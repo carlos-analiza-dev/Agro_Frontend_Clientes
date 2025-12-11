@@ -16,6 +16,7 @@ const CardServiceUsers = ({ services, onPress }: Props) => {
         <Image
           src="/images/servicio_image.png"
           alt={services.nombre}
+          unoptimized
           fill
           className="object-cover"
         />

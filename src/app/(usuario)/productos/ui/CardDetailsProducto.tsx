@@ -46,6 +46,7 @@ const CardDetailsProducto = ({
                 <div className="relative aspect-square rounded-lg overflow-hidden">
                   <Image
                     src={imagen.url}
+                    unoptimized
                     alt={`${producto.nombre} - Imagen ${index + 1}`}
                     fill
                     className="object-cover"
@@ -90,6 +91,7 @@ const CardDetailsProducto = ({
                       <Image
                         src={imagen.url}
                         alt={`${producto.nombre} - Miniatura ${index + 1}`}
+                        unoptimized
                         fill
                         className="object-cover"
                       />

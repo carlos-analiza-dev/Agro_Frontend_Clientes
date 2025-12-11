@@ -49,6 +49,7 @@ const CardCarrito = ({
           <div className="relative h-24 w-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
             <Image
               src={getImagenPrincipal(item.imagenes)}
+              unoptimized
               alt={item.nombre}
               fill
               className="object-cover"

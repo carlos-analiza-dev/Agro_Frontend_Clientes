@@ -27,33 +27,31 @@ export default function AdminLayout({
   const [showSessionModal, setShowSessionModal] = useState(false);
   const [checkingPermissions, setCheckingPermissions] = useState(true);
 
-  // Obtener las URLs a las que el cliente tiene permiso de "ver"
-  const permisosVer =
-    cliente?.clientePermisos
-      ?.filter((permiso) => permiso.ver === true)
-      ?.map((permiso) => permiso.permiso.url) || [];
-
-  // Verificar si la ruta actual tiene permisos
   const hasPermissionForCurrentRoute = () => {
-    // Si no hay cliente cargado aún, esperar
     if (!cliente) return true;
 
-    // Rutas que siempre están permitidas para todos los usuarios
-    const allowedRoutes = [
-      "/not-found",
-      "/unauthorized",
-      "/panel", // <- Agregar /panel aquí
-    ];
+    const allowedRoutes = ["/not-found", "/unauthorized", "/panel"];
 
-    // Si la ruta actual está en las rutas permitidas, no redirigir
     if (allowedRoutes.includes(pathname)) {
       return true;
     }
 
-    // Verificar si la ruta actual está en los permisos del cliente
-    return permisosVer.includes(pathname);
-  };
+    if (!cliente.clientePermisos || cliente.clientePermisos.length === 0) {
+      return true;
+    }
 
+    const hasPermission = cliente.clientePermisos.some((permiso) => {
+      if (permiso.ver === true) {
+        return (
+          pathname === permiso.permiso.url ||
+          pathname.startsWith(permiso.permiso.url + "/")
+        );
+      }
+      return false;
+    });
+
+    return hasPermission;
+  };
   const handleLogout = async () => {
     try {
       setMobileSidebarOpen(false);
@@ -126,10 +124,8 @@ export default function AdminLayout({
     }
   }, [token]);
 
-  // Efecto para verificar permisos de la ruta actual
   useEffect(() => {
     const checkRoutePermissions = () => {
-      // Solo verificar si ya tenemos los datos del cliente
       if (cliente) {
         if (!hasPermissionForCurrentRoute()) {
           router.push("/not-found");
@@ -141,7 +137,6 @@ export default function AdminLayout({
     checkRoutePermissions();
   }, [cliente, pathname, router]);
 
-  // Mostrar loader mientras verificamos permisos
   if (loading || checkingPermissions) {
     return <FullScreenLoader />;
   }

@@ -23,6 +23,7 @@ const AnimalItem = ({ item }: AnimalItemProps) => {
           width={50}
           height={50}
           className="rounded-full object-cover"
+          unoptimized
         />
       )}
 

@@ -49,6 +49,7 @@ const ProductCard = ({ producto, user, onPress, className = "" }: Props) => {
           {tieneImagenes ? (
             <Image
               src={producto.imagenes[0].url}
+              unoptimized
               alt={producto.nombre}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-110"
