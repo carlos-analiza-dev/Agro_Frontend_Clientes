@@ -69,7 +69,7 @@ const CarritoPage = () => {
   const handleCheckout = (ubicacion: UbicacionPedido) => {
     if (!cliente) {
       toast.error("Debes iniciar sesión para realizar un pedido");
-      router.push("/auth/login");
+      router.push("/");
       return;
     }
 

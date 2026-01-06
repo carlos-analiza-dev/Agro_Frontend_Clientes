@@ -18,6 +18,7 @@ import usePaisesById from "@/hooks/paises/usePaisesById";
 
 import { useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
+import { Eye, EyeClosed, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -30,6 +31,7 @@ const FormRegister = () => {
   const [codigoPais, setCodigoPais] = useState("");
   const [paisId, setPaisId] = useState("");
   const [departamentoId, setDepartamentoId] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -195,15 +197,25 @@ const FormRegister = () => {
 
         <div className="space-y-2">
           <Label htmlFor="password">Contraseña*</Label>
-          <Input
-            id="password"
-            type="password"
-            placeholder="••••••••"
-            {...register("password", {
-              required: "La contraseña es requerida",
-              validate: validatePassword,
-            })}
-          />
+          <div className="relative">
+            <Input
+              id="password"
+              type={showPassword ? "password" : "text"}
+              placeholder="••••••••"
+              {...register("password", {
+                required: "La contraseña es requerida",
+                validate: validatePassword,
+              })}
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
+            </button>
+          </div>
           {errors.password && (
             <p className="text-sm font-medium text-red-500">
               {errors.password.message as string}

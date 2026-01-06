@@ -61,7 +61,9 @@ const ProductosRelacionados = ({
     <Card className="mt-12">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-          <span className="text-2xl font-bold">Productos Relacionados</span>
+          <span className="text-base md:text-xl font-bold">
+            ¿Qué otros productos compran los clientes tras ver este producto?
+          </span>
           <Button variant="ghost" size="sm" asChild>
             <Link href="/productos">
               Ver todos

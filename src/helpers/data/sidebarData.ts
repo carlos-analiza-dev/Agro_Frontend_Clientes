@@ -21,9 +21,21 @@ export const navItems = [
     items: [{ name: "Panel", href: "/panel", icon: ChartColumnIncreasing }],
   },
   {
-    category: "Actividades",
+    category: "Finca",
     items: [
-      { name: "Servicios", href: "/servicios", icon: BriefcaseMedical },
+      { name: "Fincas", href: "/fincas", icon: Building2 },
+      { name: "Animales", href: "/animales", icon: Layers3 },
+      { name: "Producción", href: "/produccion", icon: FlaskConical },
+    ],
+  },
+  {
+    category: "Solicitudes El Sembrador",
+    items: [
+      {
+        name: "Servicios Veterinarios",
+        href: "/servicios",
+        icon: BriefcaseMedical,
+      },
       { name: "Productos", href: "/productos", icon: ShoppingBag },
       { name: "Citas", href: "/citas", icon: FileText },
     ],
@@ -37,14 +49,7 @@ export const navItems = [
       { name: "Cancelados", href: "/pedidos-cancelados", icon: PackageXIcon },
     ],
   },
-  {
-    category: "Finca",
-    items: [
-      { name: "Fincas", href: "/fincas", icon: Building2 },
-      { name: "Animales", href: "/animales", icon: Layers3 },
-      { name: "Producción", href: "/produccion", icon: FlaskConical },
-    ],
-  },
+
   {
     category: "Salud Animal",
     items: [

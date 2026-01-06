@@ -9,17 +9,13 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, X } from "lucide-react";
+import { MapPin } from "lucide-react";
 import dynamic from "next/dynamic";
 import { toast } from "react-toastify";
 
 const Map = dynamic(() => import("@/components/generics/Map"), {
   ssr: false,
-  loading: () => (
-    <div className="h-64 w-full rounded-md bg-muted flex items-center justify-center">
-      Cargando mapa...
-    </div>
-  ),
+  loading: () => <div>Cargando mapa...</div>,
 });
 
 interface MapaSeleccionDireccionProps {

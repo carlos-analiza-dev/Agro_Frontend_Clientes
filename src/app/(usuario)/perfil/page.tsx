@@ -12,7 +12,7 @@ const PerfilPage = () => {
 
   useEffect(() => {
     if (!token) {
-      router.replace("/auth/login");
+      router.replace("/");
     }
   }, [token, router]);
 

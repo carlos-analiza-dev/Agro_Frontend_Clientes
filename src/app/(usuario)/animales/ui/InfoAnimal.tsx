@@ -21,7 +21,7 @@ const InfoAnimal = ({ animal }: Props) => {
         <Calendar className="w-5 h-5 text-muted-foreground mt-1" />
         <p className="text-sm text-foreground">
           <span className="font-medium">Nacimiento:</span>{" "}
-          {new Date(animal.fecha_nacimiento).toLocaleDateString()}
+          {animal.fecha_nacimiento}
         </p>
       </div>
 

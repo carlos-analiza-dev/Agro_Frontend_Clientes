@@ -68,7 +68,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
           <Menu className="h-6 w-6" />
         </Button>
         {activePage && (
-          <h2 className="ml-4 text-lg font-medium text-gray-900">
+          <h2 className="ml-4 text-base md:text-lg font-medium text-gray-900">
             {activePage}
           </h2>
         )}

@@ -50,7 +50,7 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
   const imageUrl = animal.profileImages[0]?.url?.replace(
     "localhost",
-    process.env.NEXT_PUBLIC_API || "localhost"
+    process.env.NEXT_PUBLIC_HOST || "localhost"
   );
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -252,7 +252,6 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           <AnimalFincaByPropietarion
             fincaNombre={animal.finca.nombre_finca}
             fincaAbreviatura={animal.finca.abreviatura}
-            propietarioNombre={animal.propietario.name}
             observaciones={animal.observaciones}
           />
 

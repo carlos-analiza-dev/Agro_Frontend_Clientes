@@ -386,6 +386,13 @@ const AnimalDetailsPage = () => {
       propietarioId: cliente.id,
     };
 
+    if (animalData.fecha_nacimiento) {
+      const fecha = new Date(animalData.fecha_nacimiento);
+      fecha.setDate(fecha.getDate() + 1);
+
+      animalData.fecha_nacimiento = fecha.toISOString().split("T")[0];
+    }
+
     delete (animalData as any).identificador_temp;
     delete (animalData as any).identificador_temp_padre;
     delete (animalData as any).identificador_temp_madre;

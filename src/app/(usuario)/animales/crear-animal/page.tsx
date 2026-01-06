@@ -28,15 +28,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { ArrowLeft, CalendarIcon, InfoIcon, PawPrintIcon } from "lucide-react";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { ArrowLeft, InfoIcon, PawPrintIcon } from "lucide-react";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import {
   CrearAnimalByFinca,
@@ -61,7 +53,6 @@ const CrearAnimalPage = () => {
   const [showIdentifierHelp, setShowIdentifierHelp] = useState(false);
   const [showIdentifierHelpPadre, setShowIdentifierHelpPadre] = useState(false);
   const [showIdentifierHelpMadre, setShowIdentifierHelpMadre] = useState(false);
-  const [date, setDate] = useState<Date>();
 
   const {
     register,
@@ -605,36 +596,17 @@ const CrearAnimalPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Fecha de Nacimiento</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start text-left font-normal"
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date
-                          ? format(date, "PPP", { locale: es })
-                          : "Seleccionar fecha"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={date}
-                        onSelect={(selectedDate) => {
-                          setDate(selectedDate);
-                          if (selectedDate) {
-                            setValue(
-                              "fecha_nacimiento",
-                              format(selectedDate, "yyyy-MM-dd")
-                            );
-                          }
-                        }}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <Label htmlFor="fecha_nacimiento">Fecha de Nacimiento</Label>
+                  <Input
+                    id="fecha_nacimiento"
+                    type="date"
+                    {...register("fecha_nacimiento")}
+                    onChange={(e) => {
+                      setValue("fecha_nacimiento", e.target.value);
+                    }}
+                    max={new Date().toISOString().split("T")[0]}
+                    className="w-full"
+                  />
                   {errors.fecha_nacimiento && (
                     <p className="text-sm text-red-500">
                       {errors.fecha_nacimiento.message}
@@ -1344,6 +1316,7 @@ const CrearAnimalPage = () => {
                   <Label>Número de parto</Label>
                   <Input
                     value={watch("numero_parto_madre") || ""}
+                    min={1}
                     onChange={(e) => {
                       const value = e.target.value;
 

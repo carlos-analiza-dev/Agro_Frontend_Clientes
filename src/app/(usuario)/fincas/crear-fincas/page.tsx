@@ -261,12 +261,14 @@ export default function CrearFincaPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="abreviatura">Abreviatura (opcional)</Label>
+                    <Label htmlFor="abreviatura">
+                      Abreviatura de finca (opcional)
+                    </Label>
                     <div className="relative">
                       <Type className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="abreviatura"
-                        placeholder="Abreviatura"
+                        placeholder="Abreviatura de finca"
                         className="pl-10"
                         {...register("abreviatura")}
                       />

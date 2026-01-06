@@ -1,9 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   images: {
-    domains: ["localhost"],
+    domains: ["localhost", "34.42.111.72"],
+    qualities: [75, 85],
   },
 };
 
