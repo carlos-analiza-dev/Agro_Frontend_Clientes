@@ -23,7 +23,7 @@ interface MapaSeleccionDireccionProps {
   onClose: () => void;
   onLocationSelect: (
     direccion: string,
-    coords: { latitude: number; longitude: number }
+    coords: { latitude: number; longitude: number },
   ) => void;
   initialCoords?: { latitude: number; longitude: number };
 }
@@ -77,7 +77,7 @@ export default function MapaSeleccionDireccion({
           updateDireccion(defaultCoords.latitude, defaultCoords.longitude);
           setIsLoading(false);
         },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
       );
     } else {
       toast.error("Geolocalización no es soportada por este navegador");
@@ -90,7 +90,7 @@ export default function MapaSeleccionDireccion({
     try {
       setIsLoading(true);
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
       );
 
       if (!response.ok) {
@@ -103,14 +103,14 @@ export default function MapaSeleccionDireccion({
         setDireccion(data.display_name);
       } else {
         setDireccion(
-          `Ubicación seleccionada (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`
+          `Ubicación seleccionada (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`,
         );
       }
     } catch (error) {
       toast.error("Error al obtener la dirección");
 
       setDireccion(
-        `Ubicación seleccionada (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`
+        `Ubicación seleccionada (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`,
       );
       toast.error("No se pudo obtener la dirección exacta");
     } finally {
