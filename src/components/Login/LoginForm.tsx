@@ -40,7 +40,7 @@ const LoginForm = () => {
 
       if (!authResponse) {
         toast.error(
-          "Usuario o contraseña incorrectos. Contacte al administrador."
+          "Usuario o contraseña incorrectos. Contacte al administrador.",
         );
         return;
       }

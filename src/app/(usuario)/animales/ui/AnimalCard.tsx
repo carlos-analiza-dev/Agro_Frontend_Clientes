@@ -48,10 +48,7 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
 
-  const imageUrl = animal.profileImages[0]?.url?.replace(
-    "localhost",
-    process.env.NEXT_PUBLIC_HOST || "localhost"
-  );
+  const imageUrl = animal.profileImages[0]?.url;
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -92,7 +89,7 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
       if (isAxiosError(error)) {
         toast.error(
           error.response?.data?.message ||
-            "Error al eliminar la foto de perfil del animal"
+            "Error al eliminar la foto de perfil del animal",
         );
       }
     }
@@ -105,7 +102,7 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
         (!deathReason || deathReason.trim() === "" || deathReason === "N/D")
       ) {
         toast.error(
-          "Debe ingresar una razón de muerte válida (no puede estar vacía o ser 'N/D')"
+          "Debe ingresar una razón de muerte válida (no puede estar vacía o ser 'N/D')",
         );
         return;
       }
@@ -118,7 +115,7 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
       toast(
         deathStatus
           ? "Animal marcado como fallecido"
-          : "Animal marcado como vivo"
+          : "Animal marcado como vivo",
       );
 
       queryClient.invalidateQueries({

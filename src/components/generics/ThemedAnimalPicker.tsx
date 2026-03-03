@@ -47,7 +47,7 @@ const ThemedAnimalPicker = ({
   const [isOpen, setIsOpen] = useState(false);
 
   const unselectedAnimals = animals.filter(
-    (animal) => !selectedAnimals.includes(animal.id)
+    (animal) => !selectedAnimals.includes(animal.id),
   );
 
   const toggleAnimalSelection = (animalId: string) => {
@@ -67,10 +67,7 @@ const ThemedAnimalPicker = ({
 
   const getAnimalImageUrl = (animal: Animal): string | undefined => {
     if (animal.profileImages?.[0]?.url) {
-      return animal.profileImages[0].url.replace(
-        "localhost",
-        process.env.NEXT_PUBLIC_HOST || "localhost"
-      );
+      return animal.profileImages[0].url;
     }
     return undefined;
   };

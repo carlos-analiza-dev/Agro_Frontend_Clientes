@@ -2,6 +2,7 @@ import {
   BriefcaseMedical,
   Building2,
   ChartColumnIncreasing,
+  CircleDollarSign,
   FileText,
   FlaskConical,
   Heart,
@@ -11,6 +12,7 @@ import {
   PackageOpen,
   PackageXIcon,
   Pill,
+  Scale,
   ShoppingBag,
   UserCog,
 } from "lucide-react";
@@ -25,6 +27,12 @@ export const navItems = [
     items: [
       { name: "Fincas", href: "/fincas", icon: Building2 },
       { name: "Animales", href: "/animales", icon: Layers3 },
+      { name: "Control de Peso", href: "/peso-animales", icon: Scale },
+      {
+        name: "Productos de Venta",
+        href: "/precios-productos",
+        icon: CircleDollarSign,
+      },
       { name: "Producción", href: "/produccion", icon: FlaskConical },
     ],
   },

@@ -5,7 +5,7 @@ const useGetAnimalesPropietario = (id: string) => {
   return useQuery({
     queryKey: ["animales-propietario", id],
     queryFn: () => ObtenerAnimales(id),
-    retry: 0,
+    staleTime: 60 * 5 * 100,
   });
 };
 

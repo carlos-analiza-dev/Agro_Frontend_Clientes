@@ -87,7 +87,7 @@ const DetailsProducto = ({
   } = useCartStore();
 
   const isInCart = cart.some(
-    (item) => item.id === producto.id && item.sucursalId === sucursalId
+    (item) => item.id === producto.id && item.sucursalId === sucursalId,
   );
 
   const canAddToCurrentSucursal = canAddToSucursal(sucursalId);
@@ -103,7 +103,7 @@ const DetailsProducto = ({
 
     if (!canAddToCurrentSucursal) {
       toast.error(
-        `No puedes agregar productos de ${nombreSucursal}. Tu pedido actual es para ${getCurrentSucursalName()}. Limpia el carrito para cambiar de sucursal.`
+        `No puedes agregar productos de ${nombreSucursal}. Tu pedido actual es para ${getCurrentSucursalName()}. Limpia el carrito para cambiar de sucursal.`,
       );
       return;
     }
@@ -113,7 +113,7 @@ const DetailsProducto = ({
     }
     isInCart
       ? toast.success(
-          `${producto.nombre} ya estaba en el carrito. Se agregaron ${quantity} unidad${quantity > 1 ? "es" : ""} más.`
+          `${producto.nombre} ya estaba en el carrito. Se agregaron ${quantity} unidad${quantity > 1 ? "es" : ""} más.`,
         )
       : toast.success(`${producto.nombre} fue agregado al carrito.`);
     setNotas("");
@@ -129,7 +129,7 @@ const DetailsProducto = ({
           {producto.nombre}
         </h1>
         <p className="text-lg text-gray-600 leading-relaxed">
-          {producto.descripcion || "Sin descripción disponible"}
+          {producto.atributos || "N/D"}
         </p>
       </div>
 

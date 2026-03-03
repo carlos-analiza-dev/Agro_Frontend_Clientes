@@ -21,6 +21,7 @@ import NoOpiniones from "../ui/NoOpiniones ";
 import useGetProductoCompradoByCliente from "@/hooks/pedidos/useGetProductoCompradoByCliente";
 import FormOpinionProducto from "../ui/FormOpinionProducto";
 import useGetProductoOpinadoCliente from "@/hooks/opiniones/useGetProductoOpinadoCliente";
+import Paginacion from "@/components/generics/Paginacion";
 
 const ProductDetailsPage = () => {
   const { id: productoId } = useParams();
@@ -28,7 +29,7 @@ const ProductDetailsPage = () => {
   const router = useRouter();
   const { cliente } = useAuthStore();
   const paisId = cliente?.pais.id || "";
-  const [limit, setLimit] = useState(5);
+  const limit = 5;
   const [offset, setOffset] = useState(0);
 
   const [mostrarFormOpinion, setMostrarFormOpinion] = useState(false);
@@ -61,6 +62,15 @@ const ProductDetailsPage = () => {
       limit: limit,
       offset: offset,
     });
+
+  const totalPages = opiniones_producto
+    ? Math.ceil(opiniones_producto.total / limit)
+    : 1;
+  const currentPage = Math.floor(offset / limit) + 1;
+
+  const handlePageChange = (page: number) => {
+    setOffset((page - 1) * limit);
+  };
 
   const { data: rating_producto } = useGetRatingProducto(productoId as string);
 
@@ -184,7 +194,7 @@ const ProductDetailsPage = () => {
 
   if (isErrorSucursales || isErrorProducto) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen px-4">
         <MessageError
           titulo="Error al cargar la información"
           descripcion="Ocurrió un error al cargar los datos del producto o sucursales"
@@ -204,7 +214,7 @@ const ProductDetailsPage = () => {
 
   if (!producto) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen px-4">
         <MessageError
           titulo="No se encontró el producto seleccionado"
           descripcion="El producto que buscas no está disponible"
@@ -221,27 +231,32 @@ const ProductDetailsPage = () => {
 
   return (
     <div className="container">
-      <div className="mx-auto px-4 py-6 max-w-6xl">
-        <div className="flex items-center justify-between mb-6">
+      <div className="px-4 py-4 sm:py-6">
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
           <Button
             variant="ghost"
             onClick={() => router.push("/productos")}
-            className="gap-2"
+            className="gap-2 text-sm sm:text-base"
+            size="sm"
           >
-            <ArrowLeft className="h-4 w-4" />
-            Productos
+            <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Productos</span>
+            <span className="sm:hidden">Volver</span>
           </Button>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <CardDetailsProducto
-            imagenes={imagenes}
-            producto={producto}
-            setCarouselApi={setCarouselApi}
-            selectedImageIndex={selectedImageIndex}
-            setSelectedImageIndex={setSelectedImageIndex}
-          />
 
-          <div className="h-[700px] overflow-y-scroll">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+          <div className="w-full">
+            <CardDetailsProducto
+              imagenes={imagenes}
+              producto={producto}
+              setCarouselApi={setCarouselApi}
+              selectedImageIndex={selectedImageIndex}
+              setSelectedImageIndex={setSelectedImageIndex}
+            />
+          </div>
+
+          <div className="lg:h-[700px] lg:overflow-y-scroll">
             <DetailsProducto
               producto={producto}
               isLoadingSucursales={isLoadingSucursales}
@@ -268,114 +283,110 @@ const ProductDetailsPage = () => {
           </div>
         </div>
 
-        <ProductosRelacionados
-          categoriaId={producto.categoria.id}
-          producto={producto.id}
-          tipo={producto.categoria.tipo}
-        />
-      </div>
-
-      <div className="mt-12 px-4 max-w-6xl mx-auto pb-10">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Opiniones Destacadas</h1>
-
-          {cliente && producto_comprado && !producto_opinado && (
-            <Button
-              onClick={() => setMostrarFormOpinion(!mostrarFormOpinion)}
-              variant={mostrarFormOpinion ? "secondary" : "default"}
-              className="gap-2"
-            >
-              <MessageSquarePlus className="h-4 w-4" />
-              {mostrarFormOpinion ? "Cancelar" : "Agregar opinión"}
-            </Button>
-          )}
-
-          {cliente && producto_opinado && (
-            <div className="flex items-center gap-2 p-3 border border-green-200 bg-green-50 rounded-lg">
-              <CheckCircle className="h-5 w-5 text-green-600" />
-              <p className="text-sm font-medium text-green-800">
-                Ya opinaste sobre este producto
-              </p>
-            </div>
-          )}
+        <div className="mt-8 lg:mt-12">
+          <ProductosRelacionados
+            categoriaId={producto.categoria.id}
+            producto={producto.id}
+            tipo={producto.categoria.tipo}
+          />
         </div>
 
-        {cliente && !producto_comprado && (
-          <div className="mb-6 p-4 border border-amber-200 bg-amber-50 rounded-lg">
-            <p className="text-sm text-amber-800">
-              Solo los clientes que han comprado este producto pueden agregar
-              opiniones.
-            </p>
+        <div className="mt-8 lg:mt-12 px-0 sm:px-2 lg:px-4 max-w-6xl mx-auto pb-8 lg:pb-10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+            <h1 className="text-xl sm:text-2xl font-bold">
+              Opiniones Destacadas
+            </h1>
+
+            {cliente && producto_comprado && !producto_opinado && (
+              <Button
+                onClick={() => setMostrarFormOpinion(!mostrarFormOpinion)}
+                variant={mostrarFormOpinion ? "secondary" : "default"}
+                className="gap-2 w-full sm:w-auto"
+                size="sm"
+              >
+                <MessageSquarePlus className="h-4 w-4" />
+                {mostrarFormOpinion ? "Cancelar" : "Agregar opinión"}
+              </Button>
+            )}
+
+            {cliente && producto_opinado && (
+              <div className="flex items-center gap-2 p-3 border border-green-200 bg-green-50 rounded-lg w-full sm:w-auto">
+                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+                <p className="text-xs sm:text-sm font-medium text-green-800">
+                  Ya opinaste sobre este producto
+                </p>
+              </div>
+            )}
           </div>
-        )}
 
-        {mostrarFormOpinion &&
-          cliente &&
-          producto_comprado &&
-          !producto_opinado && (
-            <div className="mb-8">
-              <FormOpinionProducto
-                productoId={productoId as string}
-                productoNombre={producto.nombre}
-                onSuccess={handleOpinionSuccess}
-                onCancel={() => setMostrarFormOpinion(false)}
-              />
-            </div>
-          )}
+          {mostrarFormOpinion &&
+            cliente &&
+            producto_comprado &&
+            !producto_opinado && (
+              <div className="mb-6 lg:mb-8">
+                <FormOpinionProducto
+                  productoId={productoId as string}
+                  productoNombre={producto.nombre}
+                  onSuccess={handleOpinionSuccess}
+                  onCancel={() => setMostrarFormOpinion(false)}
+                />
+              </div>
+            )}
 
-        {opiniones_producto && opiniones_producto?.opiniones.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="col-span-1">
-              <CardRatingResumen rating={rating_producto} />
+          {opiniones_producto && opiniones_producto?.opiniones.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+              <div className="col-span-1">
+                <CardRatingResumen rating={rating_producto} />
 
-              {cliente &&
-                producto_comprado &&
-                !producto_opinado &&
-                !mostrarFormOpinion && (
-                  <div className="mt-6 p-4 border rounded-lg bg-blue-50">
-                    <h3 className="font-semibold text-blue-800 mb-2">
-                      ¿Te gustó este producto?
-                    </h3>
-                    <p className="text-sm text-blue-700 mb-3">
-                      Comparte tu experiencia con otros clientes
-                    </p>
-                    <Button
-                      onClick={() => setMostrarFormOpinion(true)}
-                      variant="outline"
-                      size="sm"
-                      className="w-full"
-                    >
-                      Escribir mi opinión
-                    </Button>
+                {cliente &&
+                  producto_comprado &&
+                  !producto_opinado &&
+                  !mostrarFormOpinion && (
+                    <div className="mt-6 p-4 border rounded-lg bg-blue-50">
+                      <h3 className="font-semibold text-blue-800 mb-2 text-sm sm:text-base">
+                        ¿Te gustó este producto?
+                      </h3>
+                      <p className="text-xs sm:text-sm text-blue-700 mb-3">
+                        Comparte tu experiencia con otros clientes
+                      </p>
+                      <Button
+                        onClick={() => setMostrarFormOpinion(true)}
+                        variant="outline"
+                        size="sm"
+                        className="w-full text-xs sm:text-sm"
+                      >
+                        Escribir mi opinión
+                      </Button>
+                    </div>
+                  )}
+              </div>
+
+              <div className="space-y-6 col-span-1 lg:col-span-2 h-[400px] overflow-y-scroll pr-2">
+                {opiniones_producto?.opiniones.map((opinion) => (
+                  <CardOpinionesProducto
+                    key={opinion.id}
+                    opinion={opinion}
+                    cliente={cliente}
+                  />
+                ))}
+                {opiniones_producto && opiniones_producto.total > limit && (
+                  <div className="mt-4">
+                    <Paginacion
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                    />
                   </div>
                 )}
+              </div>
             </div>
-
-            <div className="space-y-6 col-span-1 md:col-span-2">
-              {opiniones_producto?.opiniones.map((opinion) => (
-                <CardOpinionesProducto key={opinion.id} opinion={opinion} />
-              ))}
-
-              {opiniones_producto.total > 5 && (
-                <div className="text-center pt-6 border-t">
-                  <Button
-                    variant="outline"
-                    onClick={() =>
-                      router.push(`/productos/${productoId}/opiniones`)
-                    }
-                  >
-                    Ver todas las opiniones ({opiniones_producto.total})
-                  </Button>
-                </div>
-              )}
-            </div>
-          </div>
-        ) : (
-          <NoOpiniones
-            haComprado={!!producto_comprado}
-            onAgregarOpinion={() => setMostrarFormOpinion(true)}
-          />
-        )}
+          ) : (
+            <NoOpiniones
+              haComprado={!!producto_comprado}
+              onAgregarOpinion={() => setMostrarFormOpinion(true)}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

@@ -33,12 +33,6 @@ const ImageGallery = ({
   const getImageUrl = (url: string) => {
     if (!url) return "";
 
-    if (url.includes("localhost")) {
-      return url.replace(
-        "localhost",
-        process.env.NEXT_PUBLIC_HOST || "192.168.0.10"
-      );
-    }
     return url;
   };
 

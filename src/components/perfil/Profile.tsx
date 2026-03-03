@@ -28,9 +28,9 @@ interface Props {
   onUpdateProfileImage?: (uri: string) => Promise<void>;
 }
 
-const Profile = ({ user, height, primary, onUpdateProfileImage }: Props) => {
+const Profile = ({ user, height, onUpdateProfileImage }: Props) => {
   const queryClient = useQueryClient();
-  const userId = user?.id;
+
   const [galleryVisible, setGalleryVisible] = useState(false);
   const [localImage, setLocalImage] = useState<string | null>(null);
 
@@ -39,19 +39,14 @@ const Profile = ({ user, height, primary, onUpdateProfileImage }: Props) => {
   const { data: imagenes_user } = useGetAllImagesProfile();
   const { data: perfil } = useGetImagePerfil();
 
-  const imageUrl = perfil?.data?.url
-    ? perfil.data.url.replace(
-        "localhost",
-        process.env.NEXT_PUBLIC_HOST || "localhost"
-      )
-    : undefined;
+  const imageUrl = perfil?.data?.url;
 
   const handleImagePick = () => {
     fileInputRef.current?.click();
   };
 
   const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -102,7 +97,8 @@ const Profile = ({ user, height, primary, onUpdateProfileImage }: Props) => {
     } catch (error) {
       if (isAxiosError(error)) {
         toast.error(
-          error.response?.data?.message || "Error al eliminar la foto de perfil"
+          error.response?.data?.message ||
+            "Error al eliminar la foto de perfil",
         );
       }
     }

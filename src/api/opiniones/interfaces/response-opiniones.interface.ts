@@ -10,7 +10,9 @@ export interface Opinione {
   rating: number;
   titulo: string;
   comentario: string;
-  createdAt: Date;
+  compra_verificada: boolean;
+  createdAt: string;
+  updatedAt: string;
   cliente: Cliente;
 }
 
