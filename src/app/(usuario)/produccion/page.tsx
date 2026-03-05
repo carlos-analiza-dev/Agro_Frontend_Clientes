@@ -1,8 +1,8 @@
 "use client";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Plus } from "lucide-react";
+import { BadgeDollarSign, ShoppingBasket } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuthStore } from "@/providers/store/useAuthStore";
@@ -10,6 +10,12 @@ import useGetProduccionesUserId from "@/hooks/producciones/useGetProduccionesUse
 import { MessageError } from "@/components/generics/MessageError";
 import ProduccionList from "./ui/ProduccionList";
 import { FAB } from "@/components/generics/FAB";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const ProduccionGanaderoPage = () => {
   const { cliente } = useAuthStore();
@@ -42,17 +48,23 @@ const ProduccionGanaderoPage = () => {
       <div className="container mx-auto px-4 py-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Mis Producciones</h1>
-          <Button
-            onClick={onRefresh}
-            variant="outline"
-            size="sm"
-            disabled={refreshing}
-          >
-            <RefreshCw
-              className={`mr-2 h-4 w-4 ${refreshing ? "animate-spin" : ""}`}
-            />
-            Actualizar
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <BadgeDollarSign className="h-4 w-4" />
+                Mis Ventas
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                className="hover:cursor-pointer"
+                onClick={() => router.push("/produccion/precios-productos")}
+              >
+                <ShoppingBasket className="h-4 w-4 mr-2" />
+                Productos
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div className="space-y-4">

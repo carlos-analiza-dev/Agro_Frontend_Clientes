@@ -21,4 +21,19 @@ export const categorias_productos = [
     nombre: "Reproductivo",
     value: CategoriaProducto.REPRODUCTIVO,
   },
+  {
+    id: 5,
+    nombre: "Forrajes",
+    value: CategoriaProducto.FORRAJES,
+  },
+  {
+    id: 6,
+    nombre: "Concentrado",
+    value: CategoriaProducto.CONCENTRADOS,
+  },
+  {
+    id: 7,
+    nombre: "Nucleos",
+    value: CategoriaProducto.NUCELOS,
+  },
 ];

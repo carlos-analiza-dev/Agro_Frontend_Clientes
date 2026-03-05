@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import CardProducto from "./ui/CardProducto";
 import useGetProductoVenta from "@/hooks/productos-venta-ganadero/useGetProductoVenta";
-import SkeletonCard from "../peso-animales/ui/SkeletonCard";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -14,6 +13,8 @@ import {
 import { useState } from "react";
 import FormAddProducto from "./ui/FormAddProducto";
 import { ResponseProductosVenta } from "@/api/productos-ganadero/interfaces/obtener-productos-precios.interface";
+import SkeletonCard from "@/components/generics/SkeletonCard";
+import ButtonBack from "@/components/generics/ButtonBack";
 
 const PreciosProductosPage = () => {
   const { data: productos, isLoading } = useGetProductoVenta();
@@ -42,6 +43,7 @@ const PreciosProductosPage = () => {
 
   return (
     <div className="container p-4">
+      <ButtonBack />
       <div className="block md:flex md:justify-between">
         <h1 className="text-xl text-center md:text-3xl font-bold">
           Productos de Venta

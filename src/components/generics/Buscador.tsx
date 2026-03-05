@@ -6,6 +6,7 @@ interface BuscadorProps {
   setSearchTerm: (term: string) => void;
   searchTerm: string;
   className?: string;
+  onFocus?: () => void;
 }
 
 export const Buscador = ({
@@ -13,6 +14,7 @@ export const Buscador = ({
   setSearchTerm,
   searchTerm,
   className,
+  onFocus,
 }: BuscadorProps) => {
   return (
     <div className={`relative ${className}`}>
@@ -21,6 +23,7 @@ export const Buscador = ({
         placeholder={title}
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
+        onFocus={onFocus}
         className="pl-10"
       />
     </div>

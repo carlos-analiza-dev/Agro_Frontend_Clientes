@@ -25,6 +25,8 @@ import {
   MORTALIDAD_COLORS,
   ORIGEN_COLORS,
 } from "@/helpers/data/colorDashboard";
+import GananciaPesoAnimalMes from "./GananciaPesoAnimalMes";
+import GananciasPesoByFinca from "./GananciasPesoByFinca";
 
 const ProduccionGanadera = () => {
   const { data: animales_sexo } = useGetTotalAnimalesSexo();
@@ -37,9 +39,9 @@ const ProduccionGanadera = () => {
   const especiesUnicas = Array.from(
     new Set(
       especies_fincas?.flatMap((finca: ResponseEspeciesByFinca) =>
-        finca.especies.map((e: Especie) => e.especie)
-      ) || []
-    )
+        finca.especies.map((e: Especie) => e.especie),
+      ) || [],
+    ),
   );
 
   const barChartData =
@@ -50,7 +52,7 @@ const ProduccionGanadera = () => {
           acc[especie.especie] = especie.cantidad;
           return acc;
         },
-        {}
+        {},
       ),
       total: finca.cantidad_total_especies,
     })) || [];
@@ -134,6 +136,9 @@ const ProduccionGanadera = () => {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <GananciaPesoAnimalMes />
+        <GananciasPesoByFinca />
+
         <CardTipoExplotacion
           explotacionData={explotacionData}
           EXPLOTACION_COLORS={EXPLOTACION_COLORS}

@@ -192,6 +192,7 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <Button
               variant="outline"
               size="icon"
+              title="Subir Foto"
               className="h-8 w-8 rounded-full"
               onClick={() => fileInputRef.current?.click()}
             >

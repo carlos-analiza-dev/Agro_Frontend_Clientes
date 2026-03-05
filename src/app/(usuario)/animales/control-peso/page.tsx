@@ -2,9 +2,10 @@
 import { useState } from "react";
 import useGetAnimalesPropietario from "@/hooks/animales/useGetAnimalesPropietario";
 import { useAuthStore } from "@/providers/store/useAuthStore";
-import SkeletonCard from "./ui/SkeletonCard";
-import CardAnimal from "./ui/CardAnimal";
 import { Buscador } from "@/components/generics/Buscador";
+import CardAnimal from "./ui/CardAnimal";
+import ButtonBack from "@/components/generics/ButtonBack";
+import SkeletonCard from "@/components/generics/SkeletonCard";
 
 const HistorialAnimalPeso = () => {
   const { cliente } = useAuthStore();
@@ -22,6 +23,7 @@ const HistorialAnimalPeso = () => {
 
   return (
     <div className="container p-4">
+      <ButtonBack />
       <div className="flex flex-col items-center gap-4 mb-6">
         <Buscador
           title="Buscar por identificador..."

@@ -18,6 +18,7 @@ import { useAuthStore } from "@/providers/store/useAuthStore";
 import { navItems } from "@/helpers/data/sidebarData";
 import { useFavoritos } from "@/hooks/favoritos/useFavoritos";
 import { useCartStore } from "@/providers/store/useCartStore";
+import Link from "next/link";
 
 interface Props {
   setMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -30,6 +31,8 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
   const { totalItems } = useCartStore();
   const router = useRouter();
   const pathname = usePathname();
+  const firstPath = `/${pathname.split("/")[1] || ""}`;
+  const firstPathWithSlash = `${process.env.NEXT_PUBLIC_APP_URL}/${firstPath}`;
 
   const cantidadCarrito = totalItems();
 
@@ -46,11 +49,11 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
         return true;
       }
       return permisosVer.includes(item.href);
-    })
+    }),
   );
 
   const activePage =
-    navItemsConPermisos.find((item) => item.href === pathname)?.name || "";
+    navItemsConPermisos.find((item) => item.href === firstPath)?.name || "";
 
   const tienePermisoFavoritos = permisosVer.includes("/favoritos");
 
@@ -68,9 +71,12 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
           <Menu className="h-6 w-6" />
         </Button>
         {activePage && (
-          <h2 className="ml-4 text-base md:text-lg font-medium text-gray-900">
+          <Link
+            href={firstPathWithSlash}
+            className="ml-4 text-base md:text-lg font-medium text-gray-900"
+          >
             {activePage}
-          </h2>
+          </Link>
         )}
       </div>
 

@@ -29,7 +29,6 @@ const FormAddPeso = ({ animalId, openModal, setOpenModal }: Props) => {
     try {
       data.animalId = animalId;
       data.peso = Number(data.peso);
-      console.log("DATA", data);
 
       await CrearPesoAnimal(data);
       reset();

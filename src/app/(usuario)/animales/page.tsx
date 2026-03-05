@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RefreshCw, AlertCircle } from "lucide-react";
+import { RefreshCw, AlertCircle, Scale, PawPrint, Dna } from "lucide-react";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useDebounce } from "@/hooks/debounce/useDebounce";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
@@ -23,6 +23,12 @@ import { FAB } from "@/components/generics/FAB";
 import AnimalCard from "./ui/AnimalCard";
 import { uploadProfileImageAnimal } from "@/api/animales_profile/accions/uploadProfileImageAnimal";
 import { toast } from "react-toastify";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const AnimalesPageGanadero = () => {
   const router = useRouter();
@@ -51,7 +57,7 @@ const AnimalesPageGanadero = () => {
     cliente?.id ?? "",
     finca,
     especie,
-    debouncedSearchTerm
+    debouncedSearchTerm,
   );
 
   const loadMore = useCallback(() => {
@@ -62,7 +68,7 @@ const AnimalesPageGanadero = () => {
 
   const handleUpdateProfileImage = async (
     imageUri: string,
-    animalId: string
+    animalId: string,
   ) => {
     if (!cliente) return;
     try {
@@ -103,6 +109,31 @@ const AnimalesPageGanadero = () => {
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Mis Animales</h1>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="gap-2">
+              <Scale className="h-4 w-4" />
+              Control de Peso
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              className="hover:cursor-pointer"
+              onClick={() => router.push("/animales/control-peso")}
+            >
+              <PawPrint className="h-4 w-4 mr-2" />
+              Por Animal
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="hover:cursor-pointer"
+              onClick={() => router.push("/animales/peso-raza")}
+            >
+              <Dna className="h-4 w-4 mr-2" />
+              Por Raza
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
