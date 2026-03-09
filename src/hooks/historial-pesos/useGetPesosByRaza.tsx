@@ -5,7 +5,6 @@ const useGetPesosByRaza = () => {
   return useQuery({
     queryKey: ["pesos-by-razas"],
     queryFn: () => ObtenerPesoPorRaza(),
-    retry: 0,
     staleTime: 5 * 60 * 1000,
   });
 };

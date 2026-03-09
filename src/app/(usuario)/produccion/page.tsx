@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { BadgeDollarSign, ShoppingBasket } from "lucide-react";
+import { BadgeDollarSign, PackagePlus, ShoppingBasket } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuthStore } from "@/providers/store/useAuthStore";
@@ -52,7 +52,7 @@ const ProduccionGanaderoPage = () => {
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="gap-2">
                 <BadgeDollarSign className="h-4 w-4" />
-                Mis Ventas
+                Control de Productos
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -62,6 +62,13 @@ const ProduccionGanaderoPage = () => {
               >
                 <ShoppingBasket className="h-4 w-4 mr-2" />
                 Productos
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="hover:cursor-pointer"
+                onClick={() => router.push("/produccion/inventario-productos")}
+              >
+                <PackagePlus className="h-4 w-4 mr-2" />
+                Inventario
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { ResponseHistorialAnimal } from "@/api/peso-promedio-animal/interfaces/obtener-historial-pesos-animal.interface";
 import {
   Table,
@@ -12,15 +12,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { AlertCircle, CheckCircle2 } from "lucide-react";
 import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+  AlertCircle,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
+import Paginacion from "@/components/generics/Paginacion";
 
 interface Props {
   historial: ResponseHistorialAnimal[] | undefined;
@@ -32,7 +34,13 @@ interface Props {
 
 const TableHistorial = ({ historial, rangoPeso }: Props) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
+  const itemsPerPage = isMobile ? 5 : 10;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [historial, isMobile]);
 
   const getPesoStatus = (peso: number) => {
     if (!rangoPeso) return null;
@@ -58,6 +66,15 @@ const TableHistorial = ({ historial, rangoPeso }: Props) => {
     };
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("es-ES", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }).format(date);
+  };
+
   const totalItems = historial?.length || 0;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -66,14 +83,105 @@ const TableHistorial = ({ historial, rangoPeso }: Props) => {
     const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
     return historial.slice(start, end);
-  }, [historial, currentPage]);
+  }, [historial, currentPage, itemsPerPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+
+    if (isMobile) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   if (!historial || historial.length === 0) {
     return (
       <div className="w-full rounded-md border">
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-8 sm:py-12 text-gray-500 px-4">
           No hay registros de peso para este animal
         </div>
+      </div>
+    );
+  }
+
+  if (isMobile) {
+    return (
+      <div className="w-full space-y-4">
+        <div className="text-sm text-gray-500 mb-2 px-1">
+          {rangoPeso ? (
+            <span>
+              Rango esperado: {rangoPeso.minimo} - {rangoPeso.maximo} Kg
+            </span>
+          ) : (
+            "Historial de pesos"
+          )}
+        </div>
+
+        <div className="space-y-3">
+          {paginatedData.map((item) => {
+            const status = getPesoStatus(Number(item.peso));
+            const StatusIcon = status?.icon || AlertCircle;
+
+            return (
+              <Card key={item.id} className="overflow-hidden">
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <span className="text-lg font-semibold">
+                        {item.peso} Kg
+                      </span>
+                      <span className="text-sm text-gray-500 ml-2">
+                        {formatDate(item.fecha)}
+                      </span>
+                    </div>
+                    {status && (
+                      <Badge variant="outline" className={status.color}>
+                        <StatusIcon className="h-3 w-3 mr-1" />
+                        {status.label}
+                      </Badge>
+                    )}
+                  </div>
+
+                  <div className="text-sm text-gray-600">
+                    <span className="font-medium">Observaciones: </span>
+                    <span className="text-gray-500">
+                      {item.observaciones || "Sin observaciones"}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between pt-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="gap-1"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Anterior
+            </Button>
+
+            <span className="text-sm text-gray-600">
+              Página {currentPage} de {totalPages}
+            </span>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="gap-1"
+            >
+              Siguiente
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
     );
   }
@@ -110,7 +218,9 @@ const TableHistorial = ({ historial, rangoPeso }: Props) => {
                     <TableCell className="text-center font-medium">
                       {item.peso} Kg
                     </TableCell>
-                    <TableCell className="text-center">{item.fecha}</TableCell>
+                    <TableCell className="text-center">
+                      {formatDate(item.fecha)}
+                    </TableCell>
                     <TableCell className="text-center">
                       {status && (
                         <Badge variant="outline" className={status.color}>
@@ -132,54 +242,13 @@ const TableHistorial = ({ historial, rangoPeso }: Props) => {
 
       {totalPages > 1 && (
         <div className="flex justify-center">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setCurrentPage((p) => Math.max(1, p - 1));
-                  }}
-                  className={
-                    currentPage === 1 ? "pointer-events-none opacity-50" : ""
-                  }
-                />
-              </PaginationItem>
-
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                (page) => (
-                  <PaginationItem key={page}>
-                    <PaginationLink
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setCurrentPage(page);
-                      }}
-                      isActive={currentPage === page}
-                    >
-                      {page}
-                    </PaginationLink>
-                  </PaginationItem>
-                ),
-              )}
-
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setCurrentPage((p) => Math.min(totalPages, p + 1));
-                  }}
-                  className={
-                    currentPage === totalPages
-                      ? "pointer-events-none opacity-50"
-                      : ""
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+          <div className="mt-4">
+            <Paginacion
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
         </div>
       )}
     </div>

@@ -98,6 +98,7 @@ const DetailsProducto = ({
     const item = cart.find((item) => item.sucursalId === currentSucursal);
     return item?.nombreSucursal || "";
   };
+
   const handleAddToCart = () => {
     if (!isAvailable || !sucursalId) return;
 
@@ -119,59 +120,62 @@ const DetailsProducto = ({
     setNotas("");
     setQuantity(1);
   };
+
   const isSucursalDisabled =
     currentSucursal !== null && currentSucursal !== sucursalId;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+    <div className="space-y-4 md:space-y-6 px-4 sm:px-0">
+      <div className="space-y-2">
+        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">
           {producto.nombre}
         </h1>
-        <p className="text-lg text-gray-600 leading-relaxed">
+        <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed">
           {producto.atributos || "N/D"}
         </p>
       </div>
 
       {isSucursalDisabled && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-yellow-600" />
-            <span className="text-yellow-800 font-medium">
-              Pedido en curso para {getCurrentSucursalName()}
-            </span>
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 sm:p-4">
+          <div className="flex items-start sm:items-center gap-2">
+            <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-600 flex-shrink-0 mt-0.5 sm:mt-0" />
+            <div className="flex-1">
+              <span className="text-sm sm:text-base text-yellow-800 font-medium block sm:inline">
+                Pedido en curso para {getCurrentSucursalName()}
+              </span>
+              <p className="text-xs sm:text-sm text-yellow-700 mt-1 sm:mt-0 sm:inline sm:ml-2">
+                No puedes agregar productos de otras sucursales.
+                <Button
+                  variant="link"
+                  className="p-0 h-auto text-yellow-800 font-semibold ml-1 text-xs sm:text-sm"
+                  onClick={() => router.push("/cart")}
+                >
+                  Ver carrito
+                </Button>
+              </p>
+            </div>
           </div>
-          <p className="text-yellow-700 text-sm mt-1">
-            No puedes agregar productos de otras sucursales.
-            <Button
-              variant="link"
-              className="p-0 h-auto text-yellow-800 font-semibold ml-1"
-              onClick={() => router.push("/cart")}
-            >
-              Ver carrito
-            </Button>
-          </p>
         </div>
       )}
 
-      <Card>
-        <CardContent className="p-4 space-y-4">
+      <Card className="overflow-hidden">
+        <CardContent className="p-3 sm:p-4 space-y-3">
           <div className="flex items-center gap-2">
-            <Store className="h-5 w-5 text-gray-600" />
-            <Label htmlFor="sucursal" className="text-lg font-semibold">
+            <Store className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 flex-shrink-0" />
+            <Label className="text-sm sm:text-base md:text-lg font-semibold">
               Seleccionar sucursal
             </Label>
           </div>
 
           {isLoadingSucursales ? (
-            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-9 sm:h-10 w-full" />
           ) : (
             <Select
               value={sucursalId}
               onValueChange={handleSucursalChange}
               disabled={isLoadingSucursales || !sucursales?.length}
             >
-              <SelectTrigger>
+              <SelectTrigger className="h-9 sm:h-10 text-sm sm:text-base">
                 <SelectValue
                   placeholder={
                     isLoadingSucursales
@@ -184,7 +188,11 @@ const DetailsProducto = ({
               </SelectTrigger>
               <SelectContent>
                 {sucursales?.map((sucursal) => (
-                  <SelectItem key={sucursal.id} value={sucursal.id}>
+                  <SelectItem
+                    key={sucursal.id}
+                    value={sucursal.id}
+                    className="text-sm sm:text-base"
+                  >
                     {sucursal.nombre}
                   </SelectItem>
                 ))}
@@ -193,79 +201,82 @@ const DetailsProducto = ({
           )}
 
           {sucursalId && (
-            <div className="flex items-center justify-between pt-2">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 pt-2">
               {isLoadingExistencia ? (
                 <div className="flex items-center gap-2">
-                  <Skeleton className="h-4 w-4 rounded-full" />
-                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-3 sm:h-4 sm:w-4 rounded-full" />
+                  <Skeleton className="h-3 sm:h-4 w-24 sm:w-32" />
                 </div>
               ) : isErrorExistencia ? (
-                <Badge variant="destructive" className="text-sm">
-                  <AlertCircle className="w-3 h-3 mr-1" />
+                <Badge
+                  variant="destructive"
+                  className="text-xs sm:text-sm w-fit"
+                >
+                  <AlertCircle className="w-3 h-3 mr-1 flex-shrink-0" />
                   Error al cargar existencia
                 </Badge>
               ) : (
-                <>
-                  <span className="text-sm text-gray-600">
+                <div className="flex flex-col xs:flex-row xs:items-center gap-1 xs:gap-2">
+                  <span className="text-xs sm:text-sm text-gray-600">
                     Disponible en {nombreSucursal}:
                   </span>
                   <Badge
                     variant={isAvailable ? "default" : "destructive"}
-                    className="text-sm"
+                    className="text-xs sm:text-sm w-fit"
                   >
                     {isAvailable ? (
-                      <CheckCircle2 className="w-3 h-3 mr-1" />
+                      <CheckCircle2 className="w-3 h-3 mr-1 flex-shrink-0" />
                     ) : (
-                      <AlertCircle className="w-3 h-3 mr-1" />
+                      <AlertCircle className="w-3 h-3 mr-1 flex-shrink-0" />
                     )}
-                    {cantidadDisponible} {producto.unidad_venta || "unidad"}{" "}
-                    (as)
+                    {cantidadDisponible} {producto.unidad_venta || "unidad"}
+                    {cantidadDisponible !== 1 ? "s" : ""}
                   </Badge>
-                </>
+                </div>
               )}
             </div>
           )}
         </CardContent>
       </Card>
 
-      <div className="flex items-center justify-between">
-        <span className="text-4xl font-bold text-green-600">
+      <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-3">
+        <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-green-600">
           {cliente?.pais?.simbolo_moneda || "$"}
           {precio}
         </span>
 
         <Badge
           variant={isAvailable ? "default" : "destructive"}
-          className="text-sm px-3 py-1"
+          className="text-xs sm:text-sm px-2 sm:px-3 py-1 w-fit"
         >
           {isAvailable ? (
-            <CheckCircle2 className="w-4 h-4 mr-1" />
+            <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
           ) : (
-            <AlertCircle className="w-4 h-4 mr-1" />
+            <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
           )}
           {isAvailable
-            ? `Disponible (${cantidadDisponible} ${producto.unidad_venta || "unidad"})`
+            ? `Disponible (${cantidadDisponible} ${producto.unidad_venta || "unidad"}${cantidadDisponible !== 1 ? "s" : ""})`
             : "Agotado"}
         </Badge>
       </div>
 
-      <Separator />
+      <Separator className="my-2" />
 
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <span className="text-lg font-semibold">Cantidad</span>
-          <div className="flex items-center space-x-3">
+      <div className="space-y-3 sm:space-y-4">
+        <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-3">
+          <span className="text-base sm:text-lg font-semibold">Cantidad</span>
+          <div className="flex items-center justify-between xs:justify-end space-x-2 sm:space-x-3">
             <Button
               variant="outline"
               size="icon"
               onClick={handleDecrease}
               disabled={quantity <= 1 || !sucursalId}
-              className="h-10 w-10"
+              className="h-8 w-8 sm:h-10 sm:w-10"
             >
-              <Minus className="h-4 w-4" />
+              <Minus className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
 
-            <span className="text-xl font-bold min-w-[3rem] text-center">
+            <span className="text-lg sm:text-xl font-bold min-w-[2.5rem] sm:min-w-[3rem] text-center">
               {quantity}
             </span>
 
@@ -276,46 +287,45 @@ const DetailsProducto = ({
               disabled={
                 !isAvailable || quantity >= cantidadDisponible || !sucursalId
               }
-              className="h-10 w-10"
+              className="h-8 w-8 sm:h-10 sm:w-10"
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="notas" className="text-lg font-semibold">
+        <div className="space-y-1 sm:space-y-2">
+          <Label htmlFor="notas" className="text-sm sm:text-base font-semibold">
             Notas para este producto
-          </label>
+          </Label>
           <Input
             id="notas"
             value={notas}
             onChange={(e) => setNotas(e.target.value)}
             placeholder="Agregar notas especiales..."
-            className="w-full"
+            className="h-9 sm:h-10 text-sm sm:text-base"
           />
         </div>
       </div>
 
-      <Separator />
+      <Separator className="my-2" />
 
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-lg font-semibold">
+      <Card className="overflow-hidden">
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex justify-between items-center mb-3 sm:mb-4">
+            <span className="text-sm sm:text-base font-semibold">
               {quantity} {quantity === 1 ? "producto" : "productos"}
             </span>
-            <span className="text-2xl font-bold text-green-600">
+            <span className="text-xl sm:text-2xl font-bold text-green-600">
               {cliente?.pais?.simbolo_moneda || "$"}
               {totalPrecio.toFixed(2)}
             </span>
           </div>
 
-          <div className="flex space-x-3">
+          <div className="flex flex-col xs:flex-row gap-2 xs:gap-3">
             <Button
               variant="outline"
-              size="icon"
-              className={`flex-1 max-w-[60px] transition-all duration-300 ${
+              className={`xs:max-w-[60px] transition-all duration-300 ${
                 isFavorite
                   ? "bg-red-50 border-red-200 text-red-600 hover:bg-red-100"
                   : "hover:bg-red-50 hover:text-red-600"
@@ -326,66 +336,84 @@ const DetailsProducto = ({
               }
             >
               <Heart
-                className={`h-5 w-5 ${isFavorite ? "fill-current" : ""}`}
+                className={`h-4 w-4 sm:h-5 sm:w-5 ${isFavorite ? "fill-current" : ""}`}
               />
+              <span className="xs:hidden ml-2">
+                {isFavorite ? "En favoritos" : "Agregar a favoritos"}
+              </span>
             </Button>
 
             <Button
               disabled={!isAvailable || !sucursalId || !canAddToCurrentSucursal}
-              className="flex-1"
-              size="lg"
+              className="flex-1 h-10 sm:h-11 text-sm sm:text-base"
               onClick={handleAddToCart}
             >
-              <ShoppingCart className="h-5 w-5 mr-2" />
-              {!sucursalId
-                ? "Selecciona una sucursal"
-                : !canAddToCurrentSucursal
-                  ? `Pedido para ${getCurrentSucursalName()}`
-                  : isInCart
-                    ? "Agregar más al carrito"
-                    : "Agregar al carrito"}
+              <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5 mr-2 flex-shrink-0" />
+              <span className="truncate">
+                {!sucursalId
+                  ? "Selecciona una sucursal"
+                  : !canAddToCurrentSucursal
+                    ? `Pedido para ${getCurrentSucursalName()}`
+                    : isInCart
+                      ? "Agregar más al carrito"
+                      : "Agregar al carrito"}
+              </span>
             </Button>
           </div>
 
           {!canAddToCurrentSucursal && (
-            <p className="text-sm text-yellow-600 mt-2 flex items-center gap-1">
-              <AlertTriangle className="h-4 w-4" />
-              Limpia el carrito para pedir de esta sucursal
+            <p className="text-xs sm:text-sm text-yellow-600 mt-2 flex items-center gap-1">
+              <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span>Limpia el carrito para pedir de esta sucursal</span>
             </p>
           )}
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <h3 className="text-xl font-semibold">Detalles del producto</h3>
+      <Card className="overflow-hidden">
+        <CardHeader className="p-3 sm:p-4 pb-2">
+          <h3 className="text-base sm:text-lg md:text-xl font-semibold">
+            Detalles del producto
+          </h3>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex justify-between">
-            <span className="text-gray-600">Unidad de medida:</span>
-            <span className="font-semibold">
+        <CardContent className="p-3 sm:p-4 pt-0 space-y-2 sm:space-y-3">
+          <div className="flex flex-col xs:flex-row xs:justify-between gap-1 xs:gap-2 text-sm sm:text-base">
+            <span className="text-gray-600 text-xs sm:text-sm">
+              Unidad de medida:
+            </span>
+            <span className="font-semibold text-xs sm:text-sm">
               {producto.unidad_venta || "No especificada"}
             </span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Sucursal seleccionada:</span>
-            <span className="font-semibold">
+
+          <div className="flex flex-col xs:flex-row xs:justify-between gap-1 xs:gap-2 text-sm sm:text-base">
+            <span className="text-gray-600 text-xs sm:text-sm">
+              Sucursal seleccionada:
+            </span>
+            <span className="font-semibold text-xs sm:text-sm">
               {nombreSucursal || "No seleccionada"}
             </span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Cantidad disponible:</span>
-            <span className="font-semibold">
+
+          <div className="flex flex-col xs:flex-row xs:justify-between gap-1 xs:gap-2 text-sm sm:text-base">
+            <span className="text-gray-600 text-xs sm:text-sm">
+              Cantidad disponible:
+            </span>
+            <span className="font-semibold text-xs sm:text-sm">
               {sucursalId
                 ? isLoadingExistencia
                   ? "Cargando..."
-                  : `${cantidadDisponible} ${producto.unidad_venta || "unidad"}  (as)`
+                  : `${cantidadDisponible} ${producto.unidad_venta || "unidad"}${cantidadDisponible !== 1 ? "s" : ""}`
                 : "Selecciona una sucursal"}
             </span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Estado:</span>
-            <Badge variant={isAvailable ? "default" : "destructive"}>
+
+          <div className="flex flex-col xs:flex-row xs:justify-between gap-1 xs:gap-2 text-sm sm:text-base">
+            <span className="text-gray-600 text-xs sm:text-sm">Estado:</span>
+            <Badge
+              variant={isAvailable ? "default" : "destructive"}
+              className="text-xs sm:text-sm w-fit"
+            >
               {!sucursalId
                 ? "Selecciona sucursal"
                 : isAvailable
@@ -394,16 +422,26 @@ const DetailsProducto = ({
             </Badge>
           </div>
 
-          <div className="flex justify-between">
-            <span className="text-gray-600">En favoritos:</span>
-            <Badge variant={isFavorite ? "default" : "outline"}>
+          <div className="flex flex-col xs:flex-row xs:justify-between gap-1 xs:gap-2 text-sm sm:text-base">
+            <span className="text-gray-600 text-xs sm:text-sm">
+              En favoritos:
+            </span>
+            <Badge
+              variant={isFavorite ? "default" : "outline"}
+              className="text-xs sm:text-sm w-fit"
+            >
               {isFavorite ? "Sí" : "No"}
             </Badge>
           </div>
 
-          <div className="flex justify-between">
-            <span className="text-gray-600">En carrito:</span>
-            <Badge variant={isInCart ? "default" : "outline"}>
+          <div className="flex flex-col xs:flex-row xs:justify-between gap-1 xs:gap-2 text-sm sm:text-base">
+            <span className="text-gray-600 text-xs sm:text-sm">
+              En carrito:
+            </span>
+            <Badge
+              variant={isInCart ? "default" : "outline"}
+              className="text-xs sm:text-sm w-fit"
+            >
               {isInCart ? "Sí" : "No"}
             </Badge>
           </div>

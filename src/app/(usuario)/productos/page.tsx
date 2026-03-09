@@ -1,20 +1,25 @@
 "use client";
 
 import useGetProductosDisponibles from "@/hooks/productos/useGetProductosDisponibles";
-
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, ShoppingCart } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { MessageError } from "@/components/generics/MessageError";
 import ProductCard from "./ui/ProductCard";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
+import SkeletonCard from "@/components/generics/SkeletonCard";
 
 const ProductosPage = () => {
   const { cliente } = useAuthStore();
   const router = useRouter();
   const [tipoCategoria, setTipoCategoria] = useState("");
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   const {
     data: productosData,
@@ -32,7 +37,6 @@ const ProductosPage = () => {
 
   const onRefresh = useCallback(async () => {
     await refetch();
-    setTipoCategoria("");
   }, [refetch]);
 
   const handleProductClick = (productoId: string) => {
@@ -40,49 +44,69 @@ const ProductosPage = () => {
   };
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (
-        window.innerHeight + document.documentElement.scrollTop !==
-          document.documentElement.offsetHeight ||
-        isFetchingNextPage
-      ) {
-        return;
-      }
-      if (hasNextPage) {
-        fetchNextPage();
+    if (!isMobile || !hasNextPage || isFetchingNextPage) return;
+
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        const firstEntry = entries[0];
+        if (firstEntry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1, rootMargin: "100px" },
+    );
+
+    if (loadMoreRef.current) {
+      observerRef.current.observe(loadMoreRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
       }
     };
+  }, [isMobile, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+  const handleLoadMore = () => {
+    fetchNextPage();
+  };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background p-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
-            <Skeleton className="h-8 w-64 mb-2" />
-            <Skeleton className="h-4 w-96" />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {Array.from({ length: 8 }).map((_, index) => (
-              <div key={index} className="space-y-4">
-                <Skeleton className="h-48 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-                <Skeleton className="h-10 w-full" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
+    return <SkeletonCard />;
   }
 
   if (isError) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background p-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 p-5">
+          <Button
+            variant="outline"
+            className={tipoCategoria === "" ? "border-blue-500" : ""}
+            onClick={() => setTipoCategoria("")}
+          >
+            Todos
+          </Button>
+
+          <Button
+            variant="outline"
+            className={tipoCategoria === "Ganaderia" ? "border-blue-500" : ""}
+            onClick={() => setTipoCategoria("Ganaderia")}
+          >
+            Ganadería
+          </Button>
+
+          <Button
+            variant="outline"
+            className={tipoCategoria === "Agricultura" ? "border-blue-500" : ""}
+            onClick={() => setTipoCategoria("Agricultura")}
+          >
+            Agricultura
+          </Button>
+        </div>
         <MessageError
           titulo="Error al cargar los productos"
           descripcion="No se encontraron productos disponibles en este momento."
@@ -128,10 +152,10 @@ const ProductosPage = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
           {todosLosProductos.map((producto, index) => (
             <ProductCard
-              key={index}
+              key={`${producto.id}-${index}`}
               producto={producto}
               user={cliente}
               onPress={() => handleProductClick(producto.id)}
@@ -139,15 +163,30 @@ const ProductosPage = () => {
           ))}
         </div>
 
-        {isFetchingNextPage && (
+        {isMobile && hasNextPage && (
+          <div
+            ref={loadMoreRef}
+            className="w-full h-10 flex justify-center items-center mt-4"
+          >
+            {isFetchingNextPage ? (
+              <RefreshCw className="w-6 h-6 animate-spin" />
+            ) : (
+              <span className="text-sm text-muted-foreground">
+                Cargando más productos...
+              </span>
+            )}
+          </div>
+        )}
+
+        {isFetchingNextPage && !isMobile && (
           <div className="flex justify-center mt-8">
             <RefreshCw className="w-6 h-6 animate-spin" />
           </div>
         )}
 
-        {hasNextPage && !isFetchingNextPage && (
+        {!isMobile && hasNextPage && !isFetchingNextPage && (
           <div className="flex justify-center mt-8">
-            <Button onClick={() => fetchNextPage()} variant="outline">
+            <Button onClick={handleLoadMore} variant="outline">
               <ShoppingCart className="w-4 h-4 mr-2" />
               Cargar más productos
             </Button>

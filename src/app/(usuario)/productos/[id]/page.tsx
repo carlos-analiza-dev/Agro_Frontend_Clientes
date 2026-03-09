@@ -75,11 +75,11 @@ const ProductDetailsPage = () => {
   const { data: rating_producto } = useGetRatingProducto(productoId as string);
 
   const { data: producto_comprado } = useGetProductoCompradoByCliente(
-    productoId as string
+    productoId as string,
   );
 
   const { data: producto_opinado } = useGetProductoOpinadoCliente(
-    productoId as string
+    productoId as string,
   );
 
   const isFavorite = producto ? esFavorito(producto.id) : false;
@@ -231,7 +231,7 @@ const ProductDetailsPage = () => {
 
   return (
     <div className="container">
-      <div className="px-4 py-4 sm:py-6">
+      <div>
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <Button
             variant="ghost"

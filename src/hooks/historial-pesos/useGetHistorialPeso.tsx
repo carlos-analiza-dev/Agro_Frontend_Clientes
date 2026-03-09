@@ -5,7 +5,6 @@ const useGetHistorialPeso = (id: string) => {
   return useQuery({
     queryKey: ["historial-peso", id],
     queryFn: () => ObtenerHistorialPesos(id),
-    retry: 0,
     staleTime: 5 * 60 * 1000,
   });
 };
