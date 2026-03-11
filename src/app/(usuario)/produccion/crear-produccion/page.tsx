@@ -45,7 +45,7 @@ const CrearProduccionPage = () => {
   const router = useRouter();
   const [section, setSection] = useState<ProductionSection>("ganadera");
   const [fincaSeleccionada, setFincaSeleccionada] = useState<Finca | null>(
-    null
+    null,
   );
   const { data: fincas } = useFincasPropietarios(userId);
 
@@ -119,7 +119,6 @@ const CrearProduccionPage = () => {
 
   const onSubmit = (data: CreateProduccionFinca) => {
     const dataUpdate = { ...data, userId: userId };
-
     mutate_produccion.mutate(dataUpdate);
   };
 
@@ -130,7 +129,7 @@ const CrearProduccionPage = () => {
           <CardContent className="pt-6">
             <div className="text-center py-8 text-muted-foreground">
               <Tractor className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p className="text-lg">
+              <p className="text-sm sm:text-base px-4">
                 Selecciona una finca para habilitar las secciones de producción
               </p>
             </div>
@@ -182,29 +181,39 @@ const CrearProduccionPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-6">
-      <div className="flex items-center justify-between mb-6">
-        <Button
-          variant="ghost"
-          onClick={() => router.push("/produccion")}
-          className="gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Volver
-        </Button>
+    <div className="min-h-screen bg-background">
+      <div className="sticky top-0 z-10 bg-background border-b">
+        <div className="px-4 py-3 md:px-6 md:py-4 flex items-center justify-between">
+          <Button
+            variant="ghost"
+            onClick={() => router.push("/produccion")}
+            className="gap-2 -ml-2"
+            size="sm"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">Volver</span>
+          </Button>
+          <h1 className="text-lg md:text-xl font-semibold truncate">
+            Nueva Producción
+          </h1>
+          <div className="w-16 md:w-20" />
+        </div>
       </div>
-      <div className="max-w-4xl mx-auto">
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold flex items-center gap-2">
-              <Tractor className="h-6 w-6" />
-              Crear Nueva Producción
+
+      <div className="px-4 py-4 md:px-6 md:py-6 max-w-4xl mx-auto">
+        <Card className="w-full shadow-sm">
+          <CardHeader className="px-4 py-4 md:px-6 md:py-6">
+            <CardTitle className="text-lg md:text-2xl font-bold flex items-center gap-2">
+              <Tractor className="h-5 w-5 md:h-6 md:w-6" />
+              <span>Crear Nueva Producción</span>
             </CardTitle>
           </CardHeader>
 
-          <CardContent className="space-y-6">
+          <CardContent className="px-4 py-4 md:px-6 md:py-6 space-y-4 md:space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="finca">Seleccionar Finca</Label>
+              <Label htmlFor="finca" className="text-sm md:text-base">
+                Seleccionar Finca <span className="text-red-500">*</span>
+              </Label>
               <Controller
                 control={control}
                 name="fincaId"
@@ -214,12 +223,12 @@ const CrearProduccionPage = () => {
                     onValueChange={(value) => {
                       field.onChange(value);
                       const finca = fincas?.data.fincas.find(
-                        (f) => f.id === value
+                        (f) => f.id === value,
                       );
                       setFincaSeleccionada(finca || null);
                     }}
                   >
-                    <SelectTrigger id="finca">
+                    <SelectTrigger id="finca" className="h-11 md:h-10">
                       <SelectValue placeholder="Selecciona una finca" />
                     </SelectTrigger>
                     <SelectContent>
@@ -234,9 +243,9 @@ const CrearProduccionPage = () => {
               />
             </div>
 
-            <Separator />
+            <Separator className="my-2" />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
               {[
                 { name: "produccion_mixta", label: "Producción mixta" },
                 {
@@ -248,9 +257,12 @@ const CrearProduccionPage = () => {
               ].map((item) => (
                 <div
                   key={item.name}
-                  className="flex items-center justify-between space-x-2"
+                  className="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
                 >
-                  <Label htmlFor={item.name} className="flex-1 cursor-pointer">
+                  <Label
+                    htmlFor={item.name}
+                    className="text-sm md:text-base cursor-pointer flex-1 pr-2"
+                  >
                     {item.label}
                   </Label>
                   <Controller
@@ -268,49 +280,63 @@ const CrearProduccionPage = () => {
               ))}
             </div>
 
-            <Separator />
+            <Separator className="my-2" />
 
-            <div className="space-y-4">
-              <Label>Sección de Producción</Label>
-              <Tabs
-                value={section}
-                onValueChange={(value) =>
-                  setSection(value as ProductionSection)
-                }
-              >
-                <TabsList className="grid grid-cols-2 md:grid-cols-5 gap-2">
-                  {Object.entries(sectionConfig).map(([key, config]) => (
-                    <TabsTrigger
-                      key={key}
-                      value={key}
-                      disabled={!fincaSeleccionada}
-                      className="flex items-center gap-2"
-                    >
-                      <span>{config.icon}</span>
-                      <span className="hidden sm:inline">{config.label}</span>
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-              </Tabs>
+            <div className="space-y-3 md:space-y-4">
+              <Label className="text-sm md:text-base font-medium">
+                Sección de Producción
+              </Label>
 
-              <ScrollArea className="h-[400px] w-full rounded-md border p-4">
+              <div className="-mx-4 px-4 overflow-x-auto pb-2 md:pb-0 md:overflow-visible">
+                <Tabs
+                  value={section}
+                  onValueChange={(value) =>
+                    setSection(value as ProductionSection)
+                  }
+                >
+                  <TabsList className="inline-flex w-auto min-w-full md:grid md:grid-cols-5 gap-1 p-1">
+                    {Object.entries(sectionConfig).map(([key, config]) => (
+                      <TabsTrigger
+                        key={key}
+                        value={key}
+                        disabled={!fincaSeleccionada}
+                        className="flex items-center gap-1 md:gap-2 px-3 py-2 text-sm"
+                      >
+                        <span className="text-base">{config.icon}</span>
+                        <span className="text-xs md:text-sm whitespace-nowrap">
+                          {config.label}
+                        </span>
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                </Tabs>
+              </div>
+
+              <ScrollArea className="h-[400px] md:h-[500px] w-full rounded-md border p-3 md:p-4">
                 {renderSection()}
               </ScrollArea>
             </div>
 
-            <Button
-              onClick={handleSubmit(onSubmit)}
-              disabled={mutate_produccion.isPending || !fincaSeleccionada}
-              className="w-full md:w-auto md:ml-auto"
-              size="lg"
-            >
-              {mutate_produccion.isPending ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="mr-2 h-4 w-4" />
-              )}
-              Guardar Producción
-            </Button>
+            <div className="pt-4">
+              <Button
+                onClick={handleSubmit(onSubmit)}
+                disabled={mutate_produccion.isPending || !fincaSeleccionada}
+                className="w-full md:w-auto md:min-w-[200px] h-12 md:h-10 text-sm md:text-base"
+                size="lg"
+              >
+                {mutate_produccion.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Guardando...
+                  </>
+                ) : (
+                  <>
+                    <Save className="mr-2 h-4 w-4" />
+                    Guardar Producción
+                  </>
+                )}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>

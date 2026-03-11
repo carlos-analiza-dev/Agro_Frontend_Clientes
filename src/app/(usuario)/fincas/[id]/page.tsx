@@ -33,6 +33,7 @@ import { TipoExplotacion } from "@/helpers/data/tipoExplotacion";
 import useFincasById from "@/hooks/fincas/useFincasById";
 import EspecieCantidadPicker from "../crear-fincas/ui/EspecieCantidadPicker";
 import MapaSeleccionDireccion from "../crear-fincas/ui/MapaSeleccionDireccion";
+import ButtonBack from "@/components/generics/ButtonBack";
 
 const fincaSchema = z.object({
   nombre_finca: z.string().min(1, "El nombre de la finca es requerido"),
@@ -43,7 +44,7 @@ const fincaSchema = z.object({
   area_ganaderia: z.string().min(1, "El área de ganadería es requerida"),
   tipo_explotacion: z.array(z.object({ tipo_explotacion: z.string() })),
   especies_maneja: z.array(
-    z.object({ especie: z.string(), cantidad: z.number() })
+    z.object({ especie: z.string(), cantidad: z.number() }),
   ),
   latitud: z.number().optional(),
   longitud: z.number().optional(),
@@ -97,7 +98,7 @@ export default function FincaDetailsPage() {
         "yd2",
       ];
       const medidaFinca = unidadesValidas.includes(
-        fincaData.medida_finca as UnidadMedida
+        fincaData.medida_finca as UnidadMedida,
       )
         ? (fincaData.medida_finca as UnidadMedida)
         : "ha";
@@ -119,7 +120,7 @@ export default function FincaDetailsPage() {
 
       if (finca.data.tipo_explotacion) {
         const explotacion = finca.data.tipo_explotacion.map(
-          (a) => a.tipo_explotacion
+          (a) => a.tipo_explotacion,
         );
         setExplotacionSeleccionada(explotacion);
       }
@@ -130,12 +131,12 @@ export default function FincaDetailsPage() {
     try {
       const sumaEspecies = data.especies_maneja.reduce(
         (sum, item) => sum + item.cantidad,
-        0
+        0,
       );
 
       if (sumaEspecies !== data.cantidad_animales) {
         toast.error(
-          `La suma de especies debe ser igual a ${data.cantidad_animales}`
+          `La suma de especies debe ser igual a ${data.cantidad_animales}`,
         );
         return;
       }
@@ -174,7 +175,7 @@ export default function FincaDetailsPage() {
     setExplotacionSeleccionada(nuevasExplotacion);
     setValue(
       "tipo_explotacion",
-      nuevasExplotacion.map((a) => ({ tipo_explotacion: a }))
+      nuevasExplotacion.map((a) => ({ tipo_explotacion: a })),
     );
   };
 
@@ -217,17 +218,9 @@ export default function FincaDetailsPage() {
 
   return (
     <div className="min-h-screen bg-background p-4">
+      <ButtonBack />
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => router.push("/fincas")}
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Volver
-          </Button>
-        </div>
+        <div className="flex items-center justify-between mb-6"></div>
 
         <Card>
           <CardHeader>
@@ -409,7 +402,7 @@ export default function FincaDetailsPage() {
                           <Checkbox
                             id={explotacion.explotacion}
                             checked={explotacionSeleccionada.includes(
-                              explotacion.explotacion
+                              explotacion.explotacion,
                             )}
                             onCheckedChange={() =>
                               handleAlimentoChange(explotacion.explotacion)

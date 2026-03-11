@@ -28,7 +28,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ArrowLeft, InfoIcon, PawPrintIcon } from "lucide-react";
+import { ArrowLeft, ArrowRight, InfoIcon, PawPrintIcon } from "lucide-react";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import {
   CrearAnimalByFinca,
@@ -44,6 +44,7 @@ import { alimentosOptions } from "@/helpers/data/alimentos";
 import { dataProduccion } from "@/helpers/data/dataProduccion";
 import { dataTipoProduccion } from "@/helpers/data/dataTipoProduccion";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import ButtonBack from "@/components/generics/ButtonBack";
 
 const CrearAnimalPage = () => {
   const router = useRouter();
@@ -121,7 +122,7 @@ const CrearAnimalPage = () => {
 
     const razaCodes = razaIds
       .map((id) =>
-        razas?.data.find((r) => r.id === id)?.abreviatura?.toUpperCase()
+        razas?.data.find((r) => r.id === id)?.abreviatura?.toUpperCase(),
       )
       .filter(Boolean);
 
@@ -146,7 +147,7 @@ const CrearAnimalPage = () => {
 
     const razaCodes = razaIdsPadre
       .map((id) =>
-        razas?.data.find((r) => r.id === id)?.abreviatura?.toUpperCase()
+        razas?.data.find((r) => r.id === id)?.abreviatura?.toUpperCase(),
       )
       .filter(Boolean);
 
@@ -169,7 +170,7 @@ const CrearAnimalPage = () => {
 
     const razaCodes = razaIdsMadre
       .map((id) =>
-        razas?.data.find((r) => r.id === id)?.abreviatura?.toUpperCase()
+        razas?.data.find((r) => r.id === id)?.abreviatura?.toUpperCase(),
       )
       .filter(Boolean);
 
@@ -316,22 +317,17 @@ const CrearAnimalPage = () => {
 
   return (
     <div className="container mx-auto max-w-4xl">
-      <div className="flex items-center justify-between mb-6">
-        <Button
-          variant="ghost"
-          onClick={() => router.push("/animales")}
-          className="gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Volver
-        </Button>
-      </div>
+      <ButtonBack />
       <div className="flex items-center mb-6">
         <PawPrintIcon className="h-8 w-8 mr-2" />
         <h1 className="text-3xl font-bold">Crear Nuevo Animal</h1>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="w-full h-[90vh]"
+      >
         <TabsList className="grid grid-cols-3 mb-6">
           <TabsTrigger value="animal">Datos Animal</TabsTrigger>
           <TabsTrigger value="padre">Datos Padre</TabsTrigger>
@@ -481,7 +477,7 @@ const CrearAnimalPage = () => {
                               const currentValues = watch("razaIds") || [];
                               setValue(
                                 "razaIds",
-                                currentValues.filter((v) => v !== razaId)
+                                currentValues.filter((v) => v !== razaId),
                               );
                             }}
                             className="ml-1 rounded-full hover:bg-primary-foreground hover:text-primary"
@@ -619,7 +615,7 @@ const CrearAnimalPage = () => {
                   <div className="border rounded-md p-3 space-y-3">
                     {alimentosOptions.map((alimento) => {
                       const alimentoSeleccionado = watch(
-                        "tipo_alimentacion"
+                        "tipo_alimentacion",
                       )?.find((a: any) => a.alimento === alimento.value);
 
                       return (
@@ -646,8 +642,8 @@ const CrearAnimalPage = () => {
                                       "tipo_alimentacion",
                                       currentAlimentacion.filter(
                                         (a: any) =>
-                                          a.alimento !== alimento.value
-                                      )
+                                          a.alimento !== alimento.value,
+                                      ),
                                     );
                                   }
                                 }}
@@ -666,7 +662,7 @@ const CrearAnimalPage = () => {
                                   ).map((item: any) =>
                                     item.alimento === alimento.value
                                       ? { ...item, origen }
-                                      : item
+                                      : item,
                                   );
                                   setValue("tipo_alimentacion", updated);
                                 }}
@@ -727,7 +723,7 @@ const CrearAnimalPage = () => {
                                                 ...item,
                                                 porcentaje_comprado: value,
                                               }
-                                            : item
+                                            : item,
                                         );
                                         setValue("tipo_alimentacion", updated);
                                       }}
@@ -758,7 +754,7 @@ const CrearAnimalPage = () => {
                                                 ...item,
                                                 porcentaje_producido: value,
                                               }
-                                            : item
+                                            : item,
                                         );
                                         setValue("tipo_alimentacion", updated);
                                       }}
@@ -798,7 +794,7 @@ const CrearAnimalPage = () => {
                           checked={
                             watch("complementos")?.some(
                               (c: TipoComplemento) =>
-                                c.complemento === complemento.value
+                                c.complemento === complemento.value,
                             ) || false
                           }
                           onCheckedChange={(checked) => {
@@ -816,8 +812,8 @@ const CrearAnimalPage = () => {
                                 "complementos",
                                 currentComplementos.filter(
                                   (c: TipoComplemento) =>
-                                    c.complemento !== complemento.value
-                                )
+                                    c.complemento !== complemento.value,
+                                ),
                               );
                             }
                           }}
@@ -932,7 +928,7 @@ const CrearAnimalPage = () => {
                 )}
 
                 <Button type="button" onClick={() => setActiveTab("padre")}>
-                  Siguiente: Datos del Padre
+                  Datos del Padre <ArrowRight />
                 </Button>
               </CardContent>
             </Card>
@@ -1012,7 +1008,7 @@ const CrearAnimalPage = () => {
                     <SelectContent>
                       {razas?.data
                         .filter(
-                          (raza) => !watch("razas_padre")?.includes(raza.id)
+                          (raza) => !watch("razas_padre")?.includes(raza.id),
                         )
                         .map((raza) => (
                           <SelectItem key={raza.id} value={raza.id}>
@@ -1037,7 +1033,7 @@ const CrearAnimalPage = () => {
                               const currentValues = watch("razas_padre") || [];
                               setValue(
                                 "razas_padre",
-                                currentValues.filter((v) => v !== razaId)
+                                currentValues.filter((v) => v !== razaId),
                               );
                             }}
                             className="ml-1 rounded-full hover:bg-primary-foreground hover:text-primary"
@@ -1127,7 +1123,7 @@ const CrearAnimalPage = () => {
                     Anterior
                   </Button>
                   <Button type="button" onClick={() => setActiveTab("madre")}>
-                    Siguiente: Datos de la Madre
+                    Datos de la Madre <ArrowRight />
                   </Button>
                 </div>
               </CardContent>
@@ -1210,7 +1206,7 @@ const CrearAnimalPage = () => {
                     <SelectContent>
                       {razas?.data
                         .filter(
-                          (raza) => !watch("razas_madre")?.includes(raza.id)
+                          (raza) => !watch("razas_madre")?.includes(raza.id),
                         )
                         .map((raza) => (
                           <SelectItem key={raza.id} value={raza.id}>
@@ -1235,7 +1231,7 @@ const CrearAnimalPage = () => {
                               const currentValues = watch("razas_madre") || [];
                               setValue(
                                 "razas_madre",
-                                currentValues.filter((v) => v !== razaId)
+                                currentValues.filter((v) => v !== razaId),
                               );
                             }}
                             className="ml-1 rounded-full hover:bg-primary-foreground hover:text-primary"
@@ -1325,7 +1321,7 @@ const CrearAnimalPage = () => {
                         "numero_parto_madre",
                         numericValue !== undefined && !isNaN(numericValue)
                           ? numericValue
-                          : undefined
+                          : undefined,
                       );
                     }}
                     placeholder="Número de parto"

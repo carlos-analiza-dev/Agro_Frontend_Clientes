@@ -60,8 +60,8 @@ const ProductosRelacionados = ({
   return (
     <Card className="mt-12">
       <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span className="text-base md:text-xl font-bold">
+        <CardTitle className="block md:flex items-center justify-between">
+          <span className="text-sm md:text-xl font-bold">
             ¿Qué otros productos compran los clientes tras ver este producto?
           </span>
           <Button variant="ghost" size="sm" asChild>

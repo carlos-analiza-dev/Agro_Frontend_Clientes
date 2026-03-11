@@ -27,7 +27,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ArrowLeft, InfoIcon, PawPrintIcon, RefreshCw } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  InfoIcon,
+  PawPrintIcon,
+  RefreshCw,
+} from "lucide-react";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import {
   CrearAnimalByFinca,
@@ -46,6 +52,7 @@ import useAnimalById from "@/hooks/animales/useAnimalById";
 import { useParams } from "next/navigation";
 import { ActualizarAnimal } from "@/api/animales/accions/update-animal";
 import { extractNumberFromIdentifier } from "@/helpers/funciones/extractNumberFromIdentifier ";
+import ButtonBack from "@/components/generics/ButtonBack";
 
 const AnimalDetailsPage = () => {
   const router = useRouter();
@@ -106,10 +113,10 @@ const AnimalDetailsPage = () => {
         tipo_produccion: animal?.tipo_produccion || "",
         identificador_temp: extractNumberFromIdentifier(animal?.identificador),
         identificador_temp_madre: extractNumberFromIdentifier(
-          animal?.arete_madre ?? ""
+          animal?.arete_madre ?? "",
         ),
         identificador_temp_padre: extractNumberFromIdentifier(
-          animal?.arete_padre ?? ""
+          animal?.arete_padre ?? "",
         ),
         identificador: animal?.identificador || "",
         arete_madre: animal?.arete_madre || "",
@@ -200,7 +207,7 @@ const AnimalDetailsPage = () => {
 
     const razaCodes = razaIds
       .map((id) =>
-        razas?.data.find((r) => r.id === id)?.abreviatura?.toUpperCase()
+        razas?.data.find((r) => r.id === id)?.abreviatura?.toUpperCase(),
       )
       .filter(Boolean);
 
@@ -225,7 +232,7 @@ const AnimalDetailsPage = () => {
 
     const razaCodes = razaIdsPadre
       .map((id) =>
-        razas?.data.find((r) => r.id === id)?.abreviatura?.toUpperCase()
+        razas?.data.find((r) => r.id === id)?.abreviatura?.toUpperCase(),
       )
       .filter(Boolean);
 
@@ -248,7 +255,7 @@ const AnimalDetailsPage = () => {
 
     const razaCodes = razaIdsMadre
       .map((id) =>
-        razas?.data.find((r) => r.id === id)?.abreviatura?.toUpperCase()
+        razas?.data.find((r) => r.id === id)?.abreviatura?.toUpperCase(),
       )
       .filter(Boolean);
 
@@ -422,16 +429,7 @@ const AnimalDetailsPage = () => {
 
   return (
     <div className="container mx-auto p-4 max-w-4xl">
-      <div className="flex items-center justify-between mb-6">
-        <Button
-          variant="ghost"
-          onClick={() => router.push("/animales")}
-          className="gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Volver
-        </Button>
-      </div>
+      <ButtonBack />
       <div className="flex items-center mb-6">
         <PawPrintIcon className="h-8 w-8 mr-2" />
         <h1 className="text-3xl font-bold">Editar Animal</h1>
@@ -587,7 +585,7 @@ const AnimalDetailsPage = () => {
                               const currentValues = watch("razaIds") || [];
                               setValue(
                                 "razaIds",
-                                currentValues.filter((v) => v !== razaId)
+                                currentValues.filter((v) => v !== razaId),
                               );
                             }}
                             className="ml-1 rounded-full hover:bg-primary-foreground hover:text-primary"
@@ -734,7 +732,7 @@ const AnimalDetailsPage = () => {
                   <div className="border rounded-md p-3 space-y-3">
                     {alimentosOptions.map((alimento) => {
                       const alimentoSeleccionado = watch(
-                        "tipo_alimentacion"
+                        "tipo_alimentacion",
                       )?.find((a: any) => a.alimento === alimento.value);
 
                       return (
@@ -761,8 +759,8 @@ const AnimalDetailsPage = () => {
                                       "tipo_alimentacion",
                                       currentAlimentacion.filter(
                                         (a: any) =>
-                                          a.alimento !== alimento.value
-                                      )
+                                          a.alimento !== alimento.value,
+                                      ),
                                     );
                                   }
                                 }}
@@ -781,7 +779,7 @@ const AnimalDetailsPage = () => {
                                   ).map((item: any) =>
                                     item.alimento === alimento.value
                                       ? { ...item, origen }
-                                      : item
+                                      : item,
                                   );
                                   setValue("tipo_alimentacion", updated);
                                 }}
@@ -842,7 +840,7 @@ const AnimalDetailsPage = () => {
                                                 ...item,
                                                 porcentaje_comprado: value,
                                               }
-                                            : item
+                                            : item,
                                         );
                                         setValue("tipo_alimentacion", updated);
                                       }}
@@ -873,7 +871,7 @@ const AnimalDetailsPage = () => {
                                                 ...item,
                                                 porcentaje_producido: value,
                                               }
-                                            : item
+                                            : item,
                                         );
                                         setValue("tipo_alimentacion", updated);
                                       }}
@@ -913,7 +911,7 @@ const AnimalDetailsPage = () => {
                           checked={
                             watch("complementos")?.some(
                               (c: TipoComplemento) =>
-                                c.complemento === complemento.value
+                                c.complemento === complemento.value,
                             ) || false
                           }
                           onCheckedChange={(checked) => {
@@ -931,8 +929,8 @@ const AnimalDetailsPage = () => {
                                 "complementos",
                                 currentComplementos.filter(
                                   (c: TipoComplemento) =>
-                                    c.complemento !== complemento.value
-                                )
+                                    c.complemento !== complemento.value,
+                                ),
                               );
                             }
                           }}
@@ -1053,7 +1051,7 @@ const AnimalDetailsPage = () => {
                       : "Actualizar Animal"}
                   </Button>
                   <Button type="button" onClick={() => setActiveTab("padre")}>
-                    Siguiente: Datos del Padre
+                    Datos del Padre <ArrowRight />
                   </Button>
                 </div>
               </CardContent>
@@ -1134,7 +1132,7 @@ const AnimalDetailsPage = () => {
                     <SelectContent>
                       {razas?.data
                         .filter(
-                          (raza) => !watch("razas_padre")?.includes(raza.id)
+                          (raza) => !watch("razas_padre")?.includes(raza.id),
                         )
                         .map((raza) => (
                           <SelectItem key={raza.id} value={raza.id}>
@@ -1159,7 +1157,7 @@ const AnimalDetailsPage = () => {
                               const currentValues = watch("razas_padre") || [];
                               setValue(
                                 "razas_padre",
-                                currentValues.filter((v) => v !== razaId)
+                                currentValues.filter((v) => v !== razaId),
                               );
                             }}
                             className="ml-1 rounded-full hover:bg-primary-foreground hover:text-primary"
@@ -1242,21 +1240,30 @@ const AnimalDetailsPage = () => {
                   )}
                 </div>
 
-                <div className="flex gap-4">
+                <div className="block md:flex gap-4">
                   <Button
                     type="button"
                     variant="outline"
+                    className="w-full mb-2"
                     onClick={() => setActiveTab("animal")}
                   >
                     Anterior
                   </Button>
-                  <Button type="submit" disabled={mutation.isPending}>
+                  <Button
+                    className="w-full mb-2"
+                    type="submit"
+                    disabled={mutation.isPending}
+                  >
                     {mutation.isPending
                       ? "Actualizando..."
                       : "Actualizar Animal"}
                   </Button>
-                  <Button type="button" onClick={() => setActiveTab("madre")}>
-                    Siguiente: Datos de la Madre
+                  <Button
+                    className="w-full mb-2"
+                    type="button"
+                    onClick={() => setActiveTab("madre")}
+                  >
+                    Datos de la Madre <ArrowRight />
                   </Button>
                 </div>
               </CardContent>
@@ -1339,7 +1346,7 @@ const AnimalDetailsPage = () => {
                     <SelectContent>
                       {razas?.data
                         .filter(
-                          (raza) => !watch("razas_madre")?.includes(raza.id)
+                          (raza) => !watch("razas_madre")?.includes(raza.id),
                         )
                         .map((raza) => (
                           <SelectItem key={raza.id} value={raza.id}>
@@ -1364,7 +1371,7 @@ const AnimalDetailsPage = () => {
                               const currentValues = watch("razas_madre") || [];
                               setValue(
                                 "razas_madre",
-                                currentValues.filter((v) => v !== razaId)
+                                currentValues.filter((v) => v !== razaId),
                               );
                             }}
                             className="ml-1 rounded-full hover:bg-primary-foreground hover:text-primary"
@@ -1455,7 +1462,7 @@ const AnimalDetailsPage = () => {
                         "numero_parto_madre",
                         numericValue !== undefined && !isNaN(numericValue)
                           ? numericValue
-                          : undefined
+                          : undefined,
                       );
                     }}
                     placeholder="Número de parto"

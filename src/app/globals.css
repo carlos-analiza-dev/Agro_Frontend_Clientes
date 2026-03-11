@@ -82,10 +82,6 @@
   z-index: 1003 !important;
 }
 
-html, body {
-  overflow: hidden;
-}
-
 
 @layer base {
   :root {

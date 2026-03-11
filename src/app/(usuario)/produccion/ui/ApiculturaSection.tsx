@@ -17,9 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Flower2,
   Droplets,
-  Sun,
   FlaskConical,
-  Leaf,
   Calculator,
   Calendar,
   Scale,
@@ -33,35 +31,35 @@ interface ApiculturaSectionProps {
 
 const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
   return (
-    <Card className="w-full">
-      <CardHeader className="bg-gradient-to-r from-amber-50 to-yellow-50 border-b">
-        <CardTitle className="flex items-center gap-3 text-2xl text-amber-900">
-          <div className="p-2 bg-amber-100 rounded-lg">
-            <Flower2 className="h-6 w-6 text-amber-600" />
+    <Card className="w-full border-0 md:border shadow-sm overflow-hidden">
+      <CardHeader className="bg-gradient-to-r from-amber-50 to-yellow-50 border-b px-4 py-4 md:px-6 md:py-6">
+        <CardTitle className="flex flex-col sm:flex-row sm:items-center gap-3 text-xl md:text-2xl text-amber-900">
+          <div className="flex items-center gap-3">
+            <div className="p-1.5 md:p-2 bg-amber-100 rounded-lg">
+              <Flower2 className="h-5 w-5 md:h-6 md:w-6 text-amber-600" />
+            </div>
+            <span>Producción Apícola</span>
           </div>
-          <div>
-            <div>Producción Apícola</div>
-            <Badge
-              variant="secondary"
-              className="mt-1 bg-amber-100 text-amber-800"
-            >
-              <FlaskConical className="h-3 w-3 mr-1" />
-              Gestión de colmenas y miel
-            </Badge>
-          </div>
+          <Badge
+            variant="secondary"
+            className="w-fit sm:ml-2 bg-amber-100 text-amber-800 text-xs md:text-sm"
+          >
+            <FlaskConical className="h-3 w-3 mr-1" />
+            Gestión de colmenas y miel
+          </Badge>
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="pt-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-6">
-            <div className="space-y-3">
+      <CardContent className="p-4 md:p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          <div className="space-y-4 md:space-y-6">
+            <div className="space-y-2 md:space-y-3">
               <Label
                 htmlFor="numero-colmenas"
-                className="text-base font-semibold flex items-center gap-2"
+                className="text-sm md:text-base font-semibold flex items-center gap-2"
               >
-                <div className="p-1.5 bg-blue-100 rounded-md">
-                  <Calculator className="h-4 w-4 text-blue-600" />
+                <div className="p-1 md:p-1.5 bg-blue-100 rounded-md">
+                  <Calculator className="h-3.5 w-3.5 md:h-4 md:w-4 text-blue-600" />
                 </div>
                 Número de colmenas
               </Label>
@@ -76,25 +74,25 @@ const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
                     value={field.value?.toString() || ""}
                     onChange={(e) =>
                       field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined
+                        e.target.value ? Number(e.target.value) : undefined,
                       )
                     }
-                    className="text-lg py-6"
+                    className="h-10 md:h-12 text-base md:text-lg"
                   />
                 )}
               />
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs md:text-sm text-muted-foreground">
                 Total de colmenas activas en producción
               </p>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2 md:space-y-3">
               <Label
                 htmlFor="frecuencia-cosecha"
-                className="text-base font-semibold flex items-center gap-2"
+                className="text-sm md:text-base font-semibold flex items-center gap-2"
               >
-                <div className="p-1.5 bg-green-100 rounded-md">
-                  <Calendar className="h-4 w-4 text-green-600" />
+                <div className="p-1 md:p-1.5 bg-green-100 rounded-md">
+                  <Calendar className="h-3.5 w-3.5 md:h-4 md:w-4 text-green-600" />
                 </div>
                 Frecuencia de cosecha
               </Label>
@@ -104,27 +102,27 @@ const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
                 render={({ field }) => (
                   <Input
                     id="frecuencia-cosecha"
-                    placeholder="Ej: Cada 2 meses, Trimestral, Anual..."
+                    placeholder="Ej: Cada 2 meses, Trimestral..."
                     value={field.value || ""}
                     onChange={field.onChange}
-                    className="py-6"
+                    className="h-10 md:h-12 text-sm md:text-base"
                   />
                 )}
               />
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs md:text-sm text-muted-foreground">
                 Periodicidad con la que realiza la cosecha de miel
               </p>
             </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="space-y-3">
+          <div className="space-y-4 md:space-y-6">
+            <div className="space-y-2 md:space-y-3">
               <Label
                 htmlFor="cantidad-cosecha"
-                className="text-base font-semibold flex items-center gap-2"
+                className="text-sm md:text-base font-semibold flex items-center gap-2"
               >
-                <div className="p-1.5 bg-orange-100 rounded-md">
-                  <Scale className="h-4 w-4 text-orange-600" />
+                <div className="p-1 md:p-1.5 bg-orange-100 rounded-md">
+                  <Scale className="h-3.5 w-3.5 md:h-4 md:w-4 text-orange-600" />
                 </div>
                 Cantidad por cosecha (kg)
               </Label>
@@ -140,25 +138,25 @@ const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
                     value={field.value?.toString() || ""}
                     onChange={(e) =>
                       field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined
+                        e.target.value ? Number(e.target.value) : undefined,
                       )
                     }
-                    className="text-lg py-6"
+                    className="h-10 md:h-12 text-base md:text-lg"
                   />
                 )}
               />
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs md:text-sm text-muted-foreground">
                 Peso promedio obtenido por cada cosecha
               </p>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2 md:space-y-3">
               <Label
                 htmlFor="calidad-miel"
-                className="text-base font-semibold flex items-center gap-2"
+                className="text-sm md:text-base font-semibold flex items-center gap-2"
               >
-                <div className="p-1.5 bg-purple-100 rounded-md">
-                  <Flower className="h-4 w-4 text-purple-600" />
+                <div className="p-1 md:p-1.5 bg-purple-100 rounded-md">
+                  <Flower className="h-3.5 w-3.5 md:h-4 md:w-4 text-purple-600" />
                 </div>
                 Calidad de la miel
               </Label>
@@ -170,7 +168,10 @@ const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
                     value={field.value || ""}
                     onValueChange={field.onChange}
                   >
-                    <SelectTrigger id="calidad-miel" className="py-6">
+                    <SelectTrigger
+                      id="calidad-miel"
+                      className="h-10 md:h-12 text-sm md:text-base"
+                    >
                       <SelectValue placeholder="Seleccione la calidad" />
                     </SelectTrigger>
                     <SelectContent>
@@ -178,11 +179,13 @@ const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
                         <SelectItem
                           key={calidad}
                           value={calidad}
-                          className="py-3"
+                          className="text-sm md:text-base py-2 md:py-3"
                         >
                           <div className="flex items-center gap-2">
-                            <Flower className="h-4 w-4 text-amber-500" />
-                            {calidad}
+                            <Flower className="h-3.5 w-3.5 md:h-4 md:w-4 text-amber-500" />
+                            <span className="text-sm md:text-base">
+                              {calidad}
+                            </span>
                           </div>
                         </SelectItem>
                       ))}
@@ -190,21 +193,23 @@ const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
                   </Select>
                 )}
               />
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs md:text-sm text-muted-foreground">
                 Clasificación según estándares de calidad
               </p>
             </div>
           </div>
         </div>
 
-        <div className="mt-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
-          <div className="flex items-start gap-3">
-            <Droplets className="h-5 w-5 text-amber-600 mt-0.5" />
+        <div className="mt-6 md:mt-8 p-3 md:p-4 bg-amber-50 rounded-lg border border-amber-200">
+          <div className="flex flex-col sm:flex-row items-start gap-3">
+            <div className="flex-shrink-0">
+              <Droplets className="h-5 w-5 md:h-6 md:w-6 text-amber-600" />
+            </div>
             <div>
-              <h4 className="font-semibold text-amber-800">
+              <h4 className="font-semibold text-amber-800 text-sm md:text-base">
                 Información sobre producción apícola
               </h4>
-              <p className="text-sm text-amber-700 mt-1">
+              <p className="text-xs md:text-sm text-amber-700 mt-1 leading-relaxed">
                 La producción apícola incluye el manejo de colmenas, cosecha de
                 miel y otros productos derivados como polen, propóleos y cera de
                 abejas.

@@ -137,12 +137,20 @@ export default function AdminLayout({
     checkRoutePermissions();
   }, [cliente, pathname, router]);
 
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
   if (loading || checkingPermissions) {
     return <FullScreenLoader />;
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex h-screen bg-gray-50">
       <SidebarAdmin handleLogout={handleLogout} />
 
       <ShetContentComp
@@ -158,7 +166,7 @@ export default function AdminLayout({
         />
 
         <main className="flex-1 overflow-y-auto bg-gray-50 md:p-6">
-          <div className="h-full">{children}</div>
+          {children}
         </main>
       </div>
 

@@ -24,7 +24,6 @@ export default function RegisterPage() {
       <div className="absolute inset-0 z-0">
         <Image
           src="/images/Ganaderia.png"
-          unoptimized
           alt="Campo agrícola"
           layout="fill"
           objectFit="cover"

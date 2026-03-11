@@ -143,7 +143,7 @@ const FormRegister = () => {
         toast.error(errorMessage);
       } else {
         toast.error(
-          "Hubo un error al momento de crear el usuario. Inténtalo de nuevo."
+          "Hubo un error al momento de crear el usuario. Inténtalo de nuevo.",
         );
       }
     },
