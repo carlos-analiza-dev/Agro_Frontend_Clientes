@@ -12,6 +12,7 @@ import {
   PackageXIcon,
   Pill,
   ShoppingBag,
+  Stethoscope,
   UserCog,
 } from "lucide-react";
 
@@ -55,7 +56,7 @@ export const navItems = [
     category: "Salud Animal",
     items: [
       { name: "Historial Médico", href: "/historial-medico", icon: Heart },
-
+      { name: "Diagnóstico", href: "/diagnostico", icon: Stethoscope },
       { name: "Tratamientos", href: "/tratamientos", icon: Pill },
     ],
   },
