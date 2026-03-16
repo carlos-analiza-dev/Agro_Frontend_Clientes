@@ -45,11 +45,13 @@ import { dataProduccion } from "@/helpers/data/dataProduccion";
 import { dataTipoProduccion } from "@/helpers/data/dataTipoProduccion";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import ButtonBack from "@/components/generics/ButtonBack";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 
 const CrearAnimalPage = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { cliente } = useAuthStore();
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const [activeTab, setActiveTab] = useState("animal");
   const [showIdentifierHelp, setShowIdentifierHelp] = useState(false);
   const [showIdentifierHelpPadre, setShowIdentifierHelpPadre] = useState(false);
@@ -317,7 +319,7 @@ const CrearAnimalPage = () => {
 
   return (
     <div className="container mx-auto max-w-4xl">
-      <ButtonBack />
+      <ButtonBack isMobil={isMobile} />
       <div className="flex items-center mb-6">
         <PawPrintIcon className="h-8 w-8 mr-2" />
         <h1 className="text-3xl font-bold">Crear Nuevo Animal</h1>

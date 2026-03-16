@@ -3,7 +3,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,6 @@ import {
   PawPrint,
   Clock,
   DollarSign,
-  ArrowLeft,
   Building,
   Stethoscope,
 } from "lucide-react";
@@ -39,6 +38,8 @@ import useGetHorasMedicoByFecha from "@/hooks/horarios/useGetHorasMedicoByFecha"
 import { CrearCitaInterface } from "@/api/citas/interfaces/crear-cita.interface";
 import { CreateCita } from "@/api/citas/accions/crear-cita";
 import ThemedAnimalPicker from "@/components/generics/ThemedAnimalPicker";
+import ButtonBack from "@/components/generics/ButtonBack";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 
 interface HoraDisponibleItem {
   value: string;
@@ -52,6 +53,7 @@ interface HoraDisponibleItem {
 const CrearCitaPage = () => {
   const router = useRouter();
   const { cliente } = useAuthStore();
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const userId = cliente?.id || "";
   const paisId = cliente?.pais.id || "";
 
@@ -90,7 +92,7 @@ const CrearCitaPage = () => {
   const { data: animales } = useGetAnimalesByFincaEspRaza(
     fincaId,
     especieId,
-    razaId
+    razaId,
   );
   const { data: categorias } = useGetServiciosActivos();
 
@@ -98,13 +100,13 @@ const CrearCitaPage = () => {
   const subServicioId = watch("subServicioId");
   const { data: medicos } = userGetMedicoByEspecialidadesByPais(
     paisId,
-    subServicioId
+    subServicioId,
   );
 
   const { data: servicios_pais_cantidad } = useGetSubServicioPaisCantidad(
     subServicioId,
     paisId,
-    cantidadAnimales
+    cantidadAnimales,
   );
 
   const medicoId = watch("medicoId");
@@ -113,7 +115,7 @@ const CrearCitaPage = () => {
   const { data: horas_disponibles } = useGetHorasMedicoByFecha(
     medicoId,
     fecha,
-    String(duracion)
+    String(duracion),
   );
 
   useEffect(() => {
@@ -135,7 +137,7 @@ const CrearCitaPage = () => {
     ) {
       if (servicios_pais_cantidad.data.id === subServicioId) {
         const precioPais = servicios_pais_cantidad.data.preciosPorPais.find(
-          (pp) => pp.pais.id === paisId
+          (pp) => pp.pais.id === paisId,
         );
 
         if (precioPais) {
@@ -165,7 +167,7 @@ const CrearCitaPage = () => {
               horaInicio: hora.horaInicio,
               horaFin: hora.horaFin,
               duracionDisponible: hora.duracionDisponible,
-            }))
+            })),
           );
         } else {
           setValue("duracion", 0);
@@ -221,7 +223,7 @@ const CrearCitaPage = () => {
   const handleHoraChange = (horaInicioSeleccionada: string) => {
     const duracionServicio = watch("duracion") || 0;
     const horaSeleccionada = filteredHours.find(
-      (h) => h.horaInicio === horaInicioSeleccionada
+      (h) => h.horaInicio === horaInicioSeleccionada,
     );
 
     if (horaSeleccionada) {
@@ -245,7 +247,7 @@ const CrearCitaPage = () => {
         setValue("horaFin", horaFinFormateada);
       } else {
         toast.error(
-          "El rango completo no está disponible para esta hora de inicio"
+          "El rango completo no está disponible para esta hora de inicio",
         );
       }
     }
@@ -323,17 +325,7 @@ const CrearCitaPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container max-w-4xl mx-auto px-4">
-        <div className="flex items-center justify-between mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => router.back()}
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Volver
-          </Button>
-        </div>
-
+        <ButtonBack isMobil={isMobile} />
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Nueva Cita Veterinaria
@@ -342,7 +334,6 @@ const CrearCitaPage = () => {
             Complete la información requerida para agendar la cita
           </p>
         </div>
-
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle className="text-xl font-semibold">

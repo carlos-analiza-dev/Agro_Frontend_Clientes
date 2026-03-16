@@ -6,10 +6,12 @@ import { Buscador } from "@/components/generics/Buscador";
 import CardAnimal from "./ui/CardAnimal";
 import ButtonBack from "@/components/generics/ButtonBack";
 import SkeletonCard from "@/components/generics/SkeletonCard";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 
 const HistorialAnimalPeso = () => {
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id ?? "";
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const { data: animales, isLoading } = useGetAnimalesPropietario(clienteId);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -23,7 +25,7 @@ const HistorialAnimalPeso = () => {
 
   return (
     <div className="container p-4">
-      <ButtonBack />
+      <ButtonBack isMobil={isMobile} />
       <div className="flex flex-col items-center gap-4 mb-6">
         <Buscador
           title="Buscar por identificador..."

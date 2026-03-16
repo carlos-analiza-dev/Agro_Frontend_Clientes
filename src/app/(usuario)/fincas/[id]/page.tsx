@@ -22,9 +22,7 @@ import {
   Map,
   Layers,
   Save,
-  Edit,
   ArrowLeft,
-  Navigation,
 } from "lucide-react";
 
 import { ActualizarFinca } from "@/api/fincas/accions/update-finca";
@@ -34,6 +32,7 @@ import useFincasById from "@/hooks/fincas/useFincasById";
 import EspecieCantidadPicker from "../crear-fincas/ui/EspecieCantidadPicker";
 import MapaSeleccionDireccion from "../crear-fincas/ui/MapaSeleccionDireccion";
 import ButtonBack from "@/components/generics/ButtonBack";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 
 const fincaSchema = z.object({
   nombre_finca: z.string().min(1, "El nombre de la finca es requerido"),
@@ -58,7 +57,7 @@ export default function FincaDetailsPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [modalVisible, setModalVisible] = useState(false);
-
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const [unidadMedida, setUnidadMedida] = useState<UnidadMedida>("ha");
   const [explotacionSeleccionada, setExplotacionSeleccionada] = useState<
     string[]
@@ -218,7 +217,7 @@ export default function FincaDetailsPage() {
 
   return (
     <div className="min-h-screen bg-background p-4">
-      <ButtonBack />
+      <ButtonBack isMobil={isMobile} />
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-6"></div>
 

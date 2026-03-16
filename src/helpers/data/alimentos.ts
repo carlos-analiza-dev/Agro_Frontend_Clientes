@@ -27,3 +27,21 @@ export const alimentosOptions = [
     ],
   },
 ];
+
+export const origenAlimentos = [
+  {
+    id: 1,
+    label: "Comprado",
+    value: "comprado",
+  },
+  {
+    id: 2,
+    label: "Producido",
+    value: "producido",
+  },
+  {
+    id: 3,
+    label: "Comprado y Producido",
+    value: "comprado y producido",
+  },
+];

@@ -22,10 +22,13 @@ import useGetProductoCompradoByCliente from "@/hooks/pedidos/useGetProductoCompr
 import FormOpinionProducto from "../ui/FormOpinionProducto";
 import useGetProductoOpinadoCliente from "@/hooks/opiniones/useGetProductoOpinadoCliente";
 import Paginacion from "@/components/generics/Paginacion";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
+import ButtonBack from "@/components/generics/ButtonBack";
 
 const ProductDetailsPage = () => {
   const { id: productoId } = useParams();
   const { esFavorito, toggleFavorito } = useFavoritos();
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const router = useRouter();
   const { cliente } = useAuthStore();
   const paisId = cliente?.pais.id || "";
@@ -232,18 +235,7 @@ const ProductDetailsPage = () => {
   return (
     <div className="container">
       <div>
-        <div className="flex items-center justify-between mb-4 sm:mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => router.push("/productos")}
-            className="gap-2 text-sm sm:text-base"
-            size="sm"
-          >
-            <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Productos</span>
-            <span className="sm:hidden">Volver</span>
-          </Button>
-        </div>
+        <ButtonBack isMobil={isMobile} />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
           <div className="w-full">

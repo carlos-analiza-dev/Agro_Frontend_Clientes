@@ -115,10 +115,10 @@ const AnimalesPageGanadero = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Mis Animales</h1>
+      <div className="block md:flex justify-between items-center mb-6">
+        <h1 className="text-lg md:text-3xl font-bold">Mis Animales</h1>
 
-        <div className="flex gap-3">
+        <div className="mt-4 md:mt-0 flex justify-center gap-3">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="gap-2">

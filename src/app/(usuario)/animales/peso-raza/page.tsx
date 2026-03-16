@@ -18,17 +18,15 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
 import FormAddPesoRaza from "./ui/FormAddPesoRaza";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 
 const PesoRazaAnimal = () => {
   const { data: pesos, isLoading } = useGetPesosByRaza();
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const [openModal, setOpenModal] = useState(false);
   const [selectedPeso, setSelectedPeso] = useState<ResponsePesoByRaza | null>(
     null,
   );
-
-  const formatNumber = (value: string) => {
-    return parseFloat(value).toFixed(2);
-  };
 
   const handleEdit = (item: ResponsePesoByRaza) => {
     setSelectedPeso(item);
@@ -51,9 +49,9 @@ const PesoRazaAnimal = () => {
 
   return (
     <div className="container p-4">
-      <ButtonBack />
+      <ButtonBack isMobil={isMobile} />
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">
+        <h1 className="text-lg md:text-2xl font-bold text-gray-800">
           Pesos Promedio por Raza
         </h1>
         <Button onClick={handleAdd}>Agregar +</Button>

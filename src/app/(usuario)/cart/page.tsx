@@ -18,11 +18,14 @@ import { isAxiosError } from "axios";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import { useState } from "react";
 import SeleccionUbicacion from "./ui/SeleccionaUbicacion";
+import ButtonBack from "@/components/generics/ButtonBack";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 
 const CarritoPage = () => {
   const router = useRouter();
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id || "";
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const {
     cart,
     removeFromCart,
@@ -99,28 +102,24 @@ const CarritoPage = () => {
       {} as Record<
         string,
         { sucursalId: string; nombreSucursal: string; items: any[] }
-      >
+      >,
     );
 
-    // Obtener los detalles procesados UNA SOLA VEZ
     const { detalles: todosLosDetalles, totales } = useCartStore
       .getState()
       .procesarDetallesCarrito();
 
     const pedidosData = Object.values(itemsPorSucursal).map((grupoSucursal) => {
-      // Filtrar detalles para esta sucursal específica
       const detallesSucursal = todosLosDetalles.filter((detalle) =>
-        grupoSucursal.items.some((item) => item.id === detalle.id_producto)
+        grupoSucursal.items.some((item) => item.id === detalle.id_producto),
       );
 
-      // Calcular subtotal para esta sucursal
       const subtotalSucursal = detallesSucursal.reduce(
         (sum, detalle) => sum + detalle.total,
-        0
+        0,
       );
 
-      // Calcular impuestos proporcionales para esta sucursal
-      const proporcion = subtotalSucursal / (totales.subTotal || 1); // Evitar división por cero
+      const proporcion = subtotalSucursal / (totales.subTotal || 1);
 
       const pedidoData: CrearPedidoInterface = {
         id_cliente: cliente.id,
@@ -133,14 +132,14 @@ const CarritoPage = () => {
           (
             totales.subTotal -
             (totales.importeGravado15 + totales.importeGravado18) * proporcion
-          ).toFixed(2)
+          ).toFixed(2),
         ),
         importe_exonerado: 0,
         importe_gravado_15: Number(
-          (totales.importeGravado15 * proporcion).toFixed(2)
+          (totales.importeGravado15 * proporcion).toFixed(2),
         ),
         importe_gravado_18: Number(
-          (totales.importeGravado18 * proporcion).toFixed(2)
+          (totales.importeGravado18 * proporcion).toFixed(2),
         ),
         isv_15: Number((totales.isv15 * proporcion).toFixed(2)),
         isv_18: Number((totales.isv18 * proporcion).toFixed(2)),
@@ -149,7 +148,7 @@ const CarritoPage = () => {
             subtotalSucursal +
             (totales.isv15 + totales.isv18) * proporcion +
             (ubicacion.costoDelivery || 0)
-          ).toFixed(2)
+          ).toFixed(2),
         ),
         estado: EstadoPedido.PENDIENTE,
         detalles: detallesSucursal,
@@ -175,16 +174,7 @@ const CarritoPage = () => {
   if (cart.length === 0) {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
-        <div className="flex items-center justify-between mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => router.back()}
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Volver
-          </Button>
-        </div>
+        <ButtonBack isMobil={isMobile} />
         <ShoppingCart className="h-24 w-24 text-gray-400 mx-auto mb-6" />
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
           Tu carrito está vacío
@@ -198,12 +188,7 @@ const CarritoPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <Button variant="ghost" onClick={() => router.back()} className="gap-2">
-          <ArrowLeft className="h-4 w-4" />
-          Volver
-        </Button>
-      </div>
+      <ButtonBack isMobil={isMobile} />
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Carrito de Compras</h1>
         <p className="text-gray-600 mt-2">

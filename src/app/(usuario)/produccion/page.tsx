@@ -46,10 +46,10 @@ const ProduccionGanaderoPage = () => {
   return (
     <div className="min-h-screen bg-background relative pb-24">
       <div className="container mx-auto px-4 py-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Mis Producciones</h1>
+        <div className="block md:flex justify-between items-center mb-6">
+          <h1 className="text-lg md:text-2xl font-bold">Mis Producciones</h1>
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger asChild className="mt-4 md:mt-0">
               <Button variant="outline" className="gap-2">
                 <BadgeDollarSign className="h-4 w-4" />
                 Control de Productos

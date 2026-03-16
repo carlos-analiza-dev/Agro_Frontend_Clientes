@@ -33,10 +33,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import FormAddPeso from "./ui/FormAddPeso";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 
 const AnimalHistorialPesoId = () => {
   const { id } = useParams();
   const animalId = id?.toString() ?? "";
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const { data: historial, isLoading: cargando_historial } =
     useGetHistorialPeso(animalId);
   const [openModal, setOpenModal] = useState(false);
@@ -141,7 +143,7 @@ const AnimalHistorialPesoId = () => {
   return (
     <TooltipProvider>
       <div className="container p-4 md:p-6 space-y-6">
-        <ButtonBack />
+        <ButtonBack isMobil={isMobile} />
 
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>

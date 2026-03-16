@@ -53,6 +53,7 @@ import { useParams } from "next/navigation";
 import { ActualizarAnimal } from "@/api/animales/accions/update-animal";
 import { extractNumberFromIdentifier } from "@/helpers/funciones/extractNumberFromIdentifier ";
 import ButtonBack from "@/components/generics/ButtonBack";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 
 const AnimalDetailsPage = () => {
   const router = useRouter();
@@ -60,11 +61,11 @@ const AnimalDetailsPage = () => {
   const animalId = params.id as string;
   const queryClient = useQueryClient();
   const { cliente } = useAuthStore();
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const [activeTab, setActiveTab] = useState("animal");
   const [showIdentifierHelp, setShowIdentifierHelp] = useState(false);
   const [showIdentifierHelpPadre, setShowIdentifierHelpPadre] = useState(false);
   const [showIdentifierHelpMadre, setShowIdentifierHelpMadre] = useState(false);
-  const [date, setDate] = useState<Date>();
   const [tipoAlimentacion, setTipoAlimentacion] = useState<
     {
       alimento: string;
@@ -429,7 +430,7 @@ const AnimalDetailsPage = () => {
 
   return (
     <div className="container mx-auto p-4 max-w-4xl">
-      <ButtonBack />
+      <ButtonBack isMobil={isMobile} />
       <div className="flex items-center mb-6">
         <PawPrintIcon className="h-8 w-8 mr-2" />
         <h1 className="text-3xl font-bold">Editar Animal</h1>

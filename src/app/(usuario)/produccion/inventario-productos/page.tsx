@@ -28,10 +28,12 @@ import Paginacion from "@/components/generics/Paginacion";
 import Modal from "@/components/generics/Modal";
 import FormProductosGanaderia from "./ui/FormProductosGanaderia";
 import ButtonBack from "@/components/generics/ButtonBack";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 
 const InventarioProductos = () => {
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id ?? "";
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
   const [fincaSelected, setFincaSelected] = useState("todas");
@@ -58,7 +60,7 @@ const InventarioProductos = () => {
 
   return (
     <div className="container mx-auto p-4 sm:p-6 space-y-6">
-      <ButtonBack />
+      <ButtonBack isMobil={isMobile} />
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-2">
