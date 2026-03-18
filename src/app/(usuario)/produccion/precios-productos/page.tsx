@@ -16,9 +16,10 @@ import { ResponseProductosVenta } from "@/api/productos-ganadero/interfaces/obte
 import SkeletonCard from "@/components/generics/SkeletonCard";
 import ButtonBack from "@/components/generics/ButtonBack";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
+import { MessageError } from "@/components/generics/MessageError";
 
 const PreciosProductosPage = () => {
-  const { data: productos, isLoading } = useGetProductoVenta();
+  const { data: productos, isLoading, refetch } = useGetProductoVenta();
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [openModal, setOpenModal] = useState(false);
   const [productoToEdit, setProductoToEdit] =
@@ -27,6 +28,10 @@ const PreciosProductosPage = () => {
   const handleAgregarClick = () => {
     setProductoToEdit(null);
     setOpenModal(true);
+  };
+
+  const onPress = async () => {
+    await refetch();
   };
 
   const handleEditarClick = (producto: ResponseProductosVenta) => {
@@ -58,22 +63,30 @@ const PreciosProductosPage = () => {
       </div>
 
       <div className="mt-5 mb-5">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {productos?.map((producto) => (
-            <div key={producto.id}>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleEditarClick(producto)}
-                className="bg-white shadow-sm hover:bg-gray-100 mt-2 mb-2"
-              >
-                ✏️ Editar Producto
-              </Button>
+        {productos && productos?.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {productos?.map((producto) => (
+              <div key={producto.id}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleEditarClick(producto)}
+                  className="bg-white shadow-sm hover:bg-gray-100 mt-2 mb-2"
+                >
+                  ✏️ Editar Producto
+                </Button>
 
-              <CardProducto producto={producto} />
-            </div>
-          ))}
-        </div>
+                <CardProducto producto={producto} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <MessageError
+            titulo="No se encontraron productos"
+            descripcion="En este momento no se encontraron productos de venta disponibles, puedes ingresar uno"
+            onPress={onPress}
+          />
+        )}
       </div>
 
       <AlertDialog open={openModal} onOpenChange={handleCloseModal}>

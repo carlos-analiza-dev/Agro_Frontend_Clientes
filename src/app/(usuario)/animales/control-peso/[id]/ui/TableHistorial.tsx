@@ -17,6 +17,7 @@ import {
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
+  Pencil,
 } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,14 +27,17 @@ import Paginacion from "@/components/generics/Paginacion";
 
 interface Props {
   historial: ResponseHistorialAnimal[] | undefined;
+  animalId: string;
+  onEdit: (registro: ResponseHistorialAnimal) => void;
   rangoPeso?: {
     minimo: number;
     maximo: number;
   } | null;
 }
 
-const TableHistorial = ({ historial, rangoPeso }: Props) => {
+const TableHistorial = ({ historial, animalId, onEdit, rangoPeso }: Props) => {
   const [currentPage, setCurrentPage] = useState(1);
+
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const itemsPerPage = isMobile ? 5 : 10;
@@ -64,15 +68,6 @@ const TableHistorial = ({ historial, rangoPeso }: Props) => {
       color: "bg-green-100 text-green-800 border-green-200",
       icon: CheckCircle2,
     };
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("es-ES", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    }).format(date);
   };
 
   const totalItems = historial?.length || 0;
@@ -125,21 +120,35 @@ const TableHistorial = ({ historial, rangoPeso }: Props) => {
               <Card key={item.id} className="overflow-hidden">
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <span className="text-lg font-semibold">
-                        {item.peso} Kg
-                      </span>
-                      <span className="text-sm text-gray-500 ml-2">
-                        {formatDate(item.fecha)}
-                      </span>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg font-semibold">
+                          {item.peso} Kg
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          {item.fecha}
+                        </span>
+                      </div>
                     </div>
-                    {status && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onEdit(item)}
+                      className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                      title="Editar registro"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  {status && (
+                    <div className="mb-2">
                       <Badge variant="outline" className={status.color}>
                         <StatusIcon className="h-3 w-3 mr-1" />
                         {status.label}
                       </Badge>
-                    )}
-                  </div>
+                    </div>
+                  )}
 
                   <div className="text-sm text-gray-600">
                     <span className="font-medium">Observaciones: </span>
@@ -186,10 +195,11 @@ const TableHistorial = ({ historial, rangoPeso }: Props) => {
     );
   }
 
+  // Vista Desktop
   return (
     <div className="w-full space-y-4">
       <div className="w-full overflow-x-auto rounded-md border">
-        <div className="min-w-[640px]">
+        <div className="min-w-[768px]">
           <Table>
             <TableCaption className="bg-gray-50 py-2">
               {rangoPeso ? (
@@ -202,10 +212,11 @@ const TableHistorial = ({ historial, rangoPeso }: Props) => {
             </TableCaption>
             <TableHeader className="bg-gray-50">
               <TableRow>
-                <TableHead className="text-center">Peso</TableHead>
+                <TableHead className="text-center">Peso (Kg)</TableHead>
                 <TableHead className="text-center">Fecha</TableHead>
                 <TableHead className="text-center">Estado</TableHead>
                 <TableHead className="text-center">Observaciones</TableHead>
+                <TableHead className="text-center">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -218,9 +229,7 @@ const TableHistorial = ({ historial, rangoPeso }: Props) => {
                     <TableCell className="text-center font-medium">
                       {item.peso} Kg
                     </TableCell>
-                    <TableCell className="text-center">
-                      {formatDate(item.fecha)}
-                    </TableCell>
+                    <TableCell className="text-center">{item.fecha}</TableCell>
                     <TableCell className="text-center">
                       {status && (
                         <Badge variant="outline" className={status.color}>
@@ -231,6 +240,17 @@ const TableHistorial = ({ historial, rangoPeso }: Props) => {
                     </TableCell>
                     <TableCell className="text-center max-w-xs truncate">
                       {item.observaciones || "-"}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onEdit(item)}
+                        className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                        title="Editar registro"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 );

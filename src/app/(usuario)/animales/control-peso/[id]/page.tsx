@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import FormAddPeso from "./ui/FormAddPeso";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
+import { ResponseHistorialAnimal } from "@/api/peso-promedio-animal/interfaces/obtener-historial-pesos-animal.interface";
 
 const AnimalHistorialPesoId = () => {
   const { id } = useParams();
@@ -47,6 +48,21 @@ const AnimalHistorialPesoId = () => {
   const [pesos, setPesos] = useState<ResponseRangoEdad | null>(null);
   const [error, setError] = useState<string>("");
   const [activeTab, setActiveTab] = useState("calculadora");
+  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const [selectedRegistro, setSelectedRegistro] =
+    useState<ResponseHistorialAnimal | null>(null);
+
+  const handleOpenEdit = (registro: ResponseHistorialAnimal) => {
+    setSelectedRegistro(registro);
+    setModalMode("edit");
+    setOpenModal(true);
+  };
+
+  const handleOpenCreate = () => {
+    setSelectedRegistro(null);
+    setModalMode("create");
+    setOpenModal(true);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -332,7 +348,12 @@ const AnimalHistorialPesoId = () => {
                 </p>
               )}
             </div>
-            <Button onClick={() => setOpenModal(true)}>Agregar +</Button>
+            <Button onClick={handleOpenCreate}>
+              <span className="flex items-center gap-2">
+                <span>+</span>
+                Agregar
+              </span>
+            </Button>
           </div>
 
           {cargando_historial ? (
@@ -340,6 +361,8 @@ const AnimalHistorialPesoId = () => {
           ) : (
             <TableHistorial
               historial={historial}
+              animalId={animalId}
+              onEdit={handleOpenEdit}
               rangoPeso={
                 pesos
                   ? {
@@ -353,24 +376,26 @@ const AnimalHistorialPesoId = () => {
         </div>
       </div>
 
-      <AlertDialog
-        open={openModal}
-        onOpenChange={() => setOpenModal(!openModal)}
-      >
-        <AlertDialogContent>
-          <div className="flex justify-end">
-            <AlertDialogCancel>X</AlertDialogCancel>
-          </div>
+      <AlertDialog open={openModal} onOpenChange={setOpenModal}>
+        <AlertDialogContent className="sm:max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle> ¿Agregar nuevo peso?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {modalMode === "create"
+                ? "Agregar nuevo peso"
+                : "Editar registro de peso"}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              Ingresa el peso actual del animal.
+              {modalMode === "create"
+                ? "Ingresa el peso actual del animal."
+                : "Modifica los datos del registro de peso."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <FormAddPeso
             animalId={animalId}
+            registro={selectedRegistro}
             openModal={openModal}
             setOpenModal={setOpenModal}
+            onSuccess={() => {}}
           />
         </AlertDialogContent>
       </AlertDialog>

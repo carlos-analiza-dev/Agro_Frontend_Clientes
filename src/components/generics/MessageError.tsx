@@ -5,7 +5,7 @@ import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 interface MessageErrorProps {
   titulo: string;
   descripcion: string;
-  onPress: () => void;
+  onPress?: () => void;
 }
 
 export const MessageError = ({
@@ -20,10 +20,12 @@ export const MessageError = ({
         <AlertTitle>{titulo}</AlertTitle>
         <AlertDescription>{descripcion}</AlertDescription>
       </Alert>
-      <Button onClick={onPress} className="flex items-center gap-2">
-        <RefreshCw className="h-4 w-4" />
-        Reintentar
-      </Button>
+      {onPress && (
+        <Button onClick={onPress} className="flex items-center gap-2">
+          <RefreshCw className="h-4 w-4" />
+          Reintentar
+        </Button>
+      )}
     </div>
   );
 };
