@@ -1,34 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
-import { Calendar as CalendarIcon, Filter, X, Loader2 } from "lucide-react";
-
+import { Filter, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Card, CardContent } from "@/components/ui/card";
 import useGetCelosAnimal from "@/hooks/reproduccion/useGetCelosAnimal";
 import { FiltrosCelos } from "@/interfaces/filtros/celos.filtros.interface";
-import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import useGetAnimalesPropietario from "@/hooks/animales/useGetAnimalesPropietario";
@@ -39,10 +15,17 @@ import { Celo } from "@/api/reproduccion/interfaces/response-celos-animal,interf
 import Paginacion from "@/components/generics/Paginacion";
 import Modal from "@/components/generics/Modal";
 import FormCelosAnimal from "./ui/FormCelosAnimal";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
+import { useRouter } from "next/navigation";
+import MobileFilters from "./ui/MobileFilters";
+import DesktopFilters from "./ui/DesktopFilters";
 
 const CelosAnimalPage = () => {
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id ?? "";
+  const router = useRouter();
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const isTablet = useMediaQuery("(min-width: 769px) and (max-width: 1024px)");
 
   const [filtros, setFiltros] = useState<FiltrosCelos>({
     offset: 1,
@@ -56,6 +39,7 @@ const CelosAnimalPage = () => {
   const [selectedCelo, setSelectedCelo] = useState<Celo | null>(null);
   const [detalleOpen, setDetalleOpen] = useState(false);
   const [filtrosVisibles, setFiltrosVisibles] = useState(false);
+  const [filtrosAbiertos, setFiltrosAbiertos] = useState(false);
 
   const { data: fincas, isLoading: fincasLoading } =
     useFincasPropietarios(clienteId);
@@ -99,6 +83,9 @@ const CelosAnimalPage = () => {
   const aplicarFiltros = () => {
     setFiltros({ ...tempFiltros, offset: 1 });
     refetch();
+    if (isMobile) {
+      setFiltrosVisibles(false);
+    }
   };
 
   const limpiarFiltros = () => {
@@ -111,236 +98,92 @@ const CelosAnimalPage = () => {
 
   const cambiarPagina = (nuevaPagina: number) => {
     setFiltros((prev) => ({ ...prev, offset: nuevaPagina }));
+
+    if (isMobile) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handleCreateRegistro = () => {
+    if (isMobile) {
+      router.push("/celos/crear-periodo-celo");
+    } else {
+      setOpenModal(true);
+    }
   };
 
   return (
-    <div className="container mx-auto p-4 md:p-6 space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="container mx-auto p-4 md:p-6 space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
             Control de Celos
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm md:text-base text-muted-foreground">
             Gestiona y da seguimiento a los celos de tus animales
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex w-full sm:w-auto gap-2">
           <Button
             variant="outline"
-            onClick={() => setFiltrosVisibles(!filtrosVisibles)}
-            className="md:hidden"
+            onClick={() => setFiltrosVisibles(true)}
+            className="flex-1 sm:flex-none md:hidden"
           >
             <Filter className="h-4 w-4 mr-2" />
             Filtros
           </Button>
-          <Button onClick={() => setOpenModal(true)}>Nuevo Registro</Button>
+          <Button
+            onClick={handleCreateRegistro}
+            className="flex-1 sm:flex-none"
+          >
+            Nuevo Registro
+          </Button>
         </div>
       </div>
 
-      <Card className={cn("hidden md:block", filtrosVisibles && "block")}>
-        <CardHeader>
-          <CardTitle>Filtros</CardTitle>
-          <CardDescription>
-            Filtra los registros de celo por diferentes criterios
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="fincaId">Finca</Label>
-              <Select
-                value={tempFiltros.fincaId || "todas"}
-                onValueChange={(value) => handleFilterChange("fincaId", value)}
-                disabled={fincasLoading}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar finca" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todas">Todas las fincas</SelectItem>
-                  {fincas?.data.fincas.map((finca) => (
-                    <SelectItem key={finca.id} value={finca.id}>
-                      {finca.nombre_finca}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+      {isMobile ? (
+        <MobileFilters
+          filtrosVisibles={filtrosVisibles}
+          setFiltrosVisibles={setFiltrosVisibles}
+          tempFiltros={tempFiltros}
+          fincasLoading={fincasLoading}
+          handleFilterChange={handleFilterChange}
+          fincas={fincas?.data}
+          hembras={hembras}
+          especies={especies?.data}
+          animalesLoading={animalesLoading}
+          especiesLoading={especiesLoading}
+          aplicarFiltros={aplicarFiltros}
+          limpiarFiltros={limpiarFiltros}
+        />
+      ) : (
+        <DesktopFilters
+          setFiltrosAbiertos={setFiltrosAbiertos}
+          filtrosAbiertos={filtrosAbiertos}
+          tempFiltros={tempFiltros}
+          fincasLoading={fincasLoading}
+          handleFilterChange={handleFilterChange}
+          fincas={fincas?.data}
+          hembras={hembras}
+          especies={especies?.data}
+          animalesLoading={animalesLoading}
+          especiesLoading={especiesLoading}
+          aplicarFiltros={aplicarFiltros}
+          limpiarFiltros={limpiarFiltros}
+          isTablet={isTablet}
+        />
+      )}
 
-            <div className="space-y-2">
-              <Label htmlFor="animalId">Animal</Label>
-              <Select
-                value={tempFiltros.animalId || "todos"}
-                onValueChange={(value) =>
-                  handleFilterChange("animalId", value === "todos" ? "" : value)
-                }
-                disabled={animalesLoading || !tempFiltros.fincaId}
-              >
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={
-                      !tempFiltros.fincaId
-                        ? "Primero selecciona una finca"
-                        : "Seleccionar animal"
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos los animales</SelectItem>
-                  {hembras?.map((animal) => (
-                    <SelectItem key={animal.id} value={animal.id}>
-                      {animal.identificador} - {animal.color} ({animal.sexo})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {!tempFiltros.fincaId && (
-                <p className="text-xs text-muted-foreground">
-                  Selecciona una finca primero
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="especie">Especie</Label>
-              <Select
-                value={tempFiltros.especie || "todas"}
-                onValueChange={(value) => handleFilterChange("especie", value)}
-                disabled={especiesLoading}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Todas las especies" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todas">Todas las especies</SelectItem>
-                  {especies?.data.map((especie) => (
-                    <SelectItem key={especie.id} value={especie.nombre}>
-                      {especie.nombre}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="intensidad">Intensidad</Label>
-              <Select
-                value={tempFiltros.intensidad || "todas"}
-                onValueChange={(value) =>
-                  handleFilterChange("intensidad", value)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Todas las intensidades" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todas">Todas</SelectItem>
-                  <SelectItem value="BAJO">Bajo</SelectItem>
-                  <SelectItem value="MEDIO">Medio</SelectItem>
-                  <SelectItem value="ALTO">Alto</SelectItem>
-                  <SelectItem value="MUY_ALTO">Muy Alto</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Fecha Inicio</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !tempFiltros.fechaInicio && "text-muted-foreground",
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {tempFiltros.fechaInicio ? (
-                      format(new Date(tempFiltros.fechaInicio), "PPP", {
-                        locale: es,
-                      })
-                    ) : (
-                      <span>Seleccionar fecha</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={
-                      tempFiltros.fechaInicio
-                        ? new Date(tempFiltros.fechaInicio)
-                        : undefined
-                    }
-                    onSelect={(date) =>
-                      handleFilterChange("fechaInicio", date?.toISOString())
-                    }
-                    locale={es}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Fecha Fin</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !tempFiltros.fechaFin && "text-muted-foreground",
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {tempFiltros.fechaFin ? (
-                      format(new Date(tempFiltros.fechaFin), "PPP", {
-                        locale: es,
-                      })
-                    ) : (
-                      <span>Seleccionar fecha</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={
-                      tempFiltros.fechaFin
-                        ? new Date(tempFiltros.fechaFin)
-                        : undefined
-                    }
-                    onSelect={(date) =>
-                      handleFilterChange("fechaFin", date?.toISOString())
-                    }
-                    locale={es}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            <div className="flex items-end space-x-2 pt-8">
-              <Button onClick={aplicarFiltros} className="flex-1">
-                Aplicar Filtros
-              </Button>
-              <Button variant="outline" onClick={limpiarFiltros} size="icon">
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
+      <Card className="overflow-hidden">
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="flex justify-center items-center py-20">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <div className="flex justify-center items-center py-12 md:py-20">
+              <Loader2 className="h-6 w-6 md:h-8 md:w-8 animate-spin text-primary" />
             </div>
           ) : error ? (
             <MessageError
               titulo="No se encontraron registros de celo"
-              descripcion=" Error al cargar los datos. Por favor intenta de nuevo."
+              descripcion="Error al cargar los datos. Por favor intenta de nuevo."
             />
           ) : (
             <>
@@ -353,10 +196,12 @@ const CelosAnimalPage = () => {
               />
 
               {(!data?.celos || data.celos.length === 0) && (
-                <MessageError
-                  titulo="No se encontraron registros de celo"
-                  descripcion=" Error al cargar los datos. Por favor intenta de nuevo."
-                />
+                <div className="p-8 text-center">
+                  <MessageError
+                    titulo="No se encontraron registros de celo"
+                    descripcion="No hay datos disponibles para mostrar."
+                  />
+                </div>
               )}
             </>
           )}
@@ -364,7 +209,7 @@ const CelosAnimalPage = () => {
       </Card>
 
       {data && data.totalPages > 0 && (
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="flex justify-center sm:justify-end">
           <Paginacion
             currentPage={data.offset}
             totalPages={data.totalPages}
@@ -373,19 +218,21 @@ const CelosAnimalPage = () => {
         </div>
       )}
 
-      <Modal
-        open={openModal}
-        onOpenChange={setOpenModal}
-        title="Agregar Nuevo Celo"
-        description="Aqui podras agregar el timpo de celo de tus vacas"
-        size="xl"
-      >
-        <FormCelosAnimal
-          setOpenModal={setOpenModal}
-          onSuccess={() => setOpenModal(false)}
-          hembras={hembras}
-        />
-      </Modal>
+      {!isMobile && (
+        <Modal
+          open={openModal}
+          onOpenChange={setOpenModal}
+          title="Agregar Nuevo Celo"
+          description="Aquí podrás agregar el período de celo de tus vacas"
+          size="xl"
+        >
+          <FormCelosAnimal
+            setOpenModal={setOpenModal}
+            onSuccess={() => setOpenModal(false)}
+            hembras={hembras}
+          />
+        </Modal>
+      )}
     </div>
   );
 };

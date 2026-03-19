@@ -8,4 +8,8 @@ export const tipoReproduccionOptions = [
     label: "Fecundación in vitro (FIV)",
     value: "Fecundación in vitro (FIV)",
   },
+  {
+    label: "Transferencia de embriones",
+    value: "Transferencia de embriones",
+  },
 ];
