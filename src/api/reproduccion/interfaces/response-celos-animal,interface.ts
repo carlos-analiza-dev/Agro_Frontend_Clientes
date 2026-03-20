@@ -1,3 +1,5 @@
+import { EstadoCeloAnimal } from "@/interfaces/enums/servicios-reproductivos.enum";
+
 export interface ResponseCelosAnimalInterface {
   celos: Celo[];
   total: number;
@@ -9,6 +11,7 @@ export interface ResponseCelosAnimalInterface {
 export interface Celo {
   id: string;
   fechaInicio: string;
+  estado: EstadoCeloAnimal;
   fechaFin: string;
   numeroCelo: number;
   intensidad: string;

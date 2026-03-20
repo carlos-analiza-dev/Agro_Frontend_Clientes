@@ -129,6 +129,7 @@ const TableCelos = ({
             <TableHead>Periodo</TableHead>
             <TableHead>N°</TableHead>
             <TableHead>Intensidad</TableHead>
+            <TableHead>Estado</TableHead>
             <TableHead className="text-right">Acciones</TableHead>
           </TableRow>
         </TableHeader>
@@ -164,6 +165,9 @@ const TableCelos = ({
               <TableCell>
                 <RenderIntensidadBadge intensidad={celo.intensidad} />
               </TableCell>
+              <TableCell>
+                <Badge>{celo.estado}</Badge>
+              </TableCell>
               <TableCell className="text-right">
                 <Button
                   variant="ghost"
@@ -196,6 +200,7 @@ const TableCelos = ({
             <TableHead>N° Celo</TableHead>
             <TableHead>Intensidad</TableHead>
             <TableHead>Método</TableHead>
+            <TableHead>Estado</TableHead>
             <TableHead className="text-right">Acciones</TableHead>
           </TableRow>
         </TableHeader>
@@ -225,6 +230,9 @@ const TableCelos = ({
               </TableCell>
               <TableCell className="whitespace-nowrap">
                 {celo.metodo_deteccion}
+              </TableCell>
+              <TableCell>
+                <Badge>{celo.estado}</Badge>
               </TableCell>
               <TableCell className="text-right">
                 <Button

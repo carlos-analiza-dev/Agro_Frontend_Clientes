@@ -1,42 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
-import { format } from "date-fns";
-import {
-  Calendar as CalendarIcon,
-  Filter,
-  Plus,
-  Eye,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-} from "lucide-react";
+import { Filter, Plus, AlertCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Card, CardContent } from "@/components/ui/card";
+
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import useGetServicioReproductivo from "@/hooks/reproduccion/useGetServicioReproductivo";
@@ -46,10 +15,12 @@ import { useAuthStore } from "@/providers/store/useAuthStore";
 import { FiltrosServicios } from "@/interfaces/filtros/servicios-resproductivos.filtros.interface";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import Paginacion from "@/components/generics/Paginacion";
-import TipoServicioBadge from "./ui/TipoServicioBadge";
-import EstadoBadge from "./ui/EstadoBadge";
 import MobileFilters from "./ui/MobileFilters";
 import CardFilters from "./ui/CardFilters";
+import VistaTarjetas from "./ui/VistaTarjetas";
+import SummaryCard from "./ui/SummaryCard";
+import VistaTabla from "./ui/VistaTabla";
+import SkeletonTable from "@/components/generics/SkeletonTable";
 
 const ServiciosReproductivosPage = () => {
   const { cliente } = useAuthStore();
@@ -57,6 +28,7 @@ const ServiciosReproductivosPage = () => {
 
   const isMobile = useMediaQuery("(max-width: 768px)");
   const isTablet = useMediaQuery("(min-width: 769px) and (max-width: 1024px)");
+  const isDesktop = useMediaQuery("(min-width: 1025px)");
 
   const { data: fincasData, isLoading: fincasLoading } =
     useFincasPropietarios(clienteId);
@@ -113,178 +85,35 @@ const ServiciosReproductivosPage = () => {
     }
   };
 
-  const VistaTabla = () => (
-    <div className="rounded-md border overflow-hidden">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Hembra</TableHead>
-            <TableHead>Macho</TableHead>
-            <TableHead className="hidden lg:table-cell">Tipo</TableHead>
-            <TableHead>Fecha</TableHead>
-            <TableHead className="hidden md:table-cell">N°</TableHead>
-            <TableHead>Estado</TableHead>
-            <TableHead className="hidden lg:table-cell">Montas</TableHead>
-            <TableHead className="text-right">Acciones</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {servicios.map((servicio) => (
-            <TableRow key={servicio.id}>
-              <TableCell className="font-medium">
-                <div>
-                  <p className="truncate max-w-[150px]">
-                    {servicio.hembra.identificador}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {servicio.celo_asociado &&
-                      format(
-                        new Date(servicio.celo_asociado.fechaInicio),
-                        "dd/MM/yy",
-                      )}
-                  </p>
-                </div>
-              </TableCell>
-              <TableCell>
-                <span className="truncate max-w-[150px] block">
-                  {servicio.macho?.identificador || "N/A"}
-                </span>
-              </TableCell>
-              <TableCell className="hidden lg:table-cell">
-                <TipoServicioBadge tipo={servicio.tipo_servicio} />
-              </TableCell>
-              <TableCell>
-                {format(new Date(servicio.fecha_servicio), "dd/MM/yy HH:mm")}
-              </TableCell>
-              <TableCell className="hidden md:table-cell">
-                #{servicio.numero_servicio}
-              </TableCell>
-              <TableCell>
-                <EstadoBadge estado={servicio.estado} />
-              </TableCell>
-              <TableCell className="hidden lg:table-cell">
-                {servicio.detalles?.length || 0}
-              </TableCell>
-              <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>Ver detalles</DropdownMenuItem>
-                    <DropdownMenuItem>Editar</DropdownMenuItem>
-                    <DropdownMenuItem className="text-red-600">
-                      Cancelar
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
-  );
-
-  const VistaTarjetas = () => (
-    <div className="space-y-3">
-      {servicios.map((servicio) => (
-        <Card key={servicio.id} className="overflow-hidden">
-          <CardHeader className="p-4 pb-2">
-            <div className="flex justify-between items-start">
-              <div>
-                <CardTitle className="text-base flex items-center gap-2">
-                  {servicio.hembra.identificador}
-                  {servicio.exitoso ? (
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                  ) : servicio.estado === "FALLIDO" ? (
-                    <XCircle className="h-4 w-4 text-red-500" />
-                  ) : null}
-                </CardTitle>
-                <CardDescription className="text-xs mt-1">
-                  N° Servicio: {servicio.numero_servicio} •{" "}
-                  {servicio.tipo_servicio.replace(/_/g, " ")}
-                </CardDescription>
-              </div>
-              <EstadoBadge estado={servicio.estado} />
-            </div>
-          </CardHeader>
-          <CardContent className="p-4 pt-2 pb-2">
-            <div className="grid grid-cols-2 gap-2 text-sm mb-2">
-              <div>
-                <p className="text-xs text-muted-foreground">Macho</p>
-                <p className="text-sm font-medium">
-                  {servicio.macho?.identificador || "N/A"}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Fecha</p>
-                <p className="text-sm font-medium">
-                  {format(new Date(servicio.fecha_servicio), "dd/MM/yy HH:mm")}
-                </p>
-              </div>
-            </div>
-
-            {servicio.celo_asociado && (
-              <div className="bg-muted/50 p-2 rounded-md mb-2">
-                <p className="text-xs flex items-center gap-1">
-                  <CalendarIcon className="h-3 w-3" />
-                  Celo:{" "}
-                  {format(
-                    new Date(servicio.celo_asociado.fechaInicio),
-                    "dd/MM/yy HH:mm",
-                  )}
-                </p>
-              </div>
-            )}
-
-            {servicio.detalles && servicio.detalles.length > 0 && (
-              <div className="border-t pt-2 mt-2">
-                <p className="text-xs font-medium mb-1">Montas:</p>
-                <div className="flex gap-2 flex-wrap">
-                  {servicio.detalles.map((detalle, idx) => (
-                    <Badge
-                      key={detalle.id}
-                      variant="outline"
-                      className="text-xs"
-                    >
-                      {idx + 1}: {detalle.hora_servicio}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-          </CardContent>
-          <CardFooter className="p-4 pt-2 flex justify-end gap-2">
-            <Button variant="ghost" size="sm">
-              Ver más
-            </Button>
-            <Button size="sm">Editar</Button>
-          </CardFooter>
-        </Card>
-      ))}
-    </div>
-  );
-
   if (isLoading) {
-    return (
-      <div className="container mx-auto p-4 space-y-4">
-        <div className="flex justify-between items-center">
-          <Skeleton className="h-8 w-48" />
-          <Skeleton className="h-10 w-24" />
-        </div>
-        <div className="space-y-2">
-          {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-20 w-full" />
-          ))}
-        </div>
-      </div>
-    );
+    return <SkeletonTable />;
   }
 
   const fincaSeleccionada = fincas.find((f) => f.id === filtros.finca_id);
+
+  const renderVista = () => {
+    if (servicios.length === 0) return null;
+
+    if (isMobile) {
+      return <VistaTarjetas servicios={servicios} />;
+    }
+
+    if (isTablet) {
+      if (vista === "tabla") {
+        return <VistaTabla servicios={servicios} />;
+      }
+      return <VistaTarjetas servicios={servicios} />;
+    }
+
+    if (isDesktop) {
+      if (vista === "tabla") {
+        return <VistaTabla servicios={servicios} />;
+      }
+      return <VistaTarjetas servicios={servicios} />;
+    }
+
+    return <VistaTarjetas servicios={servicios} />;
+  };
 
   return (
     <TooltipProvider>
@@ -320,15 +149,14 @@ const ServiciosReproductivosPage = () => {
               </Button>
             )}
 
-            {isTablet && (
+            {(isTablet || isDesktop) && (
               <Tabs
                 value={vista}
-                onValueChange={(v) => setVista(v as any)}
+                onValueChange={(v) => setVista(v as "tabla" | "tarjetas")}
                 className="mr-2"
               >
                 <TabsList>
                   <TabsTrigger value="tabla">Tabla</TabsTrigger>
-                  <TabsTrigger value="tarjetas">Tarjetas</TabsTrigger>
                 </TabsList>
               </Tabs>
             )}
@@ -394,13 +222,7 @@ const ServiciosReproductivosPage = () => {
               </div>
             ) : (
               <>
-                {isMobile ? (
-                  <VistaTarjetas />
-                ) : isTablet && vista === "tarjetas" ? (
-                  <VistaTarjetas />
-                ) : (
-                  <VistaTabla />
-                )}
+                {renderVista()}
 
                 {totalPages > 0 && (
                   <div className="p-4 border-t">
@@ -418,55 +240,30 @@ const ServiciosReproductivosPage = () => {
 
         {servicios.length > 0 && !isMobile && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Total Servicios
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold">{data?.total}</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Exitosos</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold text-green-600">
-                  {servicios.filter((s) => s.exitoso).length}
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Tasa Éxito
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold">
-                  {Math.round(
-                    (servicios.filter((s) => s.exitoso).length /
-                      servicios.length) *
-                      100,
-                  )}
-                  %
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Programados
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold text-yellow-600">
-                  {servicios.filter((s) => s.estado === "PROGRAMADO").length}
-                </p>
-              </CardContent>
-            </Card>
+            <SummaryCard
+              title="Total Servicios"
+              numero={data?.total?.toString() ?? "0"}
+            />
+
+            <SummaryCard
+              title="Exitosos"
+              numero={servicios.filter((s) => s.exitoso).length.toString()}
+            />
+
+            <SummaryCard
+              title="Tasa Éxito"
+              numero={`${Math.round(
+                (servicios.filter((s) => s.exitoso).length / servicios.length) *
+                  100,
+              )}%`}
+            />
+
+            <SummaryCard
+              title="Programados"
+              numero={servicios
+                .filter((s) => s.estado === "PROGRAMADO")
+                .length.toString()}
+            />
           </div>
         )}
       </div>
