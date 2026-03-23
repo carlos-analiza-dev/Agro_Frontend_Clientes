@@ -21,11 +21,13 @@ import VistaTarjetas from "./ui/VistaTarjetas";
 import SummaryCard from "./ui/SummaryCard";
 import VistaTabla from "./ui/VistaTabla";
 import SkeletonTable from "@/components/generics/SkeletonTable";
+import Modal from "@/components/generics/Modal";
+import FormServicioReproductivo from "./ui/FormServicioReproductivo";
 
 const ServiciosReproductivosPage = () => {
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id ?? "";
-
+  const [openModal, setOpenModal] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
   const isTablet = useMediaQuery("(min-width: 769px) and (max-width: 1024px)");
   const isDesktop = useMediaQuery("(min-width: 1025px)");
@@ -38,6 +40,8 @@ const ServiciosReproductivosPage = () => {
   const fincas = fincasData?.data?.fincas || [];
   const hembras =
     animalesData?.data?.filter((animal) => animal.sexo === "Hembra") || [];
+  const machos =
+    animalesData?.data?.filter((animal) => animal.sexo === "Macho") || [];
 
   const [filtros, setFiltros] = useState<FiltrosServicios>({
     page: 1,
@@ -100,14 +104,18 @@ const ServiciosReproductivosPage = () => {
 
     if (isTablet) {
       if (vista === "tabla") {
-        return <VistaTabla servicios={servicios} />;
+        return (
+          <VistaTabla servicios={servicios} hembras={hembras} machos={machos} />
+        );
       }
       return <VistaTarjetas servicios={servicios} />;
     }
 
     if (isDesktop) {
       if (vista === "tabla") {
-        return <VistaTabla servicios={servicios} />;
+        return (
+          <VistaTabla servicios={servicios} hembras={hembras} machos={machos} />
+        );
       }
       return <VistaTarjetas servicios={servicios} />;
     }
@@ -152,7 +160,7 @@ const ServiciosReproductivosPage = () => {
             {(isTablet || isDesktop) && (
               <Tabs
                 value={vista}
-                onValueChange={(v) => setVista(v as "tabla" | "tarjetas")}
+                onValueChange={(v) => setVista(v as "tabla")}
                 className="mr-2"
               >
                 <TabsList>
@@ -161,7 +169,10 @@ const ServiciosReproductivosPage = () => {
               </Tabs>
             )}
 
-            <Button className="flex-1 sm:flex-none">
+            <Button
+              onClick={() => setOpenModal(true)}
+              className="flex-1 sm:flex-none"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Nuevo Servicio
             </Button>
@@ -267,6 +278,20 @@ const ServiciosReproductivosPage = () => {
           </div>
         )}
       </div>
+      <Modal
+        open={openModal}
+        onOpenChange={setOpenModal}
+        title="Agregar Nuevo Servicio Reproductivo"
+        description="Aqui podras agregar servicios reproductivos para tus animales"
+        size="xl"
+      >
+        <FormServicioReproductivo
+          setOpenModal={setOpenModal}
+          onSuccess={() => setOpenModal(true)}
+          hembras={hembras}
+          machos={machos}
+        />
+      </Modal>
     </TooltipProvider>
   );
 };

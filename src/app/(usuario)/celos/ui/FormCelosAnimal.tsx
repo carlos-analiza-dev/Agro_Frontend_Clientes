@@ -1,5 +1,5 @@
 // FormCelosAnimal.tsx
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
@@ -26,6 +26,8 @@ import {
 import { CrearCeloAnimal } from "@/api/reproduccion/accions/celos/crear-celo-animal";
 import { EditarCeloAnimal } from "@/api/reproduccion/accions/celos/editar-celo-animal";
 import { Animal } from "@/api/animales/interfaces/response-animales.interface";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircleIcon } from "lucide-react";
 
 interface Props {
   celo?: Celo | null;
@@ -35,6 +37,7 @@ interface Props {
 }
 
 const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
+  const [errorMessage, setIsErrorMessage] = useState<string>("");
   const {
     register,
     reset,
@@ -143,6 +146,7 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
 
       if (onSuccess) {
         onSuccess();
+        setIsErrorMessage("");
       }
 
       setOpenModal(false);
@@ -153,9 +157,8 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear el animal";
-
-        toast.error(errorMessage);
+            : "Hubo un error al crear el celo del animal";
+        setIsErrorMessage(errorMessage);
       } else {
         toast.error("Error inesperado. Contacte al administrador");
       }
@@ -164,6 +167,17 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {errorMessage && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircleIcon className="h-4 w-4" />
+          <AlertTitle>
+            Error al {isEditing ? "actualizar" : "registrar"} el Celo
+          </AlertTitle>
+          <AlertDescription className="whitespace-pre-line">
+            {errorMessage}
+          </AlertDescription>
+        </Alert>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="md:col-span-2">
           <Label htmlFor="fechaInicio">

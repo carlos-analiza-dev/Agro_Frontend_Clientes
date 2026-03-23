@@ -1,8 +1,8 @@
 export enum TipoServicio {
-  MONTA_NATURAL = "MONTA_NATURAL",
-  INSEMINACION_ARTIFICIAL = "INSEMINACION_ARTIFICIAL",
-  TRANSFERENCIA_EMBRIONES = "TRANSFERENCIA_EMBRIONES",
-  FERTILIZACION_INVITRO = "FERTILIZACION_INVITRO",
+  MONTA_NATURAL = "Monta natural",
+  INSEMINACION_ARTIFICIAL = "Inseminación aritificial a tiempo fijo (IATF)",
+  TRANSFERENCIA_EMBRIONES = "Transferencia de embriones",
+  FERTILIZACION_INVITRO = "Fecundación in vitro (FIV)",
 }
 
 export enum EstadoServicio {

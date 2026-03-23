@@ -3,30 +3,32 @@ import {
   TipoServicio,
 } from "@/interfaces/enums/servicios-reproductivos.enum";
 
-export interface MetadataServicio {
+export interface Metadata {
   costo?: number;
   duracion_minutos?: number;
   condiciones_climaticas?: string;
   evaluacion_macho?: string;
 }
 
-export interface ComportamientoServicio {
+export interface Comportamiento {
   aceptacion_macho?: boolean;
   receptividad?: string;
   signos_observados?: string[];
 }
 
-export interface DetalleServicioReproductivo {
+export interface DetallesServicioReproductivo {
   hora_servicio: string;
   numero_monta: number;
   duracion_minutos?: number;
   observaciones_monta?: string;
-  comportamiento?: ComportamientoServicio;
+  comportamiento?: Comportamiento;
 }
 
-export interface CreateServicioReproductivoInterface {
+export interface CreateServiciosReproductivo {
   hembra_id: string;
-  macho_id?: string;
+  macho_id?: string | undefined;
+  macho_externo_nombre?: string;
+  macho_pertenece_finca: boolean;
   tipo_servicio: TipoServicio;
   estado?: EstadoServicio;
   fecha_servicio: string;
@@ -37,6 +39,6 @@ export interface CreateServicioReproductivoInterface {
   tecnico_responsable?: string;
   exitoso?: boolean;
   observaciones?: string;
-  detalles?: DetalleServicioReproductivo[];
-  metadata?: MetadataServicio;
+  detalles?: DetallesServicioReproductivo[];
+  metadata?: Metadata;
 }
