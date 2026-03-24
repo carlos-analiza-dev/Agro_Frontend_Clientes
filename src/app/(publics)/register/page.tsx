@@ -2,6 +2,7 @@
 
 import { FullScreenLoader } from "@/components/generics/FullScreenLoader";
 import FormRegister from "@/components/Login/FormRegister";
+
 import {
   Card,
   CardContent,

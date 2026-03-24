@@ -32,7 +32,7 @@ const VerifyAccountPage = () => {
         setStatus("success");
         setMessage(
           response.message ||
-            "¡Cuenta verificada exitosamente! Ya puedes iniciar sesión."
+            "¡Cuenta verificada exitosamente! Ya puedes iniciar sesión.",
         );
 
         setTimeout(() => {
@@ -70,7 +70,7 @@ const VerifyAccountPage = () => {
               </h1>
               <p className="text-gray-600">{message}</p>
               <Button
-                onClick={() => router.push("/")}
+                onClick={() => router.push("/login")}
                 className="w-full bg-red-600 hover:bg-red-700"
               >
                 Volver al Inicio
@@ -133,7 +133,7 @@ const VerifyAccountPage = () => {
                 </div>
 
                 <Button
-                  onClick={() => router.push("/")}
+                  onClick={() => router.push("/login")}
                   className="w-full bg-green-600 hover:bg-green-700"
                 >
                   Ir a Iniciar Sesión
@@ -174,7 +174,7 @@ const VerifyAccountPage = () => {
                     Reintentar Verificación
                   </Button>
                   <Button
-                    onClick={() => router.push("/")}
+                    onClick={() => router.push("/login")}
                     variant="outline"
                     className="w-full"
                   >

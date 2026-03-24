@@ -2,11 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { useFavoritos } from "@/hooks/favoritos/useFavoritos";
-import ProductCard from "../productos/ui/ProductCard";
-import { ArrowLeft, Heart, Trash2 } from "lucide-react";
+import { Heart, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import ButtonBack from "@/components/generics/ButtonBack";
+import ProductCard from "@/components/products/ProductCard";
 
 export default function FavoritosPage() {
   const { favoritos, limpiarFavoritos } = useFavoritos();

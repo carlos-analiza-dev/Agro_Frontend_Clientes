@@ -13,7 +13,6 @@ import { toast } from "react-toastify";
 import { Loader2, ShoppingCart } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
-import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import { useState } from "react";
 import ButtonBack from "@/components/generics/ButtonBack";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
@@ -27,8 +26,9 @@ const CarritoPage = () => {
   const router = useRouter();
   const { cliente } = useAuthStore();
   const [isErrorAuth, setIsErrorAuth] = useState("");
-  const clienteId = cliente?.id || "";
-  const moneda = cliente?.pais.simbolo_moneda ?? "$";
+  const paisStorage = localStorage.getItem("selectedCountry");
+  const pais = paisStorage ? JSON.parse(paisStorage) : null;
+  const moneda = pais?.simbolo_moneda as string;
   const isMobile = useMediaQuery("(max-width: 768px)");
   const {
     cart,
@@ -39,7 +39,6 @@ const CarritoPage = () => {
     totalItems,
     totalPrice,
   } = useCartStore();
-  const { data: fincas } = useFincasPropietarios(clienteId);
 
   const [ubicacionSeleccionada, setUbicacionSeleccionada] =
     useState<UbicacionPedido | null>(null);
@@ -70,7 +69,7 @@ const CarritoPage = () => {
   });
 
   const handleContinueShopping = () => {
-    router.push("/productos");
+    router.push("/productos-agroservicios");
   };
 
   const handleCheckout = (ubicacion: UbicacionPedido) => {
@@ -179,15 +178,19 @@ const CarritoPage = () => {
 
   if (cart.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-8 text-center">
+      <div className="container ">
         <ButtonBack isMobil={isMobile} />
-        <ShoppingCart className="h-24 w-24 text-gray-400 mx-auto mb-6" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          Tu carrito está vacío
-        </h2>
-        <p className="text-gray-600 mb-8">
-          Agrega algunos productos para comenzar a comprar
-        </p>
+        <div className="h-screen flex items-center justify-center mx-auto px-4 py-8 text-center">
+          <div>
+            <ShoppingCart className="h-24 w-24 text-gray-400 mx-auto mb-6" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Tu carrito está vacío
+            </h2>
+            <p className="text-gray-600 mb-8">
+              Agrega algunos productos para comenzar a comprar
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -239,7 +242,6 @@ const CarritoPage = () => {
             </CardHeader>
             <CardContent>
               <SeleccionUbicacion
-                fincas={fincas?.data.fincas || []}
                 onUbicacionSeleccionada={handleUbicacionSeleccionada}
                 cliente={cliente}
               />

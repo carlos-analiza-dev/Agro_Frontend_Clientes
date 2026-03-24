@@ -41,7 +41,13 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
       ?.filter((permiso) => permiso.ver === true)
       ?.map((permiso) => permiso.permiso.url) || [];
 
-  const allowedRoutes = ["/panel", "/not-found", "/unauthorized"];
+  const allowedRoutes = [
+    "/panel",
+    "/not-found",
+    "/unauthorized",
+    "/cart",
+    "/favoritos",
+  ];
 
   const navItemsConPermisos = navItems.flatMap((section) =>
     section.items.filter((item) => {
@@ -85,13 +91,16 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
           <Button
             onClick={() => router.push("/favoritos")}
             variant="ghost"
-            className="relative h-8 w-8 rounded-full"
+            className="relative h-8 w-8 sm:h-9 sm:w-9 rounded-full hover:bg-gray-100"
             title="Favoritos"
           >
-            {cantidadFavoritos > 0 ? (
-              <Heart className="text-red-500" fill="currentColor" />
-            ) : (
-              <Heart />
+            <Heart
+              className={`h-4 w-4 sm:h-5 sm:w-5 ${cantidadFavoritos > 0 ? "text-red-500 fill-current" : ""}`}
+            />
+            {cantidadFavoritos > 0 && (
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
+                {cantidadFavoritos > 9 ? "9+" : cantidadFavoritos}
+              </span>
             )}
           </Button>
         )}

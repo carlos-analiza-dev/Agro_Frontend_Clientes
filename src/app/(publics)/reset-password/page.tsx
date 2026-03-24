@@ -194,7 +194,7 @@ const ResetPasswordPage = () => {
               Registrate
             </Link>
 
-            <Link href="/" className="text-green-600 hover:underline">
+            <Link href="/login" className="text-green-600 hover:underline">
               Iniciar Sesion
             </Link>
           </CardFooter>

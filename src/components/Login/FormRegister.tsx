@@ -128,7 +128,7 @@ const FormRegister = () => {
       setCodigoPais("");
       setPrefijoNumber("");
       setTimeout(() => {
-        router.push("/");
+        router.push("/login");
       }, 3000);
     },
     onError: (error) => {
@@ -432,7 +432,7 @@ const FormRegister = () => {
         </Link>
         <div className="flex items-center gap-4">
           <p>¿Ya tienes una cuenta?</p>
-          <Link href="/" className="text-green-600 hover:underline">
+          <Link href="/login" className="text-green-600 hover:underline">
             Iniciar Sesión
           </Link>
         </div>

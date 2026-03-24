@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MessageSquarePlus, CheckCircle } from "lucide-react";
+import { MessageSquarePlus, CheckCircle } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/providers/store/useAuthStore";
@@ -19,7 +19,6 @@ import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import ButtonBack from "@/components/generics/ButtonBack";
 import CardDetailsProducto from "@/components/products/CardDetailsProducto";
 import DetailsProducto from "@/components/products/DetailsProducto";
-import ProductosRelacionados from "@/components/products/ProductosRelacionados";
 import FormOpinionProducto from "@/components/products/FormOpinionProducto";
 import CardRatingResumen from "@/components/products/CardRatingResumen";
 import CardOpinionesProducto from "@/components/products/CardOpinionesProducto";
@@ -31,8 +30,11 @@ const ProductDetailsPage = () => {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const router = useRouter();
   const { cliente } = useAuthStore();
-  const moneda = cliente?.pais.simbolo_moneda ?? "$";
-  const paisId = cliente?.pais.id || "";
+  const paisStorage = localStorage.getItem("selectedCountry");
+  const pais = paisStorage ? JSON.parse(paisStorage) : null;
+  const paisId = pais?.id;
+  const moneda = pais?.simbolo_moneda as string;
+
   const limit = 5;
   const [offset, setOffset] = useState(0);
 
@@ -274,14 +276,6 @@ const ProductDetailsPage = () => {
               handleToggleFavorite={handleToggleFavorite}
             />
           </div>
-        </div>
-
-        <div className="mt-8 lg:mt-12">
-          <ProductosRelacionados
-            categoriaId={producto.categoria.id}
-            producto={producto.id}
-            tipo={producto.categoria.tipo}
-          />
         </div>
 
         <div className="mt-8 lg:mt-12 px-0 sm:px-2 lg:px-4 max-w-6xl mx-auto pb-8 lg:pb-10">

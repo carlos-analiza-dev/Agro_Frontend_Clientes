@@ -86,7 +86,6 @@ const GoogleMapsWrapper = ({
 
     if (!apiKey) {
       toast.error("Google Maps API key no encontrada");
-
       setLoadError(true);
       return;
     }
@@ -159,7 +158,7 @@ interface Finca {
 }
 
 interface SeleccionUbicacionProps {
-  fincas: Finca[];
+  fincas?: Finca[];
   onUbicacionSeleccionada: (ubicacion: {
     tipo: "finca" | "sucursal" | "otra";
     fincaId?: string;
@@ -174,15 +173,24 @@ interface SeleccionUbicacionProps {
 }
 
 const SeleccionUbicacion = ({
-  fincas,
+  fincas = [],
   onUbicacionSeleccionada,
   cliente,
 }: SeleccionUbicacionProps) => {
+  const hasFincas = fincas && fincas.length > 0;
+
+  const getInitialTipoUbicacion = (): "finca" | "sucursal" | "otra" => {
+    if (hasFincas) {
+      return "finca";
+    }
+    return "otra";
+  };
+
   const [tipoUbicacion, setTipoUbicacion] = useState<
     "finca" | "sucursal" | "otra"
-  >("finca");
+  >(getInitialTipoUbicacion());
   const [fincaSeleccionada, setFincaSeleccionada] = useState<string>(
-    fincas[0]?.id || ""
+    fincas[0]?.id || "",
   );
   const simbolo = cliente?.pais.simbolo_moneda;
   const [direccionPersonalizada, setDireccionPersonalizada] = useState("");
@@ -193,6 +201,12 @@ const SeleccionUbicacion = ({
   const [cargandoUbicacion, setCargandoUbicacion] = useState(false);
 
   const costoDelivery = cliente?.pais.simbolo_moneda === "$" ? 5.0 : 100.0;
+
+  useEffect(() => {
+    if (!hasFincas && tipoUbicacion === "finca") {
+      setTipoUbicacion("otra");
+    }
+  }, [hasFincas, tipoUbicacion]);
 
   const handleLocationSelect = (lat: number, lng: number) => {
     setLatitudPersonalizada(lat.toString());
@@ -213,7 +227,7 @@ const SeleccionUbicacion = ({
           if (status === "OK" && results && results[0]) {
             setDireccionPersonalizada(results[0].formatted_address);
           }
-        }
+        },
       );
     } catch (error) {
       toast.error("Ocurrio un error");
@@ -242,10 +256,10 @@ const SeleccionUbicacion = ({
             setDireccionPersonalizada(results[0].formatted_address);
           } else {
             toast.warning(
-              "No se pudo encontrar la dirección. Intenta con una descripción más específica."
+              "No se pudo encontrar la dirección. Intenta con una descripción más específica.",
             );
           }
-        }
+        },
       );
     } catch (error) {
       setBuscandoDireccion(false);
@@ -256,7 +270,6 @@ const SeleccionUbicacion = ({
   const obtenerUbicacionActual = () => {
     if (!navigator.geolocation) {
       toast.warn("La geolocalización no es compatible con este navegador");
-
       return;
     }
 
@@ -274,7 +287,7 @@ const SeleccionUbicacion = ({
       (error) => {
         setCargandoUbicacion(false);
         toast.warning("Error al obtener la ubicación: " + error.message);
-      }
+      },
     );
   };
 
@@ -363,17 +376,19 @@ const SeleccionUbicacion = ({
               setTipoUbicacion(value)
             }
           >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="finca" id="finca" />
-              <Label htmlFor="finca" className="flex items-center gap-2">
-                <Truck className="h-4 w-4" />
-                Enviar a una de mis fincas
-                <span className="text-orange-600 text-sm ml-2">
-                  +{simbolo}
-                  {costoDelivery.toFixed(2)} delivery
-                </span>
-              </Label>
-            </div>
+            {hasFincas && (
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="finca" id="finca" />
+                <Label htmlFor="finca" className="flex items-center gap-2">
+                  <Truck className="h-4 w-4" />
+                  Enviar a una de mis fincas
+                  <span className="text-orange-600 text-sm ml-2">
+                    +{simbolo}
+                    {costoDelivery.toFixed(2)} delivery
+                  </span>
+                </Label>
+              </div>
+            )}
 
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="sucursal" id="sucursal" />
@@ -398,7 +413,22 @@ const SeleccionUbicacion = ({
           </RadioGroup>
         </div>
 
-        {tipoUbicacion === "finca" && (
+        {!hasFincas && (
+          <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+            <div className="flex items-center gap-2 text-blue-800">
+              <MapPin className="h-4 w-4" />
+              <span className="text-sm font-medium">
+                No tienes fincas registradas
+              </span>
+            </div>
+            <p className="text-blue-600 text-xs mt-1">
+              Puedes agregar una finca en tu perfil para recibir envíos a tus
+              fincas registradas.
+            </p>
+          </div>
+        )}
+
+        {tipoUbicacion === "finca" && hasFincas && (
           <div className="space-y-3">
             <Label>Selecciona una finca para delivery</Label>
             <RadioGroup
@@ -576,7 +606,7 @@ const SeleccionUbicacion = ({
               </span>
             </div>
 
-            {tipoUbicacion === "finca" && fincaSeleccionada && (
+            {tipoUbicacion === "finca" && fincaSeleccionada && hasFincas && (
               <>
                 <div className="flex justify-between items-center mt-2">
                   <span className="font-medium">Finca:</span>

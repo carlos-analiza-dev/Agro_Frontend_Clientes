@@ -3,9 +3,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Cliente } from "@/interfaces/auth/cliente";
-import { Loader2, MapPin, Truck, Store, Info } from "lucide-react";
-import React from "react";
+import {
+  Loader2,
+  MapPin,
+  Truck,
+  Store,
+  Info,
+  AlertCircle,
+  LogIn,
+  UserPlus,
+} from "lucide-react";
 import { useCartStore } from "@/providers/store/useCartStore";
+import Link from "next/link";
 
 interface UbicacionPedido {
   tipo: "finca" | "sucursal" | "otra";
@@ -20,24 +29,26 @@ interface UbicacionPedido {
 
 interface Props {
   totalItems: () => number;
-  cliente: Cliente | undefined;
   totalPrice: () => number;
+  moneda: string;
   handleCheckout: (ubicacion: UbicacionPedido) => void;
   handleContinueShopping: () => void;
   isProcessing?: boolean;
   ubicacionSeleccionada?: UbicacionPedido | null;
   onSeleccionarUbicacion: () => void;
+  isErrorAuth: string;
 }
 
 const ResumenPedido = ({
   totalItems,
-  cliente,
   totalPrice,
+  moneda,
   handleCheckout,
   handleContinueShopping,
   isProcessing = false,
   ubicacionSeleccionada,
   onSeleccionarUbicacion,
+  isErrorAuth,
 }: Props) => {
   const { calcularImpuestos } = useCartStore();
   const impuestos = calcularImpuestos();
@@ -108,7 +119,7 @@ const ResumenPedido = ({
               {ubicacionSeleccionada.costoDelivery &&
                 ubicacionSeleccionada.costoDelivery > 0 && (
                   <div className="text-sm text-orange-600 font-medium">
-                    Delivery: +{cliente?.pais?.simbolo_moneda || "$"}
+                    Delivery: +{moneda || "$"}
                     {ubicacionSeleccionada.costoDelivery.toFixed(2)}
                   </div>
                 )}
@@ -126,7 +137,7 @@ const ResumenPedido = ({
           <div className="flex justify-between">
             <span className="text-gray-600">Subtotal:</span>
             <span className="font-semibold">
-              {cliente?.pais?.simbolo_moneda || "$"}
+              {moneda || "$"}
               {impuestos.sub_total.toFixed(2)}
             </span>
           </div>
@@ -135,7 +146,7 @@ const ResumenPedido = ({
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Exento:</span>
               <span className="text-green-600">
-                -{cliente?.pais?.simbolo_moneda || "$"}
+                -{moneda || "$"}
                 {impuestos.importe_exento.toFixed(2)}
               </span>
             </div>
@@ -145,7 +156,7 @@ const ResumenPedido = ({
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Exonerado:</span>
               <span className="text-green-600">
-                -{cliente?.pais?.simbolo_moneda || "$"}
+                -{moneda || "$"}
                 {impuestos.importe_exonerado.toFixed(2)}
               </span>
             </div>
@@ -155,7 +166,7 @@ const ResumenPedido = ({
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Base 15%:</span>
               <span>
-                {cliente?.pais?.simbolo_moneda || "$"}
+                {moneda || "$"}
                 {impuestos.importe_gravado_15.toFixed(2)}
               </span>
             </div>
@@ -165,7 +176,7 @@ const ResumenPedido = ({
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">ISV 15%:</span>
               <span className="text-red-600">
-                +{cliente?.pais?.simbolo_moneda || "$"}
+                +{moneda || "$"}
                 {impuestos.isv_15.toFixed(2)}
               </span>
             </div>
@@ -175,7 +186,7 @@ const ResumenPedido = ({
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Base 18%:</span>
               <span>
-                {cliente?.pais?.simbolo_moneda || "$"}
+                {moneda || "$"}
                 {impuestos.importe_gravado_18.toFixed(2)}
               </span>
             </div>
@@ -185,7 +196,7 @@ const ResumenPedido = ({
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">ISV 18%:</span>
               <span className="text-red-600">
-                +{cliente?.pais?.simbolo_moneda || "$"}
+                +{moneda || "$"}
                 {impuestos.isv_18.toFixed(2)}
               </span>
             </div>
@@ -195,7 +206,7 @@ const ResumenPedido = ({
             <div className="flex justify-between text-sm font-medium pt-1 border-t">
               <span className="text-gray-700">Total Impuestos:</span>
               <span className="text-red-600">
-                +{cliente?.pais?.simbolo_moneda || "$"}
+                +{moneda || "$"}
                 {impuestos.total_impuestos.toFixed(2)}
               </span>
             </div>
@@ -205,7 +216,7 @@ const ResumenPedido = ({
             <div className="flex justify-between">
               <span className="text-gray-600">Costo de delivery:</span>
               <span className="font-semibold text-orange-600">
-                +{cliente?.pais?.simbolo_moneda || "$"}
+                +{moneda || "$"}
                 {costoDelivery.toFixed(2)}
               </span>
             </div>
@@ -216,7 +227,7 @@ const ResumenPedido = ({
           <div className="flex justify-between text-lg font-bold">
             <span>Total:</span>
             <span className="text-green-600">
-              {cliente?.pais?.simbolo_moneda || "$"}
+              {moneda || "$"}
               {precioTotal.toFixed(2)}
             </span>
           </div>
@@ -246,6 +257,48 @@ const ResumenPedido = ({
             "Realizar Pedido"
           )}
         </Button>
+
+        {isErrorAuth && (
+          <div className="w-full max-w-md mx-auto animate-in fade-in duration-300 px-4 sm:px-0">
+            <div className="bg-red-50 border border-red-200 rounded-lg shadow-sm overflow-hidden">
+              <div className="p-4 sm:p-6">
+                <div className="text-center sm:text-left">
+                  <div className="flex justify-center sm:justify-start mb-3">
+                    <div className="bg-red-100 rounded-full p-3">
+                      <AlertCircle className="h-6 w-6 text-red-600" />
+                    </div>
+                  </div>
+
+                  <h3 className="text-base sm:text-sm font-semibold text-red-800 mb-2">
+                    Error de autenticación
+                  </h3>
+                  <p className="text-sm text-red-700 mb-4">
+                    {typeof isErrorAuth === "string"
+                      ? isErrorAuth
+                      : "Ha ocurrido un error al verificar tu sesión"}
+                  </p>
+                </div>
+
+                <div className="space-y-2 sm:space-y-0 sm:flex sm:gap-3">
+                  <Link
+                    href="/login"
+                    className="flex items-center justify-center gap-2 w-full rounded-md bg-red-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-red-700 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  >
+                    <LogIn className="h-4 w-4 flex-shrink-0" />
+                    <span>Iniciar Sesión</span>
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="flex items-center justify-center gap-2 w-full rounded-md border border-red-300 bg-white px-4 py-2.5 text-sm font-medium text-red-700 shadow-sm transition-all hover:bg-red-50 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  >
+                    <UserPlus className="h-4 w-4 flex-shrink-0" />
+                    <span>Registrarse</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <Button
           onClick={handleContinueShopping}

@@ -10,9 +10,14 @@ import { MessageError } from "@/components/generics/MessageError";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import SkeletonCard from "@/components/generics/SkeletonCard";
 import ProductCard from "@/components/products/ProductCard";
+import useGetProductosPublicosDisponibles from "@/hooks/productos/useGetProductosPublicosDisponibles";
 
 const ProductosPage = () => {
   const { cliente } = useAuthStore();
+  const paisStorage = localStorage.getItem("selectedCountry");
+  const pais = paisStorage ? JSON.parse(paisStorage) : null;
+  const paisId = pais?.id;
+
   const router = useRouter();
   const [tipoCategoria, setTipoCategoria] = useState("");
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -28,7 +33,7 @@ const ProductosPage = () => {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useGetProductosDisponibles(10, tipoCategoria);
+  } = useGetProductosPublicosDisponibles(10, tipoCategoria, paisId);
 
   const todosLosProductos = useMemo(() => {
     return productosData?.pages.flatMap((page) => page.productos) || [];
@@ -39,7 +44,7 @@ const ProductosPage = () => {
   }, [refetch]);
 
   const handleProductClick = (productoId: string) => {
-    router.push(`/productos/${productoId}`);
+    router.push(`/productos-agroservicios/${productoId}`);
   };
 
   useEffect(() => {
@@ -80,7 +85,7 @@ const ProductosPage = () => {
 
   if (isError) {
     return (
-      <div className="min-h-screen bg-background p-4">
+      <div className="min-h-screen max-w-7xl mx-auto bg-background p-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 p-5">
           <Button
             variant="outline"

@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Cliente } from "@/interfaces/auth/cliente";
 import { useCartStore } from "@/providers/store/useCartStore";
 import {
   AlertCircle,
@@ -27,7 +26,7 @@ import {
   Store,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { toast } from "react-toastify";
 
 interface Props {
@@ -41,7 +40,7 @@ interface Props {
   nombreSucursal: string;
   isAvailable: boolean;
   cantidadDisponible: number;
-  cliente: Cliente | undefined;
+  moneda: string;
   precio: string;
   handleDecrease: () => void;
   setQuantity: Dispatch<SetStateAction<number>>;
@@ -65,7 +64,7 @@ const DetailsProducto = ({
   nombreSucursal,
   isAvailable,
   cantidadDisponible,
-  cliente,
+  moneda,
   precio,
   handleDecrease,
   setQuantity,
@@ -241,7 +240,7 @@ const DetailsProducto = ({
 
       <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-3">
         <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-green-600">
-          {cliente?.pais?.simbolo_moneda || "$"}
+          {moneda || "$"}
           {precio}
         </span>
 
@@ -317,7 +316,7 @@ const DetailsProducto = ({
               {quantity} {quantity === 1 ? "producto" : "productos"}
             </span>
             <span className="text-xl sm:text-2xl font-bold text-green-600">
-              {cliente?.pais?.simbolo_moneda || "$"}
+              {moneda || "$"}
               {totalPrecio.toFixed(2)}
             </span>
           </div>

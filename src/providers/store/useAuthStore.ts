@@ -70,6 +70,16 @@ export const useAuthStore = create<AuthState>()(
 
       logout: async () => {
         set({
+          status: "checking",
+          token: undefined,
+          cliente: undefined,
+        });
+
+        localStorage.removeItem("auth-storage");
+
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        set({
           status: "unauthenticated",
           token: undefined,
           cliente: undefined,
@@ -89,6 +99,6 @@ export const useAuthStore = create<AuthState>()(
           state.hasHydrated = true;
         }
       },
-    }
-  )
+    },
+  ),
 );
