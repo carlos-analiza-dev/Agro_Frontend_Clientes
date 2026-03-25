@@ -36,7 +36,7 @@ const VerifyAccountPage = () => {
         );
 
         setTimeout(() => {
-          router.push("/");
+          router.push("/login");
         }, 5000);
       } catch (err: any) {
         setStatus("error");

@@ -29,7 +29,7 @@ const PublicNavBar = () => {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
-  const [isCountryModalOpen, setIsCountryModalOpen] = useState(false); // Estado separado para modal móvil
+  const [isCountryModalOpen, setIsCountryModalOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<any>(null);
   const [hasSelectedCountry, setHasSelectedCountry] = useState(false);
   const [previousCountryId, setPreviousCountryId] = useState<string | null>(
@@ -141,7 +141,7 @@ const PublicNavBar = () => {
         draggable: true,
       });
 
-      router.push("/productos-agroservicios");
+      window.location.reload();
       clearCart();
       limpiarFavoritos();
     } else if (

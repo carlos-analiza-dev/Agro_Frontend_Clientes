@@ -17,7 +17,7 @@ import EstadoBadge from "./EstadoBadge";
 import { useState } from "react";
 import Modal from "@/components/generics/Modal";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { EditarServicioReproductivo } from "@/api/reproduccion/accions/servicios/editar-servicio-reproductivo";
+import { EditarServicioReproductivoEstados } from "@/api/reproduccion/accions/servicios/editar-servicio-reproductivo";
 import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
 import {
@@ -25,10 +25,10 @@ import {
   TipoServicio,
 } from "@/interfaces/enums/servicios-reproductivos.enum";
 import { CreateServiciosReproductivo } from "@/api/reproduccion/interfaces/crear-servicio-reproductivo.interface";
-import CardTabEstado from "./CardTabEstado";
-import CardTabResultado from "./CardTabResultado";
 import FormServicioReproductivo from "./FormServicioReproductivo";
 import { Animal } from "@/api/animales/interfaces/response-animales.interface";
+import CardTabEstado from "./CardTabEstado";
+import CardTabResultado from "./CardTabResultado";
 
 interface Props {
   servicios: Servicio[];
@@ -48,7 +48,7 @@ const VistaTabla = ({ servicios, onVerDetalle, hembras, machos }: Props) => {
 
   const mutation = useMutation({
     mutationFn: (data: Partial<CreateServiciosReproductivo>) =>
-      EditarServicioReproductivo(selectedServicio?.id || "", data),
+      EditarServicioReproductivoEstados(selectedServicio?.id || "", data),
     onSuccess: () => {
       toast.success("Estado del servicio actualizado exitosamente");
       queryClient.invalidateQueries({ queryKey: ["servicios-reproductivos"] });

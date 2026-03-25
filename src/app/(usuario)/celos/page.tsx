@@ -120,7 +120,10 @@ const CelosAnimalPage = () => {
             Control de Celos
           </h1>
           <p className="text-sm md:text-base text-muted-foreground">
-            Gestiona y da seguimiento a los celos de tus animales
+            Registra y monitorea los celos de tus animales. Cada registro será
+            evaluado automáticamente para validar que el animal cumpla con la
+            edad mínima reproductiva de su especie antes de continuar con
+            procesos como monta o inseminación.
           </p>
         </div>
         <div className="flex w-full sm:w-auto gap-2">

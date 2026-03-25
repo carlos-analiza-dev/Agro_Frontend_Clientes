@@ -10,3 +10,13 @@ export const EditarServicioReproductivo = async (
   const response = await veterinariaAPI.patch(url, data);
   return response.data;
 };
+
+export const EditarServicioReproductivoEstados = async (
+  id: string,
+  data: Partial<CreateServiciosReproductivo>,
+) => {
+  let url = `${process.env.NEXT_PUBLIC_API_URL}/servicios-reproductivos/${id}/estado`;
+
+  const response = await veterinariaAPI.patch(url, data);
+  return response.data;
+};

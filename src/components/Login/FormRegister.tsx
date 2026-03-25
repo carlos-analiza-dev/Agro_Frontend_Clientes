@@ -110,7 +110,9 @@ const FormRegister = () => {
   const mutation = useMutation({
     mutationFn: CreateCliente,
     onSuccess: () => {
-      toast.success("Usuario creado correctamente");
+      toast.success(
+        "Usuario creado correctamente, revisa tu correo electronico para confirmar tu usuario",
+      );
       reset({
         email: "",
         password: "",

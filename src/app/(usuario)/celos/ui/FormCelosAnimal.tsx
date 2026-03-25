@@ -28,6 +28,7 @@ import { EditarCeloAnimal } from "@/api/reproduccion/accions/celos/editar-celo-a
 import { Animal } from "@/api/animales/interfaces/response-animales.interface";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircleIcon } from "lucide-react";
+import Image from "next/image";
 
 interface Props {
   celo?: Celo | null;
@@ -188,8 +189,8 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
             defaultValue={celo?.animal.id}
             disabled={isSubmitting}
           >
-            <SelectTrigger>
-              <SelectValue placeholder="Seleccionar vaca en celo" />
+            <SelectTrigger className="h-16">
+              <SelectValue placeholder="Seleccionar animal en celo" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
@@ -197,7 +198,21 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
                 {hembras && hembras.length > 0 ? (
                   hembras.map((animal) => (
                     <SelectItem key={animal.id} value={animal.id}>
-                      {animal.identificador}
+                      <div className="flex items-center gap-2">
+                        <Image
+                          src={
+                            animal.profileImages.length > 0
+                              ? animal.profileImages[0].url
+                              : "/images/Image-not-found.png"
+                          }
+                          alt={`animal-${animal.identificador}`}
+                          width={200}
+                          height={200}
+                          className="h-14 w-14 rounded-full"
+                          unoptimized
+                        />
+                        <p>{animal.identificador}</p>
+                      </div>
                     </SelectItem>
                   ))
                 ) : (

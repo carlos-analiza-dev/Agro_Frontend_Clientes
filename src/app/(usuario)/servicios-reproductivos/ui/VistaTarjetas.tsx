@@ -7,18 +7,27 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CalendarIcon, CheckCircle, XCircle } from "lucide-react";
-import React from "react";
 import EstadoBadge from "./EstadoBadge";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Servicio } from "@/api/reproduccion/interfaces/response-servicio-repoductivo.interface";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
+import { useRouter } from "next/navigation";
 
 interface Props {
   servicios: Servicio[];
 }
 
 const VistaTarjetas = ({ servicios }: Props) => {
+  const router = useRouter();
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
+  const handleClickEdit = (id: string) => {
+    if (isMobile) {
+      router.push(`/servicios-reproductivos/${id}`);
+    }
+  };
   return (
     <div className="space-y-3">
       {servicios.map((servicio) => (
@@ -89,10 +98,12 @@ const VistaTarjetas = ({ servicios }: Props) => {
             )}
           </CardContent>
           <CardFooter className="p-4 pt-2 flex justify-end gap-2">
-            <Button variant="ghost" size="sm">
-              Ver más
+            <Button onClick={() => handleClickEdit(servicio.id)} size="sm">
+              Estados
             </Button>
-            <Button size="sm">Editar</Button>
+            <Button onClick={() => handleClickEdit(servicio.id)} size="sm">
+              Editar
+            </Button>
           </CardFooter>
         </Card>
       ))}

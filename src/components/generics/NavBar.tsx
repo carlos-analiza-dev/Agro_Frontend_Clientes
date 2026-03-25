@@ -18,7 +18,6 @@ import { useAuthStore } from "@/providers/store/useAuthStore";
 import { navItems } from "@/helpers/data/sidebarData";
 import { useFavoritos } from "@/hooks/favoritos/useFavoritos";
 import { useCartStore } from "@/providers/store/useCartStore";
-import Link from "next/link";
 
 interface Props {
   setMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -31,8 +30,8 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
   const { totalItems } = useCartStore();
   const router = useRouter();
   const pathname = usePathname();
+
   const firstPath = `/${pathname.split("/")[1] || ""}`;
-  const firstPathWithSlash = `${process.env.NEXT_PUBLIC_APP_URL}/${firstPath}`;
 
   const cantidadCarrito = totalItems();
 
@@ -65,6 +64,12 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
 
   const tienePermisoCarrito = permisosVer.includes("/cart");
 
+  const handleNavigateToActivePage = () => {
+    if (firstPath && firstPath !== "/") {
+      router.replace(firstPath);
+    }
+  };
+
   return (
     <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6">
       <div className="flex items-center">
@@ -77,19 +82,19 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
           <Menu className="h-6 w-6" />
         </Button>
         {activePage && (
-          <Link
-            href={firstPathWithSlash}
-            className="ml-4 text-base md:text-lg font-medium text-gray-900"
+          <button
+            onClick={handleNavigateToActivePage}
+            className="ml-4 text-base md:text-lg font-medium text-gray-900 hover:text-green-600 transition-colors cursor-pointer"
           >
             {activePage}
-          </Link>
+          </button>
         )}
       </div>
 
       <div className="flex items-center space-x-4">
         {tienePermisoFavoritos && (
           <Button
-            onClick={() => router.push("/favoritos")}
+            onClick={() => router.replace("/favoritos")}
             variant="ghost"
             className="relative h-8 w-8 sm:h-9 sm:w-9 rounded-full hover:bg-gray-100"
             title="Favoritos"
@@ -107,9 +112,9 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
 
         {tienePermisoCarrito && (
           <Button
-            onClick={() => router.push("/cart")}
+            onClick={() => router.replace("/cart")}
             variant="ghost"
-            className="relative h-8 w-8 rounded-full"
+            className="relative h-8 w-8 rounded-full hover:bg-gray-100"
             title="Carrito"
           >
             {cantidadCarrito > 0 ? (

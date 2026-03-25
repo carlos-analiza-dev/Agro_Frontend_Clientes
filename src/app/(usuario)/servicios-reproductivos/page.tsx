@@ -23,14 +23,24 @@ import VistaTabla from "./ui/VistaTabla";
 import SkeletonTable from "@/components/generics/SkeletonTable";
 import Modal from "@/components/generics/Modal";
 import FormServicioReproductivo from "./ui/FormServicioReproductivo";
+import { useRouter } from "next/navigation";
 
 const ServiciosReproductivosPage = () => {
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id ?? "";
+  const router = useRouter();
   const [openModal, setOpenModal] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
   const isTablet = useMediaQuery("(min-width: 769px) and (max-width: 1024px)");
   const isDesktop = useMediaQuery("(min-width: 1025px)");
+
+  const handleClickAdd = () => {
+    if (isMobile) {
+      router.push("/servicios-reproductivos/crear-servicio-reproductivo");
+    } else {
+      setOpenModal(true);
+    }
+  };
 
   const { data: fincasData, isLoading: fincasLoading } =
     useFincasPropietarios(clienteId);
@@ -170,7 +180,7 @@ const ServiciosReproductivosPage = () => {
             )}
 
             <Button
-              onClick={() => setOpenModal(true)}
+              onClick={() => handleClickAdd()}
               className="flex-1 sm:flex-none"
             >
               <Plus className="h-4 w-4 mr-2" />

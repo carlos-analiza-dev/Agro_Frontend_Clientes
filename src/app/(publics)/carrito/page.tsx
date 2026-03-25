@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 import { Loader2, ShoppingCart } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ButtonBack from "@/components/generics/ButtonBack";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import ResumenPedido, {
@@ -30,6 +30,15 @@ const CarritoPage = () => {
   const pais = paisStorage ? JSON.parse(paisStorage) : null;
   const moneda = pais?.simbolo_moneda as string;
   const isMobile = useMediaQuery("(max-width: 768px)");
+
+  const paisId = pais?.id;
+
+  useEffect(() => {
+    if (!paisId) {
+      router.push("/not-selected-country");
+    }
+  }, [paisId, router]);
+
   const {
     cart,
     removeFromCart,

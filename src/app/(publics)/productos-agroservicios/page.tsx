@@ -1,6 +1,4 @@
 "use client";
-
-import useGetProductosDisponibles from "@/hooks/productos/useGetProductosDisponibles";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -22,6 +20,12 @@ const ProductosPage = () => {
   const [tipoCategoria, setTipoCategoria] = useState("");
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!paisId) {
+      router.push("/not-selected-country");
+    }
+  }, [paisId, router]);
 
   const isMobile = useMediaQuery("(max-width: 768px)");
 

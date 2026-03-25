@@ -301,6 +301,16 @@ const TableCelos = ({
               {celo.metodo_deteccion}
             </Badge>
           </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setSelectedCelo(celo);
+              setDetalleOpen(true);
+            }}
+          >
+            <Eye className="h-4 w-4" />
+          </Button>
         </div>
       ))}
     </div>

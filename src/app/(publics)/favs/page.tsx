@@ -5,10 +5,21 @@ import { useFavoritos } from "@/hooks/favoritos/useFavoritos";
 import { Heart, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ProductCard from "@/components/products/ProductCard";
+import { useEffect } from "react";
 
 export default function FavoritosPage() {
   const { favoritos, limpiarFavoritos } = useFavoritos();
   const router = useRouter();
+
+  const paisStorage = localStorage.getItem("selectedCountry");
+  const pais = paisStorage ? JSON.parse(paisStorage) : null;
+  const paisId = pais?.id;
+
+  useEffect(() => {
+    if (!paisId) {
+      router.push("/not-selected-country");
+    }
+  }, [paisId, router]);
 
   const tieneFavoritos = favoritos.length > 0;
 
