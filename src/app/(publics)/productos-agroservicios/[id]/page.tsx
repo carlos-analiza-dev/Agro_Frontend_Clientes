@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { MessageSquarePlus, CheckCircle } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import useGetProductoById from "@/hooks/productos/useGetProductoById";
 import { MessageError } from "@/components/generics/MessageError";
@@ -28,7 +28,6 @@ const ProductDetailsPage = () => {
   const { id: productoId } = useParams();
   const { esFavorito, toggleFavorito } = useFavoritos();
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const router = useRouter();
   const { cliente } = useAuthStore();
   const paisStorage = localStorage.getItem("selectedCountry");
   const pais = paisStorage ? JSON.parse(paisStorage) : null;

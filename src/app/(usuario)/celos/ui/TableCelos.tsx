@@ -333,7 +333,8 @@ const TableCelos = ({
         onOpenChange={setDetalleOpen}
         title="Detalles del Celo"
         description="Información completa del registro de celo"
-        size={isMobile ? "full" : "lg"}
+        size={isMobile ? "full" : "xl"}
+        height="md"
         className={isMobile ? "p-4" : ""}
       >
         {selectedCelo && <DetailsCelo selectedCelo={selectedCelo} />}

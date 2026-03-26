@@ -21,6 +21,7 @@ const Footer = () => {
     { name: "Términos y Condiciones", href: "/terminos" },
     { name: "Política de Privacidad", href: "/privacidad" },
     { name: "Preguntas Frecuentes", href: "/faq" },
+    { name: "Contacto", href: "/contacto" },
   ];
 
   const socialLinks = [

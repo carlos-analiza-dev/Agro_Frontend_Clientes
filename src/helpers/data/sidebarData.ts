@@ -72,7 +72,7 @@ export const navItems = [
         icon: FlaskConical,
       },
       { name: "Gestaciones", href: "/gestaciones", icon: Layers3 },
-      { name: "Partos", href: "/partos", icon: BriefcaseMedical },
+      { name: "Partos", href: "/partos-animales", icon: BriefcaseMedical },
       { name: "Genética", href: "/genetica", icon: GitBranch },
     ],
   },
