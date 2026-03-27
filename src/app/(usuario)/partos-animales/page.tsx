@@ -42,6 +42,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Parto } from "@/api/reproduccion/interfaces/response-partos.interface";
 
 const PartosAnimalesPage = () => {
   const { cliente } = useAuthStore();
@@ -50,7 +51,13 @@ const PartosAnimalesPage = () => {
   const [openModal, setOpenModal] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
-
+  const [selectedParto, setSelectedParto] = useState<Parto | undefined>(
+    undefined,
+  );
+  const handleEdit = (parto: Parto) => {
+    setSelectedParto(parto);
+    setOpenModal(true);
+  };
   const [filtros, setFiltros] = useState({
     finca_id: "",
     hembra_id: "",
@@ -70,7 +77,9 @@ const PartosAnimalesPage = () => {
     (item: Finca) => item.id === filtros.finca_id,
   );
 
-  const hembras = animales?.data?.filter((a) => a.sexo === "Hembra");
+  const hembras = animales?.data?.filter(
+    (a) => a.sexo === "Hembra" && a.finca.id === filtros.finca_id,
+  );
 
   const compararFechas = (
     fechaParto: string,
@@ -161,7 +170,16 @@ const PartosAnimalesPage = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleCloseModal = () => {
+    setOpenModal(false);
+
+    setTimeout(() => {
+      setSelectedParto(undefined);
+    }, 300);
+  };
+
   const handleClickNewRegister = () => {
+    setSelectedParto(undefined);
     if (isMobile) {
       router.push("/partos-animales/crear-parto");
     } else {
@@ -385,7 +403,6 @@ const PartosAnimalesPage = () => {
           Nuevo Registro
         </Button>
       </div>
-
       {!isMobile ? (
         <Card>
           <CardHeader className="pb-3">
@@ -636,7 +653,6 @@ const PartosAnimalesPage = () => {
           </Sheet>
         </>
       )}
-
       <Card>
         <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3">
           <CardTitle>Historial de Partos</CardTitle>
@@ -661,7 +677,7 @@ const PartosAnimalesPage = () => {
                 partosFiltrados={partosPaginaActual}
                 isLoading={isLoading}
                 handleRefresh={handleRefresh}
-                isMobile={isMobile}
+                handleEdit={handleEdit}
               />
             )}
           </div>
@@ -684,17 +700,34 @@ const PartosAnimalesPage = () => {
           )}
         </CardContent>
       </Card>
-
       <Modal
         open={openModal}
-        onOpenChange={setOpenModal}
-        title="Agregar Nuevo Parto"
-        description="Aquí podrás ingresar el parto de tu animal"
-        size="xl"
+        onOpenChange={(open) => {
+          if (!open) {
+            handleCloseModal();
+          } else {
+            setOpenModal(open);
+          }
+        }}
+        title={selectedParto ? "Editar Parto" : "Agregar Nuevo Parto"}
+        description={
+          selectedParto
+            ? "Aquí podrás editar la información del parto"
+            : "Aquí podrás ingresar el parto de tu animal"
+        }
+        size="2xl"
         height="xl"
       >
-        <FormPartoAnimal />
+        <FormPartoAnimal
+          hembras={hembras}
+          setOpenModal={handleCloseModal}
+          parto={selectedParto}
+          onSuccess={() => {
+            handleRefresh();
+          }}
+        />
       </Modal>
+      s
     </div>
   );
 };

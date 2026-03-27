@@ -1,3 +1,9 @@
+import {
+  EstadoParto,
+  SexoCria,
+  TipoParto,
+} from "@/interfaces/enums/partos.enums";
+
 export interface ResposnePartosInterface {
   data: Parto[];
   total: number;
@@ -10,8 +16,8 @@ export interface Parto {
   id: string;
   fecha_parto: string;
   numero_parto: number;
-  tipo_parto: string;
-  estado: string;
+  tipo_parto: TipoParto;
+  estado: EstadoParto;
   numero_crias: number;
   numero_crias_vivas: number;
   numero_crias_muertas: number;
@@ -30,7 +36,7 @@ export interface Parto {
 
 export interface Cria {
   peso: number;
-  sexo: string;
+  sexo: SexoCria;
   estado: string;
   identificador: string;
   observaciones: string;

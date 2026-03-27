@@ -17,9 +17,10 @@ import { useRouter } from "next/navigation";
 
 interface Props {
   servicios: Servicio[];
+  handleOpenModal: (servicio: Servicio) => void;
 }
 
-const VistaTarjetas = ({ servicios }: Props) => {
+const VistaTarjetas = ({ servicios, handleOpenModal }: Props) => {
   const router = useRouter();
   const isMobile = useMediaQuery("(max-width: 768px)");
 
@@ -32,6 +33,18 @@ const VistaTarjetas = ({ servicios }: Props) => {
     <div className="space-y-3">
       {servicios.map((servicio) => (
         <Card key={servicio.id} className="overflow-hidden">
+          <div className="flex justify-between items-center mt-3 px-4">
+            <EstadoBadge estado={servicio.estado} />
+            {servicio.exitoso ? (
+              <Badge className="bg-green-100 text-green-800 border-0">
+                Exitoso
+              </Badge>
+            ) : (
+              <Badge variant="outline" className="text-gray-500">
+                No exitoso
+              </Badge>
+            )}
+          </div>
           <CardHeader className="p-4 pb-2">
             <div className="flex justify-between items-start">
               <div>
@@ -48,7 +61,6 @@ const VistaTarjetas = ({ servicios }: Props) => {
                   {servicio.tipo_servicio.replace(/_/g, " ")}
                 </CardDescription>
               </div>
-              <EstadoBadge estado={servicio.estado} />
             </div>
           </CardHeader>
           <CardContent className="p-4 pt-2 pb-2">
@@ -98,7 +110,7 @@ const VistaTarjetas = ({ servicios }: Props) => {
             )}
           </CardContent>
           <CardFooter className="p-4 pt-2 flex justify-end gap-2">
-            <Button onClick={() => handleClickEdit(servicio.id)} size="sm">
+            <Button onClick={() => handleOpenModal(servicio)} size="sm">
               Estados
             </Button>
             <Button onClick={() => handleClickEdit(servicio.id)} size="sm">

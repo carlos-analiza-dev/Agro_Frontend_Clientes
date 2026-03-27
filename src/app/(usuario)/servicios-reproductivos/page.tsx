@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import useGetServicioReproductivo from "@/hooks/reproduccion/useGetServicioReproductivo";
 import useGetAnimalesPropietario from "@/hooks/animales/useGetAnimalesPropietario";
@@ -24,6 +24,15 @@ import SkeletonTable from "@/components/generics/SkeletonTable";
 import Modal from "@/components/generics/Modal";
 import FormServicioReproductivo from "./ui/FormServicioReproductivo";
 import { useRouter } from "next/navigation";
+import CardTabEstado from "./ui/CardTabEstado";
+import CardTabResultado from "./ui/CardTabResultado";
+import { Servicio } from "@/api/reproduccion/interfaces/response-servicio-repoductivo.interface";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { CreateServiciosReproductivo } from "@/api/reproduccion/interfaces/crear-servicio-reproductivo.interface";
+import { EditarServicioReproductivoEstados } from "@/api/reproduccion/accions/servicios/editar-servicio-reproductivo";
+import { toast } from "react-toastify";
+import { isAxiosError } from "axios";
+import { EstadoServicio } from "@/interfaces/enums/servicios-reproductivos.enum";
 
 const ServiciosReproductivosPage = () => {
   const { cliente } = useAuthStore();
@@ -33,6 +42,99 @@ const ServiciosReproductivosPage = () => {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const isTablet = useMediaQuery("(min-width: 769px) and (max-width: 1024px)");
   const isDesktop = useMediaQuery("(min-width: 1025px)");
+  const [selectedServicio, setSelectedServicio] = useState<Servicio | null>(
+    null,
+  );
+  const [openModalStatus, setOpenModalStatus] = useState(false);
+  const queryClient = useQueryClient();
+
+  const [selectedEstado, setSelectedEstado] = useState<string>("");
+
+  const mutation = useMutation({
+    mutationFn: (data: Partial<CreateServiciosReproductivo>) =>
+      EditarServicioReproductivoEstados(selectedServicio?.id || "", data),
+    onSuccess: () => {
+      toast.success("Estado del servicio actualizado exitosamente");
+      queryClient.invalidateQueries({ queryKey: ["servicios-reproductivos"] });
+      setOpenModalStatus(false);
+      setSelectedServicio(null);
+      setSelectedEstado("");
+    },
+    onError: (error) => {
+      if (isAxiosError(error)) {
+        const messages = error.response?.data?.message;
+        const errorMessage = Array.isArray(messages)
+          ? messages[0]
+          : typeof messages === "string"
+            ? messages
+            : "Hubo un error al actualizar el estado";
+
+        toast.error(errorMessage);
+      } else {
+        toast.error("Error inesperado. Contacte al administrador");
+      }
+    },
+  });
+
+  const handleOpenModal = (servicio: Servicio) => {
+    setSelectedServicio(servicio);
+    setSelectedEstado(servicio.estado);
+    setOpenModalStatus(true);
+  };
+
+  const handleEstadoChange = (estadoValue: string, checked: boolean) => {
+    if (checked) {
+      setSelectedEstado(estadoValue);
+    }
+  };
+
+  const handleActualizarEstado = () => {
+    if (!selectedServicio || !selectedEstado) return;
+
+    if (selectedServicio.exitoso) {
+      toast.warn(
+        "Este servicio ya fue marcado como exitoso y su estado no puede modificarse",
+      );
+      return;
+    }
+
+    mutation.mutate({
+      estado: selectedEstado as any,
+    });
+  };
+
+  const handleExitosoChange = (checked: boolean) => {
+    if (!selectedServicio) return;
+
+    if (checked && selectedServicio.estado === EstadoServicio.FALLIDO) {
+      toast.warning(
+        "No se puede marcar como exitoso un servicio que está en estado FALLIDO",
+      );
+      return;
+    }
+
+    if (checked && selectedServicio.estado === EstadoServicio.CANCELADO) {
+      toast.warning(
+        "No se puede marcar como exitoso un servicio que está en estado CANCELADO",
+      );
+      return;
+    }
+
+    if (
+      checked &&
+      selectedServicio.estado !== EstadoServicio.REALIZADO &&
+      selectedServicio.estado === EstadoServicio.PROGRAMADO
+    ) {
+      toast.info(
+        "Para marcar como exitoso, primero cambia el estado a REALIZADO",
+      );
+      return;
+    }
+
+    mutation.mutate({
+      exitoso: checked,
+    });
+  };
 
   const handleClickAdd = () => {
     if (isMobile) {
@@ -109,28 +211,59 @@ const ServiciosReproductivosPage = () => {
     if (servicios.length === 0) return null;
 
     if (isMobile) {
-      return <VistaTarjetas servicios={servicios} />;
+      return (
+        <VistaTarjetas
+          servicios={servicios}
+          handleOpenModal={handleOpenModal}
+        />
+      );
     }
 
     if (isTablet) {
       if (vista === "tabla") {
         return (
-          <VistaTabla servicios={servicios} hembras={hembras} machos={machos} />
+          <VistaTabla
+            servicios={servicios}
+            hembras={hembras}
+            machos={machos}
+            setSelectedServicio={setSelectedServicio}
+            selectedServicio={selectedServicio}
+            handleOpenModal={handleOpenModal}
+          />
         );
       }
-      return <VistaTarjetas servicios={servicios} />;
+      return (
+        <VistaTarjetas
+          servicios={servicios}
+          handleOpenModal={handleOpenModal}
+        />
+      );
     }
 
     if (isDesktop) {
       if (vista === "tabla") {
         return (
-          <VistaTabla servicios={servicios} hembras={hembras} machos={machos} />
+          <VistaTabla
+            servicios={servicios}
+            hembras={hembras}
+            machos={machos}
+            setSelectedServicio={setSelectedServicio}
+            selectedServicio={selectedServicio}
+            handleOpenModal={handleOpenModal}
+          />
         );
       }
-      return <VistaTarjetas servicios={servicios} />;
+      return (
+        <VistaTarjetas
+          servicios={servicios}
+          handleOpenModal={handleOpenModal}
+        />
+      );
     }
 
-    return <VistaTarjetas servicios={servicios} />;
+    return (
+      <VistaTarjetas servicios={servicios} handleOpenModal={handleOpenModal} />
+    );
   };
 
   return (
@@ -139,20 +272,15 @@ const ServiciosReproductivosPage = () => {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-              Servicios Reproductivos
+              Servicios Reproductivos -{" "}
+              {fincaSeleccionada && fincaSeleccionada.nombre_finca}
             </h1>
-            <p className="text-sm md:text-base text-muted-foreground">
-              {fincaSeleccionada ? (
-                <>
-                  Gestiona los servicios en{" "}
-                  <span className="font-medium">
-                    {fincaSeleccionada.nombre_finca}
-                  </span>
-                </>
-              ) : (
-                "Gestiona los servicios de monta e inseminación"
-              )}
-            </p>
+            <h2 className="text-sm md:text-base max-w-3xl text-muted-foreground">
+              Registra y monitorea los servicios reproductivos de tus animales.
+              Cada registro será evaluado automáticamente para validar que el
+              animal cumpla con la edad mínima reproductiva de su especie antes
+              de continuar con el proceso.
+            </h2>
           </div>
 
           <div className="flex w-full sm:w-auto gap-2">
@@ -294,6 +422,7 @@ const ServiciosReproductivosPage = () => {
         title="Agregar Nuevo Servicio Reproductivo"
         description="Aqui podras agregar servicios reproductivos para tus animales"
         size="xl"
+        height="lg"
       >
         <FormServicioReproductivo
           setOpenModal={setOpenModal}
@@ -301,6 +430,40 @@ const ServiciosReproductivosPage = () => {
           hembras={hembras}
           machos={machos}
         />
+      </Modal>
+
+      <Modal
+        title="Acciones del Servicio"
+        description="Aquí ejecutarás acciones sobre tu servicio reproductivo"
+        open={openModalStatus}
+        onOpenChange={setOpenModalStatus}
+        size="2xl"
+      >
+        <Tabs defaultValue="estado">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="estado">Estado del Servicio</TabsTrigger>
+            <TabsTrigger value="resultado">Resultado</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="estado">
+            <CardTabEstado
+              selectedEstado={selectedEstado}
+              handleEstadoChange={handleEstadoChange}
+              setOpenModal={setOpenModalStatus}
+              handleActualizarEstado={handleActualizarEstado}
+              isPending={mutation.isPending}
+            />
+          </TabsContent>
+
+          <TabsContent value="resultado">
+            <CardTabResultado
+              setOpenModal={setOpenModalStatus}
+              selectedServicio={selectedServicio}
+              isPending={mutation.isPending}
+              handleExitosoChange={handleExitosoChange}
+            />
+          </TabsContent>
+        </Tabs>
       </Modal>
     </TooltipProvider>
   );

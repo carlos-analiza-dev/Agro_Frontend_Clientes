@@ -119,12 +119,12 @@ const CelosAnimalPage = () => {
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
             Control de Celos
           </h1>
-          <p className="text-sm md:text-base max-w-3xl text-muted-foreground">
+          <h2 className="text-sm md:text-base max-w-3xl text-muted-foreground">
             Registra y monitorea los celos de tus animales. Cada registro será
             evaluado automáticamente para validar que el animal cumpla con la
             edad mínima reproductiva de su especie antes de continuar con
             procesos como monta o inseminación.
-          </p>
+          </h2>
         </div>
         <div className="flex w-full sm:w-auto gap-2">
           <Button
@@ -228,6 +228,7 @@ const CelosAnimalPage = () => {
           title="Agregar Nuevo Celo"
           description="Aquí podrás agregar el período de celo de tus vacas"
           size="xl"
+          height="lg"
         >
           <FormCelosAnimal
             setOpenModal={setOpenModal}

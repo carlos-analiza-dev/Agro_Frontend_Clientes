@@ -1,6 +1,7 @@
 import { Parto } from "@/api/reproduccion/interfaces/response-partos.interface";
 import { MessageError } from "@/components/generics/MessageError";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getEstadoBadge } from "@/helpers/funciones/obtenerEstadoParto";
 import { getTipoPartoLabel } from "@/helpers/funciones/tipoParto";
@@ -15,6 +16,7 @@ import {
   Syringe,
   User,
 } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 interface Props {
@@ -170,6 +172,11 @@ const CardMobile = ({ partosFiltrados, isLoading, handleRefresh }: Props) => {
                   )}
                 </div>
               )}
+              <div className="mt-3 flex justify-end">
+                <Link href={`/partos-animales/${parto.id}`}>
+                  <Button variant={"ghost"}>Editar</Button>
+                </Link>
+              </div>
             </CardContent>
           </Card>
         );
