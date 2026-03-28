@@ -15,6 +15,8 @@ import {
   User,
   HelpCircle,
 } from "lucide-react";
+import { CrearContactoNotificacion } from "@/api/notificaciones/accions/crear-contacto";
+import { NotificationType } from "@/interfaces/enums/notificaciones.enum";
 
 export default function ContactoClient() {
   const [formData, setFormData] = useState({
@@ -66,7 +68,36 @@ export default function ContactoClient() {
 
     setIsSubmitting(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const buildTitle = () => {
+      const partes = [
+        `${formData.nombre} quiere contactarse contigo`,
+        `Correo: ${formData.email}`,
+      ];
+
+      if (formData.telefono?.trim()) {
+        partes.push(`Tel: ${formData.telefono}`);
+      }
+
+      return partes.join(" | ");
+    };
+
+    const buildMessage = () => {
+      const partes = [];
+
+      if (formData.asunto?.trim()) {
+        partes.push(`Asunto: ${formData.asunto}`);
+      }
+
+      partes.push(`Mensaje: ${formData.mensaje}`);
+
+      return partes.join("\n");
+    };
+
+    await CrearContactoNotificacion({
+      type: NotificationType.NEW_CONTAC,
+      title: buildTitle(),
+      message: buildMessage(),
+    });
     setIsSubmitting(false);
     setIsSubmitted(true);
     setFormData({
