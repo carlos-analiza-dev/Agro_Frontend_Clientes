@@ -105,7 +105,7 @@ const LoginForm = () => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">Nueva Contraseña</Label>
+        <Label htmlFor="password">Contraseña</Label>
         <div className="relative">
           <Input
             id="password"

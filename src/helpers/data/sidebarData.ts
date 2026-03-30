@@ -2,6 +2,7 @@ import {
   BriefcaseMedical,
   Building2,
   ChartColumnIncreasing,
+  DollarSign,
   FileText,
   FlaskConical,
   GitBranch,
@@ -15,7 +16,9 @@ import {
   Pill,
   ShoppingBag,
   Stethoscope,
+  TrendingUp,
   UserCog,
+  Wallet,
 } from "lucide-react";
 
 export const navItems = [
@@ -53,7 +56,14 @@ export const navItems = [
       { name: "Cancelados", href: "/pedidos-cancelados", icon: PackageXIcon },
     ],
   },
-
+  {
+    category: "Finanzas",
+    items: [
+      { name: "Gastos", href: "/gastos", icon: Wallet },
+      { name: "Ingresos", href: "/ingresos", icon: DollarSign },
+      { name: "Rentabilidad", href: "/rentabilidad", icon: TrendingUp },
+    ],
+  },
   {
     category: "Salud Animal",
     items: [
