@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -23,6 +21,7 @@ import { CategoriaGasto, MetodoPago } from "@/interfaces/enums/gastos.enums";
 import { Finca } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
 import type { FiltrosGastos } from "@/interfaces/filtros/filtros-gastos";
 import { Especie } from "@/api/reproduccion/interfaces/response-celos-animal,interface";
+import { CategoriaIngreso } from "@/interfaces/enums/ingresos.enums";
 
 interface FiltrosGastosProps {
   filtros: FiltrosGastos;
@@ -30,6 +29,7 @@ interface FiltrosGastosProps {
   fincas: Finca[];
   especies: Especie[];
   onClose?: () => void;
+  isGasto: boolean;
 }
 
 const formatLocalDate = (date: Date): string => {
@@ -44,12 +44,13 @@ const parseLocalDate = (dateString: string): Date => {
   return new Date(year, month - 1, day);
 };
 
-export function FiltrosGastos({
+export function FiltrosGastosIngresos({
   filtros,
   setFiltros,
   fincas,
   especies,
   onClose,
+  isGasto = true,
 }: FiltrosGastosProps) {
   const limpiarFiltros = () => {
     setFiltros({
@@ -63,6 +64,8 @@ export function FiltrosGastos({
       limit: 10,
     });
   };
+
+  const categoriasEnum = isGasto ? CategoriaGasto : CategoriaIngreso;
 
   const contarFiltrosActivos = () => {
     let count = 0;
@@ -167,7 +170,7 @@ export function FiltrosGastos({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="todos">Todas las categorías</SelectItem>
-              {Object.values(CategoriaGasto).map((cat) => (
+              {Object.values(categoriasEnum).map((cat) => (
                 <SelectItem key={cat} value={cat}>
                   {cat.replace(/_/g, " ")}
                 </SelectItem>

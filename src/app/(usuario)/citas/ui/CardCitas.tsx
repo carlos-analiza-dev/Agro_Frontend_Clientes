@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { Cita } from "@/api/citas/interfaces/response-citas-user.interface";
 import { Calendar, Clock, MapPin, PawPrint, User } from "lucide-react";
-import { formatDate } from "@/helpers/funciones/formatDate";
 
 interface Props {
   item: Cita;
@@ -19,6 +18,29 @@ interface Props {
 const CardCitas = ({ item, onPress }: Props) => {
   const { cliente } = useAuthStore();
   const pais = cliente?.pais;
+
+  const formatDate = (date: any): string => {
+    if (!date) return "N/A";
+
+    const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+
+    if (typeof date === "string") {
+      const [year, month, day] = date.split("-").map(Number);
+      const dateObj = new Date(year, month - 1, day);
+
+      return dateObj.toLocaleDateString("es-ES", options);
+    }
+
+    if (date instanceof Date) {
+      return date.toLocaleDateString("es-ES", options);
+    }
+
+    return "N/A";
+  };
 
   const getStatusColor = () => {
     switch (item.estado.toLowerCase()) {

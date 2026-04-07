@@ -77,6 +77,7 @@ const CrearCitaPage = () => {
 
   useEffect(() => {
     const animalesIds = watch("animalesId") || [];
+
     setCantidadAnimales(animalesIds.length);
   }, [watch("animalesId")]);
 
@@ -255,6 +256,7 @@ const CrearCitaPage = () => {
 
   const mutation = useMutation({
     mutationFn: CreateCita,
+
     onSuccess: () => {
       toast.success("Cita agendada exitosamente");
       queryClient.invalidateQueries({ queryKey: ["citas-user"] });
@@ -278,7 +280,11 @@ const CrearCitaPage = () => {
   });
 
   const onSubmit = (data: CrearCitaInterface) => {
-    mutation.mutate({ ...data, clienteId: userId });
+    mutation.mutate({
+      ...data,
+      clienteId: userId,
+      cantidadAnimales: cantidadAnimales,
+    });
   };
 
   const getMinDate = () => {

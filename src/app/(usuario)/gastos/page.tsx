@@ -18,13 +18,13 @@ import {
 import Paginacion from "@/components/generics/Paginacion";
 import { FiltrosGastos as FiltrosGastosType } from "@/interfaces/filtros/filtros-gastos";
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
-import { FiltrosGastos } from "./ui/FiltrosGastos";
 import { CardGastosMobile } from "./ui/CardGastosMobile";
 import { TablaGastos } from "./ui/TablaGastos";
 import { useRouter } from "next/navigation";
 import Modal from "@/components/generics/Modal";
 import FormGastos from "./ui/FormGastos";
 import { Gastos } from "@/api/finanzas/gastos/interface/gastos-response.interface";
+import { FiltrosGastosIngresos } from "@/components/generics/FiltrosGastosIngresos";
 
 const GastosPage = () => {
   const { cliente } = useAuthStore();
@@ -144,12 +144,13 @@ const GastosPage = () => {
                   <SheetTitle>Filtros de búsqueda</SheetTitle>
                 </SheetHeader>
                 <div className="mt-4 overflow-y-auto h-full pb-20">
-                  <FiltrosGastos
+                  <FiltrosGastosIngresos
                     filtros={filtros}
                     setFiltros={setFiltros}
                     fincas={fincas?.data?.fincas || []}
                     especies={especies?.data || []}
                     onClose={() => setIsFilterOpen(false)}
+                    isGasto={true}
                   />
                 </div>
               </SheetContent>
@@ -178,11 +179,12 @@ const GastosPage = () => {
 
       {isFilterOpen && !isMobile && (
         <div className="bg-white rounded-xl border p-6 shadow-sm">
-          <FiltrosGastos
+          <FiltrosGastosIngresos
             filtros={filtros}
             setFiltros={setFiltros}
             fincas={fincas?.data?.fincas || []}
             especies={especies?.data || []}
+            isGasto={true}
           />
         </div>
       )}

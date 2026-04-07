@@ -91,20 +91,20 @@ const AgregarCitaServicioPage = () => {
   const { data: animales } = useGetAnimalesByFincaEspRaza(
     fincaId,
     especieId,
-    razaId
+    razaId,
   );
   const { data: servicios } = useGetSubServiciosByServicioId(categoriaId);
 
   const subServicioId = watch("subServicioId");
   const { data: medicos } = userGetMedicoByEspecialidadesByPais(
     paisId,
-    subServicioId
+    subServicioId,
   );
 
   const { data: servicios_pais_cantidad } = useGetSubServicioPaisCantidad(
     subServicioId,
     paisId,
-    cantidadAnimales
+    cantidadAnimales,
   );
 
   const medicoId = watch("medicoId");
@@ -113,7 +113,7 @@ const AgregarCitaServicioPage = () => {
   const { data: horas_disponibles } = useGetHorasMedicoByFecha(
     medicoId,
     fecha,
-    String(duracion)
+    String(duracion),
   );
 
   useEffect(() => {
@@ -147,7 +147,7 @@ const AgregarCitaServicioPage = () => {
     ) {
       if (servicios_pais_cantidad.data.id === subServicioId) {
         const precioPais = servicios_pais_cantidad.data.preciosPorPais.find(
-          (pp) => pp.pais.id === paisId
+          (pp) => pp.pais.id === paisId,
         );
 
         if (precioPais) {
@@ -174,12 +174,12 @@ const AgregarCitaServicioPage = () => {
             horasFiltradas.map((hora) => ({
               value: hora.horaInicio,
               label: `${hora.horaInicio} - ${hora.horaFin} (${Math.floor(
-                duracionTotal / 60
+                duracionTotal / 60,
               )}h ${duracionTotal % 60}hrs)`,
               horaInicio: hora.horaInicio,
               horaFin: hora.horaFin,
               duracionDisponible: hora.duracionDisponible,
-            }))
+            })),
           );
         } else {
           setValue("duracion", 0);
@@ -212,7 +212,7 @@ const AgregarCitaServicioPage = () => {
   const handleHoraChange = (horaInicioSeleccionada: string) => {
     const duracionServicio = watch("duracion") || 0;
     const horaSeleccionada = filteredHours.find(
-      (h) => h.horaInicio === horaInicioSeleccionada
+      (h) => h.horaInicio === horaInicioSeleccionada,
     );
 
     if (horaSeleccionada) {
@@ -236,7 +236,7 @@ const AgregarCitaServicioPage = () => {
         setValue("horaFin", horaFinFormateada);
       } else {
         toast.error(
-          "El rango completo no está disponible para esta hora de inicio"
+          "El rango completo no está disponible para esta hora de inicio",
         );
       }
     }
@@ -267,7 +267,11 @@ const AgregarCitaServicioPage = () => {
   });
 
   const onSubmit = (data: CrearCitaInterface) => {
-    mutation.mutate({ ...data, clienteId: clienteId });
+    mutation.mutate({
+      ...data,
+      clienteId: clienteId,
+      cantidadAnimales: cantidadAnimales,
+    });
   };
 
   const handleServicioChange = (value: string) => {

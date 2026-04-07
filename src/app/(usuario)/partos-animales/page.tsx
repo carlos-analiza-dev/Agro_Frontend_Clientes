@@ -727,7 +727,6 @@ const PartosAnimalesPage = () => {
           }}
         />
       </Modal>
-      s
     </div>
   );
 };

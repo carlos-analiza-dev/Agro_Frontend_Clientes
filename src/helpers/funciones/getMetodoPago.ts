@@ -1,4 +1,6 @@
-export const getMetodoPagoLabel = (metodo: string) => {
+import { MetodoPago } from "@/interfaces/enums/gastos.enums";
+
+export const getMetodoPagoLabel = (metodo: MetodoPago) => {
   const labels: Record<string, string> = {
     EFECTIVO: "Efectivo",
     TRANSFERENCIA: "Transferencia",

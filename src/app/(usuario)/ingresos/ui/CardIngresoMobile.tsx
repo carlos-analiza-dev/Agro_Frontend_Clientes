@@ -1,0 +1,123 @@
+"use client";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { CalendarIcon, DollarSign, Building2, PawPrint } from "lucide-react";
+import { getCategoriaIngresoColor } from "@/helpers/funciones/getCategoriaColor";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Ingreso } from "@/api/finanzas/ingresos/interface/response-ingresos.interface";
+
+interface CardIngresosMobileProps {
+  ingresos: Ingreso[];
+  isLoading: boolean;
+  moneda?: string;
+}
+
+export function CardIngresoMobile({
+  ingresos,
+  isLoading,
+  moneda = "L",
+}: CardIngresosMobileProps) {
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        {[...Array(3)].map((_, i) => (
+          <Card key={i} className="p-4">
+            <div className="animate-pulse space-y-3">
+              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  if (!ingresos || ingresos.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <div className="bg-gray-50 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+          <DollarSign className="h-10 w-10 text-gray-400" />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          No hay ingresos registrados
+        </h3>
+        <p className="text-gray-600">Comienza registrando tu primer ingreso</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {ingresos.map((ingreso) => (
+        <Card key={ingreso.id} className="overflow-hidden">
+          <CardContent className="p-4">
+            <div className="flex justify-between items-start mb-3">
+              <Badge className={getCategoriaIngresoColor(ingreso.categoria)}>
+                {ingreso.categoria.replace(/_/g, " ")}
+              </Badge>
+              <span className="text-sm text-gray-500 flex items-center gap-1">
+                <CalendarIcon className="h-3 w-3" />
+                {ingreso.fecha_ingreso}
+              </span>
+            </div>
+
+            <div className="mb-3">
+              <h3 className="font-semibold text-gray-900">
+                {ingreso.concepto}
+              </h3>
+              {ingreso.descripcion && (
+                <p className="text-sm text-gray-600 mt-1">
+                  {ingreso.descripcion}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2 text-sm border-t pt-3">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Monto:</span>
+                <span className="font-bold text-red-600">
+                  {moneda}{" "}
+                  {ingreso.monto.toLocaleString("es-HN", {
+                    minimumFractionDigits: 2,
+                  })}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-gray-600">Método de pago:</span>
+                <span>{ingreso.metodo_pago.replace(/_/g, " ")}</span>
+              </div>
+
+              {ingreso.fincaNombre && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600 flex items-center gap-1">
+                    <Building2 className="h-3 w-3" />
+                    Finca:
+                  </span>
+                  <span>{ingreso.fincaNombre}</span>
+                </div>
+              )}
+
+              {ingreso.especieNombre && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600 flex items-center gap-1">
+                    <PawPrint className="h-3 w-3" />
+                    Especie:
+                  </span>
+                  <span>{ingreso.especieNombre}</span>
+                </div>
+              )}
+            </div>
+          </CardContent>
+          <div className="flex justify-end mt-3 mb-3">
+            <Link href={`/ingresos/${ingreso.id}`}>
+              <Button variant={"ghost"}>Editar</Button>
+            </Link>
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+}

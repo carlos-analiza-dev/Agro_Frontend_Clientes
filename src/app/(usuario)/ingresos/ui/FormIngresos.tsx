@@ -18,23 +18,24 @@ import {
 } from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircleIcon } from "lucide-react";
-import { CrearGastoInterface } from "@/api/finanzas/gastos/interface/crear-gasto.interface";
-import { CategoriaGasto, MetodoPago } from "@/interfaces/enums/gastos.enums";
+import { MetodoPago } from "@/interfaces/enums/gastos.enums";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
 import { useAuthStore } from "@/providers/store/useAuthStore";
-import { Gastos } from "@/api/finanzas/gastos/interface/gastos-response.interface";
-import { AgregarNuevoGasto } from "@/api/finanzas/gastos/accions/agregar-gasto";
-import { EditarGasto } from "@/api/finanzas/gastos/accions/editar-gasto";
+import { Ingreso } from "@/api/finanzas/ingresos/interface/response-ingresos.interface";
+import { CategoriaIngreso } from "@/interfaces/enums/ingresos.enums";
+import { CrearIngresoInterface } from "@/api/finanzas/ingresos/interface/crear-ingreso.interface";
+import { EditarIngreso } from "@/api/finanzas/ingresos/accions/editar-ingreso";
+import { AgregarNuevoIngreso } from "@/api/finanzas/ingresos/accions/crear-ingreso";
 
 interface Props {
-  gasto?: Gastos | null;
+  ingreso?: Ingreso | null;
   setOpenModal: (open: boolean) => void;
   onSuccess?: () => void;
 }
 
-const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
+const FormIngresos = ({ ingreso, setOpenModal, onSuccess }: Props) => {
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id ?? "";
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -53,95 +54,95 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
     setValue,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<CrearGastoInterface>({
+  } = useForm<CrearIngresoInterface>({
     defaultValues: {
-      categoria: CategoriaGasto.ALIMENTACION,
+      categoria: CategoriaIngreso.SERVICIOS,
       fincaId: "",
       especieId: undefined,
       razaId: undefined,
       concepto: "",
       descripcion: "",
       monto: 0,
-      fecha_gasto: new Date().toISOString().split("T")[0],
+      fecha_ingreso: new Date().toISOString().split("T")[0],
       metodo_pago: MetodoPago.EFECTIVO,
       notas: "",
     },
   });
 
   const queryClient = useQueryClient();
-  const isEditing = !!gasto;
+  const isEditing = !!ingreso;
   const selectedCategoria = watch("categoria");
-  const isCompraAnimal = selectedCategoria === CategoriaGasto.COMPRA_ANIMAL;
+  const isVentaAnimal = selectedCategoria === CategoriaIngreso.VENTA_ANIMAL;
 
   useEffect(() => {
-    if (gasto) {
-      setValue("categoria", gasto.categoria || CategoriaGasto.ALIMENTACION);
-      setValue("fincaId", gasto.fincaId || "");
-      setValue("especieId", gasto.especieId || undefined);
-      setValue("razaId", gasto.razaId || undefined);
-      setValue("concepto", gasto.concepto || "");
-      setValue("descripcion", gasto.descripcion || "");
-      setValue("monto", gasto.monto || 0);
+    if (ingreso) {
+      setValue("categoria", ingreso.categoria || CategoriaIngreso.SERVICIOS);
+      setValue("fincaId", ingreso.fincaId || "");
+      setValue("especieId", ingreso.especieId || undefined);
+      setValue("razaId", ingreso.razaId || undefined);
+      setValue("concepto", ingreso.concepto || "");
+      setValue("descripcion", ingreso.descripcion || "");
+      setValue("monto", ingreso.monto || 0);
 
-      if (gasto.fecha_gasto) {
+      if (ingreso.fecha_ingreso) {
         const fechaStr =
-          typeof gasto.fecha_gasto === "string"
-            ? gasto.fecha_gasto.split("T")[0]
-            : new Date(gasto.fecha_gasto).toISOString().split("T")[0];
-        setValue("fecha_gasto", fechaStr);
+          typeof ingreso.fecha_ingreso === "string"
+            ? ingreso.fecha_ingreso.split("T")[0]
+            : new Date(ingreso.fecha_ingreso).toISOString().split("T")[0];
+        setValue("fecha_ingreso", fechaStr);
       } else {
-        setValue("fecha_gasto", new Date().toISOString().split("T")[0]);
+        setValue("fecha_ingreso", new Date().toISOString().split("T")[0]);
       }
 
-      setValue("metodo_pago", gasto.metodo_pago || MetodoPago.EFECTIVO);
-      setValue("notas", gasto.notas || "");
+      setValue("metodo_pago", ingreso.metodo_pago || MetodoPago.EFECTIVO);
+      setValue("notas", ingreso.notas || "");
 
-      if (gasto.especieId) {
-        setSelectedEspecieId(gasto.especieId);
+      if (ingreso.especieId) {
+        setSelectedEspecieId(ingreso.especieId);
       }
     } else {
       reset({
-        categoria: CategoriaGasto.ALIMENTACION,
+        categoria: CategoriaIngreso.SERVICIOS,
         fincaId: "",
         especieId: undefined,
         razaId: undefined,
         concepto: "",
         descripcion: "",
         monto: 0,
-        fecha_gasto: new Date().toISOString().split("T")[0],
+        fecha_ingreso: new Date().toISOString().split("T")[0],
         metodo_pago: MetodoPago.EFECTIVO,
         notas: "",
       });
       setSelectedEspecieId("");
     }
     setIsLoading(false);
-  }, [gasto, setValue, reset]);
+  }, [ingreso, setValue, reset]);
 
-  const onSubmit = async (data: CrearGastoInterface) => {
+  const onSubmit = async (data: CrearIngresoInterface) => {
     try {
-      if (!isCompraAnimal) {
+      if (!isVentaAnimal) {
         data.especieId = undefined;
         data.razaId = undefined;
       }
 
       let response;
 
-      if (isEditing && gasto) {
-        response = await EditarGasto(gasto.id, {
+      if (isEditing && ingreso) {
+        response = await EditarIngreso(ingreso.id, {
           ...data,
           monto: Number(data.monto),
         });
-        toast.success("Gasto actualizado correctamente");
+        toast.success("Ingreso actualizado correctamente");
       } else {
-        response = await AgregarNuevoGasto({
+        response = await AgregarNuevoIngreso({
           ...data,
           monto: Number(data.monto),
         });
-        toast.success("Gasto registrado correctamente");
+        toast.success("Ingreso registrado correctamente");
       }
 
       reset();
-      queryClient.invalidateQueries({ queryKey: ["gastos"] });
+      queryClient.invalidateQueries({ queryKey: ["ingresos"] });
       queryClient.invalidateQueries({ queryKey: ["rentabilidad-general"] });
       queryClient.invalidateQueries({ queryKey: ["rentabilidad-categorias"] });
       queryClient.invalidateQueries({ queryKey: ["rentabilidad-fincas"] });
@@ -160,7 +161,7 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al registrar el gasto";
+            : "Hubo un error al registrar el ingreso";
         setErrorMessage(errorMessage);
       } else {
         toast.error("Error inesperado. Contacte al administrador");
@@ -182,7 +183,7 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
         <Alert variant="destructive" className="mb-4">
           <AlertCircleIcon className="h-4 w-4" />
           <AlertTitle>
-            Error al {isEditing ? "actualizar" : "registrar"} el Gasto
+            Error al {isEditing ? "actualizar" : "registrar"} el Ingreso
           </AlertTitle>
           <AlertDescription className="whitespace-pre-line">
             {errorMessage}
@@ -198,9 +199,9 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
           <Select
             value={watch("categoria")}
             onValueChange={(value) => {
-              setValue("categoria", value as CategoriaGasto);
+              setValue("categoria", value as CategoriaIngreso);
 
-              if (value !== CategoriaGasto.COMPRA_ANIMAL) {
+              if (value !== CategoriaIngreso.SERVICIOS) {
                 setValue("especieId", undefined);
                 setValue("razaId", undefined);
                 setSelectedEspecieId("");
@@ -214,7 +215,7 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Categorías</SelectLabel>
-                {Object.values(CategoriaGasto).map((categoria) => (
+                {Object.values(CategoriaIngreso).map((categoria) => (
                   <SelectItem key={categoria} value={categoria}>
                     {categoria.replace(/_/g, " ")}
                   </SelectItem>
@@ -259,7 +260,7 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
           )}
         </div>
 
-        {isCompraAnimal && (
+        {isVentaAnimal && (
           <>
             <div>
               <Label htmlFor="especieId">
@@ -316,7 +317,7 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
                   </SelectGroup>
                 </SelectContent>
               </Select>
-              {!selectedEspecieId && isCompraAnimal && (
+              {!selectedEspecieId && isVentaAnimal && (
                 <p className="text-sm text-yellow-600 mt-1">
                   * Selecciona una especie primero para ver las razas
                 </p>
@@ -375,21 +376,21 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
         </div>
 
         <div>
-          <Label htmlFor="fecha_gasto">
-            Fecha del Gasto <span className="text-red-500">*</span>
+          <Label htmlFor="fecha_ingreso">
+            Fecha del Ingreso <span className="text-red-500">*</span>
           </Label>
           <Input
-            id="fecha_gasto"
+            id="fecha_ingreso"
             type="date"
-            {...register("fecha_gasto", {
+            {...register("fecha_ingreso", {
               required: "La fecha es requerida",
             })}
-            className={errors.fecha_gasto ? "border-red-500" : ""}
+            className={errors.fecha_ingreso ? "border-red-500" : ""}
             disabled={isSubmitting}
           />
-          {errors.fecha_gasto && (
+          {errors.fecha_ingreso && (
             <p className="text-sm text-red-500 mt-1">
-              {errors.fecha_gasto.message}
+              {errors.fecha_ingreso.message}
             </p>
           )}
         </div>
@@ -436,7 +437,7 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
                 message: "La descripción no puede exceder los 500 caracteres",
               },
             })}
-            placeholder="Detalles adicionales del gasto..."
+            placeholder="Detalles adicionales del ingreso..."
             rows={3}
             disabled={isSubmitting}
           />
@@ -482,9 +483,9 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
               {isEditing ? "Actualizando..." : "Guardando..."}
             </span>
           ) : isEditing ? (
-            "Actualizar Gasto"
+            "Actualizar Ingreso"
           ) : (
-            "Registrar Gasto"
+            "Registrar Ingreso"
           )}
         </Button>
       </div>
@@ -492,4 +493,4 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
   );
 };
 
-export default FormGastos;
+export default FormIngresos;

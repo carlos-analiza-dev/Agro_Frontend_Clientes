@@ -10,6 +10,7 @@ import {
   Globe,
   Menu,
   X,
+  UserPlus,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -231,9 +232,9 @@ const PublicNavBar = () => {
                   alt="Logo"
                   src="/images/logo.png"
                   unoptimized
-                  width={100}
-                  height={35}
-                  className="h-8 sm:h-10 w-auto object-contain transition-transform group-hover:scale-105"
+                  width={200}
+                  height={100}
+                  className="h-16 sm:h-28 w-auto object-contain transition-transform group-hover:scale-105"
                   priority
                 />
                 <span className="hidden sm:block text-lg sm:text-xl font-bold bg-gradient-to-r from-green-700 to-green-600 bg-clip-text text-transparent">
@@ -399,20 +400,20 @@ const PublicNavBar = () => {
 
               <div className="flex sm:hidden items-center gap-1">
                 <Button
-                  onClick={() => router.push("/login")}
+                  onClick={() => router.push("/register")}
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 rounded-full hover:bg-gray-100"
                   title="Iniciar Sesión"
                 >
-                  <User className="h-4 w-4" />
+                  <UserPlus className="h-4 w-4" />
                 </Button>
                 <Button
-                  onClick={() => router.push("/register")}
+                  onClick={() => router.push("/login")}
                   variant="default"
                   className="rounded-full px-2.5 py-1 h-8 text-xs bg-green-600 hover:bg-green-700"
                 >
-                  Registro
+                  Iniciar Sesion
                 </Button>
               </div>
             </div>

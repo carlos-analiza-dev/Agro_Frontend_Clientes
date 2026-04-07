@@ -37,6 +37,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import SkeletonCard from "@/components/generics/SkeletonCard";
 
 const AnimalesPageGanadero = () => {
   const router = useRouter();
@@ -106,9 +107,7 @@ const AnimalesPageGanadero = () => {
   if (isLoading) {
     return (
       <div className="container mx-auto p-4">
-        <div className="flex justify-center items-center h-64">
-          <RefreshCw className="h-8 w-8 animate-spin" />
-        </div>
+        <SkeletonCard />
       </div>
     );
   }

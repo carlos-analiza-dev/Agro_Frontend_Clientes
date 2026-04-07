@@ -91,7 +91,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
         )}
       </div>
 
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-1 md:space-x-4">
         {tienePermisoFavoritos && (
           <Button
             onClick={() => router.replace("/favoritos")}

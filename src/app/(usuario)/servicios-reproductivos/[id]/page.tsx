@@ -7,11 +7,12 @@ import FormServicioReproductivo from "../ui/FormServicioReproductivo";
 import useGetAnimalesPropietario from "@/hooks/animales/useGetAnimalesPropietario";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import useGetServicioById from "@/hooks/reproduccion/useGetServicioById";
+import SkeletonCard from "@/components/generics/SkeletonCard";
 
 const EditarServicioReproductivoPage = () => {
   const { id } = useParams();
   const servicioId = id as string;
-  const { data: servicio } = useGetServicioById(servicioId);
+  const { data: servicio, isLoading } = useGetServicioById(servicioId);
 
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id ?? "";
@@ -23,6 +24,11 @@ const EditarServicioReproductivoPage = () => {
     animalesData?.data?.filter((animal) => animal.sexo === "Hembra") || [];
   const machos =
     animalesData?.data?.filter((animal) => animal.sexo === "Macho") || [];
+
+  if (isLoading) {
+    return <SkeletonCard />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 py-4">

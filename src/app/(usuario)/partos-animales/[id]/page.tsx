@@ -7,18 +7,24 @@ import { useParams, useRouter } from "next/navigation";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import useGetAnimalesPropietario from "@/hooks/animales/useGetAnimalesPropietario";
 import useGetPartoById from "@/hooks/reproduccion/useGetPartoById";
+import SkeletonCard from "@/components/generics/SkeletonCard";
 
 const EditarPartoPage = () => {
   const { cliente } = useAuthStore();
   const { id } = useParams();
   const partoId = id as string;
-  const { data: parto } = useGetPartoById(partoId);
+  const { data: parto, isLoading } = useGetPartoById(partoId);
 
   const clienteId = cliente?.id ?? "";
   const router = useRouter();
   const isMobile = useMediaQuery("(max-width: 768px)");
   const { data: animales } = useGetAnimalesPropietario(clienteId);
   const hembras = animales?.data?.filter((a) => a.sexo === "Hembra");
+
+  if (isLoading) {
+    return <SkeletonCard />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 py-4">
