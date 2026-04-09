@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/images/og-image.jpg",
+        url: "/public/images/logo.png",
         width: 1200,
         height: 630,
         alt: "El Sembrador - Agroservicios y Veterinaria",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     title: "El Sembrador | Agroservicios y Veterinaria",
     description:
       "Soluciones integrales para el campo centroamericano. Productos agropecuarios, servicios veterinarios y gestión agrícola.",
-    images: ["/images/og-image.jpg"],
+    images: ["/public/images/logo.png"],
   },
   robots: {
     index: true,

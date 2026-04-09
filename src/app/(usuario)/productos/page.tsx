@@ -10,14 +10,15 @@ import { MessageError } from "@/components/generics/MessageError";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import SkeletonCard from "@/components/generics/SkeletonCard";
 import ProductCard from "@/components/products/ProductCard";
+import useGetCategorias from "@/hooks/categorias/useGetCategorias";
 
 const ProductosPage = () => {
   const { cliente } = useAuthStore();
   const router = useRouter();
-  const [tipoCategoria, setTipoCategoria] = useState("");
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
-
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [categoriaId, setCategoriaId] = useState("");
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const {
@@ -28,7 +29,9 @@ const ProductosPage = () => {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useGetProductosDisponibles(10, tipoCategoria);
+  } = useGetProductosDisponibles(10, categoriaId);
+
+  const { data: categorias } = useGetCategorias();
 
   const todosLosProductos = useMemo(() => {
     return productosData?.pages.flatMap((page) => page.productos) || [];
@@ -81,30 +84,36 @@ const ProductosPage = () => {
   if (isError) {
     return (
       <div className="min-h-screen bg-background p-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 p-5">
-          <Button
-            variant="outline"
-            className={tipoCategoria === "" ? "border-blue-500" : ""}
-            onClick={() => setTipoCategoria("")}
-          >
-            Todos
-          </Button>
-
-          <Button
-            variant="outline"
-            className={tipoCategoria === "Ganaderia" ? "border-blue-500" : ""}
-            onClick={() => setTipoCategoria("Ganaderia")}
-          >
-            Ganadería
-          </Button>
-
-          <Button
-            variant="outline"
-            className={tipoCategoria === "Agricultura" ? "border-blue-500" : ""}
-            onClick={() => setTipoCategoria("Agricultura")}
-          >
-            Agricultura
-          </Button>
+        <div className="overflow-x-auto pb-2 mb-4">
+          <div className="flex gap-2 min-w-max px-5">
+            <Button
+              variant="outline"
+              size="sm"
+              className={`rounded-full whitespace-nowrap ${
+                categoriaId === ""
+                  ? "border-blue-500 bg-blue-50 text-blue-700"
+                  : ""
+              }`}
+              onClick={() => setCategoriaId("")}
+            >
+              Todos
+            </Button>
+            {categorias?.map((categoria) => (
+              <Button
+                key={categoria.id}
+                variant="outline"
+                size="sm"
+                className={`rounded-full whitespace-nowrap ${
+                  categoriaId === categoria.id
+                    ? "border-blue-500 bg-blue-50 text-blue-700"
+                    : ""
+                }`}
+                onClick={() => setCategoriaId(categoria.id)}
+              >
+                {categoria.nombre}
+              </Button>
+            ))}
+          </div>
         </div>
         <MessageError
           titulo="Error al cargar los productos"
@@ -118,40 +127,63 @@ const ProductosPage = () => {
   return (
     <div className="min-h-screen bg-background p-4">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold mb-2">Productos Disponibles</h1>
-          <p className="text-muted-foreground">
+        <div className="mb-6 md:mb-8 text-center">
+          <h1 className="text-2xl md:text-3xl font-bold mb-2">
+            Productos Disponibles
+          </h1>
+          <p className="text-sm md:text-base text-muted-foreground">
             Descubre nuestra amplia gama de productos
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 p-5">
-          <Button
-            variant="outline"
-            className={tipoCategoria === "" ? "border-blue-500" : ""}
-            onClick={() => setTipoCategoria("")}
-          >
-            Todos
-          </Button>
+        <div className="relative mb-6">
+          <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none md:hidden" />
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none md:hidden" />
 
-          <Button
-            variant="outline"
-            className={tipoCategoria === "Ganaderia" ? "border-blue-500" : ""}
-            onClick={() => setTipoCategoria("Ganaderia")}
+          <div
+            ref={scrollContainerRef}
+            className="overflow-x-auto overflow-y-hidden pb-3 scrollbar-thin scroll-smooth"
+            style={{ scrollbarWidth: "thin" }}
           >
-            Ganadería
-          </Button>
+            <div className="flex gap-2 px-1 min-w-max">
+              <button
+                onClick={() => setCategoriaId("")}
+                className={`
+                  relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap
+                  ${
+                    categoriaId === ""
+                      ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md shadow-blue-200"
+                      : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                  }
+                `}
+              >
+                Todos
+                {categoriaId === "" && (
+                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                )}
+              </button>
 
-          <Button
-            variant="outline"
-            className={tipoCategoria === "Agricultura" ? "border-blue-500" : ""}
-            onClick={() => setTipoCategoria("Agricultura")}
-          >
-            Agricultura
-          </Button>
+              {categorias?.map((categoria) => (
+                <button
+                  key={categoria.id}
+                  onClick={() => setCategoriaId(categoria.id)}
+                  className={`
+                    px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap
+                    ${
+                      categoriaId === categoria.id
+                        ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md shadow-blue-200 scale-105"
+                        : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                    }
+                  `}
+                >
+                  {categoria.nombre}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
           {todosLosProductos.map((producto, index) => (
             <ProductCard
               key={`${producto.id}-${index}`}

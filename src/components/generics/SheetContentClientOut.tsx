@@ -7,7 +7,8 @@ import { useRouter } from "next/navigation";
 interface Props {
   isMobileMenuOpen: boolean;
   setIsMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onProductsClick: () => void; // Cambiado: función sin evento
+  onProductsClick: () => void;
+  onServicesClick: () => void;
   hasSelectedCountry: boolean;
   selectedCountry: any;
   isActive: (href: string) => boolean;
@@ -19,6 +20,7 @@ const SheetContentClientOut = ({
   isMobileMenuOpen,
   setIsMobileMenuOpen,
   onProductsClick,
+  onServicesClick,
   hasSelectedCountry,
   selectedCountry,
   isActive,
@@ -26,11 +28,19 @@ const SheetContentClientOut = ({
   cantidadCarrito,
 }: Props) => {
   const router = useRouter();
+
   const mobileNavLinks = [
     {
       name: "Productos",
       href: "/productos-agroservicios",
       icon: null,
+      onClick: onProductsClick,
+    },
+    {
+      name: "Servicios",
+      href: "/servicios-sembrador",
+      icon: null,
+      onClick: onServicesClick,
     },
   ];
 
@@ -55,7 +65,7 @@ const SheetContentClientOut = ({
                 <button
                   key={link.name}
                   onClick={() => {
-                    onProductsClick(); // Llamada directa sin evento
+                    link.onClick();
                     setIsMobileMenuOpen(false);
                   }}
                   className={`flex items-center w-full rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${

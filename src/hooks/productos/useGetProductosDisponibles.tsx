@@ -1,14 +1,14 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { ObtenerProductos } from "@/api/productos/accions/obtener-productos-disponibles";
 
-const useGetProductosDisponibles = (limit = 10, tipo_categoria = "") => {
+const useGetProductosDisponibles = (limit = 10, categoria = "") => {
   return useInfiniteQuery({
-    queryKey: ["obtener-productos-disponibles", tipo_categoria],
+    queryKey: ["obtener-productos-disponibles", categoria],
     queryFn: ({ pageParam = 0 }) =>
       ObtenerProductos({
         pageParam,
         limit,
-        tipo_categoria,
+        categoria,
       }),
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {

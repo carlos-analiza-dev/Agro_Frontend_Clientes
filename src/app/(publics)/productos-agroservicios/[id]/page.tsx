@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { MessageSquarePlus, CheckCircle } from "lucide-react";
+import { MessageSquarePlus, CheckCircle, Share2 } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { useAuthStore } from "@/providers/store/useAuthStore";
@@ -23,6 +23,12 @@ import FormOpinionProducto from "@/components/products/FormOpinionProducto";
 import CardRatingResumen from "@/components/products/CardRatingResumen";
 import CardOpinionesProducto from "@/components/products/CardOpinionesProducto";
 import NoOpiniones from "@/components/products/NoOpiniones";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const ProductDetailsPage = () => {
   const { id: productoId } = useParams();
@@ -197,6 +203,56 @@ const ProductDetailsPage = () => {
     setTotalPrecio(total);
   }, [quantity, producto]);
 
+  const handleShareWhatsApp = () => {
+    const urlBase = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+
+    const productUrl = `${urlBase}/productos-agroservicios/${productoId}`;
+
+    const precio = getPrecio();
+    const simboloMoneda = moneda || "L.";
+
+    const mensaje = encodeURIComponent(
+      `🌟 *${producto?.nombre}* 🌟\n\n` +
+        `💰 *Precio:* ${simboloMoneda} ${parseFloat(precio).toFixed(2)}\n` +
+        `${producto?.marca?.nombre ? `🏷️ *Marca:* ${producto.marca.nombre}\n` : ""}` +
+        `${producto?.categoria?.nombre ? `📂 *Categoría:* ${producto.categoria.nombre}\n` : ""}\n` +
+        `${isAvailable ? "✅ Disponible" : "❌ No disponible"}\n\n` +
+        `🔗 ${productUrl}\n\n` +
+        `¡Encuéntralo en Agroservicios!`,
+    );
+
+    window.open(`https://wa.me/?text=${mensaje}`, "_blank");
+  };
+
+  const handleShareFacebook = () => {
+    const urlBase = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+    const productUrl = `${urlBase}/productos-agroservicios/${productoId}`;
+    window.open(
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(productUrl)}`,
+      "_blank",
+    );
+  };
+
+  const handleShareTwitter = () => {
+    const urlBase = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+    const productUrl = `${urlBase}/productos-agroservicios/${productoId}`;
+    const text = encodeURIComponent(`¡Mira este producto! ${producto?.nombre}`);
+    window.open(
+      `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(productUrl)}`,
+      "_blank",
+    );
+  };
+
+  const handleCopyLink = async () => {
+    const urlBase = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+    const productUrl = `${urlBase}/productos-agroservicios/${productoId}`;
+    try {
+      await navigator.clipboard.writeText(productUrl);
+    } catch (err) {
+      console.error("Error al copiar:", err);
+    }
+  };
+
   if (isErrorSucursales || isErrorProducto) {
     return (
       <div className="flex items-center justify-center min-h-screen px-4">
@@ -237,7 +293,77 @@ const ProductDetailsPage = () => {
   return (
     <div className="container">
       <div>
-        <ButtonBack isMobil={isMobile} />
+        <div className="flex justify-between items-center">
+          <ButtonBack isMobil={isMobile} />
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon" className="gap-2 w-auto">
+                <Share2 className="h-4 w-4" />
+                {!isMobile && (
+                  <span className="hidden sm:inline">Compartir</span>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem
+                onClick={handleShareWhatsApp}
+                className="cursor-pointer"
+              >
+                <svg
+                  className="h-4 w-4 mr-2 text-green-600"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.514 1.086 3.584l-1.133 3.839 3.951-1.122c1.015.524 2.159.803 3.34.804 3.18 0 5.767-2.587 5.768-5.766.001-3.18-2.586-5.767-5.766-5.767l.001-.001zm0 9.352c-.891 0-1.768-.241-2.529-.692l-.179-.107-2.346.666.736-2.287-.117-.185c-.492-.787-.752-1.689-.752-2.617 0-2.642 2.149-4.79 4.791-4.79 2.642 0 4.79 2.148 4.79 4.79 0 2.642-2.148 4.79-4.79 4.79z" />
+                </svg>
+                WhatsApp
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={handleShareFacebook}
+                className="cursor-pointer"
+              >
+                <svg
+                  className="h-4 w-4 mr-2 text-blue-600"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12z" />
+                </svg>
+                Facebook
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={handleShareTwitter}
+                className="cursor-pointer"
+              >
+                <svg
+                  className="h-4 w-4 mr-2 text-sky-500"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+                Twitter/X
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={handleCopyLink}
+                className="cursor-pointer"
+              >
+                <svg
+                  className="h-4 w-4 mr-2 text-gray-600"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                </svg>
+                Copiar enlace
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
           <div className="w-full">

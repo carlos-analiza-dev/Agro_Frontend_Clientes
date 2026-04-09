@@ -50,6 +50,14 @@ const PublicNavBar = () => {
     setIsMobileMenuOpen(false);
   };
 
+  const handleServicesNavigationWithoutEvent = () => {
+    if (!canNavigateToProducts()) {
+      return;
+    }
+    router.push("/servicios-sembrador");
+    setIsMobileMenuOpen(false);
+  };
+
   const canNavigateToProducts = () => {
     if (!hasSelectedCountry) {
       toast.info(
@@ -79,6 +87,15 @@ const PublicNavBar = () => {
       return;
     }
     router.push("/productos-agroservicios");
+    setIsMobileMenuOpen(false);
+  };
+
+  const handleServicesNavigation = (e: React.MouseEvent) => {
+    if (!canNavigateToProducts()) {
+      e.preventDefault();
+      return;
+    }
+    router.push("/servicios-sembrador");
     setIsMobileMenuOpen(false);
   };
 
@@ -254,6 +271,16 @@ const PublicNavBar = () => {
               >
                 Productos
               </button>
+              <button
+                onClick={handleServicesNavigation}
+                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+                  isActive("/servicios-sembrador")
+                    ? "bg-green-50 text-green-700"
+                    : "text-gray-600 hover:bg-gray-50 hover:text-green-600"
+                }`}
+              >
+                Servicios
+              </button>
             </nav>
 
             <div className="flex items-center gap-1 sm:gap-2">
@@ -425,6 +452,7 @@ const PublicNavBar = () => {
         isMobileMenuOpen={isMobileMenuOpen}
         setIsMobileMenuOpen={setIsMobileMenuOpen}
         onProductsClick={handleProductsNavigationWithoutEvent}
+        onServicesClick={handleServicesNavigationWithoutEvent}
         hasSelectedCountry={hasSelectedCountry}
         selectedCountry={selectedCountry}
         isActive={isActive}

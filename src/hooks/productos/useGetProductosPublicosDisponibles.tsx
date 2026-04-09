@@ -3,16 +3,16 @@ import { ObtenerProductosPublicos } from "@/api/productos/accions/obtener-produc
 
 const useGetProductosPublicosDisponibles = (
   limit = 10,
-  tipo_categoria = "",
+  categoria = "",
   pais = "",
 ) => {
   return useInfiniteQuery({
-    queryKey: ["obtener-productos-publicos-disponibles", tipo_categoria, pais],
+    queryKey: ["obtener-productos-publicos-disponibles", categoria, pais],
     queryFn: ({ pageParam = 0 }) =>
       ObtenerProductosPublicos({
         pageParam,
         limit,
-        tipo_categoria,
+        categoria,
         pais,
       }),
     initialPageParam: 0,
