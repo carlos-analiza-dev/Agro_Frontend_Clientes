@@ -1,3 +1,5 @@
+import { TipoCliente } from "@/interfaces/enums/clientes.enums";
+
 export interface CrearCliente {
   email: string;
   password: string;
@@ -10,4 +12,5 @@ export interface CrearCliente {
   departamento: string;
   municipio: string;
   isActive?: boolean;
+  rol?: TipoCliente;
 }

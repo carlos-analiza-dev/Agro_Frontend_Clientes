@@ -33,6 +33,7 @@ export const navItems = [
       { name: "Animales", href: "/animales", icon: Layers3 },
 
       { name: "Producción", href: "/produccion", icon: FlaskConical },
+      { name: "Trabajadores", href: "/trabajadores", icon: UserCog },
     ],
   },
   {
