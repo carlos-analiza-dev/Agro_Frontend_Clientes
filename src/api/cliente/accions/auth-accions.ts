@@ -1,16 +1,19 @@
 import { veterinariaAPI } from "@/helpers/api/veterinariaAPI";
 import {
+  AsignacionTrabajador,
   ClientePermiso,
   Departamento,
   Municipio,
   Pais,
   ProfileImage,
 } from "@/interfaces/auth/cliente";
+import { TipoCliente } from "@/interfaces/enums/clientes.enums";
 
 export interface AuthResponse {
   id: string;
   email: string;
   nombre: string;
+  rol: TipoCliente;
   sexo: string;
   identificacion: string;
   direccion: string;
@@ -22,6 +25,7 @@ export interface AuthResponse {
   municipio: Municipio;
   profileImages: ProfileImage[];
   clientePermisos: ClientePermiso[];
+  asignacionesTrabajador?: AsignacionTrabajador[];
   token: string;
 }
 
@@ -45,7 +49,7 @@ export const authLogin = async (email: string, password: string) => {
       {
         email,
         password,
-      }
+      },
     );
 
     if (!data) {
@@ -61,7 +65,7 @@ export const authLogin = async (email: string, password: string) => {
 export const authCheckStatus = async () => {
   try {
     const { data } = await veterinariaAPI.get<AuthResponse>(
-      "/auth-clientes/check-status"
+      "/auth-clientes/check-status",
     );
     return returnUserToken(data);
   } catch (error) {

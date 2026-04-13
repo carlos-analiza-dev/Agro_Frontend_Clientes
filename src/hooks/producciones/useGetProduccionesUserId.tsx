@@ -1,10 +1,10 @@
 import { obtenerProduccionesByUserId } from "@/api/produccion/accions/obtener-producciones-userId";
 import { useQuery } from "@tanstack/react-query";
 
-const useGetProduccionesUserId = (userId: string) => {
+const useGetProduccionesUserId = () => {
   return useQuery({
     queryKey: ["producciones-user"],
-    queryFn: () => obtenerProduccionesByUserId(userId),
+    queryFn: () => obtenerProduccionesByUserId(),
     staleTime: 60 * 5 * 100,
     retry: 0,
   });

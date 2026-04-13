@@ -19,7 +19,6 @@ import {
 
 const ProduccionGanaderoPage = () => {
   const { cliente } = useAuthStore();
-  const userId = cliente?.id || "";
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
 
@@ -28,7 +27,7 @@ const ProduccionGanaderoPage = () => {
 
     isLoading,
     refetch,
-  } = useGetProduccionesUserId(userId);
+  } = useGetProduccionesUserId();
 
   const onRefresh = async () => {
     try {

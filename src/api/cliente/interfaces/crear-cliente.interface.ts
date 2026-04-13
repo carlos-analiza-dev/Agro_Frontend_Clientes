@@ -12,5 +12,6 @@ export interface CrearCliente {
   departamento: string;
   municipio: string;
   isActive?: boolean;
+  verified?: boolean;
   rol?: TipoCliente;
 }

@@ -16,11 +16,16 @@ import Paginacion from "@/components/generics/Paginacion";
 import TableTrabajadores from "./ui/TableTrabajadores";
 import SkeletonTable from "@/components/generics/SkeletonTable";
 import CardTrabajadores from "./ui/CardTrabajadores";
+import Modal from "@/components/generics/Modal";
+import FormTrabajador from "./ui/FormTrabajador";
+import { Trabajador } from "@/api/trabajadores/interface/response-trabajadores.interface";
 
 const TrabajadoresPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [itemsPerPage] = useState(10);
+  const [openAddTrabajador, setOpenAddTrabajador] = useState(false);
+  const [Trabajador, setTrabajador] = useState<Trabajador | null>(null);
 
   const {
     data: trabajadoresData,
@@ -48,6 +53,11 @@ const TrabajadoresPage = () => {
     setCurrentPage(page);
   };
 
+  const handleEditTrabajador = (trabajdor: Trabajador) => {
+    setOpenAddTrabajador(true);
+    setTrabajador(trabajdor);
+  };
+
   return (
     <div className="container mx-auto p-4 md:p-6 space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -67,7 +77,7 @@ const TrabajadoresPage = () => {
               className="pl-8 w-full md:w-[300px]"
             />
           </div>
-          <Button>
+          <Button onClick={() => setOpenAddTrabajador(true)}>
             <Users className="mr-2 h-4 w-4" />
             Nuevo Trabajador
           </Button>
@@ -107,6 +117,7 @@ const TrabajadoresPage = () => {
               <div className="rounded-md border">
                 <TableTrabajadores
                   filteredTrabajadores={filteredTrabajadores}
+                  handleEditTrabajador={handleEditTrabajador}
                 />
               </div>
 
@@ -128,6 +139,30 @@ const TrabajadoresPage = () => {
           )}
         </CardContent>
       </Card>
+
+      <Modal
+        title={Trabajador ? "Editar Trabajador" : "Nuevo Trabajador"}
+        description={
+          Trabajador
+            ? "Aquí podrás editar la información del trabajador"
+            : "Aquí Podrás Ingresar un nuevo trabajador"
+        }
+        open={openAddTrabajador}
+        onOpenChange={(open) => {
+          setOpenAddTrabajador(open);
+          if (!open) setTrabajador(null);
+        }}
+        size="2xl"
+        height="auto"
+      >
+        <FormTrabajador
+          onSuccess={() => {
+            setOpenAddTrabajador(false);
+            setTrabajador(null);
+          }}
+          trabajador={Trabajador}
+        />
+      </Modal>
     </div>
   );
 };

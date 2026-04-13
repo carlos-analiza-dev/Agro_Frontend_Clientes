@@ -1,7 +1,6 @@
 import { Trabajador } from "@/api/trabajadores/interface/response-trabajadores.interface";
 import Modal from "@/components/generics/Modal";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -29,6 +28,7 @@ import {
   Mail,
   MapPin,
   MoreVertical,
+  Pencil,
   Phone,
   Plus,
   UserCheck,
@@ -52,41 +52,44 @@ import {
 } from "@/components/ui/alert-dialog";
 import { CrearPermisoClienteInterface } from "@/api/permisos/interface/crear-permiso-cliente.interface";
 import { CrearPermisoByCliente } from "@/api/permisos/accions/crear-permiso_by_cliente";
+import VerifiedBadge from "./VerifiedBadge";
+import { ActualizarVerificacion } from "@/api/cliente/accions/update-verified";
+import useGetFincasByTrabajador from "@/hooks/fincas-trabajador/useGetFincasByTrabajador";
+import TableFincasTrabajador from "./TableFincasTrabajador";
+import FormAddAsignarFincas from "./FormAddAsignarFincas";
 
 interface Props {
   filteredTrabajadores: Trabajador[] | undefined;
+  handleEditTrabajador: (trabajdor: Trabajador) => void;
 }
 
-const TableTrabajadores = ({ filteredTrabajadores }: Props) => {
+const TableTrabajadores = ({
+  filteredTrabajadores,
+  handleEditTrabajador,
+}: Props) => {
   const queryClient = useQueryClient();
   const [permisosSeleccionados, setPermisosSeleccionados] = useState<string[]>(
     [],
   );
   const [clienteId, setClienteId] = useState<string>("");
+  const [nombreTrabajador, setNombreTrabajador] = useState("");
   const [openModalPermisos, setOpenModalPermisos] = useState(false);
   const [openAddPermisos, setOpenAddPermisos] = useState(false);
   const [isOpenFinca, setIsOpenFinca] = useState(false);
+  const [openVerified, setOpenVerified] = useState(false);
+  const [verficiado, setVerficiado] = useState(false);
+  const [openViewFincasTrabajador, setOpenViewFincasTrabajador] =
+    useState(false);
   const { data: permisos_cliente } = useGetPermisosByCliente(clienteId);
   const { data: permisos_activos } = useGetPermisosPropietario();
-
+  const { data: fincas_trabajador, isLoading: cargando } =
+    useGetFincasByTrabajador(clienteId);
   const permisosDisponibles = permisos_activos?.filter(
     (permisoActivo) =>
       !permisos_cliente?.some(
         (permisoCliente) => permisoCliente.permiso.id === permisoActivo.id,
       ),
   );
-
-  const getVerifiedBadge = (verified: boolean) => {
-    return verified ? (
-      <Badge variant="outline" className="border-blue-500 text-blue-500">
-        Verificado
-      </Badge>
-    ) : (
-      <Badge variant="outline" className="border-yellow-500 text-yellow-500">
-        No verificado
-      </Badge>
-    );
-  };
 
   const getInitials = (nombre: string) => {
     return nombre
@@ -193,15 +196,59 @@ const TableTrabajadores = ({ filteredTrabajadores }: Props) => {
     }
   };
 
+  const updatedVerified = async (verified: boolean) => {
+    if (!clienteId) {
+      toast.error(
+        "Debes seleccionar un trabajador para poder actualizar su estado de verificacion",
+      );
+      return;
+    }
+    try {
+      await ActualizarVerificacion(clienteId, verified);
+      toast.success("Estado del Trabajador Actualizado exitosamente");
+      queryClient.invalidateQueries({
+        queryKey: ["permisos-clienteId", clienteId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["trabajadores"],
+      });
+      setClienteId("");
+      setOpenVerified(false);
+    } catch (error) {
+      toast.error("Ocurrio un error al verificar el trabajador");
+    }
+  };
+
+  const handleEditarEstado = async (
+    clienteId: string,
+    verificacion: boolean,
+  ) => {
+    setOpenVerified(true);
+    setClienteId(clienteId);
+    setVerficiado(verificacion);
+  };
+
+  const handleOpenFincasTrabajador = (trabajadorId: string) => {
+    setOpenViewFincasTrabajador(true);
+    setClienteId(trabajadorId);
+  };
+
+  const handleAddFincas = (trabajadorId: string, nombre: string) => {
+    setIsOpenFinca(true);
+    setClienteId(trabajadorId);
+    setNombreTrabajador(nombre);
+  };
+
   return (
     <>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Trabajador</TableHead>
-            <TableHead>Identificación</TableHead>
-            <TableHead>Contacto</TableHead>
-            <TableHead>Ubicación</TableHead>
+            <TableHead className="text-center">Trabajador</TableHead>
+            <TableHead className="text-center">Identificación</TableHead>
+            <TableHead className="text-center">Contacto</TableHead>
+            <TableHead className="text-center">Ubicación</TableHead>
+            <TableHead className="text-center">Fincas</TableHead>
             <TableHead className="text-right">Acciones</TableHead>
           </TableRow>
         </TableHeader>
@@ -224,11 +271,13 @@ const TableTrabajadores = ({ filteredTrabajadores }: Props) => {
                     </div>
                   </div>
                 </TableCell>
-                <TableCell>
-                  <div className="font-mono text-sm">
-                    {trabajador.identificacion}
+                <TableCell className="flex justify-center">
+                  <div>
+                    <div className="font-mono text-sm">
+                      {trabajador.identificacion}
+                    </div>
+                    {VerifiedBadge(trabajador.verified)}
                   </div>
-                  {getVerifiedBadge(trabajador.verified)}
                 </TableCell>
                 <TableCell>
                   <div className="space-y-1">
@@ -260,40 +309,76 @@ const TableTrabajadores = ({ filteredTrabajadores }: Props) => {
                     </Tooltip>
                   </TooltipProvider>
                 </TableCell>
+                <TableCell className="flex justify-center">
+                  <Button
+                    onClick={() => handleOpenFincasTrabajador(trabajador.id)}
+                    variant={"ghost"}
+                  >
+                    Ver Fincas
+                  </Button>
+                </TableCell>
 
                 <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                      <DropdownMenuItem
-                        onClick={() => handleViewClienteId(trabajador.id)}
-                      >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Asignar permisos
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setIsOpenFinca(true)}>
-                        <Users className="mr-2 h-4 w-4" />
-                        Asignar a finca
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      {trabajador.isActive ? (
-                        <DropdownMenuItem className="text-red-600">
-                          <UserX className="mr-2 h-4 w-4" />
-                          Desactivar
+                  <div>
+                    <Button
+                      onClick={() => handleEditTrabajador(trabajador)}
+                      variant={"ghost"}
+                    >
+                      <Pencil />
+                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                        <DropdownMenuItem
+                          onClick={() => handleViewClienteId(trabajador.id)}
+                        >
+                          <Plus className="mr-2 h-4 w-4" />
+                          Asignar permisos
                         </DropdownMenuItem>
-                      ) : (
-                        <DropdownMenuItem className="text-green-600">
-                          <UserCheck className="mr-2 h-4 w-4" />
-                          Activar
+                        <DropdownMenuItem
+                          onClick={() =>
+                            handleAddFincas(trabajador.id, trabajador.nombre)
+                          }
+                        >
+                          <Users className="mr-2 h-4 w-4" />
+                          Asignar a finca
                         </DropdownMenuItem>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                        <DropdownMenuSeparator />
+                        {trabajador.verified ? (
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleEditarEstado(
+                                trabajador.id,
+                                trabajador.verified,
+                              )
+                            }
+                            className="text-red-600"
+                          >
+                            <UserX className="mr-2 h-4 w-4" />
+                            Invalidar
+                          </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleEditarEstado(
+                                trabajador.id,
+                                trabajador.verified,
+                              )
+                            }
+                            className="text-green-600"
+                          >
+                            <UserCheck className="mr-2 h-4 w-4" />
+                            Verificar
+                          </DropdownMenuItem>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </TableCell>
               </TableRow>
             ))
@@ -486,8 +571,39 @@ const TableTrabajadores = ({ filteredTrabajadores }: Props) => {
         description="Aqui podras agregar las fincas que tendra asignadas este trabajador"
         open={isOpenFinca}
         onOpenChange={setIsOpenFinca}
+        size="xl"
+        height="auto"
       >
-        <p>Agregar Finca</p>
+        <FormAddAsignarFincas
+          trabajadorId={clienteId}
+          setClienteId={setClienteId}
+          setNombreTrabajador={setNombreTrabajador}
+          nombre={nombreTrabajador}
+          onSuccess={() => setIsOpenFinca(false)}
+        />
+      </Modal>
+      <Modal
+        title="Modificar Verificacion"
+        description="Aqui podras verificar o invalidar un usuario"
+        open={openVerified}
+        onOpenChange={setOpenVerified}
+      >
+        <div className="flex justify-between">
+          <AlertDialogAction onClick={() => updatedVerified(!verficiado)}>
+            Actualizar
+          </AlertDialogAction>
+          <AlertDialogCancel>Cancerlar</AlertDialogCancel>
+        </div>
+      </Modal>
+      <Modal
+        title="Fincas Asignadas Al Trabajador"
+        description="Aqui se observan las fincas que tiene asignadas este trabajador"
+        open={openViewFincasTrabajador}
+        onOpenChange={setOpenViewFincasTrabajador}
+        size="4xl"
+        height="auto"
+      >
+        <TableFincasTrabajador fincas={fincas_trabajador} />
       </Modal>
     </>
   );

@@ -1,5 +1,6 @@
-import { CreateCliente } from "@/api/cliente/accions/crear-cliente";
+"use client";
 import { CrearCliente } from "@/api/cliente/interfaces/crear-cliente.interface";
+import { crearTrabajador } from "@/api/trabajadores/accions/crear-tranajador";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,25 +14,35 @@ import {
 import { sexos } from "@/helpers/data/sexos";
 import useGetDeptosActivesByPais from "@/hooks/departamentos/useGetDeptosActivesByPais";
 import useGetMunicipiosActivosByDepto from "@/hooks/municipios/useGetMunicipiosActivosByDepto";
-import useGetPaisesActivos from "@/hooks/paises/useGetPaisesActivos";
 import usePaisesById from "@/hooks/paises/usePaisesById";
-
-import { useMutation } from "@tanstack/react-query";
+import { TipoCliente } from "@/interfaces/enums/clientes.enums";
+import { useAuthStore } from "@/providers/store/useAuthStore";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
-import { Eye, EyeClosed, EyeOff } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { Eye, EyeOff, MapPin, CheckCircle2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { Trabajador } from "@/api/trabajadores/interface/response-trabajadores.interface";
+import { actualizarTrabajador } from "@/api/trabajadores/accions/editar-trabajador";
 
-const FormRegister = () => {
+interface Props {
+  onSuccess: () => void;
+  trabajador?: Trabajador | null;
+}
+
+const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
+  const { cliente } = useAuthStore();
+  const paisId = cliente?.pais?.id ?? "";
+  const paisNombre = cliente?.pais?.nombre ?? "";
+  const isEditing = !!trabajador;
+
+  const queryClient = useQueryClient();
   const [prefijoNumber, setPrefijoNumber] = useState("");
-  const router = useRouter();
   const [codigoPais, setCodigoPais] = useState("");
-  const [paisId, setPaisId] = useState("");
   const [departamentoId, setDepartamentoId] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [cargandoDatos, setCargandoDatos] = useState(true);
 
   const {
     register,
@@ -39,6 +50,7 @@ const FormRegister = () => {
     formState: { errors },
     setValue,
     reset,
+    watch,
   } = useForm<CrearCliente>({
     defaultValues: {
       email: "",
@@ -47,12 +59,16 @@ const FormRegister = () => {
       identificacion: "",
       direccion: "",
       telefono: "",
-      pais: "",
+      pais: paisId,
       departamento: "",
       municipio: "",
       sexo: "",
     },
   });
+
+  const currentDepartamento = watch("departamento");
+  const currentMunicipio = watch("municipio");
+  const currentSexo = watch("sexo");
 
   const ID_REGEX = {
     HN: {
@@ -77,20 +93,60 @@ const FormRegister = () => {
     },
   };
 
-  const { data: paises } = useGetPaisesActivos();
-
   const { data: departamentos } = useGetDeptosActivesByPais(paisId);
-
   const { data: municipios } = useGetMunicipiosActivosByDepto(departamentoId);
-
   const { data: pais } = usePaisesById(paisId);
+
+  useEffect(() => {
+    if (trabajador) {
+      setCargandoDatos(true);
+
+      const telefonoLimpio =
+        trabajador.telefono?.replace(/^\+\d{3}\s/, "") || "";
+
+      reset({
+        email: trabajador.email || "",
+        password: "",
+        nombre: trabajador.nombre || "",
+        identificacion: trabajador.identificacion || "",
+        direccion: trabajador.direccion || "",
+        telefono: telefonoLimpio,
+        pais: trabajador.pais?.id || paisId,
+        departamento: trabajador.departamento?.id || "",
+        municipio: trabajador.municipio?.id || "",
+        sexo: trabajador.sexo || "",
+      });
+
+      if (trabajador.departamento?.id) {
+        setDepartamentoId(trabajador.departamento.id);
+      }
+
+      setCargandoDatos(false);
+    } else {
+      reset({
+        email: "",
+        password: "",
+        nombre: "",
+        identificacion: "",
+        direccion: "",
+        telefono: "",
+        pais: paisId,
+        departamento: "",
+        municipio: "",
+        sexo: "",
+      });
+      setDepartamentoId("");
+      setCargandoDatos(false);
+    }
+  }, [trabajador, reset, paisId]);
 
   useEffect(() => {
     if (pais) {
       setCodigoPais(pais.data.code);
       setPrefijoNumber(pais.data.code_phone);
     }
-  }, [pais]);
+    setValue("pais", paisId);
+  }, [pais, paisId, setValue]);
 
   const validateIdentification = (value: string, codigoPais: string) => {
     if (!value) return "La identificación es requerida";
@@ -103,53 +159,67 @@ const FormRegister = () => {
       case "GT":
         return ID_REGEX.GT.regex.test(value) || ID_REGEX.GT.message;
       default:
-        return true;
+        return ID_REGEX.PASSPORT.regex.test(value) || ID_REGEX.PASSPORT.message;
     }
   };
 
-  const mutation = useMutation({
-    mutationFn: CreateCliente,
+  const createMutation = useMutation({
+    mutationFn: crearTrabajador,
     onSuccess: () => {
-      toast.success(
-        "Usuario creado correctamente, revisa tu correo electronico para confirmar tu usuario",
-      );
-      reset({
-        email: "",
-        password: "",
-        nombre: "",
-        identificacion: "",
-        direccion: "",
-        telefono: "",
-        pais: "",
-        departamento: "",
-        municipio: "",
-        sexo: "",
-      });
-      setPaisId("");
-      setDepartamentoId("");
-      setCodigoPais("");
-      setPrefijoNumber("");
-      setTimeout(() => {
-        router.push("/login");
-      }, 3000);
+      toast.success("Trabajador Creado Exitosamente");
+      resetForm();
+      queryClient.invalidateQueries({ queryKey: ["trabajadores"] });
+      onSuccess();
     },
     onError: (error) => {
-      if (isAxiosError(error)) {
-        const messages = error.response?.data?.message;
-        const errorMessage = Array.isArray(messages)
-          ? messages[0]
-          : typeof messages === "string"
-            ? messages
-            : "Hubo un error al crear el usuario";
-
-        toast.error(errorMessage);
-      } else {
-        toast.error(
-          "Hubo un error al momento de crear el usuario. Inténtalo de nuevo.",
-        );
-      }
+      handleMutationError(error, "crear");
     },
   });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<CrearCliente> }) =>
+      actualizarTrabajador(id, data),
+    onSuccess: () => {
+      toast.success("Trabajador Actualizado Exitosamente");
+      queryClient.invalidateQueries({ queryKey: ["trabajadores"] });
+      onSuccess();
+    },
+    onError: (error) => {
+      handleMutationError(error, "actualizar");
+    },
+  });
+
+  const resetForm = () => {
+    reset({
+      email: "",
+      password: "",
+      nombre: "",
+      identificacion: "",
+      direccion: "",
+      telefono: "",
+      pais: paisId,
+      departamento: "",
+      municipio: "",
+      sexo: "",
+    });
+    setDepartamentoId("");
+  };
+
+  const handleMutationError = (error: unknown, action: string) => {
+    if (isAxiosError(error)) {
+      const messages = error.response?.data?.message;
+      const errorMessage = Array.isArray(messages)
+        ? messages[0]
+        : typeof messages === "string"
+          ? messages
+          : `Hubo un error al ${action} el trabajador`;
+      toast.error(errorMessage);
+    } else {
+      toast.error(
+        `Hubo un error al ${action} el trabajador. Inténtalo de nuevo.`,
+      );
+    }
+  };
 
   const validateEmail = (email: string) => {
     const re =
@@ -158,6 +228,8 @@ const FormRegister = () => {
   };
 
   const validatePassword = (password: string) => {
+    if (isEditing && !password) return true;
+
     const re = /^(?=\w*\d)(?=\w*[A-Z])(?=\w*[a-z])\S{8,16}$/;
     return (
       re.test(password) ||
@@ -168,13 +240,47 @@ const FormRegister = () => {
   const onSubmit = (data: CrearCliente) => {
     const telefonoConPrefijo = `${prefijoNumber} ${data.telefono}`;
 
-    const payload: CrearCliente = {
-      ...data,
-      telefono: telefonoConPrefijo,
-    };
+    if (isEditing && trabajador) {
+      const payload: Partial<CrearCliente> = {
+        nombre: data.nombre,
+        identificacion: data.identificacion,
+        telefono: telefonoConPrefijo,
+        direccion: data.direccion,
+        sexo: data.sexo,
+        pais: data.pais,
+        departamento: data.departamento,
+        municipio: data.municipio,
+      };
 
-    mutation.mutate(payload);
+      if (data.email !== trabajador.email) {
+        payload.email = data.email;
+      }
+
+      if (data.password) {
+        payload.password = data.password;
+      }
+
+      updateMutation.mutate({ id: trabajador.id, data: payload });
+    } else {
+      const payload: CrearCliente = {
+        ...data,
+        telefono: telefonoConPrefijo,
+        rol: TipoCliente.TRABAJADOR,
+        pais: paisId,
+      };
+      createMutation.mutate(payload);
+    }
   };
+
+  const isPending = createMutation.isPending || updateMutation.isPending;
+
+  if (cargandoDatos && isEditing) {
+    return (
+      <div className="flex justify-center items-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -185,6 +291,7 @@ const FormRegister = () => {
             id="email"
             type="email"
             placeholder="tu@correo.com"
+            disabled={isEditing}
             {...register("email", {
               required: "El correo es requerido",
               validate: validateEmail,
@@ -195,27 +302,36 @@ const FormRegister = () => {
               {errors.email.message as string}
             </p>
           )}
+          {isEditing && (
+            <p className="text-xs text-muted-foreground">
+              El correo electrónico no se puede modificar
+            </p>
+          )}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="password">Contraseña*</Label>
+          <Label htmlFor="password">
+            Contraseña {!isEditing && "*"}
+            {isEditing && " (dejar en blanco para mantener)"}
+          </Label>
           <div className="relative">
             <Input
               id="password"
-              type={showPassword ? "password" : "text"}
-              placeholder="••••••••"
+              type={showPassword ? "text" : "password"}
+              placeholder={
+                isEditing ? "Nueva contraseña (opcional)" : "••••••••"
+              }
               {...register("password", {
-                required: "La contraseña es requerida",
+                required: !isEditing ? "La contraseña es requerida" : false,
                 validate: validatePassword,
               })}
             />
-
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
             >
-              {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
           {errors.password && (
@@ -247,36 +363,28 @@ const FormRegister = () => {
 
         <div className="space-y-2">
           <Label htmlFor="pais">País*</Label>
-          <Select
-            onValueChange={(value) => {
-              setValue("pais", value);
-              setPaisId(value);
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Selecciona un país" />
-            </SelectTrigger>
-            <SelectContent>
-              {paises?.data.map((pais) => (
-                <SelectItem key={pais.id} value={pais.id}>
-                  {pais.nombre}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.pais && (
-            <p className="text-sm font-medium text-red-500">
-              {errors.pais.message as string}
-            </p>
-          )}
+          <div className="relative">
+            <div className="flex items-center gap-2 p-2 border rounded-md bg-gray-50">
+              <MapPin className="h-4 w-4 text-muted-foreground" />
+              <span className="font-medium">{paisNombre}</span>
+              <CheckCircle2 className="h-4 w-4 text-green-500 ml-auto" />
+            </div>
+            <input type="hidden" {...register("pais")} value={paisId} />
+          </div>
+          <p className="text-xs text-muted-foreground">
+            El país se asigna automáticamente según tu ubicación
+          </p>
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="departamento">Departamento*</Label>
           <Select
+            value={currentDepartamento || ""}
             onValueChange={(value) => {
               setValue("departamento", value);
               setDepartamentoId(value);
+
+              setValue("municipio", "");
             }}
           >
             <SelectTrigger>
@@ -284,13 +392,15 @@ const FormRegister = () => {
             </SelectTrigger>
             <SelectContent>
               {departamentos && departamentos.data.length > 0 ? (
-                departamentos?.data.map((depto) => (
+                departamentos.data.map((depto) => (
                   <SelectItem key={depto.id} value={depto.id}>
                     {depto.nombre}
                   </SelectItem>
                 ))
               ) : (
-                <p>No se encontraron departamentos</p>
+                <SelectItem value="no-deptos" disabled>
+                  No se encontraron departamentos
+                </SelectItem>
               )}
             </SelectContent>
           </Select>
@@ -304,22 +414,28 @@ const FormRegister = () => {
         <div className="space-y-2">
           <Label htmlFor="municipio">Municipio*</Label>
           <Select
+            value={currentMunicipio || ""}
             onValueChange={(value) => {
               setValue("municipio", value);
             }}
+            disabled={!departamentoId}
           >
             <SelectTrigger>
               <SelectValue placeholder="Selecciona un municipio" />
             </SelectTrigger>
             <SelectContent>
               {municipios && municipios.data.length > 0 ? (
-                municipios?.data.map((mun) => (
+                municipios.data.map((mun) => (
                   <SelectItem key={mun.id} value={mun.id}>
                     {mun.nombre}
                   </SelectItem>
                 ))
               ) : (
-                <p>No se encontraron municipios</p>
+                <SelectItem value="no-municipios" disabled>
+                  {departamentoId
+                    ? "No se encontraron municipios"
+                    : "Selecciona un departamento primero"}
+                </SelectItem>
               )}
             </SelectContent>
           </Select>
@@ -335,6 +451,7 @@ const FormRegister = () => {
           <Input
             id="identificacion"
             placeholder="Número de documento"
+            disabled={isEditing}
             {...register("identificacion", {
               required: "La identificación es requerida",
               validate: (value) => validateIdentification(value, codigoPais),
@@ -345,10 +462,15 @@ const FormRegister = () => {
               {errors.identificacion.message as string}
               {codigoPais &&
                 ID_REGEX[codigoPais as keyof typeof ID_REGEX]?.example && (
-                  <span className="block text-xs text-gray-500">
+                  <span className="block text-xs text-gray-500 mt-1">
                     {ID_REGEX[codigoPais as keyof typeof ID_REGEX]?.example}
                   </span>
                 )}
+            </p>
+          )}
+          {isEditing && (
+            <p className="text-xs text-muted-foreground">
+              La identificación no se puede modificar
             </p>
           )}
         </div>
@@ -386,7 +508,6 @@ const FormRegister = () => {
               },
             })}
           />
-
           {errors.telefono && (
             <p className="text-sm font-medium text-red-500">
               {errors.telefono.message as string}
@@ -397,6 +518,7 @@ const FormRegister = () => {
         <div className="space-y-2">
           <Label htmlFor="sexo">Sexo*</Label>
           <Select
+            value={currentSexo || ""}
             onValueChange={(value) => {
               setValue("sexo", value);
             }}
@@ -424,23 +546,19 @@ const FormRegister = () => {
         <Button
           type="submit"
           className="w-full bg-green-600 hover:bg-green-700"
+          disabled={isPending}
         >
-          Registrarse
+          {isPending
+            ? isEditing
+              ? "Actualizando trabajador..."
+              : "Creando trabajador..."
+            : isEditing
+              ? "Actualizar Trabajador"
+              : "Agregar Trabajador"}
         </Button>
-      </div>
-      <div className="flex justify-between">
-        <Link href="/reset-password" className="text-green-600 hover:underline">
-          ¿Olvidaste tu contraseña?
-        </Link>
-        <div className="flex items-center gap-4">
-          <p>¿Ya tienes una cuenta?</p>
-          <Link href="/login" className="text-green-600 hover:underline">
-            Iniciar Sesión
-          </Link>
-        </div>
       </div>
     </form>
   );
 };
 
-export default FormRegister;
+export default FormTrabajador;

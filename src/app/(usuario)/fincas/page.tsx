@@ -10,10 +10,14 @@ import { MessageError } from "@/components/generics/MessageError";
 import { FAB } from "@/components/generics/FAB";
 import { CardFincas } from "./ui/CardFincas";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getPropietarioId } from "@/helpers/funciones/getPropietarioId";
+import { TipoCliente } from "@/interfaces/enums/clientes.enums";
 
 export default function FincasPageGanaderos() {
   const router = useRouter();
   const { cliente } = useAuthStore();
+  const clienteId = cliente ? getPropietarioId(cliente) : null;
+  const isPropietario = cliente?.rol === TipoCliente.PROPIETARIO;
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
@@ -29,7 +33,7 @@ export default function FincasPageGanaderos() {
     isError,
     isLoading,
     refetch,
-  } = useFincasPropietarios(cliente?.id ?? "", debouncedSearchTerm);
+  } = useFincasPropietarios(clienteId ?? "", debouncedSearchTerm);
 
   const onRefresh = useCallback(async () => {
     await refetch();
@@ -64,7 +68,12 @@ export default function FincasPageGanaderos() {
           descripcion="No se encontraron fincas disponibles en este momento"
           onPress={onRefresh}
         />
-        <FAB onPress={() => router.push("/fincas/crear-fincas")} />
+        {isPropietario && (
+          <FAB
+            titulo="Crear Finca"
+            onPress={() => router.push("/fincas/crear-fincas")}
+          />
+        )}
       </div>
     );
   }
@@ -91,10 +100,12 @@ export default function FincasPageGanaderos() {
         ))}
       </ScrollArea>
 
-      <FAB
-        titulo="Crear Finca"
-        onPress={() => router.push("/fincas/crear-fincas")}
-      />
+      {isPropietario && (
+        <FAB
+          titulo="Crear Finca"
+          onPress={() => router.push("/fincas/crear-fincas")}
+        />
+      )}
     </div>
   );
 }

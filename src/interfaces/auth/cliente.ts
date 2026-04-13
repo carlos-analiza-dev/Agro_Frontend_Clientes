@@ -1,3 +1,6 @@
+import { Finca } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
+import { TipoCliente } from "../enums/clientes.enums";
+
 export interface Municipio {
   id: string;
   nombre: string;
@@ -51,13 +54,21 @@ export interface Permiso {
   createdAt: Date;
 }
 
+export interface AsignacionTrabajador {
+  id: string;
+  fechaAsignacion: string;
+  finca: Finca;
+  asignadoPor: Cliente;
+}
+
 export interface Cliente {
   id: string;
   email: string;
-  name: string;
+  nombre: string;
   identificacion: string;
   direccion: string;
   sexo: string;
+  rol: TipoCliente;
   telefono: string;
   isActive: boolean;
   createdAt: string;
@@ -66,6 +77,7 @@ export interface Cliente {
   municipio: Municipio;
   profileImages: ProfileImage[];
   clientePermisos: ClientePermiso[];
+  asignacionesTrabajador?: AsignacionTrabajador[];
 }
 
 export type ClienteUpdateData = {
