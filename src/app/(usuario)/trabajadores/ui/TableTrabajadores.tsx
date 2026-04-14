@@ -34,6 +34,8 @@ import {
   UserCheck,
   Users,
   UserX,
+  ChevronRight,
+  Building2,
 } from "lucide-react";
 import { useState } from "react";
 import ResumenPermiso from "./ResumenPermiso";
@@ -57,15 +59,20 @@ import { ActualizarVerificacion } from "@/api/cliente/accions/update-verified";
 import useGetFincasByTrabajador from "@/hooks/fincas-trabajador/useGetFincasByTrabajador";
 import TableFincasTrabajador from "./TableFincasTrabajador";
 import FormAddAsignarFincas from "./FormAddAsignarFincas";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 interface Props {
   filteredTrabajadores: Trabajador[] | undefined;
   handleEditTrabajador: (trabajdor: Trabajador) => void;
+  isMobile: boolean;
 }
 
 const TableTrabajadores = ({
   filteredTrabajadores,
   handleEditTrabajador,
+  isMobile,
 }: Props) => {
   const queryClient = useQueryClient();
   const [permisosSeleccionados, setPermisosSeleccionados] = useState<string[]>(
@@ -239,6 +246,391 @@ const TableTrabajadores = ({
     setNombreTrabajador(nombre);
   };
 
+  if (isMobile) {
+    return (
+      <div className="space-y-3 p-2">
+        {filteredTrabajadores && filteredTrabajadores.length > 0 ? (
+          filteredTrabajadores.map((trabajador) => (
+            <Card key={trabajador.id} className="overflow-hidden">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarFallback className="bg-primary/10 text-primary text-sm">
+                        {getInitials(trabajador.nombre)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h3 className="font-semibold text-base">
+                        {trabajador.nombre}
+                      </h3>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <Badge variant="outline" className="text-xs">
+                          {trabajador.rol}
+                        </Badge>
+                        {VerifiedBadge(trabajador.verified)}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-1">
+                    <Button
+                      onClick={() => handleEditTrabajador(trabajador)}
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                        >
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                        <DropdownMenuItem
+                          onClick={() => handleViewClienteId(trabajador.id)}
+                        >
+                          <Plus className="mr-2 h-4 w-4" />
+                          Asignar permisos
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            handleAddFincas(trabajador.id, trabajador.nombre)
+                          }
+                        >
+                          <Users className="mr-2 h-4 w-4" />
+                          Asignar a finca
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        {trabajador.verified ? (
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleEditarEstado(
+                                trabajador.id,
+                                trabajador.verified,
+                              )
+                            }
+                            className="text-red-600"
+                          >
+                            <UserX className="mr-2 h-4 w-4" />
+                            Invalidar
+                          </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleEditarEstado(
+                                trabajador.id,
+                                trabajador.verified,
+                              )
+                            }
+                            className="text-green-600"
+                          >
+                            <UserCheck className="mr-2 h-4 w-4" />
+                            Verificar
+                          </DropdownMenuItem>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </div>
+
+                <Separator className="my-3" />
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">
+                      Identificación
+                    </span>
+                    <span className="text-sm font-mono">
+                      {trabajador.identificacion}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">
+                      Teléfono
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <Phone className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-sm">{trabajador.telefono}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">Email</span>
+                    <div className="flex items-center gap-1">
+                      <Mail className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-sm truncate max-w-[180px]">
+                        {trabajador.email || "No registrado"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">
+                      Ubicación
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <MapPin className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-sm">
+                        {trabajador.municipio?.nombre || "N/A"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator className="my-3" />
+
+                <Button
+                  onClick={() => handleOpenFincasTrabajador(trabajador.id)}
+                  variant="outline"
+                  className="w-full justify-between"
+                  size="sm"
+                >
+                  <span className="flex items-center gap-2">
+                    <Building2 className="h-4 w-4" />
+                    Ver fincas asignadas
+                  </span>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <Card>
+            <CardContent className="py-8 text-center">
+              <Users className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+              <p className="text-muted-foreground">
+                No se encontraron trabajadores
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
+        <Modal
+          title="Permisos del Trabajador"
+          description="Aquí puedes observar y gestionar los permisos a los cuales tiene acceso el trabajador"
+          open={openModalPermisos}
+          onOpenChange={setOpenModalPermisos}
+          size="full"
+          height="auto"
+        >
+          <div className="space-y-4 p-2">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+              <h3 className="text-lg font-semibold">Permisos Asignados</h3>
+              <Button
+                onClick={handleAgregarPermiso}
+                size="sm"
+                className="flex items-center gap-2 w-full sm:w-auto"
+                disabled={
+                  !permisosDisponibles || permisosDisponibles.length === 0
+                }
+              >
+                <Plus className="h-4 w-4" />
+                Agregar Permiso
+              </Button>
+            </div>
+
+            {permisos_cliente && permisos_cliente.length > 0 ? (
+              <div className="border rounded-lg overflow-x-auto">
+                <TablePermisosAsignados
+                  permisos_cliente={permisos_cliente}
+                  handlePermisoChange={handlePermisoChange}
+                  handleEliminarPermiso={handleEliminarPermiso}
+                />
+              </div>
+            ) : (
+              <div className="text-center py-8 border rounded-lg">
+                <p className="text-gray-500">
+                  No hay permisos asignados para este cliente
+                </p>
+                <Button
+                  onClick={handleAgregarPermiso}
+                  variant="outline"
+                  className="mt-4"
+                  disabled={
+                    !permisosDisponibles || permisosDisponibles.length === 0
+                  }
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Agregar Primer Permiso
+                </Button>
+              </div>
+            )}
+
+            {permisos_cliente && permisos_cliente.length > 0 && (
+              <ResumenPermiso permisos_cliente={permisos_cliente} />
+            )}
+          </div>
+        </Modal>
+
+        <Modal
+          title="Agregar Permisos al Trabajador"
+          description="Selecciona uno o múltiples permisos para agregar al trabajador"
+          open={openAddPermisos}
+          onOpenChange={setOpenAddPermisos}
+          size="full"
+          height="auto"
+        >
+          <div className="flex-1 overflow-y-auto space-y-4">
+            {permisosDisponibles && permisosDisponibles.length > 0 ? (
+              <>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sticky top-0 z-10 py-2 bg-white">
+                  <span className="text-sm text-gray-600 font-medium">
+                    {permisosSeleccionados.length} de{" "}
+                    {permisosDisponibles.length} seleccionados
+                  </span>
+                  <div className="flex gap-2 w-full sm:w-auto">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleSeleccionarTodos}
+                      className="flex-1"
+                    >
+                      Seleccionar Todos
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleDeseleccionarTodos}
+                      className="flex-1"
+                    >
+                      Deseleccionar Todos
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="border rounded-lg">
+                  <div className="max-h-96 overflow-y-auto">
+                    <TablePermisosCliente
+                      permisosDisponibles={permisosDisponibles}
+                      permisosSeleccionados={permisosSeleccionados}
+                      handleSeleccionarPermiso={handleSeleccionarPermiso}
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-8 border rounded-lg">
+                <p className="text-gray-500">
+                  No hay permisos disponibles para agregar
+                </p>
+              </div>
+            )}
+
+            {permisosSeleccionados.length > 0 && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="p-4 border-b border-blue-200">
+                  <h4 className="font-semibold text-blue-800">
+                    Permisos Seleccionados ({permisosSeleccionados.length})
+                  </h4>
+                </div>
+                <div className="max-h-48 overflow-y-auto">
+                  <div className="p-4 space-y-3">
+                    {permisosSeleccionados.map((permisoId) => {
+                      const permiso = permisosDisponibles?.find(
+                        (p) => p.id === permisoId,
+                      );
+                      return permiso ? (
+                        <div
+                          key={permisoId}
+                          className="flex justify-between items-start bg-white p-3 rounded-lg border border-blue-100"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="text-blue-700 font-medium truncate">
+                              {permiso.modulo}
+                            </p>
+                            <p className="text-sm text-blue-600 line-clamp-2">
+                              {permiso.descripcion}
+                            </p>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleSeleccionarPermiso(permisoId)}
+                            className="text-red-500 hover:text-red-700 ml-2 flex-shrink-0"
+                          >
+                            Quitar
+                          </Button>
+                        </div>
+                      ) : null;
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+          <AlertDialogFooter className="mt-4 pt-4 border-t border-gray-200 flex-shrink-0">
+            <AlertDialogCancel
+              onClick={() => {
+                setOpenAddPermisos(false);
+                setPermisosSeleccionados([]);
+              }}
+            >
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmarAgregarPermiso}
+              disabled={permisosSeleccionados.length === 0}
+            >
+              Agregar {permisosSeleccionados.length} Permiso(s)
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </Modal>
+
+        <Modal
+          title="Agregar Finca"
+          description="Aqui podras agregar las fincas que tendra asignadas este trabajador"
+          open={isOpenFinca}
+          onOpenChange={setIsOpenFinca}
+          size="full"
+          height="auto"
+        >
+          <FormAddAsignarFincas
+            trabajadorId={clienteId}
+            setClienteId={setClienteId}
+            setNombreTrabajador={setNombreTrabajador}
+            nombre={nombreTrabajador}
+            onSuccess={() => setIsOpenFinca(false)}
+          />
+        </Modal>
+
+        <Modal
+          title="Modificar Verificacion"
+          description="Aqui podras verificar o invalidar un usuario"
+          open={openVerified}
+          onOpenChange={setOpenVerified}
+          size="sm"
+          height="auto"
+        >
+          <div className="flex flex-col sm:flex-row justify-between gap-3">
+            <AlertDialogAction onClick={() => updatedVerified(!verficiado)}>
+              Actualizar
+            </AlertDialogAction>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          </div>
+        </Modal>
+
+        <Modal
+          title="Fincas Asignadas Al Trabajador"
+          description="Aqui se observan las fincas que tiene asignadas este trabajador"
+          open={openViewFincasTrabajador}
+          onOpenChange={setOpenViewFincasTrabajador}
+          size="full"
+          height="auto"
+        >
+          <TableFincasTrabajador fincas={fincas_trabajador} />
+        </Modal>
+      </div>
+    );
+  }
+
   return (
     <>
       <Table>
@@ -271,7 +663,7 @@ const TableTrabajadores = ({
                     </div>
                   </div>
                 </TableCell>
-                <TableCell className="flex justify-center">
+                <TableCell className="text-center">
                   <div>
                     <div className="font-mono text-sm">
                       {trabajador.identificacion}
@@ -309,22 +701,24 @@ const TableTrabajadores = ({
                     </Tooltip>
                   </TooltipProvider>
                 </TableCell>
-                <TableCell className="flex justify-center">
+                <TableCell className="text-center">
                   <Button
                     onClick={() => handleOpenFincasTrabajador(trabajador.id)}
-                    variant={"ghost"}
+                    variant="ghost"
+                    size="sm"
                   >
                     Ver Fincas
                   </Button>
                 </TableCell>
-
                 <TableCell className="text-right">
-                  <div>
+                  <div className="flex justify-end gap-1">
                     <Button
                       onClick={() => handleEditTrabajador(trabajador)}
-                      variant={"ghost"}
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
                     >
-                      <Pencil />
+                      <Pencil className="h-4 w-4" />
                     </Button>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -384,7 +778,7 @@ const TableTrabajadores = ({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={7} className="text-center py-8">
+              <TableCell colSpan={6} className="text-center py-8">
                 <div className="flex flex-col items-center gap-2">
                   <Users className="h-12 w-12 text-muted-foreground" />
                   <p className="text-muted-foreground">
@@ -582,6 +976,7 @@ const TableTrabajadores = ({
           onSuccess={() => setIsOpenFinca(false)}
         />
       </Modal>
+
       <Modal
         title="Modificar Verificacion"
         description="Aqui podras verificar o invalidar un usuario"
@@ -592,9 +987,10 @@ const TableTrabajadores = ({
           <AlertDialogAction onClick={() => updatedVerified(!verficiado)}>
             Actualizar
           </AlertDialogAction>
-          <AlertDialogCancel>Cancerlar</AlertDialogCancel>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
         </div>
       </Modal>
+
       <Modal
         title="Fincas Asignadas Al Trabajador"
         description="Aqui se observan las fincas que tiene asignadas este trabajador"

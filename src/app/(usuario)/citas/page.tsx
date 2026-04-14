@@ -4,17 +4,13 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import useGetCitasByUser from "@/hooks/citas/useGetCitasByUser";
-import { useAuthStore } from "@/providers/store/useAuthStore";
-import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import CardCitas from "./ui/CardCitas";
 import { FAB } from "@/components/generics/FAB";
 
 const CitasPage = () => {
-  const { cliente } = useAuthStore();
   const router = useRouter();
-  const clienteId = cliente?.id || "";
   const limit = 10;
 
   const {
@@ -25,7 +21,7 @@ const CitasPage = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useGetCitasByUser(clienteId, limit);
+  } = useGetCitasByUser(limit);
 
   const [allCitas, setAllCitas] = useState<any[]>([]);
 

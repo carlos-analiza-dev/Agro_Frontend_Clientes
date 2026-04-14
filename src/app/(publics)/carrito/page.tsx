@@ -136,7 +136,6 @@ const CarritoPage = () => {
       const proporcion = subtotalSucursal / (totales.subTotal || 1);
 
       const pedidoData: CrearPedidoInterface = {
-        id_cliente: cliente.id,
         id_sucursal:
           grupoSucursal.sucursalId === "default"
             ? undefined

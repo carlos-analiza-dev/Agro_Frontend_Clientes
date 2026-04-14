@@ -3,7 +3,6 @@ export interface CrearCitaInterface {
   animalesId: string[];
   fincaId: string;
   subServicioId: string;
-  clienteId: string;
   fecha: string;
   horaInicio: string;
   horaFin: string;

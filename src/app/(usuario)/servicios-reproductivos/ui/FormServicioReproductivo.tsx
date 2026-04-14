@@ -35,6 +35,7 @@ interface Props {
   onSuccess?: () => void;
   hembras: Animal[];
   machos: Animal[];
+  moneda: string;
 }
 
 const FormServicioReproductivo = ({
@@ -43,6 +44,7 @@ const FormServicioReproductivo = ({
   onSuccess,
   hembras,
   machos,
+  moneda,
 }: Props) => {
   const [errorMessage, setIsErrorMessage] = useState<string>("");
   const [selectedHembra, setSelectedHembra] = useState<string>("");
@@ -496,7 +498,7 @@ const FormServicioReproductivo = ({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="costo">Costo (Lps)</Label>
+          <Label htmlFor="costo">Costo ({moneda})</Label>
           <Input
             id="costo"
             {...register("metadata.costo", { valueAsNumber: true })}

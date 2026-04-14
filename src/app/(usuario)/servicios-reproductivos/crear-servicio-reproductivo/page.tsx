@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 const CrearServicioReproductivo = () => {
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id ?? "";
+  const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const isMobile = useMediaQuery("(max-width: 768px)");
   const router = useRouter();
   const { data: animalesData, isLoading: animalesLoading } =
@@ -42,6 +43,7 @@ const CrearServicioReproductivo = () => {
               setOpenModal={() => router.back()}
               hembras={hembras}
               machos={machos}
+              moneda={moneda}
             />
           </CardContent>
         </Card>

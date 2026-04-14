@@ -269,7 +269,6 @@ const AgregarCitaServicioPage = () => {
   const onSubmit = (data: CrearCitaInterface) => {
     mutation.mutate({
       ...data,
-      clienteId: clienteId,
       cantidadAnimales: cantidadAnimales,
     });
   };

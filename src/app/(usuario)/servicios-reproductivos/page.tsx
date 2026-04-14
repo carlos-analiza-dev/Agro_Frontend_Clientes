@@ -37,6 +37,7 @@ import { EstadoServicio } from "@/interfaces/enums/servicios-reproductivos.enum"
 const ServiciosReproductivosPage = () => {
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id ?? "";
+  const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const router = useRouter();
   const [openModal, setOpenModal] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -229,6 +230,7 @@ const ServiciosReproductivosPage = () => {
             setSelectedServicio={setSelectedServicio}
             selectedServicio={selectedServicio}
             handleOpenModal={handleOpenModal}
+            moneda={moneda}
           />
         );
       }
@@ -250,6 +252,7 @@ const ServiciosReproductivosPage = () => {
             setSelectedServicio={setSelectedServicio}
             selectedServicio={selectedServicio}
             handleOpenModal={handleOpenModal}
+            moneda={moneda}
           />
         );
       }
@@ -429,6 +432,7 @@ const ServiciosReproductivosPage = () => {
           onSuccess={() => setOpenModal(true)}
           hembras={hembras}
           machos={machos}
+          moneda={moneda}
         />
       </Modal>
 

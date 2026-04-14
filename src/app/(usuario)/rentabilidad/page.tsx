@@ -171,9 +171,11 @@ const RentabilidadPage = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-blue-600">{ratio}</div>
+                <div className="text-2xl font-bold text-blue-600">
+                  {ratio.toFixed(2)}
+                </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Ingresos por cada $1 de gasto
+                  Ingresos por cada {moneda}1 de gasto
                 </p>
               </CardContent>
             </Card>

@@ -127,11 +127,11 @@ const Profile = ({ user, height, onUpdateProfileImage }: Props) => {
             >
               <AvatarImage
                 src={imageUrl}
-                alt={user?.name}
+                alt={user?.nombre}
                 className="object-cover"
               />
               <AvatarFallback className="bg-muted text-2xl font-bold">
-                {user?.name ? getInitials(user.name) : "U"}
+                {user?.nombre ? getInitials(user.nombre) : "U"}
               </AvatarFallback>
             </Avatar>
 
@@ -159,7 +159,7 @@ const Profile = ({ user, height, onUpdateProfileImage }: Props) => {
           <CardContent className="p-6">
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-2">
-                <h1 className="text-2xl font-black">{user?.name}</h1>
+                <h1 className="text-2xl font-black">{user?.nombre}</h1>
                 <CheckCircle2 className="w-6 h-6 text-primary" />
               </div>
               <p className="text-muted-foreground">{user?.email}</p>

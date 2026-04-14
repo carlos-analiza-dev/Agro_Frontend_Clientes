@@ -282,7 +282,6 @@ const CrearCitaPage = () => {
   const onSubmit = (data: CrearCitaInterface) => {
     mutation.mutate({
       ...data,
-      clienteId: userId,
       cantidadAnimales: cantidadAnimales,
     });
   };

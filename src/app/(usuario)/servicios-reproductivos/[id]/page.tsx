@@ -15,6 +15,7 @@ const EditarServicioReproductivoPage = () => {
   const { data: servicio, isLoading } = useGetServicioById(servicioId);
 
   const { cliente } = useAuthStore();
+  const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const clienteId = cliente?.id ?? "";
   const isMobile = useMediaQuery("(max-width: 768px)");
   const router = useRouter();
@@ -52,6 +53,7 @@ const EditarServicioReproductivoPage = () => {
               machos={machos}
               setOpenModal={() => router.back()}
               servicio={servicio}
+              moneda={moneda}
             />
           </CardContent>
         </Card>

@@ -26,6 +26,7 @@ interface Props {
   setSelectedServicio: Dispatch<SetStateAction<Servicio | null>>;
   selectedServicio: Servicio | null;
   handleOpenModal: (servicio: Servicio) => void;
+  moneda: string;
 }
 
 const VistaTabla = ({
@@ -35,6 +36,7 @@ const VistaTabla = ({
   handleOpenModal,
   selectedServicio,
   setSelectedServicio,
+  moneda,
 }: Props) => {
   const [openModalEdit, setOpenModalEdit] = useState(false);
   const handleOpenModalEdit = (servicio: Servicio) => {
@@ -127,6 +129,7 @@ const VistaTabla = ({
           setOpenModal={setOpenModalEdit}
           servicio={selectedServicio}
           onSuccess={() => setOpenModalEdit(true)}
+          moneda={moneda}
         />
       </Modal>
     </div>

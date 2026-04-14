@@ -1,11 +1,11 @@
 import { ObtenerCitasByUser } from "@/api/citas/accions/obtener-citas-byuser";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-const useGetCitasByUser = (id: string, limit: number) => {
+const useGetCitasByUser = (limit: number) => {
   return useInfiniteQuery({
-    queryKey: ["citas-user", id, limit],
+    queryKey: ["citas-user", limit],
     queryFn: ({ pageParam = 0 }) =>
-      ObtenerCitasByUser(id, limit, pageParam * limit),
+      ObtenerCitasByUser(limit, pageParam * limit),
     retry: 0,
     getNextPageParam: (lastPage, allPages) => {
       const totalItems = lastPage.total || 0;

@@ -5,6 +5,7 @@ const useGetAlimentacionAnimales = () => {
   return useQuery({
     queryKey: ["alimentacion-animales"],
     queryFn: ObtenerAlimentacionAnimales,
+    retry: 0,
     staleTime: 5 * 60 * 1000,
   });
 };

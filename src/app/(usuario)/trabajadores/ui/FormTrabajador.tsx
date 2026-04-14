@@ -543,11 +543,7 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
       </div>
 
       <div className="mt-6">
-        <Button
-          type="submit"
-          className="w-full bg-green-600 hover:bg-green-700"
-          disabled={isPending}
-        >
+        <Button type="submit" className="w-full " disabled={isPending}>
           {isPending
             ? isEditing
               ? "Actualizando trabajador..."
