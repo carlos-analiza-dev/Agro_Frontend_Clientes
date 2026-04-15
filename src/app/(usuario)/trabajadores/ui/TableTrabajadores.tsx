@@ -62,6 +62,7 @@ import FormAddAsignarFincas from "./FormAddAsignarFincas";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { useRouter } from "next/navigation";
 
 interface Props {
   filteredTrabajadores: Trabajador[] | undefined;
@@ -75,6 +76,7 @@ const TableTrabajadores = ({
   isMobile,
 }: Props) => {
   const queryClient = useQueryClient();
+  const router = useRouter();
   const [permisosSeleccionados, setPermisosSeleccionados] = useState<string[]>(
     [],
   );
@@ -108,8 +110,12 @@ const TableTrabajadores = ({
   };
 
   const handleViewClienteId = (clienteId: string) => {
-    setOpenModalPermisos(true);
-    setClienteId(clienteId);
+    if (isMobile) {
+      router.push(`/trabajadores/asignar-permisos/${clienteId}`);
+    } else {
+      setOpenModalPermisos(true);
+      setClienteId(clienteId);
+    }
   };
 
   const handleAgregarPermiso = () => {

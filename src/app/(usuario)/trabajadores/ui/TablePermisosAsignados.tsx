@@ -32,9 +32,6 @@ const TablePermisosAsignados = ({
         <TableRow>
           <TableHead>Módulo</TableHead>
           <TableHead className="text-center">Ver</TableHead>
-          <TableHead className="text-center">Crear</TableHead>
-          <TableHead className="text-center">Editar</TableHead>
-          <TableHead className="text-center">Eliminar</TableHead>
           <TableHead className="text-center">Acciones</TableHead>
         </TableRow>
       </TableHeader>
@@ -61,42 +58,7 @@ const TablePermisosAsignados = ({
                 }
               />
             </TableCell>
-            <TableCell className="text-center">
-              <Checkbox
-                checked={permisoCliente.crear}
-                onCheckedChange={(checked) =>
-                  handlePermisoChange(
-                    permisoCliente.id,
-                    "crear",
-                    checked as boolean,
-                  )
-                }
-              />
-            </TableCell>
-            <TableCell className="text-center">
-              <Checkbox
-                checked={permisoCliente.editar}
-                onCheckedChange={(checked) =>
-                  handlePermisoChange(
-                    permisoCliente.id,
-                    "editar",
-                    checked as boolean,
-                  )
-                }
-              />
-            </TableCell>
-            <TableCell className="text-center">
-              <Checkbox
-                checked={permisoCliente.eliminar}
-                onCheckedChange={(checked) =>
-                  handlePermisoChange(
-                    permisoCliente.id,
-                    "eliminar",
-                    checked as boolean,
-                  )
-                }
-              />
-            </TableCell>
+
             <TableCell className="text-center">
               <Button
                 variant="ghost"

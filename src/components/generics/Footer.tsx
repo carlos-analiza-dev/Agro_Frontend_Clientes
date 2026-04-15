@@ -15,7 +15,10 @@ import Link from "next/link";
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
-  const quickLinks = [{ name: "Productos", href: "/productos-agroservicios" }];
+  const quickLinks = [
+    { name: "Productos", href: "/productos-agroservicios" },
+    { name: "Servicios", href: "/servicios-sembrador" },
+  ];
 
   const legalLinks = [
     { name: "Términos y Condiciones", href: "/terminos" },

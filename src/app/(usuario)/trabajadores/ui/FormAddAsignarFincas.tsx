@@ -166,10 +166,16 @@ const FormAddAsignarFincas = ({
                 </SelectItem>
               ) : fincas && fincas.data.fincas.length > 0 ? (
                 fincas.data.fincas.map((finca) => (
-                  <SelectItem key={finca.id} value={finca.id}>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{finca.nombre_finca}</span>
-                      <span className="text-xs text-muted-foreground">
+                  <SelectItem
+                    key={finca.id}
+                    value={finca.id}
+                    className="h-[55px]  flex items-center"
+                  >
+                    <div className="flex flex-col justify-center h-full overflow-hidden">
+                      <span className="font-medium truncate">
+                        {finca.nombre_finca}
+                      </span>
+                      <span className="text-xs text-muted-foreground truncate">
                         {finca.ubicacion} - {finca.cantidad_animales} animales
                       </span>
                     </div>
@@ -239,7 +245,9 @@ const FormAddAsignarFincas = ({
         <Button
           type="button"
           variant="outline"
-          onClick={() => setClienteId("")}
+          onClick={() => {
+            (onSuccess(), setClienteId(""));
+          }}
           disabled={isSubmitting}
         >
           Cancelar
