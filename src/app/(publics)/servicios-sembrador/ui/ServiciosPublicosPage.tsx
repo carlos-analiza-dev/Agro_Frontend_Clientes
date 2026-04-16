@@ -2,13 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { RefreshCw, AlertCircle } from "lucide-react";
-import { MessageError } from "@/components/generics/MessageError";
 import SkeletonCard from "@/components/generics/SkeletonCard";
 import Paginacion from "@/components/generics/Paginacion";
 import useGetCategoriasServices from "@/hooks/servicios/useGetCategoriasServices";
 import CardServicios from "./CardServicios";
+import { EmptyServices } from "@/components/servicios/EmptyServices";
 
 const ServiciosPublicosPage = () => {
   const router = useRouter();
@@ -33,6 +31,10 @@ const ServiciosPublicosPage = () => {
     refetch,
   } = useGetCategoriasServices(paisId, limit, offset);
 
+  const onRefresh = async () => {
+    await refetch();
+  };
+
   const servicios = serviciosData?.servicios || [];
   const total = serviciosData?.total || 0;
   const totalPages = Math.ceil(total / limit);
@@ -48,12 +50,11 @@ const ServiciosPublicosPage = () => {
 
   if (isError) {
     return (
-      <div className="min-h-screen bg-background p-4">
-        <div className="max-w-7xl mx-auto">
-          <MessageError
-            titulo="Error al cargar los servicios"
-            descripcion="No se pudieron cargar los servicios disponibles en este momento."
-            onPress={refetch}
+      <div className="min-h-screen flex justify-center items-center bg-gradient-to-b from-background to-muted/20 p-4">
+        <div className="max-w-7xl mx-auto ">
+          <EmptyServices
+            onRefresh={onRefresh}
+            countryName={pais?.nombre || pais?.name}
           />
         </div>
       </div>
@@ -62,19 +63,12 @@ const ServiciosPublicosPage = () => {
 
   if (servicios.length === 0) {
     return (
-      <div className="min-h-screen bg-background p-4">
-        <div className="max-w-7xl mx-auto text-center mt-16">
-          <AlertCircle className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-          <h3 className="text-xl font-semibold mb-2">
-            No hay servicios disponibles
-          </h3>
-          <p className="text-muted-foreground mb-4">
-            No encontramos servicios disponibles en tu país
-          </p>
-          <Button onClick={() => refetch()} variant="outline">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Reintentar
-          </Button>
+      <div className="min-h-screen flex justify-center items-center bg-gradient-to-b from-background to-muted/20 p-4">
+        <div className="max-w-7xl mx-auto">
+          <EmptyServices
+            onRefresh={onRefresh}
+            countryName={pais?.nombre || pais?.name}
+          />
         </div>
       </div>
     );

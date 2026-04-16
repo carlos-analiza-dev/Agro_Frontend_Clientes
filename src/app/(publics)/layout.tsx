@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import "../globals.css";
-import "react-toastify/dist/ReactToastify.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.clientes.interactivecore.app"),

@@ -7,22 +7,89 @@ import {
   ChevronDown,
   AlertCircle,
   ArrowRight,
+  Loader2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { toast } from "react-toastify";
 
 const NotSelecteCountry = () => {
   const router = useRouter();
   const [isHovering, setIsHovering] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+  const [isSelecting, setIsSelecting] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const checkCountry = () => {
+      try {
+        const paisStorage = localStorage.getItem("selectedCountry");
+        const pais = paisStorage ? JSON.parse(paisStorage) : null;
+
+        if (pais && pais.id) {
+          router.replace("/productos-agroservicios");
+        }
+      } catch (error) {
+        toast.error("Ocurrio un errro al verificar el pais");
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    checkCountry();
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [router]);
 
   const handleSelectCountry = () => {
+    setIsSelecting(true);
+
     const countryButton = document.querySelector(".country-dropdown button");
     if (countryButton) {
       (countryButton as HTMLButtonElement).click();
+
+      intervalRef.current = setInterval(() => {
+        try {
+          const paisStorage = localStorage.getItem("selectedCountry");
+          const pais = paisStorage ? JSON.parse(paisStorage) : null;
+
+          if (pais && pais.id) {
+            if (intervalRef.current) {
+              clearInterval(intervalRef.current);
+            }
+            setIsSelecting(false);
+            router.push("/productos-agroservicios");
+          }
+        } catch (error) {
+          toast.error("Error verificando país");
+        }
+      }, 500);
+
+      setTimeout(() => {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          setIsSelecting(false);
+        }
+      }, 10000);
     } else {
-      router.push("/");
+      router.push("/productos-agroservicios");
     }
   };
+
+  if (isChecking) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-orange-50/30 flex items-center justify-center px-4">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-orange-600 mx-auto mb-4" />
+          <p className="text-gray-600">Verificando tu ubicación...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-orange-50/30 flex items-center justify-center px-4">
@@ -86,15 +153,22 @@ const NotSelecteCountry = () => {
                 onClick={handleSelectCountry}
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
-                className="group relative bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-full shadow-lg transition-all transform hover:scale-105 flex items-center justify-center gap-2 overflow-hidden"
+                disabled={isSelecting}
+                className="group relative bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-full shadow-lg transition-all transform hover:scale-105 flex items-center justify-center gap-2 overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="relative z-10 flex items-center gap-2">
-                  <Globe className="h-5 w-5" />
-                  Seleccionar país
-                  {isHovering ? (
+                  {isSelecting ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <Globe className="h-5 w-5" />
+                  )}
+                  {isSelecting ? "Seleccionando..." : "Seleccionar país"}
+                  {!isSelecting && isHovering ? (
                     <ArrowRight className="h-4 w-4 transition-all" />
                   ) : (
-                    <ChevronDown className="h-4 w-4 transition-all" />
+                    !isSelecting && (
+                      <ChevronDown className="h-4 w-4 transition-all" />
+                    )
                   )}
                 </span>
                 <div className="absolute inset-0 bg-orange-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />

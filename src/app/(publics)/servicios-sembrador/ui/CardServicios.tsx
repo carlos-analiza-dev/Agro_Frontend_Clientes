@@ -1,29 +1,44 @@
 import { Servicio } from "@/api/servicios/interfaces/response-categorias-services";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Clock, DollarSign } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface Props {
   categoria: Servicio;
 }
 
 const CardServicios = ({ categoria }: Props) => {
+  const router = useRouter();
   return (
-    <Card className="overflow-hidden hover:shadow-xl transition-all duration-300">
+    <Card
+      onClick={() => router.push(`/servicios-sembrador/${categoria.id}`)}
+      className="overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-300 group"
+    >
       <div className="relative h-48 w-full">
         <Image
           src={`/images/servicio_image.png`}
           alt={categoria.nombre}
           fill
-          className="object-cover"
+          className="object-cover group-hover:scale-105 transition-transform duration-300"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
+
+        <div className="absolute top-3 right-3 z-10">
+          <Badge className="bg-black/70 hover:bg-black/80 text-white backdrop-blur-sm px-3 py-1.5 text-sm font-semibold shadow-lg border-none">
+            {categoria.nombre}
+          </Badge>
+        </div>
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
+
       <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5">
-        <CardTitle className="text-xl font-bold">{categoria.nombre}</CardTitle>
+        <CardTitle className="text-xl font-bold line-clamp-1">
+          {categoria.nombre}
+        </CardTitle>
         {categoria.descripcion && (
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
             {categoria.descripcion}
           </p>
         )}
@@ -31,64 +46,37 @@ const CardServicios = ({ categoria }: Props) => {
 
       <CardContent className="p-0">
         <div className="divide-y">
-          {categoria.subServicios.map((subServicio) => {
-            const precioPorPais = subServicio.preciosPorPais?.[0];
-            const simboloMoneda = precioPorPais?.pais?.simbolo_moneda || "L";
-            const precio = precioPorPais?.precio || "0";
-
+          {categoria.subServicios.slice(0, 3).map((subServicio) => {
             return (
               <div
                 key={subServicio.id}
                 className="p-4 hover:bg-muted/50 transition-colors"
               >
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-semibold text-lg">
+                  <h3 className="font-semibold text-lg line-clamp-1">
                     {subServicio.nombre}
                   </h3>
                   <Badge
                     variant={subServicio.disponible ? "default" : "destructive"}
+                    className="flex-shrink-0 ml-2"
                   >
                     {subServicio.disponible ? "Disponible" : "No disponible"}
                   </Badge>
                 </div>
-
                 {subServicio.descripcion && (
-                  <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                  <p className="text-sm text-muted-foreground line-clamp-2">
                     {subServicio.descripcion}
                   </p>
-                )}
-
-                <div className="flex flex-wrap gap-3 mt-2">
-                  {precioPorPais && (
-                    <div className="flex items-center gap-1 text-sm">
-                      <DollarSign className="h-4 w-4 text-green-600" />
-                      <span className="font-semibold">
-                        {simboloMoneda} {parseFloat(precio).toFixed(2)}
-                      </span>
-                    </div>
-                  )}
-
-                  {precioPorPais?.tiempo && (
-                    <div className="flex items-center gap-1 text-sm">
-                      <Clock className="h-4 w-4 text-blue-600" />
-                      <span>{precioPorPais.tiempo} hr(s)</span>
-                    </div>
-                  )}
-                </div>
-
-                {precioPorPais?.insumos && precioPorPais.insumos.length > 0 && (
-                  <div className="mt-3 pt-2 border-t">
-                    <p className="text-xs text-muted-foreground">
-                      Insumos incluidos:{" "}
-                      {precioPorPais.insumos
-                        .map((i) => i.insumo.nombre)
-                        .join(", ")}
-                    </p>
-                  </div>
                 )}
               </div>
             );
           })}
+
+          {categoria.subServicios.length > 3 && (
+            <div className="p-3 text-center text-sm text-muted-foreground bg-muted/30">
+              +{categoria.subServicios.length - 3} servicios más
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

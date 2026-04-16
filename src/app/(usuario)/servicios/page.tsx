@@ -2,12 +2,15 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
-import { MessageError } from "@/components/generics/MessageError";
+import { useState } from "react";
 import useGetServiciosActivos from "@/hooks/servicios/useGetServiciosActivos";
-import CardServiceUsers from "./ui/CardServiceUsers";
+import { EmptyServices } from "@/components/servicios/EmptyServices";
+import { useAuthStore } from "@/providers/store/useAuthStore";
+import CardServiceUsers from "@/components/servicios/CardServiceUsers";
 
 const ServicesUser = () => {
+  const { cliente } = useAuthStore();
+  const paisName = cliente?.pais.nombre ?? "";
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
 
@@ -43,24 +46,20 @@ const ServicesUser = () => {
 
   if (isError) {
     return (
-      <div className="flex-1 flex justify-center p-5 w-full">
-        <MessageError
-          titulo="Error al cargar servicios"
-          descripcion="Ocurrió un problema al obtener los servicios. Por favor, inténtalo de nuevo más tarde."
-          onPress={() => onRefresh()}
-        />
+      <div className="min-h-screen flex justify-center items-center bg-gradient-to-b from-background to-muted/20 p-4">
+        <div className="max-w-7xl mx-auto ">
+          <EmptyServices onRefresh={onRefresh} countryName={paisName} />
+        </div>
       </div>
     );
   }
 
   if (servicios?.length === 0) {
     return (
-      <div className="flex-1 flex justify-center p-5 w-full">
-        <MessageError
-          titulo="No hay servicios disponibles"
-          descripcion="Actualmente no hay servicios activos. Por favor, verifica más tarde."
-          onPress={() => onRefresh()}
-        />
+      <div className="min-h-screen flex justify-center items-center bg-gradient-to-b from-background to-muted/20 p-4">
+        <div className="max-w-7xl mx-auto">
+          <EmptyServices onRefresh={onRefresh} countryName={paisName} />
+        </div>
       </div>
     );
   }
@@ -84,7 +83,7 @@ const ServicesUser = () => {
                 services={item}
                 onPress={() =>
                   router.push(
-                    `/servicios/${item.id}?nombre=${encodeURIComponent(item.nombre)}`
+                    `/servicios/${item.id}?nombre=${encodeURIComponent(item.nombre)}`,
                   )
                 }
               />

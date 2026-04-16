@@ -29,7 +29,6 @@ const ProductDetailsPage = () => {
   const { id: productoId } = useParams();
   const { esFavorito, toggleFavorito } = useFavoritos();
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const router = useRouter();
   const { cliente } = useAuthStore();
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const paisId = cliente?.pais.id || "";

@@ -1,4 +1,4 @@
-import { ObtenerCategoriasServices } from "@/api/servicios/accions/obtener-servicios copy";
+import { ObtenerCategoriasServices } from "@/api/servicios/accions/obtener-servicios-categorias";
 import { useQuery } from "@tanstack/react-query";
 
 const useGetCategoriasServices = (

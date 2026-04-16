@@ -428,14 +428,21 @@ const FormRegister = () => {
           Registrarse
         </Button>
       </div>
-      <div className="flex justify-between">
-        <Link href="/reset-password" className="text-green-600 hover:underline">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between text-sm">
+        <Link
+          href="/reset-password"
+          className="text-green-600 hover:underline text-center sm:text-left"
+        >
           ¿Olvidaste tu contraseña?
         </Link>
-        <div className="flex items-center gap-4">
-          <p>¿Ya tienes una cuenta?</p>
-          <Link href="/login" className="text-green-600 hover:underline">
-            Iniciar Sesión
+
+        <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-center sm:text-left">
+          <p className="text-gray-600">¿Ya tienes una cuenta?</p>
+          <Link
+            href="/login"
+            className="text-green-600 hover:underline font-medium"
+          >
+            Iniciar sesión
           </Link>
         </div>
       </div>

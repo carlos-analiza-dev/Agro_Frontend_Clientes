@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { MessageSquarePlus, CheckCircle, Share2 } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import useGetProductoById from "@/hooks/productos/useGetProductoById";
 import { MessageError } from "@/components/generics/MessageError";
@@ -32,6 +32,7 @@ import {
 
 const ProductDetailsPage = () => {
   const { id: productoId } = useParams();
+  const router = useRouter();
   const { esFavorito, toggleFavorito } = useFavoritos();
   const isMobile = useMediaQuery("(max-width: 768px)");
   const { cliente } = useAuthStore();
@@ -39,6 +40,12 @@ const ProductDetailsPage = () => {
   const pais = paisStorage ? JSON.parse(paisStorage) : null;
   const paisId = pais?.id;
   const moneda = pais?.simbolo_moneda as string;
+
+  useEffect(() => {
+    if (!paisId) {
+      router.push("/not-selected-country");
+    }
+  }, [paisId, router]);
 
   const limit = 5;
   const [offset, setOffset] = useState(0);
