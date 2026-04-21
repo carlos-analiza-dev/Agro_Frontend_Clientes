@@ -63,6 +63,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
+import { getInitials } from "@/helpers/funciones/getInitials";
 
 interface Props {
   filteredTrabajadores: Trabajador[] | undefined;
@@ -99,15 +100,6 @@ const TableTrabajadores = ({
         (permisoCliente) => permisoCliente.permiso.id === permisoActivo.id,
       ),
   );
-
-  const getInitials = (nombre: string) => {
-    return nombre
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
 
   const handleViewClienteId = (clienteId: string) => {
     if (isMobile) {

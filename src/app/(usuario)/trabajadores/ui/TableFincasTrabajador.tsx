@@ -37,6 +37,7 @@ import { eliminarFincaTrabajador } from "@/api/fincas-trabajador/accions/elimina
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
+import { getInitials } from "@/helpers/funciones/getInitials";
 
 interface Props {
   fincas: ResposeFincasAsignadasTrabajador[] | undefined;
@@ -44,14 +45,6 @@ interface Props {
 
 const TableFincasTrabajador = ({ fincas }: Props) => {
   const queryClient = useQueryClient();
-  const getInitials = (nombre: string) => {
-    return nombre
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
 
   const onEliminarAsignacion = async (asignacionId: string) => {
     try {

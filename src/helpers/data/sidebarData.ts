@@ -66,6 +66,20 @@ export const navItems = [
     ],
   },
   {
+    category: "Gestión de Nómina",
+    items: [
+      { name: "Planillas", href: "/planillas", icon: FileText },
+      { name: "Jornadas", href: "/jornadas", icon: BriefcaseMedical },
+      { name: "Pagos", href: "/pagos", icon: DollarSign },
+      {
+        name: "Configuración",
+        href: "/configuracion-trabajador",
+        icon: UserCog,
+      },
+      { name: "Reportes", href: "/reportes-planillas", icon: TrendingUp },
+    ],
+  },
+  {
     category: "Salud Animal",
     items: [
       { name: "Historial Médico", href: "/historial-medico", icon: Heart },

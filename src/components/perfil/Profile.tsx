@@ -20,6 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../ui/alert-dialog";
+import { getInitials } from "@/helpers/funciones/getInitials";
 
 interface Props {
   user: Cliente | undefined;
@@ -102,15 +103,6 @@ const Profile = ({ user, height, onUpdateProfileImage }: Props) => {
         );
       }
     }
-  };
-
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((part) => part[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
   };
 
   return (
