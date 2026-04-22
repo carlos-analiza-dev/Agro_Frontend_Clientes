@@ -33,7 +33,9 @@ const ModalConfig = ({
       return {
         horasPorDia: 0,
         valorHoraNormal: 0,
-        valorHoraExtra: 0,
+        valorHoraExtraDiurna: 0,
+        valorHoraExtraNocturna: 0,
+        valorHoraExtraFestiva: 0,
         salarioSemanal: 0,
         salarioMensual: 0,
         totalBonificaciones: 0,
@@ -45,11 +47,18 @@ const ModalConfig = ({
     const salarioDiario = Number(selectedTrabajador.salarioDiario);
     const diasTrabajadosSemanal = selectedTrabajador.diasTrabajadosSemanal || 5;
     const horasJornadaSemanal = selectedTrabajador.horasJornadaSemanal || 40;
-    const factorHoraExtra = Number(selectedTrabajador.factorHoraExtra);
+    const factorHoraExtraDiurnas =
+      Number(selectedTrabajador.factorHoraExtraDiurnas) || 1.5;
+    const factorHoraExtraNocturnas =
+      Number(selectedTrabajador.factorHoraExtraNocturnas) || 1.75;
+    const factorHoraExtraFestivas =
+      Number(selectedTrabajador.factorHoraExtraFestivas) || 2;
 
     const horasPorDia = horasJornadaSemanal / diasTrabajadosSemanal;
     const valorHoraNormal = horasPorDia > 0 ? salarioDiario / horasPorDia : 0;
-    const valorHoraExtra = valorHoraNormal * factorHoraExtra;
+    const valorHoraExtraDiurna = valorHoraNormal * factorHoraExtraDiurnas;
+    const valorHoraExtraNocturna = valorHoraNormal * factorHoraExtraNocturnas;
+    const valorHoraExtraFestiva = valorHoraNormal * factorHoraExtraFestivas;
     const salarioSemanal = salarioDiario * diasTrabajadosSemanal;
     const salarioMensual = salarioSemanal * 4;
 
@@ -71,7 +80,9 @@ const ModalConfig = ({
     return {
       horasPorDia,
       valorHoraNormal,
-      valorHoraExtra,
+      valorHoraExtraDiurna,
+      valorHoraExtraNocturna,
+      valorHoraExtraFestiva,
       salarioSemanal,
       salarioMensual,
       totalBonificaciones,
@@ -241,11 +252,39 @@ const ModalConfig = ({
                     {valoresCalculados.horasPorDia.toFixed(1)} horas
                   </p>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-gray-500">Factor Hora Extra</p>
-                  <p className="text-sm font-medium">
-                    {selectedTrabajador.factorHoraExtra}x
-                  </p>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                Factores de Hora Extra
+              </h3>
+              <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20 p-4 rounded-lg space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">
+                    Factor Hora Extra Diurna:
+                  </span>
+                  <span className="font-semibold text-orange-600">
+                    {selectedTrabajador.factorHoraExtraDiurnas || 1.5}x
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">
+                    Factor Hora Extra Nocturna:
+                  </span>
+                  <span className="font-semibold text-red-600">
+                    {selectedTrabajador.factorHoraExtraNocturnas || 1.75}x
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">
+                    Factor Hora Extra Festiva:
+                  </span>
+                  <span className="font-semibold text-purple-600">
+                    {selectedTrabajador.factorHoraExtraFestivas || 2}x
+                  </span>
                 </div>
               </div>
             </div>
@@ -267,10 +306,35 @@ const ModalConfig = ({
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">
-                    Valor Hora Extra:
+                    Valor Hora Extra Diurna:
                   </span>
-                  <span className="font-semibold text-green-600">
-                    {formatCurrency(valoresCalculados.valorHoraExtra, moneda)}
+                  <span className="font-semibold text-orange-600">
+                    {formatCurrency(
+                      valoresCalculados.valorHoraExtraDiurna,
+                      moneda,
+                    )}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">
+                    Valor Hora Extra Nocturna:
+                  </span>
+                  <span className="font-semibold text-red-600">
+                    {formatCurrency(
+                      valoresCalculados.valorHoraExtraNocturna,
+                      moneda,
+                    )}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">
+                    Valor Hora Extra Festiva:
+                  </span>
+                  <span className="font-semibold text-purple-600">
+                    {formatCurrency(
+                      valoresCalculados.valorHoraExtraFestiva,
+                      moneda,
+                    )}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">

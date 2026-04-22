@@ -35,11 +35,12 @@ import useGetTrabajadores from "@/hooks/trabajadores/useGetTrabajadores";
 import { formatCurrency } from "@/helpers/funciones/formatCurrency";
 import { CreateConfigTrabajador } from "@/api/configuraciones-trabajadores/accions/crear-configuracion";
 import { EditarConfigTrabajador } from "@/api/configuraciones-trabajadores/accions/editar-configuracion";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 
 interface Props {
   onSuccess: () => void;
   configuracion?: Configuraciones | null;
-  setSelectedConfig: Dispatch<SetStateAction<Configuraciones | null>>;
+  setSelectedConfig?: Dispatch<SetStateAction<Configuraciones | null>>;
   moneda: string;
 }
 
@@ -53,6 +54,7 @@ const FormConfigTrabajadores = ({
   const queryClient = useQueryClient();
   const { data: trabajadores, isLoading: loadingTrabajadores } =
     useGetTrabajadores();
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   const [valorHoraNormal, setValorHoraNormal] = useState<number>(0);
   const [valorHoraExtraDiurna, setValorHoraExtraDiurna] = useState<number>(0);
@@ -248,7 +250,6 @@ const FormConfigTrabajadores = ({
   const onSubmit = (data: CrearConfigTrabajadorInterface) => {
     if (isEditing && configuracion) {
       data.trabajadorId = configuracion.trabajadorId;
-
       updateMutation.mutate({ id: configuracion.id, data });
     } else {
       createMutation.mutate(data);
@@ -281,23 +282,25 @@ const FormConfigTrabajadores = ({
 
   const handleCancel = () => {
     resetForm();
-    setSelectedConfig(null);
+    if (setSelectedConfig) {
+      setSelectedConfig(null);
+    }
     onSuccess();
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 md:space-y-6">
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
+        <CardHeader className="p-4 md:p-6">
+          <CardTitle className="text-base md:text-lg flex items-center gap-2">
             <Briefcase className="h-5 w-5" />
             Información Laboral
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="p-4 md:p-6 pt-0 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="trabajadorId">
+              <Label htmlFor="trabajadorId" className="text-sm md:text-base">
                 Trabajador <span className="text-red-500">*</span>
               </Label>
               <Select
@@ -305,7 +308,7 @@ const FormConfigTrabajadores = ({
                 onValueChange={(value) => setValue("trabajadorId", value)}
                 disabled={isEditing}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecciona un trabajador" />
                 </SelectTrigger>
                 <SelectContent>
@@ -339,7 +342,10 @@ const FormConfigTrabajadores = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="fechaContratacion">
+              <Label
+                htmlFor="fechaContratacion"
+                className="text-sm md:text-base"
+              >
                 Fecha de Contratación <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
@@ -347,7 +353,7 @@ const FormConfigTrabajadores = ({
                 <Input
                   id="fechaContratacion"
                   type="date"
-                  className="pl-10"
+                  className="pl-10 w-full"
                   {...register("fechaContratacion", {
                     required: "La fecha de contratación es requerida",
                   })}
@@ -361,16 +367,19 @@ const FormConfigTrabajadores = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="cargo">Cargo</Label>
+              <Label htmlFor="cargo" className="text-sm md:text-base">
+                Cargo
+              </Label>
               <Input
                 id="cargo"
                 placeholder="Ej: Ordeñador, Vaquero, Capataz"
+                className="w-full"
                 {...register("cargo")}
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Estado</Label>
+              <Label className="text-sm md:text-base">Estado</Label>
               <div className="flex items-center space-x-2 pt-2">
                 <Switch
                   id="activo"
@@ -387,16 +396,16 @@ const FormConfigTrabajadores = ({
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
+        <CardHeader className="p-4 md:p-6">
+          <CardTitle className="text-base md:text-lg flex items-center gap-2">
             <DollarSign className="h-5 w-5" />
             Configuración Salarial
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <CardContent className="p-4 md:p-6 pt-0 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="salarioDiario">
+              <Label htmlFor="salarioDiario" className="text-sm md:text-base">
                 Salario Diario ({moneda}){" "}
                 <span className="text-red-500">*</span>
               </Label>
@@ -406,7 +415,7 @@ const FormConfigTrabajadores = ({
                   id="salarioDiario"
                   type="number"
                   step="0.01"
-                  className="pl-10"
+                  className="pl-10 w-full"
                   placeholder="0.00"
                   {...register("salarioDiario", {
                     required: "El salario diario es requerido",
@@ -426,7 +435,10 @@ const FormConfigTrabajadores = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="diasTrabajadosSemanal">
+              <Label
+                htmlFor="diasTrabajadosSemanal"
+                className="text-sm md:text-base"
+              >
                 Días por Semana <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
@@ -435,7 +447,7 @@ const FormConfigTrabajadores = ({
                   id="diasTrabajadosSemanal"
                   type="number"
                   step="1"
-                  className="pl-10"
+                  className="pl-10 w-full"
                   placeholder="5"
                   {...register("diasTrabajadosSemanal", {
                     required: "Los días trabajados son requeridos",
@@ -456,7 +468,10 @@ const FormConfigTrabajadores = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="horasJornadaSemanal">
+              <Label
+                htmlFor="horasJornadaSemanal"
+                className="text-sm md:text-base"
+              >
                 Horas Semanales <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
@@ -465,7 +480,7 @@ const FormConfigTrabajadores = ({
                   id="horasJornadaSemanal"
                   type="number"
                   step="1"
-                  className="pl-10"
+                  className="pl-10 w-full"
                   placeholder="40"
                   {...register("horasJornadaSemanal", {
                     required: "Las horas semanales son requeridas",
@@ -486,11 +501,11 @@ const FormConfigTrabajadores = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
             <div className="space-y-2">
               <Label
                 htmlFor="factorHoraExtraDiurnas"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 text-sm md:text-base"
               >
                 <Sun className="h-4 w-4 text-yellow-500" />
                 Factor Hora Extra Diurnas
@@ -501,7 +516,7 @@ const FormConfigTrabajadores = ({
                   id="factorHoraExtraDiurnas"
                   type="number"
                   step="0.1"
-                  className="pl-10"
+                  className="pl-10 w-full"
                   {...register("factorHoraExtraDiurnas", {
                     required: "El factor de hora extra diurnas es requerido",
                     min: { value: 1, message: "Mínimo 1.0" },
@@ -523,7 +538,7 @@ const FormConfigTrabajadores = ({
             <div className="space-y-2">
               <Label
                 htmlFor="factorHoraExtraNocturnas"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 text-sm md:text-base"
               >
                 <Moon className="h-4 w-4 text-blue-500" />
                 Factor Hora Extra Nocturnas
@@ -534,7 +549,7 @@ const FormConfigTrabajadores = ({
                   id="factorHoraExtraNocturnas"
                   type="number"
                   step="0.1"
-                  className="pl-10"
+                  className="pl-10 w-full"
                   {...register("factorHoraExtraNocturnas", {
                     required: "El factor de hora extra nocturnas es requerido",
                     min: { value: 1, message: "Mínimo 1.0" },
@@ -556,7 +571,7 @@ const FormConfigTrabajadores = ({
             <div className="space-y-2">
               <Label
                 htmlFor="factorHoraExtraFestivas"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 text-sm md:text-base"
               >
                 <Star className="h-4 w-4 text-purple-500" />
                 Factor Hora Extra Festivas
@@ -566,8 +581,8 @@ const FormConfigTrabajadores = ({
                 <Input
                   id="factorHoraExtraFestivas"
                   type="number"
-                  step="1"
-                  className="pl-10"
+                  step="0.1"
+                  className="pl-10 w-full"
                   {...register("factorHoraExtraFestivas", {
                     required: "El factor de hora extra festivas es requerido",
                     min: { value: 1, message: "Mínimo 1.0" },
@@ -590,8 +605,8 @@ const FormConfigTrabajadores = ({
           {salarioDiario > 0 &&
             diasTrabajadosSemanal > 0 &&
             horasJornadaSemanal > 0 && (
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 p-4 rounded-lg">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 p-4 rounded-lg overflow-x-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                       Horas por Día
@@ -639,8 +654,8 @@ const FormConfigTrabajadores = ({
                   <p className="text-sm font-semibold mb-2">
                     Valores de Horas Extras:
                   </p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="flex items-center justify-between">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 p-2 bg-white/50 dark:bg-black/20 rounded">
                       <div className="flex items-center gap-2">
                         <Sun className="h-4 w-4 text-yellow-500" />
                         <span className="text-sm">Diurnas:</span>
@@ -652,7 +667,7 @@ const FormConfigTrabajadores = ({
                         ({factorHoraExtraDiurnas}x)
                       </span>
                     </div>
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 p-2 bg-white/50 dark:bg-black/20 rounded">
                       <div className="flex items-center gap-2">
                         <Moon className="h-4 w-4 text-blue-500" />
                         <span className="text-sm">Nocturnas:</span>
@@ -664,7 +679,7 @@ const FormConfigTrabajadores = ({
                         ({factorHoraExtraNocturnas}x)
                       </span>
                     </div>
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 p-2 bg-white/50 dark:bg-black/20 rounded">
                       <div className="flex items-center gap-2">
                         <Star className="h-4 w-4 text-purple-500" />
                         <span className="text-sm">Festivas:</span>
@@ -684,24 +699,24 @@ const FormConfigTrabajadores = ({
       </Card>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-lg flex items-center gap-2">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 md:p-6">
+          <CardTitle className="text-base md:text-lg flex items-center gap-2">
             <Plus className="h-5 w-5 text-green-600" />
             Bonificaciones Fijas
           </CardTitle>
           <Button
             type="button"
             variant="outline"
-            size="sm"
+            size={isMobile ? "default" : "sm"}
             onClick={() =>
               appendBonificacion({ concepto: "", montoMensual: 0 })
             }
-            className="gap-1"
+            className="gap-1 w-full sm:w-auto"
           >
             <Plus className="h-4 w-4" /> Agregar
           </Button>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 md:p-6 pt-0">
           {bonificacionesFields.length === 0 ? (
             <p className="text-gray-500 text-center py-4">
               No hay bonificaciones registradas. Click en "Agregar" para añadir.
@@ -709,22 +724,26 @@ const FormConfigTrabajadores = ({
           ) : (
             <div className="space-y-3">
               {bonificacionesFields.map((field, index) => (
-                <div key={field.id} className="flex gap-3 items-start">
-                  <div className="flex-1">
+                <div
+                  key={field.id}
+                  className="flex flex-col sm:flex-row gap-3 items-start"
+                >
+                  <div className="flex-1 w-full">
                     <Input
                       placeholder="Concepto (Ej: Bono transporte)"
+                      className="w-full"
                       {...register(`bonificacionesFijas.${index}.concepto`, {
                         required: "El concepto es requerido",
                       })}
                     />
                   </div>
-                  <div className="w-40">
+                  <div className="w-full sm:w-40">
                     <div className="relative">
                       <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                       <Input
                         type="number"
                         step="0.01"
-                        className="pl-10"
+                        className="pl-10 w-full"
                         placeholder="Monto mensual"
                         {...register(
                           `bonificacionesFijas.${index}.montoMensual`,
@@ -745,7 +764,7 @@ const FormConfigTrabajadores = ({
                     variant="ghost"
                     size="icon"
                     onClick={() => removeBonificacion(index)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-red-500 hover:text-red-700 w-full sm:w-auto"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -757,22 +776,22 @@ const FormConfigTrabajadores = ({
       </Card>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-lg flex items-center gap-2">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 md:p-6">
+          <CardTitle className="text-base md:text-lg flex items-center gap-2">
             <Trash2 className="h-5 w-5 text-red-600" />
             Deducciones Fijas
           </CardTitle>
           <Button
             type="button"
             variant="outline"
-            size="sm"
+            size={isMobile ? "default" : "sm"}
             onClick={() => appendDeduccion({ concepto: "", montoMensual: 0 })}
-            className="gap-1"
+            className="gap-1 w-full sm:w-auto"
           >
             <Plus className="h-4 w-4" /> Agregar
           </Button>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 md:p-6 pt-0">
           {deduccionesFields.length === 0 ? (
             <p className="text-gray-500 text-center py-4">
               No hay deducciones registradas. Click en "Agregar" para añadir.
@@ -780,22 +799,26 @@ const FormConfigTrabajadores = ({
           ) : (
             <div className="space-y-3">
               {deduccionesFields.map((field, index) => (
-                <div key={field.id} className="flex gap-3 items-start">
-                  <div className="flex-1">
+                <div
+                  key={field.id}
+                  className="flex flex-col sm:flex-row gap-3 items-start"
+                >
+                  <div className="flex-1 w-full">
                     <Input
                       placeholder="Concepto (Ej: Préstamo)"
+                      className="w-full"
                       {...register(`deduccionesFijas.${index}.concepto`, {
                         required: "El concepto es requerido",
                       })}
                     />
                   </div>
-                  <div className="w-40">
+                  <div className="w-full sm:w-40">
                     <div className="relative">
                       <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                       <Input
                         type="number"
                         step="0.01"
-                        className="pl-10"
+                        className="pl-10 w-full"
                         placeholder="Monto mensual"
                         {...register(`deduccionesFijas.${index}.montoMensual`, {
                           required: "El monto es requerido",
@@ -813,7 +836,7 @@ const FormConfigTrabajadores = ({
                     variant="ghost"
                     size="icon"
                     onClick={() => removeDeduccion(index)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-red-500 hover:text-red-700 w-full sm:w-auto"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -828,18 +851,20 @@ const FormConfigTrabajadores = ({
         deduccionesFields.length > 0 ||
         salarioMensual > 0) && (
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Resumen Mensual</CardTitle>
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="text-base md:text-lg">
+              Resumen Mensual
+            </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 md:p-6 pt-0">
             <div className="space-y-3">
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                 <span className="text-gray-600">Salario Base Mensual:</span>
                 <span className="font-semibold">
                   {formatCurrency(salarioMensual, moneda)}
                 </span>
               </div>
-              <div className="flex justify-between items-center text-sm text-gray-500">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 text-sm text-gray-500">
                 <span>Desglose:</span>
                 <span>
                   {formatCurrency(salarioDiario, moneda)}/día ×{" "}
@@ -847,7 +872,7 @@ const FormConfigTrabajadores = ({
                 </span>
               </div>
               {bonificacionesFields.length > 0 && (
-                <div className="flex justify-between items-center text-green-600">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 text-green-600">
                   <span>Total Bonificaciones:</span>
                   <span className="font-semibold">
                     {formatCurrency(totalBonificaciones, moneda)}
@@ -855,7 +880,7 @@ const FormConfigTrabajadores = ({
                 </div>
               )}
               {deduccionesFields.length > 0 && (
-                <div className="flex justify-between items-center text-red-600">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 text-red-600">
                   <span>Total Deducciones:</span>
                   <span className="font-semibold">
                     {formatCurrency(totalDeducciones, moneda)}
@@ -863,7 +888,7 @@ const FormConfigTrabajadores = ({
                 </div>
               )}
               <div className="border-t pt-3">
-                <div className="flex justify-between items-center text-lg font-bold">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 text-lg font-bold">
                   <span>Total Neto Mensual:</span>
                   <span className="text-blue-600">
                     {formatCurrency(totalNetoMensual, moneda)}
@@ -875,32 +900,40 @@ const FormConfigTrabajadores = ({
         </Card>
       )}
 
-      <div className="flex justify-end gap-3">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => handleCancel()}
-          disabled={isPending}
-        >
-          Cancelar
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={resetForm}
-          disabled={isPending}
-        >
-          Limpiar
-        </Button>
-        <Button type="submit" disabled={isPending}>
-          {isPending
-            ? isEditing
-              ? "Actualizando..."
-              : "Creando..."
-            : isEditing
-              ? "Actualizar Configuración"
-              : "Crear Configuración"}
-        </Button>
+      <div className="sticky bottom-0 bg-background border-t pt-4 pb-2 -mb-2 mt-6">
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleCancel}
+            disabled={isPending}
+            className="w-full sm:w-auto order-3 sm:order-1"
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={resetForm}
+            disabled={isPending}
+            className="w-full sm:w-auto order-2"
+          >
+            Limpiar
+          </Button>
+          <Button
+            type="submit"
+            disabled={isPending}
+            className="w-full sm:w-auto order-1 sm:order-3"
+          >
+            {isPending
+              ? isEditing
+                ? "Actualizando..."
+                : "Creando..."
+              : isEditing
+                ? "Actualizar Configuración"
+                : "Crear Configuración"}
+          </Button>
+        </div>
       </div>
     </form>
   );

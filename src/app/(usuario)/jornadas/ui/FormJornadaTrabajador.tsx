@@ -424,12 +424,13 @@ const FormJornadaTrabajador = ({
         </CardContent>
       </Card>
 
-      <div className="flex justify-end gap-3">
+      <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 mt-6">
         <Button
           type="button"
           variant="outline"
           onClick={handleCancel}
           disabled={isPending}
+          className="w-full sm:w-auto"
         >
           Cancelar
         </Button>
@@ -438,10 +439,11 @@ const FormJornadaTrabajador = ({
           variant="outline"
           onClick={resetForm}
           disabled={isPending}
+          className="w-full sm:w-auto"
         >
           Limpiar
         </Button>
-        <Button type="submit" disabled={isPending}>
+        <Button className="w-full sm:w-auto" type="submit" disabled={isPending}>
           {isPending
             ? isEditing
               ? "Actualizando..."

@@ -31,10 +31,12 @@ import FormConfigTrabajadores from "./ui/FormConfigTrabajadores";
 import { StatCard } from "@/components/generics/StatCard";
 import SkeletonJornadas from "@/components/generics/SkeletonJornadas";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
+import { useRouter } from "next/navigation";
 
 const ConfiguracionTrabajadoresPage = () => {
   const { cliente } = useAuthStore();
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [openAddConfig, setOpenAddConfig] = useState(false);
@@ -69,8 +71,12 @@ const ConfiguracionTrabajadoresPage = () => {
   });
 
   const handleEditConfig = (config: Configuraciones) => {
-    setOpenAddConfig(true);
-    setSelectedConfig(config);
+    if (isMobile) {
+      router.push(`/configuracion-trabajador/${config.id}`);
+    } else {
+      setOpenAddConfig(true);
+      setSelectedConfig(config);
+    }
   };
 
   if (isLoading) {

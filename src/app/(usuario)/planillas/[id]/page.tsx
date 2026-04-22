@@ -2,43 +2,38 @@
 import ButtonBack from "@/components/generics/ButtonBack";
 import SkeletonCard from "@/components/generics/SkeletonCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import useGetJornadasTranajadoresById from "@/hooks/jornadas-trabajadores/useGetJornadasTranajadoresById";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
+import useGetPlanillasById from "@/hooks/planillas/useGetPlanillasById";
 import { useParams, useRouter } from "next/navigation";
-import FormJornadaTrabajador from "../ui/FormJornadaTrabajador";
+import FormPlanilla from "../ui/FormPlanilla";
 
-const EditJornadaPage = () => {
+const EditarPlanillaPage = () => {
   const { id } = useParams();
-  const jornadaId = id as string;
+  const planillaId = id as string;
   const isMobile = useMediaQuery("(max-width: 768px)");
   const router = useRouter();
-  const { data: jornada, isLoading } =
-    useGetJornadasTranajadoresById(jornadaId);
+  const { data: planilla, isLoading } = useGetPlanillasById(planillaId);
 
   if (isLoading) {
     return <SkeletonCard />;
   }
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center gap-3 mb-6">
           <ButtonBack isMobil={isMobile} />
-          <h1 className="text-2xl font-bold">Editar Jornada</h1>
+          <h1 className="text-2xl font-bold">Editar Planilla</h1>
         </div>
 
         <Card className="shadow-lg border-t-4 border-t-primary">
           <CardHeader className="pb-4">
-            <CardTitle className="text-lg">Editando la Jornada</CardTitle>
+            <CardTitle className="text-lg">Editando la Planilla</CardTitle>
             <p className="text-sm text-muted-foreground">
-              Completa los datos para editar la jornada laboral
+              Completa los datos para editar la planilla
             </p>
           </CardHeader>
           <CardContent>
-            <FormJornadaTrabajador
-              onSuccess={() => router.back()}
-              jornada={jornada}
-            />
+            <FormPlanilla onSuccess={() => router.back()} planilla={planilla} />
           </CardContent>
         </Card>
       </div>
@@ -46,4 +41,4 @@ const EditJornadaPage = () => {
   );
 };
 
-export default EditJornadaPage;
+export default EditarPlanillaPage;

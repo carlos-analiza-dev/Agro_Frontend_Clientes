@@ -30,8 +30,10 @@ import SkeletonJornadas from "@/components/generics/SkeletonJornadas";
 import Modal from "@/components/generics/Modal";
 import FormJornadaTrabajador from "./ui/FormJornadaTrabajador";
 import { generarOpcionesMeses } from "@/helpers/funciones/generarOpcionesMeses";
+import { useRouter } from "next/navigation";
 
 const JornadasTrabajadoresPage = () => {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchName, setSearchName] = useState("");
   const [openModalJornada, setOpenModalJornada] = useState(false);
@@ -52,8 +54,12 @@ const JornadasTrabajadoresPage = () => {
   const mesesOpciones = generarOpcionesMeses();
 
   const handleEditJornada = (jornada: Jornada) => {
-    setOpenModalJornada(true);
-    setSelectedJornada(jornada);
+    if (isMobile) {
+      router.push(`/jornadas/${jornada.id}`);
+    } else {
+      setOpenModalJornada(true);
+      setSelectedJornada(jornada);
+    }
   };
 
   React.useEffect(() => {

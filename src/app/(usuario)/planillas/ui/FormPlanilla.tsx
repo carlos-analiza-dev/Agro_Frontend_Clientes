@@ -14,13 +14,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
-import {
-  Calendar,
-  FileText,
-  CalendarDays,
-  Clock,
-  DollarSign,
-} from "lucide-react";
+import { Calendar, FileText, CalendarDays } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -41,6 +35,8 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
 
   const [diasPeriodoMin, setDiasPeriodoMin] = useState<number>(1);
   const [diasPeriodoMax, setDiasPeriodoMax] = useState<number>(31);
+  const [selectedTipoPeriodo, setSelectedTipoPeriodo] =
+    useState<TipoPeriodoPago>(TipoPeriodoPago.MENSUAL);
 
   const {
     register,
@@ -67,6 +63,10 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
   const diasPeriodo = watch("diasPeriodo");
 
   useEffect(() => {
+    setSelectedTipoPeriodo(tipoPeriodo);
+  }, [tipoPeriodo]);
+
+  useEffect(() => {
     if (tipoPeriodo === TipoPeriodoPago.QUINCENAL) {
       setValue("diasPeriodo", 15);
       setDiasPeriodoMin(1);
@@ -75,6 +75,10 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
       setValue("diasPeriodo", 30);
       setDiasPeriodoMin(1);
       setDiasPeriodoMax(31);
+    } else if (tipoPeriodo === TipoPeriodoPago.SEMANAL) {
+      setValue("diasPeriodo", 7);
+      setDiasPeriodoMin(1);
+      setDiasPeriodoMax(7);
     }
   }, [tipoPeriodo, setValue]);
 
@@ -91,16 +95,48 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
 
   useEffect(() => {
     if (planilla) {
+      let tipoPeriodoValido: TipoPeriodoPago = TipoPeriodoPago.MENSUAL;
+
+      if (
+        planilla.tipoPeriodo === "SEMANAL" ||
+        planilla.tipoPeriodo === TipoPeriodoPago.SEMANAL
+      ) {
+        tipoPeriodoValido = TipoPeriodoPago.SEMANAL;
+      } else if (
+        planilla.tipoPeriodo === "QUINCENAL" ||
+        planilla.tipoPeriodo === TipoPeriodoPago.QUINCENAL
+      ) {
+        tipoPeriodoValido = TipoPeriodoPago.QUINCENAL;
+      } else if (
+        planilla.tipoPeriodo === "MENSUAL" ||
+        planilla.tipoPeriodo === TipoPeriodoPago.MENSUAL
+      ) {
+        tipoPeriodoValido = TipoPeriodoPago.MENSUAL;
+      }
+
       reset({
         nombre: planilla.nombre,
         descripcion: planilla.descripcion || "",
-        tipoPeriodo: planilla.tipoPeriodo as TipoPeriodoPago,
+        tipoPeriodo: tipoPeriodoValido,
         observaciones: planilla.observaciones || "",
         diasPeriodo: planilla.diasPeriodo,
         fechaInicio: planilla.fechaInicio,
         fechaFin: planilla.fechaFin,
         fechaPago: planilla.fechaPago,
       });
+
+      setSelectedTipoPeriodo(tipoPeriodoValido);
+
+      if (tipoPeriodoValido === TipoPeriodoPago.QUINCENAL) {
+        setDiasPeriodoMin(1);
+        setDiasPeriodoMax(15);
+      } else if (tipoPeriodoValido === TipoPeriodoPago.MENSUAL) {
+        setDiasPeriodoMin(1);
+        setDiasPeriodoMax(31);
+      } else if (tipoPeriodoValido === TipoPeriodoPago.SEMANAL) {
+        setDiasPeriodoMin(1);
+        setDiasPeriodoMax(7);
+      }
     }
   }, [planilla, reset]);
 
@@ -141,6 +177,10 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
       fechaFin: new Date().toISOString().split("T")[0],
       fechaPago: new Date().toISOString().split("T")[0],
     });
+    setSelectedTipoPeriodo(TipoPeriodoPago.MENSUAL);
+    if (setSelectedPlanilla) {
+      setSelectedPlanilla(null);
+    }
   };
 
   const handleMutationError = (error: unknown, action: string) => {
@@ -175,6 +215,12 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
       setSelectedPlanilla(null);
     }
     onSuccess();
+  };
+
+  const handleTipoPeriodoChange = (value: string) => {
+    const nuevoTipo = value as TipoPeriodoPago;
+    setSelectedTipoPeriodo(nuevoTipo);
+    setValue("tipoPeriodo", nuevoTipo);
   };
 
   return (
@@ -236,10 +282,8 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
                 Tipo de Período <span className="text-red-500">*</span>
               </Label>
               <Select
-                value={watch("tipoPeriodo")}
-                onValueChange={(value) =>
-                  setValue("tipoPeriodo", value as TipoPeriodoPago)
-                }
+                value={selectedTipoPeriodo}
+                onValueChange={handleTipoPeriodoChange}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecciona el tipo de período" />
@@ -288,9 +332,11 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                {tipoPeriodo === TipoPeriodoPago.QUINCENAL
-                  ? "La quincena tiene entre 1 y 15 días"
-                  : "El mes tiene entre 1 y 31 días"}
+                {tipoPeriodo === TipoPeriodoPago.SEMANAL
+                  ? "La semana tiene entre 1 y 7 días"
+                  : tipoPeriodo === TipoPeriodoPago.QUINCENAL
+                    ? "La quincena tiene entre 1 y 15 días"
+                    : "El mes tiene entre 1 y 31 días"}
               </p>
               {errors.diasPeriodo && (
                 <p className="text-sm font-medium text-red-500">
@@ -432,12 +478,13 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
         </CardContent>
       </Card>
 
-      <div className="flex justify-end gap-3">
+      <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 mt-6">
         <Button
           type="button"
           variant="outline"
           onClick={handleCancel}
           disabled={isPending}
+          className="w-full sm:w-auto"
         >
           Cancelar
         </Button>
@@ -446,10 +493,11 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
           variant="outline"
           onClick={resetForm}
           disabled={isPending}
+          className="w-full sm:w-auto"
         >
           Limpiar
         </Button>
-        <Button type="submit" disabled={isPending}>
+        <Button type="submit" disabled={isPending} className="w-full sm:w-auto">
           {isPending
             ? isEditing
               ? "Actualizando..."

@@ -35,17 +35,17 @@ import { generarOpcionesMeses } from "@/helpers/funciones/generarOpcionesMeses";
 import { Planilla } from "@/api/planillas-trabajadores/interfaces/response-planillas.interface";
 import Modal from "@/components/generics/Modal";
 import FormPlanilla from "./ui/FormPlanilla";
+import { useRouter } from "next/navigation";
 
 const PlanillaTrabajadoresPage = () => {
   const { cliente } = useAuthStore();
+  const router = useRouter();
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchName, setSearchName] = useState("");
   const [selectedPlanilla, setSelectedPlanilla] = useState<Planilla | null>(
     null,
   );
   const [openAddModal, setOpenAddModal] = useState(false);
-  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [estadoSeleccionado, setEstadoSeleccionado] = useState<string>("todos");
   const [fechaInicio, setFechaInicio] = useState<string>("");
   const [fechaFin, setFechaFin] = useState<string>("");
@@ -57,14 +57,6 @@ const PlanillaTrabajadoresPage = () => {
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const mesesOpciones = generarOpcionesMeses();
-
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(searchName);
-      setCurrentPage(1);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [searchName]);
 
   React.useEffect(() => {
     const timer = setTimeout(() => {
@@ -101,11 +93,18 @@ const PlanillaTrabajadoresPage = () => {
   });
 
   const planillas = planillasData?.planillas || [];
+  const planillasPagadas = planillas.filter(
+    (p) => p.estado === EstadoPlanilla.PAGADA,
+  );
+
+  const totalNetoPagadas = planillasPagadas.reduce(
+    (sum, p) => sum + Number(p.totalNeto),
+    0,
+  );
   const total = planillasData?.total || 0;
   const totalPages = Math.ceil(total / limit);
 
   const limpiarFiltros = () => {
-    setSearchName("");
     setFechaInicio("");
     setFechaFin("");
     setMesSeleccionado("");
@@ -115,11 +114,24 @@ const PlanillaTrabajadoresPage = () => {
   };
 
   const tieneFiltrosActivos =
-    searchName !== "" ||
     fechaInicio !== "" ||
     fechaFin !== "" ||
     mesSeleccionado !== "" ||
     estadoSeleccionado !== "todos";
+
+  const handleEditPlanilla = (planilla: Planilla) => {
+    if (isMobile) {
+      router.push(`/planillas/${planilla.id}`);
+    } else {
+      setOpenAddModal(true);
+      setSelectedPlanilla(planilla);
+    }
+  };
+
+  const handleSucces = () => {
+    setOpenAddModal(false);
+    setSelectedPlanilla(null);
+  };
 
   if (isLoading) {
     return <SkeletonJornadas isMobile={isMobile} />;
@@ -169,13 +181,7 @@ const PlanillaTrabajadoresPage = () => {
 
           <StatCard
             title="Total Neto"
-            value={formatCurrency(
-              planillas.reduce(
-                (sum: number, p: any) => sum + Number(p.totalNeto),
-                0,
-              ),
-              moneda,
-            )}
+            value={formatCurrency(totalNetoPagadas, moneda)}
             icon={DollarSign}
             gradientFrom="from-purple-50"
             gradientTo="to-purple-100 dark:from-purple-950/30 dark:to-purple-900/30"
@@ -230,16 +236,6 @@ const PlanillaTrabajadoresPage = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                <div className="relative md:col-span-3">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Buscar planilla..."
-                    value={searchName}
-                    onChange={(e) => setSearchName(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-
                 {tipoFiltroFecha === "rango" && (
                   <div className="md:col-span-5">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -322,18 +318,6 @@ const PlanillaTrabajadoresPage = () => {
 
               {tieneFiltrosActivos && (
                 <div className="flex flex-wrap gap-2 pt-2 border-t">
-                  <span className="text-sm text-gray-500">
-                    Filtros activos:
-                  </span>
-                  {searchName && (
-                    <Badge variant="secondary" className="gap-1">
-                      Búsqueda: {searchName}
-                      <X
-                        className="h-3 w-3 cursor-pointer"
-                        onClick={() => setSearchName("")}
-                      />
-                    </Badge>
-                  )}
                   {tipoFiltroFecha === "rango" && fechaInicio && (
                     <Badge variant="secondary" className="gap-1">
                       Desde: {fechaInicio}
@@ -388,7 +372,11 @@ const PlanillaTrabajadoresPage = () => {
         <Card className="shadow-lg">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
-              <TablePlanillas planillas={planillas} moneda={moneda} />
+              <TablePlanillas
+                planillas={planillas}
+                handleEditPlanilla={handleEditPlanilla}
+                moneda={moneda}
+              />
             </div>
 
             {planillas.length === 0 && (
@@ -428,7 +416,10 @@ const PlanillaTrabajadoresPage = () => {
         showCloseButton={false}
         height="auto"
       >
-        <FormPlanilla onSuccess={() => setOpenAddModal(false)} />
+        <FormPlanilla
+          onSuccess={() => handleSucces()}
+          planilla={selectedPlanilla}
+        />
       </Modal>
     </div>
   );
