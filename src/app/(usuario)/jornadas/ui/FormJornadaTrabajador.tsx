@@ -29,9 +29,9 @@ import {
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import useGetTrabajadores from "@/hooks/trabajadores/useGetTrabajadores";
 import { CreateJornadaTrabajador } from "@/api/jornadas-trabajador/accions/crear-jornada";
 import { EditarJornadaTrabajador } from "@/api/jornadas-trabajador/accions/editar-jornada";
+import useGetAllTrabajadores from "@/hooks/trabajadores/useGetAllTrabajadores";
 
 interface Props {
   onSuccess: () => void;
@@ -47,7 +47,7 @@ const FormJornadaTrabajador = ({
   const isEditing = !!jornada;
   const queryClient = useQueryClient();
   const { data: trabajadores, isLoading: loadingTrabajadores } =
-    useGetTrabajadores();
+    useGetAllTrabajadores();
 
   const [totalHorasExtras, setTotalHorasExtras] = useState<number>(0);
 
@@ -199,8 +199,8 @@ const FormJornadaTrabajador = ({
                     <SelectItem value="loading" disabled>
                       Cargando trabajadores...
                     </SelectItem>
-                  ) : trabajadores && trabajadores?.trabajadores.length > 0 ? (
-                    trabajadores?.trabajadores.map((trabajador: any) => (
+                  ) : trabajadores && trabajadores?.length > 0 ? (
+                    trabajadores?.map((trabajador: any) => (
                       <SelectItem key={trabajador.id} value={trabajador.id}>
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4" />

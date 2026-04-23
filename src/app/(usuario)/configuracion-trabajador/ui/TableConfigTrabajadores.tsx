@@ -140,7 +140,8 @@ const TableConfigTrabajadores = ({
 
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Bonificaciones:</span>
-                  {config.bonificacionesFijas?.length > 0 ? (
+                  {config.bonificacionesFijas &&
+                  config.bonificacionesFijas?.length > 0 ? (
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger>
@@ -167,7 +168,8 @@ const TableConfigTrabajadores = ({
 
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Deducciones:</span>
-                  {config.deduccionesFijas?.length > 0 ? (
+                  {config.deduccionesFijas &&
+                  config.deduccionesFijas?.length > 0 ? (
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger>
@@ -263,16 +265,18 @@ const TableConfigTrabajadores = ({
                 </TableCell>
                 <TableCell className="text-center">
                   <div className="flex items-center justify-center gap-1">
-                    {config.bonificacionesFijas?.length > 0 && (
-                      <Badge variant="secondary" className="text-xs">
-                        +{config.bonificacionesFijas.length}
-                      </Badge>
-                    )}
-                    {config.deduccionesFijas?.length > 0 && (
-                      <Badge variant="destructive" className="text-xs">
-                        -{config.deduccionesFijas.length}
-                      </Badge>
-                    )}
+                    {config.bonificacionesFijas &&
+                      config.bonificacionesFijas?.length > 0 && (
+                        <Badge variant="secondary" className="text-xs">
+                          +{config.bonificacionesFijas.length}
+                        </Badge>
+                      )}
+                    {config.deduccionesFijas &&
+                      config.deduccionesFijas?.length > 0 && (
+                        <Badge variant="destructive" className="text-xs">
+                          -{config.deduccionesFijas.length}
+                        </Badge>
+                      )}
                     {config.bonificacionesFijas?.length === 0 &&
                       config.deduccionesFijas?.length === 0 && (
                         <span className="text-xs text-gray-400">-</span>
@@ -380,7 +384,8 @@ const TableConfigTrabajadores = ({
                 </div>
               </TableCell>
               <TableCell>
-                {config.bonificacionesFijas?.length > 0 ? (
+                {config.bonificacionesFijas &&
+                config.bonificacionesFijas?.length > 0 ? (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
@@ -405,7 +410,8 @@ const TableConfigTrabajadores = ({
                 )}
               </TableCell>
               <TableCell>
-                {config.deduccionesFijas?.length > 0 ? (
+                {config.deduccionesFijas &&
+                config.deduccionesFijas?.length > 0 ? (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>

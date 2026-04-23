@@ -27,15 +27,27 @@ import {
   Sun,
   Moon,
   Star,
+  CheckSquare,
+  DoorClosed,
+  DoorOpen,
+  CalendarOff,
 } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { toast } from "react-toastify";
-import useGetTrabajadores from "@/hooks/trabajadores/useGetTrabajadores";
 import { formatCurrency } from "@/helpers/funciones/formatCurrency";
 import { CreateConfigTrabajador } from "@/api/configuraciones-trabajadores/accions/crear-configuracion";
 import { EditarConfigTrabajador } from "@/api/configuraciones-trabajadores/accions/editar-configuracion";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
+import {
+  DiaSemana,
+  TipoTrabajador,
+} from "@/interfaces/enums/config-trabajadores.enums";
+import {
+  diasSemanaOptions,
+  tipoTrabajadorOptions,
+} from "@/helpers/data/config-trabajadores";
+import useGetAllTrabajadores from "@/hooks/trabajadores/useGetAllTrabajadores";
 
 interface Props {
   onSuccess: () => void;
@@ -53,7 +65,7 @@ const FormConfigTrabajadores = ({
   const isEditing = !!configuracion;
   const queryClient = useQueryClient();
   const { data: trabajadores, isLoading: loadingTrabajadores } =
-    useGetTrabajadores();
+    useGetAllTrabajadores();
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const [valorHoraNormal, setValorHoraNormal] = useState<number>(0);
@@ -77,13 +89,18 @@ const FormConfigTrabajadores = ({
     defaultValues: {
       trabajadorId: "",
       fechaContratacion: new Date().toISOString().split("T")[0],
+      tipoTrabajador: TipoTrabajador.PERMANENTE,
+      diaDescanso: undefined,
+      horaEntrada: "07:00",
+      horaSalida: "13:00",
+      diasLaborales: [],
       cargo: "",
       salarioDiario: 0,
       factorHoraExtraDiurnas: 1.5,
       factorHoraExtraNocturnas: 1.75,
       factorHoraExtraFestivas: 2.0,
-      diasTrabajadosSemanal: 5,
-      horasJornadaSemanal: 40,
+      diasTrabajadosSemanal: 6,
+      horasJornadaSemanal: 36,
       bonificacionesFijas: [],
       deduccionesFijas: [],
       activo: true,
@@ -114,6 +131,34 @@ const FormConfigTrabajadores = ({
   const factorHoraExtraDiurnas = watch("factorHoraExtraDiurnas");
   const factorHoraExtraNocturnas = watch("factorHoraExtraNocturnas");
   const factorHoraExtraFestivas = watch("factorHoraExtraFestivas");
+  const tipoTrabajador = watch("tipoTrabajador");
+  const diaDescanso = watch("diaDescanso");
+  const diasLaborales = watch("diasLaborales");
+
+  useEffect(() => {
+    if (
+      tipoTrabajador === TipoTrabajador.PERMANENTE ||
+      tipoTrabajador === TipoTrabajador.TEMPORAL
+    ) {
+      setValue("diasTrabajadosSemanal", 6);
+    } else if (tipoTrabajador === TipoTrabajador.PARCIAL) {
+      if (diasTrabajadosSemanal >= 6) {
+        setValue("diasTrabajadosSemanal", 4);
+      }
+    }
+  }, [tipoTrabajador, setValue, diasTrabajadosSemanal]);
+
+  useEffect(() => {
+    if (
+      diaDescanso &&
+      (tipoTrabajador === TipoTrabajador.PERMANENTE ||
+        tipoTrabajador === TipoTrabajador.TEMPORAL)
+    ) {
+      const todosDias = Object.values(DiaSemana);
+      const laborales = todosDias.filter((dia) => dia !== diaDescanso);
+      setValue("diasLaborales", laborales);
+    }
+  }, [diaDescanso, tipoTrabajador, setValue]);
 
   useEffect(() => {
     if (
@@ -163,9 +208,34 @@ const FormConfigTrabajadores = ({
 
   useEffect(() => {
     if (configuracion) {
+      let tipoTrabajadorValido = TipoTrabajador.PERMANENTE;
+      if (
+        configuracion.tipoTrabajador &&
+        Object.values(TipoTrabajador).includes(
+          configuracion.tipoTrabajador as TipoTrabajador,
+        )
+      ) {
+        tipoTrabajadorValido = configuracion.tipoTrabajador as TipoTrabajador;
+      }
+
+      let diaDescansoValido: DiaSemana | undefined = undefined;
+      if (
+        configuracion.diaDescanso &&
+        Object.values(DiaSemana).includes(
+          configuracion.diaDescanso as DiaSemana,
+        )
+      ) {
+        diaDescansoValido = configuracion.diaDescanso as DiaSemana;
+      }
+
       reset({
         trabajadorId: configuracion.trabajadorId,
         fechaContratacion: configuracion.fechaContratacion,
+        tipoTrabajador: tipoTrabajadorValido,
+        diaDescanso: diaDescansoValido,
+        horaEntrada: configuracion.horaEntrada || "07:00",
+        horaSalida: configuracion.horaSalida || "13:00",
+        diasLaborales: configuracion.diasLaborales || [],
         cargo: configuracion.cargo || "",
         salarioDiario: Number(configuracion.salarioDiario),
         factorHoraExtraDiurnas:
@@ -180,8 +250,17 @@ const FormConfigTrabajadores = ({
         deduccionesFijas: configuracion.deduccionesFijas || [],
         activo: configuracion.activo,
       });
+
+      setTimeout(() => {
+        setValue("tipoTrabajador", tipoTrabajadorValido);
+        if (diaDescansoValido) {
+          setValue("diaDescanso", diaDescansoValido);
+        }
+        setValue("horaEntrada", configuracion.horaEntrada || "07:00");
+        setValue("horaSalida", configuracion.horaSalida || "13:00");
+      }, 0);
     }
-  }, [configuracion, reset]);
+  }, [configuracion, reset, setValue]);
 
   const createMutation = useMutation({
     mutationFn: CreateConfigTrabajador,
@@ -218,13 +297,18 @@ const FormConfigTrabajadores = ({
     reset({
       trabajadorId: "",
       fechaContratacion: new Date().toISOString().split("T")[0],
+      tipoTrabajador: TipoTrabajador.PERMANENTE,
+      diaDescanso: undefined,
+      horaEntrada: "07:00",
+      horaSalida: "13:00",
+      diasLaborales: [],
       cargo: "",
       salarioDiario: 0,
       factorHoraExtraDiurnas: 1.5,
       factorHoraExtraNocturnas: 1.75,
       factorHoraExtraFestivas: 2.0,
-      diasTrabajadosSemanal: 5,
-      horasJornadaSemanal: 40,
+      diasTrabajadosSemanal: 6,
+      horasJornadaSemanal: 36,
       bonificacionesFijas: [],
       deduccionesFijas: [],
       activo: true,
@@ -248,6 +332,21 @@ const FormConfigTrabajadores = ({
   };
 
   const onSubmit = (data: CrearConfigTrabajadorInterface) => {
+    if (data.tipoTrabajador !== TipoTrabajador.PARCIAL) {
+      if (!data.diaDescanso) {
+        toast.error(
+          "Los trabajadores permanentes y temporales deben tener un día de descanso",
+        );
+        return;
+      }
+      if (!data.horaEntrada || !data.horaSalida) {
+        toast.error(
+          "Los trabajadores permanentes y temporales deben tener horario definido",
+        );
+        return;
+      }
+    }
+
     if (isEditing && configuracion) {
       data.trabajadorId = configuracion.trabajadorId;
       updateMutation.mutate({ id: configuracion.id, data });
@@ -259,7 +358,7 @@ const FormConfigTrabajadores = ({
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   const trabajadoresDisponibles =
-    trabajadores?.trabajadores?.filter((trabajador: any) => {
+    trabajadores?.filter((trabajador: any) => {
       if (isEditing && configuracion?.trabajadorId === trabajador.id)
         return true;
       return !trabajador.configuracionActiva;
@@ -367,6 +466,39 @@ const FormConfigTrabajadores = ({
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="tipoTrabajador" className="text-sm md:text-base">
+                Tipo de Trabajador <span className="text-red-500">*</span>
+              </Label>
+              <Select
+                value={watch("tipoTrabajador")}
+                onValueChange={(value) =>
+                  setValue("tipoTrabajador", value as TipoTrabajador)
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecciona un tipo" />
+                </SelectTrigger>
+                <SelectContent>
+                  {tipoTrabajadorOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      <div className="flex flex-col">
+                        <span>{option.label}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {option.description}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.tipoTrabajador && (
+                <p className="text-sm font-medium text-red-500">
+                  {errors.tipoTrabajador.message as string}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="cargo" className="text-sm md:text-base">
                 Cargo
               </Label>
@@ -376,6 +508,42 @@ const FormConfigTrabajadores = ({
                 className="w-full"
                 {...register("cargo")}
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label
+                htmlFor="diaDescanso"
+                className="flex items-center gap-2 text-sm md:text-base"
+              >
+                <CalendarOff className="h-4 w-4" />
+                Día de Descanso
+                {(tipoTrabajador === TipoTrabajador.PERMANENTE ||
+                  tipoTrabajador === TipoTrabajador.TEMPORAL) && (
+                  <span className="text-red-500">*</span>
+                )}
+              </Label>
+              <Select
+                value={watch("diaDescanso") || ""}
+                onValueChange={(value) =>
+                  setValue("diaDescanso", value as DiaSemana)
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecciona día de descanso" />
+                </SelectTrigger>
+                <SelectContent>
+                  {diasSemanaOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                {tipoTrabajador === TipoTrabajador.PARCIAL
+                  ? "Opcional para trabajadores parciales"
+                  : "Obligatorio para trabajadores permanentes y temporales"}
+              </p>
             </div>
 
             <div className="space-y-2">
@@ -392,6 +560,87 @@ const FormConfigTrabajadores = ({
               </div>
             </div>
           </div>
+
+          <div className="border-t pt-4 mt-2">
+            <Label className="text-sm md:text-base font-semibold mb-3 block">
+              <Clock className="h-4 w-4 inline mr-2" />
+              Horario de Trabajo
+              {(tipoTrabajador === TipoTrabajador.PERMANENTE ||
+                tipoTrabajador === TipoTrabajador.TEMPORAL) && (
+                <span className="text-red-500 ml-1">*</span>
+              )}
+            </Label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label
+                  htmlFor="horaEntrada"
+                  className="flex items-center gap-2"
+                >
+                  <DoorOpen className="h-3 w-3" />
+                  Hora de Entrada
+                </Label>
+                <Input
+                  id="horaEntrada"
+                  type="time"
+                  step="60"
+                  className="w-full"
+                  {...register("horaEntrada")}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Formato 24h (ej: 07:00)
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="horaSalida" className="flex items-center gap-2">
+                  <DoorClosed className="h-3 w-3" />
+                  Hora de Salida
+                </Label>
+                <Input
+                  id="horaSalida"
+                  type="time"
+                  step="60"
+                  className="w-full"
+                  {...register("horaSalida")}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Formato 24h (ej: 13:00)
+                </p>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Horarios típicos de campo: 06:00-12:00 o 07:00-13:00
+            </p>
+          </div>
+
+          {(tipoTrabajador === TipoTrabajador.PERMANENTE ||
+            tipoTrabajador === TipoTrabajador.TEMPORAL) &&
+            diasLaborales &&
+            diasLaborales.length > 0 && (
+              <div className="border-t pt-4 mt-2">
+                <Label className="text-sm md:text-base font-semibold mb-3 flex items-center gap-2">
+                  <CheckSquare className="h-4 w-4" />
+                  Días Laborales
+                </Label>
+                <div className="flex flex-wrap gap-2">
+                  {diasLaborales.map((dia) => {
+                    const diaObj = diasSemanaOptions.find(
+                      (d) => d.value === dia,
+                    );
+                    return (
+                      <span
+                        key={dia}
+                        className="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded-full text-sm"
+                      >
+                        {diaObj?.label || dia}
+                      </span>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  {diasLaborales.length} días laborales a la semana
+                </p>
+              </div>
+            )}
         </CardContent>
       </Card>
 
@@ -403,7 +652,7 @@ const FormConfigTrabajadores = ({
           </CardTitle>
         </CardHeader>
         <CardContent className="p-4 md:p-6 pt-0 space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="salarioDiario" className="text-sm md:text-base">
                 Salario Diario ({moneda}){" "}
@@ -448,7 +697,7 @@ const FormConfigTrabajadores = ({
                   type="number"
                   step="1"
                   className="pl-10 w-full"
-                  placeholder="5"
+                  placeholder="6"
                   {...register("diasTrabajadosSemanal", {
                     required: "Los días trabajados son requeridos",
                     min: { value: 1, message: "Mínimo 1 día" },
@@ -458,7 +707,9 @@ const FormConfigTrabajadores = ({
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                Días que trabaja a la semana
+                {tipoTrabajador === TipoTrabajador.PARCIAL
+                  ? "Días que trabaja a la semana (puede ser variable)"
+                  : "6 días para trabajadores permanentes/temporales"}
               </p>
               {errors.diasTrabajadosSemanal && (
                 <p className="text-sm font-medium text-red-500">
@@ -481,7 +732,7 @@ const FormConfigTrabajadores = ({
                   type="number"
                   step="1"
                   className="pl-10 w-full"
-                  placeholder="40"
+                  placeholder="36"
                   {...register("horasJornadaSemanal", {
                     required: "Las horas semanales son requeridas",
                     min: { value: 1, message: "Mínimo 1 hora" },

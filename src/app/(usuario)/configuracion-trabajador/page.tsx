@@ -64,9 +64,11 @@ const ConfiguracionTrabajadoresPage = () => {
         .toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
       config.trabajador.identificacion.includes(searchTerm) ||
-      config.cargo.toLowerCase().includes(searchTerm.toLowerCase());
+      config.cargo?.toLowerCase().includes(searchTerm.toLowerCase());
+
     const matchesActivo =
       filterActivo === null ? true : config.activo === filterActivo;
+
     return matchesSearch && matchesActivo;
   });
 

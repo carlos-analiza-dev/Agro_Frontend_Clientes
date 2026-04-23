@@ -400,7 +400,8 @@ const ModalConfig = ({
                 </p>
               </CardHeader>
               <CardContent>
-                {selectedTrabajador.bonificacionesFijas?.length > 0 ? (
+                {selectedTrabajador.bonificacionesFijas &&
+                selectedTrabajador.bonificacionesFijas?.length > 0 ? (
                   <div className="space-y-3">
                     {selectedTrabajador.bonificacionesFijas.map(
                       (bono: any, idx: number) => (
@@ -440,7 +441,8 @@ const ModalConfig = ({
                 </p>
               </CardHeader>
               <CardContent>
-                {selectedTrabajador.deduccionesFijas?.length > 0 ? (
+                {selectedTrabajador.deduccionesFijas &&
+                selectedTrabajador.deduccionesFijas?.length > 0 ? (
                   <div className="space-y-3">
                     {selectedTrabajador.deduccionesFijas.map(
                       (deduccion: any, idx: number) => (

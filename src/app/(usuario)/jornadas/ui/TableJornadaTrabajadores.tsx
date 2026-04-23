@@ -26,6 +26,9 @@ import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { formatDate } from "@/helpers/funciones/formatDate";
 import { toast } from "react-toastify";
 import { exportJornadasWithSummary } from "@/helpers/funciones/exportJornadaToExcel";
+import { useState } from "react";
+import ExportButton from "./ExportButton";
+import ModalViewDetailsJornada from "./ModalViewDetailsJornada";
 
 interface Props {
   jornadasFiltradas: Jornada[];
@@ -36,6 +39,8 @@ const TableJornadaTrabajadores = ({
   jornadasFiltradas,
   handleEditJornada,
 }: Props) => {
+  const [openViewDetails, setOpenViewDetails] = useState(false);
+  const [selectedJornada, setSelectedJornada] = useState<Jornada | null>(null);
   const isMobile = useMediaQuery("(max-width: 768px)");
   const isTablet = useMediaQuery("(min-width: 769px) and (max-width: 1024px)");
 
@@ -86,26 +91,22 @@ const TableJornadaTrabajadores = ({
       );
     } catch (error) {
       toast.error("Error al exportar los datos");
-      console.error(error);
     }
   };
 
-  const ExportButton = () => (
-    <Button
-      onClick={handleExportToExcel}
-      className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800"
-      size={isMobile ? "default" : "sm"}
-    >
-      <Download className="mr-2 h-4 w-4" />
-      Exportar Excel
-    </Button>
-  );
+  const handleViewDetails = (jornada: Jornada) => {
+    setOpenViewDetails(true);
+    setSelectedJornada(jornada);
+  };
 
   if (isMobile) {
     return (
       <div className="space-y-4 p-2">
         <div className="flex justify-end mb-4">
-          <ExportButton />
+          <ExportButton
+            handleExportToExcel={handleExportToExcel}
+            isMobile={isMobile}
+          />
         </div>
 
         {jornadasFiltradas.map((jornada) => {
@@ -136,6 +137,7 @@ const TableJornadaTrabajadores = ({
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 hover:bg-blue-100 dark:hover:bg-blue-900/30"
+                      onClick={() => handleViewDetails(jornada)}
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
@@ -208,6 +210,11 @@ const TableJornadaTrabajadores = ({
             </Card>
           );
         })}
+        <ModalViewDetailsJornada
+          openViewDetails={openViewDetails}
+          setOpenViewDetails={setOpenViewDetails}
+          selectedJornada={selectedJornada}
+        />
       </div>
     );
   }
@@ -216,7 +223,7 @@ const TableJornadaTrabajadores = ({
     return (
       <div className="overflow-x-auto">
         <div className="flex justify-end mb-4 p-2">
-          <ExportButton />
+          <ExportButton handleExportToExcel={handleExportToExcel} />
         </div>
 
         <Table>
@@ -291,7 +298,12 @@ const TableJornadaTrabajadores = ({
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <Button
+                        onClick={() => handleViewDetails(jornada)}
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                      >
                         <Eye className="h-4 w-4" />
                       </Button>
                       <Button
@@ -309,6 +321,11 @@ const TableJornadaTrabajadores = ({
             })}
           </TableBody>
         </Table>
+        <ModalViewDetailsJornada
+          openViewDetails={openViewDetails}
+          setOpenViewDetails={setOpenViewDetails}
+          selectedJornada={selectedJornada}
+        />
       </div>
     );
   }
@@ -316,7 +333,7 @@ const TableJornadaTrabajadores = ({
   return (
     <div className="overflow-x-auto">
       <div className="flex justify-end mb-4 p-2">
-        <ExportButton />
+        <ExportButton handleExportToExcel={handleExportToExcel} />
       </div>
 
       <Table>
@@ -428,6 +445,7 @@ const TableJornadaTrabajadores = ({
                     variant="ghost"
                     size="sm"
                     className="hover:bg-blue-100 dark:hover:bg-blue-900/30"
+                    onClick={() => handleViewDetails(jornada)}
                   >
                     <Eye className="h-4 w-4" />
                   </Button>
@@ -445,6 +463,11 @@ const TableJornadaTrabajadores = ({
           ))}
         </TableBody>
       </Table>
+      <ModalViewDetailsJornada
+        openViewDetails={openViewDetails}
+        setOpenViewDetails={setOpenViewDetails}
+        selectedJornada={selectedJornada}
+      />
     </div>
   );
 };

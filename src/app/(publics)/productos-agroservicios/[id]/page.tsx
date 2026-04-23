@@ -29,6 +29,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { toast } from "react-toastify";
 
 const ProductDetailsPage = () => {
   const { id: productoId } = useParams();
@@ -256,7 +257,7 @@ const ProductDetailsPage = () => {
     try {
       await navigator.clipboard.writeText(productUrl);
     } catch (err) {
-      console.error("Error al copiar:", err);
+      toast.error("Error al copiar el link");
     }
   };
 

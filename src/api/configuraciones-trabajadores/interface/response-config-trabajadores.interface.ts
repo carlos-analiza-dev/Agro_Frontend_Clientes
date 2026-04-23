@@ -1,3 +1,8 @@
+import {
+  DiaSemana,
+  TipoTrabajador,
+} from "@/interfaces/enums/config-trabajadores.enums";
+
 export interface ResponseConfigTrabajadoresInterface {
   configuraciones: Configuraciones[];
   total: number;
@@ -7,23 +12,41 @@ export interface ResponseConfigTrabajadoresInterface {
 
 export interface Configuraciones {
   id: string;
+
   trabajadorId: string;
   propietarioId: string;
+
   fechaContratacion: string;
-  cargo: string;
+
+  tipoTrabajador: TipoTrabajador;
+
+  diaDescanso?: DiaSemana;
+  horaEntrada?: string;
+  horaSalida?: string;
+  diasLaborales?: DiaSemana[];
+
+  cargo?: string;
+
   salarioDiario: string;
-  factorHoraExtraDiurnas: number;
-  factorHoraExtraNocturnas: number;
-  factorHoraExtraFestivas: number;
+
+  factorHoraExtraDiurnas?: number;
+  factorHoraExtraNocturnas?: number;
+  factorHoraExtraFestivas?: number;
+
   horasJornadaSemanal: number;
   diasTrabajadosSemanal: number;
-  bonificacionesFijas: CionesFija[];
-  deduccionesFijas: CionesFija[];
+
+  bonificacionesFijas?: CionesFija[];
+  deduccionesFijas?: CionesFija[];
+
   activo: boolean;
-  fechaBaja: null;
-  motivoBaja: null;
-  createdAt: Date;
-  updatedAt: Date;
+
+  fechaBaja?: string | null;
+  motivoBaja?: string | null;
+
+  createdAt: string;
+  updatedAt: string;
+
   trabajador: Propietario;
   propietario: Propietario;
 }

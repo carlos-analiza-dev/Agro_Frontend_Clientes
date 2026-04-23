@@ -68,14 +68,16 @@ export const navItems = [
   {
     category: "Gestión de Nómina",
     items: [
-      { name: "Planillas", href: "/planillas", icon: FileText },
-      { name: "Jornadas", href: "/jornadas", icon: BriefcaseMedical },
-      { name: "Pagos", href: "/pagos", icon: DollarSign },
       {
-        name: "Configuración",
+        name: "Configuración Salarial",
         href: "/configuracion-trabajador",
         icon: UserCog,
       },
+      { name: "Jornadas Laborales", href: "/jornadas", icon: BriefcaseMedical },
+      { name: "Planillas", href: "/planillas", icon: FileText },
+
+      { name: "Pagos", href: "/pagos", icon: DollarSign },
+
       { name: "Reportes", href: "/reportes-planillas", icon: TrendingUp },
     ],
   },
