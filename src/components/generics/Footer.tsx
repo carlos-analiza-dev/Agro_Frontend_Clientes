@@ -11,9 +11,32 @@ import {
   Twitter,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const Footer = () => {
+  const [hasSelectedCountry, setHasSelectedCountry] = useState(false);
+  const router = useRouter();
   const currentYear = new Date().getFullYear();
+
+  useEffect(() => {
+    const savedCountry = localStorage.getItem("selectedCountry");
+    if (savedCountry) {
+      setHasSelectedCountry(true);
+    }
+  }, []);
+
+  const canNavigate = () => {
+    if (!hasSelectedCountry) {
+      toast.info("Para navegar, primero debes seleccionar tu país", {
+        position: "top-center",
+        autoClose: 3000,
+      });
+      return false;
+    }
+    return true;
+  };
 
   const quickLinks = [
     { name: "Productos", href: "/productos-agroservicios" },
@@ -120,12 +143,15 @@ const Footer = () => {
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.name}>
-                  <Link
-                    href={link.href}
+                  <button
+                    onClick={() => {
+                      if (!canNavigate()) return;
+                      router.push(link.href);
+                    }}
                     className="text-gray-400 hover:text-green-500 transition-colors text-sm"
                   >
                     {link.name}
-                  </Link>
+                  </button>
                 </li>
               ))}
             </ul>

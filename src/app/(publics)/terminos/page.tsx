@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     title: "Términos y Condiciones | El Sembrador",
     description:
       "Conoce los términos y condiciones de uso de nuestros servicios agropecuarios y veterinarios.",
-    images: ["/images/terminos-og-image.jpg"],
+    images: ["/images/terminos.jpg"],
   },
   alternates: {
     canonical: "https://www.clientes.interactivecore.app/terminos",

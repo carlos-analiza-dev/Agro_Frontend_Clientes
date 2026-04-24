@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/images/faq-og-image.jpg",
+        url: "/images/faqs.jpg",
         width: 1200,
         height: 630,
         alt: "Preguntas Frecuentes - El Sembrador",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     title: "Preguntas Frecuentes | El Sembrador",
     description:
       "Encuentra respuestas a las preguntas más comunes sobre pedidos, envíos, pagos, productos y cuenta.",
-    images: ["/images/faq-og-image.jpg"],
+    images: ["/images/faqs.jpg"],
   },
   alternates: {
     canonical: "https://www.clientes.interactivecore.app/faq",

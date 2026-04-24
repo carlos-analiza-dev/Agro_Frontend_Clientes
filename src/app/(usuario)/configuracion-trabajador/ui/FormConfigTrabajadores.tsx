@@ -48,6 +48,7 @@ import {
   tipoTrabajadorOptions,
 } from "@/helpers/data/config-trabajadores";
 import useGetAllTrabajadores from "@/hooks/trabajadores/useGetAllTrabajadores";
+import { formatHora } from "@/helpers/funciones/formatHora";
 
 interface Props {
   onSuccess: () => void;
@@ -233,8 +234,8 @@ const FormConfigTrabajadores = ({
         fechaContratacion: configuracion.fechaContratacion,
         tipoTrabajador: tipoTrabajadorValido,
         diaDescanso: diaDescansoValido,
-        horaEntrada: configuracion.horaEntrada || "07:00",
-        horaSalida: configuracion.horaSalida || "13:00",
+        horaEntrada: formatHora(configuracion.horaEntrada),
+        horaSalida: formatHora(configuracion.horaSalida),
         diasLaborales: configuracion.diasLaborales || [],
         cargo: configuracion.cargo || "",
         salarioDiario: Number(configuracion.salarioDiario),
@@ -349,6 +350,8 @@ const FormConfigTrabajadores = ({
 
     if (isEditing && configuracion) {
       data.trabajadorId = configuracion.trabajadorId;
+      data.horaEntrada = formatHora(data.horaEntrada);
+      data.horaSalida = formatHora(data.horaSalida);
       updateMutation.mutate({ id: configuracion.id, data });
     } else {
       createMutation.mutate(data);
