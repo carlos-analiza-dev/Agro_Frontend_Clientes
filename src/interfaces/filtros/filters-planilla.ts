@@ -1,3 +1,5 @@
+import { MetodoPago } from "../enums/planillas.enums";
+
 export interface FiltrosPlanilla {
   offset?: number;
   limit?: number;
@@ -5,4 +7,5 @@ export interface FiltrosPlanilla {
   fechaInicio?: string;
   fechaFin?: string;
   mes?: string;
+  metodoPago?: MetodoPago;
 }

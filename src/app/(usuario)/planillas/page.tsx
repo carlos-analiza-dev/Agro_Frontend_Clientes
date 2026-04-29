@@ -128,6 +128,14 @@ const PlanillaTrabajadoresPage = () => {
     }
   };
 
+  const handleAddPlanilla = () => {
+    if (isMobile) {
+      router.push(`/planillas/crear-planilla`);
+    } else {
+      setOpenAddModal(true);
+    }
+  };
+
   const handleSucces = () => {
     setOpenAddModal(false);
     setSelectedPlanilla(null);
@@ -149,7 +157,10 @@ const PlanillaTrabajadoresPage = () => {
               Gestión de nóminas y pagos de trabajadores
             </p>
           </div>
-          <Button onClick={() => setOpenAddModal(true)} className="shadow-lg">
+          <Button
+            onClick={() => handleAddPlanilla()}
+            className="shadow-lg w-full md:w-auto"
+          >
             <Plus className="mr-2 h-4 w-4" />
             Nueva Planilla
           </Button>

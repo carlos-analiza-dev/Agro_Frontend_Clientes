@@ -1,3 +1,5 @@
+import { TipoCliente } from "@/interfaces/enums/clientes.enums";
+
 export interface ResponseTrabajadoresInterface {
   trabajadores: Trabajador[];
   total: number;
@@ -12,7 +14,7 @@ export interface Trabajador {
   direccion: string;
   sexo: string;
   verified: boolean;
-  rol: string;
+  rol: TipoCliente;
   isActive: boolean;
   createdAt: Date;
   pais: Pais;

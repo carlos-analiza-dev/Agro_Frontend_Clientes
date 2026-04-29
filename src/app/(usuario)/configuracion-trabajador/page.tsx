@@ -72,6 +72,14 @@ const ConfiguracionTrabajadoresPage = () => {
     return matchesSearch && matchesActivo;
   });
 
+  const handleAddConfig = () => {
+    if (isMobile) {
+      router.push("/configuracion-trabajador/crear-configuracion");
+    } else {
+      setOpenAddConfig(true);
+    }
+  };
+
   const handleEditConfig = (config: Configuraciones) => {
     if (isMobile) {
       router.push(`/configuracion-trabajador/${config.id}`);
@@ -90,14 +98,17 @@ const ConfiguracionTrabajadoresPage = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent">
+            <h1 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent">
               Configuración de Trabajadores
             </h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
               Gestiona los salarios, cargos y configuraciones de tus empleados
             </p>
           </div>
-          <Button onClick={() => setOpenAddConfig(true)}>
+          <Button
+            className="w-full md:w-auto"
+            onClick={() => handleAddConfig()}
+          >
             <Plus className="mr-2 h-4 w-4" />
             Nuevo Trabajador
           </Button>

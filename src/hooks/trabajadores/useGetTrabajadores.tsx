@@ -6,7 +6,7 @@ const useGetTrabajadores = (filtros?: FiltrosTrabajadores) => {
   return useQuery({
     queryKey: ["trabajadores", filtros],
     queryFn: () => obtenerTrabajadores(filtros),
-    retry: 1,
+    retry: 0,
     staleTime: 60 * 5 * 1000,
   });
 };

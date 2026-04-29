@@ -1,3 +1,5 @@
+import { MetodoPago } from "@/interfaces/enums/planillas.enums";
+
 export interface ResponseDetailsPlanilla {
   planilla: Planilla;
   resumen: Resumen;
@@ -56,7 +58,7 @@ export interface Detalle {
   totalAPagar: string;
   pagado: boolean;
   fechaPago: null;
-  metodoPago: null;
+  metodoPago: null | MetodoPago;
   observaciones: null;
   createdAt: Date;
   updatedAt: Date;

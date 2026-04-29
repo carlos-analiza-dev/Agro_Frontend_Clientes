@@ -62,6 +62,14 @@ const JornadasTrabajadoresPage = () => {
     }
   };
 
+  const handleAddJornada = () => {
+    if (isMobile) {
+      router.push("/jornadas/crear-jornada");
+    } else {
+      setOpenModalJornada(true);
+    }
+  };
+
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchName);
@@ -162,8 +170,8 @@ const JornadasTrabajadoresPage = () => {
             </p>
           </div>
           <Button
-            onClick={() => setOpenModalJornada(true)}
-            className="shadow-lg"
+            onClick={() => handleAddJornada()}
+            className="shadow-lg w-full md:w-auto"
           >
             <Calendar className="mr-2 h-4 w-4" />
             Registrar Jornada

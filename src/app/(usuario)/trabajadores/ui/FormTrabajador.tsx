@@ -25,6 +25,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { Trabajador } from "@/api/trabajadores/interface/response-trabajadores.interface";
 import { actualizarTrabajador } from "@/api/trabajadores/accions/editar-trabajador";
+import { dataRoles } from "@/helpers/data/roles/dataRolesTrabajador";
 
 interface Props {
   onSuccess: () => void;
@@ -51,7 +52,7 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
     setValue,
     reset,
     watch,
-  } = useForm<CrearCliente>({
+  } = useForm<CrearCliente & { rol?: TipoCliente }>({
     defaultValues: {
       email: "",
       password: "",
@@ -63,12 +64,14 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
       departamento: "",
       municipio: "",
       sexo: "",
+      rol: TipoCliente.TRABAJADOR,
     },
   });
 
   const currentDepartamento = watch("departamento");
   const currentMunicipio = watch("municipio");
   const currentSexo = watch("sexo");
+  const currentRol = watch("rol");
 
   const ID_REGEX = {
     HN: {
@@ -115,6 +118,7 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
         departamento: trabajador.departamento?.id || "",
         municipio: trabajador.municipio?.id || "",
         sexo: trabajador.sexo || "",
+        rol: trabajador.rol || TipoCliente.TRABAJADOR,
       });
 
       if (trabajador.departamento?.id) {
@@ -134,6 +138,7 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
         departamento: "",
         municipio: "",
         sexo: "",
+        rol: TipoCliente.TRABAJADOR,
       });
       setDepartamentoId("");
       setCargandoDatos(false);
@@ -177,8 +182,13 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<CrearCliente> }) =>
-      actualizarTrabajador(id, data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Partial<CrearCliente & { rol?: TipoCliente }>;
+    }) => actualizarTrabajador(id, data),
     onSuccess: () => {
       toast.success("Trabajador Actualizado Exitosamente");
       queryClient.invalidateQueries({ queryKey: ["trabajadores"] });
@@ -201,6 +211,7 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
       departamento: "",
       municipio: "",
       sexo: "",
+      rol: TipoCliente.TRABAJADOR,
     });
     setDepartamentoId("");
   };
@@ -237,11 +248,11 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
     );
   };
 
-  const onSubmit = (data: CrearCliente) => {
+  const onSubmit = (data: CrearCliente & { rol?: TipoCliente }) => {
     const telefonoConPrefijo = `${prefijoNumber} ${data.telefono}`;
 
     if (isEditing && trabajador) {
-      const payload: Partial<CrearCliente> = {
+      const payload: Partial<CrearCliente & { rol?: TipoCliente }> = {
         nombre: data.nombre,
         identificacion: data.identificacion,
         telefono: telefonoConPrefijo,
@@ -250,6 +261,7 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
         pais: data.pais,
         departamento: data.departamento,
         municipio: data.municipio,
+        rol: data.rol,
       };
 
       if (data.email !== trabajador.email) {
@@ -262,13 +274,13 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
 
       updateMutation.mutate({ id: trabajador.id, data: payload });
     } else {
-      const payload: CrearCliente = {
+      const payload: CrearCliente & { rol?: TipoCliente } = {
         ...data,
         telefono: telefonoConPrefijo,
-        rol: TipoCliente.TRABAJADOR,
         pais: paisId,
+        rol: data.rol || TipoCliente.TRABAJADOR,
       };
-      createMutation.mutate(payload);
+      createMutation.mutate(payload as any);
     }
   };
 
@@ -362,6 +374,38 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
         </div>
 
         <div className="space-y-2">
+          <Label htmlFor="rol">Rol*</Label>
+          <Select
+            value={currentRol || ""}
+            onValueChange={(value) => {
+              setValue("rol", value as TipoCliente);
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Selecciona un rol" />
+            </SelectTrigger>
+            <SelectContent>
+              {dataRoles && dataRoles.length > 0 ? (
+                dataRoles.map((rol) => (
+                  <SelectItem key={rol.id} value={rol.value}>
+                    {rol.label}
+                  </SelectItem>
+                ))
+              ) : (
+                <SelectItem value="no-roles" disabled>
+                  No se encontraron roles
+                </SelectItem>
+              )}
+            </SelectContent>
+          </Select>
+          {errors.rol && (
+            <p className="text-sm font-medium text-red-500">
+              {errors.rol.message as string}
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-2">
           <Label htmlFor="pais">País*</Label>
           <div className="relative">
             <div className="flex items-center gap-2 p-2 border rounded-md bg-gray-50">
@@ -383,7 +427,6 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
             onValueChange={(value) => {
               setValue("departamento", value);
               setDepartamentoId(value);
-
               setValue("municipio", "");
             }}
           >
@@ -543,7 +586,7 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
       </div>
 
       <div className="mt-6">
-        <Button type="submit" className="w-full " disabled={isPending}>
+        <Button type="submit" className="w-full" disabled={isPending}>
           {isPending
             ? isEditing
               ? "Actualizando trabajador..."

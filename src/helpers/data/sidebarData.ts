@@ -1,12 +1,15 @@
 import {
   BriefcaseMedical,
   Building2,
+  CalendarDays,
   ChartColumnIncreasing,
+  ClipboardList,
   DollarSign,
   FileText,
   FlaskConical,
   GitBranch,
   Heart,
+  ImageIcon,
   Layers3,
   Package,
   PackageCheck,
@@ -79,6 +82,21 @@ export const navItems = [
       { name: "Pagos", href: "/pagos", icon: DollarSign },
 
       { name: "Reportes", href: "/reportes-planillas", icon: TrendingUp },
+    ],
+  },
+  {
+    category: "Actividades",
+    items: [
+      {
+        name: "Actividades Diarias",
+        href: "/actividades",
+        icon: ClipboardList,
+      },
+      {
+        name: "Evidencias",
+        href: "/actividades-evidencias",
+        icon: ImageIcon,
+      },
     ],
   },
   {
