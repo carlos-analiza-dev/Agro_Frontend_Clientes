@@ -13,8 +13,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Finca } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
-import { formatDate } from "@/helpers/funciones/formatDate";
 import GoogleMapViewer from "@/components/generics/GoogleMapViewer";
+import { formatDateOnly } from "@/helpers/funciones/formatDateOnly";
 
 interface CardFincasProps {
   finca: Finca;
@@ -103,7 +103,7 @@ export const CardFincas = ({ finca, onPress }: CardFincasProps) => {
             <div className="flex items-center">
               <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
               <span className="text-sm">
-                Registrada: {formatDate(finca.fecha_registro)}
+                Registrada: {formatDateOnly(finca.fecha_registro)}
               </span>
             </div>
 

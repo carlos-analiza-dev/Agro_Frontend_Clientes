@@ -4,6 +4,7 @@ import {
   CalendarDays,
   ChartColumnIncreasing,
   ClipboardList,
+  Clock,
   DollarSign,
   FileText,
   FlaskConical,
@@ -17,11 +18,13 @@ import {
   PackageXIcon,
   PawPrint,
   Pill,
+  Settings,
   ShoppingBag,
   Stethoscope,
   TrendingUp,
   UserCog,
   Wallet,
+  Wrench,
 } from "lucide-react";
 
 export const navItems = [
@@ -97,6 +100,14 @@ export const navItems = [
         href: "/actividades-evidencias",
         icon: ImageIcon,
       },
+    ],
+  },
+  {
+    category: "Operaciones",
+    items: [
+      { name: "Equipos y Maquinaria", href: "/equipos", icon: Settings },
+      { name: "Mantenimientos", href: "/mantenimientos", icon: Wrench },
+      { name: "Uso de Equipos", href: "/uso-equipos", icon: Clock },
     ],
   },
   {
