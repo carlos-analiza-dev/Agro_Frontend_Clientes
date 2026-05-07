@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { tiposMamtenimientoData } from "@/helpers/data/mantenimientos/dataTiposMantenimientos";
 import { XCircleIcon } from "lucide-react";
 import React from "react";
 
@@ -91,8 +92,11 @@ const CardFilters = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="todos">Todos los tipos</SelectItem>
-                <SelectItem value="PREVENTIVO">Preventivo</SelectItem>
-                <SelectItem value="CORRECTIVO">Correctivo</SelectItem>
+                {tiposMamtenimientoData.map((tipo) => (
+                  <SelectItem key={tipo.id} value={tipo.value}>
+                    {tipo.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

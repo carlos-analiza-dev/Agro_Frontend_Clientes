@@ -22,6 +22,8 @@ const MantenimientosPage = () => {
   const [openModal, setOpenModal] = useState(false);
   const { data: fincas, isLoading: isLoadingFincas } =
     useFincasPropietarios(clienteId);
+  const [selectedMantenimiento, setSelectedMantenimiento] =
+    useState<Mantenimiento | null>(null);
 
   const [filters, setFilters] = useState({
     offset: 0,
@@ -84,6 +86,11 @@ const MantenimientosPage = () => {
       fechaFin: "",
       fincaId: "",
     });
+  };
+
+  const handleEditMantenimiento = (mantenimiento: Mantenimiento) => {
+    setOpenModal(true);
+    setSelectedMantenimiento(mantenimiento);
   };
 
   const hasActiveFilters =
@@ -174,7 +181,12 @@ const MantenimientosPage = () => {
           </div>
         ) : (
           mantenimientos.map((m: Mantenimiento) => (
-            <CardMantenimientos mantenimiento={m} moneda={moneda} key={m.id} />
+            <CardMantenimientos
+              mantenimiento={m}
+              moneda={moneda}
+              key={m.id}
+              handleEditMantenimiento={handleEditMantenimiento}
+            />
           ))
         )}
       </div>
@@ -199,7 +211,10 @@ const MantenimientosPage = () => {
       >
         <FormMantenimiento
           moneda={moneda}
-          onSuccess={() => setOpenModal(false)}
+          onSuccess={() => {
+            (setOpenModal(false), setSelectedMantenimiento(null));
+          }}
+          mantenimiento={selectedMantenimiento}
         />
       </Modal>
     </div>

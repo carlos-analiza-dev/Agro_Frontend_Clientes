@@ -24,49 +24,17 @@ import { Mantenimiento } from "@/api/mantenimientos/interface/response-mantenimi
 import { Equipo } from "@/api/equipos-maquinaria/interface/response-equipos.interface";
 import { editarMantenimiento } from "@/api/mantenimientos/accions/editar-mantenimiento";
 import { ingresarMantenimiento } from "@/api/mantenimientos/accions/ingresar-mantenimiento";
+import {
+  formatearFechaParaEnviar,
+  formatearFechaParaInput,
+} from "@/helpers/funciones/mantenimiento/fechas_format";
+import { tiposMamtenimientoData } from "@/helpers/data/mantenimientos/dataTiposMantenimientos";
 
 interface Props {
   mantenimiento?: Mantenimiento | null;
   onSuccess: () => void;
   moneda: string;
 }
-
-const formatearFechaParaInput = (fecha: string | Date | undefined): string => {
-  if (!fecha) return "";
-
-  if (typeof fecha === "string") {
-    if (fecha.includes(" ")) {
-      const [date, time] = fecha.split(" ");
-
-      const timeOnly = time.split("+")[0].split("-")[0];
-      return `${date}T${timeOnly}`;
-    }
-
-    return fecha.split(".")[0];
-  }
-
-  if (fecha instanceof Date) {
-    return fecha.toISOString().slice(0, 16);
-  }
-
-  return "";
-};
-
-const formatearFechaParaEnviar = (fecha: string): string => {
-  if (!fecha) return "";
-
-  if (fecha.includes("T")) {
-    const offset = -new Date().getTimezoneOffset();
-    const offsetSign = offset >= 0 ? "+" : "-";
-    const offsetHours = Math.abs(Math.floor(offset / 60));
-    const offsetMinutes = Math.abs(offset % 60);
-    const offsetStr = `${offsetSign}${offsetHours.toString().padStart(2, "0")}:${offsetMinutes.toString().padStart(2, "0")}`;
-
-    return `${fecha}:00${offsetStr}`;
-  }
-
-  return `${fecha}T00:00:00`;
-};
 
 const FormMantenimiento = ({ mantenimiento, onSuccess, moneda }: Props) => {
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -293,8 +261,11 @@ const FormMantenimiento = ({ mantenimiento, onSuccess, moneda }: Props) => {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Tipos de Mantenimiento</SelectLabel>
-                <SelectItem value="PREVENTIVO">Preventivo</SelectItem>
-                <SelectItem value="CORRECTIVO">Correctivo</SelectItem>
+                {tiposMamtenimientoData.map((tipo) => (
+                  <SelectItem key={tipo.id} value={tipo.value}>
+                    {tipo.label}
+                  </SelectItem>
+                ))}
               </SelectGroup>
             </SelectContent>
           </Select>
