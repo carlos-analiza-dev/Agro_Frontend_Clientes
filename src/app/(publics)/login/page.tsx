@@ -30,7 +30,7 @@ export default function LoginPage() {
           objectFit="cover"
           quality={100}
           className="opacity-20"
-          unoptimized
+          priority
         />
       </div>
 

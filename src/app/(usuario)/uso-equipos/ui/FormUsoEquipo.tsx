@@ -102,6 +102,7 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
       setValue("equipoId", usoEquipo.equipo.id);
       setValue("actividadId", usoEquipo.actividad?.id || "");
       setValue("operadorId", usoEquipo.operador?.id || "");
+
       setValue("fechaInicio", formatearFechaParaInput(usoEquipo.fechaInicio));
       setValue("fechaFin", formatearFechaParaInput(usoEquipo.fechaFin));
       setValue("horasTrabajadas", Number(usoEquipo.horasTrabajadas));
@@ -110,8 +111,9 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
       setSelectedOperadorId(usoEquipo.operador?.id || "");
 
       if (usoEquipo.fechaInicio) {
-        const fecha = formatearFechaParaInput(usoEquipo.fechaInicio);
-        setFechaActividad(fecha.split("T")[0]);
+        const fechaObj = new Date(usoEquipo.fechaInicio);
+        const fechaYYYYMMDD = fechaObj.toISOString().split("T")[0];
+        setFechaActividad(fechaYYYYMMDD);
       }
     } else {
       reset({
@@ -296,40 +298,53 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
           <Label htmlFor="operadorId">
             Operador <span className="text-red-500">*</span>
           </Label>
-          <Select
-            value={watch("operadorId")}
-            onValueChange={(value) => {
-              setValue("operadorId", value);
-              setValue("actividadId", "");
-            }}
-            disabled={isSubmitting || isEditing}
-          >
-            <SelectTrigger
-              className={errors.operadorId ? "border-red-500" : ""}
+
+          {!isEditing ? (
+            <Select
+              value={watch("operadorId")}
+              onValueChange={(value) => {
+                setValue("operadorId", value);
+                setValue("actividadId", "");
+              }}
+              disabled={isSubmitting}
             >
-              <SelectValue placeholder="Seleccionar operador" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Operadores</SelectLabel>
-                {trabajadores?.map((trabajador) => (
-                  <SelectItem key={trabajador.id} value={trabajador.id}>
-                    <div className="flex flex-col items-start">
-                      <span className="font-medium">{trabajador.nombre}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {trabajador.email}
-                      </span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+              <SelectTrigger
+                className={errors.operadorId ? "border-red-500" : ""}
+              >
+                <SelectValue placeholder="Seleccionar operador" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Operadores</SelectLabel>
+                  {trabajadores?.map((trabajador) => (
+                    <SelectItem key={trabajador.id} value={trabajador.id}>
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">{trabajador.nombre}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {trabajador.email}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          ) : (
+            // En modo edición, mostrar un div con la información del operador
+            <div className="w-full p-2 border rounded-md bg-muted/50">
+              <div className="font-medium">{usoEquipo?.operador?.nombre}</div>
+              <div className="text-sm text-muted-foreground">
+                {usoEquipo?.operador?.email}
+              </div>
+            </div>
+          )}
+
           <input
             type="hidden"
             {...register("operadorId", {
               required: "Debe seleccionar un operador",
             })}
+            value={watch("operadorId")}
           />
           {errors.operadorId && (
             <p className="text-sm text-red-500 mt-1">

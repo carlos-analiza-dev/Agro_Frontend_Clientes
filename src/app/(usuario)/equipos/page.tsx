@@ -15,11 +15,15 @@ import { Button } from "@/components/ui/button";
 import Modal from "@/components/generics/Modal";
 import FormEquipos from "./ui/FormEquipos";
 import { Equipo } from "@/api/equipos-maquinaria/interface/response-equipos.interface";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
+import { useRouter } from "next/navigation";
 
 const EquiposPage = () => {
   const { cliente } = useAuthStore();
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const clienteId = cliente?.id ?? "";
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const router = useRouter();
   const [openModalEquipos, setOpenModalEquipos] = useState(false);
   const [selectedEquipo, setSelectedEquipo] = useState<Equipo | null>(null);
   const [filters, setFilters] = useState({
@@ -53,8 +57,20 @@ const EquiposPage = () => {
   };
 
   const handleEditEquipo = (equipo: Equipo) => {
-    setOpenModalEquipos(true);
-    setSelectedEquipo(equipo);
+    if (isMobile) {
+      router.push(`/equipos/${equipo.id}`);
+    } else {
+      setOpenModalEquipos(true);
+      setSelectedEquipo(equipo);
+    }
+  };
+
+  const handleAddEquipos = () => {
+    if (isMobile) {
+      router.push("/equipos/ingresar-equipo");
+    } else {
+      setOpenModalEquipos(true);
+    }
   };
 
   return (
@@ -68,10 +84,7 @@ const EquiposPage = () => {
             Registra y monitorea tus equipos y maquinaria
           </p>
         </div>
-        <Button
-          onClick={() => setOpenModalEquipos(true)}
-          className="w-full md:w-auto"
-        >
+        <Button onClick={() => handleAddEquipos()} className="w-full md:w-auto">
           + Agregar Equipo
         </Button>
       </div>
@@ -135,6 +148,7 @@ const EquiposPage = () => {
                 equipos={equipos}
                 handleEditEquipo={handleEditEquipo}
                 moneda={moneda}
+                isMobile={isMobile}
               />
 
               <div className="mt-4 flex justify-center">

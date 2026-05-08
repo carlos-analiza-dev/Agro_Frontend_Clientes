@@ -28,7 +28,7 @@ export default function RegisterPage() {
           alt="Campo agrícola"
           layout="fill"
           objectFit="cover"
-          unoptimized
+          priority
           quality={100}
           className="opacity-20"
         />

@@ -21,10 +21,14 @@ import FiltersUsoEquipos from "./ui/FiltersUsoEquipos";
 import Modal from "@/components/generics/Modal";
 import FormUsoEquipo from "./ui/FormUsoEquipo";
 import { useAuthStore } from "@/providers/store/useAuthStore";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
+import { useRouter } from "next/navigation";
 
 const UsoDeEquiposPage = () => {
   const { cliente } = useAuthStore();
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const router = useRouter();
   const [selectedUso, setSelectedUso] = useState<UsosEquipo | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [filters, setFilters] = useState({
@@ -69,8 +73,20 @@ const UsoDeEquiposPage = () => {
   const hasActiveFilters = filters.equipoId || filters.operadorId;
 
   const handleEdit = (uso: UsosEquipo) => {
-    setSelectedUso(uso);
-    setModalOpen(true);
+    if (isMobile) {
+      router.push(`/uso-equipos/${uso.id}`);
+    } else {
+      setSelectedUso(uso);
+      setModalOpen(true);
+    }
+  };
+
+  const handleAddUso = () => {
+    if (isMobile) {
+      router.push("/uso-equipos/ingresar-uso");
+    } else {
+      setModalOpen(true);
+    }
   };
 
   if (error) {
@@ -100,14 +116,16 @@ const UsoDeEquiposPage = () => {
 
   return (
     <div className="container mx-auto p-4 md:p-6 space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="md:flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Uso de Equipos</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+            Uso de Equipos
+          </h1>
+          <p className="text-sm md:text-base text-muted-foreground">
             Registro de uso de equipos por operadores y actividades
           </p>
         </div>
-        <Button onClick={() => setModalOpen(true)} className="gap-2">
+        <Button onClick={() => handleAddUso()} className="w-full md:w-auto">
           <WrenchIcon className="h-4 w-4" />
           Registrar Uso
         </Button>
@@ -158,6 +176,7 @@ const UsoDeEquiposPage = () => {
               <TableUsoEquipos
                 usosEquipo={usosEquipo}
                 handleEdit={handleEdit}
+                isMobile={isMobile}
               />
             </div>
           )}
@@ -185,6 +204,7 @@ const UsoDeEquiposPage = () => {
         }
         size="2xl"
         height="auto"
+        showCloseButton={false}
       >
         <FormUsoEquipo
           onSuccess={() => {

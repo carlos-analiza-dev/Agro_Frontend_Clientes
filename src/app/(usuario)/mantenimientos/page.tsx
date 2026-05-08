@@ -14,11 +14,15 @@ import CardMantenimientos from "./ui/CardMantenimientos";
 import CardFilters from "./ui/CardFilters";
 import Modal from "@/components/generics/Modal";
 import FormMantenimiento from "./ui/FormMantenimiento";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
+import { useRouter } from "next/navigation";
 
 const MantenimientosPage = () => {
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id ?? "";
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const router = useRouter();
   const [openModal, setOpenModal] = useState(false);
   const { data: fincas, isLoading: isLoadingFincas } =
     useFincasPropietarios(clienteId);
@@ -89,8 +93,12 @@ const MantenimientosPage = () => {
   };
 
   const handleEditMantenimiento = (mantenimiento: Mantenimiento) => {
-    setOpenModal(true);
-    setSelectedMantenimiento(mantenimiento);
+    if (isMobile) {
+      router.push(`/mantenimientos/${mantenimiento.id}`);
+    } else {
+      setOpenModal(true);
+      setSelectedMantenimiento(mantenimiento);
+    }
   };
 
   const hasActiveFilters =
@@ -98,6 +106,14 @@ const MantenimientosPage = () => {
     filters.fechaInicio ||
     filters.fechaFin ||
     filters.fincaId;
+
+  const handeAddMantenimiento = () => {
+    if (isMobile) {
+      router.push("/mantenimientos/ingresar-mantenimiento");
+    } else {
+      setOpenModal(true);
+    }
+  };
 
   if (error) {
     return (
@@ -126,18 +142,22 @@ const MantenimientosPage = () => {
 
   return (
     <div className="container mx-auto p-4 md:p-6 space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="md:flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Mantenimientos</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+            Mantenimientos
+          </h1>
+          <p className="text-sm md:text-base text-muted-foreground">
             Gestiona y visualiza los mantenimientos de tus equipos
           </p>
         </div>
-        <div className="flex justify-end">
-          <Button onClick={() => setOpenModal(true)}>
-            + Ingresar Mantenimiento
-          </Button>
-        </div>
+
+        <Button
+          className="w-full md:w-auto"
+          onClick={() => handeAddMantenimiento()}
+        >
+          + Ingresar Mantenimiento
+        </Button>
       </div>
 
       <CardFilters

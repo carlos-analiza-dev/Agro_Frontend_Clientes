@@ -18,3 +18,9 @@ export const obtenerEquiposActivos = async () => {
   const response = await veterinariaAPI.get<Equipo[]>(url);
   return response.data;
 };
+
+export const obtenerEquipoById = async (id: string) => {
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/equipo-maquinaria/${id}`;
+  const response = await veterinariaAPI.get<Equipo>(url);
+  return response.data;
+};
