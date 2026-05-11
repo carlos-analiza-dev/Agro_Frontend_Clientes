@@ -68,7 +68,8 @@ export const CardFincas = ({ finca, onPress }: CardFincasProps) => {
               <Box className="h-4 w-4 mr-2 text-muted-foreground" />
               <span className="text-sm">
                 {finca.tamaño_total} {finca.medida_finca} Totales -{" "}
-                {finca.area_ganaderia} {finca.medida_finca} para ganadería
+                {finca.area_ganaderia} {finca.medida_finca} para ganadería -{" "}
+                {finca.area_agricola} {finca.medida_finca} para agricultura
               </span>
             </div>
 

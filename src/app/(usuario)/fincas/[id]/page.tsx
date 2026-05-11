@@ -34,20 +34,46 @@ import MapaSeleccionDireccion from "../crear-fincas/ui/MapaSeleccionDireccion";
 import ButtonBack from "@/components/generics/ButtonBack";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 
-const fincaSchema = z.object({
-  nombre_finca: z.string().min(1, "El nombre de la finca es requerido"),
-  cantidad_animales: z.number().min(1, "Debe haber al menos 1 animal"),
-  ubicacion: z.string().min(1, "La ubicación es requerida"),
-  abreviatura: z.string().optional(),
-  tamaño_total: z.string().min(1, "El tamaño total es requerido"),
-  area_ganaderia: z.string().min(1, "El área de ganadería es requerida"),
-  tipo_explotacion: z.array(z.object({ tipo_explotacion: z.string() })),
-  especies_maneja: z.array(
-    z.object({ especie: z.string(), cantidad: z.number() }),
-  ),
-  latitud: z.number().optional(),
-  longitud: z.number().optional(),
-});
+const fincaSchema = z
+  .object({
+    nombre_finca: z.string().min(1, "El nombre de la finca es requerido"),
+
+    cantidad_animales: z.number().min(1, "Debe haber al menos 1 animal"),
+
+    ubicacion: z.string().min(1, "La ubicación es requerida"),
+
+    abreviatura: z.string().optional(),
+
+    tamaño_total: z.string().min(1, "El tamaño total es requerido"),
+
+    area_ganaderia: z.string().optional(),
+
+    area_agricola: z.string().optional(),
+
+    tipo_explotacion: z.array(
+      z.object({
+        tipo_explotacion: z.string(),
+      }),
+    ),
+
+    especies_maneja: z.array(
+      z.object({
+        especie: z.string(),
+        cantidad: z.number(),
+      }),
+    ),
+
+    latitud: z.number().optional(),
+
+    longitud: z.number().optional(),
+  })
+  .refine(
+    (data) => !!data.area_ganaderia?.trim() || !!data.area_agricola?.trim(),
+    {
+      message: "Debe ingresar al menos un área: ganadería o agrícola",
+      path: ["area_ganaderia"],
+    },
+  );
 
 type FincaFormData = z.infer<typeof fincaSchema>;
 
@@ -101,7 +127,6 @@ export default function FincaDetailsPage() {
       )
         ? (fincaData.medida_finca as UnidadMedida)
         : "ha";
-
       reset({
         nombre_finca: fincaData.nombre_finca,
         abreviatura: fincaData.abreviatura || "",
@@ -111,6 +136,7 @@ export default function FincaDetailsPage() {
         cantidad_animales: fincaData.cantidad_animales,
         tamaño_total: fincaData.tamaño_total,
         area_ganaderia: fincaData.area_ganaderia,
+        area_agricola: fincaData.area_agricola,
         especies_maneja: fincaData.especies_maneja || [],
         tipo_explotacion: fincaData.tipo_explotacion || [],
       });
@@ -346,7 +372,7 @@ export default function FincaDetailsPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="tamaño_total">
                         Tamaño total ({unidadMedida})
@@ -356,6 +382,8 @@ export default function FincaDetailsPage() {
                         <Input
                           id="tamaño_total"
                           type="number"
+                          min={0}
+                          step={0.5}
                           placeholder={`Tamaño total en ${unidadMedida}`}
                           className="pl-10"
                           {...register("tamaño_total")}
@@ -377,6 +405,7 @@ export default function FincaDetailsPage() {
                         <Input
                           id="area_ganaderia"
                           type="number"
+                          min={0}
                           placeholder={`Área de ganadería en ${unidadMedida}`}
                           className="pl-10"
                           {...register("area_ganaderia")}
@@ -385,6 +414,31 @@ export default function FincaDetailsPage() {
                       {errors.area_ganaderia && (
                         <p className="text-sm text-destructive">
                           {errors.area_ganaderia.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="area_agricola">
+                        Área agrícola ({unidadMedida})
+                      </Label>
+
+                      <div className="relative">
+                        <Layers className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+
+                        <Input
+                          id="area_agricola"
+                          type="number"
+                          min={0}
+                          placeholder={`Área agrícola en ${unidadMedida}`}
+                          className="pl-10"
+                          {...register("area_agricola")}
+                        />
+                      </div>
+
+                      {errors.area_agricola && (
+                        <p className="text-sm text-destructive">
+                          {errors.area_agricola.message}
                         </p>
                       )}
                     </div>

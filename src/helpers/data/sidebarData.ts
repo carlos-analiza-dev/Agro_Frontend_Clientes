@@ -20,10 +20,12 @@ import {
   Pill,
   Settings,
   ShoppingBag,
+  Sprout,
   Stethoscope,
   TrendingUp,
   UserCog,
   Wallet,
+  Wheat,
   Wrench,
 } from "lucide-react";
 
@@ -37,7 +39,7 @@ export const navItems = [
     items: [
       { name: "Fincas", href: "/fincas", icon: Building2 },
       { name: "Animales", href: "/animales", icon: Layers3 },
-
+      { name: "Cultivos", href: "/cultivos", icon: Sprout },
       { name: "Producción", href: "/produccion", icon: FlaskConical },
       { name: "Trabajadores", href: "/trabajadores", icon: UserCog },
     ],
@@ -111,10 +113,29 @@ export const navItems = [
     ],
   },
   {
+    category: "Consulta Inteligente",
+    items: [
+      {
+        name: "Diagnóstico Ganadero",
+        href: "/diagnostico",
+        icon: Stethoscope,
+      },
+      {
+        name: "Diagnóstico Agricola",
+        href: "/agricultura-inteligente",
+        icon: Sprout,
+      },
+      {
+        name: "Siembra Inteligente",
+        href: "/siembra-inteligente",
+        icon: Wheat,
+      },
+    ],
+  },
+  {
     category: "Salud Animal",
     items: [
       { name: "Historial Médico", href: "/historial-medico", icon: Heart },
-      { name: "Diagnóstico", href: "/diagnostico", icon: Stethoscope },
       { name: "Tratamientos", href: "/tratamientos", icon: Pill },
     ],
   },

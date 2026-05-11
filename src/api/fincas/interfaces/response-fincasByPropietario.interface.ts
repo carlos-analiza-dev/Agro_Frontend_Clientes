@@ -13,7 +13,8 @@ export interface Finca {
   latitud: number;
   abreviatura: string;
   tamaño_total: string;
-  area_ganaderia: string;
+  area_ganaderia?: string;
+  area_agricola?: string;
   tipo_explotacion: TipoExplotacion[];
   especies_maneja: EspeciesManeja[];
   fecha_registro: string;
