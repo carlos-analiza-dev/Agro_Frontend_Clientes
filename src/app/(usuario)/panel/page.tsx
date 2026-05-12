@@ -16,11 +16,26 @@ import { Button } from "@/components/ui/button";
 import ProduccionGanadera from "./ui/ProduccionGanadera";
 import { Construction, Wrench, Clock } from "lucide-react";
 import { useState } from "react";
+import useGetResumenCultivos from "@/hooks/dashboard/cultivos/useGetResumenCultivos";
+import ResumenCultivos from "./ui/ResumenCultivos";
+import { useAuthStore } from "@/providers/store/useAuthStore";
+import useGetCultivosPorTipo from "@/hooks/dashboard/cultivos/useGetCultivosPorTipo";
+import useGetAreaCultivoByFinca from "@/hooks/dashboard/cultivos/useGetAreaCultivoByFinca";
+import CultivosPorTipo from "./ui/CultivosPorTipo";
+import AreaCultivoByFinca from "./ui/AreaCultivoByFinca";
 
 const PanelPageGanadero = () => {
+  const { cliente } = useAuthStore();
+  const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const { data: total_animales } = useGetTotalAnimales();
   const { data: total_fincas } = useGetTotalFincas();
   const { data: citas_completadas } = useGetTotalCitasCompletadas();
+  const { data: resumen_cultivos, isLoading: isLoadingCultivos } =
+    useGetResumenCultivos();
+  const { data: cultivos_tipo, isLoading: isLoadingCultivosTipo } =
+    useGetCultivosPorTipo();
+  const { data: area_finca_cultivos, isLoading: isLoadingAreaFinca } =
+    useGetAreaCultivoByFinca();
   const [nombreSeccion, setNombreSeccion] = useState<string>("Ganadero");
 
   return (
@@ -80,91 +95,21 @@ const PanelPageGanadero = () => {
           </TabsContent>
 
           <TabsContent value="agricola">
-            <Card className="w-full border-dashed border-2 border-yellow-300 bg-yellow-50">
-              <CardHeader>
-                <div className="flex flex-col items-center justify-center text-center space-y-4">
-                  <div className="rounded-full bg-yellow-100 p-4">
-                    <Construction className="h-12 w-12 text-yellow-600" />
-                  </div>
-                  <CardTitle className="text-xl sm:text-2xl font-bold text-yellow-700">
-                    Módulo en Desarrollo
-                  </CardTitle>
-                  <CardDescription className="text-base text-yellow-600 max-w-md">
-                    Estamos trabajando en el módulo Agrícola para ofrecerte las
-                    mejores herramientas.
-                  </CardDescription>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  <div className="bg-white border border-yellow-200 rounded-lg p-6">
-                    <div className="space-y-4">
-                      <div className="flex items-start space-x-3">
-                        <Clock className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
-                        <div>
-                          <h3 className="font-semibold text-gray-800">
-                            Próximamente Disponible
-                          </h3>
-                          <p className="text-sm text-gray-600 mt-1">
-                            Este módulo estará disponible en las próximas
-                            actualizaciones del sistema.
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-start space-x-3">
-                        <Wrench className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
-                        <div>
-                          <h3 className="font-semibold text-gray-800">
-                            Funcionalidades en Desarrollo
-                          </h3>
-                          <p className="text-sm text-gray-600 mt-1">
-                            Estamos implementando herramientas para gestión de
-                            cultivos, cosechas y análisis agrícola.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="text-center">
-                    <h4 className="font-medium text-gray-700 mb-2">
-                      ¿Qué incluirá este módulo?
-                    </h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div className="bg-white border border-gray-200 rounded-lg p-3">
-                        <p className="text-sm font-medium text-gray-700">
-                          Gestión de Cultivos
-                        </p>
-                      </div>
-                      <div className="bg-white border border-gray-200 rounded-lg p-3">
-                        <p className="text-sm font-medium text-gray-700">
-                          Control de Cosechas
-                        </p>
-                      </div>
-                      <div className="bg-white border border-gray-200 rounded-lg p-3">
-                        <p className="text-sm font-medium text-gray-700">
-                          Análisis de Suelos
-                        </p>
-                      </div>
-                      <div className="bg-white border border-gray-200 rounded-lg p-3">
-                        <p className="text-sm font-medium text-gray-700">
-                          Planificación Agrícola
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-center">
-                <Button
-                  disabled
-                  className="bg-yellow-600 hover:bg-yellow-700 cursor-not-allowed opacity-70"
-                >
-                  <Clock className="mr-2 h-4 w-4" />
-                  Módulo en Desarrollo
-                </Button>
-              </CardFooter>
-            </Card>
+            <ResumenCultivos
+              data={resumen_cultivos}
+              isLoading={isLoadingCultivos}
+              moneda={moneda}
+            />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-2 md:mt-5">
+              <CultivosPorTipo
+                data={cultivos_tipo}
+                isLoading={isLoadingCultivosTipo}
+              />
+              <AreaCultivoByFinca
+                data={area_finca_cultivos}
+                isLoading={isLoadingAreaFinca}
+              />
+            </div>
           </TabsContent>
 
           <TabsContent value="produccion">

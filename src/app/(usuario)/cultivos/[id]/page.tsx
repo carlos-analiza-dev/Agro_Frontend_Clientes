@@ -14,6 +14,7 @@ const EditarCultivoPage = () => {
   const cultivoId = id as string;
   const { cliente } = useAuthStore();
   const propietarioId = cliente?.id ?? "";
+  const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const { data: fincasData } = useFincasPropietarios(propietarioId);
   const isMobile = useMediaQuery("(max-width: 768px)");
   const router = useRouter();
@@ -43,6 +44,7 @@ const EditarCultivoPage = () => {
               onSuccess={() => router.back()}
               fincas={fincasData?.data.fincas}
               cultivo={cultivo}
+              moneda={moneda}
             />
           </CardContent>
         </Card>

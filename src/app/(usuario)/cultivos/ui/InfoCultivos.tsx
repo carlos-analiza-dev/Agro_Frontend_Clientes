@@ -15,17 +15,25 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import DetallesCultivoModal from "./DetallesCultivoModal";
 
 interface Props {
   cultivo: Cultivo;
   estado: { label: string; variant: string };
   handleEditCultivo: (cultivo: Cultivo) => void;
+  moneda: string;
 }
 
-const InfoCultivos = ({ cultivo, estado, handleEditCultivo }: Props) => {
+const InfoCultivos = ({
+  cultivo,
+  estado,
+  handleEditCultivo,
+  moneda,
+}: Props) => {
   const queryClient = useQueryClient();
   const [openModalStatus, setOpenModalStatus] = useState(false);
-
+  const [selectedCultivo, setSelectedCultivo] = useState<Cultivo | null>(null);
+  const [ModalViewDetails, setModalViewDetails] = useState(false);
   const handleUpdateStatus = async (estado: boolean) => {
     try {
       await editarCultivo(cultivo.id, { isActive: estado });
@@ -37,6 +45,11 @@ const InfoCultivos = ({ cultivo, estado, handleEditCultivo }: Props) => {
         "Ocurrio un error al momento de cambiar el estado del cultivo",
       );
     }
+  };
+
+  const handleViewDetails = (cultivo: Cultivo) => {
+    setModalViewDetails(true);
+    setSelectedCultivo(cultivo);
   };
 
   return (
@@ -97,6 +110,13 @@ const InfoCultivos = ({ cultivo, estado, handleEditCultivo }: Props) => {
         >
           <Edit />
         </Button>
+        <Button
+          onClick={() => handleViewDetails(cultivo)}
+          variant="outline"
+          size="sm"
+        >
+          Mas Detalles
+        </Button>
         {cultivo.isActive && (
           <Button
             onClick={() => setOpenModalStatus(true)}
@@ -107,11 +127,12 @@ const InfoCultivos = ({ cultivo, estado, handleEditCultivo }: Props) => {
           </Button>
         )}
       </div>
+
       <Modal
         open={openModalStatus}
         onOpenChange={setOpenModalStatus}
         title="¿Deseas marcar el cultivo como finalizado?"
-        description="Una vez marques el cultivo como finalizado no se podra cambiar dicha accion"
+        description="Una vez marques el cultivo como finalizado no se podrá cambiar dicha acción"
         size="xl"
       >
         <div className="flex justify-end">
@@ -119,6 +140,18 @@ const InfoCultivos = ({ cultivo, estado, handleEditCultivo }: Props) => {
             Confirmar
           </Button>
         </div>
+      </Modal>
+
+      <Modal
+        open={ModalViewDetails}
+        onOpenChange={setModalViewDetails}
+        title="Detalles de tu cultivo"
+        description="Aquí podrás observar detalladamente toda la información de tu cultivo"
+        size="4xl"
+      >
+        {selectedCultivo && (
+          <DetallesCultivoModal cultivo={selectedCultivo} moneda={moneda} />
+        )}
       </Modal>
     </div>
   );

@@ -31,6 +31,7 @@ export default function LoginPage() {
           quality={100}
           className="opacity-20"
           priority
+          unoptimized
         />
       </div>
 

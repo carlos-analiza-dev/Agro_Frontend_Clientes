@@ -28,6 +28,7 @@ import { useRouter } from "next/navigation";
 const CultivoPage = () => {
   const { cliente } = useAuthStore();
   const propietarioId = cliente?.id ?? "";
+  const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const isMobile = useMediaQuery("(max-width: 768px)");
   const router = useRouter();
   const [filters, setFilters] = useState({
@@ -165,6 +166,7 @@ const CultivoPage = () => {
                       cultivo={cultivo}
                       estado={estado}
                       handleEditCultivo={handleEditCultivo}
+                      moneda={moneda}
                     />
                   </CardContent>
                 </Card>
@@ -209,6 +211,7 @@ const CultivoPage = () => {
             setSelectedCultivo(null);
           }}
           cultivo={selectedCultivo}
+          moneda={moneda}
         />
       </Modal>
     </div>

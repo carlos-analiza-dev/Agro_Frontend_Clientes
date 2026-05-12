@@ -10,6 +10,7 @@ import { useAuthStore } from "@/providers/store/useAuthStore";
 const CrearCuktivoPage = () => {
   const { cliente } = useAuthStore();
   const propietarioId = cliente?.id ?? "";
+  const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const { data: fincasData } = useFincasPropietarios(propietarioId);
   const isMobile = useMediaQuery("(max-width: 768px)");
   const router = useRouter();
@@ -32,6 +33,7 @@ const CrearCuktivoPage = () => {
             <FormCultivo
               onSuccess={() => router.back()}
               fincas={fincasData?.data.fincas}
+              moneda={moneda}
             />
           </CardContent>
         </Card>

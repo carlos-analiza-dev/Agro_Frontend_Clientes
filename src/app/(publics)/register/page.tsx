@@ -29,6 +29,7 @@ export default function RegisterPage() {
           layout="fill"
           objectFit="cover"
           priority
+          unoptimized
           quality={100}
           className="opacity-20"
         />

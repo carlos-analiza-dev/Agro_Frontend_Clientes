@@ -23,11 +23,16 @@ export const unidades_productos = [
   },
   {
     id: 5,
+    nombre: "Tonelada",
+    value: UnidadMedida.TONELADA,
+  },
+  {
+    id: 6,
     nombre: "Cabeza",
     value: UnidadMedida.CABEZA,
   },
   {
-    id: 6,
+    id: 7,
     nombre: "Unidad",
     value: UnidadMedida.UNIDAD,
   },
