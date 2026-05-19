@@ -61,6 +61,35 @@ export interface AsignacionTrabajador {
   asignadoPor: Cliente;
 }
 
+export interface Paquete {
+  id: string;
+  nombre: string;
+  tipo: string;
+  maxFincas: number;
+  maxAnimales: number;
+  maxTrabajadores: number;
+  isActive: boolean;
+}
+
+export interface PaqueteActivo {
+  id: string;
+  fechaInicio: string;
+  fechaFin: string | null;
+
+  fechaInicioFormateada: string;
+  fechaFinFormateada: string | null;
+
+  activo: boolean;
+
+  diasRestantes: number;
+  diasTotales: number;
+
+  estaVencido: boolean;
+  estaPorVencer: boolean;
+
+  paquete: Paquete;
+}
+
 export interface Cliente {
   id: string;
   email: string;
@@ -78,6 +107,8 @@ export interface Cliente {
   profileImages: ProfileImage[];
   clientePermisos: ClientePermiso[];
   asignacionesTrabajador?: AsignacionTrabajador[];
+  paqueteActivo?: PaqueteActivo | null;
+  tienePlanActivo?: boolean;
 }
 
 export type ClienteUpdateData = {

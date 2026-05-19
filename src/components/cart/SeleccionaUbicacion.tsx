@@ -192,7 +192,10 @@ const SeleccionUbicacion = ({
   const [fincaSeleccionada, setFincaSeleccionada] = useState<string>(
     fincas[0]?.id || "",
   );
-  const simbolo = cliente?.pais.simbolo_moneda;
+  const paisStorage = localStorage.getItem("selectedCountry");
+  const pais = paisStorage ? JSON.parse(paisStorage) : null;
+  const simbolo_storage = pais.simbolo_moneda;
+  const simbolo = cliente ? cliente?.pais.simbolo_moneda : simbolo_storage;
   const [direccionPersonalizada, setDireccionPersonalizada] = useState("");
   const [latitudPersonalizada, setLatitudPersonalizada] = useState("14.0818");
   const [longitudPersonalizada, setLongitudPersonalizada] =
@@ -200,7 +203,7 @@ const SeleccionUbicacion = ({
   const [buscandoDireccion, setBuscandoDireccion] = useState(false);
   const [cargandoUbicacion, setCargandoUbicacion] = useState(false);
 
-  const costoDelivery = cliente?.pais.simbolo_moneda === "$" ? 5.0 : 100.0;
+  const costoDelivery = simbolo === "$" ? 5.0 : 100.0;
 
   useEffect(() => {
     if (!hasFincas && tipoUbicacion === "finca") {

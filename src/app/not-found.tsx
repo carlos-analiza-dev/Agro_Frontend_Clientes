@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useRouter } from "next/navigation";
-import React from "react";
 
 const PageNotFound = () => {
   const { cliente, token } = useAuthStore();
@@ -10,7 +9,7 @@ const PageNotFound = () => {
 
   const handleNotFound = () => {
     if (cliente?.isActive && token) {
-      router.back();
+      router.push("/panel");
     } else {
       router.push("/");
     }
@@ -33,7 +32,7 @@ const PageNotFound = () => {
           onClick={handleNotFound}
           className="mt-6 inline-block px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-2xl shadow-md transition"
         >
-          {cliente?.isActive && token ? "Volver" : "Volver al inicio"}
+          {cliente?.isActive && token ? "Volver al Panel" : "Volver al inicio"}
         </Button>
       </div>
     </div>

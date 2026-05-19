@@ -11,6 +11,7 @@ import { useFavoritos } from "@/hooks/favoritos/useFavoritos";
 import { useCartStore } from "@/providers/store/useCartStore";
 import { isTokenExpired } from "@/helpers/funciones/tokenExpired";
 import { SessionExpiredModal } from "@/components/generics/SessionExpiredModal";
+import { publicRoutes } from "@/helpers/data/publics-routes";
 
 export default function AdminLayout({
   children,
@@ -28,16 +29,17 @@ export default function AdminLayout({
   const [checkingPermissions, setCheckingPermissions] = useState(true);
 
   const hasPermissionForCurrentRoute = () => {
-    if (!cliente) return true;
+    if (!cliente) return false;
 
-    const allowedRoutes = ["/not-found", "/unauthorized", "/panel"];
-
-    if (allowedRoutes.includes(pathname)) {
+    if (
+      publicRoutes.includes(pathname) ||
+      publicRoutes.some((route) => pathname.startsWith(route + "/"))
+    ) {
       return true;
     }
 
     if (!cliente.clientePermisos || cliente.clientePermisos.length === 0) {
-      return true;
+      return false;
     }
 
     const hasPermission = cliente.clientePermisos.some((permiso) => {
@@ -47,11 +49,13 @@ export default function AdminLayout({
           pathname.startsWith(permiso.permiso.url + "/")
         );
       }
+
       return false;
     });
 
     return hasPermission;
   };
+
   const handleLogout = async () => {
     try {
       setMobileSidebarOpen(false);
@@ -125,17 +129,15 @@ export default function AdminLayout({
   }, [token]);
 
   useEffect(() => {
-    const checkRoutePermissions = () => {
-      if (cliente) {
-        if (!hasPermissionForCurrentRoute()) {
-          router.push("/not-found");
-        }
-        setCheckingPermissions(false);
-      }
-    };
+    if (!cliente) return;
 
-    checkRoutePermissions();
-  }, [cliente, pathname, router]);
+    if (!hasPermissionForCurrentRoute()) {
+      router.push("/not-found");
+      return;
+    }
+
+    setCheckingPermissions(false);
+  }, [cliente, pathname]);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";

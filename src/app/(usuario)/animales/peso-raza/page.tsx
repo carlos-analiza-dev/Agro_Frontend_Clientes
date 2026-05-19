@@ -1,4 +1,3 @@
-// components/control-peso/PesoRazaAnimal.tsx
 "use client";
 import ButtonBack from "@/components/generics/ButtonBack";
 import SkeletonCard from "@/components/generics/SkeletonCard";

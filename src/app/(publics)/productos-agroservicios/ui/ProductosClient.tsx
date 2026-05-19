@@ -17,6 +17,7 @@ const ProductosClient = () => {
   const { cliente } = useAuthStore();
   const paisStorage = localStorage.getItem("selectedCountry");
   const pais = paisStorage ? JSON.parse(paisStorage) : null;
+
   const paisId = pais?.id;
 
   const router = useRouter();

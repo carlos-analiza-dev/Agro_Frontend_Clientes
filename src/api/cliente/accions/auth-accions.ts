@@ -5,6 +5,7 @@ import {
   Departamento,
   Municipio,
   Pais,
+  PaqueteActivo,
   ProfileImage,
 } from "@/interfaces/auth/cliente";
 import { TipoCliente } from "@/interfaces/enums/clientes.enums";
@@ -26,6 +27,8 @@ export interface AuthResponse {
   profileImages: ProfileImage[];
   clientePermisos: ClientePermiso[];
   asignacionesTrabajador?: AsignacionTrabajador[];
+  paqueteActivo?: PaqueteActivo | null;
+  tienePlanActivo?: boolean;
   token: string;
 }
 

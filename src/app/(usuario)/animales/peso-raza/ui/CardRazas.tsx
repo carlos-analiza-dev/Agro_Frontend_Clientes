@@ -1,9 +1,7 @@
-// components/control-peso/ui/CardRazas.tsx
 import { ResponsePesoByRaza } from "@/api/peso-promedio-animal/interfaces/obtener-pesos-by-raza.interface";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { formatDate } from "@/helpers/funciones/formatDate";
-import { Calendar, Scale, TrendingUp, Pencil, ArrowRight } from "lucide-react";
+import { Scale, TrendingUp, Pencil, ArrowRight } from "lucide-react";
 
 interface Props {
   item: ResponsePesoByRaza;
@@ -67,11 +65,6 @@ const CardRazas = ({ item, onEdit }: Props) => {
                 {formatNumber(item.gananciaMaxima)} lb
               </span>
             </div>
-          </div>
-
-          <div className="flex items-center gap-2 mt-3 text-xs text-gray-400 border-t pt-2">
-            <Calendar className="h-3 w-3" />
-            <span>Actualizado: {formatDate(item.updatedAt)}</span>
           </div>
         </div>
       </CardContent>
