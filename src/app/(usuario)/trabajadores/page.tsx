@@ -22,8 +22,10 @@ import { Trabajador } from "@/api/trabajadores/interface/response-trabajadores.i
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/providers/store/useAuthStore";
 
 const TrabajadoresPage = () => {
+  const { cliente } = useAuthStore();
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -259,6 +261,7 @@ const TrabajadoresPage = () => {
                     filteredTrabajadores={filteredTrabajadores}
                     handleEditTrabajador={handleEditTrabajador}
                     isMobile={isMobile}
+                    cliente={cliente}
                   />
                 </div>
 

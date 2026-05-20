@@ -1,35 +1,54 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import useGetPaquetesByPais from "@/hooks/paquetes/useGetPaquetesByPais";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertCircle, Calendar, CreditCard, LogIn, Crown } from "lucide-react";
+import { AlertCircle, Clock } from "lucide-react";
 import { toast } from "react-toastify";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ComprarPlanSkeleton } from "./ui/ComprarPlanSkeleton";
 import { PricingCard } from "./ui/PricingCard";
-import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
+import {
+  TipoPaquete,
+  TipoPrecio,
+} from "@/interfaces/enums/paquetes/paquetes.enum";
 import {
   getBadgeColor,
   getPlanColor,
   getPlanIcon,
 } from "@/helpers/funciones/paquetes/get-infos";
-import Modal from "@/components/generics/Modal";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { ComprarPaquete } from "@/api/paquetes/accions/comprar-paquete";
 import { useFavoritos } from "@/hooks/favoritos/useFavoritos";
 import { useCartStore } from "@/providers/store/useCartStore";
+import { isAxiosError } from "axios";
+import {
+  PreciosPorPai,
+  ResponsePaquetesInterface,
+} from "@/api/paquetes/interface/response-paquetes.interface";
+import { useQueryClient } from "@tanstack/react-query";
+import ModalConfirmCompra from "./ui/ModalConfirmCompra";
+import ModalCompraSucces from "./ui/ModalCompraSucces";
+import { CompraExitosa } from "@/api/paquetes/interface/comprar-paquete.interface";
+
+const calcularDiasRestantes = (fechaFin: string): number => {
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
+  const fechaFinDate = new Date(fechaFin);
+  fechaFinDate.setHours(0, 0, 0, 0);
+
+  const diferencia = fechaFinDate.getTime() - hoy.getTime();
+  const diasRestantes = Math.ceil(diferencia / (1000 * 3600 * 24));
+
+  return Math.max(0, diasRestantes);
+};
+
+const sumarDiasAFecha = (fechaInicio: Date, dias: number): Date => {
+  const nuevaFecha = new Date(fechaInicio);
+  nuevaFecha.setDate(nuevaFecha.getDate() + dias);
+  return nuevaFecha;
+};
 
 const ComprarPlanPage = () => {
   const { cliente, logout } = useAuthStore();
@@ -37,42 +56,87 @@ const ComprarPlanPage = () => {
   const { clearCart } = useCartStore();
   const { data: paquetes, isLoading, refetch } = useGetPaquetesByPais();
   const router = useRouter();
-  const [selectedPaquete, setSelectedPaquete] = useState<any>(null);
+  const [selectedPaquete, setSelectedPaquete] =
+    useState<ResponsePaquetesInterface | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [tipoPago, setTipoPago] = useState<"MENSUAL" | "ANUAL">("MENSUAL");
+  const [tipoPago, setTipoPago] = useState<TipoPrecio>(TipoPrecio.MENSUAL);
+  const [activeTab, setActiveTab] = useState<"mensual" | "anual">("mensual");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [compraExitosa, setCompraExitosa] = useState<any>(null);
+  const [compraExitosa, setCompraExitosa] = useState<CompraExitosa | null>(
+    null,
+  );
+  const queryClient = useQueryClient();
 
   const tienePlanActivo = cliente?.tienePlanActivo;
   const planActivo = cliente?.paqueteActivo;
 
+  const diasRestantes = useMemo(() => {
+    if (!planActivo?.fechaFin) return 0;
+    return calcularDiasRestantes(planActivo.fechaFin);
+  }, [planActivo?.fechaFin]);
+
+  const estaPorVencer = planActivo?.estaPorVencer || false;
+  const puedeRenovarAntes = diasRestantes > 0;
+
+  useEffect(() => {
+    if (selectedPaquete?.tipo === TipoPaquete.FREE) {
+      setTipoPago(TipoPrecio.MENSUAL);
+      setActiveTab("mensual");
+    } else {
+      const nuevoTipoPago =
+        activeTab === "mensual" ? TipoPrecio.MENSUAL : TipoPrecio.ANUAL;
+      setTipoPago(nuevoTipoPago);
+    }
+  }, [activeTab, selectedPaquete]);
+
   useEffect(() => {
     if (selectedPaquete) {
       if (selectedPaquete.tipo === TipoPaquete.FREE) {
-        setTipoPago("MENSUAL");
+        setTipoPago(TipoPrecio.MENSUAL);
+        setActiveTab("mensual");
+      } else {
+        const nuevoTipoPago =
+          activeTab === "mensual" ? TipoPrecio.MENSUAL : TipoPrecio.ANUAL;
+        setTipoPago(nuevoTipoPago);
       }
     }
   }, [selectedPaquete]);
 
-  const calcularFechas = (tipo: "MENSUAL" | "ANUAL") => {
-    const fechaInicio = new Date();
+  const getDuracionDias = (tipo: TipoPrecio): number => {
+    return tipo === TipoPrecio.MENSUAL ? 30 : 365;
+  };
 
-    fechaInicio.setHours(0, 0, 0, 0);
+  const calcularNuevaFechaFin = (tipo: TipoPrecio): string => {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
 
-    let fechaFin = new Date(fechaInicio);
+    const duracionDias = getDuracionDias(tipo);
+    let totalDias = duracionDias;
 
-    if (tipo === "MENSUAL") {
-      fechaFin.setDate(fechaFin.getDate() + 30);
-    } else {
-      fechaFin.setDate(fechaFin.getDate() + 365);
+    const puedeSumarDias =
+      puedeRenovarAntes &&
+      diasRestantes > 0 &&
+      planActivo?.paquete?.tipo !== TipoPaquete.FREE;
+
+    if (puedeSumarDias) {
+      totalDias = duracionDias + diasRestantes;
     }
 
-    fechaFin.setHours(23, 59, 59, 999);
+    const nuevaFechaFin = sumarDiasAFecha(hoy, totalDias);
+    nuevaFechaFin.setHours(23, 59, 59, 999);
+
+    return nuevaFechaFin.toISOString();
+  };
+
+  const calcularFechas = (tipo: TipoPrecio) => {
+    const fechaInicio = new Date();
+    fechaInicio.setHours(0, 0, 0, 0);
+    const fechaFin = calcularNuevaFechaFin(tipo);
 
     return {
       fechaInicio: fechaInicio.toISOString(),
-      fechaFin: fechaFin.toISOString(),
+      fechaFin: fechaFin,
     };
   };
 
@@ -80,8 +144,17 @@ const ComprarPlanPage = () => {
     const fechaInicio = new Date();
     fechaInicio.setHours(0, 0, 0, 0);
 
-    let fechaFin = new Date(fechaInicio);
-    fechaFin.setDate(fechaFin.getDate() + 30);
+    let totalDias = 30;
+
+    if (
+      puedeRenovarAntes &&
+      diasRestantes > 0 &&
+      planActivo?.paquete?.tipo === TipoPaquete.FREE
+    ) {
+      totalDias = 30 + diasRestantes;
+    }
+
+    const fechaFin = sumarDiasAFecha(fechaInicio, totalDias);
     fechaFin.setHours(23, 59, 59, 999);
 
     return {
@@ -97,9 +170,9 @@ const ComprarPlanPage = () => {
     return paquete.isActive === true;
   });
 
-  const getPrecio = (paquete: any) => {
+  const getPrecio = (paquete: ResponsePaquetesInterface) => {
     const precioPais = paquete.preciosPorPais?.find(
-      (p: any) => p.pais?.id === cliente?.pais?.id,
+      (p: PreciosPorPai) => p.pais?.id === cliente?.pais?.id,
     );
 
     if (precioPais) {
@@ -132,7 +205,7 @@ const ComprarPlanPage = () => {
     return Math.round(porcentaje);
   };
 
-  const handleComprar = (paquete: any) => {
+  const handleComprar = (paquete: ResponsePaquetesInterface) => {
     setSelectedPaquete(paquete);
     setShowConfirmDialog(true);
   };
@@ -166,17 +239,28 @@ const ComprarPlanPage = () => {
         nombre: selectedPaquete.nombre,
         tipo: selectedPaquete.tipo,
         fechaFin: data.fechaFin,
+        diasAgregados:
+          puedeRenovarAntes &&
+          diasRestantes > 0 &&
+          planActivo?.paquete?.tipo !== TipoPaquete.FREE
+            ? diasRestantes
+            : 0,
+        duracionComprada: getDuracionDias(tipoPago),
       });
 
       setShowConfirmDialog(false);
-
       setShowSuccessModal(true);
 
-      refetch();
-    } catch (error: any) {
-      toast.error(
-        error.response?.data?.message || "Error al procesar la compra",
-      );
+      queryClient.invalidateQueries({ queryKey: ["paquetes-pais"] });
+      await refetch();
+    } catch (error) {
+      if (isAxiosError(error)) {
+        const errorMessage =
+          error.response?.data?.message ||
+          error.message ||
+          "Error al ejecutar la compra";
+        toast.error(errorMessage);
+      }
     } finally {
       setIsProcessing(false);
     }
@@ -198,7 +282,6 @@ const ComprarPlanPage = () => {
 
   const handleContinuar = () => {
     setShowSuccessModal(false);
-
     window.location.reload();
   };
 
@@ -211,6 +294,23 @@ const ComprarPlanPage = () => {
     }
     const fechas = calcularFechas(tipoPago);
     return new Date(fechas.fechaFin).toLocaleDateString();
+  };
+
+  const getMensajeRenovacionModal = () => {
+    if (!diasRestantes || diasRestantes <= 0) return null;
+
+    return (
+      <div className="bg-green-50 rounded-lg p-3 border border-green-200">
+        <div className="flex items-center gap-2">
+          <Clock className="h-4 w-4 text-green-600" />
+          <span className="text-sm text-green-800">
+            ✨ <strong>Beneficio por renovación:</strong> Sumarás los{" "}
+            <strong>{diasRestantes} días</strong> restantes de tu plan actual a
+            esta nueva suscripción.
+          </span>
+        </div>
+      </div>
+    );
   };
 
   if (isLoading) {
@@ -245,12 +345,17 @@ const ComprarPlanPage = () => {
                 <span>
                   {" "}
                   Vence el {new Date(planActivo.fechaFin).toLocaleDateString()}
+                  {diasRestantes > 0 && (
+                    <span className="ml-2 text-blue-600">
+                      (Te quedan {diasRestantes} días)
+                    </span>
+                  )}
                 </span>
               )}
-              {planActivo.estaPorVencer && !planActivo.estaVencido && (
+              {estaPorVencer && !planActivo.estaVencido && (
                 <span className="block text-yellow-600 text-sm mt-1">
-                  ⚠️ Tu plan está por vencer. ¡Renueva para no perder
-                  beneficios!
+                  ⚠️ ¡Tu plan está por vencer! Renueva ahora y suma los días
+                  restantes a tu nuevo plan.
                 </span>
               )}
             </AlertDescription>
@@ -258,8 +363,17 @@ const ComprarPlanPage = () => {
         </div>
       )}
 
+      {diasRestantes > 0 &&
+        planActivo?.paquete?.tipo !== TipoPaquete.FREE &&
+        getMensajeRenovacionModal()}
+
       <div className="container mx-auto px-4 py-12">
-        <Tabs defaultValue="mensual" className="w-full">
+        <Tabs
+          defaultValue="mensual"
+          className="w-full"
+          onValueChange={(value) => setActiveTab(value as "mensual" | "anual")}
+          value={activeTab}
+        >
           <div className="flex justify-center mb-8">
             <TabsList className="grid w-full max-w-md grid-cols-2">
               <TabsTrigger value="mensual">Pago Mensual</TabsTrigger>
@@ -274,29 +388,31 @@ const ComprarPlanPage = () => {
 
           <TabsContent value="mensual" className="mt-0">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {paquetesDisponibles?.map((paquete: any, index: number) => {
-                const precio = getPrecio(paquete);
-                const esPlanActual = planActivo?.paquete?.id === paquete.id;
-                const esFree = paquete.tipo === TipoPaquete.FREE;
-                const ahorro = calcularAhorro(precio.mensual, precio.anual);
+              {paquetesDisponibles?.map(
+                (paquete: ResponsePaquetesInterface, index: number) => {
+                  const precio = getPrecio(paquete);
+                  const esPlanActual = planActivo?.paquete?.id === paquete.id;
+                  const esFree = paquete.tipo === TipoPaquete.FREE;
+                  const ahorro = calcularAhorro(precio.mensual, precio.anual);
 
-                return (
-                  <PricingCard
-                    key={paquete.id}
-                    paquete={paquete}
-                    precio={precio}
-                    tipoPago="mensual"
-                    icon={getPlanIcon(paquete.tipo)}
-                    badgeColor={getBadgeColor(paquete.tipo)}
-                    cardColor={getPlanColor(paquete.tipo)}
-                    index={index}
-                    esPlanActual={esPlanActual}
-                    esFree={esFree}
-                    ahorro={ahorro}
-                    onComprar={() => handleComprar(paquete)}
-                  />
-                );
-              })}
+                  return (
+                    <PricingCard
+                      key={paquete.id}
+                      paquete={paquete}
+                      precio={precio}
+                      tipoPago="mensual"
+                      icon={getPlanIcon(paquete.tipo)}
+                      badgeColor={getBadgeColor(paquete.tipo)}
+                      cardColor={getPlanColor(paquete.tipo)}
+                      index={index}
+                      esPlanActual={esPlanActual}
+                      esFree={esFree}
+                      ahorro={ahorro}
+                      onComprar={() => handleComprar(paquete)}
+                    />
+                  );
+                },
+              )}
             </div>
           </TabsContent>
 
@@ -330,245 +446,29 @@ const ComprarPlanPage = () => {
         </Tabs>
       </div>
 
-      <Modal
-        open={showConfirmDialog}
-        onOpenChange={setShowConfirmDialog}
-        title="Confirmar Compra"
-        description="¿Estás seguro de que deseas adquirir este plan?"
-      >
-        {selectedPaquete && (
-          <div className="space-y-4">
-            <div
-              className={`p-4 rounded-lg ${getPlanColor(selectedPaquete.tipo)}`}
-            >
-              <div className="flex items-center gap-3 mb-3">
-                {getPlanIcon(selectedPaquete.tipo)}
-                <div>
-                  <h3 className="font-bold text-lg">
-                    {selectedPaquete.nombre}
-                  </h3>
-                  <Badge className={getBadgeColor(selectedPaquete.tipo)}>
-                    {selectedPaquete.tipo}
-                  </Badge>
-                </div>
-              </div>
+      <ModalConfirmCompra
+        showConfirmDialog={showConfirmDialog}
+        setShowConfirmDialog={setShowConfirmDialog}
+        selectedPaquete={selectedPaquete}
+        diasRestantes={diasRestantes}
+        tipoPago={tipoPago}
+        setTipoPago={setTipoPago}
+        esPaqueteFree={esPaqueteFree}
+        getPrecio={getPrecio}
+        getFechaFinPreview={getFechaFinPreview}
+        calcularAhorro={calcularAhorro}
+        isProcessing={isProcessing}
+        handleConfirmarCompra={handleConfirmarCompra}
+        planActualEsFree={planActivo?.paquete?.tipo === TipoPaquete.FREE}
+      />
 
-              <Separator className="my-3" />
-
-              <div className="space-y-3">
-                <div>
-                  <Label className="text-sm font-semibold">
-                    Tipo de suscripción
-                  </Label>
-                  <RadioGroup
-                    value={tipoPago}
-                    onValueChange={(value) =>
-                      setTipoPago(value as "MENSUAL" | "ANUAL")
-                    }
-                    className="flex gap-4 mt-2"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem
-                        value="MENSUAL"
-                        id="mensual"
-                        disabled={esPaqueteFree}
-                      />
-                      <Label
-                        htmlFor="mensual"
-                        className={`cursor-pointer ${esPaqueteFree ? "text-gray-400" : ""}`}
-                      >
-                        Mensual
-                      </Label>
-                    </div>
-
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem
-                              value="ANUAL"
-                              id="anual"
-                              disabled={esPaqueteFree}
-                            />
-                            <Label
-                              htmlFor="anual"
-                              className={`cursor-pointer ${esPaqueteFree ? "text-gray-400" : ""}`}
-                            >
-                              Anual
-                              {getPrecio(selectedPaquete).mensual > 0 &&
-                                !esPaqueteFree && (
-                                  <span className="ml-2 text-xs text-green-600">
-                                    Ahorra{" "}
-                                    {calcularAhorro(
-                                      getPrecio(selectedPaquete).mensual,
-                                      getPrecio(selectedPaquete).anual,
-                                    )}
-                                    %
-                                  </span>
-                                )}
-                            </Label>
-                          </div>
-                        </TooltipTrigger>
-                        {esPaqueteFree && (
-                          <TooltipContent>
-                            <p className="text-xs">
-                              El plan FREE solo está disponible en modalidad
-                              mensual
-                            </p>
-                          </TooltipContent>
-                        )}
-                      </Tooltip>
-                    </TooltipProvider>
-                  </RadioGroup>
-
-                  {esPaqueteFree && (
-                    <p className="text-xs text-blue-600 mt-2">
-                      ℹ️ El plan gratuito solo está disponible en modalidad
-                      mensual
-                    </p>
-                  )}
-                </div>
-
-                <div className="bg-white rounded-lg p-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Total a pagar:</span>
-                    <span className="text-2xl font-bold text-blue-600">
-                      {getPrecio(selectedPaquete).moneda}{" "}
-                      {tipoPago === "MENSUAL"
-                        ? getPrecio(selectedPaquete).mensual.toFixed(2)
-                        : getPrecio(selectedPaquete).anual.toFixed(2)}
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {tipoPago === "MENSUAL"
-                      ? "Se realizará un cargo mensual"
-                      : "Se realizará un cargo único anual"}
-                  </p>
-                </div>
-
-                <div className="bg-blue-50 rounded-lg p-3">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Calendar className="h-4 w-4 text-blue-600" />
-                    <span className="text-gray-700">
-                      Tu plan estará activo hasta el{" "}
-                      <strong>{getFechaFinPreview()}</strong>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setShowConfirmDialog(false)}
-                className="flex-1"
-                disabled={isProcessing}
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleConfirmarCompra}
-                className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600"
-                disabled={isProcessing}
-              >
-                {isProcessing ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                    Procesando...
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    Confirmar
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
-        )}
-      </Modal>
-
-      <Modal
-        open={showSuccessModal}
-        onOpenChange={setShowSuccessModal}
-        title="¡Compra Exitosa! 🎉"
-        size="lg"
-        showCloseButton={false}
-      >
-        <div className="space-y-6">
-          <div className="text-center">
-            <div className="w-20 h-20 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
-              <Crown className="h-10 w-10 text-green-600" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
-              ¡Felicidades!
-            </h3>
-            <p className="text-gray-600">
-              Has adquirido el plan <strong>{compraExitosa?.nombre}</strong>{" "}
-              exitosamente.
-            </p>
-          </div>
-
-          <div className="bg-blue-50 rounded-lg p-4">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-blue-800 mb-1">
-                  Para activar tu plan y ver todos los beneficios
-                </p>
-                <p className="text-sm text-blue-700">
-                  Es necesario que cierres sesión y vuelvas a iniciar sesión.
-                  Esto actualizará tus permisos y te dará acceso a todas las
-                  funcionalidades incluidas en tu nuevo plan.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {compraExitosa?.fechaFin && (
-            <div className="bg-gray-50 rounded-lg p-3">
-              <div className="flex items-center gap-2 text-sm">
-                <Calendar className="h-4 w-4 text-gray-500" />
-                <span className="text-gray-600">
-                  Tu plan estará activo hasta:{" "}
-                  <strong>
-                    {new Date(compraExitosa.fechaFin).toLocaleDateString()}
-                  </strong>
-                </span>
-              </div>
-            </div>
-          )}
-
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-            <p className="text-sm text-yellow-800">
-              💡 <span className="font-semibold">Nota:</span> Si no cierras
-              sesión ahora, los cambios se reflejarán automáticamente cuando tu
-              sesión expire.
-            </p>
-          </div>
-
-          <Separator />
-
-          <div className="flex flex-col gap-3">
-            <Button
-              onClick={handleReiniciarSesion}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600"
-              size="lg"
-            >
-              <LogIn className="mr-2 h-4 w-4" />
-              Cerrar Sesión y Volver a Iniciar
-            </Button>
-            <Button
-              onClick={handleContinuar}
-              variant="outline"
-              className="w-full"
-            >
-              Continuar sin cerrar sesión
-            </Button>
-          </div>
-        </div>
-      </Modal>
+      <ModalCompraSucces
+        showSuccessModal={showSuccessModal}
+        setShowSuccessModal={setShowSuccessModal}
+        compraExitosa={compraExitosa}
+        handleReiniciarSesion={handleReiniciarSesion}
+        handleContinuar={handleContinuar}
+      />
     </div>
   );
 };

@@ -37,6 +37,8 @@ import {
 } from "../ui/tooltip";
 import { TipoCliente } from "@/interfaces/enums/clientes.enums";
 import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
+import useGetPermisosByClientePaquete from "@/hooks/permisos/useGetPermisosByClientePaquete";
+import useGetPermisosByCliente from "@/hooks/permisos/useGetPermisosByCliente";
 
 interface Props {
   setMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -55,13 +57,22 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
 
   const esPropietario = cliente?.rol === TipoCliente.PROPIETARIO;
 
+  const paqueteId = cliente?.paqueteActivo?.paquete?.id ?? "";
+  const clienteId = cliente?.id ?? "";
+
+  const { data: permisosPaquete } = useGetPermisosByClientePaquete(paqueteId);
+
+  const { data: permisosCliente } = useGetPermisosByCliente(clienteId);
+
+  const permisos = esPropietario ? permisosPaquete : permisosCliente;
+
   const planActivo = esPropietario ? cliente?.paqueteActivo : null;
   const tienePlanActivo = esPropietario
     ? cliente?.tienePlanActivo || false
     : false;
 
   const permisosVer =
-    cliente?.clientePermisos
+    permisos
       ?.filter((permiso) => permiso.ver === true)
       ?.map((permiso) => permiso.permiso.url) || [];
 
@@ -145,7 +156,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
     "/favoritos",
 
     ...(esPropietario
-      ? ["/mi-plan", "/actualizar-plan", "/comprar-plan", "/historial-paquetes"]
+      ? ["/mi-plan", "/comprar-plan", "/historial-paquetes"]
       : []),
   ];
 

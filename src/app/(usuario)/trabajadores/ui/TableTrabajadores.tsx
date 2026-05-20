@@ -42,7 +42,6 @@ import ResumenPermiso from "./ResumenPermiso";
 import TablePermisosCliente from "./TablePermisosCliente";
 import TablePermisosAsignados from "./TablePermisosAsignados";
 import useGetPermisosByCliente from "@/hooks/permisos/useGetPermisosByCliente";
-import useGetPermisosPropietario from "@/hooks/permisos/useGetPermisosPropietario";
 import { toast } from "react-toastify";
 import { EditarPermisoByCliente } from "@/api/permisos/accions/editar-permiso_by_cliente";
 import { useQueryClient } from "@tanstack/react-query";
@@ -64,23 +63,28 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { getInitials } from "@/helpers/funciones/getInitials";
+import { Cliente } from "@/interfaces/auth/cliente";
+import useGetPermisosByPaquete from "@/hooks/permisos/useGetPermisosByPaquete";
 
 interface Props {
   filteredTrabajadores: Trabajador[] | undefined;
   handleEditTrabajador: (trabajdor: Trabajador) => void;
   isMobile: boolean;
+  cliente: Cliente | undefined;
 }
 
 const TableTrabajadores = ({
   filteredTrabajadores,
   handleEditTrabajador,
   isMobile,
+  cliente,
 }: Props) => {
   const queryClient = useQueryClient();
   const router = useRouter();
   const [permisosSeleccionados, setPermisosSeleccionados] = useState<string[]>(
     [],
   );
+  const paqueteId = cliente?.paqueteActivo?.paquete.id ?? "";
   const [clienteId, setClienteId] = useState<string>("");
   const [nombreTrabajador, setNombreTrabajador] = useState("");
   const [openModalPermisos, setOpenModalPermisos] = useState(false);
@@ -91,7 +95,8 @@ const TableTrabajadores = ({
   const [openViewFincasTrabajador, setOpenViewFincasTrabajador] =
     useState(false);
   const { data: permisos_cliente } = useGetPermisosByCliente(clienteId);
-  const { data: permisos_activos } = useGetPermisosPropietario();
+  const { data: permisos_activos } = useGetPermisosByPaquete(paqueteId);
+
   const { data: fincas_trabajador, isLoading: cargando } =
     useGetFincasByTrabajador(clienteId);
   const permisosDisponibles = permisos_activos?.filter(

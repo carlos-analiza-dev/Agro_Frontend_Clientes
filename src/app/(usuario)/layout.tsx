@@ -12,6 +12,9 @@ import { useCartStore } from "@/providers/store/useCartStore";
 import { isTokenExpired } from "@/helpers/funciones/tokenExpired";
 import { SessionExpiredModal } from "@/components/generics/SessionExpiredModal";
 import { publicRoutes } from "@/helpers/data/publics-routes";
+import { TipoCliente } from "@/interfaces/enums/clientes.enums";
+import useGetPermisosByClientePaquete from "@/hooks/permisos/useGetPermisosByClientePaquete";
+import useGetPermisosByCliente from "@/hooks/permisos/useGetPermisosByCliente";
 
 export default function AdminLayout({
   children,
@@ -28,6 +31,17 @@ export default function AdminLayout({
   const [showSessionModal, setShowSessionModal] = useState(false);
   const [checkingPermissions, setCheckingPermissions] = useState(true);
 
+  const esPropietario = cliente?.rol === TipoCliente.PROPIETARIO;
+
+  const paqueteId = cliente?.paqueteActivo?.paquete?.id ?? "";
+  const clienteId = cliente?.id ?? "";
+
+  const { data: permisosPaquete } = useGetPermisosByClientePaquete(paqueteId);
+
+  const { data: permisosCliente } = useGetPermisosByCliente(clienteId);
+
+  const permisos = esPropietario ? permisosPaquete : permisosCliente;
+
   const hasPermissionForCurrentRoute = () => {
     if (!cliente) return false;
 
@@ -38,11 +52,11 @@ export default function AdminLayout({
       return true;
     }
 
-    if (!cliente.clientePermisos || cliente.clientePermisos.length === 0) {
+    if (!permisos || permisos.length === 0) {
       return false;
     }
 
-    const hasPermission = cliente.clientePermisos.some((permiso) => {
+    const hasPermission = permisos.some((permiso) => {
       if (permiso.ver === true) {
         return (
           pathname === permiso.permiso.url ||

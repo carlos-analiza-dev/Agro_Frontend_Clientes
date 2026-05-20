@@ -111,16 +111,18 @@ export const PricingCard = ({
             </div>
           </div>
         </CardContent>
-
         <CardFooter>
           <Button
             onClick={onComprar}
-            className={`w-full ${esPlanActual ? "bg-gray-400" : "bg-gradient-to-r from-blue-600 to-purple-600"}`}
+            className={`w-full ${
+              esPlanActual
+                ? "bg-green-600 hover:bg-green-700"
+                : "bg-gradient-to-r from-blue-600 to-purple-600"
+            }`}
             size="lg"
-            disabled={esPlanActual}
           >
             {esPlanActual
-              ? "Plan Actual"
+              ? "Renovar Plan"
               : esFree
                 ? "Comenzar Gratis"
                 : "Contratar Plan"}

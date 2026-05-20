@@ -158,12 +158,7 @@ export const navItems = [
     category: "Paquetes",
     items: [
       { name: "Mi Plan", href: "/mi-plan", icon: PawPrint },
-      {
-        name: "Actualizar Plan",
-        href: "/actualizar-plan",
-        icon: FlaskConical,
-      },
-      { name: "Comprar Plan", href: "/comprar-plan", icon: Layers3 },
+      { name: "Comprar", href: "/comprar-plan", icon: Layers3 },
     ],
   },
 

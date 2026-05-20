@@ -12,6 +12,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useAuthStore } from "@/providers/store/useAuthStore";
+import useGetPermisosByClientePaquete from "@/hooks/permisos/useGetPermisosByClientePaquete";
+import useGetPermisosByCliente from "@/hooks/permisos/useGetPermisosByCliente";
+import { TipoCliente } from "@/interfaces/enums/clientes.enums";
 
 interface Props {
   handleLogout: () => Promise<void>;
@@ -21,8 +24,19 @@ const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
   const { cliente } = useAuthStore();
   const pathname = usePathname();
 
+  const paqueteId = cliente?.paqueteActivo?.paquete?.id ?? "";
+  const clienteId = cliente?.id ?? "";
+
+  const esPropietario = cliente?.rol === TipoCliente.PROPIETARIO;
+
+  const { data: permisosPaquete } = useGetPermisosByClientePaquete(paqueteId);
+
+  const { data: permisosCliente } = useGetPermisosByCliente(clienteId);
+
+  const permisos = esPropietario ? permisosPaquete : permisosCliente;
+
   const permisosVer =
-    cliente?.clientePermisos
+    permisos
       ?.filter((permiso) => permiso.ver === true)
       ?.map((permiso) => permiso.permiso.url) || [];
 

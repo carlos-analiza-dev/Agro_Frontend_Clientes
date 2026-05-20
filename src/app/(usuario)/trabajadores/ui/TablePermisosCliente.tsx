@@ -7,19 +7,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-
-interface PermisoActivo {
-  id: string;
-  nombre: string;
-  descripcion: string;
-  url: string;
-  modulo: string;
-  isActive: boolean;
-  createdAt: string;
-}
+import { Permiso } from "@/api/permisos/interface/response-permisos.interface";
 
 interface TablePermisosClienteProps {
-  permisosDisponibles: PermisoActivo[];
+  permisosDisponibles: Permiso[];
   permisosSeleccionados: string[];
   handleSeleccionarPermiso: (permisoId: string) => void;
 }
