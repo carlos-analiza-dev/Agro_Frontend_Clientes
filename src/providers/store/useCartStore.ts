@@ -6,6 +6,8 @@ export interface CartItem extends Producto {
   quantity: number;
   sucursalId: string;
   nombreSucursal?: string;
+  longitudSucursal?: number;
+  latitudSucursal?: number;
   nota?: string;
   notas?: string;
   totalPrecio?: number;
@@ -28,11 +30,15 @@ export interface ImpuestosCalculados {
 interface CartState {
   cart: CartItem[];
   currentSucursalId: string | null;
+  currentLongitudSucursal?: number;
+  currentLatitudSucursal?: number;
   addToCart: (
     producto: Producto,
     sucursalId: string,
     nombreSucursal?: string,
-    nota?: string
+    longitud?: number,
+    latitud?: number,
+    nota?: string,
   ) => void;
   removeFromCart: (productoId: string, sucursalId: string) => void;
   increaseQuantity: (productoId: string, sucursalId: string) => void;
@@ -41,9 +47,16 @@ interface CartState {
   totalItems: () => number;
   totalPrice: () => number;
   getItemQuantity: (productoId: string, sucursalId: string) => number;
-  setCurrentSucursal: (sucursalId: string | null) => void;
+  setCurrentSucursal: (
+    sucursalId: string | null,
+    longitud?: number,
+    latitud?: number,
+  ) => void;
   getCurrentSucursal: () => string | null;
+  getCurrentSucursalCoordenadas: () => { longitud?: number; latitud?: number };
   canAddToSucursal: (sucursalId: string) => boolean;
+  getSucursalesEnCarrito: () => string[];
+  getProductosPorSucursal: (sucursalId: string) => CartItem[];
 
   calcularImpuestos: () => ImpuestosCalculados;
   getSubTotal: () => number;
@@ -67,8 +80,17 @@ export const useCartStore = create<CartState>()(
     (set, get) => ({
       cart: [],
       currentSucursalId: null,
+      currentLongitudSucursal: undefined,
+      currentLatitudSucursal: undefined,
 
-      addToCart: (producto, sucursalId, nombreSucursal, nota) => {
+      addToCart: (
+        producto,
+        sucursalId,
+        nombreSucursal,
+        longitud,
+        latitud,
+        nota,
+      ) => {
         const state = get();
 
         if (!state.canAddToSucursal(sucursalId)) {
@@ -76,11 +98,17 @@ export const useCartStore = create<CartState>()(
         }
 
         set((state) => {
+          // Solo actualizar la sucursal actual si el carrito está vacío
           const newSucursalId =
             state.cart.length === 0 ? sucursalId : state.currentSucursalId;
 
+          const newLongitud =
+            state.cart.length === 0 ? longitud : state.currentLongitudSucursal;
+          const newLatitud =
+            state.cart.length === 0 ? latitud : state.currentLatitudSucursal;
+
           const exists = state.cart.find(
-            (item) => item.id === producto.id && item.sucursalId === sucursalId
+            (item) => item.id === producto.id && item.sucursalId === sucursalId,
           );
 
           if (exists) {
@@ -94,9 +122,11 @@ export const useCartStore = create<CartState>()(
                         parseFloat(item.preciosPorPais?.[0]?.precio ?? "0") *
                         (item.quantity + 1),
                     }
-                  : item
+                  : item,
               ),
               currentSucursalId: newSucursalId,
+              currentLongitudSucursal: newLongitud,
+              currentLatitudSucursal: newLatitud,
             };
           }
 
@@ -108,30 +138,43 @@ export const useCartStore = create<CartState>()(
                 quantity: 1,
                 sucursalId,
                 nombreSucursal,
+                longitudSucursal: longitud,
+                latitudSucursal: latitud,
                 nota,
                 totalPrecio: parseFloat(
-                  producto.preciosPorPais?.[0]?.precio ?? "0"
+                  producto.preciosPorPais?.[0]?.precio ?? "0",
                 ),
               },
             ],
             currentSucursalId: newSucursalId,
+            currentLongitudSucursal: newLongitud,
+            currentLatitudSucursal: newLatitud,
           };
         });
+
+        return true;
       },
 
       removeFromCart: (productoId, sucursalId) => {
         set((state) => {
           const newCart = state.cart.filter(
             (item) =>
-              !(item.id === productoId && item.sucursalId === sucursalId)
+              !(item.id === productoId && item.sucursalId === sucursalId),
           );
 
           const newSucursalId =
             newCart.length === 0 ? null : state.currentSucursalId;
 
+          const newLongitud =
+            newCart.length === 0 ? undefined : state.currentLongitudSucursal;
+          const newLatitud =
+            newCart.length === 0 ? undefined : state.currentLatitudSucursal;
+
           return {
             cart: newCart,
             currentSucursalId: newSucursalId,
+            currentLongitudSucursal: newLongitud,
+            currentLatitudSucursal: newLatitud,
           };
         });
       },
@@ -147,7 +190,7 @@ export const useCartStore = create<CartState>()(
                     parseFloat(item.preciosPorPais?.[0]?.precio ?? "0") *
                     (item.quantity + 1),
                 }
-              : item
+              : item,
           ),
         }));
       },
@@ -166,13 +209,19 @@ export const useCartStore = create<CartState>()(
                       parseFloat(item.preciosPorPais?.[0]?.precio ?? "0") *
                       (item.quantity - 1),
                   }
-                : item
+                : item,
             )
             .filter((item) => item.quantity > 0),
         }));
       },
 
-      clearCart: () => set({ cart: [], currentSucursalId: null }),
+      clearCart: () =>
+        set({
+          cart: [],
+          currentSucursalId: null,
+          currentLongitudSucursal: undefined,
+          currentLatitudSucursal: undefined,
+        }),
 
       totalItems: () => {
         return get().cart.length;
@@ -183,30 +232,54 @@ export const useCartStore = create<CartState>()(
           (acc, item) =>
             acc +
             item.quantity * parseFloat(item.preciosPorPais?.[0]?.precio ?? "0"),
-          0
+          0,
         );
       },
 
       getItemQuantity: (productoId, sucursalId) => {
         const item = get().cart.find(
-          (item) => item.id === productoId && item.sucursalId === sucursalId
+          (item) => item.id === productoId && item.sucursalId === sucursalId,
         );
         return item ? item.quantity : 0;
       },
 
-      setCurrentSucursal: (sucursalId) => {
-        set({ currentSucursalId: sucursalId });
+      setCurrentSucursal: (sucursalId, longitud, latitud) => {
+        set({
+          currentSucursalId: sucursalId,
+          currentLongitudSucursal: longitud,
+          currentLatitudSucursal: latitud,
+        });
       },
 
       getCurrentSucursal: () => {
         return get().currentSucursalId;
       },
 
+      getCurrentSucursalCoordenadas: () => {
+        return {
+          longitud: get().currentLongitudSucursal,
+          latitud: get().currentLatitudSucursal,
+        };
+      },
+
+      // MODIFICADO: Permitir agregar productos de cualquier sucursal
       canAddToSucursal: (sucursalId) => {
-        const state = get();
-        return (
-          state.cart.length === 0 || state.currentSucursalId === sucursalId
-        );
+        // Ahora siempre permite agregar productos de cualquier sucursal
+        return true;
+      },
+
+      // NUEVO: Obtener todas las sucursales que tienen productos en el carrito
+      getSucursalesEnCarrito: () => {
+        const sucursales = new Set<string>();
+        get().cart.forEach((item) => {
+          sucursales.add(item.sucursalId);
+        });
+        return Array.from(sucursales);
+      },
+
+      // NUEVO: Obtener productos por sucursal
+      getProductosPorSucursal: (sucursalId: string) => {
+        return get().cart.filter((item) => item.sucursalId === sucursalId);
       },
 
       getSubTotal: () => {
@@ -214,7 +287,7 @@ export const useCartStore = create<CartState>()(
           (acc, item) =>
             acc +
             item.quantity * parseFloat(item.preciosPorPais?.[0]?.precio ?? "0"),
-          0
+          0,
         );
       },
 
@@ -304,14 +377,14 @@ export const useCartStore = create<CartState>()(
       },
 
       calcularImpuestos: (): ImpuestosCalculados => {
-        const { detalles, totales } = get().procesarDetallesCarrito();
+        const { totales } = get().procesarDetallesCarrito();
 
         const subTotal = totales.subTotal;
         const importeGravadoTotal =
           totales.importeGravado15 + totales.importeGravado18;
         const importeExentoExonerado = Math.max(
           0,
-          subTotal - importeGravadoTotal
+          subTotal - importeGravadoTotal,
         );
 
         const importeExento = importeExentoExonerado * 0.5;
@@ -338,7 +411,9 @@ export const useCartStore = create<CartState>()(
       partialize: (state) => ({
         cart: state.cart,
         currentSucursalId: state.currentSucursalId,
+        currentLongitudSucursal: state.currentLongitudSucursal,
+        currentLatitudSucursal: state.currentLatitudSucursal,
       }),
-    }
-  )
+    },
+  ),
 );

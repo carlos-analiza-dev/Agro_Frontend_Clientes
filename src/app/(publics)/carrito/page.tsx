@@ -10,7 +10,7 @@ import {
   CrearPedidoInterface,
 } from "@/api/pedidos/interface/crear-pedido.interface";
 import { toast } from "react-toastify";
-import { Loader2, ShoppingCart } from "lucide-react";
+import { Loader2, ShoppingCart, Truck, AlertCircle } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
@@ -21,6 +21,8 @@ import ResumenPedido, {
 } from "@/components/cart/ResumenPedido";
 import CardCarrito from "@/components/cart/CardCarrito";
 import SeleccionUbicacion from "@/components/cart/SeleccionaUbicacion";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 const CarritoPage = () => {
   const router = useRouter();
@@ -30,7 +32,6 @@ const CarritoPage = () => {
   const pais = paisStorage ? JSON.parse(paisStorage) : null;
   const moneda = pais?.simbolo_moneda as string;
   const isMobile = useMediaQuery("(max-width: 768px)");
-
   const paisId = pais?.id;
 
   useEffect(() => {
@@ -48,6 +49,31 @@ const CarritoPage = () => {
     totalItems,
     totalPrice,
   } = useCartStore();
+
+  const sucursales = cart.map((item) => item.sucursalId);
+  const sucursalesUnicas = [...new Set(sucursales)];
+  const sonDiferentesSucursales = sucursalesUnicas.length > 1;
+
+  const productosPorSucursal = cart.reduce(
+    (acc, item) => {
+      const sucursalId = item.sucursalId;
+      if (!acc[sucursalId]) {
+        acc[sucursalId] = {
+          sucursalId,
+          nombreSucursal: item.nombreSucursal || "Sucursal sin nombre",
+          productos: [],
+          totalProductos: 0,
+          subtotal: 0,
+        };
+      }
+      acc[sucursalId].productos.push(item);
+      acc[sucursalId].totalProductos += item.quantity;
+      acc[sucursalId].subtotal +=
+        item.quantity * parseFloat(item.preciosPorPais?.[0]?.precio ?? "0");
+      return acc;
+    },
+    {} as Record<string, any>,
+  );
 
   const [ubicacionSeleccionada, setUbicacionSeleccionada] =
     useState<UbicacionPedido | null>(null);
@@ -178,6 +204,7 @@ const CarritoPage = () => {
 
     crearPedidoMutation.mutate(pedidosData);
   };
+
   const handleUbicacionSeleccionada = (ubicacion: UbicacionPedido) => {
     setUbicacionSeleccionada(ubicacion);
     setMostrarSeleccionUbicacion(false);
@@ -213,6 +240,48 @@ const CarritoPage = () => {
         </p>
       </div>
 
+      {sonDiferentesSucursales && (
+        <Card className="mb-6 border-amber-200 bg-amber-50">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0">
+                <Truck className="h-5 w-5 text-amber-600 mt-0.5" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-amber-800 text-base sm:text-lg">
+                  Productos de diferentes sucursales
+                </h3>
+                <p className="text-amber-700 text-sm sm:text-base mt-1">
+                  Tu pedido incluye productos de {sucursalesUnicas.length}{" "}
+                  sucursal{sucursalesUnicas.length > 1 ? "es" : ""} diferentes.
+                  El tiempo de entrega estimado es de{" "}
+                  <strong>3 a 5 días hábiles</strong> debido a la consolidación
+                  de productos desde múltiples ubicaciones.
+                </p>
+                <Separator className="my-3 bg-amber-200" />
+                <div className="space-y-2">
+                  <p className="text-xs text-amber-700 font-medium">
+                    📦 Productos por sucursal:
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {Object.values(productosPorSucursal).map((sucursal) => (
+                      <Badge
+                        key={sucursal.sucursalId}
+                        variant="secondary"
+                        className="bg-white border border-amber-300 text-amber-700"
+                      >
+                        {sucursal.nombreSucursal}: {sucursal.totalProductos}{" "}
+                        producto{sucursal.totalProductos !== 1 ? "s" : ""}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-4">
           {cart.map((item) => (
@@ -238,6 +307,7 @@ const CarritoPage = () => {
             isProcessing={crearPedidoMutation.isPending}
             ubicacionSeleccionada={ubicacionSeleccionada}
             onSeleccionarUbicacion={() => setMostrarSeleccionUbicacion(true)}
+            sonDiferentesSucursales={sonDiferentesSucursales}
           />
         </div>
       </div>

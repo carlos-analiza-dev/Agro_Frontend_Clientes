@@ -24,6 +24,7 @@ import FormOpinionProducto from "@/components/products/FormOpinionProducto";
 import CardRatingResumen from "@/components/products/CardRatingResumen";
 import CardOpinionesProducto from "@/components/products/CardOpinionesProducto";
 import NoOpiniones from "@/components/products/NoOpiniones";
+import { ResponseInterfazPais } from "@/api/sucursales/interfaces/response-sucursal-pais.interface";
 
 const ProductDetailsPage = () => {
   const { id: productoId } = useParams();
@@ -101,8 +102,8 @@ const ProductDetailsPage = () => {
   };
 
   const getCantidadDisponible = () => {
-    if (!existencia || !sucursalId) return 0;
-    return existencia || 0;
+    if (!existencia?.existencia || !sucursalId) return 0;
+    return existencia.existencia || 0;
   };
 
   const getNombreSucursalSeleccionada = () => {
@@ -110,6 +111,16 @@ const ProductDetailsPage = () => {
     const sucursal = sucursales.find((s) => s.id === sucursalId);
     return sucursal?.nombre || "";
   };
+
+  const getSucursalSeleccionada = (): ResponseInterfazPais | null => {
+    if (!sucursales || !sucursalId) return null;
+
+    const sucursal = sucursales.find((s) => s.id === sucursalId);
+
+    return sucursal || null;
+  };
+
+  const sucursal = getSucursalSeleccionada();
 
   const [quantity, setQuantity] = useState(1);
   const [totalPrecio, setTotalPrecio] = useState(0);
@@ -271,6 +282,8 @@ const ProductDetailsPage = () => {
               totalPrecio={totalPrecio}
               isFavorite={isFavorite}
               handleToggleFavorite={handleToggleFavorite}
+              sucursal={sucursal}
+              sucursalesDisponible={existencia?.sucursalesConExistencia}
             />
           </div>
         </div>

@@ -2,7 +2,6 @@ import { TipoEntrega } from "@/api/pedidos/interface/crear-pedido.interface";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Cliente } from "@/interfaces/auth/cliente";
 import {
   Loader2,
   MapPin,
@@ -37,6 +36,7 @@ interface Props {
   ubicacionSeleccionada?: UbicacionPedido | null;
   onSeleccionarUbicacion: () => void;
   isErrorAuth: string;
+  sonDiferentesSucursales: boolean;
 }
 
 const ResumenPedido = ({
@@ -49,6 +49,7 @@ const ResumenPedido = ({
   ubicacionSeleccionada,
   onSeleccionarUbicacion,
   isErrorAuth,
+  sonDiferentesSucursales,
 }: Props) => {
   const { calcularImpuestos } = useCartStore();
   const impuestos = calcularImpuestos();
@@ -66,7 +67,7 @@ const ResumenPedido = ({
       case "sucursal":
         return "Recoger en sucursal";
       default:
-        return "No seleccionada";
+        return "Ubicación personalizada";
     }
   };
 
@@ -84,6 +85,22 @@ const ResumenPedido = ({
         <CardTitle className="text-xl">Resumen del Pedido</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {sonDiferentesSucursales && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-xs text-amber-800 font-medium">
+                  Productos de diferentes sucursales
+                </p>
+                <p className="text-xs text-amber-700 mt-0.5">
+                  Tiempo de entrega: <strong>3 a 5 días hábiles</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="space-y-3 p-3 border rounded-lg bg-gray-50">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Ubicación:</span>

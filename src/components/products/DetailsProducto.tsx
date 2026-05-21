@@ -17,7 +17,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCartStore } from "@/providers/store/useCartStore";
 import {
   AlertCircle,
-  AlertTriangle,
   CheckCircle2,
   Heart,
   Minus,
@@ -25,7 +24,6 @@ import {
   ShoppingCart,
   Store,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction } from "react";
 import { toast } from "react-toastify";
 
@@ -51,6 +49,14 @@ interface Props {
   totalPrecio: number;
   isFavorite: boolean;
   handleToggleFavorite: () => void;
+  sucursal: ResponseInterfazPais | null;
+  sucursalesDisponible:
+    | {
+        id: string;
+        nombre: string;
+        existencia: number;
+      }[]
+    | undefined;
 }
 
 const DetailsProducto = ({
@@ -75,41 +81,27 @@ const DetailsProducto = ({
   totalPrecio,
   isFavorite,
   handleToggleFavorite,
+  sucursal,
+  sucursalesDisponible,
 }: Props) => {
-  const router = useRouter();
-  const {
-    addToCart,
-    cart,
-    canAddToSucursal,
-    getCurrentSucursal,
-    currentSucursalId,
-  } = useCartStore();
+  const { addToCart, cart, getCurrentSucursal } = useCartStore();
 
   const isInCart = cart.some(
     (item) => item.id === producto.id && item.sucursalId === sucursalId,
   );
 
-  const canAddToCurrentSucursal = canAddToSucursal(sucursalId);
-  const currentSucursal = getCurrentSucursal();
-
-  const getCurrentSucursalName = () => {
-    if (!currentSucursal) return "";
-    const item = cart.find((item) => item.sucursalId === currentSucursal);
-    return item?.nombreSucursal || "";
-  };
-
   const handleAddToCart = () => {
     if (!isAvailable || !sucursalId) return;
 
-    if (!canAddToCurrentSucursal) {
-      toast.error(
-        `No puedes agregar productos de ${nombreSucursal}. Tu pedido actual es para ${getCurrentSucursalName()}. Limpia el carrito para cambiar de sucursal.`,
-      );
-      return;
-    }
-
     for (let i = 0; i < quantity; i++) {
-      addToCart(producto, sucursalId, nombreSucursal, notas);
+      addToCart(
+        producto,
+        sucursalId,
+        nombreSucursal,
+        Number(sucursal?.longitud),
+        Number(sucursal?.latitud),
+        notas,
+      );
     }
     isInCart
       ? toast.success(
@@ -119,9 +111,6 @@ const DetailsProducto = ({
     setNotas("");
     setQuantity(1);
   };
-
-  const isSucursalDisabled =
-    currentSucursal !== null && currentSucursal !== sucursalId;
 
   return (
     <div className="space-y-4 md:space-y-6 px-4 sm:px-0">
@@ -133,29 +122,6 @@ const DetailsProducto = ({
           {producto.atributos || "N/D"}
         </p>
       </div>
-
-      {isSucursalDisabled && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 sm:p-4">
-          <div className="flex items-start sm:items-center gap-2">
-            <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-600 flex-shrink-0 mt-0.5 sm:mt-0" />
-            <div className="flex-1">
-              <span className="text-sm sm:text-base text-yellow-800 font-medium block sm:inline">
-                Pedido en curso para {getCurrentSucursalName()}
-              </span>
-              <p className="text-xs sm:text-sm text-yellow-700 mt-1 sm:mt-0 sm:inline sm:ml-2">
-                No puedes agregar productos de otras sucursales.
-                <Button
-                  variant="link"
-                  className="p-0 h-auto text-yellow-800 font-semibold ml-1 text-xs sm:text-sm"
-                  onClick={() => router.push("/cart")}
-                >
-                  Ver carrito
-                </Button>
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
 
       <Card className="overflow-hidden">
         <CardContent className="p-3 sm:p-4 space-y-3">
@@ -215,22 +181,60 @@ const DetailsProducto = ({
                   Error al cargar existencia
                 </Badge>
               ) : (
-                <div className="flex flex-col xs:flex-row xs:items-center gap-1 xs:gap-2">
-                  <span className="text-xs sm:text-sm text-gray-600">
-                    Disponible en {nombreSucursal}:
-                  </span>
-                  <Badge
-                    variant={isAvailable ? "default" : "destructive"}
-                    className="text-xs sm:text-sm w-fit"
-                  >
-                    {isAvailable ? (
-                      <CheckCircle2 className="w-3 h-3 mr-1 flex-shrink-0" />
-                    ) : (
-                      <AlertCircle className="w-3 h-3 mr-1 flex-shrink-0" />
+                <div className="space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span className="text-sm text-gray-600 font-medium">
+                      Disponibles en {nombreSucursal}:
+                    </span>
+
+                    <Badge
+                      variant={isAvailable ? "default" : "destructive"}
+                      className="text-xs sm:text-sm w-fit flex items-center px-3 py-1"
+                    >
+                      {isAvailable ? (
+                        <CheckCircle2 className="w-3.5 h-3.5 mr-1.5 flex-shrink-0" />
+                      ) : (
+                        <AlertCircle className="w-3.5 h-3.5 mr-1.5 flex-shrink-0" />
+                      )}
+
+                      <span className="font-medium">
+                        {cantidadDisponible} {producto.unidad_venta || "unidad"}
+                        {cantidadDisponible !== 1 ? "es" : ""}
+                      </span>
+                    </Badge>
+                  </div>
+
+                  {!isAvailable &&
+                    sucursalesDisponible &&
+                    sucursalesDisponible.length > 0 && (
+                      <div className="rounded-xl border border-amber-200 bg-amber-50 p-3">
+                        <div className="flex items-start gap-2">
+                          <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+
+                          <div className="space-y-2">
+                            <p className="text-sm text-amber-800 font-medium">
+                              Este producto sí tiene existencia en otras
+                              sucursales:
+                            </p>
+
+                            <div className="flex flex-wrap gap-2">
+                              {sucursalesDisponible.map((dis) => (
+                                <Badge
+                                  key={dis.id}
+                                  variant="secondary"
+                                  className="px-3 py-1 text-xs sm:text-sm bg-white border border-amber-200 text-amber-700 hover:bg-amber-100 transition-colors"
+                                >
+                                  {dis.nombre}
+                                  <span className="ml-1 font-semibold">
+                                    ({dis.existencia})
+                                  </span>
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     )}
-                    {cantidadDisponible} {producto.unidad_venta || "unidad"}
-                    {cantidadDisponible !== 1 ? "s" : ""}
-                  </Badge>
                 </div>
               )}
             </div>
@@ -343,7 +347,7 @@ const DetailsProducto = ({
             </Button>
 
             <Button
-              disabled={!isAvailable || !sucursalId || !canAddToCurrentSucursal}
+              disabled={!isAvailable || !sucursalId}
               className="flex-1 h-10 sm:h-11 text-sm sm:text-base"
               onClick={handleAddToCart}
             >
@@ -351,21 +355,12 @@ const DetailsProducto = ({
               <span className="truncate">
                 {!sucursalId
                   ? "Selecciona una sucursal"
-                  : !canAddToCurrentSucursal
-                    ? `Pedido para ${getCurrentSucursalName()}`
-                    : isInCart
-                      ? "Agregar más al carrito"
-                      : "Agregar al carrito"}
+                  : isInCart
+                    ? "Agregar más al carrito"
+                    : "Agregar al carrito"}
               </span>
             </Button>
           </div>
-
-          {!canAddToCurrentSucursal && (
-            <p className="text-xs sm:text-sm text-yellow-600 mt-2 flex items-center gap-1">
-              <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-              <span>Limpia el carrito para pedir de esta sucursal</span>
-            </p>
-          )}
         </CardContent>
       </Card>
 

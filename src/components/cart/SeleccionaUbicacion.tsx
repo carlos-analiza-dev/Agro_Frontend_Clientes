@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -15,6 +15,7 @@ import {
 import { TipoEntrega } from "@/api/pedidos/interface/crear-pedido.interface";
 import { Cliente } from "@/interfaces/auth/cliente";
 import { toast } from "react-toastify";
+import { GoogleMapsWrapper } from "./GoogleMapsWrapper";
 
 declare global {
   interface Window {
@@ -22,132 +23,6 @@ declare global {
     googleMapsLoaded?: boolean;
   }
 }
-
-const MapComponent = ({
-  onLocationSelect,
-  initialLocation,
-}: {
-  onLocationSelect: (lat: number, lng: number) => void;
-  initialLocation: { lat: number; lng: number };
-}) => {
-  const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<any>(null);
-  const markerRef = useRef<any>(null);
-
-  useEffect(() => {
-    if (!mapRef.current || !window.google) return;
-
-    mapInstanceRef.current = new window.google.maps.Map(mapRef.current, {
-      center: initialLocation,
-      zoom: 13,
-      streetViewControl: false,
-      mapTypeControl: false,
-      fullscreenControl: true,
-      zoomControl: true,
-    });
-
-    markerRef.current = new window.google.maps.Marker({
-      position: initialLocation,
-      map: mapInstanceRef.current,
-      draggable: true,
-      title: "Ubicación de entrega",
-    });
-
-    markerRef.current.addListener("dragend", () => {
-      const position = markerRef.current?.getPosition();
-      if (position) {
-        onLocationSelect(position.lat(), position.lng());
-      }
-    });
-
-    mapInstanceRef.current.addListener("click", (event: any) => {
-      if (event.latLng && markerRef.current) {
-        markerRef.current.setPosition(event.latLng);
-        onLocationSelect(event.latLng.lat(), event.latLng.lng());
-      }
-    });
-  }, [onLocationSelect, initialLocation]);
-
-  return <div ref={mapRef} className="w-full h-64 rounded-lg" />;
-};
-
-const GoogleMapsWrapper = ({
-  onLocationSelect,
-  initialLocation,
-}: {
-  onLocationSelect: (lat: number, lng: number) => void;
-  initialLocation: { lat: number; lng: number };
-}) => {
-  const [mapLoaded, setMapLoaded] = useState(false);
-  const [loadError, setLoadError] = useState(false);
-
-  useEffect(() => {
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-
-    if (!apiKey) {
-      toast.error("Google Maps API key no encontrada");
-      setLoadError(true);
-      return;
-    }
-
-    if (window.google) {
-      setMapLoaded(true);
-      return;
-    }
-
-    if (window.googleMapsLoaded) {
-      return;
-    }
-
-    window.googleMapsLoaded = true;
-
-    const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-    script.async = true;
-    script.defer = true;
-
-    script.onload = () => {
-      setMapLoaded(true);
-    };
-
-    script.onerror = () => {
-      setLoadError(true);
-      window.googleMapsLoaded = false;
-    };
-
-    document.head.appendChild(script);
-
-    return () => {};
-  }, []);
-
-  if (loadError) {
-    return (
-      <div className="w-full h-64 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
-        <MapPin className="h-12 w-12 text-gray-400 mb-2" />
-        <span className="text-gray-600 text-center">
-          Error al cargar el mapa. <br />
-          Verifica tu conexión a internet.
-        </span>
-      </div>
-    );
-  }
-
-  if (!mapLoaded) {
-    return (
-      <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-        <span className="ml-2 text-gray-600">Cargando mapa...</span>
-      </div>
-    );
-  }
-
-  return (
-    <MapComponent
-      onLocationSelect={onLocationSelect}
-      initialLocation={initialLocation}
-    />
-  );
-};
 
 interface Finca {
   id: string;

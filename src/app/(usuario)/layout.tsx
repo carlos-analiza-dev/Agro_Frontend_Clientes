@@ -30,21 +30,27 @@ export default function AdminLayout({
   const [loading, setLoading] = useState(false);
   const [showSessionModal, setShowSessionModal] = useState(false);
   const [checkingPermissions, setCheckingPermissions] = useState(true);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   const esPropietario = cliente?.rol === TipoCliente.PROPIETARIO;
 
   const paqueteId = cliente?.paqueteActivo?.paquete?.id ?? "";
   const clienteId = cliente?.id ?? "";
 
-  const { data: permisosPaquete } = useGetPermisosByClientePaquete(paqueteId);
+  const { data: permisosPaquete, isLoading: isLoadingPaquete } =
+    useGetPermisosByClientePaquete(paqueteId);
 
-  const { data: permisosCliente } = useGetPermisosByCliente(clienteId);
+  const { data: permisosCliente, isLoading: isLoadingCliente } =
+    useGetPermisosByCliente(clienteId);
 
   const permisos = esPropietario ? permisosPaquete : permisosCliente;
+  const isLoadingPermisos = esPropietario ? isLoadingPaquete : isLoadingCliente;
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   const hasPermissionForCurrentRoute = () => {
-    if (!cliente) return false;
-
     if (
       publicRoutes.includes(pathname) ||
       publicRoutes.some((route) => pathname.startsWith(route + "/"))
@@ -52,8 +58,10 @@ export default function AdminLayout({
       return true;
     }
 
+    if (!cliente) return false;
+
     if (!permisos || permisos.length === 0) {
-      return false;
+      return null;
     }
 
     const hasPermission = permisos.some((permiso) => {
@@ -63,7 +71,6 @@ export default function AdminLayout({
           pathname.startsWith(permiso.permiso.url + "/")
         );
       }
-
       return false;
     });
 
@@ -102,7 +109,6 @@ export default function AdminLayout({
 
     try {
       await logout();
-
       router.push("/");
     } catch (error) {
       toast.error("Error al cerrar sesión expirada");
@@ -124,7 +130,7 @@ export default function AdminLayout({
     };
 
     checkUser();
-  }, [cliente, logout, router]);
+  }, [token, router]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -137,31 +143,34 @@ export default function AdminLayout({
   }, [token]);
 
   useEffect(() => {
-    if (token) {
-      checkTokenExpiration();
-    }
-  }, [token]);
+    if (!isHydrated) return;
 
-  useEffect(() => {
+    if (!token) return;
+
     if (!cliente) return;
 
-    if (!hasPermissionForCurrentRoute()) {
+    if (isLoadingPermisos) return;
+
+    const hasPermission = hasPermissionForCurrentRoute();
+
+    if (hasPermission === null) return;
+
+    if (!hasPermission) {
       router.push("/not-found");
       return;
     }
 
     setCheckingPermissions(false);
-  }, [cliente, pathname]);
+  }, [cliente, pathname, token, isLoadingPermisos, isHydrated, router]);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
-
     return () => {
       document.body.style.overflow = "auto";
     };
   }, []);
 
-  if (loading || checkingPermissions) {
+  if (loading || checkingPermissions || !isHydrated || isLoadingPermisos) {
     return <FullScreenLoader />;
   }
 

@@ -4,6 +4,8 @@ export interface ResponseInterfazPais {
   tipo: string;
   direccion_complemento: string;
   paisId: string;
+  longitud?: string;
+  latitud?: string;
   departamentoId: string;
   municipioId: string;
   gerenteId: string;
