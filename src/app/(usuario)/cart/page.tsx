@@ -118,83 +118,87 @@ const CarritoPage = () => {
       return;
     }
 
-    const itemsPorSucursal = cart.reduce(
-      (acc, item) => {
-        const sucursalId = item.sucursalId || "default";
-        if (!acc[sucursalId]) {
-          acc[sucursalId] = {
-            sucursalId: sucursalId,
-            nombreSucursal: item.nombreSucursal || "Sucursal Principal",
-            items: [],
-          };
-        }
-        acc[sucursalId].items.push(item);
-        return acc;
-      },
-      {} as Record<
-        string,
-        { sucursalId: string; nombreSucursal: string; items: any[] }
-      >,
-    );
+    const detalles = cart.map((item) => ({
+      id_producto: item.id,
+      id_sucursal: item.sucursalId || undefined,
+      cantidad: item.quantity,
+      precio: parseFloat(item.preciosPorPais?.[0]?.precio ?? "0"),
+      total:
+        item.totalPrecio ||
+        item.quantity * parseFloat(item.preciosPorPais?.[0]?.precio ?? "0"),
+    }));
 
-    const { detalles: todosLosDetalles, totales } = useCartStore
-      .getState()
-      .procesarDetallesCarrito();
+    const sub_total = detalles.reduce((sum, detalle) => sum + detalle.total, 0);
 
-    const pedidosData = Object.values(itemsPorSucursal).map((grupoSucursal) => {
-      const detallesSucursal = todosLosDetalles.filter((detalle) =>
-        grupoSucursal.items.some((item) => item.id === detalle.id_producto),
-      );
+    let importe_gravado_15 = 0;
+    let importe_gravado_18 = 0;
+    let isv_15 = 0;
+    let isv_18 = 0;
+    let importe_exento = 0;
 
-      const subtotalSucursal = detallesSucursal.reduce(
-        (sum, detalle) => sum + detalle.total,
-        0,
-      );
+    for (const item of cart) {
+      const totalLinea =
+        item.quantity * parseFloat(item.preciosPorPais?.[0]?.precio ?? "0");
+      const tasaImpuesto = determinarTasaImpuesto(item);
 
-      const proporcion = subtotalSucursal / (totales.subTotal || 1);
+      if (tasaImpuesto === 0.15) {
+        importe_gravado_15 += totalLinea;
+        isv_15 += totalLinea * 0.15;
+      } else if (tasaImpuesto === 0.18) {
+        importe_gravado_18 += totalLinea;
+        isv_18 += totalLinea * 0.18;
+      } else {
+        importe_exento += totalLinea;
+      }
+    }
 
-      const pedidoData: CrearPedidoInterface = {
-        id_sucursal:
-          grupoSucursal.sucursalId === "default"
-            ? undefined
-            : grupoSucursal.sucursalId,
-        sub_total: subtotalSucursal,
-        importe_exento: Number(
-          (
-            totales.subTotal -
-            (totales.importeGravado15 + totales.importeGravado18) * proporcion
-          ).toFixed(2),
-        ),
-        importe_exonerado: 0,
-        importe_gravado_15: Number(
-          (totales.importeGravado15 * proporcion).toFixed(2),
-        ),
-        importe_gravado_18: Number(
-          (totales.importeGravado18 * proporcion).toFixed(2),
-        ),
-        isv_15: Number((totales.isv15 * proporcion).toFixed(2)),
-        isv_18: Number((totales.isv18 * proporcion).toFixed(2)),
-        total: Number(
-          (
-            subtotalSucursal +
-            (totales.isv15 + totales.isv18) * proporcion +
-            (ubicacion.costoDelivery || 0)
-          ).toFixed(2),
-        ),
-        estado: EstadoPedido.PENDIENTE,
-        detalles: detallesSucursal,
-        direccion_entrega: ubicacion.direccion_entrega,
-        latitud: ubicacion.latitud,
-        longitud: ubicacion.longitud,
-        tipo_entrega: ubicacion.tipoEntrega,
-        costo_delivery: ubicacion.costoDelivery || 0,
-        nombre_finca: ubicacion.nombre_finca,
-      };
+    const total = sub_total + isv_15 + isv_18 + (ubicacion.costoDelivery || 0);
 
-      return pedidoData;
-    });
+    const pedidoData: CrearPedidoInterface = {
+      sub_total: sub_total,
+      importe_exento: importe_exento,
+      importe_exonerado: 0,
+      importe_gravado_15: importe_gravado_15,
+      importe_gravado_18: importe_gravado_18,
+      isv_15: isv_15,
+      isv_18: isv_18,
+      total: total,
+      estado: EstadoPedido.PENDIENTE,
+      detalles: detalles,
+      direccion_entrega: ubicacion.direccion_entrega,
+      latitud: ubicacion.latitud,
+      longitud: ubicacion.longitud,
+      tipo_entrega: ubicacion.tipoEntrega,
+      costo_delivery: ubicacion.costoDelivery || 0,
+      nombre_finca: ubicacion.nombre_finca,
+    };
 
-    crearPedidoMutation.mutate(pedidosData);
+    crearPedidoMutation.mutate([pedidoData]);
+  };
+
+  const determinarTasaImpuesto = (item: any): number => {
+    if (item.tax?.porcentaje) {
+      return Number(item.tax.porcentaje) / 100;
+    }
+
+    if (item.categoria?.nombre) {
+      const categoriaNombre = item.categoria.nombre.toLowerCase();
+      switch (categoriaNombre) {
+        case "exento":
+        case "exentos":
+          return 0;
+        case "15%":
+        case "gravado 15":
+          return 0.15;
+        case "18%":
+        case "gravado 18":
+          return 0.18;
+        case "exonerado":
+          return 0;
+      }
+    }
+
+    return 0.15;
   };
   const handleUbicacionSeleccionada = (ubicacion: UbicacionPedido) => {
     setUbicacionSeleccionada(ubicacion);

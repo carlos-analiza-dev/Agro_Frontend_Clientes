@@ -11,7 +11,6 @@ export enum TipoEntrega {
 }
 
 export interface CrearPedidoInterface {
-  id_sucursal?: string;
   sub_total: number;
   importe_exento?: number;
   importe_exonerado?: number;
@@ -32,6 +31,7 @@ export interface CrearPedidoInterface {
 
 export interface Detalle {
   id_producto: string;
+  id_sucursal?: string;
   cantidad: number;
   precio: number;
   total: number;

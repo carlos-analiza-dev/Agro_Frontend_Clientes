@@ -17,7 +17,6 @@ const useGetProductosDisponibles = (limit = 10, categoria = "") => {
     },
     retry: false,
     enabled: true,
-    staleTime: 60 * 1000 * 5,
   });
 };
 

@@ -22,7 +22,6 @@ const useGetProductosPublicosDisponibles = (
     },
     retry: false,
     enabled: true,
-    staleTime: 60 * 1000 * 5,
   });
 };
 

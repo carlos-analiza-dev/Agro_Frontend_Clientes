@@ -4,7 +4,7 @@ import { ResponsePedidosInterface } from "../interface/response-pedidos.interfac
 export const ObtenerPedidosByCliente = async (
   limit: number = 10,
   offset: number = 0,
-  estado: string = ""
+  estado: string = "",
 ) => {
   const params: Record<string, string> = {
     limit: limit.toString(),

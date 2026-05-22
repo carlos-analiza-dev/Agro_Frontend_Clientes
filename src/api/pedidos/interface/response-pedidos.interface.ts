@@ -6,7 +6,6 @@ export interface ResponsePedidosInterface {
 export interface Pedido {
   id: string;
   id_cliente: string;
-  id_sucursal: string;
   sub_total: string;
   importe_exento: string;
   importe_exonerado: string;
@@ -25,7 +24,6 @@ export interface Pedido {
   created_at: string;
   updated_at: string;
   cliente: Cliente;
-  sucursal: Sucursal;
   detalles: Detalle[];
 }
 
@@ -77,10 +75,12 @@ export interface Detalle {
   id: string;
   id_pedido: string;
   id_producto: string;
+  id_sucursal: string;
   precio: string;
   cantidad: number;
   total: string;
   producto: Producto;
+  sucursal: Sucursal;
 }
 
 export interface Producto {

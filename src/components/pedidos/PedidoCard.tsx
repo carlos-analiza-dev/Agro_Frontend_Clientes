@@ -29,9 +29,17 @@ import { formatCurrency } from "@/helpers/funciones/formatCurrency";
 import { formatDate } from "@/helpers/funciones/formatDate";
 import { Cliente } from "@/interfaces/auth/cliente";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Calendar, MapPin, Package, Receipt, Info } from "lucide-react";
+import {
+  Calendar,
+  MapPin,
+  Package,
+  Receipt,
+  Info,
+  AlertTriangleIcon,
+} from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 
 interface Props {
   pedido: Pedido;
@@ -81,10 +89,10 @@ const PedidoCard = ({ pedido, cliente }: Props) => {
         },
         onError: (error: any) => {
           toast.error(
-            error?.response?.data?.message || "Error al cancelar el pedido"
+            error?.response?.data?.message || "Error al cancelar el pedido",
           );
         },
-      }
+      },
     );
   };
 
@@ -95,9 +103,29 @@ const PedidoCard = ({ pedido, cliente }: Props) => {
     (parseFloat(pedido.importe_gravado_15) || 0) +
     (parseFloat(pedido.importe_gravado_18) || 0);
 
+  const sucursalesUnicas = Array.from(
+    new Map(pedido.detalles.map((d) => [d.sucursal.id, d.sucursal])).values(),
+  );
+
+  const sucursalesIds = pedido.detalles.map((sucs) => sucs.sucursal.id);
+  const esMismaSucursal = new Set(sucursalesIds).size === 1;
+
   return (
     <>
       <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-200">
+        {!esMismaSucursal && (
+          <div className="w-full flex justify-center">
+            <Alert className="border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-50">
+              <AlertTriangleIcon />
+              <AlertTitle>Pedido con múltiples sucursales</AlertTitle>
+              <AlertDescription>
+                Este pedido contiene productos provenientes de diferentes
+                sucursales. Por esta razón, el tiempo de procesamiento y envío
+                puede extenderse de 3 a 5 días hábiles.
+              </AlertDescription>
+            </Alert>
+          </div>
+        )}
         <CardHeader className="bg-gray-50 border-b">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="space-y-1">
@@ -136,13 +164,20 @@ const PedidoCard = ({ pedido, cliente }: Props) => {
               <div className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
                 <div>
-                  <h3 className="font-semibold text-gray-900">Sucursal</h3>
-                  <p className="text-sm text-gray-600">
-                    {pedido.sucursal.nombre}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {pedido.sucursal.direccion_complemento}
-                  </p>
+                  <h3 className="font-semibold text-gray-900">Sucursales</h3>
+
+                  <div>
+                    {sucursalesUnicas.map((sucursal) => (
+                      <div key={sucursal.id}>
+                        <p className="text-sm text-gray-600">
+                          {sucursal.nombre}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {sucursal.direccion_complemento}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
 
