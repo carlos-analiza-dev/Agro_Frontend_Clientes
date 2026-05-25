@@ -126,7 +126,7 @@ const ServicioPage = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 py-6 md:py-8">
         <div className="max-w-6xl mx-auto">
-          <ButtonBack isMobil={isMobile} />
+          {isMobile && <ButtonBack isMobil={isMobile} />}
           <div className="mb-8">
             <Badge className="mb-4 bg-primary/10 text-primary hover:bg-primary/20">
               <CheckCircle className="w-3 h-3 mr-1" />

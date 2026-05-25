@@ -29,12 +29,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { toast } from "react-toastify";
-import { Sucursal } from "@/api/sucursales/interfaces/response-sucursales.interface";
 import { ResponseInterfazPais } from "@/api/sucursales/interfaces/response-sucursal-pais.interface";
+import {
+  handleCopyLink,
+  handleShareFacebook,
+  handleShareTwitter,
+  handleShareWhatsApp,
+} from "@/helpers/data/social-media/redes-sociales";
 
 const ProductDetailsPage = () => {
-  const { id: productoId } = useParams();
+  const { id } = useParams();
+  const productoId = id as string;
   const router = useRouter();
   const { esFavorito, toggleFavorito } = useFavoritos();
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -223,56 +228,6 @@ const ProductDetailsPage = () => {
     setTotalPrecio(total);
   }, [quantity, producto]);
 
-  const handleShareWhatsApp = () => {
-    const urlBase = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
-
-    const productUrl = `${urlBase}/productos-agroservicios/${productoId}`;
-
-    const precio = getPrecio();
-    const simboloMoneda = moneda || "L.";
-
-    const mensaje = encodeURIComponent(
-      `🌟 *${producto?.nombre}* 🌟\n\n` +
-        `💰 *Precio:* ${simboloMoneda} ${parseFloat(precio).toFixed(2)}\n` +
-        `${producto?.marca?.nombre ? `🏷️ *Marca:* ${producto.marca.nombre}\n` : ""}` +
-        `${producto?.categoria?.nombre ? `📂 *Categoría:* ${producto.categoria.nombre}\n` : ""}\n` +
-        `${isAvailable ? "✅ Disponible" : "❌ No disponible"}\n\n` +
-        `🔗 ${productUrl}\n\n` +
-        `¡Encuéntralo en Agroservicios!`,
-    );
-
-    window.open(`https://wa.me/?text=${mensaje}`, "_blank");
-  };
-
-  const handleShareFacebook = () => {
-    const urlBase = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
-    const productUrl = `${urlBase}/productos-agroservicios/${productoId}`;
-    window.open(
-      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(productUrl)}`,
-      "_blank",
-    );
-  };
-
-  const handleShareTwitter = () => {
-    const urlBase = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
-    const productUrl = `${urlBase}/productos-agroservicios/${productoId}`;
-    const text = encodeURIComponent(`¡Mira este producto! ${producto?.nombre}`);
-    window.open(
-      `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(productUrl)}`,
-      "_blank",
-    );
-  };
-
-  const handleCopyLink = async () => {
-    const urlBase = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
-    const productUrl = `${urlBase}/productos-agroservicios/${productoId}`;
-    try {
-      await navigator.clipboard.writeText(productUrl);
-    } catch (err) {
-      toast.error("Error al copiar el link");
-    }
-  };
-
   if (isErrorSucursales || isErrorProducto) {
     return (
       <div className="flex items-center justify-center min-h-screen px-4">
@@ -314,11 +269,15 @@ const ProductDetailsPage = () => {
     <div className="container">
       <div>
         <div className="flex justify-between items-center">
-          <ButtonBack isMobil={isMobile} />
+          {isMobile && <ButtonBack isMobil={isMobile} />}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon" className="gap-2 w-auto">
+              <Button
+                variant="outline"
+                size="icon"
+                className="gap-2 w-auto mt-5 mb-5"
+              >
                 <Share2 className="h-4 w-4" />
                 {!isMobile && (
                   <span className="hidden sm:inline">Compartir</span>
@@ -327,7 +286,15 @@ const ProductDetailsPage = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem
-                onClick={handleShareWhatsApp}
+                onClick={() =>
+                  handleShareWhatsApp(
+                    productoId,
+                    producto,
+                    isAvailable,
+                    precio,
+                    moneda,
+                  )
+                }
                 className="cursor-pointer"
               >
                 <svg
@@ -340,7 +307,7 @@ const ProductDetailsPage = () => {
                 WhatsApp
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={handleShareFacebook}
+                onClick={() => handleShareFacebook(productoId)}
                 className="cursor-pointer"
               >
                 <svg
@@ -353,7 +320,7 @@ const ProductDetailsPage = () => {
                 Facebook
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={handleShareTwitter}
+                onClick={() => handleShareTwitter(productoId, producto)}
                 className="cursor-pointer"
               >
                 <svg
@@ -366,7 +333,7 @@ const ProductDetailsPage = () => {
                 Twitter/X
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={handleCopyLink}
+                onClick={() => handleCopyLink(productoId)}
                 className="cursor-pointer"
               >
                 <svg

@@ -11,6 +11,7 @@ import {
   Navigation,
   Search,
   Loader2,
+  AlertCircle,
 } from "lucide-react";
 import { TipoEntrega } from "@/api/pedidos/interface/crear-pedido.interface";
 import { Cliente } from "@/interfaces/auth/cliente";
@@ -45,16 +46,25 @@ interface SeleccionUbicacionProps {
     nombre_finca?: string;
   }) => void;
   cliente: Cliente | undefined;
+  sonDiferentesSucursales: boolean;
 }
 
 const SeleccionUbicacion = ({
   fincas = [],
   onUbicacionSeleccionada,
   cliente,
+  sonDiferentesSucursales,
 }: SeleccionUbicacionProps) => {
   const hasFincas = fincas && fincas.length > 0;
 
   const getInitialTipoUbicacion = (): "finca" | "sucursal" | "otra" => {
+    if (sonDiferentesSucursales) {
+      if (hasFincas) {
+        return "finca";
+      }
+      return "otra";
+    }
+
     if (hasFincas) {
       return "finca";
     }
@@ -84,7 +94,11 @@ const SeleccionUbicacion = ({
     if (!hasFincas && tipoUbicacion === "finca") {
       setTipoUbicacion("otra");
     }
-  }, [hasFincas, tipoUbicacion]);
+
+    if (sonDiferentesSucursales && tipoUbicacion === "sucursal") {
+      setTipoUbicacion(hasFincas ? "finca" : "otra");
+    }
+  }, [hasFincas, tipoUbicacion, sonDiferentesSucursales]);
 
   const handleLocationSelect = (lat: number, lng: number) => {
     setLatitudPersonalizada(lat.toString());
@@ -186,6 +200,13 @@ const SeleccionUbicacion = ({
       }
     }
 
+    if (sonDiferentesSucursales && tipoUbicacion === "sucursal") {
+      toast.error(
+        "No es posible recoger en sucursal porque los productos son de diferentes sucursales",
+      );
+      return;
+    }
+
     const tipoEntrega =
       tipoUbicacion === "sucursal" ? TipoEntrega.RECOGER : TipoEntrega.DELIVERY;
     const costo = tipoUbicacion === "sucursal" ? 0 : costoDelivery;
@@ -246,6 +267,24 @@ const SeleccionUbicacion = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
+        {sonDiferentesSucursales && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-amber-800">
+                  Productos de diferentes sucursales
+                </p>
+                <p className="text-xs text-amber-700 mt-1">
+                  Tus productos provienen de diferentes sucursales. El tiempo de
+                  entrega será de <strong>3 a 5 días hábiles</strong>. No está
+                  disponible la opción de recoger en sucursal.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="space-y-4">
           <Label>Tipo de Ubicación</Label>
           <RadioGroup
@@ -268,14 +307,16 @@ const SeleccionUbicacion = ({
               </div>
             )}
 
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="sucursal" id="sucursal" />
-              <Label htmlFor="sucursal" className="flex items-center gap-2">
-                <Store className="h-4 w-4" />
-                Recoger en sucursal
-                <span className="text-green-600 text-sm ml-2">Gratis</span>
-              </Label>
-            </div>
+            {!sonDiferentesSucursales && (
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="sucursal" id="sucursal" />
+                <Label htmlFor="sucursal" className="flex items-center gap-2">
+                  <Store className="h-4 w-4" />
+                  Recoger en sucursal
+                  <span className="text-green-600 text-sm ml-2">Gratis</span>
+                </Label>
+              </div>
+            )}
 
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="otra" id="otra" />
@@ -450,7 +491,7 @@ const SeleccionUbicacion = ({
           </div>
         )}
 
-        {tipoUbicacion === "sucursal" && (
+        {tipoUbicacion === "sucursal" && !sonDiferentesSucursales && (
           <div className="bg-green-50 p-3 rounded-lg border border-green-200">
             <div className="flex items-center gap-2 text-green-800">
               <Store className="h-4 w-4" />

@@ -26,7 +26,6 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { formatCurrency } from "@/helpers/funciones/formatCurrency";
-import { formatDate } from "@/helpers/funciones/formatDate";
 import { Cliente } from "@/interfaces/auth/cliente";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -37,9 +36,10 @@ import {
   Info,
   AlertTriangleIcon,
 } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { formatDateOnly } from "@/helpers/funciones/formatDateOnly";
 
 interface Props {
   pedido: Pedido;
@@ -137,7 +137,7 @@ const PedidoCard = ({ pedido, cliente }: Props) => {
               </div>
               <CardDescription className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
-                {formatDate(pedido.created_at)}
+                {formatDateOnly(pedido.created_at)}
               </CardDescription>
             </div>
 

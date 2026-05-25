@@ -24,6 +24,7 @@ import CardCarrito from "@/components/cart/CardCarrito";
 import SeleccionUbicacion from "@/components/cart/SeleccionaUbicacion";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { determinarTasaImpuesto } from "@/helpers/funciones/cart/determinarTasaImpuesto";
 
 const CarritoPage = () => {
   const router = useRouter();
@@ -44,6 +45,7 @@ const CarritoPage = () => {
   const sucursales = cart.map((item) => item.sucursalId);
   const sucursalesUnicas = [...new Set(sucursales)];
   const sonDiferentesSucursales = sucursalesUnicas.length > 1;
+  const [sucursalCercana, setSucursalCercana] = useState("");
 
   const productosPorSucursal = cart.reduce(
     (acc, item) => {
@@ -155,6 +157,9 @@ const CarritoPage = () => {
     const total = sub_total + isv_15 + isv_18 + (ubicacion.costoDelivery || 0);
 
     const pedidoData: CrearPedidoInterface = {
+      id_sucursal_cercana: sonDiferentesSucursales
+        ? sucursalCercana
+        : sucursalesUnicas[0],
       sub_total: sub_total,
       importe_exento: importe_exento,
       importe_exonerado: 0,
@@ -176,30 +181,6 @@ const CarritoPage = () => {
     crearPedidoMutation.mutate([pedidoData]);
   };
 
-  const determinarTasaImpuesto = (item: any): number => {
-    if (item.tax?.porcentaje) {
-      return Number(item.tax.porcentaje) / 100;
-    }
-
-    if (item.categoria?.nombre) {
-      const categoriaNombre = item.categoria.nombre.toLowerCase();
-      switch (categoriaNombre) {
-        case "exento":
-        case "exentos":
-          return 0;
-        case "15%":
-        case "gravado 15":
-          return 0.15;
-        case "18%":
-        case "gravado 18":
-          return 0.18;
-        case "exonerado":
-          return 0;
-      }
-    }
-
-    return 0.15;
-  };
   const handleUbicacionSeleccionada = (ubicacion: UbicacionPedido) => {
     setUbicacionSeleccionada(ubicacion);
     setMostrarSeleccionUbicacion(false);
@@ -299,6 +280,8 @@ const CarritoPage = () => {
             ubicacionSeleccionada={ubicacionSeleccionada}
             onSeleccionarUbicacion={() => setMostrarSeleccionUbicacion(true)}
             sonDiferentesSucursales={sonDiferentesSucursales}
+            setSucursalCercana={setSucursalCercana}
+            sucursalCercana={sucursalCercana}
           />
         </div>
       </div>
@@ -314,6 +297,7 @@ const CarritoPage = () => {
                 fincas={fincas?.data.fincas || []}
                 onUbicacionSeleccionada={handleUbicacionSeleccionada}
                 cliente={cliente}
+                sonDiferentesSucursales={sonDiferentesSucursales}
               />
               <Button
                 variant="outline"

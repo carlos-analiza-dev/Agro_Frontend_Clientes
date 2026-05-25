@@ -14,6 +14,15 @@ import {
 } from "lucide-react";
 import { useCartStore } from "@/providers/store/useCartStore";
 import Link from "next/link";
+import { Dispatch, SetStateAction, useEffect } from "react";
+import useGetSucursalesCercanas from "@/hooks/sucursales/useGetSucursalesCercanas";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 interface UbicacionPedido {
   tipo: "finca" | "sucursal" | "otra";
@@ -37,6 +46,8 @@ interface Props {
   onSeleccionarUbicacion: () => void;
   isErrorAuth: string;
   sonDiferentesSucursales: boolean;
+  sucursalCercana: string;
+  setSucursalCercana: Dispatch<SetStateAction<string>>;
 }
 
 const ResumenPedido = ({
@@ -50,9 +61,28 @@ const ResumenPedido = ({
   onSeleccionarUbicacion,
   isErrorAuth,
   sonDiferentesSucursales,
+  sucursalCercana,
+  setSucursalCercana,
 }: Props) => {
   const { calcularImpuestos } = useCartStore();
   const impuestos = calcularImpuestos();
+
+  const { data: sucursales, isLoading } = useGetSucursalesCercanas(
+    ubicacionSeleccionada?.latitud,
+    ubicacionSeleccionada?.longitud,
+  );
+
+  const sucursalMasCercana = sucursales?.[0];
+
+  const sucursalSeleccionada = sucursales?.find(
+    (s) => s.sucursal.id === sucursalCercana,
+  );
+
+  useEffect(() => {
+    if (sucursalMasCercana && !sucursalCercana) {
+      setSucursalCercana(sucursalMasCercana.sucursal.id);
+    }
+  }, [sucursalMasCercana, sucursalCercana, setSucursalCercana]);
 
   const costoDelivery = ubicacionSeleccionada?.costoDelivery || 0;
 
@@ -148,6 +178,90 @@ const ResumenPedido = ({
           )}
         </div>
 
+        <Separator />
+        {sucursales && sucursales.length > 0 && (
+          <div className="space-y-3 border rounded-lg p-4 bg-gray-50">
+            <div className="flex items-center gap-2">
+              <Store className="h-4 w-4 text-blue-600" />
+
+              <div>
+                <p className="text-sm font-medium">Selecciona una sucursal</p>
+
+                <p className="text-xs text-muted-foreground">
+                  Escoge la sucursal desde donde se procesará tu pedido
+                </p>
+              </div>
+            </div>
+
+            {isLoading ? (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Buscando sucursales cercanas...
+              </div>
+            ) : (
+              <Select
+                value={sucursalCercana}
+                onValueChange={setSucursalCercana}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Seleccionar sucursal" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  {sucursales.map((item, index) => (
+                    <SelectItem key={item.sucursal.id} value={item.sucursal.id}>
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                          <span>{item.sucursal.nombre}</span>
+
+                          {index === 0 && (
+                            <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+                              Más cercana
+                            </span>
+                          )}
+                        </div>
+
+                        <span className="text-xs text-muted-foreground">
+                          {item.distancia_km.toFixed(2)} km
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
+            {sucursalSeleccionada && (
+              <div className="rounded-md border bg-white p-3 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">
+                    Sucursal seleccionada
+                  </span>
+
+                  <span className="text-sm font-semibold text-blue-600">
+                    {sucursalSeleccionada.sucursal.nombre}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">
+                    Distancia
+                  </span>
+
+                  <span className="text-sm">
+                    {sucursalSeleccionada.distancia_km.toFixed(2)} km
+                  </span>
+                </div>
+
+                <div className="pt-2 border-t">
+                  <p className="text-xs text-muted-foreground">
+                    {sucursalSeleccionada.sucursal.direccion_complemento}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
         <Separator />
 
         <div className="space-y-3">
