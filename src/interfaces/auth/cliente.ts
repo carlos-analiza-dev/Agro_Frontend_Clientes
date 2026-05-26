@@ -69,6 +69,7 @@ export interface Paquete {
   maxAnimales: number;
   maxTrabajadores: number;
   isActive: boolean;
+  ecommerce: boolean;
 }
 
 export interface PaqueteActivo {

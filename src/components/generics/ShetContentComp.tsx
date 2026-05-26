@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Separator } from "../ui/separator";
 import { LogOut } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { navItems } from "@/helpers/data/sidebarData";
+import { navItems } from "@/helpers/data/sidebar/sidebarData";
 import {
   Accordion,
   AccordionContent,

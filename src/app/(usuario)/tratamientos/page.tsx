@@ -66,15 +66,15 @@ const TratamientosPage = () => {
   const inicioItem = paginacion.offset + 1;
   const finItem = Math.min(
     paginacion.offset + paginacion.limit,
-    totalTratamientos
+    totalTratamientos,
   );
 
   const fincasFiltradas = fincas.filter((finca) =>
-    finca.nombre_finca.toLowerCase().includes(busquedaFinca.toLowerCase())
+    finca.nombre_finca.toLowerCase().includes(busquedaFinca.toLowerCase()),
   );
 
   const animalesFiltrados = animales.filter((animal) =>
-    animal.identificador.toLowerCase().includes(busquedaAnimal.toLowerCase())
+    animal.identificador.toLowerCase().includes(busquedaAnimal.toLowerCase()),
   );
 
   const handleFiltroChange = (key: string, value: string) => {
@@ -170,7 +170,7 @@ const TratamientosPage = () => {
     const fechaTratamiento = new Date(fechaCreacion);
     const hoy = new Date();
     const diferenciaDias = Math.floor(
-      (hoy.getTime() - fechaTratamiento.getTime()) / (1000 * 60 * 60 * 24)
+      (hoy.getTime() - fechaTratamiento.getTime()) / (1000 * 60 * 60 * 24),
     );
 
     if (diferenciaDias <= 7) {
@@ -337,7 +337,7 @@ const TratamientosPage = () => {
               const fecha = new Date(t.createdAt);
               const hoy = new Date();
               const diferenciaDias = Math.floor(
-                (hoy.getTime() - fecha.getTime()) / (1000 * 60 * 60 * 24)
+                (hoy.getTime() - fecha.getTime()) / (1000 * 60 * 60 * 24),
               );
               return diferenciaDias <= 7;
             }).length

@@ -25,7 +25,7 @@ const ProductCard = ({ producto, user, onPress, className = "" }: Props) => {
   const { esFavorito, toggleFavorito } = useFavoritos();
   const paisStorage = localStorage.getItem("selectedCountry");
   const pais = paisStorage ? JSON.parse(paisStorage) : null;
-  const simbolo_storage = pais.simbolo_moneda;
+  const simbolo_storage = pais?.simbolo_moneda ?? "L";
   const simbolo = user ? user?.pais.simbolo_moneda : simbolo_storage;
   const isFavorite = esFavorito(producto.id);
   const precioPrincipal = producto.preciosPorPais?.[0]?.precio || "0.00";

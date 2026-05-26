@@ -20,7 +20,7 @@ import { useCartStore } from "@/providers/store/useCartStore";
 import useGetPaisesActivos from "@/hooks/paises/useGetPaisesActivos";
 import { Pais } from "@/interfaces/auth/cliente";
 import { toast } from "react-toastify";
-import SheetContentClientOut from "./SheetContentClientOut";
+import SheetContentClientOut from "../generics/SheetContentClientOut";
 
 const PublicNavBar = () => {
   const { data: paises, isLoading: paisesLoading } = useGetPaisesActivos();

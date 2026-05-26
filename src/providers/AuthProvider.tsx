@@ -3,7 +3,7 @@ import { useEffect } from "react";
 
 import { FullScreenLoader } from "@/components/generics/FullScreenLoader";
 import { useAuthStore } from "./store/useAuthStore";
-import PublicNavBar from "@/components/generics/PublicNavBar";
+import PublicNavBar from "@/components/NavBars/PublicNavBar";
 import Footer from "@/components/generics/Footer";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {

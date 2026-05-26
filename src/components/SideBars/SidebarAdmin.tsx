@@ -1,6 +1,6 @@
 "use client";
 
-import { navItems } from "@/helpers/data/sidebarData";
+import { navItems } from "@/helpers/data/sidebar/sidebarData";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Separator } from "../ui/separator";

@@ -25,7 +25,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/providers/store/useAuthStore";
-import { navItems } from "@/helpers/data/sidebarData";
+import { navItems } from "@/helpers/data/sidebar/sidebarData";
 import { useFavoritos } from "@/hooks/favoritos/useFavoritos";
 import { useCartStore } from "@/providers/store/useCartStore";
 import { Badge } from "../ui/badge";
@@ -39,6 +39,7 @@ import { TipoCliente } from "@/interfaces/enums/clientes.enums";
 import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
 import useGetPermisosByClientePaquete from "@/hooks/permisos/useGetPermisosByClientePaquete";
 import useGetPermisosByCliente from "@/hooks/permisos/useGetPermisosByCliente";
+import { EcommerceButton } from "../generics/EcommerceButton";
 
 interface Props {
   setMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -245,6 +246,8 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
             </Tooltip>
           </TooltipProvider>
         )}
+
+        {esPropietario && tienePlanActivo && <EcommerceButton />}
 
         {esPropietario && !tienePlanActivo && (
           <Button

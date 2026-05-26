@@ -63,15 +63,15 @@ const HistorialMedicoAnimalPage = () => {
   const inicioItem = paginacion.offset + 1;
   const finItem = Math.min(
     paginacion.offset + paginacion.limit,
-    totalHistoriales
+    totalHistoriales,
   );
 
   const fincasFiltradas = fincas.filter((finca) =>
-    finca.nombre_finca.toLowerCase().includes(busquedaFinca.toLowerCase())
+    finca.nombre_finca.toLowerCase().includes(busquedaFinca.toLowerCase()),
   );
 
   const animalesFiltrados = animales.filter((animal) =>
-    animal.identificador.toLowerCase().includes(busquedaAnimal.toLowerCase())
+    animal.identificador.toLowerCase().includes(busquedaAnimal.toLowerCase()),
   );
 
   const handleFiltroChange = (key: string, value: string) => {
