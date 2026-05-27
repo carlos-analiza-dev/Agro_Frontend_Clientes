@@ -4,6 +4,7 @@ import { EmptyProducts } from "@/components/products/EmptyProducts";
 import ProductCard from "@/components/products/ProductCard";
 import { Button } from "@/components/ui/button";
 import useGetCategorias from "@/hooks/categorias/useGetCategorias";
+import useGetAnimalesMarket from "@/hooks/market-animales/useGetAnimalesMarket";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import useGetProductosDisponibles from "@/hooks/productos/useGetProductosDisponibles";
 import { useAuthStore } from "@/providers/store/useAuthStore";
@@ -25,6 +26,11 @@ const MarketPlacePage = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [categoriaId, setCategoriaId] = useState("");
   const isMobile = useMediaQuery("(max-width: 768px)");
+
+  const { data: animales_market } = useGetAnimalesMarket({
+    latitud: 14.079960138228557,
+    longitud: -87.24640801288486,
+  });
 
   const {
     data: productosData,

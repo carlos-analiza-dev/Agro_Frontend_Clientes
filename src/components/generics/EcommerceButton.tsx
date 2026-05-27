@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "react-toastify";
 
 export const EcommerceButton = () => {
   const ecommerceUrl = `${process.env.NEXT_PUBLIC_APP_URL}/marketplace`;
 
   if (!ecommerceUrl) {
-    console.warn("La tienda aun no está configurada");
+    toast.error("La tienda aun no está configurada");
     return null;
   }
 
