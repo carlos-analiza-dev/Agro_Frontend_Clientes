@@ -1,17 +1,11 @@
-import { Especie } from "@/api/dashboard/interfaces/response-especies-fincas.interface";
-import { Raza } from "@/api/peso-promedio-animal/interfaces/obtener-pesos-by-raza.interface";
-
-export interface ResponseMarketAnimalesInterface {
+export interface ResponseMISPublicaciones {
   total: number;
   limit: number;
   offset: number;
-  radio_km: number;
-  usando_google_maps: boolean;
-  ubicacion_usuario: UbicacionUsuario;
-  productos: ProductoAnimal[];
+  productos: ProductoPublish[];
 }
 
-export interface ProductoAnimal {
+export interface ProductoPublish {
   id: string;
   nombre: string;
   descripcion: string;
@@ -25,7 +19,7 @@ export interface ProductoAnimal {
   oferta: boolean;
   favoritos: number;
   views: number;
-  created_at: string;
+  created_at: Date;
   imagenes: Imagene[];
   animal: Animal;
   categoria: Categoria;
@@ -34,10 +28,6 @@ export interface ProductoAnimal {
   tipo_producto: Categoria;
   vendedor: Vendedor;
   ubicacion: Ubicacion;
-  distancia_km: number;
-  tiempo_estimado_minutos: number;
-  distancia_linea_recta_km: number;
-  ubicacion_producto: UbicacionProducto;
 }
 
 export interface Animal {
@@ -48,8 +38,8 @@ export interface Animal {
   edad_promedio: number;
   tipo_produccion: string;
   produccion: string;
-  especie: Especie;
-  razas: Raza[];
+  especie: Categoria;
+  razas: Categoria[];
 }
 
 export interface Categoria {
@@ -67,21 +57,10 @@ export interface Ubicacion {
   departamento: string;
 }
 
-export interface UbicacionProducto {
-  latitud: string;
-  longitud: string;
-  direccion: string;
-}
-
 export interface Vendedor {
   id: string;
   nombre: string;
   telefono: string;
-  create: string;
-  imagenes: Imagene[];
-}
-
-export interface UbicacionUsuario {
-  latitud: string;
-  longitud: string;
+  create: Date;
+  imagenes: any[];
 }

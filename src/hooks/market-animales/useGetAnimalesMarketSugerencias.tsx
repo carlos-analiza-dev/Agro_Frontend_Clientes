@@ -1,15 +1,15 @@
-import { obtenerAnimalesMarket } from "@/api/market-animales/accions/obtener-animales-market";
+import { obtenerAnimalesMarketSugeridos } from "@/api/market-animales/accions/obtener-animales-market-sugeridos";
 import { PaginationInterface } from "@/interfaces/filtros/paginacion/paginacion.interface";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 const LIMIT = 12;
 
-const useGetAnimalesMarket = (filters?: PaginationInterface) => {
+const useGetAnimalesMarketSugerencias = (filters?: PaginationInterface) => {
   return useInfiniteQuery({
-    queryKey: ["animales-market", filters],
+    queryKey: ["animales-market-sugerencias", filters],
 
     queryFn: ({ pageParam = 0 }) =>
-      obtenerAnimalesMarket({
+      obtenerAnimalesMarketSugeridos({
         ...filters,
         limit: LIMIT,
         offset: pageParam * LIMIT,
@@ -28,8 +28,11 @@ const useGetAnimalesMarket = (filters?: PaginationInterface) => {
 
     retry: 0,
     staleTime: 60 * 5 * 1000,
-    enabled: !!filters?.latitud && !!filters?.longitud,
+    enabled:
+      !!filters?.categoriaId &&
+      !!filters.subcategoriaId &&
+      !!filters.tipoProductoId,
   });
 };
 
-export default useGetAnimalesMarket;
+export default useGetAnimalesMarketSugerencias;

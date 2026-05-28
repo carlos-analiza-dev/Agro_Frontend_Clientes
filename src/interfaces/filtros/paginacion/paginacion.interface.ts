@@ -62,11 +62,17 @@ export interface PaginationInterface {
   activo?: boolean;
   is_market?: boolean;
 
-  latitud: number;
-  longitud: number;
+  latitud?: number;
+  longitud?: number;
 
   limite?: number;
   radio?: number;
 
   usarGoogleMaps?: boolean;
+
+  categoriaId?: string;
+
+  subcategoriaId?: string;
+
+  tipoProductoId?: string;
 }

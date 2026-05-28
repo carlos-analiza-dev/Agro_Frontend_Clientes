@@ -7,7 +7,7 @@ const useAnimalesByPropietario = (
   propietarioId: string,
   fincaId?: string,
   especieId?: string,
-  identificador?: string
+  identificador?: string,
 ) => {
   return useInfiniteQuery({
     queryKey: [
@@ -26,18 +26,17 @@ const useAnimalesByPropietario = (
         {
           limit: LIMIT,
           offset: pageParam * LIMIT,
-        }
+        },
       ),
     getNextPageParam: (lastPage, allPages) => {
       const totalLoaded = allPages.reduce(
         (total, page) => total + page.data.length,
-        0
+        0,
       );
       return totalLoaded < lastPage.total ? allPages.length : undefined;
     },
     initialPageParam: 0,
     retry: 0,
-    staleTime: 60 * 1000 * 5,
   });
 };
 

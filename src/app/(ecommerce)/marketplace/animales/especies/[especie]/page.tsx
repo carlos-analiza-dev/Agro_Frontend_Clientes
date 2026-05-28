@@ -1,13 +1,16 @@
 "use client";
-
 import SkeletonCard from "@/components/generics/SkeletonCard";
 import CardMarketAnimal from "@/components/marketplace/CardMarketAnimal";
 import EmptyStateMarketplace from "@/components/marketplace/EmptyStateMarketplace";
 import useUserLocation from "@/hooks/location/useUserLocation";
 import useGetAnimalesMarket from "@/hooks/market-animales/useGetAnimalesMarket";
 import { MapPin } from "lucide-react";
+import { useParams } from "next/navigation";
 
-const MarketPlacePage = () => {
+const AnimalByEspecie = () => {
+  const params = useParams();
+  const especie = params.especie as string;
+
   const { location } = useUserLocation();
 
   const {
@@ -21,6 +24,7 @@ const MarketPlacePage = () => {
       ? {
           latitud: location.latitud,
           longitud: location.longitud,
+          especie,
         }
       : undefined,
   );
@@ -40,7 +44,7 @@ const MarketPlacePage = () => {
     return <SkeletonCard />;
   }
 
-  if (isError) {
+  if (isError || animales.length === 0) {
     return (
       <div className="container mx-auto p-4">
         <EmptyStateMarketplace
@@ -73,4 +77,4 @@ const MarketPlacePage = () => {
   );
 };
 
-export default MarketPlacePage;
+export default AnimalByEspecie;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Store,
@@ -11,6 +11,8 @@ import {
   Facebook,
   Instagram,
   Twitter,
+  Plus,
+  BookCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +38,7 @@ interface Props {
 
 const SidebarMarket = ({ handleLogout }: Props) => {
   const pathname = usePathname();
+  const router = useRouter();
   const { cliente } = useAuthStore();
   const [openMenus, setOpenMenus] = useState<string[]>([]);
 
@@ -47,16 +50,23 @@ const SidebarMarket = ({ handleLogout }: Props) => {
     );
   };
 
-  const isActive = (href: string) => {
-    if (href === "/") return pathname === href;
-    return pathname.startsWith(href);
+  const isExactActive = (href: string) => pathname === href;
+
+  const isParentActive = (href: string) => pathname.startsWith(href);
+
+  const handleCreatePublicacion = () => {
+    router.push("/marketplace/create");
+  };
+
+  const handleMyPublicacion = () => {
+    router.push("/marketplace/mis-publicaciones");
   };
 
   return (
     <aside className="hidden lg:flex lg:flex-shrink-0">
       <div className="flex w-80 flex-col border-r border-gray-200 bg-white">
         <div className="flex h-16 items-center justify-between px-4 border-b border-gray-200">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/marketplace" className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-gradient-to-r from-green-600 to-green-500 flex items-center justify-center">
               <Store className="h-5 w-5 text-white" />
             </div>
@@ -102,7 +112,7 @@ const SidebarMarket = ({ handleLogout }: Props) => {
                       <Button
                         variant="ghost"
                         className={`w-full justify-between px-3 py-2 text-sm font-medium transition-colors ${
-                          isActive(item.href)
+                          isParentActive(item.href)
                             ? "bg-green-50 text-green-700 hover:bg-green-100"
                             : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                         }`}
@@ -129,7 +139,7 @@ const SidebarMarket = ({ handleLogout }: Props) => {
                           key={subItem.href}
                           href={subItem.href}
                           className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-                            isActive(subItem.href)
+                            isExactActive(subItem.href)
                               ? "bg-green-50 text-green-700"
                               : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                           }`}
@@ -145,7 +155,7 @@ const SidebarMarket = ({ handleLogout }: Props) => {
                     <Button
                       variant="ghost"
                       className={`w-full justify-start px-3 py-2 text-sm font-medium transition-colors ${
-                        isActive(item.href)
+                        isExactActive(item.href)
                           ? "bg-green-50 text-green-700 hover:bg-green-100"
                           : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                       }`}
@@ -164,6 +174,20 @@ const SidebarMarket = ({ handleLogout }: Props) => {
                 )}
               </div>
             ))}
+            <Button
+              onClick={handleCreatePublicacion}
+              className="w-full bg-green-200 text-green-800 font-bold"
+              variant={"outline"}
+            >
+              <Plus /> Crear Publicacion
+            </Button>
+            <Button
+              onClick={handleMyPublicacion}
+              className="w-full bg-green-200 text-green-800 font-bold"
+              variant={"outline"}
+            >
+              <BookCheck /> Mis Publicaciones
+            </Button>
           </div>
 
           <Separator className="my-4" />
@@ -198,8 +222,8 @@ const SidebarMarket = ({ handleLogout }: Props) => {
                   <Link key={item.href} href={item.href}>
                     <Button
                       variant="ghost"
-                      className={`w-full justify-start px-3 py-2 text-sm font-medium transition-colors ${
-                        isActive(item.href)
+                      className={`w-full justify-between px-3 py-2 text-sm font-medium transition-colors ${
+                        isParentActive(item.href)
                           ? "bg-green-50 text-green-700 hover:bg-green-100"
                           : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                       }`}

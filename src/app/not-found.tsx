@@ -9,7 +9,7 @@ const PageNotFound = () => {
 
   const handleNotFound = () => {
     if (cliente?.isActive && token) {
-      router.push("/panel");
+      router.push("/marketplace");
     } else {
       router.push("/");
     }
@@ -30,9 +30,11 @@ const PageNotFound = () => {
 
         <Button
           onClick={handleNotFound}
-          className="mt-6 inline-block px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-2xl shadow-md transition"
+          className="mt-6 inline-block px-6 py-3 text-white bg-green-600 hover:bg-green-700 rounded-2xl shadow-md transition"
         >
-          {cliente?.isActive && token ? "Volver al Panel" : "Volver al inicio"}
+          {cliente?.isActive && token
+            ? "Volver a AgroMarket"
+            : "Volver al inicio"}
         </Button>
       </div>
     </div>

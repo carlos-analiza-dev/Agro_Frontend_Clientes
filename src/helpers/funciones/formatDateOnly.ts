@@ -68,3 +68,14 @@ export function formatDateLocal(date: string | Date): string {
 
   return `${day.toString().padStart(2, "0")} de ${monthNames[month]} de ${year}`;
 }
+
+export function formatDateLocalAnyo(date: string | Date): string {
+  if (!date) return "N/A";
+
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return "Fecha inválida";
+
+  const year = d.getUTCFullYear();
+
+  return ` ${year}`;
+}
