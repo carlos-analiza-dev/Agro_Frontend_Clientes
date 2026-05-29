@@ -39,7 +39,7 @@ import { toast } from "react-toastify";
 import { CrearFinca } from "@/api/fincas/interfaces/crear-finca.interface";
 import { CreateFinca } from "@/api/fincas/accions/crear-finca";
 import EspecieCantidadPicker from "./ui/EspecieCantidadPicker";
-import MapaSeleccionDireccion from "./ui/MapaSeleccionDireccion";
+import MapaSeleccionDireccion from "../../../../components/maps/MapaSeleccionDireccion";
 import ButtonBack from "@/components/generics/ButtonBack";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 

@@ -44,8 +44,8 @@ const CelosAnimalPage = () => {
   const { data: fincas, isLoading: fincasLoading } =
     useFincasPropietarios(clienteId);
   const { data: animales, isLoading: animalesLoading } =
-    useGetAnimalesPropietario(clienteId);
-  const hembras = animales?.data.filter((animal) => animal.sexo === "Hembra");
+    useGetAnimalesPropietario();
+  const hembras = animales?.filter((animal) => animal.sexo === "Hembra");
 
   const { data: especies, isLoading: especiesLoading } = useGetEspecies();
 

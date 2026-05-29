@@ -1,10 +1,10 @@
 import { ObtenerAnimales } from "@/api/animales/accions/get-animales-bypropietario";
 import { useQuery } from "@tanstack/react-query";
 
-const useGetAnimalesPropietario = (id: string) => {
+const useGetAnimalesPropietario = () => {
   return useQuery({
-    queryKey: ["animales-propietario", id],
-    queryFn: () => ObtenerAnimales(id),
+    queryKey: ["animales-propietario"],
+    queryFn: () => ObtenerAnimales(),
     staleTime: 60 * 5 * 1000,
   });
 };

@@ -3,7 +3,6 @@
 import { useMemo, useState, useRef, useEffect } from "react";
 import useGetAnimalesPropietario from "@/hooks/animales/useGetAnimalesPropietario";
 import useGananciaMensual from "@/hooks/dashboard/useGetGananciaPesoAnimal";
-import { useAuthStore } from "@/providers/store/useAuthStore";
 
 import {
   CartesianGrid,
@@ -29,10 +28,7 @@ import { getNombreMes } from "@/helpers/data/meses";
 import { Buscador } from "@/components/generics/Buscador";
 
 const GananciaPesoAnimalMes = () => {
-  const { cliente } = useAuthStore();
-  const clienteId = cliente?.id ?? "";
-
-  const { data: animales } = useGetAnimalesPropietario(clienteId);
+  const { data: animales } = useGetAnimalesPropietario();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedAnimalId, setSelectedAnimalId] = useState("");
@@ -45,9 +41,9 @@ const GananciaPesoAnimalMes = () => {
   const { data } = useGananciaMensual(selectedAnimalId, year);
 
   const filteredAnimales = useMemo(() => {
-    if (!animales?.data || !searchTerm) return [];
+    if (!animales || !searchTerm) return [];
 
-    return animales.data.filter(
+    return animales.filter(
       (animal: any) =>
         animal.identificador
           ?.toLowerCase()

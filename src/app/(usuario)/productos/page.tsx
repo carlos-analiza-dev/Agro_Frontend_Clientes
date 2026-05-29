@@ -31,7 +31,7 @@ const ProductosPage = () => {
     isFetchingNextPage,
   } = useGetProductosDisponibles(10, categoriaId);
 
-  const { data: categorias } = useGetCategorias();
+  const { data: categorias } = useGetCategorias({ is_market: false });
 
   const todosLosProductos = useMemo(() => {
     return productosData?.pages.flatMap((page) => page.productos) || [];

@@ -51,11 +51,11 @@ const HistorialMedicoAnimalPage = () => {
   const { data: historialData, isLoading } =
     useGetHistorialAnimal(parametrosConsulta);
   const { data: fincasData } = useFincasPropietarios(userId);
-  const { data: animalesData } = useGetAnimalesPropietario(userId);
+  const { data: animalesData } = useGetAnimalesPropietario();
 
   const historiales = historialData?.historial || [];
   const fincas = fincasData?.data?.fincas || [];
-  const animales = animalesData?.data || [];
+  const animales = animalesData || [];
   const totalHistoriales = historialData?.total || 0;
 
   const paginaActual = Math.floor(paginacion.offset / paginacion.limit) + 1;

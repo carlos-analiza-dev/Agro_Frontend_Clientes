@@ -1,3 +1,5 @@
+import { TipoPublicacion } from "@/interfaces/enums/market/tipo_publicacion.enum";
+
 export interface ResponseMISPublicaciones {
   total: number;
   limit: number;
@@ -10,11 +12,15 @@ export interface ProductoPublish {
   nombre: string;
   descripcion: string;
   direccion: string;
+  modelo: string;
   precio: string;
   precio_oferta: string;
   moneda: string;
   stock: number;
+  latitud: string;
+  longitud: string;
   disponible: boolean;
+  tipo_publicacion: TipoPublicacion;
   vendido: boolean;
   oferta: boolean;
   favoritos: number;

@@ -43,9 +43,8 @@ const FormAlimentacionAnimal = ({
   editAlimentacion,
   isEdit = false,
 }: Props) => {
-  const clienteId = cliente?.id ?? "";
   const { data: animales, isLoading: isLoadingAnimales } =
-    useGetAnimalesPropietario(clienteId);
+    useGetAnimalesPropietario();
   const queryClient = useQueryClient();
 
   const {
@@ -282,8 +281,8 @@ const FormAlimentacionAnimal = ({
             <SelectContent className="max-h-[300px]">
               <SelectGroup>
                 <SelectLabel>Animales Disponibles</SelectLabel>
-                {animales && animales?.data.length > 0 ? (
-                  animales?.data.map((animal) => (
+                {animales && animales?.length > 0 ? (
+                  animales?.map((animal) => (
                     <SelectItem
                       key={animal.id}
                       value={animal.id}

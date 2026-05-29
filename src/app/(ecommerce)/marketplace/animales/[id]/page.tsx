@@ -10,32 +10,39 @@ import {
   formatDateLocalAnyo,
 } from "@/helpers/funciones/formatDateOnly";
 import useGetAnimalMarketById from "@/hooks/market-animales/useGetAnimalMarketById";
-import { Bookmark, MessageCircle, Send, Tractor } from "lucide-react";
-import { useParams } from "next/navigation";
+import { Bookmark, MessageCircle, Pencil, Send, Tractor } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import DetailsSkeleton from "./ui/DetailsSkeleton";
 import useGetAnimalesMarketSugerencias from "@/hooks/market-animales/useGetAnimalesMarketSugerencias";
 import CardMarketAnimal from "@/components/marketplace/CardMarketAnimal";
 import SkeletonCard from "@/components/generics/SkeletonCard";
 import EmptyStateMarketplace from "@/components/marketplace/EmptyStateMarketplace";
+import { useAuthStore } from "@/providers/store/useAuthStore";
+import { ProductoAnimal } from "@/api/market-animales/interfaces/response-market-animales.interface";
 
 const DetailsAnimalesPage = () => {
+  const { cliente } = useAuthStore();
   const params = useParams();
+  const router = useRouter();
   const marketAnimalId = params.id as string;
   const { data: animal, isLoading } = useGetAnimalMarketById(marketAnimalId);
+  const tipoProducto = animal?.tipo_producto ? animal.tipo_producto.id : "";
   const { data: animales_market, isLoading: cargando } =
     useGetAnimalesMarketSugerencias({
       categoriaId: animal?.categoria.id,
       subcategoriaId: animal?.subcategoria.id,
-      tipoProductoId: animal?.tipo_producto.id,
+      tipoProductoId: tipoProducto,
     });
+
+  const handleClickEdit = (producto: ProductoAnimal) => {
+    router.push(`/marketplace/mis-publicaciones/${producto.id}`);
+  };
 
   const animales =
     animales_market?.pages.flatMap((page) => page.productos) ?? [];
 
-  const filtersAnimales = animales.filter(
-    (item) => item.animal.id !== animal?.id,
-  );
+  const filtersAnimales = animales.filter((item) => item.id !== marketAnimalId);
 
   const [message, setMessage] = useState("");
 
@@ -72,29 +79,50 @@ const DetailsAnimalesPage = () => {
             Publicado {formatDateLocal(animal?.created_at ?? "")},{" "}
             {animal?.direccion}
           </p>
-          <div className="flex items-center gap-4 w-full mt-5">
-            <Button
-              className="bg-gray-200 text-black font-bold md:w-3/5 "
-              variant={"outline"}
-              title="Enviar Mensaje"
-            >
-              <MessageCircle /> Enviar Mensaje
-            </Button>
-            <Button
-              className="bg-gray-200 text-black font-bold md:w-1/5 "
-              variant={"outline"}
-              title="Guardar"
-            >
-              <Bookmark />
-            </Button>
-            <Button
-              className="bg-gray-200 text-black font-bold md:w-1/5 "
-              variant={"outline"}
-              title="Compartir"
-            >
-              <Send />
-            </Button>
-          </div>
+          {cliente?.id !== animal.vendedor.id ? (
+            <div className="flex items-center gap-4 w-full mt-5">
+              <Button
+                className="bg-gray-200 text-black font-bold md:w-3/5 "
+                variant={"outline"}
+                title="Enviar Mensaje"
+              >
+                <MessageCircle /> Enviar Mensaje
+              </Button>
+              <Button
+                className="bg-gray-200 text-black font-bold md:w-1/5 "
+                variant={"outline"}
+                title="Guardar"
+              >
+                <Bookmark />
+              </Button>
+              <Button
+                className="bg-gray-200 text-black font-bold md:w-1/5 "
+                variant={"outline"}
+                title="Compartir"
+              >
+                <Send />
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-4 w-full mt-5">
+              <Button
+                className="bg-gray-200 text-black font-bold md:w-3/5 "
+                variant={"outline"}
+                title="Editar publicacion"
+                onClick={() => handleClickEdit(animal)}
+              >
+                <Pencil /> Editar
+              </Button>
+
+              <Button
+                className="bg-gray-200 text-black font-bold md:w-1/5 "
+                variant={"outline"}
+                title="Compartir"
+              >
+                <Send />
+              </Button>
+            </div>
+          )}
           <div className="mt-4">
             <p className="text-xl font-bold">Descripción del vendedor</p>
             <p className="mt-3">{animal?.descripcion}</p>
@@ -132,42 +160,55 @@ const DetailsAnimalesPage = () => {
             </p>
           </div>
           <Separator className="mt-5" />
-          <div className="mt-4 flex items-center gap-2">
-            <MessageCircle size={20} className="text-green-500" />
-            <p>Envía un mensaje al vendedor</p>
-          </div>
-          <div className="mt-2 flex gap-2">
-            <Input
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Escribe tu mensaje..."
-            />
-            <Button className="bg-green-500 hover:bg-green-600">Enviar</Button>
-          </div>
+          {cliente?.id !== animal.vendedor.id ? (
+            <div>
+              <div className="mt-4 flex items-center gap-2">
+                <MessageCircle size={20} className="text-green-500" />
+                <p>Envía un mensaje al vendedor</p>
+              </div>
+              <div className="mt-2 flex gap-2">
+                <Input
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Escribe tu mensaje..."
+                />
+                <Button className="bg-green-500 hover:bg-green-600">
+                  Enviar
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-5">
+              <Button className="w-full bg-green-500 hover:bg-green-700">
+                Marcar como vendido
+              </Button>
+            </div>
+          )}
         </div>
       </div>
-      <div className="mt-5">
-        <h1 className="text-2xl font-black">Sugerencias de hoy</h1>
-        {filtersAnimales.length > 0 ? (
-          <div className="container mx-auto p-4">
-            <EmptyStateMarketplace
-              variant="error"
-              isLoading={isLoading}
-              description={
-                "No se encontraron productos sugeridos en este momento"
-              }
-            />
-          </div>
-        ) : cargando ? (
-          <SkeletonCard />
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 mt-8 gap-5">
-            {animales.map((animal) => (
-              <CardMarketAnimal key={animal.id} animal={animal} />
-            ))}
-          </div>
-        )}
-      </div>
+      {cliente?.id !== animal.vendedor.id && (
+        <div className="mt-5">
+          <h1 className="text-2xl font-black">Sugerencias de hoy</h1>
+
+          {cargando ? (
+            <SkeletonCard />
+          ) : filtersAnimales.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 mt-8 gap-5">
+              {filtersAnimales.map((animalItem) => (
+                <CardMarketAnimal key={animalItem.id} animal={animalItem} />
+              ))}
+            </div>
+          ) : (
+            <div className="container mx-auto p-4">
+              <EmptyStateMarketplace
+                variant="error"
+                isLoading={false}
+                description="No se encontraron productos sugeridos en este momento"
+              />
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

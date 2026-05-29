@@ -10,17 +10,16 @@ import { useRouter } from "next/navigation";
 
 const CrearServicioReproductivo = () => {
   const { cliente } = useAuthStore();
-  const clienteId = cliente?.id ?? "";
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const isMobile = useMediaQuery("(max-width: 768px)");
   const router = useRouter();
   const { data: animalesData, isLoading: animalesLoading } =
-    useGetAnimalesPropietario(clienteId);
+    useGetAnimalesPropietario();
 
   const hembras =
-    animalesData?.data?.filter((animal) => animal.sexo === "Hembra") || [];
+    animalesData?.filter((animal) => animal.sexo === "Hembra") || [];
   const machos =
-    animalesData?.data?.filter((animal) => animal.sexo === "Macho") || [];
+    animalesData?.filter((animal) => animal.sexo === "Macho") || [];
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 py-4">

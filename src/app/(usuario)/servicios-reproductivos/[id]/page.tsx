@@ -16,15 +16,14 @@ const EditarServicioReproductivoPage = () => {
 
   const { cliente } = useAuthStore();
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
-  const clienteId = cliente?.id ?? "";
   const isMobile = useMediaQuery("(max-width: 768px)");
   const router = useRouter();
-  const { data: animalesData } = useGetAnimalesPropietario(clienteId);
+  const { data: animalesData } = useGetAnimalesPropietario();
 
   const hembras =
-    animalesData?.data?.filter((animal) => animal.sexo === "Hembra") || [];
+    animalesData?.filter((animal) => animal.sexo === "Hembra") || [];
   const machos =
-    animalesData?.data?.filter((animal) => animal.sexo === "Macho") || [];
+    animalesData?.filter((animal) => animal.sexo === "Macho") || [];
 
   if (isLoading) {
     return <SkeletonCard />;

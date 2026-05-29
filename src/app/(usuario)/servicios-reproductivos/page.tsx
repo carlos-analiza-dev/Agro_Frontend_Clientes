@@ -148,13 +148,13 @@ const ServiciosReproductivosPage = () => {
   const { data: fincasData, isLoading: fincasLoading } =
     useFincasPropietarios(clienteId);
   const { data: animalesData, isLoading: animalesLoading } =
-    useGetAnimalesPropietario(clienteId);
+    useGetAnimalesPropietario();
 
   const fincas = fincasData?.data?.fincas || [];
   const hembras =
-    animalesData?.data?.filter((animal) => animal.sexo === "Hembra") || [];
+    animalesData?.filter((animal) => animal.sexo === "Hembra") || [];
   const machos =
-    animalesData?.data?.filter((animal) => animal.sexo === "Macho") || [];
+    animalesData?.filter((animal) => animal.sexo === "Macho") || [];
 
   const [filtros, setFiltros] = useState<FiltrosServicios>({
     page: 1,

@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import useGetAnimalesPropietario from "@/hooks/animales/useGetAnimalesPropietario";
-import { useAuthStore } from "@/providers/store/useAuthStore";
 import { Buscador } from "@/components/generics/Buscador";
 import CardAnimal from "./ui/CardAnimal";
 import ButtonBack from "@/components/generics/ButtonBack";
@@ -9,13 +8,11 @@ import SkeletonCard from "@/components/generics/SkeletonCard";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 
 const HistorialAnimalPeso = () => {
-  const { cliente } = useAuthStore();
-  const clienteId = cliente?.id ?? "";
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const { data: animales, isLoading } = useGetAnimalesPropietario(clienteId);
+  const { data: animales, isLoading } = useGetAnimalesPropietario();
   const [searchTerm, setSearchTerm] = useState("");
 
-  const animalesFiltrados = animales?.data.filter((animal) =>
+  const animalesFiltrados = animales?.filter((animal) =>
     animal.identificador.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 

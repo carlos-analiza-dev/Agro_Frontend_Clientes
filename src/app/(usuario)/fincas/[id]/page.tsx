@@ -30,7 +30,7 @@ import { CrearFinca } from "@/api/fincas/interfaces/crear-finca.interface";
 import { TipoExplotacion } from "@/helpers/data/tipoExplotacion";
 import useFincasById from "@/hooks/fincas/useFincasById";
 import EspecieCantidadPicker from "../crear-fincas/ui/EspecieCantidadPicker";
-import MapaSeleccionDireccion from "../crear-fincas/ui/MapaSeleccionDireccion";
+import MapaSeleccionDireccion from "../../../../components/maps/MapaSeleccionDireccion";
 import ButtonBack from "@/components/generics/ButtonBack";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 

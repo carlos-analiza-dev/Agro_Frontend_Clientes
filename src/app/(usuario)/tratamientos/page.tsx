@@ -54,11 +54,11 @@ const TratamientosPage = () => {
   const { data: tratamientosData, isLoading } =
     useGetTratamientosAnimales(parametrosConsulta);
   const { data: fincasData } = useFincasPropietarios(userId);
-  const { data: animalesData } = useGetAnimalesPropietario(userId);
+  const { data: animalesData } = useGetAnimalesPropietario();
 
   const tratamientos = tratamientosData?.tratamientos || [];
   const fincas = fincasData?.data?.fincas || [];
-  const animales = animalesData?.data || [];
+  const animales = animalesData || [];
   const totalTratamientos = tratamientosData?.total || 0;
 
   const paginaActual = Math.floor(paginacion.offset / paginacion.limit) + 1;

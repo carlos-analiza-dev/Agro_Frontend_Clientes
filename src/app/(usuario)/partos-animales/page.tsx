@@ -71,13 +71,13 @@ const PartosAnimalesPage = () => {
 
   const { data: partos, isLoading, refetch } = useGetPartosAnimales();
   const { data: fincas } = useFincasPropietarios(clienteId);
-  const { data: animales } = useGetAnimalesPropietario(clienteId);
+  const { data: animales } = useGetAnimalesPropietario();
 
   const finca = fincas?.data.fincas.find(
     (item: Finca) => item.id === filtros.finca_id,
   );
 
-  const hembras = animales?.data?.filter(
+  const hembras = animales?.filter(
     (a) => a.sexo === "Hembra" && a.finca.id === filtros.finca_id,
   );
 

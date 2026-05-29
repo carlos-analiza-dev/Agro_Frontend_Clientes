@@ -2,7 +2,6 @@
 import ButtonBack from "@/components/generics/ButtonBack";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import FormPartoAnimal from "../ui/FormPartoAnimal";
-import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useParams, useRouter } from "next/navigation";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import useGetAnimalesPropietario from "@/hooks/animales/useGetAnimalesPropietario";
@@ -10,16 +9,14 @@ import useGetPartoById from "@/hooks/reproduccion/useGetPartoById";
 import SkeletonCard from "@/components/generics/SkeletonCard";
 
 const EditarPartoPage = () => {
-  const { cliente } = useAuthStore();
   const { id } = useParams();
   const partoId = id as string;
   const { data: parto, isLoading } = useGetPartoById(partoId);
 
-  const clienteId = cliente?.id ?? "";
   const router = useRouter();
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const { data: animales } = useGetAnimalesPropietario(clienteId);
-  const hembras = animales?.data?.filter((a) => a.sexo === "Hembra");
+  const { data: animales } = useGetAnimalesPropietario();
+  const hembras = animales?.filter((a) => a.sexo === "Hembra");
 
   if (isLoading) {
     return <SkeletonCard />;

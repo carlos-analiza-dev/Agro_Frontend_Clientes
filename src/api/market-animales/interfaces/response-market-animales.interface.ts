@@ -1,5 +1,6 @@
 import { Especie } from "@/api/dashboard/interfaces/response-especies-fincas.interface";
 import { Raza } from "@/api/peso-promedio-animal/interfaces/obtener-pesos-by-raza.interface";
+import { TipoPublicacion } from "@/interfaces/enums/market/tipo_publicacion.enum";
 
 export interface ResponseMarketAnimalesInterface {
   total: number;
@@ -16,14 +17,18 @@ export interface ProductoAnimal {
   nombre: string;
   descripcion: string;
   direccion: string;
+  modelo: string;
   precio: string;
   precio_oferta: string;
   moneda: string;
   stock: number;
   disponible: boolean;
+  latitud: string;
+  longitud: string;
   vendido: boolean;
   oferta: boolean;
   favoritos: number;
+  tipo_publicacion: TipoPublicacion;
   views: number;
   created_at: string;
   imagenes: Imagene[];

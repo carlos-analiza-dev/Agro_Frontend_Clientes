@@ -58,14 +58,12 @@ const ImageCarouselMarketAnimal: React.FC<Props> = ({ images }) => {
         <CarouselContent className="cursor-grab">
           {images.map((img) => (
             <CarouselItem key={img.id}>
-              <div className="relative aspect-square w-full">
+              <div className="relative aspect-square w-full bg-black">
                 <Image
                   src={img.url}
                   alt="animal"
                   fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover rounded-xl"
-                  priority={current === 0}
+                  className="object-contain rounded-xl"
                   unoptimized
                 />
               </div>

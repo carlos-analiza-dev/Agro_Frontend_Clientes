@@ -44,8 +44,9 @@ const ProductosClient = () => {
     isFetchingNextPage,
   } = useGetProductosPublicosDisponibles(10, categoriaId, paisId);
 
-  const { data: categorias, isLoading: isLoadingCategorias } =
-    useGetCategorias();
+  const { data: categorias, isLoading: isLoadingCategorias } = useGetCategorias(
+    { is_market: false },
+  );
 
   const todosLosProductos = useMemo(() => {
     return productosData?.pages.flatMap((page) => page.productos) || [];

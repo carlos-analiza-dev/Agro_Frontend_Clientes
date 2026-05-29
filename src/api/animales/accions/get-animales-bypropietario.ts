@@ -1,12 +1,15 @@
 import { veterinariaAPI } from "@/helpers/api/veterinariaAPI";
-import { ResponseAnimalesByPropietario } from "../interfaces/response-animales.interface";
+import {
+  Animal,
+  ResponseAnimalesByPropietario,
+} from "../interfaces/response-animales.interface";
 
 export const ObtenerAnimalesByPropietario = async (
   propietarioId: string,
   fincaId?: string,
   especieId?: string,
   identificador?: string,
-  pageParams?: { limit: number; offset: number }
+  pageParams?: { limit: number; offset: number },
 ): Promise<ResponseAnimalesByPropietario> => {
   let url = `${process.env.NEXT_PUBLIC_API_URL}/animal-finca/propietario-animales/${propietarioId}`;
 
@@ -37,17 +40,9 @@ export const ObtenerAnimalesByPropietario = async (
   return response.data;
 };
 
-export const ObtenerAnimales = async (
-  propietarioId: string
-): Promise<ResponseAnimalesByPropietario> => {
-  let url = `${process.env.NEXT_PUBLIC_API_URL}/animal-finca/propietario-animales/${propietarioId}`;
+export const ObtenerAnimales = async () => {
+  let url = `${process.env.NEXT_PUBLIC_API_URL}/animal-finca/propietario`;
 
-  const params = new URLSearchParams();
-
-  if ([...params].length > 0) {
-    url += `?${params.toString()}`;
-  }
-
-  const response = await veterinariaAPI.get<ResponseAnimalesByPropietario>(url);
+  const response = await veterinariaAPI.get<Animal[]>(url);
   return response.data;
 };
