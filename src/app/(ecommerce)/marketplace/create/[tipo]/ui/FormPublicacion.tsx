@@ -704,7 +704,7 @@ const FormPublicacion = ({ tipo_publicacion, cliente, publicacion }: Props) => {
           </CardContent>
         </Card>
 
-        <div className="flex gap-3 justify-end sticky bottom-4 bg-white p-4 rounded-lg shadow-lg">
+        <div className="flex gap-3 justify-end  bg-white p-4 rounded-lg shadow-lg">
           <Button
             type="button"
             variant="outline"
@@ -713,7 +713,11 @@ const FormPublicacion = ({ tipo_publicacion, cliente, publicacion }: Props) => {
           >
             Cancelar
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
+          <Button
+            className="bg-green-500"
+            type="submit"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? "Publicando..." : "Publicar"}
           </Button>
         </div>

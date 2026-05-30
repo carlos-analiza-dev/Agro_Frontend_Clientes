@@ -39,6 +39,7 @@ interface Props {
 const SidebarMarket = ({ handleLogout }: Props) => {
   const pathname = usePathname();
   const router = useRouter();
+
   const { cliente } = useAuthStore();
   const [openMenus, setOpenMenus] = useState<string[]>([]);
 
@@ -176,17 +177,28 @@ const SidebarMarket = ({ handleLogout }: Props) => {
             ))}
             <Button
               onClick={handleCreatePublicacion}
-              className="w-full bg-green-200 text-green-800 font-bold"
-              variant={"outline"}
+              className={`w-full font-bold ${
+                pathname.startsWith("/marketplace/create")
+                  ? "bg-green-200 text-green-800"
+                  : ""
+              }`}
+              variant="outline"
             >
-              <Plus /> Crear Publicacion
+              <Plus />
+              Crear Publicación
             </Button>
+
             <Button
               onClick={handleMyPublicacion}
-              className="w-full bg-green-200 text-green-800 font-bold"
-              variant={"outline"}
+              className={`w-full font-bold ${
+                pathname.startsWith("/marketplace/mis-publicaciones")
+                  ? "bg-green-200 text-green-800"
+                  : ""
+              }`}
+              variant="outline"
             >
-              <BookCheck /> Mis Publicaciones
+              <BookCheck />
+              Mis Publicaciones
             </Button>
           </div>
 

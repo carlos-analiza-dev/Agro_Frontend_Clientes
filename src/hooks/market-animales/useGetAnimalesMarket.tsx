@@ -27,7 +27,7 @@ const useGetAnimalesMarket = (filters?: PaginationInterface) => {
     },
 
     retry: 0,
-    staleTime: 60 * 5 * 1000,
+    staleTime: 1000 * 60 * 2,
     enabled: !!filters?.latitud && !!filters?.longitud,
   });
 };

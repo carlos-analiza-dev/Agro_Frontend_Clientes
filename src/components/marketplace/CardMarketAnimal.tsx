@@ -1,13 +1,13 @@
 "use client";
 
 import { ProductoAnimal } from "@/api/market-animales/interfaces/response-market-animales.interface";
-
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-
 import { Badge } from "@/components/ui/badge";
-
 import { MapPin } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { newViewPublicacion } from "@/api/view-publicaciones/acciones/new-view-publicacion";
+import { useQueryClient } from "@tanstack/react-query";
+import Image from "next/image";
 
 interface Props {
   animal: ProductoAnimal;
@@ -15,10 +15,13 @@ interface Props {
 
 const CardMarketAnimal = ({ animal }: Props) => {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const image = animal.imagenes?.[0]?.url || "/images/agricultura.jpg";
 
-  const linkCardAnimal = (aniaml: ProductoAnimal) => {
+  const linkCardAnimal = async (aniaml: ProductoAnimal) => {
     router.push(`/marketplace/animales/${aniaml.id}`);
+    await newViewPublicacion(aniaml.id);
+    queryClient.invalidateQueries({ queryKey: ["views"] });
   };
 
   return (
@@ -27,9 +30,12 @@ const CardMarketAnimal = ({ animal }: Props) => {
       className="group overflow-hidden hover:cursor-pointer rounded-2xl border-0 py-0 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
     >
       <div className="relative overflow-hidden">
-        <img
+        <Image
           src={image}
           alt={animal.nombre}
+          unoptimized
+          width={800}
+          height={600}
           className="h-64 w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
 

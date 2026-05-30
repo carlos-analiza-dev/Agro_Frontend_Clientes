@@ -10,12 +10,31 @@ interface UserLocation {
   pais?: string;
 }
 
+const STORAGE_KEY = "user_location";
+const EXPIRATION_TIME = 1000 * 60 * 30;
+
 const useUserLocation = () => {
   const [location, setLocation] = useState<UserLocation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    const cachedLocation = localStorage.getItem(STORAGE_KEY);
+
+    if (cachedLocation) {
+      const parsed = JSON.parse(cachedLocation);
+
+      const isValid = Date.now() - parsed.timestamp < EXPIRATION_TIME;
+
+      if (isValid) {
+        setLocation(parsed.location);
+        setLoading(false);
+        return;
+      }
+
+      localStorage.removeItem(STORAGE_KEY);
+    }
+
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
@@ -33,7 +52,7 @@ const useUserLocation = () => {
           let ciudad = "";
           let pais = "";
 
-          resultado.address_components.forEach((component: any) => {
+          resultado?.address_components?.forEach((component: any) => {
             if (component.types.includes("locality")) {
               ciudad = component.long_name;
             }
@@ -43,17 +62,26 @@ const useUserLocation = () => {
             }
           });
 
-          setLocation({
+          const userLocation: UserLocation = {
             latitud,
             longitud,
             direccion: resultado?.formatted_address,
             ciudad,
             pais,
-          });
+          };
 
-          setLoading(false);
-        } catch (err) {
+          localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify({
+              location: userLocation,
+              timestamp: Date.now(),
+            }),
+          );
+
+          setLocation(userLocation);
+        } catch {
           setError("Error obteniendo dirección");
+        } finally {
           setLoading(false);
         }
       },

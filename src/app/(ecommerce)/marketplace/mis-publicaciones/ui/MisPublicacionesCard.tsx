@@ -9,7 +9,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { formatDateLocal } from "@/helpers/funciones/formatDateOnly";
+import useGetViewsPublicacion from "@/hooks/views-publicaciones/useGetViewsPublicacion";
 import {
   Check,
   Eye,
@@ -28,7 +30,9 @@ interface Props {
 
 const MisPublicacionesCard = ({ producto }: Props) => {
   const router = useRouter();
-  const handleClickEdit = (productoEdit: ProductoPublish) => {
+  const { data: views, isLoading } = useGetViewsPublicacion(producto.id);
+
+  const handleClickEdit = () => {
     router.push(`/marketplace/mis-publicaciones/${producto.id}`);
   };
 
@@ -70,7 +74,7 @@ const MisPublicacionesCard = ({ producto }: Props) => {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => handleClickEdit(producto)}>
+              <DropdownMenuItem onClick={() => handleClickEdit()}>
                 <Pencil className="mr-2 h-4 w-4" />
                 Editar
               </DropdownMenuItem>
@@ -110,7 +114,14 @@ const MisPublicacionesCard = ({ producto }: Props) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Eye size={18} />
-            <span className="text-sm">{producto.views} vistas</span>
+
+            {isLoading ? (
+              <Skeleton className="h-4 w-16" />
+            ) : (
+              <span className="text-sm">
+                {views?.totalVisualizaciones ?? 0} vistas
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-2 text-muted-foreground">

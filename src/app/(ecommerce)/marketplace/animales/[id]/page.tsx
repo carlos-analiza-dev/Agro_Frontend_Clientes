@@ -186,7 +186,7 @@ const DetailsAnimalesPage = () => {
           )}
         </div>
       </div>
-      {cliente?.id !== animal.vendedor.id && (
+      {cliente?.id !== animal.vendedor.id && filtersAnimales.length > 0 && (
         <div className="mt-5">
           <h1 className="text-2xl font-black">Sugerencias de hoy</h1>
 
