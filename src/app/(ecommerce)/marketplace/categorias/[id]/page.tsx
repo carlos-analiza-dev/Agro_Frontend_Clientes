@@ -4,10 +4,13 @@ import CardMarketAnimal from "@/components/marketplace/CardMarketAnimal";
 import EmptyStateMarketplace from "@/components/marketplace/EmptyStateMarketplace";
 import useUserLocation from "@/hooks/location/useUserLocation";
 import useGetAnimalesMarket from "@/hooks/market-animales/useGetAnimalesMarket";
-import { TipoPublicacion } from "@/interfaces/enums/market/tipo_publicacion.enum";
 import { MapPin } from "lucide-react";
+import { useParams } from "next/navigation";
 
-const AnimalesPage = () => {
+const PublicacionesByCategory = () => {
+  const params = useParams();
+  const id = params.id as string;
+
   const { location } = useUserLocation();
 
   const {
@@ -21,7 +24,7 @@ const AnimalesPage = () => {
       ? {
           latitud: location.latitud,
           longitud: location.longitud,
-          tipo_publicacion: TipoPublicacion.ANIMALES,
+          categoria: id,
         }
       : undefined,
   );
@@ -74,4 +77,4 @@ const AnimalesPage = () => {
   );
 };
 
-export default AnimalesPage;
+export default PublicacionesByCategory;

@@ -1,4 +1,5 @@
 import { Especie } from "@/api/dashboard/interfaces/response-especies-fincas.interface";
+import { Marca } from "@/api/marcas/interface/response-marcas.interface";
 import { Raza } from "@/api/peso-promedio-animal/interfaces/obtener-pesos-by-raza.interface";
 import { TipoPublicacion } from "@/interfaces/enums/market/tipo_publicacion.enum";
 
@@ -35,7 +36,7 @@ export interface ProductoAnimal {
   animal: Animal;
   categoria: Categoria;
   subcategoria: Categoria;
-  marca: null;
+  marca: Marca | null;
   tipo_producto: Categoria;
   vendedor: Vendedor;
   ubicacion: Ubicacion;

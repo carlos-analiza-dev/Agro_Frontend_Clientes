@@ -1,4 +1,5 @@
 import { EstadoPedido } from "@/api/pedidos/interface/crear-pedido.interface";
+import { TipoPublicacion } from "@/interfaces/enums/market/tipo_publicacion.enum";
 
 export interface PaginationInterface {
   limit?: number;
@@ -10,7 +11,7 @@ export interface PaginationInterface {
   tipo_producto?: string;
   indicaciones?: string;
   tipo_uso?: string;
-
+  tipo_publicacion?: TipoPublicacion;
   marca?: string;
   proveedor?: string;
   producto?: string;

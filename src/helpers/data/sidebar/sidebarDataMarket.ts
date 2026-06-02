@@ -4,17 +4,12 @@ import {
   Bookmark,
   Clock,
   Dog,
-  Heart,
   Package,
   PawPrint,
   Phone,
   Shield,
-  ShoppingCart,
-  Star,
   Store,
   Tag,
-  TrendingUp,
-  Truck,
   Users,
 } from "lucide-react";
 
@@ -83,25 +78,14 @@ export const mainMenuItems: MenuItem[] = [
 
     subItems: [
       {
-        title: "Todos los productos",
-        href: "/productos",
-      },
-
-      {
         title: "Categorías",
-        href: "/categorias",
+        href: "/marketplace/categorias",
       },
 
       {
         title: "Ofertas",
-        href: "/ofertas",
+        href: "/marketplace/ofertas",
         icon: Tag,
-      },
-
-      {
-        title: "Nuevos productos",
-        href: "/nuevos",
-        icon: Star,
       },
     ],
   },
@@ -110,38 +94,6 @@ export const mainMenuItems: MenuItem[] = [
     title: "Articulos Guardados",
     href: "/marketplace/guardados",
     icon: Bookmark,
-  },
-];
-
-export const categories = [
-  {
-    name: "Semillas",
-    href: "/categorias/semillas",
-    icon: Package,
-  },
-
-  {
-    name: "Fertilizantes",
-    href: "/categorias/fertilizantes",
-    icon: TrendingUp,
-  },
-
-  {
-    name: "Ganadería",
-    href: "/marketplace/animales",
-    icon: Users,
-  },
-
-  {
-    name: "Maquinaria",
-    href: "/categorias/maquinaria",
-    icon: Truck,
-  },
-
-  {
-    name: "Protección",
-    href: "/categorias/proteccion",
-    icon: Shield,
   },
 ];
 

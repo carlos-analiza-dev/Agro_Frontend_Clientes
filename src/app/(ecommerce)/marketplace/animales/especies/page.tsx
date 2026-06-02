@@ -180,37 +180,6 @@ const EspeciesPage = () => {
           );
         })}
       </div>
-
-      <div className="mt-12 p-6 bg-muted/50 rounded-lg">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-center">
-          <div>
-            <p className="text-2xl font-bold text-primary">
-              {especiesActivas.length}
-            </p>
-            <p className="text-sm text-muted-foreground">Especies</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-primary">+100</p>
-            <p className="text-sm text-muted-foreground">Animales</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-primary">+50</p>
-            <p className="text-sm text-muted-foreground">Vendedores</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-primary">+20</p>
-            <p className="text-sm text-muted-foreground">Razas</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-primary">+500</p>
-            <p className="text-sm text-muted-foreground">Productos</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-primary">+1K</p>
-            <p className="text-sm text-muted-foreground">Clientes</p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

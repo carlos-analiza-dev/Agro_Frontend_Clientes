@@ -14,7 +14,6 @@ export interface ProductoPublish {
   direccion: string;
   modelo: string;
   precio: string;
-  precio_oferta: string;
   moneda: string;
   stock: number;
   latitud: string;
@@ -22,7 +21,6 @@ export interface ProductoPublish {
   disponible: boolean;
   tipo_publicacion: TipoPublicacion;
   vendido: boolean;
-  oferta: boolean;
   favoritos: number;
   views: number;
   created_at: Date;

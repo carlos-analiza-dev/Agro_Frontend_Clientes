@@ -31,6 +31,8 @@ import {
   mainMenuItems,
   userMenuItems,
 } from "@/helpers/data/sidebar/sidebarDataMarket";
+import useGetCategorias from "@/hooks/categorias/useGetCategorias";
+import { Skeleton } from "../ui/skeleton";
 
 interface Props {
   handleLogout: () => Promise<void>;
@@ -39,6 +41,9 @@ interface Props {
 const SidebarMarket = ({ handleLogout }: Props) => {
   const pathname = usePathname();
   const router = useRouter();
+  const { data: categorias, isLoading } = useGetCategorias({ is_market: true });
+
+  const filterCate = categorias?.filter((cat) => cat.is_market);
 
   const { cliente } = useAuthStore();
   const [openMenus, setOpenMenus] = useState<string[]>([]);
@@ -54,6 +59,9 @@ const SidebarMarket = ({ handleLogout }: Props) => {
   const isExactActive = (href: string) => pathname === href;
 
   const isParentActive = (href: string) => pathname.startsWith(href);
+
+  const isCategoryActive = (id: string) =>
+    pathname.startsWith(`/marketplace/categorias/${id}`);
 
   const handleCreatePublicacion = () => {
     router.push("/marketplace/create");
@@ -204,23 +212,38 @@ const SidebarMarket = ({ handleLogout }: Props) => {
 
           <Separator className="my-4" />
 
-          <div className="space-y-2">
-            <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Categorías Destacadas
-            </p>
-            <div className="space-y-1">
-              {categories.map((category) => (
-                <Link
-                  key={category.href}
-                  href={category.href}
-                  className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
-                >
-                  <category.icon className="h-4 w-4" />
-                  <span>{category.name}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
+          {isLoading ? (
+            <Skeleton className="h-4 w-full" />
+          ) : (
+            filterCate &&
+            filterCate.length > 0 && (
+              <div className="space-y-2">
+                <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Categorías Destacadas
+                </p>
+                <div className="space-y-1">
+                  {filterCate.map((category) => {
+                    const active = isCategoryActive(category.id);
+
+                    return (
+                      <Link
+                        key={category.id}
+                        href={`/marketplace/categorias/${category.id}`}
+                        className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors
+        ${
+          active
+            ? "bg-green-50 text-green-700 font-semibold"
+            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+        }`}
+                      >
+                        <span>{category.nombre.toUpperCase()}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )
+          )}
 
           <Separator className="my-4" />
 

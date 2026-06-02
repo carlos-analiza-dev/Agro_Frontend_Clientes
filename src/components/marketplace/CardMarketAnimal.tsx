@@ -38,26 +38,6 @@ const CardMarketAnimal = ({ animal }: Props) => {
           height={600}
           className="h-64 w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-
-        <Badge
-          className={`absolute left-3 top-3 ${
-            animal.disponible
-              ? "bg-emerald-600 hover:bg-emerald-700"
-              : "bg-red-600 hover:bg-red-700"
-          }`}
-        >
-          {animal.disponible ? "Disponible" : "No Disponible"}
-        </Badge>
-
-        <Badge
-          className={`absolute right-3 top-3 ${
-            !animal.vendido
-              ? "bg-emerald-600 hover:bg-emerald-700"
-              : "bg-red-600 hover:bg-red-700"
-          }`}
-        >
-          {animal.vendido ? "Vendido" : "En Venta"}
-        </Badge>
       </div>
 
       <CardContent className="space-y-4 p-5">

@@ -1,10 +1,10 @@
 "use client";
+import FormPublicacion from "@/components/marketplace/FormPublicacion";
 import { Card, CardContent } from "@/components/ui/card";
 import useGetAnimalMarketById from "@/hooks/market-animales/useGetAnimalMarketById";
 import { TipoPublicacion } from "@/interfaces/enums/market/tipo_publicacion.enum";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useParams } from "next/navigation";
-import FormPublicacion from "../../create/[tipo]/ui/FormPublicacion";
 
 const EditPublicacionPage = () => {
   const { cliente } = useAuthStore();
@@ -12,12 +12,13 @@ const EditPublicacionPage = () => {
 
   const id = params.id as string;
   const { data: publicacion, isLoading } = useGetAnimalMarketById(id);
+
   const tipo = publicacion?.tipo_publicacion ?? TipoPublicacion.ANIMALES;
   const isAnimales = tipo === TipoPublicacion.ANIMALES;
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container max-w-4xl mx-auto px-4">
+      <div className="container w-full mx-auto px-4">
         <Card className="mb-6">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
@@ -37,6 +38,7 @@ const EditPublicacionPage = () => {
           tipo_publicacion={tipo}
           cliente={cliente}
           publicacion={publicacion}
+          isLoading={isLoading}
         />
       </div>
     </div>

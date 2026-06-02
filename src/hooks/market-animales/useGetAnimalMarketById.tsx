@@ -7,7 +7,6 @@ const useGetAnimalMarketById = (id: string) => {
     queryFn: () => obtenerAnimalMarketById(id),
     enabled: !!id,
     retry: 0,
-    staleTime: 60 * 5 * 1000,
   });
 };
 

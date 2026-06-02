@@ -3,7 +3,8 @@ import { TipoPublicacion } from "@/interfaces/enums/market/tipo_publicacion.enum
 import { useParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuthStore } from "@/providers/store/useAuthStore";
-import FormPublicacion from "./ui/FormPublicacion";
+import SkeletonPublicacion from "@/components/marketplace/SkeletonPublicacion";
+import FormPublicacion from "@/components/marketplace/FormPublicacion";
 
 const CreatePublicacionPage = () => {
   const { cliente } = useAuthStore();
@@ -13,9 +14,13 @@ const CreatePublicacionPage = () => {
 
   const isAnimales = tipo_publicacion === TipoPublicacion.ANIMALES;
 
+  if (!tipo_publicacion) {
+    return <SkeletonPublicacion />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container max-w-4xl mx-auto px-4">
+      <div className="container w-full mx-auto px-4">
         <Card className="mb-6">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">

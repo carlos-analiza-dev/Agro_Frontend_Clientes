@@ -2,7 +2,6 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { LogOut, Menu, Store, User } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +12,8 @@ import {
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAuthStore } from "@/providers/store/useAuthStore";
+import useGetConversaciones from "@/hooks/chat/useGetConversaciones";
+import { MessageInbox } from "../chat/MessageInbox";
 
 interface Props {
   setMobileSidebarOpen: Dispatch<SetStateAction<boolean>>;
@@ -21,6 +22,8 @@ interface Props {
 const MarhetPlaceNavBar = ({ setMobileSidebarOpen }: Props) => {
   const { cliente } = useAuthStore();
   const [isScrolled, setIsScrolled] = useState(false);
+  const { data: conversaciones, isLoading: isLoadingConversaciones } =
+    useGetConversaciones();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,40 +64,45 @@ const MarhetPlaceNavBar = ({ setMobileSidebarOpen }: Props) => {
           <Store />
           <div className=" w-full rounded-full p-1 bg-green-600" />
         </Link>
+        <div className="flex gap-2 items-center">
+          <MessageInbox
+            conversations={conversaciones || []}
+            isLoading={isLoadingConversaciones}
+          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src="/avatars/user.png" alt="Usuario" />
+                  <AvatarFallback>
+                    <User className="h-4 w-4" />
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-80" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-2">
+                  <p className="text-sm font-medium text-gray-900">
+                    {cliente?.nombre || "Usuario"}
+                  </p>
+                  <p className="text-xs leading-none text-gray-500">
+                    {cliente?.email}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="/avatars/user.png" alt="Usuario" />
-                <AvatarFallback>
-                  <User className="h-4 w-4" />
-                </AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-80" align="end" forceMount>
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-2">
-                <p className="text-sm font-medium text-gray-900">
-                  {cliente?.nombre || "Usuario"}
-                </p>
-                <p className="text-xs leading-none text-gray-500">
-                  {cliente?.email}
-                </p>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-
-            <DropdownMenuItem
-              onClick={handleCloseMarketplace}
-              className="cursor-pointer text-red-600"
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              Cerrar Market Place
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <DropdownMenuItem
+                onClick={handleCloseMarketplace}
+                className="cursor-pointer text-red-600"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Cerrar Market Place
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </header>
   );
