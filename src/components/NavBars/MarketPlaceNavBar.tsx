@@ -51,7 +51,7 @@ const MarhetPlaceNavBar = ({ setMobileSidebarOpen }: Props) => {
             variant="ghost"
             size="icon"
             className="lg:hidden"
-            onClick={() => {}}
+            onClick={() => setMobileSidebarOpen(true)}
           >
             <Menu className="h-6 w-6" />
           </Button>

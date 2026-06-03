@@ -10,6 +10,7 @@ import { SessionExpiredModal } from "@/components/generics/SessionExpiredModal";
 import MarhetPlaceNavBar from "@/components/NavBars/MarketPlaceNavBar";
 import SidebarMarket from "@/components/SideBars/SidebarMarket";
 import { TipoCliente } from "@/interfaces/enums/clientes.enums";
+import SheetContentMarket from "@/components/generics/SheetContentMarket";
 
 export default function MarketPlaceLayout({
   children,
@@ -126,7 +127,11 @@ export default function MarketPlaceLayout({
   return (
     <div className="flex h-screen bg-gray-50">
       <SidebarMarket handleLogout={handleLogout} />
-
+      <SheetContentMarket
+        setMobileSidebarOpen={setMobileSidebarOpen}
+        handleLogout={handleLogout}
+        mobileSidebarOpen={mobileSidebarOpen}
+      />
       <div className="flex flex-1 flex-col overflow-hidden">
         <MarhetPlaceNavBar setMobileSidebarOpen={setMobileSidebarOpen} />
 

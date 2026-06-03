@@ -573,18 +573,22 @@ const FormPublicacion = ({
                         <SelectValue placeholder="Selecciona un animal de tu registro" />
                       </SelectTrigger>
                       <SelectContent>
-                        {animales?.map((animal: Animal) => (
-                          <SelectItem key={animal.id} value={animal.id}>
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                              <span className="font-medium">
-                                {animal.identificador}
-                              </span>
-                              <span className="text-xs text-gray-500">
-                                {animal.especie?.nombre} - {animal.sexo}
-                              </span>
-                            </div>
-                          </SelectItem>
-                        ))}
+                        {animales && animales.length > 0 ? (
+                          animales?.map((animal: Animal) => (
+                            <SelectItem key={animal.id} value={animal.id}>
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                                <span className="font-medium">
+                                  {animal.identificador}
+                                </span>
+                                <span className="text-xs text-gray-500">
+                                  {animal.especie?.nombre} - {animal.sexo}
+                                </span>
+                              </div>
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <p>No hay animales disponibles</p>
+                        )}
                       </SelectContent>
                     </Select>
                     <p className="text-xs text-gray-500 mt-1.5">

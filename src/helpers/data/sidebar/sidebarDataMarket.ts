@@ -2,7 +2,6 @@ import {
   Beef,
   Bird,
   Bookmark,
-  Clock,
   Dog,
   Package,
   PawPrint,
@@ -82,11 +81,11 @@ export const mainMenuItems: MenuItem[] = [
         href: "/marketplace/categorias",
       },
 
-      {
+      /* {
         title: "Ofertas",
         href: "/marketplace/ofertas",
         icon: Tag,
-      },
+      }, */
     ],
   },
 
@@ -120,14 +119,6 @@ export const animalCategories = [
     name: "Mascotas",
     href: "/marketplace/animales/mascotas",
     icon: Dog,
-  },
-];
-
-export const userMenuItems: MenuItem[] = [
-  {
-    title: "Mis Pedidos",
-    href: "/mis-pedidos",
-    icon: Clock,
   },
 ];
 

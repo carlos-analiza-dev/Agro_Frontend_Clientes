@@ -6,8 +6,10 @@ import { obtenerChatsByConversacion } from "@/api/chat/accions/obtener-chats-by-
 import { obtenerConversaciones } from "@/api/chat/accions/obtener-all-conversacion";
 import { ResponseChatsConversacionInterface } from "@/api/chat/interface/response-chats-conversacion";
 import { ResponseConversacionesInterface } from "@/api/chat/interface/response-conversacion.interface";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const useChatMarketplace = () => {
+  const queryClient = useQueryClient();
   const { cliente } = useAuthStore();
   const [socket, setSocket] = useState<Socket | null>(null);
 
@@ -96,6 +98,20 @@ export const useChatMarketplace = () => {
         );
         newMap.set(data.conversationId, updatedMessages);
         return newMap;
+      });
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv.id === data.conversationId
+            ? {
+                ...conv,
+                unreadCount: 0,
+                hasUnreadMessages: false,
+              }
+            : conv,
+        ),
+      );
+      queryClient.invalidateQueries({
+        queryKey: ["conversaciones"],
       });
     });
 
@@ -203,6 +219,9 @@ export const useChatMarketplace = () => {
     if (!socketRef.current) return;
 
     socketRef.current.emit("mark-as-read", { conversationId, userId });
+    queryClient.invalidateQueries({
+      queryKey: ["conversaciones"],
+    });
   }, []);
 
   const clearMessages = useCallback(() => {

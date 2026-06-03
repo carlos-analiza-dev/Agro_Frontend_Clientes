@@ -4,12 +4,13 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, X } from "lucide-react";
+import { Send } from "lucide-react";
 import { useChatMarketplace } from "@/hooks/chat/useChatMarketplace";
 import Modal from "../generics/Modal";
 import { formatChatDate } from "@/helpers/funciones/dates/formatChatDate";
 import { ProductoAnimal } from "@/api/market-animales/interfaces/response-market-animales.interface";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { toast } from "react-toastify";
 
 interface ChatModalProps {
   isOpen: boolean;
@@ -40,7 +41,6 @@ export const ChatModal = ({
 
   const {
     messages,
-    messagesMap,
     fetchMessages,
     sendMessage,
     joinConversation,
@@ -70,7 +70,6 @@ export const ChatModal = ({
     if (localConversationId && isOpen) {
       joinConversation(localConversationId);
       loadMessages();
-
       markAsRead(localConversationId, buyerId);
     }
   }, [localConversationId, isOpen]);
@@ -108,7 +107,7 @@ export const ChatModal = ({
     setIsLoading(true);
     try {
       const conversation = await getOrCreateConversation(seller.id, product.id);
-      if (conversation) {
+      if (conversation && conversation.id) {
         setLocalConversationId(conversation.id);
       }
     } catch (error) {
@@ -117,13 +116,23 @@ export const ChatModal = ({
     }
   };
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = () => {
     if (!message.trim() || !localConversationId || !isConnected) {
       return;
     }
 
-    sendMessage(localConversationId, message, seller.id, product.id);
-    setMessage("");
+    const success = sendMessage(
+      localConversationId,
+      message,
+      seller.id,
+      product.id,
+    );
+
+    if (success) {
+      setMessage("");
+    } else {
+      toast.warning("No se pudo enviar el mensaje. Verifica tu conexión.");
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -224,7 +233,6 @@ export const ChatModal = ({
                   </div>
                 );
               })}
-
               <div ref={messagesEndRef} />
             </div>
           )}

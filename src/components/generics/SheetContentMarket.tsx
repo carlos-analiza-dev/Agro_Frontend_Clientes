@@ -1,29 +1,30 @@
 "use client";
 
-import { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import React, { useState } from "react";
 import Link from "next/link";
-import {
-  Store,
-  LogOut,
-  ChevronDown,
-  ChevronRight,
-  Facebook,
-  Instagram,
-  Twitter,
-  Plus,
-  BookCheck,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
+import { usePathname, useRouter } from "next/navigation";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
+import { Separator } from "../ui/separator";
+import { Button } from "../ui/button";
+import { ScrollArea } from "../ui/scroll-area";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+} from "../ui/collapsible";
+import {
+  LogOut,
+  ChevronDown,
+  ChevronRight,
+  Plus,
+  BookCheck,
+  Facebook,
+  Instagram,
+  Twitter,
+} from "lucide-react";
+import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Badge } from "../ui/badge";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import {
   helpfulLinks,
@@ -33,18 +34,23 @@ import useGetCategorias from "@/hooks/categorias/useGetCategorias";
 import { Skeleton } from "../ui/skeleton";
 
 interface Props {
-  handleLogout: () => Promise<void>;
+  mobileSidebarOpen: boolean;
+  setMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  handleLogout?: () => void;
 }
 
-const SidebarMarket = ({ handleLogout }: Props) => {
+const SheetContentMarket = ({
+  mobileSidebarOpen,
+  setMobileSidebarOpen,
+  handleLogout,
+}: Props) => {
   const pathname = usePathname();
   const router = useRouter();
+  const { cliente } = useAuthStore();
   const { data: categorias, isLoading } = useGetCategorias({ is_market: true });
+  const [openMenus, setOpenMenus] = useState<string[]>([]);
 
   const filterCate = categorias?.filter((cat) => cat.is_market);
-
-  const { cliente } = useAuthStore();
-  const [openMenus, setOpenMenus] = useState<string[]>([]);
 
   const toggleMenu = (menuTitle: string) => {
     setOpenMenus((prev) =>
@@ -55,32 +61,49 @@ const SidebarMarket = ({ handleLogout }: Props) => {
   };
 
   const isExactActive = (href: string) => pathname === href;
-
   const isParentActive = (href: string) => pathname.startsWith(href);
-
   const isCategoryActive = (id: string) =>
     pathname.startsWith(`/marketplace/categorias/${id}`);
 
+  const closeSidebar = () => setMobileSidebarOpen(false);
+
   const handleCreatePublicacion = () => {
     router.push("/marketplace/create");
+    closeSidebar();
   };
 
   const handleMyPublicacion = () => {
     router.push("/marketplace/mis-publicaciones");
+    closeSidebar();
   };
 
   return (
-    <aside className="hidden lg:flex lg:flex-shrink-0">
-      <div className="flex w-80 flex-col border-r border-gray-200 bg-white">
-        <div className="flex h-16 items-center justify-between px-4 border-b border-gray-200">
-          <Link href="/marketplace" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-r from-green-600 to-green-500 flex items-center justify-center">
-              <Store className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-lg font-bold bg-gradient-to-r from-green-700 to-green-600 bg-clip-text text-transparent">
-              AgroMarket
-            </span>
-          </Link>
+    <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
+      <SheetContent
+        side="left"
+        className="w-[280px] sm:w-[320px] p-0 h-screen flex flex-col overflow-hidden bg-white"
+      >
+        <VisuallyHidden asChild>
+          <SheetHeader>
+            <SheetTitle>Menú de Marketplace</SheetTitle>
+          </SheetHeader>
+        </VisuallyHidden>
+
+        <div className="border-b border-gray-200 flex-shrink-0">
+          <div className="flex h-16 items-center justify-between px-4">
+            <Link
+              href="/marketplace"
+              onClick={closeSidebar}
+              className="flex items-center gap-2"
+            >
+              <div className="h-8 w-8 rounded-lg bg-gradient-to-r from-green-600 to-green-500 flex items-center justify-center">
+                <span className="text-white font-bold">A</span>
+              </div>
+              <span className="text-lg font-bold bg-gradient-to-r from-green-700 to-green-600 bg-clip-text text-transparent">
+                AgroMarket
+              </span>
+            </Link>
+          </div>
         </div>
 
         <ScrollArea className="flex-1 px-3 py-4">
@@ -108,8 +131,9 @@ const SidebarMarket = ({ handleLogout }: Props) => {
             <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
               Menú Principal
             </p>
+
             {mainMenuItems.map((item) => (
-              <div key={item.href}>
+              <div key={item.href || item.title}>
                 {item.subItems ? (
                   <Collapsible
                     open={openMenus.includes(item.title)}
@@ -145,6 +169,7 @@ const SidebarMarket = ({ handleLogout }: Props) => {
                         <Link
                           key={subItem.href}
                           href={subItem.href}
+                          onClick={closeSidebar}
                           className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
                             isExactActive(subItem.href)
                               ? "bg-green-50 text-green-700"
@@ -158,7 +183,7 @@ const SidebarMarket = ({ handleLogout }: Props) => {
                     </CollapsibleContent>
                   </Collapsible>
                 ) : (
-                  <Link href={item.href}>
+                  <Link href={item.href} onClick={closeSidebar}>
                     <Button
                       variant="ghost"
                       className={`w-full justify-start px-3 py-2 text-sm font-medium transition-colors ${
@@ -181,29 +206,22 @@ const SidebarMarket = ({ handleLogout }: Props) => {
                 )}
               </div>
             ))}
+
             <Button
               onClick={handleCreatePublicacion}
-              className={`w-full font-bold ${
-                pathname.startsWith("/marketplace/create")
-                  ? "bg-green-200 text-green-800"
-                  : ""
-              }`}
+              className="w-full font-bold mt-2"
               variant="outline"
             >
-              <Plus />
+              <Plus className="mr-2 h-4 w-4" />
               Crear Publicación
             </Button>
 
             <Button
               onClick={handleMyPublicacion}
-              className={`w-full font-bold ${
-                pathname.startsWith("/marketplace/mis-publicaciones")
-                  ? "bg-green-200 text-green-800"
-                  : ""
-              }`}
+              className="w-full font-bold"
               variant="outline"
             >
-              <BookCheck />
+              <BookCheck className="mr-2 h-4 w-4" />
               Mis Publicaciones
             </Button>
           </div>
@@ -227,12 +245,12 @@ const SidebarMarket = ({ handleLogout }: Props) => {
                       <Link
                         key={category.id}
                         href={`/marketplace/categorias/${category.id}`}
-                        className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors
-        ${
-          active
-            ? "bg-green-50 text-green-700 font-semibold"
-            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-        }`}
+                        onClick={closeSidebar}
+                        className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                          active
+                            ? "bg-green-50 text-green-700 font-semibold"
+                            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                        }`}
                       >
                         <span>{category.nombre.toUpperCase()}</span>
                       </Link>
@@ -250,7 +268,12 @@ const SidebarMarket = ({ handleLogout }: Props) => {
               Enlaces Útiles
             </p>
             {helpfulLinks.map((link) => (
-              <Link key={link.href} href={link.href} target="_blank">
+              <Link
+                key={link.href}
+                href={link.href}
+                target="_blank"
+                onClick={closeSidebar}
+              >
                 <Button
                   variant="ghost"
                   className="w-full justify-start px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
@@ -264,12 +287,15 @@ const SidebarMarket = ({ handleLogout }: Props) => {
             ))}
           </div>
 
-          {cliente && (
+          {cliente && handleLogout && (
             <>
               <Separator className="my-4" />
               <Button
                 variant="ghost"
-                onClick={handleLogout}
+                onClick={() => {
+                  handleLogout();
+                  closeSidebar();
+                }}
                 className="w-full justify-start px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700"
               >
                 <LogOut className="mr-3 h-4 w-4" />
@@ -279,7 +305,7 @@ const SidebarMarket = ({ handleLogout }: Props) => {
           )}
         </ScrollArea>
 
-        <div className="border-t border-gray-200 p-4">
+        <div className="border-t border-gray-200 p-4 flex-shrink-0">
           <div className="space-y-2">
             <p className="text-xs text-gray-500 text-center">
               © 2024 AgroMarket
@@ -297,9 +323,9 @@ const SidebarMarket = ({ handleLogout }: Props) => {
             </div>
           </div>
         </div>
-      </div>
-    </aside>
+      </SheetContent>
+    </Sheet>
   );
 };
 
-export default SidebarMarket;
+export default SheetContentMarket;

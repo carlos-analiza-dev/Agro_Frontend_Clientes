@@ -9,7 +9,7 @@ export const EcommerceButton = () => {
   const ecommerceUrl = `${process.env.NEXT_PUBLIC_APP_URL}/marketplace`;
 
   if (!ecommerceUrl) {
-    toast.error("La tienda aun no está configurada");
+    toast.error("La tienda aún no está configurada");
     return null;
   }
 
@@ -21,12 +21,25 @@ export const EcommerceButton = () => {
       className="inline-flex"
     >
       <Button
-        variant="outline"
         size="sm"
-        className="gap-2 border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+        className="
+          gap-2
+          bg-gradient-to-r from-blue-600 to-indigo-600
+          text-white
+          font-medium
+          shadow-md
+          hover:shadow-xl
+          hover:scale-105
+          active:scale-95
+          transition-all
+          duration-300
+          rounded-full
+          px-4
+          border-0
+        "
       >
-        <Store className="h-4 w-4" />
-        <span className="hidden sm:inline">Ir al Ecommerce</span>
+        <Store className="h-4 w-4 animate-pulse" />
+        <span className="hidden sm:inline">Ir al Marketplace</span>
         <span className="sm:hidden">Tienda</span>
       </Button>
     </Link>
