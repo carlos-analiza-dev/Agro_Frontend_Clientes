@@ -7,7 +7,7 @@ import useGetAnimalesMarket from "@/hooks/market-animales/useGetAnimalesMarket";
 import { TipoPublicacion } from "@/interfaces/enums/market/tipo_publicacion.enum";
 import { MapPin } from "lucide-react";
 
-const AnimalesPage = () => {
+const ProductosGanaderosPage = () => {
   const { location } = useUserLocation();
 
   const {
@@ -21,7 +21,7 @@ const AnimalesPage = () => {
       ? {
           latitud: location.latitud,
           longitud: location.longitud,
-          tipo_publicacion: TipoPublicacion.ANIMALES,
+          tipo_publicacion: TipoPublicacion.PRODUCTOS_GANADEROS,
         }
       : undefined,
   );
@@ -58,7 +58,7 @@ const AnimalesPage = () => {
     <div className="container mx-auto px-3 sm:px-4 lg:px-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
         <h1 className="flex justify-center text-lg sm:text-xl md:text-2xl font-bold">
-          Animales destacados
+          Productos ganaderos destacados
         </h1>
 
         <div className="flex items-center gap-2 text-gray-600">
@@ -78,4 +78,4 @@ const AnimalesPage = () => {
   );
 };
 
-export default AnimalesPage;
+export default ProductosGanaderosPage;

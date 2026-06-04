@@ -39,7 +39,7 @@ export const EcommerceButton = () => {
         "
       >
         <Store className="h-4 w-4 animate-pulse" />
-        <span className="hidden sm:inline">Ir al Marketplace</span>
+        <span className="hidden sm:inline">Ir a AgroMarket</span>
         <span className="sm:hidden">Tienda</span>
       </Button>
     </Link>

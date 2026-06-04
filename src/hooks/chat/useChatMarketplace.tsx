@@ -7,6 +7,7 @@ import { obtenerConversaciones } from "@/api/chat/accions/obtener-all-conversaci
 import { ResponseChatsConversacionInterface } from "@/api/chat/interface/response-chats-conversacion";
 import { ResponseConversacionesInterface } from "@/api/chat/interface/response-conversacion.interface";
 import { useQueryClient } from "@tanstack/react-query";
+import { uploadImagesChat } from "@/api/chat/accions/upload-images-chat";
 
 export const useChatMarketplace = () => {
   const queryClient = useQueryClient();

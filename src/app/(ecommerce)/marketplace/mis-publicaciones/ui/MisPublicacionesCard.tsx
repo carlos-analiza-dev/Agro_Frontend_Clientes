@@ -39,6 +39,7 @@ const MisPublicacionesCard = ({ producto }: Props) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [openModal, setOpenModal] = useState(false);
+  const [openVendido, setOpenVendido] = useState(false);
   const { data: views, isLoading } = useGetViewsPublicacion(producto.id);
   const [imageError, setImageError] = useState(false);
 
@@ -94,6 +95,7 @@ const MisPublicacionesCard = ({ producto }: Props) => {
           queryKey: ["animal-market-id", producto.id],
         });
       }
+      setOpenVendido(false);
       toast.success("Publicacion Marcada como Vendida");
     } catch (error) {
       if (isAxiosError(error)) {
@@ -175,9 +177,7 @@ const MisPublicacionesCard = ({ producto }: Props) => {
                   </DropdownMenuItem>
 
                   {producto.disponible && !producto.vendido && (
-                    <DropdownMenuItem
-                      onClick={() => handleVendido(producto.id)}
-                    >
+                    <DropdownMenuItem onClick={() => setOpenVendido(true)}>
                       <Check className="mr-2 h-4 w-4" />
                       Marcar como vendida
                     </DropdownMenuItem>
@@ -276,6 +276,40 @@ const MisPublicacionesCard = ({ producto }: Props) => {
               className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white"
             >
               Eliminar publicación
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        open={openVendido}
+        onOpenChange={setOpenVendido}
+        title="Marcar publicación como vendida"
+        description="Esta acción es permanente. Una vez marques como vendida, no se puede restablecer"
+        showCloseButton={false}
+      >
+        <div className="p-6 space-y-5">
+          <div className="flex items-start gap-3 rounded-lg border border-green-200 bg-green-50 p-4">
+            <div className="mt-0.5 h-2 w-2 rounded-full bg-green-500" />
+            <div className="text-sm text-green-700">
+              Estás a punto de marcar esta publicación como vendida.
+            </div>
+          </div>
+
+          <div className="flex flex-col-reverse sm:flex-row justify-end gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setOpenVendido(false)}
+              className="w-full sm:w-auto"
+            >
+              Cancelar
+            </Button>
+
+            <Button
+              onClick={() => handleVendido(producto.id)}
+              className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white"
+            >
+              Marcar publicación
             </Button>
           </div>
         </div>

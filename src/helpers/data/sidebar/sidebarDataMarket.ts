@@ -3,12 +3,15 @@ import {
   Bird,
   Bookmark,
   Dog,
+  Layers2,
   Package,
   PawPrint,
   Phone,
   Shield,
+  Sprout,
   Store,
   Tag,
+  Tractor,
   Users,
 } from "lucide-react";
 
@@ -77,8 +80,19 @@ export const mainMenuItems: MenuItem[] = [
 
     subItems: [
       {
+        title: "Agricolas",
+        href: "/marketplace/agricolas",
+        icon: Sprout,
+      },
+      {
+        title: "Ganaderos",
+        href: "/marketplace/ganaderos",
+        icon: Tractor,
+      },
+      {
         title: "Categorías",
         href: "/marketplace/categorias",
+        icon: Layers2,
       },
 
       /* {
