@@ -62,6 +62,7 @@ export interface PaginationInterface {
   activos?: boolean;
   activo?: boolean;
   is_market?: boolean;
+  destacada?: boolean;
 
   latitud?: number;
   longitud?: number;

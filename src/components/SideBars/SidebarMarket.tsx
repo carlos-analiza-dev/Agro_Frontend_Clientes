@@ -39,7 +39,10 @@ interface Props {
 const SidebarMarket = ({ handleLogout }: Props) => {
   const pathname = usePathname();
   const router = useRouter();
-  const { data: categorias, isLoading } = useGetCategorias({ is_market: true });
+  const { data: categorias, isLoading } = useGetCategorias({
+    is_market: true,
+    destacada: true,
+  });
 
   const filterCate = categorias?.filter((cat) => cat.is_market);
 

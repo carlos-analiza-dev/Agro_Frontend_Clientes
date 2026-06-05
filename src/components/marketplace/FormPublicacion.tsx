@@ -50,6 +50,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 interface Props {
   tipo_publicacion: TipoPublicacion;
@@ -576,13 +577,26 @@ const FormPublicacion = ({
                         {animales && animales.length > 0 ? (
                           animales?.map((animal: Animal) => (
                             <SelectItem key={animal.id} value={animal.id}>
-                              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                                <span className="font-medium">
-                                  {animal.identificador}
-                                </span>
-                                <span className="text-xs text-gray-500">
-                                  {animal.especie?.nombre} - {animal.sexo}
-                                </span>
+                              <div className="flex gap-2 items-center">
+                                <Avatar>
+                                  <AvatarImage
+                                    src={
+                                      animal.profileImages &&
+                                      animal.profileImages.length > 0
+                                        ? animal.profileImages[0].url
+                                        : "/images/Image-not-found.png"
+                                    }
+                                  />
+                                  <AvatarFallback>CN</AvatarFallback>
+                                </Avatar>
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                                  <span className="font-medium">
+                                    {animal.identificador}
+                                  </span>
+                                  <span className="text-xs text-gray-500">
+                                    {animal.especie?.nombre} - {animal.sexo}
+                                  </span>
+                                </div>
                               </div>
                             </SelectItem>
                           ))
@@ -692,7 +706,7 @@ const FormPublicacion = ({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="marcaId" className="mb-2 block">
-                          Marca
+                          Marca (opcional)
                         </Label>
                         <Select
                           onValueChange={(value) => setValue("marcaId", value)}
@@ -738,7 +752,7 @@ const FormPublicacion = ({
 
                     <div>
                       <Label htmlFor="modelo" className="mb-2 block">
-                        Modelo
+                        Modelo (opcional)
                       </Label>
                       <Input
                         id="modelo"
