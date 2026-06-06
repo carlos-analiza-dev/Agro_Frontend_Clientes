@@ -1,6 +1,4 @@
 "use client";
-
-import Link from "next/link";
 import { Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
