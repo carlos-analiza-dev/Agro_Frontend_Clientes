@@ -11,6 +11,7 @@ import MarhetPlaceNavBar from "@/components/NavBars/MarketPlaceNavBar";
 import SidebarMarket from "@/components/SideBars/SidebarMarket";
 import { TipoCliente } from "@/interfaces/enums/clientes.enums";
 import SheetContentMarket from "@/components/generics/SheetContentMarket";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 
 export default function MarketPlaceLayout({
   children,
@@ -24,7 +25,7 @@ export default function MarketPlaceLayout({
   const [showSessionModal, setShowSessionModal] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(false);
-
+  const isMobile = useMediaQuery("(max-width: 768px)");
   useEffect(() => {
     setIsHydrated(true);
   }, []);

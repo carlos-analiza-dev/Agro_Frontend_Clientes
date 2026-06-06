@@ -1,5 +1,5 @@
-import { Categoria } from "@/apis/categorias/interface/response-categorias.interface";
-import { SubCategoria } from "@/apis/subcategorias/interface/get-subcategorias.interface";
+import { Categoria } from "@/api/categorias/interfaces/response-categorias";
+import { SubCategoria } from "@/api/subcategorias/interface/get-subcategorias.interface";
 
 export interface ResponseTipoProductoInterface {
   tipos: TipoProducto[];

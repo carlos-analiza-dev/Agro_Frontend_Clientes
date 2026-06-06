@@ -14,6 +14,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import useGetConversaciones from "@/hooks/chat/useGetConversaciones";
 import { MessageInbox } from "../chat/MessageInbox";
+import useGetSearchMarket from "@/hooks/market-animales/useGetSearchMarket";
+import SearchMarket from "../marketplace/SearchMarket";
 
 interface Props {
   setMobileSidebarOpen: Dispatch<SetStateAction<boolean>>;
@@ -24,6 +26,10 @@ const MarhetPlaceNavBar = ({ setMobileSidebarOpen }: Props) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const { data: conversaciones, isLoading: isLoadingConversaciones } =
     useGetConversaciones();
+  const [nombre, setNombre] = useState("");
+  const { data: buscando, isLoading: cargando } = useGetSearchMarket({
+    nombre,
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,12 +64,22 @@ const MarhetPlaceNavBar = ({ setMobileSidebarOpen }: Props) => {
         </div>
 
         <Link
-          className="text-green-500 hover:text-green-400"
+          className="hidden lg:block text-green-500 hover:text-green-400"
           href={"/marketplace"}
         >
           <Store />
           <div className=" w-full rounded-full p-1 bg-green-600" />
         </Link>
+
+        <div className="block lg:hidden w-full">
+          <SearchMarket
+            nombre={nombre}
+            setNombre={setNombre}
+            buscando={buscando}
+            cargando={cargando}
+          />
+        </div>
+
         <div className="flex gap-2 items-center">
           <MessageInbox
             conversations={conversaciones || []}

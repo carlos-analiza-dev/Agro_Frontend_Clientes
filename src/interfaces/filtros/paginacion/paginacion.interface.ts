@@ -6,6 +6,7 @@ export interface PaginationInterface {
   offset?: number;
 
   name?: string;
+  nombre?: string;
   categoria?: string;
   subcategoria?: string;
   tipo_producto?: string;

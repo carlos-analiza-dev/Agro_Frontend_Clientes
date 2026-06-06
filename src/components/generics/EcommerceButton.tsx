@@ -14,7 +14,7 @@ export const EcommerceButton = () => {
   }
 
   return (
-    <Link
+    <a
       href={ecommerceUrl}
       target="_blank"
       rel="noopener noreferrer"
@@ -42,6 +42,6 @@ export const EcommerceButton = () => {
         <span className="hidden sm:inline">Ir a AgroMarket</span>
         <span className="sm:hidden">Tienda</span>
       </Button>
-    </Link>
+    </a>
   );
 };

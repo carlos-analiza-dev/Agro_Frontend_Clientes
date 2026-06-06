@@ -31,6 +31,8 @@ import {
 } from "@/helpers/data/sidebar/sidebarDataMarket";
 import useGetCategorias from "@/hooks/categorias/useGetCategorias";
 import { Skeleton } from "../ui/skeleton";
+import useGetSearchMarket from "@/hooks/market-animales/useGetSearchMarket";
+import SearchMarket from "../marketplace/SearchMarket";
 
 interface Props {
   handleLogout: () => Promise<void>;
@@ -42,6 +44,11 @@ const SidebarMarket = ({ handleLogout }: Props) => {
   const { data: categorias, isLoading } = useGetCategorias({
     is_market: true,
     destacada: true,
+  });
+
+  const [nombre, setNombre] = useState("");
+  const { data: buscando, isLoading: cargando } = useGetSearchMarket({
+    nombre,
   });
 
   const filterCate = categorias?.filter((cat) => cat.is_market);
@@ -107,8 +114,15 @@ const SidebarMarket = ({ handleLogout }: Props) => {
             </div>
           )}
 
-          <div className="space-y-1">
-            <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+          <SearchMarket
+            nombre={nombre}
+            setNombre={setNombre}
+            buscando={buscando}
+            cargando={cargando}
+          />
+
+          <div className="space-y-2">
+            <p className="px-3 mt-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
               Menú Principal
             </p>
             {mainMenuItems.map((item) => (
