@@ -302,15 +302,21 @@ const SidebarMarket = ({ handleLogout }: Props) => {
               © 2024 AgroMarket
             </p>
             <div className="flex justify-center gap-2">
-              <Button variant="ghost" size="icon" className="h-8 w-8">
+              {/*    <Button variant="ghost" size="icon" className="h-8 w-8">
                 <Facebook className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
+              </Button> */}
+              <Link
+                href={
+                  "https://www.instagram.com/elsembrador.app?igsh=MW9zdW1mbzloN2piNg=="
+                }
+                target="_blank"
+                className="h-8 w-8"
+              >
                 <Instagram className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
+              </Link>
+              {/*   <Button variant="ghost" size="icon" className="h-8 w-8">
                 <Twitter className="h-4 w-4" />
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>
