@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MessageCircle, CheckCheck } from "lucide-react";
+import { MessageCircle, CheckCheck, X } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -85,6 +85,13 @@ export const MessageInbox = ({
         </DropdownMenuTrigger>
 
         <DropdownMenuContent className="w-96 p-0" align="end">
+          <div className="flex justify-end mr-4 mt-2">
+            <X
+              size={20}
+              onClick={() => setIsOpen(false)}
+              className="hover:cursor-pointer"
+            />
+          </div>
           <DropdownMenuLabel className="flex items-center justify-between p-4">
             <div className="flex items-center gap-2">
               <MessageCircle className="h-4 w-4 text-gray-500" />

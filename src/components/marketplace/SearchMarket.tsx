@@ -153,34 +153,45 @@ const SearchMarket = ({
           <div
             ref={suggestionsRef}
             className={`
-              ${
-                isMobile
-                  ? `fixed 
-                   left-0 
-                   right-0 
-                   bottom-0 
-                   top-auto
-                   z-[9999] 
-                   rounded-t-2xl
-                   max-h-[70vh]
-                   animate-slide-up`
-                  : `absolute 
-                   top-full 
-                   left-0 
-                   right-0 
-                   mt-2 
-                   rounded-xl 
-                   shadow-xl 
-                   z-[999] 
-                   max-h-[400px]`
-              }
-              bg-white
-              border
-              border-gray-200
-              overflow-hidden
-              flex
-              flex-col
-            `}
+        ${
+          isMobile
+            ? `absolute 
+             left-0 
+             right-0 
+             top-full 
+             mt-1
+             z-[9999] 
+             rounded-xl 
+             shadow-xl
+             max-h-[60vh]
+             overflow-hidden`
+            : `absolute 
+             top-full 
+             left-0 
+             right-0 
+             mt-2 
+             rounded-xl 
+             shadow-xl 
+             z-[999] 
+             max-h-[400px]`
+        }
+        bg-white
+        border
+        border-gray-200
+        flex
+        flex-col
+      `}
+            style={
+              isMobile
+                ? {
+                    position: "absolute",
+                    maxHeight: "60vh",
+                    left: "-8px",
+                    right: "-8px",
+                    width: "calc(100% + 38px)",
+                  }
+                : {}
+            }
           >
             {isMobile && (
               <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center">

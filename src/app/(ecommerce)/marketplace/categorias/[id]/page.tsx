@@ -31,8 +31,8 @@ const PublicacionesByCategory = () => {
 
   const handleRefresh = () => {
     refetch();
+    window.location.reload();
   };
-
   const animales =
     animales_market?.pages.flatMap((page) => page.productos) ?? [];
 

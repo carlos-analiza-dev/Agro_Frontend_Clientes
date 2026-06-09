@@ -163,6 +163,7 @@ const PartosAnimalesPage = () => {
 
   const handleRefresh = async () => {
     await refetch();
+    window.location.reload();
   };
 
   const handlePageChange = (page: number) => {

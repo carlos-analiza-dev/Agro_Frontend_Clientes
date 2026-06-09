@@ -31,6 +31,7 @@ const AnimalByEspecie = () => {
 
   const handleRefresh = () => {
     refetch();
+    window.location.reload();
   };
 
   const animales =

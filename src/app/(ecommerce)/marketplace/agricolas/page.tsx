@@ -28,6 +28,7 @@ const ProductosAgricolasPage = () => {
 
   const handleRefresh = () => {
     refetch();
+    window.location.reload();
   };
 
   const animales =

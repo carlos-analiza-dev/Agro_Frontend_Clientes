@@ -34,7 +34,7 @@ const PublicacionesGuardadasPage = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-black flex items-center gap-2">
+          <h1 className="text-lg md:text-3xl font-black flex items-center gap-2">
             <Bookmark className="w-8 h-8 text-blue-500" />
             Publicaciones guardadas
           </h1>

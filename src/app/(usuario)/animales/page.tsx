@@ -89,6 +89,7 @@ const AnimalesPageGanadero = () => {
 
   const handleRefresh = () => {
     refetch();
+    window.location.reload();
   };
 
   const handleAddAnimal = () => {

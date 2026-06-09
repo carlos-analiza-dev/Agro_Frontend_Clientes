@@ -6,6 +6,7 @@ const useGetCategorias = (filters?: PaginationInterface) => {
   return useQuery({
     queryKey: ["categorias", filters],
     queryFn: () => ObtenerCategorias(filters),
+    retry: 0,
     staleTime: 60 * 5 * 1000,
   });
 };

@@ -28,6 +28,7 @@ const ProductosGanaderosPage = () => {
 
   const handleRefresh = () => {
     refetch();
+    window.location.reload();
   };
 
   const animales =
