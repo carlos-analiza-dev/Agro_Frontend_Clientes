@@ -29,20 +29,16 @@ export default function AdminLayout({
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showSessionModal, setShowSessionModal] = useState(false);
-  const [checkingPermissions, setCheckingPermissions] = useState(true);
   const [isHydrated, setIsHydrated] = useState(false);
 
   const esPropietario = cliente?.rol === TipoCliente.PROPIETARIO;
-
   const paqueteId = cliente?.paqueteActivo?.paquete?.id ?? "";
   const clienteId = cliente?.id ?? "";
 
   const { data: permisosPaquete, isLoading: isLoadingPaquete } =
     useGetPermisosByClientePaquete(paqueteId);
-
   const { data: permisosCliente, isLoading: isLoadingCliente } =
     useGetPermisosByCliente(clienteId);
-
   const permisos = esPropietario ? permisosPaquete : permisosCliente;
   const isLoadingPermisos = esPropietario ? isLoadingPaquete : isLoadingCliente;
 
@@ -50,43 +46,107 @@ export default function AdminLayout({
     setIsHydrated(true);
   }, []);
 
-  const hasPermissionForCurrentRoute = () => {
-    if (
-      publicRoutes.includes(pathname) ||
-      publicRoutes.some((route) => pathname.startsWith(route + "/"))
-    ) {
-      return true;
-    }
+  useEffect(() => {
+    if (!isHydrated) return;
 
-    if (!cliente) return false;
-
-    if (!permisos || permisos.length === 0) {
-      return null;
-    }
-
-    const hasPermission = permisos.some((permiso) => {
-      if (permiso.ver === true) {
-        return (
-          pathname === permiso.permiso.url ||
-          pathname.startsWith(permiso.permiso.url + "/")
-        );
+    const checkExpiration = () => {
+      if (token && isTokenExpired(token)) {
+        setShowSessionModal(true);
+        return true;
       }
       return false;
-    });
+    };
 
-    return hasPermission;
-  };
+    checkExpiration();
+  }, [token, isHydrated]);
+
+  useEffect(() => {
+    if (!token) return;
+
+    const interval = setInterval(() => {
+      if (isTokenExpired(token)) {
+        setShowSessionModal(true);
+        clearInterval(interval);
+      }
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [token]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+
+    const checkAuth = () => {
+      if (!token) {
+        router.push("/");
+        return;
+      }
+
+      if (isTokenExpired(token)) {
+        setShowSessionModal(true);
+        return;
+      }
+    };
+
+    checkAuth();
+  }, [token, router, isHydrated]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    if (!token) return;
+    if (!cliente) return;
+    if (isTokenExpired(token)) return;
+    if (isLoadingPermisos) return;
+
+    const hasPermissionForCurrentRoute = () => {
+      if (
+        publicRoutes.includes(pathname) ||
+        publicRoutes.some((route) => pathname.startsWith(route + "/"))
+      ) {
+        return true;
+      }
+
+      if (!permisos || permisos.length === 0) {
+        return null;
+      }
+
+      const hasPermission = permisos.some((permiso) => {
+        if (permiso.ver === true) {
+          return (
+            pathname === permiso.permiso.url ||
+            pathname.startsWith(permiso.permiso.url + "/")
+          );
+        }
+        return false;
+      });
+
+      return hasPermission;
+    };
+
+    const hasPermission = hasPermissionForCurrentRoute();
+    if (hasPermission === null) return;
+
+    if (!hasPermission) {
+      router.push("/not-found");
+    }
+  }, [
+    cliente,
+    pathname,
+    token,
+    isLoadingPermisos,
+    isHydrated,
+    router,
+    permisos,
+  ]);
 
   const handleLogout = async () => {
     try {
       setMobileSidebarOpen(false);
       setLoading(true);
-
       await logout();
       limpiarFavoritos();
       clearCart();
       router.push("/");
-
       toast.success("Sesión cerrada correctamente");
     } catch (error) {
       toast.error("Ocurrió un error al cerrar la sesión");
@@ -95,18 +155,9 @@ export default function AdminLayout({
     }
   };
 
-  const checkTokenExpiration = () => {
-    if (token && isTokenExpired(token)) {
-      setShowSessionModal(true);
-      return true;
-    }
-    return false;
-  };
-
   const handleSessionExpired = async () => {
     setShowSessionModal(false);
     setLoading(true);
-
     try {
       await logout();
       router.push("/");
@@ -118,83 +169,33 @@ export default function AdminLayout({
   };
 
   useEffect(() => {
-    const checkUser = async () => {
-      if (!token) {
-        router.push("/");
-        return;
-      }
-
-      if (checkTokenExpiration()) {
-        return;
-      }
-    };
-
-    checkUser();
-  }, [token, router]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (token) {
-        checkTokenExpiration();
-      }
-    }, 60000);
-
-    return () => clearInterval(interval);
-  }, [token]);
-
-  useEffect(() => {
-    if (!isHydrated) return;
-
-    if (!token) return;
-
-    if (!cliente) return;
-
-    if (isLoadingPermisos) return;
-
-    const hasPermission = hasPermissionForCurrentRoute();
-
-    if (hasPermission === null) return;
-
-    if (!hasPermission) {
-      router.push("/not-found");
-      return;
-    }
-
-    setCheckingPermissions(false);
-  }, [cliente, pathname, token, isLoadingPermisos, isHydrated, router]);
-
-  useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "auto";
     };
   }, []);
 
-  if (loading || checkingPermissions || !isHydrated || isLoadingPermisos) {
+  if (loading) {
     return <FullScreenLoader />;
   }
 
   return (
     <div className="flex h-screen bg-gray-50">
       <SidebarAdmin handleLogout={handleLogout} />
-
       <ShetContentComp
         setMobileSidebarOpen={setMobileSidebarOpen}
         handleLogout={handleLogout}
         mobileSidebarOpen={mobileSidebarOpen}
       />
-
       <div className="flex flex-1 flex-col overflow-hidden">
         <NavBar
           setMobileSidebarOpen={setMobileSidebarOpen}
           handleLogout={handleLogout}
         />
-
         <main className="flex-1 overflow-y-auto bg-gray-50 md:p-6">
           {children}
         </main>
       </div>
-
       <SessionExpiredModal
         isOpen={showSessionModal}
         onClose={handleSessionExpired}

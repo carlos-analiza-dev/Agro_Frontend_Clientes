@@ -168,6 +168,11 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     : "Sin raza"}{" "}
                 - {animal.sexo}
               </p>
+              {animal.nombre_animal && (
+                <p className="text-sm text-muted-foreground">
+                  {animal.nombre_animal}
+                </p>
+              )}
             </div>
           </div>
 

@@ -30,9 +30,7 @@ import { CrearFinca } from "@/api/fincas/interfaces/crear-finca.interface";
 import { TipoExplotacion } from "@/helpers/data/tipoExplotacion";
 import useFincasById from "@/hooks/fincas/useFincasById";
 import EspecieCantidadPicker from "../crear-fincas/ui/EspecieCantidadPicker";
-import MapaSeleccionDireccion from "../../../../components/maps/MapaSeleccionDireccion";
-import ButtonBack from "@/components/generics/ButtonBack";
-import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
+import MapaSeleccionDireccion from "@/components/maps/MapaSeleccionDireccion";
 
 const fincaSchema = z
   .object({
@@ -83,7 +81,6 @@ export default function FincaDetailsPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [modalVisible, setModalVisible] = useState(false);
-  const isMobile = useMediaQuery("(max-width: 768px)");
   const [unidadMedida, setUnidadMedida] = useState<UnidadMedida>("ha");
   const [explotacionSeleccionada, setExplotacionSeleccionada] = useState<
     string[]
@@ -243,7 +240,6 @@ export default function FincaDetailsPage() {
 
   return (
     <div className="min-h-screen bg-background p-4">
-      <ButtonBack isMobil={isMobile} />
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-6"></div>
 

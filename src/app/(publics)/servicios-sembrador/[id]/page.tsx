@@ -30,15 +30,12 @@ import {
 import Link from "next/link";
 import { PreciosPorPai } from "@/api/servicios/interfaces/response-categorias-services";
 import SkeletonCard from "@/components/generics/SkeletonCard";
-import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
-import ButtonBack from "@/components/generics/ButtonBack";
 import Modal from "@/components/generics/Modal";
 
 const ServicioPage = () => {
   const { id } = useParams();
   const router = useRouter();
   const servicioId = id as string;
-  const isMobile = useMediaQuery("(max-width: 768px)");
   const paisStorage = localStorage.getItem("selectedCountry");
   const pais = paisStorage ? JSON.parse(paisStorage) : null;
   const paisId = pais?.id;
@@ -126,7 +123,6 @@ const ServicioPage = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 py-6 md:py-8">
         <div className="max-w-6xl mx-auto">
-          {isMobile && <ButtonBack isMobil={isMobile} />}
           <div className="mb-8">
             <Badge className="mb-4 bg-primary/10 text-primary hover:bg-primary/20">
               <CheckCircle className="w-3 h-3 mr-1" />

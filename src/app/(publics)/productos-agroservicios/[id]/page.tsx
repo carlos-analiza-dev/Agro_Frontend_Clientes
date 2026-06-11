@@ -16,7 +16,6 @@ import useGetProductoCompradoByCliente from "@/hooks/pedidos/useGetProductoCompr
 import useGetProductoOpinadoCliente from "@/hooks/opiniones/useGetProductoOpinadoCliente";
 import Paginacion from "@/components/generics/Paginacion";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
-import ButtonBack from "@/components/generics/ButtonBack";
 import CardDetailsProducto from "@/components/products/CardDetailsProducto";
 import DetailsProducto from "@/components/products/DetailsProducto";
 import FormOpinionProducto from "@/components/products/FormOpinionProducto";
@@ -269,8 +268,6 @@ const ProductDetailsPage = () => {
     <div className="container">
       <div>
         <div className="flex justify-between items-center">
-          {isMobile && <ButtonBack isMobil={isMobile} />}
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button

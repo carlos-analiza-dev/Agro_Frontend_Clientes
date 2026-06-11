@@ -15,8 +15,6 @@ import useGetRatingProducto from "@/hooks/rating/useGetRatingProducto";
 import useGetProductoCompradoByCliente from "@/hooks/pedidos/useGetProductoCompradoByCliente";
 import useGetProductoOpinadoCliente from "@/hooks/opiniones/useGetProductoOpinadoCliente";
 import Paginacion from "@/components/generics/Paginacion";
-import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
-import ButtonBack from "@/components/generics/ButtonBack";
 import CardDetailsProducto from "@/components/products/CardDetailsProducto";
 import DetailsProducto from "@/components/products/DetailsProducto";
 import ProductosRelacionados from "@/components/products/ProductosRelacionados";
@@ -29,7 +27,6 @@ import { ResponseInterfazPais } from "@/api/sucursales/interfaces/response-sucur
 const ProductDetailsPage = () => {
   const { id: productoId } = useParams();
   const { esFavorito, toggleFavorito } = useFavoritos();
-  const isMobile = useMediaQuery("(max-width: 768px)");
   const { cliente } = useAuthStore();
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const paisId = cliente?.pais.id || "";
@@ -246,8 +243,6 @@ const ProductDetailsPage = () => {
   return (
     <div className="container">
       <div>
-        <ButtonBack isMobil={isMobile} />
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
           <div className="w-full">
             <CardDetailsProducto

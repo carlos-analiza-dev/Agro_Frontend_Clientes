@@ -1,9 +1,7 @@
 "use client";
-import ButtonBack from "@/components/generics/ButtonBack";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import useGetPermisosByCliente from "@/hooks/permisos/useGetPermisosByCliente";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import TablePermisosAsignados from "../../ui/TablePermisosAsignados";
 import { EditarPermisoByCliente } from "@/api/permisos/accions/editar-permiso_by_cliente";
 import { EliminarPermisoByCliente } from "@/api/permisos/accions/eliminar-permiso_by_cliente";
@@ -14,7 +12,6 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import useGetPermisosPropietario from "@/hooks/permisos/useGetPermisosPropietario";
 import Modal from "@/components/generics/Modal";
-import TablePermisosCliente from "../../ui/TablePermisosCliente";
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -22,6 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { CrearPermisoClienteInterface } from "@/api/permisos/interface/crear-permiso-cliente.interface";
 import { CrearPermisoByCliente } from "@/api/permisos/accions/crear-permiso_by_cliente";
+import TablePermisosCliente from "../../ui/TablePermisosCliente";
 
 const AsignarPermisosPage = () => {
   const queryClient = useQueryClient();
@@ -33,7 +31,6 @@ const AsignarPermisosPage = () => {
   const [permisosSeleccionados, setPermisosSeleccionados] = useState<string[]>(
     [],
   );
-  const isMobile = useMediaQuery("(max-width: 768px)");
 
   const handlePermisoChange = async (
     permisoId: string,
@@ -137,7 +134,6 @@ const AsignarPermisosPage = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
         <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-          <ButtonBack isMobil={isMobile} />
           <h1 className="text-xl sm:text-2xl font-bold leading-tight">
             Permisos Asignados
           </h1>

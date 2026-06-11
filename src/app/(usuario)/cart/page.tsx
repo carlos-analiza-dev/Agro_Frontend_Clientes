@@ -15,8 +15,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import { useState } from "react";
-import ButtonBack from "@/components/generics/ButtonBack";
-import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import ResumenPedido, {
   UbicacionPedido,
 } from "@/components/cart/ResumenPedido";
@@ -32,7 +30,6 @@ const CarritoPage = () => {
   const [isErrorAuth, setIsErrorAuth] = useState("");
   const clienteId = cliente?.id || "";
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
-  const isMobile = useMediaQuery("(max-width: 768px)");
   const {
     cart,
     removeFromCart,
@@ -190,7 +187,6 @@ const CarritoPage = () => {
   if (cart.length === 0) {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
-        <ButtonBack isMobil={isMobile} />
         <ShoppingCart className="h-24 w-24 text-gray-400 mx-auto mb-6" />
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
           Tu carrito está vacío
@@ -204,7 +200,6 @@ const CarritoPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <ButtonBack isMobil={isMobile} />
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Carrito de Compras</h1>
         <p className="text-gray-600 mt-2">

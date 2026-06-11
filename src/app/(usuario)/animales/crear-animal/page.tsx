@@ -28,7 +28,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ArrowLeft, ArrowRight, InfoIcon, PawPrintIcon } from "lucide-react";
+import { ArrowRight, InfoIcon, PawPrintIcon } from "lucide-react";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import {
   CrearAnimalByFinca,
@@ -44,19 +44,25 @@ import { alimentosOptions } from "@/helpers/data/alimentos";
 import { dataProduccion } from "@/helpers/data/dataProduccion";
 import { dataTipoProduccion } from "@/helpers/data/dataTipoProduccion";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import ButtonBack from "@/components/generics/ButtonBack";
-import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
+import useGetAnimalesPropietario from "@/hooks/animales/useGetAnimalesPropietario";
+import { SexoAnimal } from "@/interfaces/enums/animales/sexo-animal.enum";
+import { Animal } from "@/api/animales/interfaces/response-animales.interface";
 
 const CrearAnimalPage = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { cliente } = useAuthStore();
-  const isMobile = useMediaQuery("(max-width: 768px)");
   const [activeTab, setActiveTab] = useState("animal");
   const [showIdentifierHelp, setShowIdentifierHelp] = useState(false);
   const [showIdentifierHelpPadre, setShowIdentifierHelpPadre] = useState(false);
   const [showIdentifierHelpMadre, setShowIdentifierHelpMadre] = useState(false);
-
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [edadAnimal, setEdadAnimal] = useState(0);
+  const [isPadreFinca, setIsPadreFinca] = useState(false);
+  const [isMadreFinca, setIsMadreFinca] = useState(false);
+  const [selectedMadreId, setSelectedMadreId] = useState("");
+  const [selectedPadreId, setSelectedPadreId] = useState("");
   const {
     register,
     handleSubmit,
@@ -82,7 +88,80 @@ const CrearAnimalPage = () => {
   const especieId = watch("especie");
   const { data: razas } = useGetRazasByEspecie(especieId);
   const { data: fincas } = useFincasPropietarios(cliente?.id ?? "");
+  const { data: machos, isLoading: cargando_machos } =
+    useGetAnimalesPropietario({ sexo: SexoAnimal.Macho, especieId });
+  const { data: hembras, isLoading: cargando_hembras } =
+    useGetAnimalesPropietario({ sexo: SexoAnimal.Hembra, especieId });
   const selectedSexo = watch("sexo");
+
+  const fechaNacimiento = watch("fecha_nacimiento");
+
+  useEffect(() => {
+    if (!fechaNacimiento) {
+      setEdadAnimal(0);
+      setValue("edad_promedio", 0);
+      return;
+    }
+
+    const nacimiento = new Date(fechaNacimiento);
+    const hoy = new Date();
+
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+
+    const mes = hoy.getMonth() - nacimiento.getMonth();
+    const dia = hoy.getDate() - nacimiento.getDate();
+
+    if (mes < 0 || (mes === 0 && dia < 0)) {
+      edad--;
+    }
+
+    setEdadAnimal(edad);
+    setValue("edad_promedio", edad, {
+      shouldValidate: true,
+    });
+  }, [fechaNacimiento]);
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+
+    if (files.length + selectedImages.length > 5) {
+      toast.error("Máximo 5 imágenes permitidas");
+      return;
+    }
+
+    const validFiles = files.filter((file) => {
+      const isValidType = file.type.startsWith("image/");
+      const isValidSize = file.size <= 5 * 1024 * 1024;
+
+      if (!isValidType) {
+        toast.error(`El archivo ${file.name} no es una imagen válida`);
+        return false;
+      }
+      if (!isValidSize) {
+        toast.error(`La imagen ${file.name} excede el límite de 5MB`);
+        return false;
+      }
+      return true;
+    });
+
+    setSelectedImages((prev) => [...prev, ...validFiles]);
+
+    const newPreviews = validFiles.map((file) => URL.createObjectURL(file));
+    setImagePreviews((prev) => [...prev, ...newPreviews]);
+  };
+
+  const removeImage = (index: number) => {
+    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
+
+    URL.revokeObjectURL(imagePreviews[index]);
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  useEffect(() => {
+    return () => {
+      imagePreviews.forEach((preview) => URL.revokeObjectURL(preview));
+    };
+  }, []);
 
   const especiesItmes =
     especies?.data.map((especie) => ({
@@ -256,12 +335,14 @@ const CrearAnimalPage = () => {
     })) || [];
 
   const mutation = useMutation({
-    mutationFn: (data: CrearAnimalByFinca) => CreateAnimal(data),
+    mutationFn: (data: FormData) => CreateAnimal(data),
     onSuccess: () => {
       toast.success("Animal creado correctamente");
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
       reset();
       router.push("/animales");
+      setSelectedMadreId("");
+      setSelectedPadreId("");
     },
     onError: (error) => {
       if (isAxiosError(error)) {
@@ -282,26 +363,13 @@ const CrearAnimalPage = () => {
   const onSubmit = (data: CrearAnimalByFinca) => {
     if (!cliente?.id) return;
 
-    if (!data.especie) {
-      toast.error("Debes seleccionar una especie");
+    if (isMadreFinca && !selectedMadreId) {
+      toast.error("Debes seleccionar la madre para poder crear el animal");
       return;
     }
 
-    if (!data.razaIds || data.razaIds.length === 0) {
-      toast.error("Debes seleccionar al menos una raza");
-      return;
-    }
-
-    if (!data.sexo) {
-      toast.error("Debes seleccionar un sexo");
-      return;
-    }
-
-    if (
-      !data.identificador ||
-      !/^[A-ZÁÉÍÓÚÑ]{2}[A-ZÁÉÍÓÚÑ]{3,7}[12]-\d{6}$/.test(data.identificador)
-    ) {
-      toast.error("El identificador debe tener 6 dígitos");
+    if (isPadreFinca && !selectedPadreId) {
+      toast.error("Debes seleccionar el padre para poder crear el animal");
       return;
     }
 
@@ -314,15 +382,94 @@ const CrearAnimalPage = () => {
     delete (animalData as any).identificador_temp_padre;
     delete (animalData as any).identificador_temp_madre;
 
-    mutation.mutate(animalData);
+    const formData = new FormData();
+
+    Object.entries(animalData).forEach(([key, value]) => {
+      if (
+        value === undefined ||
+        value === null ||
+        key === "razaIds" ||
+        key === "razas_padre" ||
+        key === "razas_madre" ||
+        key === "tipo_alimentacion" ||
+        key === "complementos" ||
+        key === "edad_promedio" ||
+        key === "fecha_nacimiento" ||
+        key === "numero_parto_madre"
+      ) {
+        return;
+      }
+
+      formData.append(key, String(value));
+    });
+
+    formData.append("castrado", String(data.castrado));
+    formData.append("esterelizado", String(data.esterelizado));
+    formData.append("numero_parto_madre", String(data.numero_parto_madre));
+    if (data.fecha_nacimiento) {
+      formData.append("fecha_nacimiento", data.fecha_nacimiento);
+    }
+    formData.append("razaIds", JSON.stringify(data.razaIds));
+    if (data.razas_padre) {
+      formData.append("razas_padre", JSON.stringify(data.razas_padre));
+    }
+    if (data.razas_madre) {
+      formData.append("razas_madre", JSON.stringify(data.razas_madre));
+    }
+    data.tipo_alimentacion.forEach((item, index) => {
+      formData.append(`tipo_alimentacion[${index}][alimento]`, item.alimento);
+      formData.append(`tipo_alimentacion[${index}][origen]`, item.origen);
+
+      if (item.porcentaje_comprado != null) {
+        formData.append(
+          `tipo_alimentacion[${index}][porcentaje_comprado]`,
+          String(item.porcentaje_comprado),
+        );
+      }
+
+      if (item.porcentaje_producido != null) {
+        formData.append(
+          `tipo_alimentacion[${index}][porcentaje_producido]`,
+          String(item.porcentaje_producido),
+        );
+      }
+    });
+    const edadParaEnviar =
+      edadAnimal !== undefined && edadAnimal !== null && edadAnimal !== 0
+        ? edadAnimal
+        : data.edad_promedio || 0;
+
+    formData.append("edad_promedio", String(edadParaEnviar));
+
+    if (selectedMadreId) {
+      formData.append("madreId", selectedMadreId);
+    }
+
+    if (selectedPadreId) {
+      formData.append("padreId", selectedPadreId);
+    }
+
+    if (data.complementos && data.complementos.length > 0) {
+      data.complementos.forEach((item, index) => {
+        formData.append(
+          `complementos[${index}][complemento]`,
+          item.complemento,
+        );
+      });
+    }
+
+    selectedImages.forEach((image) => {
+      formData.append("images", image);
+    });
+
+    mutation.mutate(formData as any);
   };
 
   return (
     <div className="container mx-auto max-w-4xl">
-      <ButtonBack isMobil={isMobile} />
       <div className="flex items-center mb-6">
-        <PawPrintIcon className="h-8 w-8 mr-2" />
-        <h1 className="text-3xl font-bold">Crear Nuevo Animal</h1>
+        <PawPrintIcon className="h-5 w-5 md:h-8 md:w-8 mr-2" />
+        <h1 className="text-lg md:text-3xl font-bold">Crear Nuevo Animal</h1>
       </div>
 
       <Tabs
@@ -392,7 +539,20 @@ const CrearAnimalPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Color</Label>
+                  <Label>Nombre (opcional)</Label>
+                  <Input
+                    {...register("nombre_animal")}
+                    placeholder="Nombre del animal"
+                  />
+                  {errors.nombre_animal && (
+                    <p className="text-sm text-red-500">
+                      {errors.nombre_animal.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Color (opcional)</Label>
                   <Input
                     {...register("color")}
                     placeholder="Color del animal"
@@ -440,7 +600,7 @@ const CrearAnimalPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Razas del Animal</Label>
+                  <Label>Razas del Animal *</Label>
                   <Select
                     value=""
                     onValueChange={(value) => {
@@ -499,7 +659,7 @@ const CrearAnimalPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Nivel de Pureza</Label>
+                  <Label>Nivel de Pureza (opcional)</Label>
                   <Select
                     value={watch("pureza") || ""}
                     onValueChange={(value) => setValue("pureza", value)}
@@ -518,7 +678,7 @@ const CrearAnimalPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Tipo de Reproducción</Label>
+                  <Label>Tipo de Reproducción *</Label>
                   <Select
                     value={watch("tipo_reproduccion") || ""}
                     onValueChange={(value) =>
@@ -544,7 +704,7 @@ const CrearAnimalPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Producción</Label>
+                  <Label>Producción *</Label>
                   <Select
                     value={watch("produccion") || ""}
                     onValueChange={(value) => setValue("produccion", value)}
@@ -568,7 +728,7 @@ const CrearAnimalPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Tipo de Producción</Label>
+                  <Label>Tipo de Producción *</Label>
                   <Select
                     value={watch("tipo_produccion") || ""}
                     onValueChange={(value) =>
@@ -594,7 +754,9 @@ const CrearAnimalPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="fecha_nacimiento">Fecha de Nacimiento</Label>
+                  <Label htmlFor="fecha_nacimiento">
+                    Fecha de Nacimiento (opcional)
+                  </Label>
                   <Input
                     id="fecha_nacimiento"
                     type="date"
@@ -613,7 +775,37 @@ const CrearAnimalPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Tipo de Alimentación</Label>
+                  <Label>Edad Promedio *</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    value={edadAnimal}
+                    disabled={!!fechaNacimiento}
+                    onChange={(e) => {
+                      const value =
+                        e.target.value === "" ? 0 : Number(e.target.value);
+                      setEdadAnimal(value);
+                      setValue("edad_promedio", value, {
+                        shouldValidate: true,
+                      });
+                    }}
+                    placeholder="Edad en años"
+                  />
+                  {errors.edad_promedio && (
+                    <p className="text-sm text-red-500">
+                      {errors.edad_promedio.message}
+                    </p>
+                  )}
+                  {fechaNacimiento && (
+                    <p className="text-xs text-gray-500">
+                      La edad se calcula automáticamente desde la fecha de
+                      nacimiento
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Tipo de Alimentación *</Label>
                   <div className="border rounded-md p-3 space-y-3">
                     {alimentosOptions.map((alimento) => {
                       const alimentoSeleccionado = watch(
@@ -785,7 +977,7 @@ const CrearAnimalPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Tipo de Complemento</Label>
+                  <Label>Tipo de Complemento *</Label>
                   <div className="grid grid-cols-2 gap-2">
                     {complementosOptions.map((complemento) => (
                       <div
@@ -929,6 +1121,51 @@ const CrearAnimalPage = () => {
                   </div>
                 )}
 
+                <div className="space-y-4">
+                  <Label className="text-base font-medium">
+                    Imágenes del Animal (Máximo 5)
+                  </Label>
+
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageSelect}
+                      className="cursor-pointer text-sm file:mr-2 file:py-2 file:px-3 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 file:border-none file:rounded-md hover:file:bg-blue-100"
+                      disabled={selectedImages.length >= 5}
+                    />
+                    <p className="text-xs text-gray-500 mt-3">
+                      📷 Formatos: JPG, PNG, GIF | Máximo 5MB por imagen
+                    </p>
+                  </div>
+
+                  {imagePreviews.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
+                      {imagePreviews.map((preview, index) => (
+                        <div
+                          key={index}
+                          className="relative group aspect-square"
+                        >
+                          <img
+                            src={preview}
+                            alt={`Preview ${index + 1}`}
+                            className="w-full h-full object-cover rounded-lg border shadow-sm"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center hover:bg-red-600 transition-all shadow-md active:scale-95"
+                            aria-label="Eliminar imagen"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 <Button type="button" onClick={() => setActiveTab("padre")}>
                   Datos del Padre <ArrowRight />
                 </Button>
@@ -943,179 +1180,233 @@ const CrearAnimalPage = () => {
                 <CardTitle>Datos del Padre</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Nombre Padre (opcional)</Label>
-                  <Input
-                    {...register("nombre_padre")}
-                    placeholder="Nombre del padre"
-                  />
-                  {errors.nombre_padre && (
-                    <p className="text-sm text-red-500">
-                      {errors.nombre_padre.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Arete Padre (6 dígitos)</Label>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      value={watch("identificador_temp_padre") || ""}
-                      onChange={(e) =>
-                        handleIdentifierChangePadre(e.target.value)
-                      }
-                      placeholder="000000"
-                      maxLength={6}
-                      className="flex-1"
-                    />
-                    <TooltipProvider>
-                      <Tooltip
-                        open={showIdentifierHelpPadre}
-                        onOpenChange={setShowIdentifierHelpPadre}
-                      >
-                        <TooltipTrigger asChild>
-                          <Button type="button" variant="outline" size="icon">
-                            <InfoIcon className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>
-                            PRIMEROS SEIS DÍGITOS DE IDENTIFICACIÓN DEL ARETE
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                  {errors.arete_padre && (
-                    <p className="text-sm text-red-500">
-                      {errors.arete_padre.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Razas del Padre</Label>
-                  <Select
-                    value=""
-                    onValueChange={(value) => {
-                      const currentValues = watch("razas_padre") || [];
-                      if (!currentValues.includes(value)) {
-                        setValue("razas_padre", [...currentValues, value]);
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="padreFinca"
+                    checked={isPadreFinca}
+                    onCheckedChange={(checked) => {
+                      setIsPadreFinca(checked === true);
+                      if (checked === false) {
+                        setSelectedPadreId("");
                       }
                     }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona una o más razas" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {razas?.data
-                        .filter(
-                          (raza) => !watch("razas_padre")?.includes(raza.id),
-                        )
-                        .map((raza) => (
-                          <SelectItem key={raza.id} value={raza.id}>
-                            {raza.nombre}
+                  />
+                  <Label htmlFor="padreFinca">
+                    El padre pertenece a esta finca
+                  </Label>
+                </div>
+                {isPadreFinca ? (
+                  <div className="space-y-2">
+                    <Label>Seleccionar Padre *</Label>
+                    <Select
+                      value={selectedPadreId}
+                      onValueChange={(value) => setSelectedPadreId(value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona el padre" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {cargando_machos ? (
+                          <SelectItem value="loading" disabled>
+                            Cargando...
                           </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
-
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {watch("razas_padre")?.map((razaId) => {
-                      const raza = razas?.data.find((r) => r.id === razaId);
-                      return raza ? (
-                        <span
-                          key={razaId}
-                          className="bg-primary text-primary-foreground px-2 py-1 rounded text-sm flex items-center gap-1"
-                        >
-                          {raza.nombre}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const currentValues = watch("razas_padre") || [];
-                              setValue(
-                                "razas_padre",
-                                currentValues.filter((v) => v !== razaId),
-                              );
-                            }}
-                            className="ml-1 rounded-full hover:bg-primary-foreground hover:text-primary"
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ) : null;
-                    })}
+                        ) : machos && machos.length > 0 ? (
+                          machos?.map((macho: Animal) => (
+                            <SelectItem key={macho.id} value={macho.id}>
+                              {macho.identificador}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <p>No se encontraron machos disponibles</p>
+                        )}
+                      </SelectContent>
+                    </Select>
                   </div>
+                ) : (
+                  <div>
+                    <div className="space-y-2">
+                      <Label>Nombre Padre (opcional)</Label>
+                      <Input
+                        {...register("nombre_padre")}
+                        placeholder="Nombre del padre"
+                      />
+                      {errors.nombre_padre && (
+                        <p className="text-sm text-red-500">
+                          {errors.nombre_padre.message}
+                        </p>
+                      )}
+                    </div>
 
-                  {errors.razas_padre && (
-                    <p className="text-sm text-red-500">
-                      {errors.razas_padre.message}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label>Nivel de Pureza del Padre</Label>
-                  <Select
-                    value={watch("pureza_padre") || ""}
-                    onValueChange={(value) => setValue("pureza_padre", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona nivel de pureza" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {purezaOptions.map((pureza) => (
-                        <SelectItem key={pureza.value} value={pureza.value}>
-                          {pureza.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.pureza_padre && (
-                    <p className="text-sm text-red-500">
-                      {errors.pureza_padre.message}
-                    </p>
-                  )}
-                </div>
+                    <div className="space-y-2">
+                      <Label>Arete Padre (6 dígitos) (opcional)</Label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          value={watch("identificador_temp_padre") || ""}
+                          onChange={(e) =>
+                            handleIdentifierChangePadre(e.target.value)
+                          }
+                          placeholder="000000"
+                          maxLength={6}
+                          className="flex-1"
+                        />
+                        <TooltipProvider>
+                          <Tooltip
+                            open={showIdentifierHelpPadre}
+                            onOpenChange={setShowIdentifierHelpPadre}
+                          >
+                            <TooltipTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                              >
+                                <InfoIcon className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>
+                                PRIMEROS SEIS DÍGITOS DE IDENTIFICACIÓN DEL
+                                ARETE
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                      {errors.arete_padre && (
+                        <p className="text-sm text-red-500">
+                          {errors.arete_padre.message}
+                        </p>
+                      )}
+                    </div>
 
-                <div className="space-y-2">
-                  <Label>Nombre Criador del Padre</Label>
-                  <Input
-                    {...register("nombre_criador_padre")}
-                    placeholder="Nombre del criador"
-                  />
-                  {errors.nombre_criador_padre && (
-                    <p className="text-sm text-red-500">
-                      {errors.nombre_criador_padre.message}
-                    </p>
-                  )}
-                </div>
+                    <div className="space-y-2">
+                      <Label>Razas del Padre *</Label>
+                      <Select
+                        value=""
+                        onValueChange={(value) => {
+                          const currentValues = watch("razas_padre") || [];
+                          if (!currentValues.includes(value)) {
+                            setValue("razas_padre", [...currentValues, value]);
+                          }
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona una o más razas" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {razas?.data
+                            .filter(
+                              (raza) =>
+                                !watch("razas_padre")?.includes(raza.id),
+                            )
+                            .map((raza) => (
+                              <SelectItem key={raza.id} value={raza.id}>
+                                {raza.nombre}
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
 
-                <div className="space-y-2">
-                  <Label>Nombre Propietario del Padre</Label>
-                  <Input
-                    {...register("nombre_propietario_padre")}
-                    placeholder="Nombre del propietario"
-                  />
-                  {errors.nombre_propietario_padre && (
-                    <p className="text-sm text-red-500">
-                      {errors.nombre_propietario_padre.message}
-                    </p>
-                  )}
-                </div>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {watch("razas_padre")?.map((razaId) => {
+                          const raza = razas?.data.find((r) => r.id === razaId);
+                          return raza ? (
+                            <span
+                              key={razaId}
+                              className="bg-primary text-primary-foreground px-2 py-1 rounded text-sm flex items-center gap-1"
+                            >
+                              {raza.nombre}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const currentValues =
+                                    watch("razas_padre") || [];
+                                  setValue(
+                                    "razas_padre",
+                                    currentValues.filter((v) => v !== razaId),
+                                  );
+                                }}
+                                className="ml-1 rounded-full hover:bg-primary-foreground hover:text-primary"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ) : null;
+                        })}
+                      </div>
 
-                <div className="space-y-2">
-                  <Label>Nombre de la Finca de Origen del Padre</Label>
-                  <Input
-                    {...register("nombre_finca_origen_padre")}
-                    placeholder="Nombre de la finca"
-                  />
-                  {errors.nombre_finca_origen_padre && (
-                    <p className="text-sm text-red-500">
-                      {errors.nombre_finca_origen_padre.message}
-                    </p>
-                  )}
-                </div>
+                      {errors.razas_padre && (
+                        <p className="text-sm text-red-500">
+                          {errors.razas_padre.message}
+                        </p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Nivel de Pureza del Padre (opcional)</Label>
+                      <Select
+                        value={watch("pureza_padre") || ""}
+                        onValueChange={(value) =>
+                          setValue("pureza_padre", value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona nivel de pureza" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {purezaOptions.map((pureza) => (
+                            <SelectItem key={pureza.value} value={pureza.value}>
+                              {pureza.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {errors.pureza_padre && (
+                        <p className="text-sm text-red-500">
+                          {errors.pureza_padre.message}
+                        </p>
+                      )}
+                    </div>
 
+                    <div className="space-y-2">
+                      <Label>Nombre Criador del Padre *</Label>
+                      <Input
+                        {...register("nombre_criador_padre")}
+                        placeholder="Nombre del criador"
+                      />
+                      {errors.nombre_criador_padre && (
+                        <p className="text-sm text-red-500">
+                          {errors.nombre_criador_padre.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Nombre Propietario del Padre *</Label>
+                      <Input
+                        {...register("nombre_propietario_padre")}
+                        placeholder="Nombre del propietario"
+                      />
+                      {errors.nombre_propietario_padre && (
+                        <p className="text-sm text-red-500">
+                          {errors.nombre_propietario_padre.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Nombre de la Finca de Origen del Padre *</Label>
+                      <Input
+                        {...register("nombre_finca_origen_padre")}
+                        placeholder="Nombre de la finca"
+                      />
+                      {errors.nombre_finca_origen_padre && (
+                        <p className="text-sm text-red-500">
+                          {errors.nombre_finca_origen_padre.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
                 <div className="flex gap-4">
                   <Button
                     type="button"
@@ -1139,193 +1430,255 @@ const CrearAnimalPage = () => {
                 <CardTitle>Datos de la Madre</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Nombre Madre (opcional)</Label>
-                  <Input
-                    value={watch("nombre_madre") || ""}
-                    onChange={(e) => setValue("nombre_madre", e.target.value)}
-                    placeholder="Nombre de la madre"
-                    className="flex-1"
-                  />
-                  {errors.nombre_madre && (
-                    <p className="text-sm text-red-500">
-                      {errors.nombre_madre.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Arete Madre (6 dígitos)</Label>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      value={watch("identificador_temp_madre") || ""}
-                      onChange={(e) =>
-                        handleIdentifierChangeMadre(e.target.value)
-                      }
-                      placeholder="000000"
-                      maxLength={6}
-                      className="flex-1"
-                    />
-                    <TooltipProvider>
-                      <Tooltip
-                        open={showIdentifierHelpMadre}
-                        onOpenChange={setShowIdentifierHelpMadre}
-                      >
-                        <TooltipTrigger asChild>
-                          <Button type="button" variant="outline" size="icon">
-                            <InfoIcon className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>
-                            PRIMEROS SEIS DÍGITOS DE IDENTIFICACIÓN DEL ARETE
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                  {errors.arete_madre && (
-                    <p className="text-sm text-red-500">
-                      {errors.arete_madre.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Razas de la Madre</Label>
-                  <Select
-                    value=""
-                    onValueChange={(value) => {
-                      const currentValues = watch("razas_madre") || [];
-                      if (!currentValues.includes(value)) {
-                        setValue("razas_madre", [...currentValues, value]);
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="madreFinca"
+                    checked={isMadreFinca}
+                    onCheckedChange={(checked) => {
+                      setIsMadreFinca(checked === true);
+                      if (checked === false) {
+                        setSelectedMadreId("");
                       }
                     }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona una o más razas" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {razas?.data
-                        .filter(
-                          (raza) => !watch("razas_madre")?.includes(raza.id),
-                        )
-                        .map((raza) => (
-                          <SelectItem key={raza.id} value={raza.id}>
-                            {raza.nombre}
+                  />
+                  <Label htmlFor="madreFinca">
+                    La madre pertenece a esta finca
+                  </Label>
+                </div>
+
+                {isMadreFinca ? (
+                  <div className="space-y-2">
+                    <Label>Seleccionar Madre *</Label>
+                    <Select
+                      value={selectedMadreId}
+                      onValueChange={(value) => setSelectedMadreId(value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona la madre" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {cargando_hembras ? (
+                          <SelectItem value="loading" disabled>
+                            Cargando...
                           </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
-
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {watch("razas_madre")?.map((razaId) => {
-                      const raza = razas?.data.find((r) => r.id === razaId);
-                      return raza ? (
-                        <span
-                          key={razaId}
-                          className="bg-primary text-primary-foreground px-2 py-1 rounded text-sm flex items-center gap-1"
-                        >
-                          {raza.nombre}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const currentValues = watch("razas_madre") || [];
-                              setValue(
-                                "razas_madre",
-                                currentValues.filter((v) => v !== razaId),
-                              );
-                            }}
-                            className="ml-1 rounded-full hover:bg-primary-foreground hover:text-primary"
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ) : null;
-                    })}
+                        ) : hembras && hembras.length > 0 ? (
+                          hembras?.map((hembra: Animal) => (
+                            <SelectItem key={hembra.id} value={hembra.id}>
+                              {hembra.identificador} -{" "}
+                              {hembra.nombre_animal || "Sin nombre"}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <p>No se encontraron hembras disponibles</p>
+                        )}
+                      </SelectContent>
+                    </Select>
                   </div>
+                ) : (
+                  <>
+                    <div className="space-y-2">
+                      <Label>Nombre Madre (opcional)</Label>
+                      <Input
+                        value={watch("nombre_madre") || ""}
+                        onChange={(e) =>
+                          setValue("nombre_madre", e.target.value)
+                        }
+                        placeholder="Nombre de la madre"
+                        className="flex-1"
+                      />
+                      {errors.nombre_madre && (
+                        <p className="text-sm text-red-500">
+                          {errors.nombre_madre.message}
+                        </p>
+                      )}
+                    </div>
 
-                  {errors.razas_madre && (
-                    <p className="text-sm text-red-500">
-                      {errors.razas_madre.message}
-                    </p>
-                  )}
-                </div>
+                    <div className="space-y-2">
+                      <Label>Arete Madre (6 dígitos) (opcional)</Label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          value={watch("identificador_temp_madre") || ""}
+                          onChange={(e) =>
+                            handleIdentifierChangeMadre(e.target.value)
+                          }
+                          placeholder="000000"
+                          maxLength={6}
+                          className="flex-1"
+                        />
+                        <TooltipProvider>
+                          <Tooltip
+                            open={showIdentifierHelpMadre}
+                            onOpenChange={setShowIdentifierHelpMadre}
+                          >
+                            <TooltipTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                              >
+                                <InfoIcon className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>
+                                PRIMEROS SEIS DÍGITOS DE IDENTIFICACIÓN DEL
+                                ARETE
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                      {errors.arete_madre && (
+                        <p className="text-sm text-red-500">
+                          {errors.arete_madre.message}
+                        </p>
+                      )}
+                    </div>
 
+                    <div className="space-y-2">
+                      <Label>Razas de la Madre *</Label>
+                      <Select
+                        value=""
+                        onValueChange={(value) => {
+                          const currentValues = watch("razas_madre") || [];
+                          if (!currentValues.includes(value)) {
+                            setValue("razas_madre", [...currentValues, value]);
+                          }
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona una o más razas" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {razas?.data
+                            .filter(
+                              (raza) =>
+                                !watch("razas_madre")?.includes(raza.id),
+                            )
+                            .map((raza) => (
+                              <SelectItem key={raza.id} value={raza.id}>
+                                {raza.nombre}
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
+
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {watch("razas_madre")?.map((razaId) => {
+                          const raza = razas?.data.find((r) => r.id === razaId);
+                          return raza ? (
+                            <span
+                              key={razaId}
+                              className="bg-primary text-primary-foreground px-2 py-1 rounded text-sm flex items-center gap-1"
+                            >
+                              {raza.nombre}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const currentValues =
+                                    watch("razas_madre") || [];
+                                  setValue(
+                                    "razas_madre",
+                                    currentValues.filter((v) => v !== razaId),
+                                  );
+                                }}
+                                className="ml-1 rounded-full hover:bg-primary-foreground hover:text-primary"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ) : null;
+                        })}
+                      </div>
+
+                      {errors.razas_madre && (
+                        <p className="text-sm text-red-500">
+                          {errors.razas_madre.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Nivel de pureza (opcional)</Label>
+                      <Select
+                        value={watch("pureza_madre") || ""}
+                        onValueChange={(value) =>
+                          setValue("pureza_madre", value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona nivel de pureza" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {purezaOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {errors.pureza_madre && (
+                        <p className="text-sm text-red-500">
+                          {errors.pureza_madre.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Nombre Criador *</Label>
+                      <Input
+                        value={watch("nombre_criador_madre") || ""}
+                        onChange={(e) =>
+                          setValue("nombre_criador_madre", e.target.value)
+                        }
+                        placeholder="Nombre del criador"
+                        className="flex-1"
+                      />
+                      {errors.nombre_criador_madre && (
+                        <p className="text-sm text-red-500">
+                          {errors.nombre_criador_madre.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Nombre Propietario *</Label>
+                      <Input
+                        value={watch("nombre_propietario_madre") || ""}
+                        onChange={(e) =>
+                          setValue("nombre_propietario_madre", e.target.value)
+                        }
+                        placeholder="Nombre del propietario"
+                        className="flex-1"
+                      />
+                      {errors.nombre_propietario_madre && (
+                        <p className="text-sm text-red-500">
+                          {errors.nombre_propietario_madre.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Nombre de la finca *</Label>
+                      <Input
+                        value={watch("nombre_finca_origen_madre") || ""}
+                        onChange={(e) =>
+                          setValue("nombre_finca_origen_madre", e.target.value)
+                        }
+                        placeholder="Nombre de la finca de origen"
+                        className="flex-1"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* NÚMERO DE PARTO - SIEMPRE VISIBLE */}
                 <div className="space-y-2">
-                  <Label>Nivel de pureza</Label>
-                  <Select
-                    value={watch("pureza_madre") || ""}
-                    onValueChange={(value) => setValue("pureza_madre", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona nivel de pureza" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {purezaOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.pureza_madre && (
-                    <p className="text-sm text-red-500">
-                      {errors.pureza_madre.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Nombre Criador</Label>
+                  <Label>Número de parto *</Label>
                   <Input
-                    value={watch("nombre_criador_madre") || ""}
-                    onChange={(e) =>
-                      setValue("nombre_criador_madre", e.target.value)
-                    }
-                    placeholder="Nombre del criador"
-                    className="flex-1"
-                  />
-                  {errors.nombre_criador_madre && (
-                    <p className="text-sm text-red-500">
-                      {errors.nombre_criador_madre.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Nombre Propietario</Label>
-                  <Input
-                    value={watch("nombre_propietario_madre") || ""}
-                    onChange={(e) =>
-                      setValue("nombre_propietario_madre", e.target.value)
-                    }
-                    placeholder="Nombre del propietario"
-                    className="flex-1"
-                  />
-                  {errors.nombre_propietario_madre && (
-                    <p className="text-sm text-red-500">
-                      {errors.nombre_propietario_madre.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Número de parto</Label>
-                  <Input
-                    value={watch("numero_parto_madre") || ""}
                     min={1}
-                    onChange={(e) => {
-                      const value = e.target.value;
-
-                      const numericValue = value ? Number(value) : undefined;
-                      setValue(
-                        "numero_parto_madre",
-                        numericValue !== undefined && !isNaN(numericValue)
-                          ? numericValue
-                          : undefined,
-                      );
-                    }}
+                    {...register("numero_parto_madre")}
+                    required
                     placeholder="Número de parto"
                     maxLength={2}
                     className="flex-1"
@@ -1336,18 +1689,6 @@ const CrearAnimalPage = () => {
                       {errors.numero_parto_madre.message}
                     </p>
                   )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Nombre de la finca</Label>
-                  <Input
-                    value={watch("nombre_finca_origen_madre") || ""}
-                    onChange={(e) =>
-                      setValue("nombre_finca_origen_madre", e.target.value)
-                    }
-                    placeholder="Nombre de la finca de origen"
-                    className="flex-1"
-                  />
                 </div>
 
                 <div className="flex gap-4">

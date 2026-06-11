@@ -38,8 +38,6 @@ import useGetHorasMedicoByFecha from "@/hooks/horarios/useGetHorasMedicoByFecha"
 import { CrearCitaInterface } from "@/api/citas/interfaces/crear-cita.interface";
 import { CreateCita } from "@/api/citas/accions/crear-cita";
 import ThemedAnimalPicker from "@/components/generics/ThemedAnimalPicker";
-import ButtonBack from "@/components/generics/ButtonBack";
-import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 
 interface HoraDisponibleItem {
   value: string;
@@ -53,7 +51,6 @@ interface HoraDisponibleItem {
 const CrearCitaPage = () => {
   const router = useRouter();
   const { cliente } = useAuthStore();
-  const isMobile = useMediaQuery("(max-width: 768px)");
   const userId = cliente?.id || "";
   const paisId = cliente?.pais.id || "";
 
@@ -330,7 +327,6 @@ const CrearCitaPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container max-w-4xl mx-auto px-4">
-        <ButtonBack isMobil={isMobile} />
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Nueva Cita Veterinaria

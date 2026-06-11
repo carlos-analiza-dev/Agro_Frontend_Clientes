@@ -4,22 +4,17 @@ import { Button } from "@/components/ui/button";
 import { useFavoritos } from "@/hooks/favoritos/useFavoritos";
 import { Heart, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
-import ButtonBack from "@/components/generics/ButtonBack";
 import ProductCard from "@/components/products/ProductCard";
 
 export default function FavoritosPage() {
   const { favoritos, limpiarFavoritos } = useFavoritos();
   const router = useRouter();
-  const isMobile = useMediaQuery("(max-width: 768px)");
 
   const tieneFavoritos = favoritos.length > 0;
 
   return (
     <div className="container mx-auto p-4 max-w-6xl">
       <div className="flex items-center justify-between mb-8">
-        <ButtonBack isMobil={isMobile} />
-
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Heart className="h-5 w-5" />

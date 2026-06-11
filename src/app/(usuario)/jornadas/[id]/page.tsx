@@ -1,16 +1,13 @@
 "use client";
-import ButtonBack from "@/components/generics/ButtonBack";
 import SkeletonCard from "@/components/generics/SkeletonCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useGetJornadasTranajadoresById from "@/hooks/jornadas-trabajadores/useGetJornadasTranajadoresById";
-import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { useParams, useRouter } from "next/navigation";
 import FormJornadaTrabajador from "../ui/FormJornadaTrabajador";
 
 const EditJornadaPage = () => {
   const { id } = useParams();
   const jornadaId = id as string;
-  const isMobile = useMediaQuery("(max-width: 768px)");
   const router = useRouter();
   const { data: jornada, isLoading } =
     useGetJornadasTranajadoresById(jornadaId);
@@ -23,7 +20,6 @@ const EditJornadaPage = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center gap-3 mb-6">
-          <ButtonBack isMobil={isMobile} />
           <h1 className="text-2xl font-bold">Editar Jornada</h1>
         </div>
 

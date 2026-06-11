@@ -11,6 +11,7 @@ import MarhetPlaceNavBar from "@/components/NavBars/MarketPlaceNavBar";
 import SidebarMarket from "@/components/SideBars/SidebarMarket";
 import { TipoCliente } from "@/interfaces/enums/clientes.enums";
 import SheetContentMarket from "@/components/generics/SheetContentMarket";
+import { LocationPermissionBanner } from "@/components/location/LocationPermissionBanner";
 
 export default function MarketPlaceLayout({
   children,
@@ -136,6 +137,7 @@ export default function MarketPlaceLayout({
 
         <main className="flex-1 overflow-y-auto bg-gray-50 md:p-6">
           {children}
+          <LocationPermissionBanner />
         </main>
       </div>
 

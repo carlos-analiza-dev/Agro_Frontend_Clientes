@@ -6,6 +6,7 @@ export interface PaginationInterface {
   offset?: number;
 
   name?: string;
+  sexo?: string;
   nombre?: string;
   categoria?: string;
   subcategoria?: string;

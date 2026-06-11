@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import SkeletonCard from "@/components/generics/SkeletonCard";
 import EmptyStateAnimales from "./ui/EmptyStateAnimales";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 
 const AnimalesPageGanadero = () => {
   const router = useRouter();
@@ -40,9 +41,11 @@ const AnimalesPageGanadero = () => {
   const [especieId, setEspecieId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
-
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const { data: fincas } = useFincasPropietarios(cliente?.id ?? "");
   const { data: especies } = useGetEspecies();
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+  const [isScrolling, setIsScrolling] = useState(false);
 
   const finca = fincaId === "all" ? "" : fincaId;
   const especie = especieId === "all" ? "" : especieId;
@@ -63,10 +66,56 @@ const AnimalesPageGanadero = () => {
   );
 
   const loadMore = useCallback(() => {
-    if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
+    if (hasNextPage && !isFetchingNextPage && !isScrolling) {
+      setIsScrolling(true);
+      fetchNextPage().finally(() => {
+        setTimeout(() => setIsScrolling(false), 500);
+      });
     }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage, isScrolling]);
+
+  useEffect(() => {
+    if (!loadMoreRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          loadMore();
+        }
+      },
+      {
+        rootMargin: "100px",
+        threshold: 0.1,
+      },
+    );
+
+    observer.observe(loadMoreRef.current);
+
+    return () => {
+      if (loadMoreRef.current) {
+        observer.unobserve(loadMoreRef.current);
+      }
+    };
+  }, [hasNextPage, isFetchingNextPage, loadMore]);
+
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const handleScroll = () => {
+      if (isFetchingNextPage || !hasNextPage) return;
+
+      const scrollPosition =
+        window.innerHeight + document.documentElement.scrollTop;
+      const threshold = document.documentElement.offsetHeight - 200;
+
+      if (scrollPosition >= threshold) {
+        loadMore();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isFetchingNextPage, hasNextPage, loadMore, isMobile]);
 
   const handleUpdateProfileImage = async (
     imageUri: string,
@@ -76,6 +125,7 @@ const AnimalesPageGanadero = () => {
     try {
       await uploadProfileImageAnimal(imageUri, animalId);
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
+      toast.success("Imagen actualizada correctamente");
     } catch (error) {
       toast.error("Error al actualizar la imagen de perfil");
     }
@@ -89,7 +139,6 @@ const AnimalesPageGanadero = () => {
 
   const handleRefresh = () => {
     refetch();
-    window.location.reload();
   };
 
   const handleAddAnimal = () => {
@@ -103,24 +152,14 @@ const AnimalesPageGanadero = () => {
     (especieId && especieId !== "all") ||
     debouncedSearchTerm !== "";
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (
-        window.innerHeight + document.documentElement.scrollTop >=
-        document.documentElement.offsetHeight - 100
-      ) {
-        loadMore();
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [loadMore]);
-
   if (isLoading) {
     return (
       <div className="container mx-auto p-4">
-        <SkeletonCard />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[...Array(6)].map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
       </div>
     );
   }
@@ -142,7 +181,7 @@ const AnimalesPageGanadero = () => {
 
   if (animales.length === 0) {
     return (
-      <div className="container mx-auto p-4">
+      <div className="container mx-auto p-4 pb-20">
         <div className="block md:flex justify-between items-center mb-6">
           <h1 className="text-lg md:text-3xl font-bold">Mis Animales</h1>
 
@@ -238,12 +277,17 @@ const AnimalesPageGanadero = () => {
           onRefresh={handleRefresh}
           isLoading={isFetchingNextPage}
         />
+
+        <FAB
+          titulo="Agregar Animal"
+          onPress={() => router.push("/animales/crear-animal")}
+        />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 pb-20">
       <div className="block md:flex justify-between items-center mb-6">
         <h1 className="text-lg md:text-3xl font-bold">Mis Animales</h1>
 
@@ -343,17 +387,22 @@ const AnimalesPageGanadero = () => {
         ))}
       </div>
 
-      {isFetchingNextPage && (
-        <div className="flex justify-center mt-6">
-          <RefreshCw className="h-6 w-6 animate-spin" />
-        </div>
-      )}
-
-      {hasNextPage && !isFetchingNextPage && (
-        <div className="flex justify-center mt-6">
-          <Button variant="outline" onClick={loadMore}>
-            Cargar más animales
-          </Button>
+      {hasNextPage && (
+        <div ref={loadMoreRef} className="flex justify-center mt-6">
+          {isFetchingNextPage ? (
+            <div className="flex items-center gap-2">
+              <RefreshCw className="h-5 w-5 animate-spin" />
+              <span className="text-sm text-gray-500">Cargando más...</span>
+            </div>
+          ) : (
+            <Button
+              variant="outline"
+              onClick={loadMore}
+              className="w-full max-w-xs"
+            >
+              Cargar más animales
+            </Button>
+          )}
         </div>
       )}
 

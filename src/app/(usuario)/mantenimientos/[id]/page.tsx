@@ -1,9 +1,7 @@
 "use client";
-import ButtonBack from "@/components/generics/ButtonBack";
 import SkeletonCard from "@/components/generics/SkeletonCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useGetMantenimientoById from "@/hooks/mantenimientos/useGetMantenimientoById";
-import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useParams, useRouter } from "next/navigation";
 import FormMantenimiento from "../ui/FormMantenimiento";
@@ -13,7 +11,6 @@ const EditarMantenimientoPage = () => {
   const mantenimientoId = id as string;
   const { cliente } = useAuthStore();
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
-  const isMobile = useMediaQuery("(max-width: 768px)");
   const router = useRouter();
   const { data: mantenimiento, isLoading } =
     useGetMantenimientoById(mantenimientoId);
@@ -26,7 +23,6 @@ const EditarMantenimientoPage = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center gap-3 mb-6">
-          <ButtonBack isMobil={isMobile} />
           <h1 className="text-2xl font-bold">Editar Mantenimiento</h1>
         </div>
 

@@ -3,6 +3,7 @@ import {
   Animal,
   ResponseAnimalesByPropietario,
 } from "../interfaces/response-animales.interface";
+import { PaginationInterface } from "@/interfaces/filtros/paginacion/paginacion.interface";
 
 export const ObtenerAnimalesByPropietario = async (
   propietarioId: string,
@@ -40,9 +41,11 @@ export const ObtenerAnimalesByPropietario = async (
   return response.data;
 };
 
-export const ObtenerAnimales = async () => {
+export const ObtenerAnimales = async (filters?: PaginationInterface) => {
   let url = `${process.env.NEXT_PUBLIC_API_URL}/animal-finca/propietario`;
 
-  const response = await veterinariaAPI.get<Animal[]>(url);
+  const response = await veterinariaAPI.get<Animal[]>(url, {
+    params: filters,
+  });
   return response.data;
 };

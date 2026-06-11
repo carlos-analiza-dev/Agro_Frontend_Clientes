@@ -39,9 +39,7 @@ import { toast } from "react-toastify";
 import { CrearFinca } from "@/api/fincas/interfaces/crear-finca.interface";
 import { CreateFinca } from "@/api/fincas/accions/crear-finca";
 import EspecieCantidadPicker from "./ui/EspecieCantidadPicker";
-import MapaSeleccionDireccion from "../../../../components/maps/MapaSeleccionDireccion";
-import ButtonBack from "@/components/generics/ButtonBack";
-import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
+import MapaSeleccionDireccion from "@/components/maps/MapaSeleccionDireccion";
 
 const fincaSchema = z
   .object({
@@ -94,7 +92,7 @@ type FincaFormData = z.infer<typeof fincaSchema>;
 
 export default function CrearFincaPage() {
   const { cliente } = useAuthStore();
-  const isMobile = useMediaQuery("(max-width: 768px)");
+
   const paisId = cliente?.pais.id || "";
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -197,7 +195,6 @@ export default function CrearFincaPage() {
 
   return (
     <div className="min-h-screen bg-background p-4">
-      <ButtonBack isMobil={isMobile} />
       <Card className="max-w-4xl mx-auto">
         <CardHeader>
           <CardTitle className="text-2xl font-bold flex items-center gap-2">

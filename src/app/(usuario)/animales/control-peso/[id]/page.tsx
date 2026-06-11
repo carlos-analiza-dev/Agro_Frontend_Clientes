@@ -18,7 +18,6 @@ import FormCalcularPesos from "./ui/FormCalcularPesos";
 import CardPesos from "./ui/CardPesos";
 import ResumenCalc from "./ui/ResumenCalc";
 import { ResponseRangoEdad } from "@/api/peso-promedio-animal/interfaces/calcular-rango-peso.interface";
-import ButtonBack from "@/components/generics/ButtonBack";
 import useGetHistorialPeso from "@/hooks/historial-pesos/useGetHistorialPeso";
 import { TableSkeleton } from "@/components/generics/TableSkeleton ";
 import TableHistorial from "./ui/TableHistorial";
@@ -26,20 +25,17 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   AlertDialog,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import FormAddPeso from "./ui/FormAddPeso";
-import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { ResponseHistorialAnimal } from "@/api/peso-promedio-animal/interfaces/obtener-historial-pesos-animal.interface";
 
 const AnimalHistorialPesoId = () => {
   const { id } = useParams();
   const animalId = id?.toString() ?? "";
-  const isMobile = useMediaQuery("(max-width: 768px)");
   const { data: historial, isLoading: cargando_historial } =
     useGetHistorialPeso(animalId);
   const [openModal, setOpenModal] = useState(false);
@@ -159,8 +155,6 @@ const AnimalHistorialPesoId = () => {
   return (
     <TooltipProvider>
       <div className="container p-4 md:p-6 space-y-6">
-        <ButtonBack isMobil={isMobile} />
-
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">

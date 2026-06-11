@@ -17,13 +17,15 @@ interface Props {
 const InfoAnimal = ({ animal }: Props) => {
   return (
     <div className="space-y-2">
-      <div className="flex items-start gap-2 rounded-md bg-background p-2">
-        <Calendar className="w-5 h-5 text-muted-foreground mt-1" />
-        <p className="text-sm text-foreground">
-          <span className="font-medium">Nacimiento:</span>{" "}
-          {animal.fecha_nacimiento}
-        </p>
-      </div>
+      {animal.fecha_nacimiento && (
+        <div className="flex items-start gap-2 rounded-md bg-background p-2">
+          <Calendar className="w-5 h-5 text-muted-foreground mt-1" />
+          <p className="text-sm text-foreground">
+            <span className="font-medium">Nacimiento:</span>{" "}
+            {animal.fecha_nacimiento}
+          </p>
+        </div>
+      )}
 
       <div className="flex items-start gap-2 rounded-md bg-background p-2">
         <CalendarCheck className="w-5 h-5 text-muted-foreground mt-1" />
@@ -33,12 +35,14 @@ const InfoAnimal = ({ animal }: Props) => {
         </p>
       </div>
 
-      <div className="flex items-start gap-2 rounded-md bg-background p-2">
-        <Palette className="w-5 h-5 text-muted-foreground mt-1" />
-        <p className="text-sm text-foreground">
-          <span className="font-medium">Color:</span> {animal.color}
-        </p>
-      </div>
+      {animal.color && (
+        <div className="flex items-start gap-2 rounded-md bg-background p-2">
+          <Palette className="w-5 h-5 text-muted-foreground mt-1" />
+          <p className="text-sm text-foreground">
+            <span className="font-medium">Color:</span> {animal.color}
+          </p>
+        </div>
+      )}
 
       <div className="flex items-start gap-2 rounded-md bg-background p-2">
         <Clock className="w-5 h-5 text-muted-foreground mt-1" />
@@ -47,12 +51,14 @@ const InfoAnimal = ({ animal }: Props) => {
         </p>
       </div>
 
-      <div className="flex items-start gap-2 rounded-md bg-background p-2">
-        <Dna className="w-5 h-5 text-muted-foreground mt-1" />
-        <p className="text-sm text-foreground">
-          <span className="font-medium">Pureza:</span> {animal.pureza}
-        </p>
-      </div>
+      {animal.pureza && (
+        <div className="flex items-start gap-2 rounded-md bg-background p-2">
+          <Dna className="w-5 h-5 text-muted-foreground mt-1" />
+          <p className="text-sm text-foreground">
+            <span className="font-medium">Pureza:</span> {animal.pureza}
+          </p>
+        </div>
+      )}
 
       <div className="flex items-start gap-2 rounded-md bg-background p-2">
         <Baby className="w-5 h-5 text-muted-foreground mt-1" />

@@ -1,8 +1,6 @@
 "use client";
-import ButtonBack from "@/components/generics/ButtonBack";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useGetObtenerIngresoById from "@/hooks/finanzas/ingresos/useGetObtenerIngresoById";
-import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { useParams, useRouter } from "next/navigation";
 import FormIngresos from "../ui/FormIngresos";
 import SkeletonCard from "@/components/generics/SkeletonCard";
@@ -10,7 +8,6 @@ import SkeletonCard from "@/components/generics/SkeletonCard";
 const EditarIngresoPage = () => {
   const { id } = useParams();
   const ingresoId = id as string;
-  const isMobile = useMediaQuery("(max-width: 768px)");
   const router = useRouter();
   const { data: ingreso, isLoading } = useGetObtenerIngresoById(ingresoId);
 
@@ -22,7 +19,6 @@ const EditarIngresoPage = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center gap-3 mb-6">
-          <ButtonBack isMobil={isMobile} />
           <h1 className="text-2xl font-bold">Editar Ingreso</h1>
         </div>
 

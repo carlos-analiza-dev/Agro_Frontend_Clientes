@@ -52,20 +52,17 @@ import useAnimalById from "@/hooks/animales/useAnimalById";
 import { useParams } from "next/navigation";
 import { ActualizarAnimal } from "@/api/animales/accions/update-animal";
 import { extractNumberFromIdentifier } from "@/helpers/funciones/extractNumberFromIdentifier ";
-import ButtonBack from "@/components/generics/ButtonBack";
-import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 
 const AnimalDetailsPage = () => {
-  const router = useRouter();
   const params = useParams();
   const animalId = params.id as string;
   const queryClient = useQueryClient();
   const { cliente } = useAuthStore();
-  const isMobile = useMediaQuery("(max-width: 768px)");
   const [activeTab, setActiveTab] = useState("animal");
   const [showIdentifierHelp, setShowIdentifierHelp] = useState(false);
   const [showIdentifierHelpPadre, setShowIdentifierHelpPadre] = useState(false);
   const [showIdentifierHelpMadre, setShowIdentifierHelpMadre] = useState(false);
+  const [edadAnimal, setEdadAnimal] = useState(0);
   const [tipoAlimentacion, setTipoAlimentacion] = useState<
     {
       alimento: string;
@@ -110,6 +107,7 @@ const AnimalDetailsPage = () => {
         especie: animal?.especie?.id || "",
         sexo: animal?.sexo || "",
         color: animal?.color || "",
+        nombre_animal: animal?.nombre_animal || "",
         produccion: animal?.produccion || "",
         tipo_produccion: animal?.tipo_produccion || "",
         identificador_temp: extractNumberFromIdentifier(animal?.identificador),
@@ -155,9 +153,34 @@ const AnimalDetailsPage = () => {
         setTipoAlimentacion(animal.tipo_alimentacion);
       }
 
-      if (animal?.complementos) {
-        const complementos = animal.complementos.map((c) => c.complemento);
-        setComplementoSeleccionados(complementos);
+      if (animal?.complementos && animal.complementos.length > 0) {
+        const complementosArray = animal.complementos.map((c) => ({
+          complemento: c.complemento,
+        }));
+        setValue("complementos", complementosArray);
+        setComplementoSeleccionados(
+          animal.complementos.map((c) => c.complemento),
+        );
+      } else {
+        setValue("complementos", []);
+        setComplementoSeleccionados([]);
+      }
+      if (animal.fecha_nacimiento) {
+        const nacimiento = new Date(animal.fecha_nacimiento);
+        const hoy = new Date();
+        let edad = hoy.getFullYear() - nacimiento.getFullYear();
+        const mes = hoy.getMonth() - nacimiento.getMonth();
+        const dia = hoy.getDate() - nacimiento.getDate();
+
+        if (mes < 0 || (mes === 0 && dia < 0)) {
+          edad--;
+        }
+        edad = Math.max(0, edad);
+        setEdadAnimal(edad);
+        setValue("edad_promedio", edad);
+      } else if (animal.edad_promedio) {
+        setEdadAnimal(Number(animal.edad_promedio));
+        setValue("edad_promedio", Number(animal.edad_promedio));
       }
     }
   }, [animalData, reset]);
@@ -167,6 +190,35 @@ const AnimalDetailsPage = () => {
   const { data: razas } = useGetRazasByEspecie(especieId);
   const { data: fincas } = useFincasPropietarios(cliente?.id ?? "");
   const selectedSexo = watch("sexo");
+
+  const fechaNacimiento = watch("fecha_nacimiento");
+
+  useEffect(() => {
+    if (!fechaNacimiento) {
+      setEdadAnimal(0);
+      setValue("edad_promedio", 0);
+      return;
+    }
+
+    const nacimiento = new Date(fechaNacimiento);
+    const hoy = new Date();
+
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+
+    const mes = hoy.getMonth() - nacimiento.getMonth();
+    const dia = hoy.getDate() - nacimiento.getDate();
+
+    if (mes < 0 || (mes === 0 && dia < 0)) {
+      edad--;
+    }
+
+    edad = Math.max(0, edad);
+
+    setEdadAnimal(edad);
+    setValue("edad_promedio", edad, {
+      shouldValidate: true,
+    });
+  }, [fechaNacimiento, setValue]);
 
   const especiesItmes =
     especies?.data.map((especie) => ({
@@ -345,7 +397,7 @@ const AnimalDetailsPage = () => {
       toast.success("Animal actualizado correctamente");
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
       queryClient.invalidateQueries({ queryKey: ["animal-id", animalId] });
-      router.push("/animales");
+      window.location.reload();
     },
     onError: (error) => {
       if (isAxiosError(error)) {
@@ -430,10 +482,9 @@ const AnimalDetailsPage = () => {
 
   return (
     <div className="container mx-auto p-4 max-w-4xl">
-      <ButtonBack isMobil={isMobile} />
       <div className="flex items-center mb-6">
-        <PawPrintIcon className="h-8 w-8 mr-2" />
-        <h1 className="text-3xl font-bold">Editar Animal</h1>
+        <PawPrintIcon className="h-5 w-5 md:h-8 md:w-8 mr-2" />
+        <h1 className="text-lg md:text-3xl font-bold">Editar Animal</h1>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -494,6 +545,19 @@ const AnimalDetailsPage = () => {
                   {errors.sexo && (
                     <p className="text-sm text-red-500">
                       {errors.sexo.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Nombre</Label>
+                  <Input
+                    {...register("nombre_animal")}
+                    placeholder="Nombre del animal"
+                  />
+                  {errors.nombre_animal && (
+                    <p className="text-sm text-red-500">
+                      {errors.nombre_animal.message}
                     </p>
                   )}
                 </div>
@@ -709,21 +773,58 @@ const AnimalDetailsPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Fecha de Nacimiento</Label>
+                  <Label htmlFor="fecha_nacimiento">
+                    Fecha de Nacimiento (opcional)
+                  </Label>
                   <Input
+                    id="fecha_nacimiento"
                     type="date"
-                    value={watch("fecha_nacimiento") || ""}
+                    {...register("fecha_nacimiento")}
                     onChange={(e) => {
-                      const selectedDate = e.target.value;
-                      setValue("fecha_nacimiento", selectedDate, {
-                        shouldValidate: true,
-                      });
+                      setValue("fecha_nacimiento", e.target.value);
                     }}
+                    max={new Date().toISOString().split("T")[0]}
                     className="w-full"
                   />
                   {errors.fecha_nacimiento && (
                     <p className="text-sm text-red-500">
                       {errors.fecha_nacimiento.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Edad Promedio *</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    value={edadAnimal}
+                    disabled={!!fechaNacimiento}
+                    onChange={(e) => {
+                      const value =
+                        e.target.value === "" ? 0 : Number(e.target.value);
+                      setEdadAnimal(value);
+                      setValue("edad_promedio", value, {
+                        shouldValidate: true,
+                      });
+                    }}
+                    placeholder="Edad en años"
+                    className={fechaNacimiento ? "bg-gray-100" : ""}
+                  />
+                  {errors.edad_promedio && (
+                    <p className="text-sm text-red-500">
+                      {errors.edad_promedio.message}
+                    </p>
+                  )}
+                  {fechaNacimiento ? (
+                    <p className="text-xs text-green-600">
+                      ✓ Edad calculada automáticamente desde la fecha de
+                      nacimiento: {edadAnimal} año(s)
+                    </p>
+                  ) : (
+                    <p className="text-xs text-gray-500">
+                      Ingresa la edad manualmente o selecciona una fecha de
+                      nacimiento para calcularla automáticamente
                     </p>
                   )}
                 </div>
@@ -1456,15 +1557,7 @@ const AnimalDetailsPage = () => {
                   <Input
                     value={watch("numero_parto_madre") || ""}
                     onChange={(e) => {
-                      const value = e.target.value;
-
-                      const numericValue = value ? Number(value) : undefined;
-                      setValue(
-                        "numero_parto_madre",
-                        numericValue !== undefined && !isNaN(numericValue)
-                          ? numericValue
-                          : undefined,
-                      );
+                      setValue("numero_parto_madre", Number(e.target.value));
                     }}
                     placeholder="Número de parto"
                     maxLength={2}

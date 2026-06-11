@@ -1,7 +1,7 @@
 import { ObtenerAnimalesByPropietario } from "@/api/animales/accions/get-animales-bypropietario";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-const LIMIT = 5;
+const LIMIT = 7;
 
 const useAnimalesByPropietario = (
   propietarioId: string,

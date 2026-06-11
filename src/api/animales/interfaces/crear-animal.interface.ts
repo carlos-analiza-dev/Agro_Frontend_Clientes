@@ -2,13 +2,16 @@ export interface CrearAnimalByFinca {
   especie: string;
   sexo: string;
   color: string;
+  padreId?: string;
+  madreId?: string;
+  nombre_animal?: string;
   tipo_alimentacion: TipoAlimentacion[];
   complementos?: TipoComplemento[];
   medicamento?: string;
   identificador: string;
   razaIds: string[];
-  edad_promedio?: number;
-  fecha_nacimiento: string;
+  edad_promedio: number;
+  fecha_nacimiento?: string;
   observaciones?: string;
   animal_muerte?: boolean;
   razon_muerte?: string;
@@ -22,6 +25,7 @@ export interface CrearAnimalByFinca {
   tipo_reproduccion: string;
   compra_animal?: boolean;
   nombre_criador_origen_animal?: string;
+  images?: File[];
 
   nombre_padre?: string;
   arete_padre?: string;
@@ -38,7 +42,7 @@ export interface CrearAnimalByFinca {
   nombre_criador_madre?: string;
   nombre_propietario_madre?: string;
   nombre_finca_origen_madre?: string;
-  numero_parto_madre?: number;
+  numero_parto_madre: number;
 }
 
 export interface TipoAlimentacion {

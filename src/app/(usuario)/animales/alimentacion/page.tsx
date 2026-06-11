@@ -1,6 +1,4 @@
 "use client";
-
-import ButtonBack from "@/components/generics/ButtonBack";
 import useGetAlimentacionAnimales from "@/hooks/alimentacion_animales/useGetAlimentacionAnimales";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -93,8 +91,6 @@ const AlimentacionAnimal = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
-        <ButtonBack isMobil={isMobile} />
-
         <div className="flex justify-between items-center">
           <h1 className="text-2xl sm:text-3xl font-bold">Alimentación</h1>
           <Button

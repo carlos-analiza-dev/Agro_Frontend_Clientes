@@ -14,13 +14,10 @@ import { useState } from "react";
 import FormAddProducto from "./ui/FormAddProducto";
 import { ResponseProductosVenta } from "@/api/productos-ganadero/interfaces/obtener-productos-precios.interface";
 import SkeletonCard from "@/components/generics/SkeletonCard";
-import ButtonBack from "@/components/generics/ButtonBack";
-import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { MessageError } from "@/components/generics/MessageError";
 
 const PreciosProductosPage = () => {
   const { data: productos, isLoading, refetch } = useGetProductoVenta();
-  const isMobile = useMediaQuery("(max-width: 768px)");
   const [openModal, setOpenModal] = useState(false);
   const [productoToEdit, setProductoToEdit] =
     useState<ResponseProductosVenta | null>(null);
@@ -50,7 +47,6 @@ const PreciosProductosPage = () => {
 
   return (
     <div className="container p-4">
-      <ButtonBack isMobil={isMobile} />
       <div className="block md:flex md:justify-between">
         <h1 className="text-xl text-center md:text-3xl font-bold">
           Productos de Venta

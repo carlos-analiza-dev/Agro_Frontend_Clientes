@@ -1,5 +1,4 @@
 "use client";
-import ButtonBack from "@/components/generics/ButtonBack";
 import SkeletonCard from "@/components/generics/SkeletonCard";
 import useGetPesosByRaza from "@/hooks/historial-pesos/useGetPesosByRaza";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,11 +16,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
 import FormAddPesoRaza from "./ui/FormAddPesoRaza";
-import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 
 const PesoRazaAnimal = () => {
   const { data: pesos, isLoading } = useGetPesosByRaza();
-  const isMobile = useMediaQuery("(max-width: 768px)");
   const [openModal, setOpenModal] = useState(false);
   const [selectedPeso, setSelectedPeso] = useState<ResponsePesoByRaza | null>(
     null,
@@ -40,7 +37,6 @@ const PesoRazaAnimal = () => {
   if (isLoading) {
     return (
       <div className="container p-4">
-        <ButtonBack />
         <SkeletonCard />
       </div>
     );
@@ -48,7 +44,6 @@ const PesoRazaAnimal = () => {
 
   return (
     <div className="container p-4">
-      <ButtonBack isMobil={isMobile} />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-lg md:text-2xl font-bold text-gray-800">
           Pesos Promedio por Raza

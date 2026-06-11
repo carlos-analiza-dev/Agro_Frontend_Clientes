@@ -14,8 +14,6 @@ import { Loader2, ShoppingCart, Truck } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
-import ButtonBack from "@/components/generics/ButtonBack";
-import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import ResumenPedido, {
   UbicacionPedido,
 } from "@/components/cart/ResumenPedido";
@@ -32,7 +30,6 @@ const CarritoPage = () => {
   const paisStorage = localStorage.getItem("selectedCountry");
   const pais = paisStorage ? JSON.parse(paisStorage) : null;
   const moneda = pais?.simbolo_moneda as string;
-  const isMobile = useMediaQuery("(max-width: 768px)");
   const paisId = pais?.id;
   const [sucursalCercana, setSucursalCercana] = useState("");
 
@@ -197,7 +194,6 @@ const CarritoPage = () => {
   if (cart.length === 0) {
     return (
       <div className="container ">
-        <ButtonBack isMobil={isMobile} />
         <div className="h-screen flex items-center justify-center mx-auto px-4 py-8 text-center">
           <div>
             <ShoppingCart className="h-24 w-24 text-gray-400 mx-auto mb-6" />
@@ -215,7 +211,6 @@ const CarritoPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <ButtonBack isMobil={isMobile} />
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Carrito de Compras</h1>
         <p className="text-gray-600 mt-2">
