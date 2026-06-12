@@ -16,6 +16,57 @@ export const LocationPermissionBanner: React.FC<
     return null;
   }
 
+  const getLocationInstructions = () => {
+    const userAgent = navigator.userAgent;
+
+    if (/iPhone|iPad|iPod/.test(userAgent)) {
+      return (
+        "Safari (iPhone/iPad):\n" +
+        "Opción 1:\n" +
+        "1. Toca 'aA' en la barra de direcciones\n" +
+        "2. Configuración del sitio web\n" +
+        "3. Ubicación → Permitir\n" +
+        "4. Recarga la página\n\n" +
+        "Si no funciona:\n" +
+        "1. Configuración → Privacidad y seguridad\n" +
+        "2. Localización → Sitios web de Safari\n" +
+        "3. Selecciona 'Mientras se usa la app'\n" +
+        "4. Regresa a Safari y recarga la página"
+      );
+    }
+
+    if (/Safari/.test(userAgent) && !/Chrome/.test(userAgent)) {
+      return (
+        "Safari (Mac):\n" +
+        "1. Safari → Configuración (o Preferencias en versiones antiguas)\n" +
+        "2. Sitios web → Ubicación\n" +
+        "3. Busca este sitio en la lista\n" +
+        "4. Cambia el permiso a 'Permitir'\n" +
+        "5. Recarga la página"
+      );
+    }
+
+    if (/Firefox/.test(userAgent)) {
+      return "Firefox:\nHaz clic en el ícono de permisos, en la parte superior izquierda de la URL → Permitir ubicación";
+    }
+
+    if (/Edg/.test(userAgent)) {
+      return "Edge:\nHaz clic en el ícono del sitio, en la parte superior izquierda de la URL → Permisos → Ubicación → Permitir";
+    }
+
+    if (/OPR/.test(userAgent)) {
+      return (
+        "Opera:\n" +
+        "Haz clic en el ícono de candado del sitio, parte superior izquierda de la URL → Ubicación → Permitir"
+      );
+    }
+
+    return (
+      "Chrome:\n" +
+      "Haz clic en el ícono de configuración del sitio, parte superior izquierda de la URL → Ubicación → Permitir"
+    );
+  };
+
   if (permissionStatus.isBlocked) {
     return (
       <div className="fixed bottom-4 right-4 z-50 bg-red-50 border border-red-200 rounded-lg p-4 max-w-md shadow-lg">
@@ -37,17 +88,13 @@ export const LocationPermissionBanner: React.FC<
           </div>
           <div className="flex-1">
             <h3 className="text-sm font-semibold text-red-800">
-              Ubicación bloqueada
+              El sitio necesita acceder a tu ubicacion para funcionar
             </h3>
             <p className="text-sm text-red-600 mt-1">{error}</p>
             <button
               onClick={() => {
-                // Instrucciones para el usuario
-                alert(
-                  "Por favor, permite el acceso a la ubicación en la configuración del navegador:\n\nChrome: Click en el candado 🔒 → Permisos → Ubicación → Permitir\nFirefox: Click en el ícono de ubicación → Permitir\nEdge: Click en el candado → Permisos de ubicación → Permitir",
-                );
+                alert(getLocationInstructions());
               }}
-              className="mt-2 text-sm text-red-700 hover:text-red-900 font-medium"
             >
               Cómo habilitar la ubicación →
             </button>

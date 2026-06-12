@@ -145,7 +145,7 @@ const useUserLocation = () => {
 
       if (permission.isBlocked) {
         setError(
-          "La ubicación está bloqueada. Por favor, habilítala en Configuración de Safari > Sitios Web > Ubicación",
+          "La ubicación está bloqueada. Por favor, habilítala en Configuración de tu navegador",
         );
         setLoading(false);
         return;

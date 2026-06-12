@@ -314,7 +314,14 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
               <Avatar className="h-8 w-8">
-                <AvatarImage src="/avatars/user.png" alt="Usuario" />
+                <AvatarImage
+                  src={
+                    cliente && cliente?.profileImages.length > 0
+                      ? cliente?.profileImages[0].url
+                      : "/images/ProfileImage.png"
+                  }
+                  alt="Usuario"
+                />
                 <AvatarFallback>
                   <User className="h-4 w-4" />
                 </AvatarFallback>

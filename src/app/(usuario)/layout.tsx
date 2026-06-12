@@ -146,10 +146,16 @@ export default function AdminLayout({
       await logout();
       limpiarFavoritos();
       clearCart();
+      localStorage.removeItem("user_location");
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       router.push("/");
       toast.success("Sesión cerrada correctamente");
     } catch (error) {
       toast.error("Ocurrió un error al cerrar la sesión");
+
+      router.push("/");
     } finally {
       setLoading(false);
     }

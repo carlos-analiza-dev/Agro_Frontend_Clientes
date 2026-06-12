@@ -15,6 +15,7 @@ import { useAuthStore } from "@/providers/store/useAuthStore";
 import useGetPermisosByClientePaquete from "@/hooks/permisos/useGetPermisosByClientePaquete";
 import useGetPermisosByCliente from "@/hooks/permisos/useGetPermisosByCliente";
 import { TipoCliente } from "@/interfaces/enums/clientes.enums";
+import SidebarSkeleton from "./SidebarSkeleton";
 
 interface Props {
   handleLogout: () => Promise<void>;
@@ -31,7 +32,11 @@ const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
 
   const { data: permisosPaquete } = useGetPermisosByClientePaquete(paqueteId);
 
-  const { data: permisosCliente } = useGetPermisosByCliente(clienteId);
+  const {
+    data: permisosCliente,
+    isLoading,
+    isError,
+  } = useGetPermisosByCliente(clienteId);
 
   const permisos = esPropietario ? permisosPaquete : permisosCliente;
 
@@ -58,6 +63,10 @@ const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
     .filter((section) => section.items.length > 0);
 
   const isItemActive = (href: string) => pathname === href;
+
+  if (isLoading || isError) {
+    return <SidebarSkeleton />;
+  }
 
   return (
     <aside className="hidden lg:flex lg:flex-shrink-0">

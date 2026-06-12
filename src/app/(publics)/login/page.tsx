@@ -28,7 +28,6 @@ export default function LoginPage() {
           alt="Campo agrícola"
           layout="fill"
           objectFit="cover"
-          quality={100}
           className="opacity-20"
           priority
           unoptimized

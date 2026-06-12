@@ -81,7 +81,6 @@ const ResetPasswordPage = () => {
           alt="Campo agrícola"
           layout="fill"
           objectFit="cover"
-          quality={100}
           className="opacity-20"
         />
       </div>
