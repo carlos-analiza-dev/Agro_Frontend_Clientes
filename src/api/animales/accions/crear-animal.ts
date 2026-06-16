@@ -19,3 +19,23 @@ export const CreateAnimal = async (formData: FormData) => {
 
   return response;
 };
+
+export const cargaMasivaAnimales = async (
+  file: File,
+  fincaId: string,
+  especieId: string,
+  razaId: string,
+) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/animal-finca/carga-masiva/${fincaId}/${especieId}/${razaId}`;
+
+  const response = await veterinariaAPI.post(url, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return response.data;
+};

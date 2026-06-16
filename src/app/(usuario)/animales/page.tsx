@@ -14,7 +14,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RefreshCw, Scale, PawPrint, Dna, Wheat, Utensils } from "lucide-react";
+import {
+  RefreshCw,
+  Scale,
+  PawPrint,
+  Dna,
+  Wheat,
+  Utensils,
+  UploadCloud,
+} from "lucide-react";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useDebounce } from "@/hooks/debounce/useDebounce";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
@@ -32,6 +40,7 @@ import {
 import SkeletonCard from "@/components/generics/SkeletonCard";
 import EmptyStateAnimales from "./ui/EmptyStateAnimales";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
+import CargaMasivaModal from "./ui/CargaMasivaModal";
 
 const AnimalesPageGanadero = () => {
   const router = useRouter();
@@ -46,7 +55,7 @@ const AnimalesPageGanadero = () => {
   const { data: especies } = useGetEspecies();
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const [isScrolling, setIsScrolling] = useState(false);
-
+  const [isCargaMasivaOpen, setIsCargaMasivaOpen] = useState(false);
   const finca = fincaId === "all" ? "" : fincaId;
   const especie = especieId === "all" ? "" : especieId;
 
@@ -185,10 +194,19 @@ const AnimalesPageGanadero = () => {
         <div className="block md:flex justify-between items-center mb-6">
           <h1 className="text-lg md:text-3xl font-bold">Mis Animales</h1>
 
-          <div className="mt-4 md:mt-0 flex justify-center gap-3">
+          <div className="mt-4 md:mt-0 flex flex-col sm:flex-row flex-wrap justify-center gap-3 w-full md:w-auto">
+            <Button
+              variant="outline"
+              className="gap-2 w-full sm:w-auto"
+              onClick={() => setIsCargaMasivaOpen(true)}
+            >
+              <UploadCloud className="h-4 w-4" />
+              Carga Masiva
+            </Button>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2">
+                <Button variant="outline" className="gap-2 w-full sm:w-auto">
                   <Scale className="h-4 w-4" />
                   Control de Peso
                 </Button>
@@ -215,7 +233,7 @@ const AnimalesPageGanadero = () => {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2">
+                <Button variant="outline" className="gap-2 w-full sm:w-auto">
                   <Wheat className="h-4 w-4" />
                   Alimentación
                 </Button>
@@ -277,7 +295,10 @@ const AnimalesPageGanadero = () => {
           onRefresh={handleRefresh}
           isLoading={isFetchingNextPage}
         />
-
+        <CargaMasivaModal
+          isOpen={isCargaMasivaOpen}
+          onClose={() => setIsCargaMasivaOpen(false)}
+        />
         <FAB
           titulo="Agregar Animal"
           onPress={() => router.push("/animales/crear-animal")}
@@ -291,10 +312,19 @@ const AnimalesPageGanadero = () => {
       <div className="block md:flex justify-between items-center mb-6">
         <h1 className="text-lg md:text-3xl font-bold">Mis Animales</h1>
 
-        <div className="mt-4 md:mt-0 flex justify-center gap-3">
+        <div className="mt-4 md:mt-0 flex flex-col sm:flex-row flex-wrap justify-center gap-3 w-full md:w-auto">
+          <Button
+            variant="outline"
+            className="gap-2 w-full sm:w-auto"
+            onClick={() => setIsCargaMasivaOpen(true)}
+          >
+            <UploadCloud className="h-4 w-4" />
+            Carga Masiva
+          </Button>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2">
+              <Button variant="outline" className="gap-2 w-full sm:w-auto">
                 <Scale className="h-4 w-4" />
                 Control de Peso
               </Button>
@@ -321,7 +351,7 @@ const AnimalesPageGanadero = () => {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2">
+              <Button variant="outline" className="gap-2 w-full sm:w-auto">
                 <Wheat className="h-4 w-4" />
                 Alimentación
               </Button>
@@ -405,7 +435,10 @@ const AnimalesPageGanadero = () => {
           )}
         </div>
       )}
-
+      <CargaMasivaModal
+        isOpen={isCargaMasivaOpen}
+        onClose={() => setIsCargaMasivaOpen(false)}
+      />
       <FAB
         titulo="Agregar Animal"
         onPress={() => router.push("/animales/crear-animal")}
