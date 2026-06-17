@@ -26,4 +26,13 @@ export interface CreateMarketplaceAnimale {
 
   disponible?: boolean;
   vendido?: boolean;
+
+  // ALQUILERES
+  precioPorHora?: number;
+  precioPorDia?: number;
+  precioPorSemana?: number;
+  precioPorMes?: number;
+
+  requiereDeposito?: boolean;
+  montoDeposito?: number;
 }

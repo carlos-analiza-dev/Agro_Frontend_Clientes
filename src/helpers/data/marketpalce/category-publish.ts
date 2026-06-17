@@ -1,4 +1,4 @@
-import { Package, PawPrint, Sprout } from "lucide-react";
+import { Package, PawPrint, Sprout, Wrench } from "lucide-react";
 
 export const categorias_publish = [
   {
@@ -11,7 +11,6 @@ export const categorias_publish = [
     bgColor: "bg-green-50",
     borderColor: "border-green-200",
     hoverColor: "hover:border-green-300",
-
     ejemplos: ["Bovinos", "Porcinos", "Equinos", "Aves", "Caprinos"],
   },
   {
@@ -24,7 +23,6 @@ export const categorias_publish = [
     bgColor: "bg-blue-50",
     borderColor: "border-blue-200",
     hoverColor: "hover:border-blue-300",
-
     ejemplos: [
       "Bebederos",
       "Comederos",
@@ -43,13 +41,30 @@ export const categorias_publish = [
     bgColor: "bg-amber-50",
     borderColor: "border-amber-200",
     hoverColor: "hover:border-amber-300",
-
     ejemplos: [
       "Semillas",
       "Fertilizantes",
       "Tractores",
       "Riego",
       "Herramientas",
+    ],
+  },
+  {
+    id: "alquileres" as const,
+    titulo: "Alquileres",
+    descripcion:
+      "Alquiler de maquinaria agrícola, equipos ganaderos, herramientas, terrenos y otros recursos del sector.",
+    icono: Wrench,
+    color: "from-purple-500 to-violet-500",
+    bgColor: "bg-purple-50",
+    borderColor: "border-purple-200",
+    hoverColor: "hover:border-purple-300",
+    ejemplos: [
+      "Tractores",
+      "Retroexcavadoras",
+      "Terrenos",
+      "Corrales",
+      "Equipos de Riego",
     ],
   },
 ];

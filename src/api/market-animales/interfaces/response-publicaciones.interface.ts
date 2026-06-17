@@ -16,6 +16,13 @@ export interface ProductoPublish {
   precio: string;
   moneda: string;
   stock: number;
+  precioPorHora?: number;
+  precioPorDia?: number;
+  precioPorSemana?: number;
+  precioPorMes?: number;
+
+  requiereDeposito?: boolean;
+  montoDeposito?: number;
   latitud: string;
   longitud: string;
   disponible: boolean;

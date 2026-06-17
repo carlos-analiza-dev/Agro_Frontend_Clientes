@@ -57,7 +57,7 @@ const BsuquedasPage = () => {
     <div className="container mx-auto px-3 sm:px-4 lg:px-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
         <h1 className="text-lg sm:text-xl md:text-2xl font-bold">
-          Resultados de la Busqueda
+          Resultados de la Busqueda "{nombre}"
         </h1>
       </div>
 

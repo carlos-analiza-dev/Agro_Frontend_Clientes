@@ -12,6 +12,8 @@ import SidebarMarket from "@/components/SideBars/SidebarMarket";
 import { TipoCliente } from "@/interfaces/enums/clientes.enums";
 import SheetContentMarket from "@/components/generics/SheetContentMarket";
 import { LocationPermissionBanner } from "@/components/location/LocationPermissionBanner";
+import PublicidadBanner from "@/components/publicidad/PublicidadBanner";
+import PublicidadPanel from "@/components/publicidad/PublicidadPanel";
 
 export default function MarketPlaceLayout({
   children,
@@ -25,6 +27,10 @@ export default function MarketPlaceLayout({
   const [showSessionModal, setShowSessionModal] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(false);
+
+  const mostrarPublicidad =
+    cliente?.paqueteActivo?.paquete.nombre === "Plan Free";
+
   useEffect(() => {
     setIsHydrated(true);
   }, []);
@@ -134,9 +140,13 @@ export default function MarketPlaceLayout({
       />
       <div className="flex flex-1 flex-col overflow-hidden">
         <MarhetPlaceNavBar setMobileSidebarOpen={setMobileSidebarOpen} />
-
         <main className="flex-1 overflow-y-auto bg-gray-50 md:p-6">
-          {children}
+          {mostrarPublicidad && <PublicidadBanner />}
+
+          <div className="my-6">{children}</div>
+
+          {mostrarPublicidad && <PublicidadPanel />}
+
           <LocationPermissionBanner />
         </main>
       </div>

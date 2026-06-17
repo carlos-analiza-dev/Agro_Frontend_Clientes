@@ -101,6 +101,7 @@ const FormPublicacion = ({
     useGetDeptosActivesByPais(paidId);
 
   const isAnimales = tipo_publicacion === TipoPublicacion.ANIMALES;
+  const isAlquileres = tipo_publicacion === TipoPublicacion.ALQUILERES;
 
   const {
     register,
@@ -116,6 +117,12 @@ const FormPublicacion = ({
       descripcion: "",
       precio: 0,
       stock: 1,
+      precioPorHora: 0,
+      precioPorDia: 0,
+      precioPorSemana: 0,
+      precioPorMes: 0,
+      requiereDeposito: false,
+      montoDeposito: 0,
       direccion_completa: "",
       categoriaId: "",
       subcategoriaId: "",
@@ -143,7 +150,13 @@ const FormPublicacion = ({
       setValue("nombre", publicacion.nombre);
       setValue("descripcion", publicacion.descripcion);
 
-      setValue("precio", parseFloat(publicacion.precio));
+      setValue("precio", parseFloat(publicacion?.precio ?? "0"));
+      setValue("precioPorHora", parseFloat(publicacion?.precioHora ?? "0"));
+      setValue("precioPorDia", parseFloat(publicacion?.precioDia ?? "0"));
+      setValue("precioPorSemana", parseFloat(publicacion?.precioSemana ?? "0"));
+      setValue("precioPorMes", parseFloat(publicacion?.precioMes ?? "0"));
+      setValue("requiereDeposito", publicacion.deposito);
+      setValue("montoDeposito", parseFloat(publicacion?.montoDeposito ?? "0"));
       if (
         publicacion.precio_oferta &&
         parseFloat(publicacion.precio_oferta) > 0
@@ -363,45 +376,90 @@ const FormPublicacion = ({
       return;
     }
 
-    if (data.precio <= 0) {
-      toast.error("El precio debe ser mayor a 0");
-      return;
-    }
+    if (isAlquileres) {
+      const tienePrecioAlquiler =
+        (data.precioPorHora && data.precioPorHora > 0) ||
+        (data.precioPorDia && data.precioPorDia > 0) ||
+        (data.precioPorSemana && data.precioPorSemana > 0) ||
+        (data.precioPorMes && data.precioPorMes > 0);
 
-    if (data.stock < 1) {
-      toast.error("El stock debe ser al menos 1");
-      return;
+      if (!tienePrecioAlquiler) {
+        toast.error("Debes especificar al menos un precio de alquiler");
+        return;
+      }
+
+      if (
+        data.requiereDeposito &&
+        (!data.montoDeposito || data.montoDeposito <= 0)
+      ) {
+        toast.error("Debes especificar el monto del depósito");
+        return;
+      }
+    } else {
+      if (data.precio <= 0) {
+        toast.error("El precio debe ser mayor a 0");
+        return;
+      }
+      if (data.stock < 1) {
+        toast.error("El stock debe ser al menos 1");
+        return;
+      }
     }
 
     setIsSubmitting(true);
 
     try {
+      console.log("DATA", data);
+
       const formData = new FormData();
 
       formData.append("nombre", data.nombre);
       formData.append("descripcion", data.descripcion);
       formData.append("direccion_completa", data.direccion_completa);
-      formData.append("precio", String(data.precio));
-      formData.append("stock", String(data.stock));
       formData.append("categoriaId", data.categoriaId);
       formData.append("subcategoriaId", data.subcategoriaId);
       formData.append("departamentoId", data.departamentoId);
       formData.append("tipo_publicacion", data.tipo_publicacion);
 
-      if (isAnimales && data.animalId) {
-        formData.append("animalId", data.animalId);
-      }
+      if (isAlquileres) {
+        if (data.precioPorHora && data.precioPorHora > 0) {
+          formData.append("precioPorHora", String(data.precioPorHora));
+        }
+        if (data.precioPorDia && data.precioPorDia > 0) {
+          formData.append("precioPorDia", String(data.precioPorDia));
+        }
+        if (data.precioPorSemana && data.precioPorSemana > 0) {
+          formData.append("precioPorSemana", String(data.precioPorSemana));
+        }
+        if (data.precioPorMes && data.precioPorMes > 0) {
+          formData.append("precioPorMes", String(data.precioPorMes));
+        }
 
-      if (data.modelo) {
-        formData.append("modelo", data.modelo);
-      }
+        if (data.requiereDeposito !== undefined) {
+          formData.append("requiereDeposito", String(data.requiereDeposito));
+        }
+        if (data.montoDeposito && data.montoDeposito > 0) {
+          formData.append("montoDeposito", String(data.montoDeposito));
+        }
+      } else {
+        formData.append("precio", String(data.precio));
+        formData.append("stock", String(data.stock));
 
-      if (data.marcaId) {
-        formData.append("marcaId", data.marcaId);
-      }
+        if (isAnimales && data.animalId) {
+          formData.append("animalId", data.animalId);
+        }
 
-      if (data.tipoProductoId) {
-        formData.append("tipoProductoId", data.tipoProductoId);
+        if (data.modelo) {
+          formData.append("modelo", data.modelo);
+        }
+
+        if (data.marcaId) {
+          formData.append("marcaId", data.marcaId);
+        }
+
+        if (data.tipoProductoId) {
+          formData.append("tipoProductoId", data.tipoProductoId);
+        }
       }
 
       if (data.latitud) {
@@ -769,44 +827,174 @@ const FormPublicacion = ({
               <CardContent className="p-4 sm:p-6 space-y-5">
                 <h2 className="text-lg font-semibold flex items-center gap-2 border-b pb-3">
                   <DollarSign className="w-5 h-5" />
-                  Precio y disponibilidad
+                  {isAlquileres
+                    ? "Precios de alquiler"
+                    : "Precio y disponibilidad"}
                 </h2>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="precio" className="mb-2 block">
-                      Precio regular *
-                    </Label>
-                    <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <Input
-                        id="precio"
-                        type="number"
-                        step="0.01"
-                        min={1}
-                        className="pl-9"
-                        placeholder="0.00"
-                        {...register("precio", { valueAsNumber: true })}
-                      />
-                    </div>
-                  </div>
+                {isAlquileres ? (
+                  // Sección de precios de alquiler
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="precioPorHora" className="mb-2 block">
+                          Precio por hora
+                        </Label>
+                        <div className="relative">
+                          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <Input
+                            id="precioPorHora"
+                            type="number"
+                            step="0.01"
+                            min={0}
+                            className="pl-9"
+                            placeholder="0.00"
+                            {...register("precioPorHora", {
+                              valueAsNumber: true,
+                            })}
+                          />
+                        </div>
+                      </div>
 
-                  <div>
-                    <Label htmlFor="stock" className="mb-2 block">
-                      Cantidad / Stock *
-                    </Label>
-                    <div className="relative">
-                      <Package className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <Input
-                        id="stock"
-                        min={1}
-                        type="number"
-                        className="pl-9"
-                        {...register("stock", { valueAsNumber: true })}
-                      />
+                      <div>
+                        <Label htmlFor="precioPorDia" className="mb-2 block">
+                          Precio por día
+                        </Label>
+                        <div className="relative">
+                          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <Input
+                            id="precioPorDia"
+                            type="number"
+                            step="0.01"
+                            min={0}
+                            className="pl-9"
+                            placeholder="0.00"
+                            {...register("precioPorDia", {
+                              valueAsNumber: true,
+                            })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="precioPorSemana" className="mb-2 block">
+                          Precio por semana
+                        </Label>
+                        <div className="relative">
+                          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <Input
+                            id="precioPorSemana"
+                            type="number"
+                            step="0.01"
+                            min={0}
+                            className="pl-9"
+                            placeholder="0.00"
+                            {...register("precioPorSemana", {
+                              valueAsNumber: true,
+                            })}
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="precioPorMes" className="mb-2 block">
+                          Precio por mes
+                        </Label>
+                        <div className="relative">
+                          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <Input
+                            id="precioPorMes"
+                            type="number"
+                            step="0.01"
+                            min={0}
+                            className="pl-9"
+                            placeholder="0.00"
+                            {...register("precioPorMes", {
+                              valueAsNumber: true,
+                            })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="border-t pt-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <input
+                          type="checkbox"
+                          id="requiereDeposito"
+                          {...register("requiereDeposito")}
+                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <Label
+                          htmlFor="requiereDeposito"
+                          className="cursor-pointer"
+                        >
+                          Requiere depósito de garantía
+                        </Label>
+                      </div>
+
+                      {watch("requiereDeposito") && (
+                        <div className="relative">
+                          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <Input
+                            id="montoDeposito"
+                            type="number"
+                            step="0.01"
+                            min={0}
+                            className="pl-9"
+                            placeholder="Monto del depósito"
+                            {...register("montoDeposito", {
+                              valueAsNumber: true,
+                            })}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <p className="text-xs text-gray-500">
+                      💡 Al menos uno de los precios de alquiler debe ser mayor
+                      a 0
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="precio" className="mb-2 block">
+                        Precio regular *
+                      </Label>
+                      <div className="relative">
+                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Input
+                          id="precio"
+                          type="number"
+                          step="0.01"
+                          min={1}
+                          className="pl-9"
+                          placeholder="0.00"
+                          {...register("precio", { valueAsNumber: true })}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="stock" className="mb-2 block">
+                        Cantidad / Stock *
+                      </Label>
+                      <div className="relative">
+                        <Package className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Input
+                          id="stock"
+                          min={1}
+                          type="number"
+                          className="pl-9"
+                          {...register("stock", { valueAsNumber: true })}
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </CardContent>
             </Card>
 

@@ -205,7 +205,7 @@ const Footer = () => {
             </div>
 
             <div className="text-gray-400 text-sm text-center">
-              © {currentYear} El Sembrador. Todos los derechos reservados.
+              © {currentYear} Interactive Core. Todos los derechos reservados.
             </div>
 
             <div className="flex space-x-3">

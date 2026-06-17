@@ -15,6 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDateLocal } from "@/helpers/funciones/formatDateOnly";
 import useGetViewsPublicacion from "@/hooks/views-publicaciones/useGetViewsPublicacion";
+import { TipoPublicacion } from "@/interfaces/enums/market/tipo_publicacion.enum";
 import { useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import {
@@ -25,6 +26,11 @@ import {
   Pencil,
   Trash2,
   ImageOff,
+  Clock,
+  Calendar,
+  CalendarDays,
+  CalendarRange,
+  DollarSign,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -42,6 +48,8 @@ const MisPublicacionesCard = ({ producto }: Props) => {
   const [openVendido, setOpenVendido] = useState(false);
   const { data: views, isLoading } = useGetViewsPublicacion(producto.id);
   const [imageError, setImageError] = useState(false);
+
+  const esAlquiler = producto.tipo_publicacion === TipoPublicacion.ALQUILERES;
 
   const handleViewModal = () => {
     setOpenModal(true);
@@ -110,12 +118,97 @@ const MisPublicacionesCard = ({ producto }: Props) => {
     }
   };
 
+  const getTimeIcon = (unidad: string) => {
+    switch (unidad) {
+      case "hora":
+        return <Clock className="w-4 h-4" />;
+      case "día":
+        return <Calendar className="w-4 h-4" />;
+      case "semana":
+        return <CalendarDays className="w-4 h-4" />;
+      case "mes":
+        return <CalendarRange className="w-4 h-4" />;
+      default:
+        return <Clock className="w-4 h-4" />;
+    }
+  };
+
+  const obtenerPrecioMasBajo = () => {
+    const precios = [];
+    if (producto.precioPorHora && producto.precioPorHora > 0)
+      precios.push({ valor: producto.precioPorHora, unidad: "hora" });
+    if (producto.precioPorDia && producto.precioPorDia > 0)
+      precios.push({ valor: producto.precioPorDia, unidad: "día" });
+    if (producto.precioPorSemana && producto.precioPorSemana > 0)
+      precios.push({ valor: producto.precioPorSemana, unidad: "semana" });
+    if (producto.precioPorMes && producto.precioPorMes > 0)
+      precios.push({ valor: producto.precioPorMes, unidad: "mes" });
+
+    if (precios.length === 0) return null;
+
+    const masBajo = precios.reduce((min, p) => (p.valor < min.valor ? p : min));
+    return masBajo;
+  };
+
+  const renderPrecio = () => {
+    if (esAlquiler) {
+      const precioMasBajo = obtenerPrecioMasBajo();
+
+      if (!precioMasBajo) {
+        return (
+          <div className="text-sm text-muted-foreground">
+            <span className="font-semibold text-yellow-600">
+              Precios disponibles
+            </span>
+          </div>
+        );
+      }
+
+      return (
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            {getTimeIcon(precioMasBajo.unidad)}
+            <p className="text-2xl font-black text-blue-600">
+              {producto.moneda} {Number(precioMasBajo.valor).toLocaleString()}
+            </p>
+            <span className="text-sm text-muted-foreground">
+              /{precioMasBajo.unidad}
+            </span>
+          </div>
+          {producto.requiereDeposito && (
+            <div className="flex items-center gap-1 text-xs text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-full">
+              <DollarSign className="w-3 h-3" />
+              Depósito: {producto.moneda}{" "}
+              {Number(producto.montoDeposito).toLocaleString()}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <p className="text-2xl font-black text-green-600">
+        {producto.moneda} {Number(producto.precio).toLocaleString()}
+      </p>
+    );
+  };
+
+  const getTipoBadge = () => {
+    if (esAlquiler) {
+      return (
+        <Badge className="bg-blue-500 hover:bg-blue-500 shadow-sm">
+          Alquiler
+        </Badge>
+      );
+    }
+    return null;
+  };
+
   return (
     <>
       <Card className="overflow-hidden border-0 shadow-md rounded-3xl transition-all hover:shadow-lg hover:-translate-y-1 duration-300">
         <div className="relative w-full bg-gradient-to-br from-gray-100 to-gray-200">
           <div className="relative pt-[75%]">
-            {" "}
             {imageError ? (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100">
                 <ImageOff className="w-12 h-12 text-gray-400 mb-2" />
@@ -140,6 +233,8 @@ const MisPublicacionesCard = ({ producto }: Props) => {
           </div>
 
           <div className="absolute top-3 left-3 flex flex-wrap gap-2">
+            {getTipoBadge()}
+
             {producto.disponible ? (
               <Badge className="bg-green-500 hover:bg-green-500 shadow-sm">
                 Disponible
@@ -179,7 +274,7 @@ const MisPublicacionesCard = ({ producto }: Props) => {
                   {producto.disponible && !producto.vendido && (
                     <DropdownMenuItem onClick={() => setOpenVendido(true)}>
                       <Check className="mr-2 h-4 w-4" />
-                      Marcar como vendida
+                      Marcar como {esAlquiler ? "alquilada" : "vendida"}
                     </DropdownMenuItem>
                   )}
 
@@ -207,11 +302,7 @@ const MisPublicacionesCard = ({ producto }: Props) => {
             {producto.nombre}
           </h2>
 
-          <div className="mt-3">
-            <p className="text-2xl font-black text-green-600">
-              {producto.moneda} {Number(producto.precio).toLocaleString()}
-            </p>
-          </div>
+          <div className="mt-3">{renderPrecio()}</div>
 
           <div className="flex items-start gap-2 text-muted-foreground mt-3">
             <MapPin size={16} className="mt-0.5 flex-shrink-0" />
@@ -247,6 +338,7 @@ const MisPublicacionesCard = ({ producto }: Props) => {
           </div>
         </CardContent>
       </Card>
+
       <Modal
         open={openModal}
         onOpenChange={setOpenModal}
@@ -284,15 +376,16 @@ const MisPublicacionesCard = ({ producto }: Props) => {
       <Modal
         open={openVendido}
         onOpenChange={setOpenVendido}
-        title="Marcar publicación como vendida"
-        description="Esta acción es permanente. Una vez marques como vendida, no se puede restablecer"
+        title={`Marcar publicación como ${esAlquiler ? "alquilada" : "vendida"}`}
+        description={`Esta acción es permanente. Una vez marques como ${esAlquiler ? "alquilada" : "vendida"}, no se puede restablecer`}
         showCloseButton={false}
       >
         <div className="p-6 space-y-5">
           <div className="flex items-start gap-3 rounded-lg border border-green-200 bg-green-50 p-4">
             <div className="mt-0.5 h-2 w-2 rounded-full bg-green-500" />
             <div className="text-sm text-green-700">
-              Estás a punto de marcar esta publicación como vendida.
+              Estás a punto de marcar esta publicación como{" "}
+              {esAlquiler ? "alquilada" : "vendida"}.
             </div>
           </div>
 

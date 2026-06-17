@@ -1,6 +1,7 @@
 import { Especie } from "@/api/dashboard/interfaces/response-especies-fincas.interface";
 import { Marca } from "@/api/marcas/interface/response-marcas.interface";
 import { Raza } from "@/api/peso-promedio-animal/interfaces/obtener-pesos-by-raza.interface";
+import { Paquete } from "@/interfaces/auth/cliente";
 import { TipoPublicacion } from "@/interfaces/enums/market/tipo_publicacion.enum";
 
 export interface ResponseMarketAnimalesInterface {
@@ -19,10 +20,16 @@ export interface ProductoAnimal {
   descripcion: string;
   direccion: string;
   modelo: string;
-  precio: string;
+  precio: string | null;
   precio_oferta: string;
   moneda: string;
   stock: number;
+  precioHora: string | null;
+  precioDia: string | null;
+  precioSemana: string | null;
+  precioMes: string | null;
+  deposito: boolean;
+  montoDeposito: string | null;
   disponible: boolean;
   latitud: string;
   longitud: string;
@@ -83,6 +90,9 @@ export interface Vendedor {
   id: string;
   nombre: string;
   telefono: string;
+  verificado: boolean;
+  tienePaqueteActivo: boolean;
+  paqueteActivo: Paquete;
   create: string;
   imagenes: Imagene[];
 }

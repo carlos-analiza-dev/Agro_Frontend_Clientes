@@ -28,6 +28,7 @@ type CategoriaType =
   | "animales"
   | "productos_ganaderos"
   | "productos_agricolas"
+  | "alquileres"
   | null;
 
 const CrearPublicacionPage = () => {
@@ -60,8 +61,8 @@ const CrearPublicacionPage = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 pb-16 mt-5">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+      <div className="container mx-auto pb-16 mt-5">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-12">
           {categorias_publish.map((categoria) => {
             const Icon = categoria.icono;
             const isSelected = selectedCategory === categoria.id;
