@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import * as XLSX from "xlsx";
 import {
   Dialog,
   DialogContent,
@@ -21,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Upload, FileSpreadsheet, X } from "lucide-react";
+import { Upload, FileSpreadsheet, X, Download } from "lucide-react";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
@@ -74,6 +75,76 @@ const CargaMasivaModal = ({ isOpen, onClose }: CargaMasivaModalProps) => {
       "file-upload",
     ) as HTMLInputElement;
     if (fileInput) fileInput.value = "";
+  };
+
+  const handleDownloadTemplate = () => {
+    try {
+      const headers = [
+        "nombre_animal",
+        "sexo",
+        "fecha_nacimiento",
+        "edad_promedio",
+        "nombre_padre",
+        "nombre_madre",
+      ];
+
+      const exampleData = [
+        {
+          nombre_animal: "Ejemplo1",
+          sexo: "Macho",
+          fecha_nacimiento: "2024-01-15",
+          edad_promedio: 2,
+          nombre_padre: "PadreEjemplo",
+          nombre_madre: "MadreEjemplo",
+        },
+        {
+          nombre_animal: "Ejemplo2",
+          sexo: "Hembra",
+          fecha_nacimiento: "2024-02-20",
+          edad_promedio: 1,
+          nombre_padre: "PadreEjemplo2",
+          nombre_madre: "MadreEjemplo2",
+        },
+      ];
+
+      const wb = XLSX.utils.book_new();
+
+      const ws = XLSX.utils.json_to_sheet(exampleData);
+
+      const colWidths = [
+        { wch: 20 },
+        { wch: 12 },
+        { wch: 18 },
+        { wch: 15 },
+        { wch: 20 },
+        { wch: 20 },
+      ];
+      ws["!cols"] = colWidths;
+
+      XLSX.utils.book_append_sheet(wb, ws, "Animales");
+
+      const excelBuffer = XLSX.write(wb, {
+        bookType: "xlsx",
+        type: "array",
+      });
+
+      const blob = new Blob([excelBuffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "plantilla_carga_masiva.xlsx";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast.success("Plantilla descargada exitosamente");
+    } catch (error) {
+      toast.error("Error al generar la plantilla");
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -145,14 +216,41 @@ const CargaMasivaModal = ({ isOpen, onClose }: CargaMasivaModalProps) => {
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Carga Masiva de Animales</DialogTitle>
-          <DialogDescription>
-            Sube un archivo Excel con los datos de los animales para
-            registrarlos masivamente.
-            <br />
-            <span className="text-xs text-muted-foreground mt-2 block">
-              El archivo debe contener las columnas: nombre_animal, sexo,
-              fecha_nacimiento, edad_promedio, nombre_padre, nombre_madre
-            </span>
+          <DialogDescription asChild>
+            <div className="text-sm text-muted-foreground">
+              <p>
+                Sube un archivo Excel con los datos de los animales para
+                registrarlos masivamente.
+              </p>
+
+              <div className="mt-2 flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDownloadTemplate}
+                  className="text-xs"
+                >
+                  <Download className="h-3 w-3 mr-1" />
+                  Descargar plantilla
+                </Button>
+                <span className="text-xs text-muted-foreground">
+                  (Formato requerido)
+                </span>
+              </div>
+
+              <div className="mt-2 text-xs text-muted-foreground bg-muted p-3 rounded-md">
+                <p className="font-medium mb-1">Estructura de la plantilla:</p>
+                <ul className="list-disc pl-4 space-y-0.5">
+                  <li>nombre_animal (requerido)</li>
+                  <li>sexo (requerido: Macho/Hembra)</li>
+                  <li>fecha_nacimiento (requerido: YYYY-MM-DD)</li>
+                  <li>edad_promedio (opcional)</li>
+                  <li>nombre_padre (opcional)</li>
+                  <li>nombre_madre (opcional)</li>
+                </ul>
+              </div>
+            </div>
           </DialogDescription>
         </DialogHeader>
 
@@ -174,7 +272,7 @@ const CargaMasivaModal = ({ isOpen, onClose }: CargaMasivaModalProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="especie">Especie *</Label>
+            <Label htmlFor="especie">Especie de animales *</Label>
             <Select
               value={especieId}
               onValueChange={(value) => {
@@ -197,7 +295,7 @@ const CargaMasivaModal = ({ isOpen, onClose }: CargaMasivaModalProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="raza">Raza *</Label>
+            <Label htmlFor="raza">Raza de animales *</Label>
             <Select value={razaId} onValueChange={setRazaId} required>
               <SelectTrigger>
                 <SelectValue placeholder="Seleccionar raza" />

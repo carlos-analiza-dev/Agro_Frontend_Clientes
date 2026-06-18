@@ -52,6 +52,9 @@ import useAnimalById from "@/hooks/animales/useAnimalById";
 import { useParams } from "next/navigation";
 import { ActualizarAnimal } from "@/api/animales/accions/update-animal";
 import { extractNumberFromIdentifier } from "@/helpers/funciones/extractNumberFromIdentifier ";
+import { Animal } from "@/api/animales/interfaces/response-animales.interface";
+import useGetAnimalesPropietario from "@/hooks/animales/useGetAnimalesPropietario";
+import { SexoAnimal } from "@/interfaces/enums/animales/sexo-animal.enum";
 
 const AnimalDetailsPage = () => {
   const params = useParams();
@@ -63,6 +66,16 @@ const AnimalDetailsPage = () => {
   const [showIdentifierHelpPadre, setShowIdentifierHelpPadre] = useState(false);
   const [showIdentifierHelpMadre, setShowIdentifierHelpMadre] = useState(false);
   const [edadAnimal, setEdadAnimal] = useState(0);
+  const [isPadreFinca, setIsPadreFinca] = useState(false);
+  const [isMadreFinca, setIsMadreFinca] = useState(false);
+  const [selectedMadreId, setSelectedMadreId] = useState("");
+  const [selectedPadreId, setSelectedPadreId] = useState("");
+  const [searchPadreTerm, setSearchPadreTerm] = useState("");
+  const [searchMadreTerm, setSearchMadreTerm] = useState("");
+  const [filteredMachos, setFilteredMachos] = useState<Animal[]>([]);
+  const [filteredHembras, setFilteredHembras] = useState<Animal[]>([]);
+  const [isPadreDropdownOpen, setIsPadreDropdownOpen] = useState(false);
+  const [isMadreDropdownOpen, setIsMadreDropdownOpen] = useState(false);
   const [tipoAlimentacion, setTipoAlimentacion] = useState<
     {
       alimento: string;
@@ -98,6 +111,7 @@ const AnimalDetailsPage = () => {
       arete_madre: "",
     },
   });
+  3;
 
   useEffect(() => {
     if (animalData?.data) {
@@ -182,6 +196,21 @@ const AnimalDetailsPage = () => {
         setEdadAnimal(Number(animal.edad_promedio));
         setValue("edad_promedio", Number(animal.edad_promedio));
       }
+      if (animal.padre) {
+        setSelectedPadreId(animal.padre.id);
+        setSearchPadreTerm(
+          `${animal.padre.identificador} - ${animal.padre.nombre_animal || "Sin nombre"}`,
+        );
+        setIsPadreFinca(true);
+      }
+
+      if (animal.madre) {
+        setSelectedMadreId(animal.madre.id);
+        setSearchMadreTerm(
+          `${animal.madre.identificador} - ${animal.madre.nombre_animal || "Sin nombre"}`,
+        );
+        setIsMadreFinca(true);
+      }
     }
   }, [animalData, reset]);
 
@@ -190,7 +219,15 @@ const AnimalDetailsPage = () => {
   const { data: razas } = useGetRazasByEspecie(especieId);
   const { data: fincas } = useFincasPropietarios(cliente?.id ?? "");
   const selectedSexo = watch("sexo");
+  const { data: machos } = useGetAnimalesPropietario({
+    sexo: SexoAnimal.Macho,
+    especieId,
+  });
 
+  const { data: hembras } = useGetAnimalesPropietario({
+    sexo: SexoAnimal.Hembra,
+    especieId,
+  });
   const fechaNacimiento = watch("fecha_nacimiento");
 
   useEffect(() => {
@@ -219,6 +256,49 @@ const AnimalDetailsPage = () => {
       shouldValidate: true,
     });
   }, [fechaNacimiento, setValue]);
+
+  useEffect(() => {
+    if (machos) {
+      const filtered = machos.filter(
+        (macho) =>
+          macho.identificador
+            .toLowerCase()
+            .includes(searchPadreTerm.toLowerCase()) ||
+          (macho.nombre_animal &&
+            macho.nombre_animal
+              .toLowerCase()
+              .includes(searchPadreTerm.toLowerCase())),
+      );
+      setFilteredMachos(filtered);
+    }
+  }, [searchPadreTerm, machos, especieId]);
+
+  useEffect(() => {
+    if (hembras) {
+      const filtered = hembras.filter(
+        (hembra) =>
+          hembra.identificador
+            .toLowerCase()
+            .includes(searchMadreTerm.toLowerCase()) ||
+          (hembra.nombre_animal &&
+            hembra.nombre_animal
+              .toLowerCase()
+              .includes(searchMadreTerm.toLowerCase())),
+      );
+      setFilteredHembras(filtered);
+    }
+  }, [searchMadreTerm, hembras, especieId]);
+
+  useEffect(() => {
+    setSearchPadreTerm("");
+    setSearchMadreTerm("");
+    setSelectedPadreId("");
+    setSelectedMadreId("");
+    setIsPadreDropdownOpen(false);
+    setIsMadreDropdownOpen(false);
+    setFilteredMachos([]);
+    setFilteredHembras([]);
+  }, [especieId]);
 
   const especiesItmes =
     especies?.data.map((especie) => ({
@@ -441,9 +521,21 @@ const AnimalDetailsPage = () => {
       return;
     }
 
+    if (isPadreFinca && !selectedPadreId) {
+      toast.error("Debes seleccionar un padre de la finca");
+      return;
+    }
+
+    if (isMadreFinca && !selectedMadreId) {
+      toast.error("Debes seleccionar una madre de la finca");
+      return;
+    }
+
     const animalData = {
       ...data,
       propietarioId: cliente.id,
+      padreId: isPadreFinca ? selectedPadreId : undefined,
+      madreId: isMadreFinca ? selectedMadreId : undefined,
     };
 
     if (animalData.fecha_nacimiento) {
@@ -1167,204 +1259,302 @@ const AnimalDetailsPage = () => {
                 <CardTitle>Datos del Padre</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Nombre Padre (opcional)</Label>
-                  <Input
-                    {...register("nombre_padre")}
-                    placeholder="Nombre del padre"
-                  />
-                  {errors.nombre_padre && (
-                    <p className="text-sm text-red-500">
-                      {errors.nombre_padre.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Arete Padre (6 dígitos)</Label>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      value={watch("identificador_temp_padre") || ""}
-                      onChange={(e) =>
-                        handleIdentifierChangePadre(e.target.value)
-                      }
-                      placeholder="000000"
-                      maxLength={6}
-                      className="flex-1"
-                    />
-                    <TooltipProvider>
-                      <Tooltip
-                        open={showIdentifierHelpPadre}
-                        onOpenChange={setShowIdentifierHelpPadre}
-                      >
-                        <TooltipTrigger asChild>
-                          <Button type="button" variant="outline" size="icon">
-                            <InfoIcon className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>
-                            PRIMEROS SEIS DÍGITOS DE IDENTIFICACIÓN DEL ARETE
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                  {errors.arete_padre && (
-                    <p className="text-sm text-red-500">
-                      {errors.arete_padre.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Razas del Padre</Label>
-                  <Select
-                    value=""
-                    onValueChange={(value) => {
-                      const currentValues = watch("razas_padre") || [];
-                      if (!currentValues.includes(value)) {
-                        setValue("razas_padre", [...currentValues, value]);
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="padreFinca"
+                    checked={isPadreFinca}
+                    onCheckedChange={(checked) => {
+                      setIsPadreFinca(checked === true);
+                      if (checked === false) {
+                        setSelectedPadreId("");
+                        setSearchPadreTerm("");
                       }
                     }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona una o más razas" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {razas?.data
-                        .filter(
-                          (raza) => !watch("razas_padre")?.includes(raza.id),
-                        )
-                        .map((raza) => (
-                          <SelectItem key={raza.id} value={raza.id}>
-                            {raza.nombre}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
+                  />
+                  <Label htmlFor="padreFinca">
+                    El padre pertenece a esta finca
+                  </Label>
+                </div>
 
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {watch("razas_padre")?.map((razaId) => {
-                      const raza = razas?.data.find((r) => r.id === razaId);
-                      return raza ? (
-                        <span
-                          key={razaId}
-                          className="bg-primary text-primary-foreground px-2 py-1 rounded text-sm flex items-center gap-1"
+                {isPadreFinca ? (
+                  <div className="space-y-2">
+                    <Label>Buscar Padre *</Label>
+                    <div className="relative">
+                      <Input
+                        placeholder="Buscar por identificador o nombre..."
+                        value={searchPadreTerm}
+                        onChange={(e) => {
+                          setSearchPadreTerm(e.target.value);
+                          setIsPadreDropdownOpen(true);
+                        }}
+                        onFocus={() => {
+                          if (searchPadreTerm) {
+                            setIsPadreDropdownOpen(true);
+                          }
+                        }}
+                        className="w-full"
+                      />
+                      {isPadreDropdownOpen && searchPadreTerm && (
+                        <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-auto">
+                          {filteredMachos.length > 0 ? (
+                            filteredMachos.map((macho) => (
+                              <div
+                                key={macho.id}
+                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between"
+                                onClick={() => {
+                                  setSelectedPadreId(macho.id);
+                                  setSearchPadreTerm(
+                                    `${macho.identificador} - ${macho.nombre_animal || "Sin nombre"}`,
+                                  );
+                                  setIsPadreDropdownOpen(false);
+                                }}
+                              >
+                                <span className="font-medium">
+                                  {macho.identificador}
+                                </span>
+                                <span className="text-sm text-gray-500">
+                                  {macho.nombre_animal || "Sin nombre"}
+                                </span>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="px-4 py-2 text-gray-500">
+                              No se encontraron machos con ese criterio
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {isPadreDropdownOpen && (
+                      <div
+                        className="fixed inset-0 z-0"
+                        onClick={() => setIsPadreDropdownOpen(false)}
+                      />
+                    )}
+
+                    {selectedPadreId && (
+                      <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md">
+                        <p className="text-sm text-green-700">
+                          ✅ Padre seleccionado:{" "}
+                          <span className="font-semibold">
+                            {searchPadreTerm}
+                          </span>
+                        </p>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="mt-1 text-red-500 hover:text-red-700"
+                          onClick={() => {
+                            setSelectedPadreId("");
+                            setSearchPadreTerm("");
+                          }}
                         >
-                          {raza.nombre}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const currentValues = watch("razas_padre") || [];
-                              setValue(
-                                "razas_padre",
-                                currentValues.filter((v) => v !== razaId),
-                              );
-                            }}
-                            className="ml-1 rounded-full hover:bg-primary-foreground hover:text-primary"
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ) : null;
-                    })}
+                          Cambiar selección
+                        </Button>
+                      </div>
+                    )}
                   </div>
+                ) : (
+                  <>
+                    {/* Campos manuales del padre */}
+                    <div className="space-y-2">
+                      <Label>Nombre Padre (opcional)</Label>
+                      <Input
+                        {...register("nombre_padre")}
+                        placeholder="Nombre del padre"
+                      />
+                      {errors.nombre_padre && (
+                        <p className="text-sm text-red-500">
+                          {errors.nombre_padre.message}
+                        </p>
+                      )}
+                    </div>
 
-                  {errors.razas_padre && (
-                    <p className="text-sm text-red-500">
-                      {errors.razas_padre.message}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label>Nivel de Pureza del Padre</Label>
-                  <Select
-                    defaultValue={
-                      animal ? animal.pureza_padre : watch("pureza_padre")
-                    }
-                    onValueChange={(value) => setValue("pureza_padre", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona nivel de pureza" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {purezaOptions.map((pureza) => (
-                        <SelectItem key={pureza.value} value={pureza.value}>
-                          {pureza.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.pureza_padre && (
-                    <p className="text-sm text-red-500">
-                      {errors.pureza_padre.message}
-                    </p>
-                  )}
-                </div>
+                    <div className="space-y-2">
+                      <Label>Arete Padre (6 dígitos)</Label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          value={watch("identificador_temp_padre") || ""}
+                          onChange={(e) =>
+                            handleIdentifierChangePadre(e.target.value)
+                          }
+                          placeholder="000000"
+                          maxLength={6}
+                          className="flex-1"
+                        />
+                        <TooltipProvider>
+                          <Tooltip
+                            open={showIdentifierHelpPadre}
+                            onOpenChange={setShowIdentifierHelpPadre}
+                          >
+                            <TooltipTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                              >
+                                <InfoIcon className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>
+                                PRIMEROS SEIS DÍGITOS DE IDENTIFICACIÓN DEL
+                                ARETE
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                      {errors.arete_padre && (
+                        <p className="text-sm text-red-500">
+                          {errors.arete_padre.message}
+                        </p>
+                      )}
+                    </div>
 
-                <div className="space-y-2">
-                  <Label>Nombre Criador del Padre</Label>
-                  <Input
-                    {...register("nombre_criador_padre")}
-                    placeholder="Nombre del criador"
-                  />
-                  {errors.nombre_criador_padre && (
-                    <p className="text-sm text-red-500">
-                      {errors.nombre_criador_padre.message}
-                    </p>
-                  )}
-                </div>
+                    <div className="space-y-2">
+                      <Label>Razas del Padre</Label>
+                      <Select
+                        value=""
+                        onValueChange={(value) => {
+                          const currentValues = watch("razas_padre") || [];
+                          if (!currentValues.includes(value)) {
+                            setValue("razas_padre", [...currentValues, value]);
+                          }
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona una o más razas" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {razas?.data
+                            .filter(
+                              (raza) =>
+                                !watch("razas_padre")?.includes(raza.id),
+                            )
+                            .map((raza) => (
+                              <SelectItem key={raza.id} value={raza.id}>
+                                {raza.nombre}
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
 
-                <div className="space-y-2">
-                  <Label>Nombre Propietario del Padre</Label>
-                  <Input
-                    {...register("nombre_propietario_padre")}
-                    placeholder="Nombre del propietario"
-                  />
-                  {errors.nombre_propietario_padre && (
-                    <p className="text-sm text-red-500">
-                      {errors.nombre_propietario_padre.message}
-                    </p>
-                  )}
-                </div>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {watch("razas_padre")?.map((razaId) => {
+                          const raza = razas?.data.find((r) => r.id === razaId);
+                          return raza ? (
+                            <span
+                              key={razaId}
+                              className="bg-primary text-primary-foreground px-2 py-1 rounded text-sm flex items-center gap-1"
+                            >
+                              {raza.nombre}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const currentValues =
+                                    watch("razas_padre") || [];
+                                  setValue(
+                                    "razas_padre",
+                                    currentValues.filter((v) => v !== razaId),
+                                  );
+                                }}
+                                className="ml-1 rounded-full hover:bg-primary-foreground hover:text-primary"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ) : null;
+                        })}
+                      </div>
 
-                <div className="space-y-2">
-                  <Label>Nombre de la Finca de Origen del Padre</Label>
-                  <Input
-                    {...register("nombre_finca_origen_padre")}
-                    placeholder="Nombre de la finca"
-                  />
-                  {errors.nombre_finca_origen_padre && (
-                    <p className="text-sm text-red-500">
-                      {errors.nombre_finca_origen_padre.message}
-                    </p>
-                  )}
-                </div>
+                      {errors.razas_padre && (
+                        <p className="text-sm text-red-500">
+                          {errors.razas_padre.message}
+                        </p>
+                      )}
+                    </div>
 
-                <div className="block md:flex gap-4">
+                    <div className="space-y-2">
+                      <Label>Nivel de Pureza del Padre</Label>
+                      <Select
+                        defaultValue={
+                          animal ? animal.pureza_padre : watch("pureza_padre")
+                        }
+                        onValueChange={(value) =>
+                          setValue("pureza_padre", value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona nivel de pureza" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {purezaOptions.map((pureza) => (
+                            <SelectItem key={pureza.value} value={pureza.value}>
+                              {pureza.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {errors.pureza_padre && (
+                        <p className="text-sm text-red-500">
+                          {errors.pureza_padre.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Nombre Criador del Padre</Label>
+                      <Input
+                        {...register("nombre_criador_padre")}
+                        placeholder="Nombre del criador"
+                      />
+                      {errors.nombre_criador_padre && (
+                        <p className="text-sm text-red-500">
+                          {errors.nombre_criador_padre.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Nombre Propietario del Padre</Label>
+                      <Input
+                        {...register("nombre_propietario_padre")}
+                        placeholder="Nombre del propietario"
+                      />
+                      {errors.nombre_propietario_padre && (
+                        <p className="text-sm text-red-500">
+                          {errors.nombre_propietario_padre.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Nombre de la Finca de Origen del Padre</Label>
+                      <Input
+                        {...register("nombre_finca_origen_padre")}
+                        placeholder="Nombre de la finca"
+                      />
+                      {errors.nombre_finca_origen_padre && (
+                        <p className="text-sm text-red-500">
+                          {errors.nombre_finca_origen_padre.message}
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                <div className="flex gap-4">
                   <Button
                     type="button"
                     variant="outline"
-                    className="w-full mb-2"
                     onClick={() => setActiveTab("animal")}
                   >
-                    Anterior
+                    <ArrowLeft /> Anterior
                   </Button>
-                  <Button
-                    className="w-full mb-2"
-                    type="submit"
-                    disabled={mutation.isPending}
-                  >
-                    {mutation.isPending
-                      ? "Actualizando..."
-                      : "Actualizar Animal"}
-                  </Button>
-                  <Button
-                    className="w-full mb-2"
-                    type="button"
-                    onClick={() => setActiveTab("madre")}
-                  >
+                  <Button type="button" onClick={() => setActiveTab("madre")}>
                     Datos de la Madre <ArrowRight />
                   </Button>
                 </div>
@@ -1379,209 +1569,325 @@ const AnimalDetailsPage = () => {
                 <CardTitle>Datos de la Madre</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Nombre Madre (opcional)</Label>
-                  <Input
-                    value={watch("nombre_madre") || ""}
-                    onChange={(e) => setValue("nombre_madre", e.target.value)}
-                    placeholder="Nombre de la madre"
-                    className="flex-1"
-                  />
-                  {errors.nombre_madre && (
-                    <p className="text-sm text-red-500">
-                      {errors.nombre_madre.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Arete Madre (6 dígitos)</Label>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      value={watch("identificador_temp_madre") || ""}
-                      onChange={(e) =>
-                        handleIdentifierChangeMadre(e.target.value)
-                      }
-                      placeholder="000000"
-                      maxLength={6}
-                      className="flex-1"
-                    />
-                    <TooltipProvider>
-                      <Tooltip
-                        open={showIdentifierHelpMadre}
-                        onOpenChange={setShowIdentifierHelpMadre}
-                      >
-                        <TooltipTrigger asChild>
-                          <Button type="button" variant="outline" size="icon">
-                            <InfoIcon className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>
-                            PRIMEROS SEIS DÍGITOS DE IDENTIFICACIÓN DEL ARETE
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                  {errors.arete_madre && (
-                    <p className="text-sm text-red-500">
-                      {errors.arete_madre.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Razas de la Madre</Label>
-                  <Select
-                    value=""
-                    onValueChange={(value) => {
-                      const currentValues = watch("razas_madre") || [];
-                      if (!currentValues.includes(value)) {
-                        setValue("razas_madre", [...currentValues, value]);
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="madreFinca"
+                    checked={isMadreFinca}
+                    onCheckedChange={(checked) => {
+                      setIsMadreFinca(checked === true);
+                      if (checked === false) {
+                        setSelectedMadreId("");
+                        setSearchMadreTerm("");
                       }
                     }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona una o más razas" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {razas?.data
-                        .filter(
-                          (raza) => !watch("razas_madre")?.includes(raza.id),
-                        )
-                        .map((raza) => (
-                          <SelectItem key={raza.id} value={raza.id}>
-                            {raza.nombre}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
+                  />
+                  <Label htmlFor="madreFinca">
+                    La madre pertenece a esta finca
+                  </Label>
+                </div>
 
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {watch("razas_madre")?.map((razaId) => {
-                      const raza = razas?.data.find((r) => r.id === razaId);
-                      return raza ? (
-                        <span
-                          key={razaId}
-                          className="bg-primary text-primary-foreground px-2 py-1 rounded text-sm flex items-center gap-1"
+                {isMadreFinca ? (
+                  <div className="space-y-2">
+                    <Label>Buscar Madre *</Label>
+                    <div className="relative">
+                      <Input
+                        placeholder="Buscar por identificador o nombre..."
+                        value={searchMadreTerm}
+                        onChange={(e) => {
+                          setSearchMadreTerm(e.target.value);
+                          setIsMadreDropdownOpen(true);
+                        }}
+                        onFocus={() => {
+                          if (searchMadreTerm) {
+                            setIsMadreDropdownOpen(true);
+                          }
+                        }}
+                        className="w-full"
+                      />
+                      {isMadreDropdownOpen && searchMadreTerm && (
+                        <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-auto">
+                          {filteredHembras.length > 0 ? (
+                            filteredHembras.map((hembra) => (
+                              <div
+                                key={hembra.id}
+                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between"
+                                onClick={() => {
+                                  setSelectedMadreId(hembra.id);
+                                  setSearchMadreTerm(
+                                    `${hembra.identificador} - ${hembra.nombre_animal || "Sin nombre"}`,
+                                  );
+                                  setIsMadreDropdownOpen(false);
+                                }}
+                              >
+                                <span className="font-medium">
+                                  {hembra.identificador}
+                                </span>
+                                <span className="text-sm text-gray-500">
+                                  {hembra.nombre_animal || "Sin nombre"}
+                                </span>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="px-4 py-2 text-gray-500">
+                              No se encontraron hembras con ese criterio
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {isMadreDropdownOpen && (
+                      <div
+                        className="fixed inset-0 z-0"
+                        onClick={() => setIsMadreDropdownOpen(false)}
+                      />
+                    )}
+
+                    {selectedMadreId && (
+                      <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md">
+                        <p className="text-sm text-green-700">
+                          ✅ Madre seleccionada:{" "}
+                          <span className="font-semibold">
+                            {searchMadreTerm}
+                          </span>
+                        </p>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="mt-1 text-red-500 hover:text-red-700"
+                          onClick={() => {
+                            setSelectedMadreId("");
+                            setSearchMadreTerm("");
+                          }}
                         >
-                          {raza.nombre}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const currentValues = watch("razas_madre") || [];
-                              setValue(
-                                "razas_madre",
-                                currentValues.filter((v) => v !== razaId),
-                              );
-                            }}
-                            className="ml-1 rounded-full hover:bg-primary-foreground hover:text-primary"
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ) : null;
-                    })}
+                          Cambiar selección
+                        </Button>
+                      </div>
+                    )}
                   </div>
+                ) : (
+                  <>
+                    {/* Campos manuales de la madre */}
+                    <div className="space-y-2">
+                      <Label>Nombre Madre (opcional)</Label>
+                      <Input
+                        value={watch("nombre_madre") || ""}
+                        onChange={(e) =>
+                          setValue("nombre_madre", e.target.value)
+                        }
+                        placeholder="Nombre de la madre"
+                        className="flex-1"
+                      />
+                      {errors.nombre_madre && (
+                        <p className="text-sm text-red-500">
+                          {errors.nombre_madre.message}
+                        </p>
+                      )}
+                    </div>
 
-                  {errors.razas_madre && (
-                    <p className="text-sm text-red-500">
-                      {errors.razas_madre.message}
-                    </p>
-                  )}
-                </div>
+                    <div className="space-y-2">
+                      <Label>Arete Madre (6 dígitos)</Label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          value={watch("identificador_temp_madre") || ""}
+                          onChange={(e) =>
+                            handleIdentifierChangeMadre(e.target.value)
+                          }
+                          placeholder="000000"
+                          maxLength={6}
+                          className="flex-1"
+                        />
+                        <TooltipProvider>
+                          <Tooltip
+                            open={showIdentifierHelpMadre}
+                            onOpenChange={setShowIdentifierHelpMadre}
+                          >
+                            <TooltipTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                              >
+                                <InfoIcon className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>
+                                PRIMEROS SEIS DÍGITOS DE IDENTIFICACIÓN DEL
+                                ARETE
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                      {errors.arete_madre && (
+                        <p className="text-sm text-red-500">
+                          {errors.arete_madre.message}
+                        </p>
+                      )}
+                    </div>
 
-                <div className="space-y-2">
-                  <Label>Nivel de pureza</Label>
-                  <Select
-                    defaultValue={
-                      animal ? animal.pureza_madre : watch("pureza_madre")
-                    }
-                    onValueChange={(value) => setValue("pureza_madre", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona nivel de pureza" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {purezaOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.pureza_madre && (
-                    <p className="text-sm text-red-500">
-                      {errors.pureza_madre.message}
-                    </p>
-                  )}
-                </div>
+                    <div className="space-y-2">
+                      <Label>Razas de la Madre</Label>
+                      <Select
+                        value=""
+                        onValueChange={(value) => {
+                          const currentValues = watch("razas_madre") || [];
+                          if (!currentValues.includes(value)) {
+                            setValue("razas_madre", [...currentValues, value]);
+                          }
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona una o más razas" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {razas?.data
+                            .filter(
+                              (raza) =>
+                                !watch("razas_madre")?.includes(raza.id),
+                            )
+                            .map((raza) => (
+                              <SelectItem key={raza.id} value={raza.id}>
+                                {raza.nombre}
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
 
-                <div className="space-y-2">
-                  <Label>Nombre Criador</Label>
-                  <Input
-                    value={watch("nombre_criador_madre") || ""}
-                    onChange={(e) =>
-                      setValue("nombre_criador_madre", e.target.value)
-                    }
-                    placeholder="Nombre del criador"
-                    className="flex-1"
-                  />
-                  {errors.nombre_criador_madre && (
-                    <p className="text-sm text-red-500">
-                      {errors.nombre_criador_madre.message}
-                    </p>
-                  )}
-                </div>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {watch("razas_madre")?.map((razaId) => {
+                          const raza = razas?.data.find((r) => r.id === razaId);
+                          return raza ? (
+                            <span
+                              key={razaId}
+                              className="bg-primary text-primary-foreground px-2 py-1 rounded text-sm flex items-center gap-1"
+                            >
+                              {raza.nombre}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const currentValues =
+                                    watch("razas_madre") || [];
+                                  setValue(
+                                    "razas_madre",
+                                    currentValues.filter((v) => v !== razaId),
+                                  );
+                                }}
+                                className="ml-1 rounded-full hover:bg-primary-foreground hover:text-primary"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ) : null;
+                        })}
+                      </div>
 
-                <div className="space-y-2">
-                  <Label>Nombre Propietario</Label>
-                  <Input
-                    value={watch("nombre_propietario_madre") || ""}
-                    onChange={(e) =>
-                      setValue("nombre_propietario_madre", e.target.value)
-                    }
-                    placeholder="Nombre del propietario"
-                    className="flex-1"
-                  />
-                  {errors.nombre_propietario_madre && (
-                    <p className="text-sm text-red-500">
-                      {errors.nombre_propietario_madre.message}
-                    </p>
-                  )}
-                </div>
+                      {errors.razas_madre && (
+                        <p className="text-sm text-red-500">
+                          {errors.razas_madre.message}
+                        </p>
+                      )}
+                    </div>
 
-                <div className="space-y-2">
-                  <Label>Número de parto</Label>
-                  <Input
-                    value={watch("numero_parto_madre") || ""}
-                    onChange={(e) => {
-                      setValue("numero_parto_madre", Number(e.target.value));
-                    }}
-                    placeholder="Número de parto"
-                    maxLength={2}
-                    className="flex-1"
-                    type="number"
-                  />
-                  {errors.numero_parto_madre && (
-                    <p className="text-sm text-red-500">
-                      {errors.numero_parto_madre.message}
-                    </p>
-                  )}
-                </div>
+                    <div className="space-y-2">
+                      <Label>Nivel de pureza</Label>
+                      <Select
+                        defaultValue={
+                          animal ? animal.pureza_madre : watch("pureza_madre")
+                        }
+                        onValueChange={(value) =>
+                          setValue("pureza_madre", value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona nivel de pureza" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {purezaOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {errors.pureza_madre && (
+                        <p className="text-sm text-red-500">
+                          {errors.pureza_madre.message}
+                        </p>
+                      )}
+                    </div>
 
-                <div className="space-y-2">
-                  <Label>Nombre de la finca</Label>
-                  <Input
-                    value={watch("nombre_finca_origen_madre") || ""}
-                    onChange={(e) =>
-                      setValue("nombre_finca_origen_madre", e.target.value)
-                    }
-                    placeholder="Nombre de la finca de origen"
-                    className="flex-1"
-                  />
-                </div>
+                    <div className="space-y-2">
+                      <Label>Nombre Criador</Label>
+                      <Input
+                        value={watch("nombre_criador_madre") || ""}
+                        onChange={(e) =>
+                          setValue("nombre_criador_madre", e.target.value)
+                        }
+                        placeholder="Nombre del criador"
+                        className="flex-1"
+                      />
+                      {errors.nombre_criador_madre && (
+                        <p className="text-sm text-red-500">
+                          {errors.nombre_criador_madre.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Nombre Propietario</Label>
+                      <Input
+                        value={watch("nombre_propietario_madre") || ""}
+                        onChange={(e) =>
+                          setValue("nombre_propietario_madre", e.target.value)
+                        }
+                        placeholder="Nombre del propietario"
+                        className="flex-1"
+                      />
+                      {errors.nombre_propietario_madre && (
+                        <p className="text-sm text-red-500">
+                          {errors.nombre_propietario_madre.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Número de parto</Label>
+                      <Input
+                        value={watch("numero_parto_madre") || ""}
+                        onChange={(e) => {
+                          setValue(
+                            "numero_parto_madre",
+                            Number(e.target.value),
+                          );
+                        }}
+                        placeholder="Número de parto"
+                        maxLength={2}
+                        className="flex-1"
+                        type="number"
+                      />
+                      {errors.numero_parto_madre && (
+                        <p className="text-sm text-red-500">
+                          {errors.numero_parto_madre.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Nombre de la finca</Label>
+                      <Input
+                        value={watch("nombre_finca_origen_madre") || ""}
+                        onChange={(e) =>
+                          setValue("nombre_finca_origen_madre", e.target.value)
+                        }
+                        placeholder="Nombre de la finca de origen"
+                        className="flex-1"
+                      />
+                    </div>
+                  </>
+                )}
 
                 <div className="flex gap-4">
                   <Button
@@ -1589,7 +1895,7 @@ const AnimalDetailsPage = () => {
                     variant="outline"
                     onClick={() => setActiveTab("padre")}
                   >
-                    Anterior
+                    <ArrowLeft /> Anterior
                   </Button>
                   <Button type="submit" disabled={mutation.isPending}>
                     {mutation.isPending

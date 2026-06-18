@@ -4,7 +4,8 @@ import { TipoPublicacion } from "@/interfaces/enums/market/tipo_publicacion.enum
 export interface PaginationInterface {
   limit?: number;
   offset?: number;
-
+  principal?: boolean;
+  mostrar?: boolean;
   name?: string;
   sexo?: string;
   nombre?: string;

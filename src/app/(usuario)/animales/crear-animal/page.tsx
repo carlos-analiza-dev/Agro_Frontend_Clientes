@@ -63,6 +63,12 @@ const CrearAnimalPage = () => {
   const [isMadreFinca, setIsMadreFinca] = useState(false);
   const [selectedMadreId, setSelectedMadreId] = useState("");
   const [selectedPadreId, setSelectedPadreId] = useState("");
+  const [searchPadreTerm, setSearchPadreTerm] = useState("");
+  const [searchMadreTerm, setSearchMadreTerm] = useState("");
+  const [filteredMachos, setFilteredMachos] = useState<Animal[]>([]);
+  const [filteredHembras, setFilteredHembras] = useState<Animal[]>([]);
+  const [isPadreDropdownOpen, setIsPadreDropdownOpen] = useState(false);
+  const [isMadreDropdownOpen, setIsMadreDropdownOpen] = useState(false);
   const {
     register,
     handleSubmit,
@@ -86,13 +92,52 @@ const CrearAnimalPage = () => {
 
   const { data: especies } = useGetEspecies();
   const especieId = watch("especie");
+
   const { data: razas } = useGetRazasByEspecie(especieId);
   const { data: fincas } = useFincasPropietarios(cliente?.id ?? "");
-  const { data: machos, isLoading: cargando_machos } =
-    useGetAnimalesPropietario({ sexo: SexoAnimal.Macho, especieId });
-  const { data: hembras, isLoading: cargando_hembras } =
-    useGetAnimalesPropietario({ sexo: SexoAnimal.Hembra, especieId });
+  const { data: machos } = useGetAnimalesPropietario({
+    sexo: SexoAnimal.Macho,
+    especieId,
+  });
+
+  const { data: hembras } = useGetAnimalesPropietario({
+    sexo: SexoAnimal.Hembra,
+    especieId,
+  });
+
   const selectedSexo = watch("sexo");
+
+  useEffect(() => {
+    if (machos) {
+      const filtered = machos.filter(
+        (macho) =>
+          macho.identificador
+            .toLowerCase()
+            .includes(searchPadreTerm.toLowerCase()) ||
+          (macho.nombre_animal &&
+            macho.nombre_animal
+              .toLowerCase()
+              .includes(searchPadreTerm.toLowerCase())),
+      );
+      setFilteredMachos(filtered);
+    }
+  }, [searchPadreTerm, machos, especieId]);
+
+  useEffect(() => {
+    if (hembras) {
+      const filtered = hembras.filter(
+        (hembra) =>
+          hembra.identificador
+            .toLowerCase()
+            .includes(searchMadreTerm.toLowerCase()) ||
+          (hembra.nombre_animal &&
+            hembra.nombre_animal
+              .toLowerCase()
+              .includes(searchMadreTerm.toLowerCase())),
+      );
+      setFilteredHembras(filtered);
+    }
+  }, [searchMadreTerm, hembras, especieId]);
 
   const fechaNacimiento = watch("fecha_nacimiento");
 
@@ -479,8 +524,12 @@ const CrearAnimalPage = () => {
       >
         <TabsList className="grid grid-cols-3 mb-6">
           <TabsTrigger value="animal">Datos Animal</TabsTrigger>
-          <TabsTrigger value="padre">Datos Padre</TabsTrigger>
-          <TabsTrigger value="madre">Datos Madre</TabsTrigger>
+          <TabsTrigger disabled={!especieId} value="padre">
+            Datos Padre
+          </TabsTrigger>
+          <TabsTrigger disabled={!especieId} value="madre">
+            Datos Madre
+          </TabsTrigger>
         </TabsList>
 
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -1197,30 +1246,82 @@ const CrearAnimalPage = () => {
                 </div>
                 {isPadreFinca ? (
                   <div className="space-y-2">
-                    <Label>Seleccionar Padre *</Label>
-                    <Select
-                      value={selectedPadreId}
-                      onValueChange={(value) => setSelectedPadreId(value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona el padre" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {cargando_machos ? (
-                          <SelectItem value="loading" disabled>
-                            Cargando...
-                          </SelectItem>
-                        ) : machos && machos.length > 0 ? (
-                          machos?.map((macho: Animal) => (
-                            <SelectItem key={macho.id} value={macho.id}>
-                              {macho.identificador}
-                            </SelectItem>
-                          ))
-                        ) : (
-                          <p>No se encontraron machos disponibles</p>
-                        )}
-                      </SelectContent>
-                    </Select>
+                    <Label>Buscar Padre *</Label>
+                    <div className="relative">
+                      <Input
+                        placeholder="Buscar por identificador o nombre..."
+                        value={searchPadreTerm}
+                        onChange={(e) => {
+                          setSearchPadreTerm(e.target.value);
+                          setIsPadreDropdownOpen(true);
+                        }}
+                        onFocus={() => {
+                          if (searchPadreTerm) {
+                            setIsPadreDropdownOpen(true);
+                          }
+                        }}
+                        className="w-full"
+                      />
+                      {isPadreDropdownOpen && searchPadreTerm && (
+                        <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-auto">
+                          {filteredMachos.length > 0 ? (
+                            filteredMachos.map((macho) => (
+                              <div
+                                key={macho.id}
+                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between"
+                                onClick={() => {
+                                  setSelectedPadreId(macho.id);
+                                  setSearchPadreTerm(
+                                    `${macho.identificador} - ${macho.nombre_animal || "Sin nombre"}`,
+                                  );
+                                  setIsPadreDropdownOpen(false);
+                                }}
+                              >
+                                <span className="font-medium">
+                                  {macho.identificador}
+                                </span>
+                                <span className="text-sm text-gray-500">
+                                  {macho.nombre_animal || "Sin nombre"}
+                                </span>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="px-4 py-2 text-gray-500">
+                              No se encontraron machos
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {isPadreDropdownOpen && (
+                      <div
+                        className="fixed inset-0 z-0"
+                        onClick={() => setIsPadreDropdownOpen(false)}
+                      />
+                    )}
+                    {selectedPadreId && (
+                      <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md">
+                        <p className="text-sm text-green-700">
+                          ✅ Padre seleccionado:{" "}
+                          <span className="font-semibold">
+                            {searchPadreTerm}
+                          </span>
+                        </p>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="mt-1 text-red-500 hover:text-red-700"
+                          onClick={() => {
+                            setSelectedPadreId("");
+                            setSearchPadreTerm("");
+                          }}
+                        >
+                          Cambiar selección
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div>
@@ -1448,31 +1549,82 @@ const CrearAnimalPage = () => {
 
                 {isMadreFinca ? (
                   <div className="space-y-2">
-                    <Label>Seleccionar Madre *</Label>
-                    <Select
-                      value={selectedMadreId}
-                      onValueChange={(value) => setSelectedMadreId(value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona la madre" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {cargando_hembras ? (
-                          <SelectItem value="loading" disabled>
-                            Cargando...
-                          </SelectItem>
-                        ) : hembras && hembras.length > 0 ? (
-                          hembras?.map((hembra: Animal) => (
-                            <SelectItem key={hembra.id} value={hembra.id}>
-                              {hembra.identificador} -{" "}
-                              {hembra.nombre_animal || "Sin nombre"}
-                            </SelectItem>
-                          ))
-                        ) : (
-                          <p>No se encontraron hembras disponibles</p>
-                        )}
-                      </SelectContent>
-                    </Select>
+                    <Label>Buscar Madre *</Label>
+                    <div className="relative">
+                      <Input
+                        placeholder="Buscar por identificador o nombre..."
+                        value={searchMadreTerm}
+                        onChange={(e) => {
+                          setSearchMadreTerm(e.target.value);
+                          setIsMadreDropdownOpen(true);
+                        }}
+                        onFocus={() => {
+                          if (searchMadreTerm) {
+                            setIsMadreDropdownOpen(true);
+                          }
+                        }}
+                        className="w-full"
+                      />
+                      {isMadreDropdownOpen && searchMadreTerm && (
+                        <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-auto">
+                          {filteredHembras.length > 0 ? (
+                            filteredHembras.map((hembra) => (
+                              <div
+                                key={hembra.id}
+                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between"
+                                onClick={() => {
+                                  setSelectedMadreId(hembra.id);
+                                  setSearchMadreTerm(
+                                    `${hembra.identificador} - ${hembra.nombre_animal || "Sin nombre"}`,
+                                  );
+                                  setIsMadreDropdownOpen(false);
+                                }}
+                              >
+                                <span className="font-medium">
+                                  {hembra.identificador}
+                                </span>
+                                <span className="text-sm text-gray-500">
+                                  {hembra.nombre_animal || "Sin nombre"}
+                                </span>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="px-4 py-2 text-gray-500">
+                              No se encontraron hembras
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {isMadreDropdownOpen && (
+                      <div
+                        className="fixed inset-0 z-0"
+                        onClick={() => setIsMadreDropdownOpen(false)}
+                      />
+                    )}
+                    {selectedMadreId && (
+                      <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md">
+                        <p className="text-sm text-green-700">
+                          ✅ Madre seleccionada:{" "}
+                          <span className="font-semibold">
+                            {searchMadreTerm}
+                          </span>
+                        </p>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="mt-1 text-red-500 hover:text-red-700"
+                          onClick={() => {
+                            setSelectedMadreId("");
+                            setSearchMadreTerm("");
+                          }}
+                        >
+                          Cambiar selección
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <>

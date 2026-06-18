@@ -409,8 +409,6 @@ const FormPublicacion = ({
     setIsSubmitting(true);
 
     try {
-      console.log("DATA", data);
-
       const formData = new FormData();
 
       formData.append("nombre", data.nombre);

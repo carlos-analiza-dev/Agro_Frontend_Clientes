@@ -16,8 +16,6 @@ const EditPublicacionPage = () => {
   const tipo = publicacion?.tipo_publicacion ?? TipoPublicacion.ANIMALES;
   const isAnimales = tipo === TipoPublicacion.ANIMALES;
 
-  console.log("PUBLICACION", publicacion);
-
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container w-full mx-auto px-4">

@@ -9,6 +9,8 @@ export interface Animal {
   id: string;
   sexo: string;
   color: string;
+  padre: Animal;
+  madre: Animal;
   nombre_animal: string;
   identificador: string;
   tipo_reproduccion: string;
