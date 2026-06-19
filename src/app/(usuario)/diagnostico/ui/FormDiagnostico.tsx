@@ -289,7 +289,7 @@ const FormDiagnostico = ({
 
       <div className="space-y-2">
         <Label htmlFor="edad" className="font-bold">
-          Edad (meses) <span className="text-red-500">*</span>
+          Edad (años) <span className="text-red-500">*</span>
         </Label>
         <Input
           id="edad"

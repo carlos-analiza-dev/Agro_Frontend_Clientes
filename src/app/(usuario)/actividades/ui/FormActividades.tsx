@@ -20,7 +20,7 @@ import {
 } from "@/interfaces/enums/actividaes.enums";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
-import { Loader2 } from "lucide-react";
+import { Loader2, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -31,6 +31,7 @@ import {
 } from "@/helpers/data/actividades/actividadesdData";
 import { Input } from "@/components/ui/input";
 import { Actividade } from "@/api/actividades/interfaces/response-actividades.interface";
+import { cn } from "@/lib/utils";
 
 interface Props {
   cliente: Cliente | undefined;
@@ -43,6 +44,9 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
   const queryClient = useQueryClient();
   const isEditing = !!actividad;
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [searchTrabajadorTerm, setSearchTrabajadorTerm] = useState<string>("");
+  const [isTrabajadorSearchOpen, setIsTrabajadorSearchOpen] =
+    useState<boolean>(false);
 
   const {
     register,
@@ -71,6 +75,28 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
   const currentFrecuencia = watch("frecuencia");
   const currentTrabajadorId = watch("trabajadorId");
   const currentFincaId = watch("fincaId");
+
+  const filteredTrabajadores =
+    trabajadores?.filter((trabajador: any) => {
+      const searchTerm = searchTrabajadorTerm.toLowerCase().trim();
+      if (!searchTerm) return true;
+
+      const nombre = trabajador.nombre?.toLowerCase() || "";
+      const identificacion = trabajador.identificacion?.toLowerCase() || "";
+      const email = trabajador.email?.toLowerCase() || "";
+      const telefono = trabajador.telefono?.toLowerCase() || "";
+
+      return (
+        nombre.includes(searchTerm) ||
+        identificacion.includes(searchTerm) ||
+        email.includes(searchTerm) ||
+        telefono.includes(searchTerm)
+      );
+    }) || [];
+
+  const selectedTrabajador = trabajadores?.find(
+    (trabajador: any) => trabajador.id === currentTrabajadorId,
+  );
 
   useEffect(() => {
     if (actividad && fincas && trabajadores && !isDataLoaded) {
@@ -153,6 +179,20 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
       frecuencia: FrecuenciaActividad.DIARIA,
       descripcion: "",
     });
+    setSearchTrabajadorTerm("");
+    setIsTrabajadorSearchOpen(false);
+  };
+
+  const handleSelectTrabajador = (trabajadorId: string) => {
+    setValue("trabajadorId", trabajadorId);
+    setSearchTrabajadorTerm("");
+    setIsTrabajadorSearchOpen(false);
+  };
+
+  const handleClearTrabajador = () => {
+    setValue("trabajadorId", "");
+    setSearchTrabajadorTerm("");
+    setIsTrabajadorSearchOpen(false);
   };
 
   const onSubmit = (data: CrearActividadInterface) => {
@@ -188,7 +228,7 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="trabajadorId">
+          <Label htmlFor="trabajadorSearch">
             Trabajador <span className="text-red-500">*</span>
           </Label>
           {isEditing ? (
@@ -198,30 +238,119 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
               </span>
             </div>
           ) : (
-            <Select
-              value={currentTrabajadorId || ""}
-              onValueChange={(value) => setValue("trabajadorId", value)}
-            >
-              <SelectTrigger
-                className={errors.trabajadorId ? "border-red-500" : ""}
-              >
-                <SelectValue placeholder="Selecciona un trabajador" />
-              </SelectTrigger>
-              <SelectContent>
-                {trabajadores && trabajadores.length > 0 ? (
-                  trabajadores.map((trabajador: any) => (
-                    <SelectItem key={trabajador.id} value={trabajador.id}>
-                      {trabajador.nombre}
-                    </SelectItem>
-                  ))
-                ) : (
-                  <SelectItem value="no-trabajadores" disabled>
-                    No hay trabajadores disponibles
-                  </SelectItem>
+            <div className="relative">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50" />
+                <input
+                  type="text"
+                  id="trabajadorSearch"
+                  placeholder={
+                    selectedTrabajador
+                      ? `${selectedTrabajador.nombre}`
+                      : "Buscar trabajador por nombre, identificación, email o teléfono..."
+                  }
+                  value={searchTrabajadorTerm}
+                  onChange={(e) => {
+                    setSearchTrabajadorTerm(e.target.value);
+                    setIsTrabajadorSearchOpen(true);
+                  }}
+                  onFocus={() => setIsTrabajadorSearchOpen(true)}
+                  className={cn(
+                    "w-full pl-9 pr-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
+                    selectedTrabajador && "bg-blue-50 border-blue-300",
+                    errors.trabajadorId && "border-red-500",
+                  )}
+                />
+                {selectedTrabajador && (
+                  <button
+                    type="button"
+                    onClick={handleClearTrabajador}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
                 )}
-              </SelectContent>
-            </Select>
+              </div>
+
+              {isTrabajadorSearchOpen && searchTrabajadorTerm && (
+                <div className="absolute z-50 w-full mt-1 border rounded-md shadow-lg max-h-60 overflow-y-auto bg-white">
+                  {filteredTrabajadores.length > 0 ? (
+                    filteredTrabajadores.map((trabajador: any) => (
+                      <div
+                        key={trabajador.id}
+                        onClick={() => handleSelectTrabajador(trabajador.id)}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-gray-50",
+                          currentTrabajadorId === trabajador.id && "bg-blue-50",
+                        )}
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">
+                            {trabajador.nombre}
+                          </p>
+                          <div className="flex items-center gap-2 text-xs text-gray-500 flex-wrap">
+                            {trabajador.identificacion && (
+                              <span className="truncate">
+                                ID: {trabajador.identificacion}
+                              </span>
+                            )}
+                            {trabajador.telefono && (
+                              <span>• {trabajador.telefono}</span>
+                            )}
+                            {trabajador.email && (
+                              <span className="truncate">
+                                • {trabajador.email}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {currentTrabajadorId === trabajador.id && (
+                          <div className="h-2 w-2 rounded-full bg-blue-600 flex-shrink-0" />
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="py-6 text-center text-sm">
+                      <p className="text-gray-500">
+                        No se encontraron trabajadores
+                      </p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        Intenta con otro término de búsqueda
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           )}
+
+          {!isEditing && selectedTrabajador && !searchTrabajadorTerm && (
+            <div className="mt-2 p-2 bg-blue-50 rounded-md border border-blue-200">
+              <div className="flex items-center gap-3">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium">
+                    {selectedTrabajador.nombre}
+                  </p>
+                  <div className="flex items-center gap-2 text-xs text-gray-600 flex-wrap">
+                    {selectedTrabajador.identificacion && (
+                      <span className="truncate">
+                        ID: {selectedTrabajador.identificacion}
+                      </span>
+                    )}
+                    {selectedTrabajador.telefono && (
+                      <span>• {selectedTrabajador.telefono}</span>
+                    )}
+                    {selectedTrabajador.email && (
+                      <span className="truncate">
+                        • {selectedTrabajador.email}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {errors.trabajadorId && (
             <p className="text-sm font-medium text-red-500">
               {errors.trabajadorId.message as string}

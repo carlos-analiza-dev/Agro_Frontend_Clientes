@@ -22,6 +22,8 @@ import {
   Wheat,
   Utensils,
   UploadCloud,
+  X,
+  Filter,
 } from "lucide-react";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useDebounce } from "@/hooks/debounce/useDebounce";
@@ -41,6 +43,7 @@ import SkeletonCard from "@/components/generics/SkeletonCard";
 import EmptyStateAnimales from "./ui/EmptyStateAnimales";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import CargaMasivaModal from "./ui/CargaMasivaModal";
+import { Badge } from "@/components/ui/badge";
 
 const AnimalesPageGanadero = () => {
   const router = useRouter();
@@ -156,10 +159,69 @@ const AnimalesPageGanadero = () => {
 
   const animales = data?.pages.flatMap((page) => page.data) || [];
 
-  const hasActiveFilters =
-    (fincaId && fincaId !== "all") ||
-    (especieId && especieId !== "all") ||
-    debouncedSearchTerm !== "";
+  const getActiveFilterName = () => {
+    const filters = [];
+
+    if (debouncedSearchTerm) {
+      filters.push(`Búsqueda: "${debouncedSearchTerm}"`);
+    }
+
+    if (fincaId && fincaId !== "all") {
+      const fincaName = fincas?.data?.fincas.find(
+        (f) => f.id === fincaId,
+      )?.nombre_finca;
+      filters.push(`Finca: ${fincaName || fincaId}`);
+    }
+
+    if (especieId && especieId !== "all") {
+      const especieName = especies?.data?.find(
+        (e) => e.id === especieId,
+      )?.nombre;
+      filters.push(`Especie: ${especieName || especieId}`);
+    }
+
+    return filters;
+  };
+
+  const activeFilters = getActiveFilterName();
+  const hasActiveFilters = activeFilters.length > 0;
+
+  const ActiveFiltersSection = () => {
+    if (!hasActiveFilters) return null;
+
+    return (
+      <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
+        <div className="flex flex-wrap items-center gap-2">
+          <Filter className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+          <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+            Filtros activos:
+          </span>
+
+          <div className="flex flex-wrap gap-2">
+            {activeFilters.map((filter, index) => (
+              <Badge
+                key={index}
+                variant="secondary"
+                className="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300"
+              >
+                {filter}
+              </Badge>
+            ))}
+          </div>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleClearFilters}
+            className="ml-auto text-blue-600 hover:text-blue-700 hover:bg-blue-100 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/50"
+          >
+            <X className="h-4 w-4 mr-1" />
+            Limpiar todos
+          </Button>
+        </div>
+      </div>
+    );
+  };
 
   if (isLoading) {
     return (
@@ -187,6 +249,48 @@ const AnimalesPageGanadero = () => {
       </div>
     );
   }
+
+  const renderFilters = () => (
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <Buscador
+          title="Buscar por identificador o nombre..."
+          setSearchTerm={setSearchTerm}
+          searchTerm={searchTerm}
+        />
+
+        <Select value={fincaId} onValueChange={setFincaId}>
+          <SelectTrigger>
+            <SelectValue placeholder="Seleccionar finca" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos</SelectItem>
+            {fincas?.data?.fincas.map((finca) => (
+              <SelectItem key={finca.id} value={finca.id}>
+                {finca.nombre_finca}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={especieId} onValueChange={setEspecieId}>
+          <SelectTrigger>
+            <SelectValue placeholder="Seleccionar especie" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos</SelectItem>
+            {especies?.data?.map((especie) => (
+              <SelectItem key={especie.id} value={especie.id}>
+                {especie.nombre}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <ActiveFiltersSection />
+    </>
+  );
 
   if (animales.length === 0) {
     return (
@@ -252,49 +356,18 @@ const AnimalesPageGanadero = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Buscador
-            title="Buscar por identificador..."
-            setSearchTerm={setSearchTerm}
-            searchTerm={searchTerm}
+        {renderFilters()}
+
+        <div className="container mx-auto p-4">
+          <EmptyStateAnimales
+            hasFilters={false}
+            onRefresh={handleRefresh}
+            isLoading={isLoading}
+            title="Error al cargar los animales"
+            description="No se pudieron cargar los animales. Por favor, intenta nuevamente."
+            actionText="Recargar"
           />
-
-          <Select value={fincaId} onValueChange={setFincaId}>
-            <SelectTrigger>
-              <SelectValue placeholder="Seleccionar finca" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              {fincas?.data?.fincas.map((finca) => (
-                <SelectItem key={finca.id} value={finca.id}>
-                  {finca.nombre_finca}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select value={especieId} onValueChange={setEspecieId}>
-            <SelectTrigger>
-              <SelectValue placeholder="Seleccionar especie" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              {especies?.data?.map((especie) => (
-                <SelectItem key={especie.id} value={especie.id}>
-                  {especie.nombre}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
-
-        <EmptyStateAnimales
-          hasFilters={hasActiveFilters}
-          onClearFilters={handleClearFilters}
-          onAddAnimal={handleAddAnimal}
-          onRefresh={handleRefresh}
-          isLoading={isFetchingNextPage}
-        />
         <CargaMasivaModal
           isOpen={isCargaMasivaOpen}
           onClose={() => setIsCargaMasivaOpen(false)}
@@ -370,41 +443,7 @@ const AnimalesPageGanadero = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <Buscador
-          title="Buscar por identificador..."
-          setSearchTerm={setSearchTerm}
-          searchTerm={searchTerm}
-        />
-
-        <Select value={fincaId} onValueChange={setFincaId}>
-          <SelectTrigger>
-            <SelectValue placeholder="Seleccionar finca" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            {fincas?.data?.fincas.map((finca) => (
-              <SelectItem key={finca.id} value={finca.id}>
-                {finca.nombre_finca}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <Select value={especieId} onValueChange={setEspecieId}>
-          <SelectTrigger>
-            <SelectValue placeholder="Seleccionar especie" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            {especies?.data?.map((especie) => (
-              <SelectItem key={especie.id} value={especie.id}>
-                {especie.nombre}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      {renderFilters()}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {animales.map((animal) => (

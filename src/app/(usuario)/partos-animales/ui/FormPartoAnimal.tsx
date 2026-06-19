@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircleIcon, Plus, Trash2, Baby } from "lucide-react";
+import { AlertCircleIcon, Plus, Trash2, Baby, Search, X } from "lucide-react";
 import { Animal } from "@/api/animales/interfaces/response-animales.interface";
 import { CrearPartoInterface } from "@/api/reproduccion/interfaces/crear-parto.interface";
 import { CrearPartoAnimal } from "@/api/reproduccion/accions/partos/crear-parto";
@@ -30,6 +30,8 @@ import {
 import { convertirFechaHora } from "@/helpers/funciones/convertirFechaHoras";
 import { Parto } from "@/api/reproduccion/interfaces/response-partos.interface";
 import useGetServicioByHembraId from "@/hooks/reproduccion/useGetServicioByHembraId";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface Props {
   parto?: Parto | null;
@@ -47,6 +49,8 @@ const FormPartoAnimal = ({
   const [errorMessage, setIsErrorMessage] = useState<string>("");
   const [selectedHembra, setSelectedHembra] = useState<string>("");
   const [selectedServicio, setSelectedServicio] = useState<string>("");
+  const [searchHembraTerm, setSearchHembraTerm] = useState<string>("");
+  const [isHembraSearchOpen, setIsHembraSearchOpen] = useState<boolean>(false);
 
   const {
     register,
@@ -100,6 +104,26 @@ const FormPartoAnimal = ({
 
   const { data: servicios_hembra } = useGetServicioByHembraId(hembraId);
 
+  const filteredHembras =
+    hembras?.filter((animal) => {
+      const searchTerm = searchHembraTerm.toLowerCase().trim();
+      if (!searchTerm) return true;
+
+      const identificador = animal.identificador?.toLowerCase() || "";
+      const nombre = animal.nombre_animal?.toLowerCase() || "";
+      const especie = animal.especie?.nombre?.toLowerCase() || "";
+
+      return (
+        identificador.includes(searchTerm) ||
+        nombre.includes(searchTerm) ||
+        especie.includes(searchTerm)
+      );
+    }) || [];
+
+  const selectedHembraAnimal = hembras?.find(
+    (animal) => animal.id === hembraId,
+  );
+
   useEffect(() => {
     if (crias.length !== numeroCrias) {
       setValue("numero_crias", crias.length);
@@ -145,6 +169,20 @@ const FormPartoAnimal = ({
       setSelectedServicio("");
     }
   }, [parto, setValue, reset]);
+
+  const handleSelectHembra = (animalId: string) => {
+    setValue("hembra_id", animalId);
+    setSelectedHembra(animalId);
+    setSearchHembraTerm("");
+    setIsHembraSearchOpen(false);
+  };
+
+  const handleClearHembra = () => {
+    setValue("hembra_id", "");
+    setSelectedHembra("");
+    setSearchHembraTerm("");
+    setIsHembraSearchOpen(false);
+  };
 
   const onSubmit = async (data: CrearPartoInterface) => {
     try {
@@ -236,37 +274,130 @@ const FormPartoAnimal = ({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {!isEditing ? (
-          <div>
-            <Label htmlFor="hembra_id">
+          <div className="md:col-span-2">
+            <Label htmlFor="hembraSearch">
               Hembra <span className="text-red-500">*</span>
             </Label>
-            <Select
-              onValueChange={(value) => {
-                setValue("hembra_id", value);
-                setSelectedHembra(value);
-              }}
-              disabled={isSubmitting}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccionar hembra" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Hembras</SelectLabel>
-                  {hembras && hembras.length > 0 ? (
-                    hembras.map((animal) => (
-                      <SelectItem key={animal.id} value={animal.id}>
-                        {animal.identificador}
-                      </SelectItem>
+
+            <div className="relative">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50" />
+                <input
+                  type="text"
+                  id="hembraSearch"
+                  placeholder={
+                    selectedHembraAnimal
+                      ? `${selectedHembraAnimal.identificador || selectedHembraAnimal.nombre_animal || "Animal"} seleccionado`
+                      : "Buscar hembra por identificador, nombre o especie..."
+                  }
+                  value={searchHembraTerm}
+                  onChange={(e) => {
+                    setSearchHembraTerm(e.target.value);
+                    setIsHembraSearchOpen(true);
+                  }}
+                  onFocus={() => setIsHembraSearchOpen(true)}
+                  className={cn(
+                    "w-full pl-9 pr-10 py-3 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
+                    selectedHembraAnimal && "bg-blue-50 border-blue-300",
+                  )}
+                  disabled={isSubmitting}
+                />
+                {selectedHembraAnimal && (
+                  <button
+                    type="button"
+                    onClick={handleClearHembra}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+
+              {isHembraSearchOpen && searchHembraTerm && (
+                <div className="absolute z-50 w-full mt-1 border rounded-md shadow-lg max-h-60 overflow-y-auto bg-white">
+                  {filteredHembras.length > 0 ? (
+                    filteredHembras.map((animal) => (
+                      <div
+                        key={animal.id}
+                        onClick={() => handleSelectHembra(animal.id)}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-gray-50",
+                          hembraId === animal.id && "bg-blue-50",
+                        )}
+                      >
+                        <Image
+                          src={
+                            animal.profileImages.length > 0
+                              ? animal.profileImages[0].url
+                              : "/images/Image-not-found.png"
+                          }
+                          alt={`animal-${animal.identificador}`}
+                          width={40}
+                          height={40}
+                          className="h-10 w-10 rounded-full object-cover"
+                          unoptimized
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">
+                            {animal.identificador ||
+                              animal.nombre_animal ||
+                              "Sin identificar"}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {animal.especie?.nombre ||
+                              "Especie no especificada"}
+                            {animal.sexo && ` • ${animal.sexo}`}
+                          </p>
+                        </div>
+                        {hembraId === animal.id && (
+                          <div className="h-2 w-2 rounded-full bg-blue-600 flex-shrink-0" />
+                        )}
+                      </div>
                     ))
                   ) : (
-                    <SelectItem value="no-hembras" disabled>
-                      No hay hembras disponibles
-                    </SelectItem>
+                    <div className="py-6 text-center text-sm">
+                      <p className="text-gray-500">No se encontraron hembras</p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        Intenta con otro término de búsqueda
+                      </p>
+                    </div>
                   )}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+                </div>
+              )}
+            </div>
+
+            {selectedHembraAnimal && !searchHembraTerm && (
+              <div className="mt-2 p-2 bg-blue-50 rounded-md border border-blue-200">
+                <div className="flex items-center gap-3">
+                  <Image
+                    src={
+                      selectedHembraAnimal.profileImages.length > 0
+                        ? selectedHembraAnimal.profileImages[0].url
+                        : "/images/Image-not-found.png"
+                    }
+                    alt={`animal-${selectedHembraAnimal.identificador}`}
+                    width={32}
+                    height={32}
+                    className="h-8 w-8 rounded-full object-cover"
+                    unoptimized
+                  />
+                  <div>
+                    <p className="text-sm font-medium">
+                      {selectedHembraAnimal.identificador ||
+                        selectedHembraAnimal.nombre_animal ||
+                        "Animal"}
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      {selectedHembraAnimal.especie?.nombre ||
+                        "Especie no especificada"}
+                      {selectedHembraAnimal.sexo &&
+                        ` • ${selectedHembraAnimal.sexo}`}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {errors.hembra_id && (
               <p className="text-sm text-red-500 mt-1">
                 {errors.hembra_id.message}
@@ -274,7 +405,7 @@ const FormPartoAnimal = ({
             )}
           </div>
         ) : (
-          <div>
+          <div className="md:col-span-2">
             <Label>Hembra</Label>
             <div className="p-2 border rounded-md bg-gray-50">
               {parto?.hembra?.identificador || "No especificada"}
@@ -283,7 +414,7 @@ const FormPartoAnimal = ({
         )}
 
         {!isEditing ? (
-          <div>
+          <div className="md:col-span-2">
             <Label htmlFor="servicio_id">Servicio Asociado</Label>
             <Select
               value={selectedServicio}
@@ -313,6 +444,11 @@ const FormPartoAnimal = ({
                 </SelectGroup>
               </SelectContent>
             </Select>
+            {!selectedHembra && (
+              <p className="text-sm text-gray-500 mt-1">
+                * Seleccione una hembra primero para ver sus servicios
+              </p>
+            )}
           </div>
         ) : (
           <div>

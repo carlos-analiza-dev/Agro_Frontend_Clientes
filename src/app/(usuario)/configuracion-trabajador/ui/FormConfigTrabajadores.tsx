@@ -31,6 +31,8 @@ import {
   DoorClosed,
   DoorOpen,
   CalendarOff,
+  Search,
+  X,
 } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -49,6 +51,7 @@ import {
 } from "@/helpers/data/config-trabajadores";
 import useGetAllTrabajadores from "@/hooks/trabajadores/useGetAllTrabajadores";
 import { formatHora } from "@/helpers/funciones/formatHora";
+import { cn } from "@/lib/utils";
 
 interface Props {
   onSuccess: () => void;
@@ -68,6 +71,9 @@ const FormConfigTrabajadores = ({
   const { data: trabajadores, isLoading: loadingTrabajadores } =
     useGetAllTrabajadores();
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const [searchTrabajadorTerm, setSearchTrabajadorTerm] = useState<string>("");
+  const [isTrabajadorSearchOpen, setIsTrabajadorSearchOpen] =
+    useState<boolean>(false);
 
   const [valorHoraNormal, setValorHoraNormal] = useState<number>(0);
   const [valorHoraExtraDiurna, setValorHoraExtraDiurna] = useState<number>(0);
@@ -98,7 +104,7 @@ const FormConfigTrabajadores = ({
       cargo: "",
       salarioDiario: 0,
       factorHoraExtraDiurnas: 1.5,
-      factorHoraExtraNocturnas: 1.75,
+      factorHoraExtraNocturnas: 1.7,
       factorHoraExtraFestivas: 2.0,
       diasTrabajadosSemanal: 6,
       horasJornadaSemanal: 36,
@@ -135,6 +141,36 @@ const FormConfigTrabajadores = ({
   const tipoTrabajador = watch("tipoTrabajador");
   const diaDescanso = watch("diaDescanso");
   const diasLaborales = watch("diasLaborales");
+  const currentTrabajadorId = watch("trabajadorId");
+
+  const filteredTrabajadores =
+    trabajadores?.filter((trabajador: any) => {
+      const searchTerm = searchTrabajadorTerm.toLowerCase().trim();
+      if (!searchTerm) return true;
+
+      const nombre = trabajador.nombre?.toLowerCase() || "";
+      const identificacion = trabajador.identificacion?.toLowerCase() || "";
+      const email = trabajador.email?.toLowerCase() || "";
+      const telefono = trabajador.telefono?.toLowerCase() || "";
+
+      return (
+        nombre.includes(searchTerm) ||
+        identificacion.includes(searchTerm) ||
+        email.includes(searchTerm) ||
+        telefono.includes(searchTerm)
+      );
+    }) || [];
+
+  const trabajadoresDisponibles =
+    filteredTrabajadores?.filter((trabajador: any) => {
+      if (isEditing && configuracion?.trabajadorId === trabajador.id)
+        return true;
+      return !trabajador.configuracionActiva;
+    }) || [];
+
+  const selectedTrabajador = trabajadores?.find(
+    (trabajador: any) => trabajador.id === currentTrabajadorId,
+  );
 
   useEffect(() => {
     if (
@@ -187,7 +223,7 @@ const FormConfigTrabajadores = ({
       const salarioSemanalCalc = salarioDiario * diasTrabajadosSemanal;
       setSalarioSemanal(salarioSemanalCalc);
 
-      const salarioMensualCalc = salarioSemanalCalc * 4.33;
+      const salarioMensualCalc = salarioSemanalCalc * 4;
       setSalarioMensual(Math.round(salarioMensualCalc));
     } else {
       setHorasPorDia(0);
@@ -242,7 +278,7 @@ const FormConfigTrabajadores = ({
         factorHoraExtraDiurnas:
           Number(configuracion.factorHoraExtraDiurnas) || 1.5,
         factorHoraExtraNocturnas:
-          Number(configuracion.factorHoraExtraNocturnas) || 1.75,
+          Number(configuracion.factorHoraExtraNocturnas) || 1.7,
         factorHoraExtraFestivas:
           Number(configuracion.factorHoraExtraFestivas) || 2.0,
         diasTrabajadosSemanal: configuracion.diasTrabajadosSemanal,
@@ -306,7 +342,7 @@ const FormConfigTrabajadores = ({
       cargo: "",
       salarioDiario: 0,
       factorHoraExtraDiurnas: 1.5,
-      factorHoraExtraNocturnas: 1.75,
+      factorHoraExtraNocturnas: 1.7,
       factorHoraExtraFestivas: 2.0,
       diasTrabajadosSemanal: 6,
       horasJornadaSemanal: 36,
@@ -314,6 +350,8 @@ const FormConfigTrabajadores = ({
       deduccionesFijas: [],
       activo: true,
     });
+    setSearchTrabajadorTerm("");
+    setIsTrabajadorSearchOpen(false);
   };
 
   const handleMutationError = (error: unknown, action: string) => {
@@ -330,6 +368,18 @@ const FormConfigTrabajadores = ({
         `Hubo un error al ${action} la configuración. Inténtalo de nuevo.`,
       );
     }
+  };
+
+  const handleSelectTrabajador = (trabajadorId: string) => {
+    setValue("trabajadorId", trabajadorId);
+    setSearchTrabajadorTerm("");
+    setIsTrabajadorSearchOpen(false);
+  };
+
+  const handleClearTrabajador = () => {
+    setValue("trabajadorId", "");
+    setSearchTrabajadorTerm("");
+    setIsTrabajadorSearchOpen(false);
   };
 
   const onSubmit = (data: CrearConfigTrabajadorInterface) => {
@@ -359,13 +409,6 @@ const FormConfigTrabajadores = ({
   };
 
   const isPending = createMutation.isPending || updateMutation.isPending;
-
-  const trabajadoresDisponibles =
-    trabajadores?.filter((trabajador: any) => {
-      if (isEditing && configuracion?.trabajadorId === trabajador.id)
-        return true;
-      return !trabajador.configuracionActiva;
-    }) || [];
 
   const totalBonificaciones =
     watch("bonificacionesFijas")?.reduce(
@@ -402,35 +445,140 @@ const FormConfigTrabajadores = ({
         <CardContent className="p-4 md:p-6 pt-0 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="trabajadorId" className="text-sm md:text-base">
+              <Label
+                htmlFor="trabajadorSearch"
+                className="text-sm md:text-base"
+              >
                 Trabajador <span className="text-red-500">*</span>
               </Label>
-              <Select
-                value={watch("trabajadorId")}
-                onValueChange={(value) => setValue("trabajadorId", value)}
-                disabled={isEditing}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecciona un trabajador" />
-                </SelectTrigger>
-                <SelectContent>
-                  {loadingTrabajadores ? (
-                    <SelectItem value="loading" disabled>
-                      Cargando trabajadores...
-                    </SelectItem>
-                  ) : trabajadoresDisponibles.length > 0 ? (
-                    trabajadoresDisponibles.map((trabajador: any) => (
-                      <SelectItem key={trabajador.id} value={trabajador.id}>
-                        {trabajador.nombre} - {trabajador.identificacion}
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <SelectItem value="no-trabajadores" disabled>
-                      No hay trabajadores disponibles
-                    </SelectItem>
+              {isEditing ? (
+                <div className="flex items-center h-10 px-3 border rounded-md bg-gray-50">
+                  <span className="text-sm">
+                    {configuracion?.trabajador?.nombre || "No asignado"}
+                  </span>
+                </div>
+              ) : (
+                <div className="relative">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50" />
+                    <input
+                      type="text"
+                      id="trabajadorSearch"
+                      placeholder={
+                        selectedTrabajador
+                          ? `${selectedTrabajador.nombre}`
+                          : "Buscar trabajador por nombre, identificación, email o teléfono..."
+                      }
+                      value={searchTrabajadorTerm}
+                      onChange={(e) => {
+                        setSearchTrabajadorTerm(e.target.value);
+                        setIsTrabajadorSearchOpen(true);
+                      }}
+                      onFocus={() => setIsTrabajadorSearchOpen(true)}
+                      className={cn(
+                        "w-full pl-9 pr-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
+                        selectedTrabajador && "bg-blue-50 border-blue-300",
+                        errors.trabajadorId && "border-red-500",
+                      )}
+                      disabled={loadingTrabajadores}
+                    />
+                    {selectedTrabajador && (
+                      <button
+                        type="button"
+                        onClick={handleClearTrabajador}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
+
+                  {isTrabajadorSearchOpen && searchTrabajadorTerm && (
+                    <div className="absolute z-50 w-full mt-1 border rounded-md shadow-lg max-h-60 overflow-y-auto bg-white">
+                      {loadingTrabajadores ? (
+                        <div className="py-6 text-center text-sm text-gray-500">
+                          Cargando trabajadores...
+                        </div>
+                      ) : trabajadoresDisponibles.length > 0 ? (
+                        trabajadoresDisponibles.map((trabajador: any) => (
+                          <div
+                            key={trabajador.id}
+                            onClick={() =>
+                              handleSelectTrabajador(trabajador.id)
+                            }
+                            className={cn(
+                              "flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-gray-50",
+                              currentTrabajadorId === trabajador.id &&
+                                "bg-blue-50",
+                            )}
+                          >
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">
+                                {trabajador.nombre}
+                              </p>
+                              <div className="flex items-center gap-2 text-xs text-gray-500 flex-wrap">
+                                {trabajador.identificacion && (
+                                  <span className="truncate">
+                                    ID: {trabajador.identificacion}
+                                  </span>
+                                )}
+                                {trabajador.telefono && (
+                                  <span>• {trabajador.telefono}</span>
+                                )}
+                                {trabajador.email && (
+                                  <span className="truncate">
+                                    • {trabajador.email}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            {currentTrabajadorId === trabajador.id && (
+                              <div className="h-2 w-2 rounded-full bg-blue-600 flex-shrink-0" />
+                            )}
+                          </div>
+                        ))
+                      ) : (
+                        <div className="py-6 text-center text-sm">
+                          <p className="text-gray-500">
+                            No hay trabajadores disponibles
+                          </p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            Todos los trabajadores ya tienen configuración
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   )}
-                </SelectContent>
-              </Select>
+                </div>
+              )}
+
+              {!isEditing && selectedTrabajador && !searchTrabajadorTerm && (
+                <div className="mt-2 p-2 bg-blue-50 rounded-md border border-blue-200">
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium">
+                        {selectedTrabajador.nombre}
+                      </p>
+                      <div className="flex items-center gap-2 text-xs text-gray-600 flex-wrap">
+                        {selectedTrabajador.identificacion && (
+                          <span className="truncate">
+                            ID: {selectedTrabajador.identificacion}
+                          </span>
+                        )}
+                        {selectedTrabajador.telefono && (
+                          <span>• {selectedTrabajador.telefono}</span>
+                        )}
+                        {selectedTrabajador.email && (
+                          <span className="truncate">
+                            • {selectedTrabajador.email}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {errors.trabajadorId && (
                 <p className="text-sm font-medium text-red-500">
                   {errors.trabajadorId.message as string}
@@ -1122,7 +1270,7 @@ const FormConfigTrabajadores = ({
                 <span>Desglose:</span>
                 <span>
                   {formatCurrency(salarioDiario, moneda)}/día ×{" "}
-                  {diasTrabajadosSemanal} días/semana × 4.33 semanas
+                  {diasTrabajadosSemanal} días/semana × 4 semanas
                 </span>
               </div>
               {bonificacionesFields.length > 0 && (

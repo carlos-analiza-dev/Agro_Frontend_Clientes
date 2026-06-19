@@ -18,16 +18,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircleIcon } from "lucide-react";
+import { AlertCircleIcon, Search, X } from "lucide-react";
 import { Animal } from "@/api/animales/interfaces/response-animales.interface";
 import { CreateServiciosReproductivo } from "@/api/reproduccion/interfaces/crear-servicio-reproductivo.interface";
-import { Celo } from "@/api/reproduccion/interfaces/response-celos-animal,interface";
 import { CrearServicioReproductivo } from "@/api/reproduccion/accions/servicios/crear-servicio-reproductivo";
 import { EditarServicioReproductivo } from "@/api/reproduccion/accions/servicios/editar-servicio-reproductivo";
 import useGetCelosActivosByAnimal from "@/hooks/reproduccion/useGetCelosActivosByAnimal";
 import { TipoServicio } from "@/interfaces/enums/servicios-reproductivos.enum";
 import { Servicio } from "@/api/reproduccion/interfaces/response-servicio-repoductivo.interface";
 import { convertirFechaHora } from "@/helpers/funciones/convertirFechaHoras";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
+import { Celo } from "@/api/reproduccion/interfaces/response-celos-animal,interface";
 
 interface Props {
   servicio?: Servicio | null;
@@ -50,6 +52,10 @@ const FormServicioReproductivo = ({
   const [selectedHembra, setSelectedHembra] = useState<string>("");
   const [machoPerteneceFinca, setMachoPerteneceFinca] = useState<boolean>(true);
   const [mostrarSeccionMacho, setMostrarSeccionMacho] = useState<boolean>(true);
+  const [searchHembraTerm, setSearchHembraTerm] = useState<string>("");
+  const [isHembraSearchOpen, setIsHembraSearchOpen] = useState<boolean>(false);
+  const [searchMachoTerm, setSearchMachoTerm] = useState<string>("");
+  const [isMachoSearchOpen, setIsMachoSearchOpen] = useState<boolean>(false);
 
   const {
     register,
@@ -93,6 +99,45 @@ const FormServicioReproductivo = ({
   const isFIV = tipoServicio === TipoServicio.FERTILIZACION_INVITRO;
   const isMontaNatural = tipoServicio === TipoServicio.MONTA_NATURAL;
   const machoPerteneceFincaValue = watch("macho_pertenece_finca");
+  const hembraId = watch("hembra_id");
+  const machoId = watch("macho_id");
+
+  const filteredHembras =
+    hembras?.filter((animal) => {
+      const searchTerm = searchHembraTerm.toLowerCase().trim();
+      if (!searchTerm) return true;
+
+      const identificador = animal.identificador?.toLowerCase() || "";
+      const nombre = animal.nombre_animal?.toLowerCase() || "";
+      const especie = animal.especie?.nombre?.toLowerCase() || "";
+
+      return (
+        identificador.includes(searchTerm) ||
+        nombre.includes(searchTerm) ||
+        especie.includes(searchTerm)
+      );
+    }) || [];
+
+  const filteredMachos =
+    machos?.filter((animal) => {
+      const searchTerm = searchMachoTerm.toLowerCase().trim();
+      if (!searchTerm) return true;
+
+      const identificador = animal.identificador?.toLowerCase() || "";
+      const nombre = animal.nombre_animal?.toLowerCase() || "";
+      const especie = animal.especie?.nombre?.toLowerCase() || "";
+
+      return (
+        identificador.includes(searchTerm) ||
+        nombre.includes(searchTerm) ||
+        especie.includes(searchTerm)
+      );
+    }) || [];
+
+  const selectedHembraAnimal = hembras?.find(
+    (animal) => animal.id === hembraId,
+  );
+  const selectedMachoAnimal = machos?.find((animal) => animal.id === machoId);
 
   useEffect(() => {
     if (isMontaNatural) {
@@ -107,6 +152,7 @@ const FormServicioReproductivo = ({
   useEffect(() => {
     if (servicio) {
       setValue("hembra_id", servicio.hembra?.id || "");
+      setSelectedHembra(servicio.hembra?.id || "");
 
       const tieneMachoFinca = !!servicio.macho?.id;
       setValue("macho_pertenece_finca", tieneMachoFinca);
@@ -132,19 +178,43 @@ const FormServicioReproductivo = ({
       setValue("tecnico_responsable", servicio.tecnico_responsable || "");
       setValue("observaciones", servicio.observaciones || "");
       setValue("metadata", servicio.metadata || {});
-      setSelectedHembra(servicio.hembra?.id || "");
     } else {
       reset();
       setMachoPerteneceFinca(true);
     }
   }, [servicio, setValue, reset]);
 
+  const handleSelectHembra = (animalId: string) => {
+    setValue("hembra_id", animalId);
+    setSelectedHembra(animalId);
+    setSearchHembraTerm("");
+    setIsHembraSearchOpen(false);
+  };
+
+  const handleClearHembra = () => {
+    setValue("hembra_id", "");
+    setSelectedHembra("");
+    setSearchHembraTerm("");
+    setIsHembraSearchOpen(false);
+  };
+
+  const handleSelectMacho = (animalId: string) => {
+    setValue("macho_id", animalId);
+    setSearchMachoTerm("");
+    setIsMachoSearchOpen(false);
+  };
+
+  const handleClearMacho = () => {
+    setValue("macho_id", "");
+    setSearchMachoTerm("");
+    setIsMachoSearchOpen(false);
+  };
+
   const onSubmit = async (data: CreateServiciosReproductivo) => {
     try {
       const payload = {
         ...data,
         fecha_servicio: new Date(data.fecha_servicio).toISOString(),
-
         macho_id:
           data.macho_pertenece_finca && data.macho_id
             ? data.macho_id
@@ -274,38 +344,161 @@ const FormServicioReproductivo = ({
           )}
         </div>
 
-        <div>
-          <Label htmlFor="hembra_id">
+        <div className="md:col-span-2">
+          <Label htmlFor="hembraSearch">
             Hembra <span className="text-red-500">*</span>
           </Label>
-          <Select
-            onValueChange={(value) => {
-              setValue("hembra_id", value);
-              setSelectedHembra(value);
-            }}
-            defaultValue={servicio?.hembra?.id}
-            disabled={isSubmitting || isEditing}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Seleccionar hembra" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Hembras</SelectLabel>
-                {hembras && hembras.length > 0 ? (
-                  hembras.map((animal) => (
-                    <SelectItem key={animal.id} value={animal.id}>
-                      {animal.identificador}
-                    </SelectItem>
+
+          <div className="relative">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50" />
+              <input
+                type="text"
+                id="hembraSearch"
+                placeholder={
+                  selectedHembraAnimal
+                    ? `${selectedHembraAnimal.identificador || selectedHembraAnimal.nombre_animal || "Animal"} seleccionado`
+                    : "Buscar hembra por identificador, nombre o especie..."
+                }
+                value={searchHembraTerm}
+                onChange={(e) => {
+                  setSearchHembraTerm(e.target.value);
+                  setIsHembraSearchOpen(true);
+                }}
+                onFocus={() => setIsHembraSearchOpen(true)}
+                className={cn(
+                  "w-full pl-9 pr-10 py-3 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
+                  selectedHembraAnimal && "bg-blue-50 border-blue-300",
+                )}
+                disabled={isSubmitting || isEditing}
+              />
+              {selectedHembraAnimal && !isEditing && (
+                <button
+                  type="button"
+                  onClick={handleClearHembra}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+
+            {isHembraSearchOpen && searchHembraTerm && !isEditing && (
+              <div className="absolute z-50 w-full mt-1 border rounded-md shadow-lg max-h-60 overflow-y-auto bg-white">
+                {filteredHembras.length > 0 ? (
+                  filteredHembras.map((animal) => (
+                    <div
+                      key={animal.id}
+                      onClick={() => handleSelectHembra(animal.id)}
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-gray-50",
+                        hembraId === animal.id && "bg-blue-50",
+                      )}
+                    >
+                      <Image
+                        src={
+                          animal.profileImages.length > 0
+                            ? animal.profileImages[0].url
+                            : "/images/Image-not-found.png"
+                        }
+                        alt={`animal-${animal.identificador}`}
+                        width={40}
+                        height={40}
+                        className="h-10 w-10 rounded-full object-cover"
+                        unoptimized
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">
+                          {animal.identificador ||
+                            animal.nombre_animal ||
+                            "Sin identificar"}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {animal.especie?.nombre || "Especie no especificada"}
+                          {animal.sexo && ` • ${animal.sexo}`}
+                        </p>
+                      </div>
+                      {hembraId === animal.id && (
+                        <div className="h-2 w-2 rounded-full bg-blue-600 flex-shrink-0" />
+                      )}
+                    </div>
                   ))
                 ) : (
-                  <SelectItem value="no-hembras" disabled>
-                    No hay hembras disponibles
-                  </SelectItem>
+                  <div className="py-6 text-center text-sm">
+                    <p className="text-gray-500">No se encontraron hembras</p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Intenta con otro término de búsqueda
+                    </p>
+                  </div>
                 )}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+              </div>
+            )}
+          </div>
+
+          {selectedHembraAnimal && !searchHembraTerm && !isEditing && (
+            <div className="mt-2 p-2 bg-blue-50 rounded-md border border-blue-200">
+              <div className="flex items-center gap-3">
+                <Image
+                  src={
+                    selectedHembraAnimal.profileImages.length > 0
+                      ? selectedHembraAnimal.profileImages[0].url
+                      : "/images/Image-not-found.png"
+                  }
+                  alt={`animal-${selectedHembraAnimal.identificador}`}
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 rounded-full object-cover"
+                  unoptimized
+                />
+                <div>
+                  <p className="text-sm font-medium">
+                    {selectedHembraAnimal.identificador ||
+                      selectedHembraAnimal.nombre_animal ||
+                      "Animal"}
+                  </p>
+                  <p className="text-xs text-gray-600">
+                    {selectedHembraAnimal.especie?.nombre ||
+                      "Especie no especificada"}
+                    {selectedHembraAnimal.sexo &&
+                      ` • ${selectedHembraAnimal.sexo}`}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {isEditing && selectedHembraAnimal && (
+            <div className="mt-2 p-2 bg-gray-50 rounded-md border border-gray-200">
+              <div className="flex items-center gap-3">
+                <Image
+                  src={
+                    selectedHembraAnimal.profileImages.length > 0
+                      ? selectedHembraAnimal.profileImages[0].url
+                      : "/images/Image-not-found.png"
+                  }
+                  alt={`animal-${selectedHembraAnimal.identificador}`}
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 rounded-full object-cover"
+                  unoptimized
+                />
+                <div>
+                  <p className="text-sm font-medium">
+                    {selectedHembraAnimal.identificador ||
+                      selectedHembraAnimal.nombre_animal ||
+                      "Animal"}
+                  </p>
+                  <p className="text-xs text-gray-600">
+                    {selectedHembraAnimal.especie?.nombre ||
+                      "Especie no especificada"}
+                    {selectedHembraAnimal.sexo &&
+                      ` • ${selectedHembraAnimal.sexo}`}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {errors.hembra_id && (
             <p className="text-sm text-red-500 mt-1">
               {errors.hembra_id.message}
@@ -328,6 +521,7 @@ const FormServicioReproductivo = ({
                   setValue("macho_externo_nombre", "");
                 } else {
                   setValue("macho_id", "");
+                  setSearchMachoTerm("");
                 }
               }}
               disabled={isSubmitting}
@@ -342,34 +536,131 @@ const FormServicioReproductivo = ({
 
           {machoPerteneceFincaValue ? (
             <div>
-              <Label htmlFor="macho_id">
+              <Label htmlFor="machoSearch">
                 Macho de la Finca <span className="text-red-500">*</span>
               </Label>
-              <Select
-                onValueChange={(value) => setValue("macho_id", value)}
-                defaultValue={servicio?.macho?.id}
-                disabled={isSubmitting}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar macho de la finca" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Machos de la Finca</SelectLabel>
-                    {machos && machos.length > 0 ? (
-                      machos.map((animal) => (
-                        <SelectItem key={animal.id} value={animal.id}>
-                          {animal.identificador}
-                        </SelectItem>
+
+              <div className="relative">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50" />
+                  <input
+                    type="text"
+                    id="machoSearch"
+                    placeholder={
+                      selectedMachoAnimal
+                        ? `${selectedMachoAnimal.identificador || selectedMachoAnimal.nombre_animal || "Animal"} seleccionado`
+                        : "Buscar macho por identificador, nombre o especie..."
+                    }
+                    value={searchMachoTerm}
+                    onChange={(e) => {
+                      setSearchMachoTerm(e.target.value);
+                      setIsMachoSearchOpen(true);
+                    }}
+                    onFocus={() => setIsMachoSearchOpen(true)}
+                    className={cn(
+                      "w-full pl-9 pr-10 py-3 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
+                      selectedMachoAnimal && "bg-blue-50 border-blue-300",
+                    )}
+                    disabled={isSubmitting}
+                  />
+                  {selectedMachoAnimal && (
+                    <button
+                      type="button"
+                      onClick={handleClearMacho}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+
+                {isMachoSearchOpen && searchMachoTerm && (
+                  <div className="absolute z-50 w-full mt-1 border rounded-md shadow-lg max-h-60 overflow-y-auto bg-white">
+                    {filteredMachos.length > 0 ? (
+                      filteredMachos.map((animal) => (
+                        <div
+                          key={animal.id}
+                          onClick={() => handleSelectMacho(animal.id)}
+                          className={cn(
+                            "flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-gray-50",
+                            machoId === animal.id && "bg-blue-50",
+                          )}
+                        >
+                          <Image
+                            src={
+                              animal.profileImages.length > 0
+                                ? animal.profileImages[0].url
+                                : "/images/Image-not-found.png"
+                            }
+                            alt={`animal-${animal.identificador}`}
+                            width={40}
+                            height={40}
+                            className="h-10 w-10 rounded-full object-cover"
+                            unoptimized
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">
+                              {animal.identificador ||
+                                animal.nombre_animal ||
+                                "Sin identificar"}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {animal.especie?.nombre ||
+                                "Especie no especificada"}
+                              {animal.sexo && ` • ${animal.sexo}`}
+                            </p>
+                          </div>
+                          {machoId === animal.id && (
+                            <div className="h-2 w-2 rounded-full bg-blue-600 flex-shrink-0" />
+                          )}
+                        </div>
                       ))
                     ) : (
-                      <SelectItem value="no-machos" disabled>
-                        No hay machos disponibles en la finca
-                      </SelectItem>
+                      <div className="py-6 text-center text-sm">
+                        <p className="text-gray-500">
+                          No se encontraron machos
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          Intenta con otro término de búsqueda
+                        </p>
+                      </div>
                     )}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+                  </div>
+                )}
+              </div>
+
+              {selectedMachoAnimal && !searchMachoTerm && (
+                <div className="mt-2 p-2 bg-blue-50 rounded-md border border-blue-200">
+                  <div className="flex items-center gap-3">
+                    <Image
+                      src={
+                        selectedMachoAnimal.profileImages.length > 0
+                          ? selectedMachoAnimal.profileImages[0].url
+                          : "/images/Image-not-found.png"
+                      }
+                      alt={`animal-${selectedMachoAnimal.identificador}`}
+                      width={32}
+                      height={32}
+                      className="h-8 w-8 rounded-full object-cover"
+                      unoptimized
+                    />
+                    <div>
+                      <p className="text-sm font-medium">
+                        {selectedMachoAnimal.identificador ||
+                          selectedMachoAnimal.nombre_animal ||
+                          "Animal"}
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        {selectedMachoAnimal.especie?.nombre ||
+                          "Especie no especificada"}
+                        {selectedMachoAnimal.sexo &&
+                          ` • ${selectedMachoAnimal.sexo}`}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {errors.macho_id && (
                 <p className="text-sm text-red-500 mt-1">
                   {errors.macho_id.message}

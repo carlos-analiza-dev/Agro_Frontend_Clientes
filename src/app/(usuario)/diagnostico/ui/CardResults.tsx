@@ -68,7 +68,7 @@ const CardResults = ({
               <div className="bg-primary/5 p-3 rounded-lg">
                 <p className="text-sm font-medium mb-1">Paciente:</p>
                 <p className="text-sm">
-                  {especieValue} - {razaValue} ({edadValue} meses)
+                  {especieValue} - {razaValue} ({edadValue} años)
                 </p>
               </div>
 

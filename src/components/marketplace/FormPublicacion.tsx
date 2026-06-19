@@ -44,13 +44,16 @@ import {
   Map as MapIcon,
   Edit,
   Plus,
+  Search,
+  Check,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { cn } from "@/lib/utils";
 
 interface Props {
   tipo_publicacion: TipoPublicacion;
@@ -82,7 +85,6 @@ const FormPublicacion = ({
   const [isUsingUserLocation, setIsUsingUserLocation] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [initialDataLoaded, setInitialDataLoaded] = useState(false);
-
   const { data: categorias, isLoading: cat_load } = useGetCategorias({
     is_market: true,
   });
@@ -95,13 +97,33 @@ const FormPublicacion = ({
     useGetTipoProductoBySubCategoria(subcateId, {
       is_market: true,
     });
-  const { data: animales, isLoading: animal_load } =
-    useGetAnimalesPropietario();
   const { data: departamentos, isLoading: depto_load } =
     useGetDeptosActivesByPais(paidId);
+  const { data: animales, isLoading: animal_load } =
+    useGetAnimalesPropietario();
 
   const isAnimales = tipo_publicacion === TipoPublicacion.ANIMALES;
   const isAlquileres = tipo_publicacion === TipoPublicacion.ALQUILERES;
+  const [searchAnimalTerm, setSearchAnimalTerm] = useState("");
+
+  const filteredAnimales = useMemo(() => {
+    if (!searchAnimalTerm.trim()) {
+      return animales || [];
+    }
+
+    const term = searchAnimalTerm.toLowerCase().trim();
+    const filtered = (animales || []).filter((animal: Animal) => {
+      const identificador = (animal.identificador || "").toLowerCase();
+      const nombre = (animal.nombre_animal || "").toLowerCase();
+
+      const matches = identificador.includes(term) || nombre.includes(term);
+      if (matches) {
+      }
+      return matches;
+    });
+
+    return filtered;
+  }, [animales, searchAnimalTerm]);
 
   const {
     register,
@@ -615,58 +637,168 @@ const FormPublicacion = ({
                 </h2>
 
                 {isAnimales && (
-                  <div>
-                    <Label htmlFor="animalId" className="mb-2 block">
+                  <div className="space-y-2">
+                    <Label htmlFor="animalId" className="block">
                       <span className="flex items-center gap-2">
                         <PawPrint className="w-4 h-4" />
-                        Seleccionar animal *
+                        Buscar animal *
                       </span>
                     </Label>
-                    <Select
-                      onValueChange={(value) => setValue("animalId", value)}
-                      value={watch("animalId")}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona un animal de tu registro" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {animales && animales.length > 0 ? (
-                          animales?.map((animal: Animal) => (
-                            <SelectItem key={animal.id} value={animal.id}>
-                              <div className="flex gap-2 items-center">
-                                <Avatar>
-                                  <AvatarImage
-                                    src={
-                                      animal.profileImages &&
-                                      animal.profileImages.length > 0
-                                        ? animal.profileImages[0].url
-                                        : "/images/Image-not-found.png"
-                                    }
-                                  />
-                                  <AvatarFallback>CN</AvatarFallback>
-                                </Avatar>
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                                  <span className="font-medium">
-                                    {animal.identificador}
+
+                    <div className="relative">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50" />
+                        <input
+                          type="text"
+                          id="animalId"
+                          placeholder="Buscar por identificador o nombre..."
+                          value={searchAnimalTerm}
+                          onChange={(e) => {
+                            setSearchAnimalTerm(e.target.value);
+                          }}
+                          className="w-full pl-9 pr-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+
+                    {searchAnimalTerm && (
+                      <div className="border rounded-md shadow-lg max-h-60 overflow-y-auto bg-white">
+                        {filteredAnimales.length > 0 ? (
+                          filteredAnimales.map((animal: Animal) => (
+                            <div
+                              key={animal.id}
+                              onClick={() => {
+                                setValue("animalId", animal.id);
+                                setSearchAnimalTerm("");
+                              }}
+                              className={cn(
+                                "flex items-start gap-2 px-3 py-2 cursor-pointer hover:bg-gray-50",
+                                watch("animalId") === animal.id && "bg-blue-50",
+                              )}
+                            >
+                              <Avatar className="h-8 w-8 flex-shrink-0">
+                                <AvatarImage
+                                  src={
+                                    animal.profileImages &&
+                                    animal.profileImages.length > 0
+                                      ? animal.profileImages[0].url
+                                      : "/images/Image-not-found.png"
+                                  }
+                                  alt={
+                                    animal.identificador || animal.nombre_animal
+                                  }
+                                />
+                                <AvatarFallback>
+                                  {animal.identificador
+                                    ?.slice(0, 2)
+                                    .toUpperCase() ||
+                                    animal.nombre_animal
+                                      ?.slice(0, 2)
+                                      .toUpperCase() ||
+                                    "AN"}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between gap-2">
+                                  <span className="font-medium text-sm truncate">
+                                    {animal.identificador ||
+                                      animal.nombre_animal ||
+                                      "Sin identificar"}
                                   </span>
-                                  <span className="text-xs text-gray-500">
-                                    {animal.especie?.nombre} - {animal.sexo}
+                                  {watch("animalId") === animal.id && (
+                                    <Check className="h-4 w-4 flex-shrink-0 text-blue-600" />
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-1 text-xs text-gray-500">
+                                  <span>
+                                    {animal.especie?.nombre ||
+                                      "Especie no especificada"}
+                                  </span>
+                                  <span>•</span>
+                                  <span>
+                                    {animal.sexo || "Sexo no especificado"}
                                   </span>
                                 </div>
                               </div>
-                            </SelectItem>
+                            </div>
                           ))
                         ) : (
-                          <p>No hay animales disponibles</p>
+                          <div className="py-6 text-center text-sm">
+                            <p>No se encontraron animales.</p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              Intenta con otro término de búsqueda
+                            </p>
+                          </div>
                         )}
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-gray-500 mt-1.5">
-                      Selecciona el animal que deseas publicar
+                      </div>
+                    )}
+
+                    <p className="text-xs text-gray-500">
+                      🔍 Busca por identificador o nombre del animal
                     </p>
+
+                    {watch("animalId") && !searchAnimalTerm && (
+                      <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                        {(() => {
+                          const selectedAnimal = animales?.find(
+                            (animal: Animal) => animal.id === watch("animalId"),
+                          );
+                          if (!selectedAnimal) return null;
+                          return (
+                            <div className="flex items-center gap-3">
+                              <Avatar className="h-12 w-12 flex-shrink-0">
+                                <AvatarImage
+                                  src={
+                                    selectedAnimal.profileImages &&
+                                    selectedAnimal.profileImages.length > 0
+                                      ? selectedAnimal.profileImages[0].url
+                                      : "/images/Image-not-found.png"
+                                  }
+                                  alt={
+                                    selectedAnimal.identificador ||
+                                    selectedAnimal.nombre_animal
+                                  }
+                                />
+                                <AvatarFallback>
+                                  {selectedAnimal.identificador
+                                    ?.slice(0, 2)
+                                    .toUpperCase() ||
+                                    selectedAnimal.nombre_animal
+                                      ?.slice(0, 2)
+                                      .toUpperCase() ||
+                                    "AN"}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-sm truncate">
+                                  {selectedAnimal.identificador ||
+                                    selectedAnimal.nombre_animal ||
+                                    "Animal"}
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                  {selectedAnimal.especie?.nombre ||
+                                    "Especie no especificada"}{" "}
+                                  •{" "}
+                                  {selectedAnimal.sexo ||
+                                    "Sexo no especificado"}
+                                  {selectedAnimal.fecha_nacimiento && (
+                                    <>
+                                      {" "}
+                                      • Nacimiento:{" "}
+                                      {new Date(
+                                        selectedAnimal.fecha_nacimiento,
+                                      ).toLocaleDateString()}
+                                    </>
+                                  )}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    )}
                   </div>
                 )}
-
                 <div>
                   <Label htmlFor="nombre" className="mb-2 block">
                     Título *
@@ -687,7 +819,6 @@ const FormPublicacion = ({
                     </p>
                   )}
                 </div>
-
                 <div>
                   <Label htmlFor="descripcion" className="mb-2 block">
                     Descripción *
@@ -704,7 +835,6 @@ const FormPublicacion = ({
                     importantes
                   </p>
                 </div>
-
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="categoriaId" className="mb-2 block">
@@ -756,7 +886,6 @@ const FormPublicacion = ({
                     </Select>
                   </div>
                 </div>
-
                 {!isAnimales && (
                   <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
