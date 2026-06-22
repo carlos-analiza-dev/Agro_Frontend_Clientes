@@ -14,6 +14,7 @@ import SheetContentMarket from "@/components/generics/SheetContentMarket";
 import { LocationPermissionBanner } from "@/components/location/LocationPermissionBanner";
 import PublicidadBanner from "@/components/publicidad/PublicidadBanner";
 import PublicidadPanel from "@/components/publicidad/PublicidadPanel";
+import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
 
 export default function MarketPlaceLayout({
   children,
@@ -29,7 +30,7 @@ export default function MarketPlaceLayout({
   const [isAuthorized, setIsAuthorized] = useState(false);
 
   const mostrarPublicidad =
-    cliente?.paqueteActivo?.paquete.nombre === "Plan Free";
+    cliente?.paqueteActivo?.paquete.tipo === TipoPaquete.FREE;
 
   useEffect(() => {
     setIsHydrated(true);

@@ -3,16 +3,12 @@
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 import {
-  Heart,
   LogOut,
   Menu,
-  ShoppingCart,
   User,
   Crown,
-  Gift,
-  History,
   AlertCircle,
-  Sprout,
+  PanelsTopLeft,
 } from "lucide-react";
 
 import {
@@ -27,8 +23,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { navItems } from "@/helpers/data/sidebar/sidebarData";
-import { useFavoritos } from "@/hooks/favoritos/useFavoritos";
-import { useCartStore } from "@/providers/store/useCartStore";
 import { Badge } from "../ui/badge";
 import {
   Tooltip,
@@ -37,10 +31,8 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import { TipoCliente } from "@/interfaces/enums/clientes.enums";
-import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
 import useGetPermisosByClientePaquete from "@/hooks/permisos/useGetPermisosByClientePaquete";
 import useGetPermisosByCliente from "@/hooks/permisos/useGetPermisosByCliente";
-import { EcommerceButton } from "../generics/EcommerceButton";
 import { FullScreenLoader } from "../generics/FullScreenLoader";
 import { getPlanInfo } from "@/helpers/funciones/paquetes/get-infos";
 
@@ -49,23 +41,17 @@ interface Props {
   handleLogout: () => Promise<void>;
 }
 
-const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
+const NavBarAgro = ({ handleLogout, setMobileSidebarOpen }: Props) => {
   const { cliente } = useAuthStore();
-  const { cantidadFavoritos } = useFavoritos();
-  const { totalItems } = useCartStore();
   const router = useRouter();
   const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(false);
   const firstPath = `/${pathname.split("/")[1] || ""}`;
-  const cantidadCarrito = totalItems();
 
   const esPropietario = cliente?.rol === TipoCliente.PROPIETARIO;
 
   const paqueteId = cliente?.paqueteActivo?.paquete?.id ?? "";
   const clienteId = cliente?.id ?? "";
-
-  const tieneAgroGestion =
-    cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_GESTION;
 
   const { data: permisosPaquete } = useGetPermisosByClientePaquete(paqueteId);
   const { data: permisosCliente } = useGetPermisosByCliente(clienteId);
@@ -92,8 +78,6 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
     "/panel",
     "/not-found",
     "/unauthorized",
-    "/cart",
-    "/favoritos",
     "/agro-servicios",
 
     ...(esPropietario
@@ -113,31 +97,16 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
   const activePage =
     navItemsConPermisos.find((item) => item.href === firstPath)?.name || "";
 
-  const tienePermisoFavoritos = permisosVer.includes("/favoritos");
-  const tienePermisoCarrito = permisosVer.includes("/cart");
-
   const handleNavigateToActivePage = () => {
     if (firstPath && firstPath !== "/") {
       router.replace(firstPath);
     }
   };
 
-  const handleNavigateToPlanes = () => {
-    router.push("/comprar-plan");
-  };
-
-  const handleNavigateToMiPlan = () => {
-    router.push("/mi-plan");
-  };
-
-  const handleNavigateToHistorial = () => {
-    router.push("/historial-paquetes");
-  };
-
-  const handleNavigateToAgroServicios = () => {
+  const handleNavigateToPanel = () => {
     setIsLoading(true);
     setTimeout(() => {
-      router.push("/agro-servicios");
+      router.push("/panel");
       setIsLoading(false);
     }, 1000);
   };
@@ -197,69 +166,6 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        )}
-
-        {esPropietario && tienePlanActivo && <EcommerceButton />}
-
-        {esPropietario && !tienePlanActivo && (
-          <Button
-            onClick={handleNavigateToPlanes}
-            size="sm"
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-md"
-          >
-            <Crown className="mr-2 h-4 w-4" />
-            Ver Planes
-          </Button>
-        )}
-
-        {esPropietario && tienePlanActivo && estaPorVencer && !estaVencido && (
-          <Button
-            onClick={handleNavigateToPlanes}
-            size="sm"
-            variant="outline"
-            className="border-yellow-500 text-yellow-600 hover:bg-yellow-50"
-          >
-            <Gift className="mr-2 h-4 w-4" />
-            Renovar Plan
-          </Button>
-        )}
-
-        {tienePermisoFavoritos && (
-          <Button
-            onClick={() => router.replace("/favoritos")}
-            variant="ghost"
-            className="relative h-8 w-8 sm:h-9 sm:w-9 rounded-full hover:bg-gray-100"
-            title="Favoritos"
-          >
-            <Heart
-              className={`h-4 w-4 sm:h-5 sm:w-5 ${cantidadFavoritos > 0 ? "text-red-500 fill-current" : ""}`}
-            />
-            {cantidadFavoritos > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
-                {cantidadFavoritos > 9 ? "9+" : cantidadFavoritos}
-              </span>
-            )}
-          </Button>
-        )}
-
-        {tienePermisoCarrito && (
-          <Button
-            onClick={() => router.replace("/cart")}
-            variant="ghost"
-            className="relative h-8 w-8 rounded-full hover:bg-gray-100"
-            title="Carrito"
-          >
-            {cantidadCarrito > 0 ? (
-              <>
-                <ShoppingCart className="text-blue-600" />
-                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-600 text-xs text-white">
-                  {cantidadCarrito}
-                </span>
-              </>
-            ) : (
-              <ShoppingCart />
-            )}
-          </Button>
         )}
 
         <DropdownMenu>
@@ -376,48 +282,15 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
 
-            {tieneAgroGestion && (
-              <>
-                <DropdownMenuItem
-                  onClick={handleNavigateToAgroServicios}
-                  className="cursor-pointer text-green-600"
-                >
-                  <Sprout className="mr-2 h-4 w-4" />
-                  Agro Servicios
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-              </>
-            )}
+            <DropdownMenuItem
+              onClick={handleNavigateToPanel}
+              className="cursor-pointer text-blue-600"
+            >
+              <PanelsTopLeft className="mr-2 h-4 w-4" />
+              Panel
+            </DropdownMenuItem>
 
-            {esPropietario && (
-              <>
-                <DropdownMenuItem
-                  onClick={handleNavigateToMiPlan}
-                  className="cursor-pointer"
-                >
-                  <Crown className="mr-2 h-4 w-4 text-yellow-500" />
-                  Mi Plan Actual
-                </DropdownMenuItem>
-
-                <DropdownMenuItem
-                  onClick={handleNavigateToPlanes}
-                  className="cursor-pointer"
-                >
-                  <Gift className="mr-2 h-4 w-4 text-blue-500" />
-                  {tienePlanActivo ? "Cambiar / Renovar Plan" : "Comprar Plan"}
-                </DropdownMenuItem>
-
-                <DropdownMenuItem
-                  onClick={handleNavigateToHistorial}
-                  className="cursor-pointer"
-                >
-                  <History className="mr-2 h-4 w-4 text-gray-500" />
-                  Historial de Compras
-                </DropdownMenuItem>
-
-                <DropdownMenuSeparator />
-              </>
-            )}
+            <DropdownMenuSeparator />
 
             <DropdownMenuItem
               onClick={handleLogout}
@@ -433,4 +306,4 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
   );
 };
 
-export default NavBar;
+export default NavBarAgro;

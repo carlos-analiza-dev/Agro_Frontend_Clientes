@@ -1,12 +1,11 @@
 "use client";
-
-import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import useGetServiciosActivos from "@/hooks/servicios/useGetServiciosActivos";
 import { EmptyServices } from "@/components/servicios/EmptyServices";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import CardServiceUsers from "@/components/servicios/CardServiceUsers";
+import SkeletonCard from "@/components/generics/SkeletonCard";
 
 const ServicesUser = () => {
   const { cliente } = useAuthStore();
@@ -31,17 +30,7 @@ const ServicesUser = () => {
   };
 
   if (isLoading && !refreshing) {
-    return (
-      <div className="flex-1 w-full flex justify-center items-center">
-        <div className="flex flex-col space-y-3">
-          <Skeleton className="h-[125px] w-[250px] rounded-xl" />
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-[250px]" />
-            <Skeleton className="h-4 w-[200px]" />
-          </div>
-        </div>
-      </div>
-    );
+    return <SkeletonCard />;
   }
 
   if (isError) {

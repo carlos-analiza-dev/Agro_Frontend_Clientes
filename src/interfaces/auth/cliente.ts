@@ -1,5 +1,6 @@
 import { Finca } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
 import { TipoCliente } from "../enums/clientes.enums";
+import { TipoPaquete } from "../enums/paquetes/paquetes.enum";
 
 export interface Municipio {
   id: string;
@@ -64,7 +65,7 @@ export interface AsignacionTrabajador {
 export interface Paquete {
   id: string;
   nombre: string;
-  tipo: string;
+  tipo: TipoPaquete;
   maxFincas: number;
   maxAnimales: number;
   maxTrabajadores: number;

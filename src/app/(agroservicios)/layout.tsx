@@ -1,22 +1,19 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { toast } from "react-toastify";
-import SidebarAdmin from "@/components/SideBars/SidebarAdmin";
-import ShetContentComp from "@/components/generics/ShetContentComp";
-import NavBar from "@/components/NavBars/NavBar";
 import { FullScreenLoader } from "@/components/generics/FullScreenLoader";
 import { useFavoritos } from "@/hooks/favoritos/useFavoritos";
 import { useCartStore } from "@/providers/store/useCartStore";
 import { isTokenExpired } from "@/helpers/funciones/tokenExpired";
 import { SessionExpiredModal } from "@/components/generics/SessionExpiredModal";
-import { publicRoutes } from "@/helpers/data/publics-routes";
-import { TipoCliente } from "@/interfaces/enums/clientes.enums";
-import useGetPermisosByClientePaquete from "@/hooks/permisos/useGetPermisosByClientePaquete";
-import useGetPermisosByCliente from "@/hooks/permisos/useGetPermisosByCliente";
+import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
+import NavBarAgro from "@/components/NavBars/NavBarAgro";
+import SidebarAgro from "@/components/SideBars/SidebarAgro";
+import ShetContentCompAgro from "@/components/generics/ShetContentCompAgro";
 
-export default function AdminLayout({
+export default function AgroServiciosLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -25,22 +22,13 @@ export default function AdminLayout({
   const { limpiarFavoritos } = useFavoritos();
   const { clearCart } = useCartStore();
   const router = useRouter();
-  const pathname = usePathname();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showSessionModal, setShowSessionModal] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
 
-  const esPropietario = cliente?.rol === TipoCliente.PROPIETARIO;
-  const paqueteId = cliente?.paqueteActivo?.paquete?.id ?? "";
-  const clienteId = cliente?.id ?? "";
-
-  const { data: permisosPaquete, isLoading: isLoadingPaquete } =
-    useGetPermisosByClientePaquete(paqueteId);
-  const { data: permisosCliente, isLoading: isLoadingCliente } =
-    useGetPermisosByCliente(clienteId);
-  const permisos = esPropietario ? permisosPaquete : permisosCliente;
-  const isLoadingPermisos = esPropietario ? isLoadingPaquete : isLoadingCliente;
+  const tieneAgroGestion =
+    cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_GESTION;
 
   useEffect(() => {
     setIsHydrated(true);
@@ -96,52 +84,13 @@ export default function AdminLayout({
     if (!token) return;
     if (!cliente) return;
     if (isTokenExpired(token)) return;
-    if (isLoadingPermisos) return;
 
-    if (pathname === "/select-destination") {
+    if (!tieneAgroGestion) {
+      toast.warning("No tienes acceso a Agro Servicios");
+      router.push("/panel");
       return;
     }
-
-    const hasPermissionForCurrentRoute = () => {
-      if (
-        publicRoutes.includes(pathname) ||
-        publicRoutes.some((route) => pathname.startsWith(route + "/"))
-      ) {
-        return true;
-      }
-
-      if (!permisos || permisos.length === 0) {
-        return null;
-      }
-
-      const hasPermission = permisos.some((permiso) => {
-        if (permiso.ver === true) {
-          return (
-            pathname === permiso.permiso.url ||
-            pathname.startsWith(permiso.permiso.url + "/")
-          );
-        }
-        return false;
-      });
-
-      return hasPermission;
-    };
-
-    const hasPermission = hasPermissionForCurrentRoute();
-    if (hasPermission === null) return;
-
-    if (!hasPermission) {
-      router.push("/not-found");
-    }
-  }, [
-    cliente,
-    pathname,
-    token,
-    isLoadingPermisos,
-    isHydrated,
-    router,
-    permisos,
-  ]);
+  }, [tieneAgroGestion, token, cliente, router, isHydrated]);
 
   const handleLogout = async () => {
     try {
@@ -190,14 +139,16 @@ export default function AdminLayout({
 
   return (
     <div className="flex h-screen bg-gray-50">
-      <SidebarAdmin handleLogout={handleLogout} />
-      <ShetContentComp
+      <SidebarAgro handleLogout={handleLogout} />
+
+      <ShetContentCompAgro
         setMobileSidebarOpen={setMobileSidebarOpen}
         handleLogout={handleLogout}
         mobileSidebarOpen={mobileSidebarOpen}
       />
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <NavBar
+
+      <div className="flex flex-1 flex-col overflow-hidden lg:ml-64">
+        <NavBarAgro
           setMobileSidebarOpen={setMobileSidebarOpen}
           handleLogout={handleLogout}
         />
@@ -205,6 +156,7 @@ export default function AdminLayout({
           {children}
         </main>
       </div>
+
       <SessionExpiredModal
         isOpen={showSessionModal}
         onClose={handleSessionExpired}

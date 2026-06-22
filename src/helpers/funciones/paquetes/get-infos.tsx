@@ -1,3 +1,4 @@
+import { PaqueteActivo } from "@/interfaces/auth/cliente";
 import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
 import { Crown, Shield, Sparkles, Star, Zap } from "lucide-react";
 
@@ -43,5 +44,81 @@ export const getBadgeColor = (tipo: string) => {
       return "bg-purple-100 text-purple-800";
     default:
       return "bg-gray-100 text-gray-800";
+  }
+};
+
+export const getPlanInfo = (
+  esPropietario: boolean,
+  planActivo: PaqueteActivo,
+) => {
+  if (!esPropietario) {
+    return {
+      label: "",
+      color: "",
+      progress: 0,
+      daysLeft: 0,
+    };
+  }
+
+  if (!planActivo) {
+    return {
+      label: "Sin plan activo",
+      color: "bg-red-100 text-red-700",
+      progress: 0,
+      daysLeft: 0,
+    };
+  }
+
+  const tipo = planActivo.paquete?.tipo || "FREE";
+  const progress =
+    planActivo.diasTotales > 0
+      ? ((planActivo.diasTotales - planActivo.diasRestantes) /
+          planActivo.diasTotales) *
+        100
+      : 0;
+
+  switch (tipo) {
+    case TipoPaquete.FREE:
+      return {
+        label: "Plan Gratuito",
+        color: "bg-gray-100 text-gray-700",
+        progress,
+        daysLeft: planActivo.diasRestantes,
+      };
+    case TipoPaquete.BASICO:
+      return {
+        label: "Plan Básico",
+        color: "bg-blue-100 text-blue-700",
+        progress,
+        daysLeft: planActivo.diasRestantes,
+      };
+    case TipoPaquete.PREMIUM:
+      return {
+        label: "Plan Premium",
+        color: "bg-yellow-100 text-yellow-700",
+        progress,
+        daysLeft: planActivo.diasRestantes,
+      };
+    case TipoPaquete.EMPRESARIAL:
+      return {
+        label: "Plan Empresarial",
+        color: "bg-purple-100 text-purple-700",
+        progress,
+        daysLeft: planActivo.diasRestantes,
+      };
+    case TipoPaquete.AGRO_GESTION:
+      return {
+        label: "Agro Gestión",
+        color: "bg-green-100 text-green-700",
+        progress,
+        daysLeft: planActivo.diasRestantes,
+      };
+    default:
+      return {
+        label: tipo,
+        color: "bg-gray-100 text-gray-700",
+        progress,
+        daysLeft: planActivo.diasRestantes,
+      };
   }
 };
