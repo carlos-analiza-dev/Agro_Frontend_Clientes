@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Plus, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import useGetEspecies from "@/hooks/especies/useGetEspecies";
 
 interface EspecieCantidad {
   especie: string;
@@ -26,23 +27,13 @@ interface EspecieCantidadPickerProps {
   disabled?: boolean;
 }
 
-const especiesOptions = [
-  "Bovino",
-  "Porcino",
-  "Ovino",
-  "Caprino",
-  "Equino",
-  "Aves",
-  "Peces",
-  "Otros",
-];
-
 export default function EspecieCantidadPicker({
   value,
   onChange,
   cantidadTotal,
   disabled = false,
 }: EspecieCantidadPickerProps) {
+  const { data: especies_options } = useGetEspecies();
   const [especies, setEspecies] = useState<EspecieCantidad[]>(value);
   useEffect(() => {
     setEspecies(value);
@@ -65,7 +56,7 @@ export default function EspecieCantidadPicker({
   const updateEspecie = (
     index: number,
     field: keyof EspecieCantidad,
-    newValue: string | number
+    newValue: string | number,
   ) => {
     if (disabled) return;
     const nuevasEspecies = [...especies];
@@ -101,9 +92,9 @@ export default function EspecieCantidadPicker({
                   <SelectValue placeholder="Seleccionar especie" />
                 </SelectTrigger>
                 <SelectContent>
-                  {especiesOptions.map((option) => (
-                    <SelectItem key={option} value={option}>
-                      {option}
+                  {especies_options?.data?.map((option) => (
+                    <SelectItem key={option.id} value={option.nombre}>
+                      {option.nombre}
                     </SelectItem>
                   ))}
                 </SelectContent>

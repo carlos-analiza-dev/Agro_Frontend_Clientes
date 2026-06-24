@@ -438,9 +438,9 @@ const AnimalesPageGanadero = () => {
       {renderFilters()}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {animales.map((animal) => (
+        {animales.map((animal, index) => (
           <AnimalCard
-            key={animal.id}
+            key={`${animal.id}-${index}`}
             animal={animal}
             onEdit={() => router.push(`/animales/${animal.id}`)}
             onUpdateProfileImage={handleUpdateProfileImage}

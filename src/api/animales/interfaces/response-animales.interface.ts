@@ -1,3 +1,5 @@
+import { UsoEquinoEnum } from "@/interfaces/enums/animales/use-equino.enum";
+
 export interface ResponseAnimalesByPropietario {
   data: Animal[];
   total: number;
@@ -15,7 +17,6 @@ export interface Animal {
   identificador: string;
   tipo_reproduccion: string;
   pureza: string;
-  produccion: string;
   tipo_produccion: string;
   animal_muerte: boolean;
   razon_muerte: string;
@@ -50,6 +51,19 @@ export interface Animal {
   razas_madre: EspecieClass[];
   razas_padre: EspecieClass[];
   profileImages: ProfileImage[];
+
+  //EQUINO
+  uso_equino?: UsoEquinoEnum;
+  desparasitado?: boolean;
+  vacunas?: string;
+  veterinario?: string;
+  peso_actual?: number;
+  condicion_corporal?: string;
+  nivel_entrenamiento?: string;
+  resultados_competencias?: string;
+  historial_reproductivo?: string;
+  valor_estimado?: number;
+  asegurado?: boolean;
 }
 
 export interface ProfileImage {

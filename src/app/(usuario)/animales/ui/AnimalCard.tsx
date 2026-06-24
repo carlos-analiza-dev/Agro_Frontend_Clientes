@@ -19,7 +19,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Camera, CircleAlert, Heart } from "lucide-react";
+import {
+  Camera,
+  CircleAlert,
+  Heart,
+  PawPrint,
+  Award,
+  Activity,
+  Syringe,
+  Scale,
+  Dumbbell,
+  Medal,
+  Baby,
+  Shield,
+  Wallet,
+  Dna,
+} from "lucide-react";
 import { toast } from "react-toastify";
 import { ActualizarAnimalMuerte } from "@/api/animales/accions/update-animal-status-muerte";
 import InfoAnimal from "./InfoAnimal";
@@ -29,9 +44,10 @@ import AnimalMedicamento from "./AnimalMedicamento";
 import ReproductiveStatus from "./ReproductiveStatus";
 import AnimalParentInfo from "./AnimalParentInfo";
 import AnimalFincaByPropietarion from "./AnimalFincaByPropietarion";
-import AnimalProductionInfo from "./AnimalProductionInfo";
 import { eliminarImagenAnimal } from "@/api/animales_profile/accions/delete-image-animal";
 import ImageGallery from "@/components/generics/ImageGallery";
+import { Badge } from "@/components/ui/badge";
+import { useAuthStore } from "@/providers/store/useAuthStore";
 
 interface Props {
   animal: Animal;
@@ -40,6 +56,8 @@ interface Props {
 }
 
 const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
+  const { cliente } = useAuthStore();
+  const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const [deathDialogVisible, setDeathDialogVisible] = useState(false);
   const [deathStatus, setDeathStatus] = useState(animal.animal_muerte);
   const [deathReason, setDeathReason] = useState(animal.razon_muerte);
@@ -49,6 +67,7 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const queryClient = useQueryClient();
 
   const imageUrl = animal.profileImages[0]?.url;
+  const isEquino = animal.especie.nombre.toLowerCase() === "equino";
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -138,6 +157,131 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
     }
   };
 
+  const renderEquinoInfo = () => {
+    if (!isEquino) return null;
+
+    return (
+      <div className="mt-3 space-y-2">
+        <div className="flex items-center gap-2">
+          <PawPrint className="h-4 w-4 text-purple-600" />
+          <h4 className="text-sm font-semibold text-purple-700">
+            Información Equina
+          </h4>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 bg-purple-50 p-3 rounded-lg">
+          {animal.desparasitado !== undefined && (
+            <div className="flex items-center gap-2">
+              <Syringe className="h-3 w-3 text-purple-600" />
+              <span className="text-xs">
+                <span className="font-medium">Desparasitado:</span>{" "}
+                <Badge
+                  variant={animal.desparasitado ? "default" : "secondary"}
+                  className="text-xs"
+                >
+                  {animal.desparasitado ? "Sí" : "No"}
+                </Badge>
+              </span>
+            </div>
+          )}
+
+          {animal.vacunas && animal.vacunas !== "Sin vacunas" && (
+            <div className="flex items-center gap-2">
+              <Syringe className="h-3 w-3 text-purple-600" />
+              <span className="text-xs">
+                <span className="font-medium">Vacunas:</span> {animal.vacunas}
+              </span>
+            </div>
+          )}
+
+          {animal.peso_actual && (
+            <div className="flex items-center gap-2">
+              <Scale className="h-3 w-3 text-purple-600" />
+              <span className="text-xs">
+                <span className="font-medium">Peso:</span> {animal.peso_actual}{" "}
+                kg
+              </span>
+            </div>
+          )}
+
+          {animal.condicion_corporal && (
+            <div className="flex items-center gap-2">
+              <Activity className="h-3 w-3 text-purple-600" />
+              <span className="text-xs">
+                <span className="font-medium">Condición:</span>{" "}
+                {animal.condicion_corporal}
+              </span>
+            </div>
+          )}
+
+          {animal.nivel_entrenamiento && (
+            <div className="flex items-center gap-2">
+              <Dumbbell className="h-3 w-3 text-purple-600" />
+              <span className="text-xs">
+                <span className="font-medium">Entrenamiento:</span>{" "}
+                {animal.nivel_entrenamiento}
+              </span>
+            </div>
+          )}
+
+          {animal.resultados_competencias && (
+            <div className="flex items-center gap-2 col-span-2">
+              <Award className="h-3 w-3 text-purple-600" />
+              <span className="text-xs">
+                <span className="font-medium">Resultados:</span>{" "}
+                {animal.resultados_competencias}
+              </span>
+            </div>
+          )}
+
+          {animal.historial_reproductivo && (
+            <div className="flex items-center gap-2 col-span-2">
+              <Baby className="h-3 w-3 text-purple-600" />
+              <span className="text-xs">
+                <span className="font-medium">Historial Reproductivo:</span>{" "}
+                {animal.historial_reproductivo}
+              </span>
+            </div>
+          )}
+
+          {animal.uso_equino && (
+            <div className="flex items-center gap-2 col-span-2">
+              <Dna className="h-3 w-3 text-purple-600" />
+              <span className="text-xs">
+                <span className="font-medium">Uso:</span> {animal.uso_equino}
+              </span>
+            </div>
+          )}
+
+          {animal.valor_estimado && (
+            <div className="flex items-center gap-2">
+              <Wallet className="h-3 w-3 text-purple-600" />
+              <span className="text-xs">
+                <span className="font-medium">Valor:</span> {moneda}{" "}
+                {animal.valor_estimado.toLocaleString()}
+              </span>
+            </div>
+          )}
+
+          {animal.asegurado !== undefined && (
+            <div className="flex items-center gap-2">
+              <Shield className="h-3 w-3 text-purple-600" />
+              <span className="text-xs">
+                <span className="font-medium">Asegurado:</span>{" "}
+                <Badge
+                  variant={animal.asegurado ? "default" : "secondary"}
+                  className="text-xs"
+                >
+                  {animal.asegurado ? "Sí" : "No"}
+                </Badge>
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
       <Card className="mb-4 overflow-hidden transition-all duration-200 hover:shadow-md">
@@ -158,7 +302,9 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               </Avatar>
             </div>
             <div>
-              <CardTitle className="text-lg">{animal.identificador}</CardTitle>
+              <CardTitle className="text-lg">
+                {animal.identificador.toUpperCase()}
+              </CardTitle>
               <p className="text-sm text-muted-foreground">
                 {animal.especie.nombre} -{" "}
                 {animal.razas.length === 1
@@ -217,7 +363,7 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
         <CardContent className="p-4 pt-2">
           <InfoAnimal animal={animal} />
 
-          {animal.tipo_alimentacion.length > 0 && (
+          {animal.tipo_alimentacion && animal.tipo_alimentacion.length > 0 && (
             <AnimalTipoAlimentacion animal={animal} />
           )}
 
@@ -250,6 +396,9 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             numeroParto={animal.numero_parto_madre}
           />
 
+          {/* Información específica de equinos */}
+          {renderEquinoInfo()}
+
           <Separator className="my-4" />
 
           <AnimalFincaByPropietarion
@@ -257,20 +406,6 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             fincaAbreviatura={animal.finca.abreviatura}
             observaciones={animal.observaciones}
           />
-
-          {(animal.produccion ||
-            animal.tipo_produccion ||
-            animal.animal_muerte) && (
-            <>
-              <Separator className="my-4" />
-              <AnimalProductionInfo
-                produccion={animal.produccion}
-                tipoProduccion={animal.tipo_produccion}
-                animalMuerto={animal.animal_muerte}
-                razonMuerte={animal.razon_muerte}
-              />
-            </>
-          )}
 
           <div className="flex justify-center w-full space-x-2 mt-4">
             <Button className="w-full" variant="outline" onClick={onEdit}>

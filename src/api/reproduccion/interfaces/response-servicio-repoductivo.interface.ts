@@ -1,5 +1,6 @@
 import { TipoServicio } from "@/interfaces/enums/servicios-reproductivos.enum";
 import { Metadata } from "./crear-servicio-reproductivo.interface";
+import { Animal } from "@/api/animales/interfaces/response-animales.interface";
 
 export interface ResponseServicioReproductivoInterface {
   data: Servicio[];
@@ -23,8 +24,8 @@ export interface Servicio {
   exitoso: boolean;
   macho_pertenece_finca: boolean;
   macho_externo_nombre?: string;
-  hembra: Hembra;
-  macho: Hembra;
+  hembra: Animal;
+  macho: Animal;
   celo_asociado: CeloAsociado;
   detalles: Detalle[];
 }
@@ -38,9 +39,4 @@ export interface Detalle {
   id: string;
   hora_servicio: string;
   numero_monta: number;
-}
-
-export interface Hembra {
-  id: string;
-  identificador: string;
 }

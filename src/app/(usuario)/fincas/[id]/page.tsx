@@ -14,16 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Home,
-  MapPin,
-  PawPrint,
-  Type,
-  Map,
-  Layers,
-  Save,
-  ArrowLeft,
-} from "lucide-react";
+import { Home, MapPin, Type, Map, Layers, Save, ArrowLeft } from "lucide-react";
 
 import { ActualizarFinca } from "@/api/fincas/accions/update-finca";
 import { CrearFinca } from "@/api/fincas/interfaces/crear-finca.interface";
@@ -35,34 +26,25 @@ import MapaSeleccionDireccion from "@/components/maps/MapaSeleccionDireccion";
 const fincaSchema = z
   .object({
     nombre_finca: z.string().min(1, "El nombre de la finca es requerido"),
-
-    cantidad_animales: z.number().min(1, "Debe haber al menos 1 animal"),
-
     ubicacion: z.string().min(1, "La ubicación es requerida"),
-
     abreviatura: z.string().optional(),
-
     tamaño_total: z.string().min(1, "El tamaño total es requerido"),
-
     area_ganaderia: z.string().optional(),
-
     area_agricola: z.string().optional(),
-
     tipo_explotacion: z.array(
       z.object({
         tipo_explotacion: z.string(),
       }),
     ),
-
-    especies_maneja: z.array(
-      z.object({
-        especie: z.string(),
-        cantidad: z.number(),
-      }),
-    ),
-
+    especies_maneja: z
+      .array(
+        z.object({
+          especie: z.string(),
+          cantidad: z.number().min(1, "La cantidad debe ser mayor a 0"),
+        }),
+      )
+      .min(1, "Debe agregar al menos una especie"),
     latitud: z.number().optional(),
-
     longitud: z.number().optional(),
   })
   .refine(
@@ -87,7 +69,6 @@ export default function FincaDetailsPage() {
   >([]);
 
   const params = useParams();
-
   const fincaId = params.id as string;
   const { data: finca, isLoading, isError } = useFincasById(fincaId);
 
@@ -105,7 +86,12 @@ export default function FincaDetailsPage() {
     },
   });
 
-  const cantidadAnimales = watch("cantidad_animales");
+  const especiesManeja = watch("especies_maneja") || [];
+
+  const cantidadAnimalesTotal = especiesManeja.reduce(
+    (sum, item) => sum + (item.cantidad || 0),
+    0,
+  );
 
   useEffect(() => {
     if (finca?.data) {
@@ -130,7 +116,6 @@ export default function FincaDetailsPage() {
         ubicacion: fincaData.ubicacion,
         latitud: fincaData.latitud,
         longitud: fincaData.longitud,
-        cantidad_animales: fincaData.cantidad_animales,
         tamaño_total: fincaData.tamaño_total,
         area_ganaderia: fincaData.area_ganaderia,
         area_agricola: fincaData.area_agricola,
@@ -151,20 +136,19 @@ export default function FincaDetailsPage() {
 
   const onSubmit = async (data: FincaFormData) => {
     try {
-      const sumaEspecies = data.especies_maneja.reduce(
+      const totalAnimales = data.especies_maneja.reduce(
         (sum, item) => sum + item.cantidad,
         0,
       );
 
-      if (sumaEspecies !== data.cantidad_animales) {
-        toast.error(
-          `La suma de especies debe ser igual a ${data.cantidad_animales}`,
-        );
+      if (totalAnimales === 0) {
+        toast.error("Debe agregar al menos un animal en las especies");
         return;
       }
 
       const fincaData: Partial<CrearFinca> = {
         ...data,
+        cantidad_animales: totalAnimales,
         medida_finca: unidadMedida,
       };
 
@@ -172,8 +156,7 @@ export default function FincaDetailsPage() {
 
       if (response.status === 200) {
         toast.success("Finca actualizada correctamente");
-
-        router.push("/fincas");
+        router.push("/animales/crear-animal");
         reset();
         queryClient.invalidateQueries({ queryKey: ["fincas-propietario"] });
         queryClient.invalidateQueries({ queryKey: ["finca", fincaId] });
@@ -293,30 +276,7 @@ export default function FincaDetailsPage() {
                     )}
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="cantidad_animales">
-                        Cantidad de animales
-                      </Label>
-                      <div className="relative">
-                        <PawPrint className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="cantidad_animales"
-                          type="number"
-                          placeholder="Número de animales"
-                          className="pl-10"
-                          {...register("cantidad_animales", {
-                            valueAsNumber: true,
-                          })}
-                        />
-                      </div>
-                      {errors.cantidad_animales && (
-                        <p className="text-sm text-destructive">
-                          {errors.cantidad_animales.message}
-                        </p>
-                      )}
-                    </div>
-
+                  <div className="grid grid-cols-1 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="abreviatura">
                         Abreviatura (opcional)
@@ -418,10 +378,8 @@ export default function FincaDetailsPage() {
                       <Label htmlFor="area_agricola">
                         Área agrícola ({unidadMedida})
                       </Label>
-
                       <div className="relative">
                         <Layers className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-
                         <Input
                           id="area_agricola"
                           type="number"
@@ -431,7 +389,6 @@ export default function FincaDetailsPage() {
                           {...register("area_agricola")}
                         />
                       </div>
-
                       {errors.area_agricola && (
                         <p className="text-sm text-destructive">
                           {errors.area_agricola.message}
@@ -473,8 +430,13 @@ export default function FincaDetailsPage() {
                     <EspecieCantidadPicker
                       value={watch("especies_maneja") || []}
                       onChange={(val) => setValue("especies_maneja", val)}
-                      cantidadTotal={cantidadAnimales || 0}
+                      cantidadTotal={cantidadAnimalesTotal}
                     />
+                    {errors.especies_maneja && (
+                      <p className="text-sm text-destructive">
+                        {errors.especies_maneja.message}
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex justify-end pt-4">

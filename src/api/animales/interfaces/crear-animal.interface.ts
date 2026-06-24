@@ -1,3 +1,5 @@
+import { UsoEquinoEnum } from "@/interfaces/enums/animales/use-equino.enum";
+
 export interface CrearAnimalByFinca {
   especie: string;
   sexo: string;
@@ -43,6 +45,19 @@ export interface CrearAnimalByFinca {
   nombre_propietario_madre?: string;
   nombre_finca_origen_madre?: string;
   numero_parto_madre: number;
+
+  //EQUIMO
+  uso_equino?: UsoEquinoEnum;
+  desparasitado?: boolean;
+  vacunas?: string;
+  veterinario?: string;
+  peso_actual?: number;
+  condicion_corporal?: string;
+  nivel_entrenamiento?: string;
+  resultados_competencias?: string;
+  historial_reproductivo?: string;
+  valor_estimado?: number;
+  asegurado?: boolean;
 }
 
 export interface TipoAlimentacion {

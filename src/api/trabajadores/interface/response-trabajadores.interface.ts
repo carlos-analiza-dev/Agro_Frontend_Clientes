@@ -1,3 +1,4 @@
+import { Finca } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
 import { TipoCliente } from "@/interfaces/enums/clientes.enums";
 
 export interface ResponseTrabajadoresInterface {
@@ -21,6 +22,7 @@ export interface Trabajador {
   departamento: Departamento;
   municipio: Departamento;
   propietario: Propietario;
+  asignacionesTrabajador?: Asignaciones[];
 }
 
 export interface Departamento {
@@ -52,4 +54,9 @@ export interface Propietario {
   rol: string;
   isActive: boolean;
   createdAt: Date;
+}
+
+export interface Asignaciones {
+  id: string;
+  finca: Finca;
 }

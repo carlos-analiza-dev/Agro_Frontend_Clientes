@@ -19,13 +19,19 @@ import { TipoCliente } from "@/interfaces/enums/clientes.enums";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
-import { Eye, EyeOff, MapPin, CheckCircle2 } from "lucide-react";
+import { Eye, EyeOff, MapPin, CheckCircle2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { Trabajador } from "@/api/trabajadores/interface/response-trabajadores.interface";
+import {
+  Asignaciones,
+  Trabajador,
+} from "@/api/trabajadores/interface/response-trabajadores.interface";
 import { actualizarTrabajador } from "@/api/trabajadores/accions/editar-trabajador";
 import { dataRoles } from "@/helpers/data/roles/dataRolesTrabajador";
+import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
+import { Badge } from "@/components/ui/badge";
+import { Finca } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
 
 interface Props {
   onSuccess: () => void;
@@ -37,13 +43,17 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
   const paisId = cliente?.pais?.id ?? "";
   const paisNombre = cliente?.pais?.nombre ?? "";
   const isEditing = !!trabajador;
-
+  const { data: fincas, isLoading: isLoadingFincas } = useFincasPropietarios(
+    cliente?.id ?? "",
+  );
   const queryClient = useQueryClient();
   const [prefijoNumber, setPrefijoNumber] = useState("");
   const [codigoPais, setCodigoPais] = useState("");
   const [departamentoId, setDepartamentoId] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [cargandoDatos, setCargandoDatos] = useState(true);
+  const [selectedFincas, setSelectedFincas] = useState<string[]>([]);
+  const [isFincasOpen, setIsFincasOpen] = useState(false);
 
   const {
     register,
@@ -107,6 +117,11 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
       const telefonoLimpio =
         trabajador.telefono?.replace(/^\+\d{3}\s/, "") || "";
 
+      const fincasAsignadas =
+        trabajador.asignacionesTrabajador?.map(
+          (f: Asignaciones) => f.finca.id,
+        ) || [];
+
       reset({
         email: trabajador.email || "",
         password: "",
@@ -120,6 +135,8 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
         sexo: trabajador.sexo || "",
         rol: trabajador.rol || TipoCliente.TRABAJADOR,
       });
+
+      setSelectedFincas(fincasAsignadas);
 
       if (trabajador.departamento?.id) {
         setDepartamentoId(trabajador.departamento.id);
@@ -140,6 +157,7 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
         sexo: "",
         rol: TipoCliente.TRABAJADOR,
       });
+      setSelectedFincas([]);
       setDepartamentoId("");
       setCargandoDatos(false);
     }
@@ -213,6 +231,7 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
       sexo: "",
       rol: TipoCliente.TRABAJADOR,
     });
+    setSelectedFincas([]);
     setDepartamentoId("");
   };
 
@@ -248,20 +267,45 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
     );
   };
 
+  const handleFincaToggle = (fincaId: string) => {
+    setSelectedFincas((prev) =>
+      prev.includes(fincaId)
+        ? prev.filter((id) => id !== fincaId)
+        : [...prev, fincaId],
+    );
+  };
+
+  const validateFincas = () => {
+    if (selectedFincas.length === 0) {
+      toast.warning("Por favor, selecciona al menos una finca");
+      return false;
+    }
+    return true;
+  };
+
   const onSubmit = (data: CrearCliente & { rol?: TipoCliente }) => {
+    if (!validateFincas()) return;
+
     const telefonoConPrefijo = `${prefijoNumber} ${data.telefono}`;
+
+    const payloadWithFincas = {
+      ...data,
+      telefono: telefonoConPrefijo,
+      fincasAsignadas: selectedFincas,
+    };
 
     if (isEditing && trabajador) {
       const payload: Partial<CrearCliente & { rol?: TipoCliente }> = {
-        nombre: data.nombre,
-        identificacion: data.identificacion,
-        telefono: telefonoConPrefijo,
-        direccion: data.direccion,
-        sexo: data.sexo,
-        pais: data.pais,
-        departamento: data.departamento,
-        municipio: data.municipio,
-        rol: data.rol,
+        nombre: payloadWithFincas.nombre,
+        identificacion: payloadWithFincas.identificacion,
+        telefono: payloadWithFincas.telefono,
+        direccion: payloadWithFincas.direccion,
+        sexo: payloadWithFincas.sexo,
+        pais: payloadWithFincas.pais,
+        departamento: payloadWithFincas.departamento,
+        municipio: payloadWithFincas.municipio,
+        rol: payloadWithFincas.rol,
+        fincasAsignadas: payloadWithFincas.fincasAsignadas,
       };
 
       if (data.email !== trabajador.email) {
@@ -274,13 +318,7 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
 
       updateMutation.mutate({ id: trabajador.id, data: payload });
     } else {
-      const payload: CrearCliente & { rol?: TipoCliente } = {
-        ...data,
-        telefono: telefonoConPrefijo,
-        pais: paisId,
-        rol: data.rol || TipoCliente.TRABAJADOR,
-      };
-      createMutation.mutate(payload as any);
+      createMutation.mutate(payloadWithFincas as any);
     }
   };
 
@@ -293,6 +331,10 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
       </div>
     );
   }
+
+  const selectedFincasData =
+    fincas?.data?.fincas.filter((f: any) => selectedFincas.includes(f.id)) ||
+    [];
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -583,6 +625,100 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
             </p>
           )}
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Fincas Asignadas *</Label>
+
+        {isLoadingFincas ? (
+          <div className="flex items-center justify-center p-4 border rounded-md bg-gray-50">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+            <span className="ml-2 text-sm text-muted-foreground">
+              Cargando fincas...
+            </span>
+          </div>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={() => setIsFincasOpen(!isFincasOpen)}
+              className="w-full p-2 text-left border rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <div className="flex justify-between items-center">
+                <span className="text-sm">
+                  {selectedFincas.length > 0
+                    ? `${selectedFincas.length} finca${selectedFincas.length > 1 ? "s" : ""} seleccionada${selectedFincas.length > 1 ? "s" : ""}`
+                    : "Seleccionar fincas..."}
+                </span>
+                <span className="text-gray-400">
+                  {isFincasOpen ? "▲" : "▼"}
+                </span>
+              </div>
+            </button>
+
+            {isFincasOpen && (
+              <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
+                {fincas?.data && fincas.data.fincas.length > 0 ? (
+                  fincas.data.fincas.map((finca: Finca) => (
+                    <label
+                      key={finca.id}
+                      className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedFincas.includes(finca.id)}
+                        onChange={() => handleFincaToggle(finca.id)}
+                        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                      />
+                      <div className="flex flex-col">
+                        <span className="text-sm">{finca.nombre_finca}</span>
+                        {finca.ubicacion && (
+                          <span className="text-xs text-muted-foreground">
+                            {finca.ubicacion}
+                          </span>
+                        )}
+                      </div>
+                    </label>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground p-2">
+                    No tienes fincas disponibles para asignar.
+                  </p>
+                )}
+              </div>
+            )}
+
+            {selectedFincas.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-2">
+                {selectedFincasData.map((finca: Finca) => (
+                  <Badge
+                    key={finca.id}
+                    variant="secondary"
+                    className="flex items-center gap-1"
+                  >
+                    {finca.nombre_finca}
+                    <button
+                      type="button"
+                      onClick={() => handleFincaToggle(finca.id)}
+                      className="ml-1 hover:text-destructive"
+                    >
+                      <X size={14} />
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        <p className="text-xs text-muted-foreground">
+          Selecciona las fincas a las que tendrá acceso el trabajador
+        </p>
+        {selectedFincas.length === 0 && (
+          <p className="text-xs text-amber-600">
+            ⚠️ Debes seleccionar al menos una finca
+          </p>
+        )}
       </div>
 
       <div className="mt-6">

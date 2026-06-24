@@ -14,4 +14,5 @@ export interface CrearCliente {
   isActive?: boolean;
   verified?: boolean;
   rol?: TipoCliente;
+  fincasAsignadas?: string[];
 }
