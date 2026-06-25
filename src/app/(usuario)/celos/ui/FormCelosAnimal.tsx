@@ -1,4 +1,3 @@
-// FormCelosAnimal.tsx
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -12,9 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -24,12 +21,17 @@ import {
   SignosObservados,
 } from "@/api/reproduccion/interfaces/response-celos-animal,interface";
 import { CrearCeloAnimal } from "@/api/reproduccion/accions/celos/crear-celo-animal";
-import { EditarCeloAnimal } from "@/api/reproduccion/accions/celos/editar-celo-animal";
 import { Animal } from "@/api/animales/interfaces/response-animales.interface";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircleIcon, Search, X } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { ActualizarCeloAnimal } from "@/api/reproduccion/accions/celos/actualizar-celo";
+import {
+  DeteccionCelo,
+  IntensidadCelosAnimal,
+} from "@/interfaces/enums/celos/celos-enums";
 
 interface Props {
   celo?: Celo | null;
@@ -42,6 +44,7 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
   const [errorMessage, setIsErrorMessage] = useState<string>("");
   const [searchAnimalTerm, setSearchAnimalTerm] = useState<string>("");
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
+
   const {
     register,
     reset,
@@ -54,8 +57,8 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
       animalId: "",
       fechaInicio: "",
       fechaFin: "",
-      intensidad: "MEDIO",
-      metodo_deteccion: "VISUAL",
+      intensidad: IntensidadCelosAnimal.MEDIO,
+      metodo_deteccion: DeteccionCelo.VISUAL,
       observaciones: "",
       signos_observados: {
         monta_otros: false,
@@ -96,11 +99,33 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
 
   useEffect(() => {
     if (celo) {
+      const formatDateForInput = (dateString: string) => {
+        if (!dateString) return "";
+        try {
+          const date = new Date(dateString);
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          const hours = String(date.getHours()).padStart(2, "0");
+          const minutes = String(date.getMinutes()).padStart(2, "0");
+          return `${year}-${month}-${day}T${hours}:${minutes}`;
+        } catch (error) {
+          console.error("Error formateando fecha:", error);
+          return "";
+        }
+      };
+
       setValue("animalId", celo.animal?.id || "");
-      setValue("fechaInicio", celo.fechaInicio.split("T")[0]);
-      setValue("fechaFin", celo.fechaFin?.split("T")[0] || "");
-      setValue("intensidad", celo.intensidad || "MEDIO");
-      setValue("metodo_deteccion", celo.metodo_deteccion || "VISUAL");
+      setValue("fechaInicio", formatDateForInput(celo.fechaInicio));
+      setValue(
+        "fechaFin",
+        celo.fechaFin ? formatDateForInput(celo.fechaFin) : "",
+      );
+      setValue("intensidad", celo.intensidad || IntensidadCelosAnimal.MEDIO);
+      setValue(
+        "metodo_deteccion",
+        celo.metodo_deteccion || DeteccionCelo.VISUAL,
+      );
       setValue("observaciones", celo.observaciones || "");
 
       if (celo.signos_observados) {
@@ -113,14 +138,17 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
           otros: celo.signos_observados.otros || [],
         });
       }
+
+      if (celo.animal) {
+        setSearchAnimalTerm(`${celo.animal.identificador || ""}`);
+      }
     } else {
       reset({
         animalId: "",
         fechaInicio: "",
         fechaFin: "",
-
-        intensidad: "MEDIO",
-        metodo_deteccion: "VISUAL",
+        intensidad: IntensidadCelosAnimal.MEDIO,
+        metodo_deteccion: DeteccionCelo.VISUAL,
         observaciones: "",
         signos_observados: {
           monta_otros: false,
@@ -131,6 +159,7 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
           otros: [],
         },
       });
+      setSearchAnimalTerm("");
     }
   }, [celo, setValue, reset]);
 
@@ -151,26 +180,38 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
 
   const handleSelectAnimal = (animalId: string) => {
     setValue("animalId", animalId);
-    setSearchAnimalTerm("");
+    const animal = hembras?.find((a) => a.id === animalId);
+    if (animal) {
+      setSearchAnimalTerm(
+        `${animal.identificador || ""} - ${animal.nombre_animal || "Sin nombre"}`,
+      );
+    }
     setIsSearchOpen(false);
   };
 
   const handleClearAnimal = () => {
-    setValue("animalId", "");
-    setSearchAnimalTerm("");
-    setIsSearchOpen(false);
+    if (!isEditing) {
+      setValue("animalId", "");
+      setSearchAnimalTerm("");
+      setIsSearchOpen(false);
+    }
   };
 
   const onSubmit = async (data: CrearCeloInterface) => {
     try {
       const payload = {
         ...data,
+
+        fechaInicio: data.fechaInicio
+          ? new Date(data.fechaInicio).toISOString()
+          : "",
+        fechaFin: data.fechaFin ? new Date(data.fechaFin).toISOString() : "",
       };
 
       let response;
 
       if (isEditing && celo) {
-        response = await EditarCeloAnimal(celo.id, payload);
+        response = await ActualizarCeloAnimal(celo.id, payload);
         toast.success("Celo actualizado correctamente");
       } else {
         response = await CrearCeloAnimal(payload);
@@ -234,17 +275,31 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
                 }
                 value={searchAnimalTerm}
                 onChange={(e) => {
-                  setSearchAnimalTerm(e.target.value);
-                  setIsSearchOpen(true);
+                  if (!isEditing) {
+                    setSearchAnimalTerm(e.target.value);
+                    setIsSearchOpen(true);
+                  }
                 }}
-                onFocus={() => setIsSearchOpen(true)}
+                onFocus={() => {
+                  if (!isEditing && searchAnimalTerm) {
+                    setIsSearchOpen(true);
+                  }
+                }}
                 className={cn(
                   "w-full pl-9 pr-10 py-3 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
                   selectedAnimal && "bg-blue-50 border-blue-300",
+                  isEditing && "bg-gray-100 cursor-not-allowed",
                 )}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isEditing}
               />
-              {selectedAnimal && (
+              {selectedAnimal && isEditing && (
+                <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                  <Badge variant="secondary" className="text-xs">
+                    Bloqueado
+                  </Badge>
+                </div>
+              )}
+              {selectedAnimal && !isEditing && (
                 <button
                   type="button"
                   onClick={handleClearAnimal}
@@ -255,7 +310,7 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
               )}
             </div>
 
-            {isSearchOpen && searchAnimalTerm && (
+            {!isEditing && isSearchOpen && searchAnimalTerm && (
               <div className="absolute z-50 w-full mt-1 border rounded-md shadow-lg max-h-60 overflow-y-auto bg-white">
                 {filteredAnimales.length > 0 ? (
                   filteredAnimales.map((animal) => (
@@ -269,6 +324,7 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
                     >
                       <Image
                         src={
+                          animal.profileImages &&
                           animal.profileImages.length > 0
                             ? animal.profileImages[0].url
                             : "/images/Image-not-found.png"
@@ -312,6 +368,7 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
               <div className="flex items-center gap-3">
                 <Image
                   src={
+                    selectedAnimal.profileImages &&
                     selectedAnimal.profileImages.length > 0
                       ? selectedAnimal.profileImages[0].url
                       : "/images/Image-not-found.png"
@@ -347,7 +404,7 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
 
         <div>
           <Label htmlFor="fechaInicio">
-            Fecha de Inicio <span className="text-red-500">*</span>
+            Fecha de Inicio de celo <span className="text-red-500">*</span>
           </Label>
           <Input
             id="fechaInicio"
@@ -366,7 +423,7 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
         </div>
 
         <div>
-          <Label htmlFor="fechaFin">Fecha de Fin</Label>
+          <Label htmlFor="fechaFin">Fecha de Fin de celo</Label>
           <Input
             id="fechaFin"
             {...register("fechaFin")}
@@ -382,8 +439,10 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
             Intensidad <span className="text-red-500">*</span>
           </Label>
           <Select
-            onValueChange={(value) => setValue("intensidad", value)}
-            defaultValue={celo?.intensidad || "MEDIO"}
+            defaultValue={celo?.intensidad || IntensidadCelosAnimal.MEDIO}
+            onValueChange={(value) => {
+              setValue("intensidad", value as IntensidadCelosAnimal);
+            }}
             disabled={isSubmitting}
           >
             <SelectTrigger>
@@ -403,8 +462,10 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
             Método de Detección <span className="text-red-500">*</span>
           </Label>
           <Select
-            onValueChange={(value) => setValue("metodo_deteccion", value)}
-            defaultValue={celo?.metodo_deteccion || "VISUAL"}
+            onValueChange={(value) =>
+              setValue("metodo_deteccion", value as DeteccionCelo)
+            }
+            value={watch("metodo_deteccion") || DeteccionCelo.VISUAL}
             disabled={isSubmitting}
           >
             <SelectTrigger>
@@ -491,7 +552,7 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
             onValueChange={(value) =>
               setValue("signos_observados.secreciones", value)
             }
-            defaultValue={celo?.signos_observados?.secreciones || ""}
+            value={watch("signos_observados.secreciones") || ""}
             disabled={isSubmitting}
           >
             <SelectTrigger>
@@ -513,7 +574,7 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
             id="otros"
             type="text"
             placeholder="Ej: brama, inquietud, etc."
-            defaultValue={celo?.signos_observados?.otros?.join(", ") || ""}
+            value={signosObservados?.otros?.join(", ") || ""}
             onChange={(e) => handleOtrosChange(e.target.value)}
             disabled={isSubmitting}
           />

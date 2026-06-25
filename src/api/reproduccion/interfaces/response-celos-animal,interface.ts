@@ -1,3 +1,7 @@
+import {
+  DeteccionCelo,
+  IntensidadCelosAnimal,
+} from "@/interfaces/enums/celos/celos-enums";
 import { EstadoCeloAnimal } from "@/interfaces/enums/servicios-reproductivos.enum";
 
 export interface ResponseCelosAnimalInterface {
@@ -14,8 +18,8 @@ export interface Celo {
   estado: EstadoCeloAnimal;
   fechaFin: string;
   numeroCelo: number;
-  intensidad: string;
-  metodo_deteccion: string;
+  intensidad: IntensidadCelosAnimal;
+  metodo_deteccion: DeteccionCelo;
   observaciones: string;
   signos_observados: SignosObservados;
   fechaRegistro: Date;

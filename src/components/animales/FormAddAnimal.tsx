@@ -210,12 +210,6 @@ const FormAddAnimal = ({ setActiveTab, selectedEspecieId }: Props) => {
     };
   }, []);
 
-  const especiesItmes =
-    especies?.data.map((especie) => ({
-      label: especie.nombre,
-      value: especie.id,
-    })) || [];
-
   const sexoItems = sexoOptions.map((sexo) => ({
     label: sexo.label,
     value: sexo.value,

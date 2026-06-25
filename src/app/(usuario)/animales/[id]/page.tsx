@@ -6,10 +6,10 @@ import useAnimalById from "@/hooks/animales/useAnimalById";
 import { useParams } from "next/navigation";
 import FormEditAnimales from "@/components/animales/FormEditAnimales";
 import FormAddPorcino from "@/components/animales/FormAddPorcino";
-import FormAddAvicola from "@/components/animales/FormAddAvicola";
 import FormAddPeces from "@/components/animales/FormAddPeces";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import FormEditEquino from "@/components/animales/FormEditEquino";
+import FormEditAvicola from "@/components/animales/FormEditAvicola";
 
 const AnimalDetailsPage = () => {
   const params = useParams();
@@ -63,7 +63,9 @@ const AnimalDetailsPage = () => {
       {tieneFormulario ? (
         <>
           {especieNombre === "porcino" && <FormAddPorcino />}
-          {especieNombre === "avicola" && <FormAddAvicola />}
+          {especieNombre === "avicola" && (
+            <FormEditAvicola animal={animal} animalId={animalId} />
+          )}
           {especieNombre === "piscicola" && <FormAddPeces />}
 
           {especieNombre === "equino" && (

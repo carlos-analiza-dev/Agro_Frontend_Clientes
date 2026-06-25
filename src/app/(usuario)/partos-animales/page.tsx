@@ -1,33 +1,15 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Label } from "@/components/ui/label";
-import { CalendarIcon, Filter, X, Baby } from "lucide-react";
-import { format, startOfDay, endOfDay } from "date-fns";
-import { es } from "date-fns/locale";
-import { cn } from "@/lib/utils";
+import { Filter, X, Baby } from "lucide-react";
+import { startOfDay, endOfDay } from "date-fns";
 import useGetPartosAnimales from "@/hooks/reproduccion/useGetPartosAnimales";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import useGetAnimalesPropietario from "@/hooks/animales/useGetAnimalesPropietario";
 import { Finca } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
-import { EstadoParto, TipoParto } from "@/interfaces/enums/partos.enums";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import InfoPartoAnimal from "./ui/InfoPartoAnimal";
 import DetailsParto from "./ui/DetailsParto";
@@ -43,6 +25,8 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Parto } from "@/api/reproduccion/interfaces/response-partos.interface";
+import FiltersParto from "./ui/FiltersParto";
+import { SexoAnimal } from "@/interfaces/enums/animales/sexo-animal.enum";
 
 const PartosAnimalesPage = () => {
   const { cliente } = useAuthStore();
@@ -77,9 +61,7 @@ const PartosAnimalesPage = () => {
     (item: Finca) => item.id === filtros.finca_id,
   );
 
-  const hembras = animales?.filter(
-    (a) => a.sexo === "Hembra" && a.finca.id === filtros.finca_id,
-  );
+  const hembras = animales?.filter((a) => a.sexo === SexoAnimal.Hembra);
 
   const compararFechas = (
     fechaParto: string,
@@ -188,201 +170,6 @@ const PartosAnimalesPage = () => {
     }
   };
 
-  const FiltersContent = () => (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">Finca</Label>
-        <Select
-          value={filtros.finca_id}
-          onValueChange={(value) =>
-            setFiltros({ ...filtros, finca_id: value, page: 1 })
-          }
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Seleccionar finca" />
-          </SelectTrigger>
-          <SelectContent>
-            {fincas?.data?.fincas?.map((f) => (
-              <SelectItem key={f.id} value={f.id}>
-                {f.nombre_finca}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">Hembra</Label>
-        <Select
-          value={filtros.hembra_id || "todos"}
-          onValueChange={(value) =>
-            setFiltros({
-              ...filtros,
-              hembra_id: value === "todos" ? "" : value,
-              page: 1,
-            })
-          }
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Todas las hembras" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos">Todas las hembras</SelectItem>
-            {hembras?.map((h) => (
-              <SelectItem key={h.id} value={h.id}>
-                {h.identificador}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">Estado</Label>
-        <Select
-          value={filtros.estado || "todos"}
-          onValueChange={(value) =>
-            setFiltros({
-              ...filtros,
-              estado: value === "todos" ? "" : value,
-              page: 1,
-            })
-          }
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Todos los estados" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos">Todos los estados</SelectItem>
-            <SelectItem value={EstadoParto.PROGRAMADO}>Programado</SelectItem>
-            <SelectItem value={EstadoParto.EN_PROGRESO}>En progreso</SelectItem>
-            <SelectItem value={EstadoParto.COMPLETADO}>Completado</SelectItem>
-            <SelectItem value={EstadoParto.COMPLICADO}>Complicado</SelectItem>
-            <SelectItem value={EstadoParto.ABORTADO}>Abortado</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">Tipo de parto</Label>
-        <Select
-          value={filtros.tipo_parto || "todos"}
-          onValueChange={(value) =>
-            setFiltros({
-              ...filtros,
-              tipo_parto: value === "todos" ? "" : value,
-              page: 1,
-            })
-          }
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Todos los tipos" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos">Todos los tipos</SelectItem>
-            <SelectItem value={TipoParto.NORMAL}>Normal</SelectItem>
-            <SelectItem value={TipoParto.DISTOCICO}>Distócico</SelectItem>
-            <SelectItem value={TipoParto.CESAREA}>Cesárea</SelectItem>
-            <SelectItem value={TipoParto.MUERTE_NATAL}>Muerte Natal</SelectItem>
-            <SelectItem value={TipoParto.ABORTO}>Aborto</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">Rango de fechas</Label>
-        <div className="flex flex-col gap-2">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !filtros.fecha_desde && "text-muted-foreground",
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {filtros.fecha_desde
-                  ? format(filtros.fecha_desde, "dd/MM/yyyy", { locale: es })
-                  : "Fecha desde"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={filtros.fecha_desde}
-                onSelect={(date) =>
-                  setFiltros({ ...filtros, fecha_desde: date, page: 1 })
-                }
-                initialFocus
-                locale={es}
-              />
-            </PopoverContent>
-          </Popover>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !filtros.fecha_hasta && "text-muted-foreground",
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {filtros.fecha_hasta
-                  ? format(filtros.fecha_hasta, "dd/MM/yyyy", { locale: es })
-                  : "Fecha hasta"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={filtros.fecha_hasta}
-                onSelect={(date) =>
-                  setFiltros({ ...filtros, fecha_hasta: date, page: 1 })
-                }
-                initialFocus
-                locale={es}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">Items por página</Label>
-        <Select
-          value={filtros.limit.toString()}
-          onValueChange={(value) =>
-            setFiltros({ ...filtros, limit: parseInt(value), page: 1 })
-          }
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="10" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="5">5</SelectItem>
-            <SelectItem value="10">10</SelectItem>
-            <SelectItem value="20">20</SelectItem>
-            <SelectItem value="50">50</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="flex gap-2 pt-4">
-        <Button variant="outline" onClick={clearFilters} className="flex-1">
-          <X className="h-4 w-4 mr-2" />
-          Limpiar
-        </Button>
-        {isMobile && (
-          <Button onClick={() => setShowFilters(false)} className="flex-1">
-            Aplicar filtros
-          </Button>
-        )}
-      </div>
-    </div>
-  );
-
   return (
     <div className="container mx-auto p-3 sm:p-4 md:p-6 space-y-4 md:space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
@@ -405,225 +192,13 @@ const PartosAnimalesPage = () => {
         </Button>
       </div>
       {!isMobile ? (
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex justify-between items-center">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Filter className="h-4 w-4" />
-                Filtros
-                {contarFiltrosActivos() > 0 && (
-                  <Badge variant="secondary" className="ml-2">
-                    {contarFiltrosActivos()} activos
-                  </Badge>
-                )}
-              </CardTitle>
-              <Button variant="ghost" size="sm" onClick={clearFilters}>
-                <X className="h-4 w-4 mr-1" />
-                Limpiar
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Finca</Label>
-                <Select
-                  value={filtros.finca_id}
-                  onValueChange={(value) =>
-                    setFiltros({ ...filtros, finca_id: value, page: 1 })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar finca" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {fincas?.data?.fincas?.map((f) => (
-                      <SelectItem key={f.id} value={f.id}>
-                        {f.nombre_finca}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Hembra</Label>
-                <Select
-                  value={filtros.hembra_id || "todos"}
-                  onValueChange={(value) =>
-                    setFiltros({
-                      ...filtros,
-                      hembra_id: value === "todos" ? "" : value,
-                      page: 1,
-                    })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Todas las hembras" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todas las hembras</SelectItem>
-                    {hembras?.map((h) => (
-                      <SelectItem key={h.id} value={h.id}>
-                        {h.identificador}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Estado</Label>
-                <Select
-                  value={filtros.estado || "todos"}
-                  onValueChange={(value) =>
-                    setFiltros({
-                      ...filtros,
-                      estado: value === "todos" ? "" : value,
-                      page: 1,
-                    })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Todos los estados" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos los estados</SelectItem>
-                    <SelectItem value={EstadoParto.PROGRAMADO}>
-                      Programado
-                    </SelectItem>
-                    <SelectItem value={EstadoParto.EN_PROGRESO}>
-                      En progreso
-                    </SelectItem>
-                    <SelectItem value={EstadoParto.COMPLETADO}>
-                      Completado
-                    </SelectItem>
-                    <SelectItem value={EstadoParto.COMPLICADO}>
-                      Complicado
-                    </SelectItem>
-                    <SelectItem value={EstadoParto.ABORTADO}>
-                      Abortado
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Tipo de parto</Label>
-                <Select
-                  value={filtros.tipo_parto || "todos"}
-                  onValueChange={(value) =>
-                    setFiltros({
-                      ...filtros,
-                      tipo_parto: value === "todos" ? "" : value,
-                      page: 1,
-                    })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Todos los tipos" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos los tipos</SelectItem>
-                    <SelectItem value={TipoParto.NORMAL}>Normal</SelectItem>
-                    <SelectItem value={TipoParto.DISTOCICO}>
-                      Distócico
-                    </SelectItem>
-                    <SelectItem value={TipoParto.CESAREA}>Cesárea</SelectItem>
-                    <SelectItem value={TipoParto.MUERTE_NATAL}>
-                      Muerte Natal
-                    </SelectItem>
-                    <SelectItem value={TipoParto.ABORTO}>Aborto</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2 sm:col-span-2 lg:col-span-2">
-                <Label className="text-sm font-medium">Rango de fechas</Label>
-                <div className="flex gap-2">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "flex-1 justify-start text-left font-normal",
-                          !filtros.fecha_desde && "text-muted-foreground",
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {filtros.fecha_desde
-                          ? format(filtros.fecha_desde, "dd/MM/yyyy", {
-                              locale: es,
-                            })
-                          : "Fecha desde"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={filtros.fecha_desde}
-                        onSelect={(date) =>
-                          setFiltros({ ...filtros, fecha_desde: date, page: 1 })
-                        }
-                        initialFocus
-                        locale={es}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "flex-1 justify-start text-left font-normal",
-                          !filtros.fecha_hasta && "text-muted-foreground",
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {filtros.fecha_hasta
-                          ? format(filtros.fecha_hasta, "dd/MM/yyyy", {
-                              locale: es,
-                            })
-                          : "Fecha hasta"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={filtros.fecha_hasta}
-                        onSelect={(date) =>
-                          setFiltros({ ...filtros, fecha_hasta: date, page: 1 })
-                        }
-                        initialFocus
-                        locale={es}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Items por página</Label>
-                <Select
-                  value={filtros.limit.toString()}
-                  onValueChange={(value) =>
-                    setFiltros({ ...filtros, limit: parseInt(value), page: 1 })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="10" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="5">5</SelectItem>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="20">20</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <FiltersParto
+          filtros={filtros}
+          setFiltros={setFiltros}
+          fincas={fincas}
+          hembras={hembras}
+          clearFilters={clearFilters}
+        />
       ) : (
         <>
           <Button
@@ -648,7 +223,15 @@ const PartosAnimalesPage = () => {
                 <SheetTitle className="text-left">Filtros</SheetTitle>
               </SheetHeader>
               <div className="overflow-y-auto h-full pb-20">
-                <FiltersContent />
+                <FiltersParto
+                  filtros={filtros}
+                  setFiltros={setFiltros}
+                  fincas={fincas}
+                  hembras={hembras}
+                  clearFilters={clearFilters}
+                  isMobile={true}
+                  onApplyMobile={() => setShowFilters(false)}
+                />
               </div>
             </SheetContent>
           </Sheet>

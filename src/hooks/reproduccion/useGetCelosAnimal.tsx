@@ -2,7 +2,7 @@ import { ObtenerCelosAnimales } from "@/api/reproduccion/accions/celos/obtener-c
 import { FiltrosCelos } from "@/interfaces/filtros/celos.filtros.interface";
 import { useQuery } from "@tanstack/react-query";
 
-const useGetCelosAnimal = (filtros: FiltrosCelos) => {
+const useGetCelosAnimal = (filtros?: FiltrosCelos) => {
   return useQuery({
     queryKey: ["celos-animal", filtros],
     queryFn: () => ObtenerCelosAnimales(filtros),

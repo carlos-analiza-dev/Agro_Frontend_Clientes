@@ -99,7 +99,9 @@ const CrearAnimalPage = () => {
       )}
 
       {especieName.toLowerCase() === "porcino" && <FormAddPorcino />}
-      {especieName.toLowerCase() === "avicola" && <FormAddAvicola />}
+      {especieName.toLowerCase() === "avicola" && (
+        <FormAddAvicola selectedEspecieId={selectedEspecieId} />
+      )}
       {especieName.toLowerCase() === "piscicola" && <FormAddPeces />}
       {especieName.toLowerCase() === "equino" && (
         <Tabs

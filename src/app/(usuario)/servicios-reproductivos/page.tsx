@@ -33,6 +33,7 @@ import { EditarServicioReproductivoEstados } from "@/api/reproduccion/accions/se
 import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
 import { EstadoServicio } from "@/interfaces/enums/servicios-reproductivos.enum";
+import { SexoAnimal } from "@/interfaces/enums/animales/sexo-animal.enum";
 
 const ServiciosReproductivosPage = () => {
   const { cliente } = useAuthStore();
@@ -152,9 +153,9 @@ const ServiciosReproductivosPage = () => {
 
   const fincas = fincasData?.data?.fincas || [];
   const hembras =
-    animalesData?.filter((animal) => animal.sexo === "Hembra") || [];
+    animalesData?.filter((animal) => animal.sexo === SexoAnimal.Hembra) || [];
   const machos =
-    animalesData?.filter((animal) => animal.sexo === "Macho") || [];
+    animalesData?.filter((animal) => animal.sexo === SexoAnimal.Macho) || [];
 
   const [filtros, setFiltros] = useState<FiltrosServicios>({
     page: 1,
@@ -274,9 +275,10 @@ const ServiciosReproductivosPage = () => {
       <div className="container mx-auto p-4 md:p-6 space-y-4 md:space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+            <h1 className="text-xl md:text-3xl font-bold tracking-tight">
               Servicios Reproductivos -{" "}
-              {fincaSeleccionada && fincaSeleccionada.nombre_finca}
+              {fincaSeleccionada &&
+                fincaSeleccionada.nombre_finca.toLowerCase()}
             </h1>
             <h2 className="text-sm md:text-base max-w-3xl text-muted-foreground">
               Registra y monitorea los servicios reproductivos de tus animales.

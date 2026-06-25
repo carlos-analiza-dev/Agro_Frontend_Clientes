@@ -24,6 +24,8 @@ import {
   UploadCloud,
   X,
   Filter,
+  Egg,
+  Fish,
 } from "lucide-react";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useDebounce } from "@/hooks/debounce/useDebounce";
@@ -44,6 +46,43 @@ import EmptyStateAnimales from "./ui/EmptyStateAnimales";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import CargaMasivaModal from "./ui/CargaMasivaModal";
 import { Badge } from "@/components/ui/badge";
+import AvicolaCard from "./ui/AvicolaCard";
+
+const ESPECIES = {
+  AVES: ["aves", "avicola", "pollos", "gallinas"],
+  EQUINO: ["equino", "caballo", "yegua", "potro"],
+  BOVINO: ["bovino", "vaca", "toro", "ternero"],
+  PORCINO: ["porcino", "cerdo", "chancho"],
+  OVINO: ["ovino", "oveja", "carnero"],
+  CAPRINO: ["caprino", "cabra", "chivo"],
+  PISCICOLA: [
+    "piscicola",
+    "pez",
+    "peces",
+    "tilapia",
+    "trucha",
+    "salmón",
+    "carpa",
+    "mojarra",
+  ],
+};
+
+const getEspecieTipo = (nombreEspecie: string): string => {
+  if (!nombreEspecie) return "default";
+
+  const nombreLower = nombreEspecie.toLowerCase();
+
+  if (ESPECIES.AVES.some((e) => nombreLower.includes(e))) return "aves";
+  if (ESPECIES.EQUINO.some((e) => nombreLower.includes(e))) return "equino";
+  if (ESPECIES.BOVINO.some((e) => nombreLower.includes(e))) return "bovino";
+  if (ESPECIES.PORCINO.some((e) => nombreLower.includes(e))) return "porcino";
+  if (ESPECIES.OVINO.some((e) => nombreLower.includes(e))) return "ovino";
+  if (ESPECIES.CAPRINO.some((e) => nombreLower.includes(e))) return "caprino";
+  if (ESPECIES.PISCICOLA.some((e) => nombreLower.includes(e)))
+    return "piscicola";
+
+  return "default";
+};
 
 const AnimalesPageGanadero = () => {
   const router = useRouter();
@@ -223,6 +262,33 @@ const AnimalesPageGanadero = () => {
     );
   };
 
+  const renderAnimalCard = (animal: any, index: number) => {
+    const especieTipo = getEspecieTipo(animal.especie?.nombre || "");
+
+    const commonProps = {
+      animal,
+      onEdit: () => router.push(`/animales/${animal.id}`),
+      onUpdateProfileImage: handleUpdateProfileImage,
+    };
+
+    const key = `${animal.id}-${index}`;
+
+    switch (especieTipo) {
+      case "aves":
+        return <AvicolaCard key={key} {...commonProps} />;
+      case "piscicola":
+        return <AnimalCard key={key} {...commonProps} />;
+      case "equino":
+        return <AnimalCard key={key} {...commonProps} />;
+      case "bovino":
+      case "porcino":
+      case "ovino":
+      case "caprino":
+      default:
+        return <AnimalCard key={key} {...commonProps} />;
+    }
+  };
+
   if (isLoading) {
     return <SkeletonCard />;
   }
@@ -355,9 +421,9 @@ const AnimalesPageGanadero = () => {
             hasFilters={false}
             onRefresh={handleRefresh}
             isLoading={isLoading}
-            title="Error al cargar los animales"
-            description="No se pudieron cargar los animales. Por favor, intenta nuevamente."
-            actionText="Recargar"
+            title="No hay animales registrados"
+            description="Comienza agregando tu primer animal o lote avícola."
+            actionText="Agregar Animal"
           />
         </div>
         <CargaMasivaModal
@@ -438,14 +504,7 @@ const AnimalesPageGanadero = () => {
       {renderFilters()}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {animales.map((animal, index) => (
-          <AnimalCard
-            key={`${animal.id}-${index}`}
-            animal={animal}
-            onEdit={() => router.push(`/animales/${animal.id}`)}
-            onUpdateProfileImage={handleUpdateProfileImage}
-          />
-        ))}
+        {animales.map((animal, index) => renderAnimalCard(animal, index))}
       </div>
 
       {hasNextPage && (

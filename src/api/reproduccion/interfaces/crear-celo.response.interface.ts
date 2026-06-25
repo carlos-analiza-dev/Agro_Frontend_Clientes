@@ -1,10 +1,14 @@
+import {
+  DeteccionCelo,
+  IntensidadCelosAnimal,
+} from "@/interfaces/enums/celos/celos-enums";
+
 export interface CrearCeloInterface {
   animalId: string;
   fechaInicio: string;
   fechaFin: string;
-  /*   numeroCelo?: number; */
-  intensidad: string;
-  metodo_deteccion: string;
+  intensidad: IntensidadCelosAnimal;
+  metodo_deteccion: DeteccionCelo;
   observaciones: string;
   signos_observados: SignosObservados;
 }

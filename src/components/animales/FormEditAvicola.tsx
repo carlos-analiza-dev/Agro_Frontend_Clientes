@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Label } from "../ui/label";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
@@ -35,26 +37,32 @@ import {
 } from "@/helpers/data/animales/animales-data";
 import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
-import { CreateAnimalAvicolas } from "@/api/animales/accions/crear-animal";
+import { Animal } from "@/api/animales/interfaces/response-animales.interface";
+import { ActualizarAvicola } from "@/api/animales/accions/update-animal";
 
 interface Props {
-  selectedEspecieId: string;
+  animalId: string;
+  animal: Animal;
 }
 
-const FormAddAvicola = ({ selectedEspecieId }: Props) => {
+const FormEditAvicola = ({ animalId, animal }: Props) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { cliente } = useAuthStore();
   const [showIdentifierHelp, setShowIdentifierHelp] = useState(false);
-  const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-  const { data: razas } = useGetRazasByEspecie(selectedEspecieId);
+  const [isFormReady, setIsFormReady] = useState(false);
+
+  const especieId = animal?.especie?.id || "";
+
+  const { data: razas } = useGetRazasByEspecie(especieId);
   const { data: fincas } = useFincasPropietarios(cliente?.id ?? "");
+
   const fincasItems =
     fincas?.data.fincas.map((finca) => ({
       label: finca.nombre_finca,
       value: finca.id,
     })) || [];
+
   const {
     register,
     handleSubmit,
@@ -62,59 +70,55 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
     setValue,
     formState: { errors },
     reset,
-  } = useForm<AvicolaData & { identificador_temp: string }>({
+  } = useForm<AvicolaData>({
     defaultValues: {
       identificador: "",
+      tipo_ave: undefined,
+      razaIds: [],
+      cantidad_lote: 0,
+      tipo_alimentacion: [],
     },
   });
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-
-    if (files.length + selectedImages.length > 5) {
-      toast.error("Máximo 5 imágenes permitidas");
-      return;
-    }
-
-    const validFiles = files.filter((file) => {
-      const isValidType = file.type.startsWith("image/");
-      const isValidSize = file.size <= 5 * 1024 * 1024;
-
-      if (!isValidType) {
-        toast.error(`El archivo ${file.name} no es una imagen válida`);
-        return false;
-      }
-      if (!isValidSize) {
-        toast.error(`La imagen ${file.name} excede el límite de 5MB`);
-        return false;
-      }
-      return true;
-    });
-
-    setSelectedImages((prev) => [...prev, ...validFiles]);
-
-    const newPreviews = validFiles.map((file) => URL.createObjectURL(file));
-    setImagePreviews((prev) => [...prev, ...newPreviews]);
-  };
-
-  const removeImage = (index: number) => {
-    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
-    URL.revokeObjectURL(imagePreviews[index]);
-    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
-  };
-
   useEffect(() => {
-    return () => {
-      imagePreviews.forEach((preview) => URL.revokeObjectURL(preview));
-    };
-  }, []);
+    if (animal) {
+      reset({
+        especie: animal?.especie?.id || "",
+        identificador: animal.identificador || "",
+        tipo_ave: (animal.tipo_ave as TipoAve) || undefined,
+        razaIds: animal.razas?.map((raza) => raza.id) || [],
+        cantidad_lote: animal.cantidad_lote || 0,
+        galpon: animal.galpon || "",
+        proveedor_aves: animal.proveedor_aves || "",
+        mortalidad_diaria: animal.mortalidad_diaria || 0,
+        consumo_alimento: animal.consumo_alimento || "",
+        consumo_agua: animal.consumo_agua || "",
+        tipo_concentrado: animal.tipo_concentrado || "",
+        huevos_diarios: animal.huevos_diarios || 0,
+        huevos_rotos: animal.huevos_rotos || 0,
+        calificacion_huevos: animal.calificacion_huevos || "",
+        porcentaje_postura: animal.porcentaje_postura || "",
+        fecha_postura: animal.fecha_postura
+          ? new Date(animal.fecha_postura).toISOString().split("T")[0]
+          : "",
+        vacunas_lote: animal.vacunas_lote || "",
+        tratamientos: animal.tratamientos || "",
+        peso_promedio: animal.peso_promedio || "",
+        tipo_produccion: animal.tipo_produccion || "",
+        fincaId: animal.finca?.id || "",
+        tipo_alimentacion: animal.tipo_alimentacion || [],
+      });
+
+      setIsFormReady(true);
+    }
+  }, [animal, reset]);
 
   const mutation = useMutation({
-    mutationFn: (data: FormData) => CreateAnimalAvicolas(data),
+    mutationFn: (data: AvicolaData) => ActualizarAvicola(animalId, data),
     onSuccess: () => {
-      toast.success("Animal avícola creado correctamente");
+      toast.success("Lote avícola actualizado correctamente");
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
-      reset();
+      queryClient.invalidateQueries({ queryKey: ["animal-id", animalId] });
       router.push("/animales");
     },
     onError: (error) => {
@@ -124,7 +128,7 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear el animal avícola";
+            : "Hubo un error al actualizar el lote avícola";
 
         toast.error(errorMessage);
       } else {
@@ -135,64 +139,61 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
 
   const onSubmit = (data: AvicolaData) => {
     if (!cliente?.id) return;
-    if (!selectedEspecieId) {
-      toast.error("No se ha seleccionado una especie válida");
+
+    if (!data.fincaId) {
+      toast.error("Debes seleccionar una finca");
       return;
     }
-    const formData = new FormData();
 
-    Object.entries(data).forEach(([key, value]) => {
-      if (
-        value === undefined ||
-        value === null ||
-        key === "razaIds" ||
-        key === "tipo_alimentacion"
-      ) {
-        return;
-      }
+    if (!data.razaIds || data.razaIds.length === 0) {
+      toast.error("Debes seleccionar al menos una raza");
+      return;
+    }
 
-      formData.append(key, String(value));
-    });
+    if (!data.identificador || data.identificador.trim() === "") {
+      toast.error("El identificador es obligatorio");
+      return;
+    }
 
-    formData.append("especie", selectedEspecieId);
-    formData.append("razaIds", JSON.stringify(data.razaIds));
-    data.tipo_alimentacion.forEach((item, index) => {
-      formData.append(`tipo_alimentacion[${index}][alimento]`, item.alimento);
-      formData.append(`tipo_alimentacion[${index}][origen]`, item.origen);
-
-      if (item.porcentaje_comprado != null) {
-        formData.append(
-          `tipo_alimentacion[${index}][porcentaje_comprado]`,
-          String(item.porcentaje_comprado),
-        );
-      }
-
-      if (item.porcentaje_producido != null) {
-        formData.append(
-          `tipo_alimentacion[${index}][porcentaje_producido]`,
-          String(item.porcentaje_producido),
-        );
-      }
-    });
-    selectedImages.forEach((image) => {
-      formData.append("images", image);
-    });
-
-    mutation.mutate(formData as any);
+    mutation.mutate(data);
   };
+
+  const handleSelectChange = (field: keyof AvicolaData, value: any) => {
+    setValue(field, value);
+  };
+
+  if (!isFormReady) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">
+            Cargando datos del lote...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Card className="max-w-4xl mx-auto">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Datos del Lote</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Completa la información del lote avícola. Los campos con{" "}
-            <span className="text-red-500">*</span> son obligatorios.
-          </p>
+          <div className="flex items-center gap-4">
+            <div>
+              <CardTitle className="text-2xl font-bold">
+                Editar Lote Avícola
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Actualiza la información del lote avícola. Los campos con{" "}
+                <span className="text-red-500">*</span> son obligatorios.
+              </p>
+            </div>
+          </div>
         </CardHeader>
 
         <CardContent className="space-y-6">
+          {/* Identificación */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
               Identificación
@@ -206,7 +207,7 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                 <Select
                   value={watch("tipo_ave") || ""}
                   onValueChange={(value) =>
-                    setValue("tipo_ave", value as TipoAve)
+                    handleSelectChange("tipo_ave", value as TipoAve)
                   }
                 >
                   <SelectTrigger>
@@ -226,6 +227,7 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                   </p>
                 )}
               </div>
+
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
                   Identificador Lote/Galpon{" "}
@@ -283,6 +285,7 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
             </div>
           </div>
 
+          {/* Razas */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
               Razas del Lote <span className="text-red-500">*</span>
@@ -336,6 +339,7 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
             </div>
           </div>
 
+          {/* Información del Lote */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
               Información del Lote
@@ -389,186 +393,178 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
             </div>
           </div>
 
+          {/* Alimentación */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
               Alimentación
             </h3>
 
-            <div className="space-y-4">
-              <div className="space-y-4">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                  Alimentación
-                </h3>
+            <div className="border rounded-lg p-4 space-y-4 bg-gray-50">
+              {alimentoOptionsAves.map((alimento) => {
+                const alimentoSeleccionado = watch("tipo_alimentacion")?.find(
+                  (a) => a.alimento === alimento.value,
+                );
 
-                <div className="border rounded-lg p-4 space-y-4 bg-gray-50">
-                  {alimentoOptionsAves.map((alimento) => {
-                    const alimentoSeleccionado = watch(
-                      "tipo_alimentacion",
-                    )?.find((a) => a.alimento === alimento.value);
+                return (
+                  <div
+                    key={alimento.value}
+                    className="bg-white rounded-lg p-4 shadow-sm"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center space-x-3">
+                        <Checkbox
+                          checked={!!alimentoSeleccionado}
+                          onCheckedChange={(checked) => {
+                            const isChecked = checked === true;
+                            const currentAlimentacion =
+                              watch("tipo_alimentacion") || [];
 
-                    return (
-                      <div
-                        key={alimento.value}
-                        className="bg-white rounded-lg p-4 shadow-sm"
-                      >
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center space-x-3">
-                            <Checkbox
-                              checked={!!alimentoSeleccionado}
-                              onCheckedChange={(checked) => {
-                                const isChecked = checked === true;
-                                const currentAlimentacion =
-                                  watch("tipo_alimentacion") || [];
+                            if (isChecked) {
+                              setValue("tipo_alimentacion", [
+                                ...currentAlimentacion,
+                                {
+                                  alimento: alimento.value,
+                                  origen: "comprado",
+                                },
+                              ]);
+                            } else {
+                              setValue(
+                                "tipo_alimentacion",
+                                currentAlimentacion.filter(
+                                  (a) => a.alimento !== alimento.value,
+                                ),
+                              );
+                            }
+                          }}
+                        />
+                        <Label className="font-medium">{alimento.label}</Label>
+                      </div>
+                    </div>
 
-                                if (isChecked) {
-                                  setValue("tipo_alimentacion", [
-                                    ...currentAlimentacion,
-                                    {
-                                      alimento: alimento.value,
-                                      origen: "comprado",
-                                    },
-                                  ]);
-                                } else {
-                                  setValue(
-                                    "tipo_alimentacion",
-                                    currentAlimentacion.filter(
-                                      (a) => a.alimento !== alimento.value,
-                                    ),
-                                  );
-                                }
-                              }}
-                            />
-                            <Label className="font-medium">
-                              {alimento.label}
-                            </Label>
-                          </div>
-                        </div>
-
-                        {alimentoSeleccionado && (
-                          <div className="pl-6 space-y-3">
-                            <RadioGroup
-                              value={alimentoSeleccionado.origen}
-                              onValueChange={(origen) => {
-                                const updated = (
-                                  watch("tipo_alimentacion") || []
-                                ).map((item) =>
-                                  item.alimento === alimento.value
-                                    ? { ...item, origen }
-                                    : item,
-                                );
-                                setValue("tipo_alimentacion", updated);
-                              }}
-                              className="flex flex-wrap gap-4"
+                    {alimentoSeleccionado && (
+                      <div className="pl-6 space-y-3">
+                        <RadioGroup
+                          value={alimentoSeleccionado.origen}
+                          onValueChange={(origen) => {
+                            const updated = (
+                              watch("tipo_alimentacion") || []
+                            ).map((item) =>
+                              item.alimento === alimento.value
+                                ? { ...item, origen }
+                                : item,
+                            );
+                            setValue("tipo_alimentacion", updated);
+                          }}
+                          className="flex flex-wrap gap-4"
+                        >
+                          {[
+                            "comprado",
+                            "producido",
+                            "comprado y producido",
+                          ].map((origen) => (
+                            <div
+                              key={origen}
+                              className="flex items-center space-x-2"
                             >
-                              {[
-                                "comprado",
-                                "producido",
-                                "comprado y producido",
-                              ].map((origen) => (
-                                <div
-                                  key={origen}
-                                  className="flex items-center space-x-2"
-                                >
-                                  <RadioGroupItem
-                                    value={origen}
-                                    id={`${alimento.value}-${origen}`}
-                                  />
-                                  <Label
-                                    htmlFor={`${alimento.value}-${origen}`}
-                                    className="text-sm"
-                                  >
-                                    {origen === "comprado"
-                                      ? "Comprado"
-                                      : origen === "producido"
-                                        ? "Producido"
-                                        : "Comprado y producido"}
-                                  </Label>
-                                </div>
-                              ))}
-                            </RadioGroup>
+                              <RadioGroupItem
+                                value={origen}
+                                id={`${alimento.value}-${origen}`}
+                              />
+                              <Label
+                                htmlFor={`${alimento.value}-${origen}`}
+                                className="text-sm"
+                              >
+                                {origen === "comprado"
+                                  ? "Comprado"
+                                  : origen === "producido"
+                                    ? "Producido"
+                                    : "Comprado y producido"}
+                              </Label>
+                            </div>
+                          ))}
+                        </RadioGroup>
 
-                            {alimentoSeleccionado.origen ===
-                              "comprado y producido" && (
-                              <div className="grid grid-cols-2 gap-3">
-                                <div className="space-y-1">
-                                  <Label className="text-xs">% Comprado</Label>
-                                  <Input
-                                    type="number"
-                                    min="0"
-                                    max="100"
-                                    value={
-                                      alimentoSeleccionado.porcentaje_comprado ||
-                                      ""
-                                    }
-                                    onChange={(e) => {
-                                      const value = e.target.value
-                                        ? parseInt(e.target.value)
-                                        : undefined;
-                                      const updated = (
-                                        watch("tipo_alimentacion") || []
-                                      ).map((item) =>
-                                        item.alimento === alimento.value
-                                          ? {
-                                              ...item,
-                                              porcentaje_comprado: value,
-                                            }
-                                          : item,
-                                      );
-                                      setValue("tipo_alimentacion", updated);
-                                    }}
-                                    placeholder="Ej: 60"
-                                  />
-                                </div>
-                                <div className="space-y-1">
-                                  <Label className="text-xs">% Producido</Label>
-                                  <Input
-                                    type="number"
-                                    min="0"
-                                    max="100"
-                                    value={
-                                      alimentoSeleccionado.porcentaje_producido ||
-                                      ""
-                                    }
-                                    onChange={(e) => {
-                                      const value = e.target.value
-                                        ? parseInt(e.target.value)
-                                        : undefined;
-                                      const updated = (
-                                        watch("tipo_alimentacion") || []
-                                      ).map((item) =>
-                                        item.alimento === alimento.value
-                                          ? {
-                                              ...item,
-                                              porcentaje_producido: value,
-                                            }
-                                          : item,
-                                      );
-                                      setValue("tipo_alimentacion", updated);
-                                    }}
-                                    placeholder="Ej: 40"
-                                  />
-                                </div>
-                                {alimentoSeleccionado.porcentaje_comprado !==
-                                  undefined &&
-                                  alimentoSeleccionado.porcentaje_producido !==
-                                    undefined &&
-                                  alimentoSeleccionado.porcentaje_comprado +
-                                    alimentoSeleccionado.porcentaje_producido !==
-                                    100 && (
-                                    <p className="text-xs text-red-500 col-span-2">
-                                      ⚠️ La suma de porcentajes debe ser 100%
-                                    </p>
-                                  )}
-                              </div>
-                            )}
+                        {alimentoSeleccionado.origen ===
+                          "comprado y producido" && (
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                              <Label className="text-xs">% Comprado</Label>
+                              <Input
+                                type="number"
+                                min="0"
+                                max="100"
+                                value={
+                                  alimentoSeleccionado.porcentaje_comprado || ""
+                                }
+                                onChange={(e) => {
+                                  const value = e.target.value
+                                    ? parseInt(e.target.value)
+                                    : undefined;
+                                  const updated = (
+                                    watch("tipo_alimentacion") || []
+                                  ).map((item) =>
+                                    item.alimento === alimento.value
+                                      ? {
+                                          ...item,
+                                          porcentaje_comprado: value,
+                                        }
+                                      : item,
+                                  );
+                                  setValue("tipo_alimentacion", updated);
+                                }}
+                                placeholder="Ej: 60"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-xs">% Producido</Label>
+                              <Input
+                                type="number"
+                                min="0"
+                                max="100"
+                                value={
+                                  alimentoSeleccionado.porcentaje_producido ||
+                                  ""
+                                }
+                                onChange={(e) => {
+                                  const value = e.target.value
+                                    ? parseInt(e.target.value)
+                                    : undefined;
+                                  const updated = (
+                                    watch("tipo_alimentacion") || []
+                                  ).map((item) =>
+                                    item.alimento === alimento.value
+                                      ? {
+                                          ...item,
+                                          porcentaje_producido: value,
+                                        }
+                                      : item,
+                                  );
+                                  setValue("tipo_alimentacion", updated);
+                                }}
+                                placeholder="Ej: 40"
+                              />
+                            </div>
+                            {alimentoSeleccionado.porcentaje_comprado !==
+                              undefined &&
+                              alimentoSeleccionado.porcentaje_producido !==
+                                undefined &&
+                              alimentoSeleccionado.porcentaje_comprado +
+                                alimentoSeleccionado.porcentaje_producido !==
+                                100 && (
+                                <p className="text-xs text-red-500 col-span-2">
+                                  ⚠️ La suma de porcentajes debe ser 100%
+                                </p>
+                              )}
                           </div>
                         )}
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
                   Consumo de Alimento (kg/día)
@@ -579,27 +575,24 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">
-                    Tipo de Concentrado
-                  </Label>
-                  <Input
-                    {...register("tipo_concentrado")}
-                    placeholder="Ej: Iniciador, Crecimiento, Postura"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">
-                    Consumo de Agua (L/día)
-                  </Label>
-                  <Input {...register("consumo_agua")} placeholder="Ej: 200L" />
-                </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">
+                  Consumo de Agua (L/día)
+                </Label>
+                <Input {...register("consumo_agua")} placeholder="Ej: 200L" />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Tipo de Concentrado</Label>
+              <Input
+                {...register("tipo_concentrado")}
+                placeholder="Ej: Iniciador, Crecimiento, Postura"
+              />
             </div>
           </div>
 
+          {/* Producción de Huevos */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
               Producción de Huevos
@@ -635,7 +628,7 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                 <Select
                   value={watch("calificacion_huevos") || ""}
                   onValueChange={(value) =>
-                    setValue("calificacion_huevos", value)
+                    handleSelectChange("calificacion_huevos", value)
                   }
                 >
                   <SelectTrigger>
@@ -671,6 +664,7 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
             </div>
           </div>
 
+          {/* Sanidad */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
               Sanidad
@@ -697,6 +691,7 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
             </div>
           </div>
 
+          {/* Desempeño */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
               Desempeño
@@ -716,7 +711,9 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                 </Label>
                 <Select
                   value={watch("tipo_produccion") || ""}
-                  onValueChange={(value) => setValue("tipo_produccion", value)}
+                  onValueChange={(value) =>
+                    handleSelectChange("tipo_produccion", value)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecciona el tipo de producción" />
@@ -731,6 +728,8 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
               </div>
             </div>
           </div>
+
+          {/* Ubicación y Origen */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
               Ubicación y Origen
@@ -741,7 +740,9 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                 <Label className="text-sm font-medium">Finca</Label>
                 <Select
                   value={watch("fincaId") || ""}
-                  onValueChange={(value) => setValue("fincaId", value)}
+                  onValueChange={(value) =>
+                    handleSelectChange("fincaId", value)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecciona una finca" />
@@ -762,79 +763,6 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
               </div>
             </div>
           </div>
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Imágenes del Lote
-            </h3>
-
-            <div className="space-y-4">
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50 hover:bg-gray-100 transition-colors">
-                <div className="flex flex-col items-center justify-center text-center">
-                  <div className="mb-2">
-                    <svg
-                      className="w-8 h-8 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-2">
-                    Arrastra y suelta imágenes o haz clic para seleccionar
-                  </p>
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageSelect}
-                    disabled={selectedImages.length >= 5}
-                    className="w-full max-w-xs cursor-pointer text-sm file:mr-2 file:py-2 file:px-3 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 file:border-none file:rounded-md hover:file:bg-blue-100 disabled:opacity-50"
-                  />
-                  <p className="text-xs text-gray-500 mt-3">
-                    <span className="font-medium">Máximo 5 imágenes</span> ·
-                    Formatos: JPG, PNG, GIF · Máximo 5MB cada una
-                    <br />
-                    <span className="text-blue-600">
-                      {selectedImages.length}/5 imágenes seleccionadas
-                    </span>
-                  </p>
-                </div>
-              </div>
-
-              {imagePreviews.length > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                  {imagePreviews.map((preview, index) => (
-                    <div key={index} className="relative group aspect-square">
-                      <img
-                        src={preview}
-                        alt={`Preview ${index + 1}`}
-                        className="w-full h-full object-cover rounded-lg border shadow-sm hover:shadow-md transition-shadow"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-all shadow-md active:scale-95 opacity-0 group-hover:opacity-100"
-                        aria-label="Eliminar imagen"
-                      >
-                        ×
-                      </button>
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <span className="text-white text-xs">
-                          Imagen {index + 1}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
 
           <div className="pt-4 border-t flex justify-end gap-3">
             <Button
@@ -847,7 +775,7 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
             <Button
               type="submit"
               disabled={mutation.isPending}
-              className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-amber-600 hover:bg-amber-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {mutation.isPending ? (
                 <>
@@ -871,10 +799,10 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Creando...
+                  Actualizando...
                 </>
               ) : (
-                "Ingresar Lote"
+                "Actualizar Lote"
               )}
             </Button>
           </div>
@@ -884,4 +812,4 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
   );
 };
 
-export default FormAddAvicola;
+export default FormEditAvicola;

@@ -1,11 +1,8 @@
-import { Animal } from "@/api/animales/interfaces/response-animales.interface";
-import { Finca } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
-import { ResponseServicioReproductivoInterface } from "@/api/reproduccion/interfaces/response-servicio-repoductivo.interface";
-import { Badge } from "@/components/ui/badge";
+"use client";
+
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -13,44 +10,52 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { estadoReproductivo } from "@/helpers/data/estadoServicioReproductivo";
-import { tipoReproduccionOptions } from "@/helpers/data/tipoReproduccionOptions";
-import { FiltrosServicios } from "@/interfaces/filtros/servicios-resproductivos.filtros.interface";
-import { QueryObserverResult, RefetchOptions } from "@tanstack/react-query";
-import { ChevronDown, RefreshCw, Search, X } from "lucide-react";
-import React, { useState, useEffect, useRef } from "react";
-import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
+import { CalendarIcon, Filter, X, Search } from "lucide-react";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { Finca } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
+import { Animal } from "@/api/animales/interfaces/response-animales.interface";
+import { EstadoParto, TipoParto } from "@/interfaces/enums/partos.enums";
+import { Input } from "@/components/ui/input";
+import Image from "next/image";
 
-interface Props {
-  filtros: FiltrosServicios;
-  fincas: Finca[];
-  fincaSeleccionada: Finca | undefined;
-  fincasLoading: boolean;
-  hembras: Animal[];
-  animalesLoading: boolean;
-  handleFilterChange: (key: keyof FiltrosServicios, value: any) => void;
-  limpiarFiltros: () => void;
-  refetch: (
-    options?: RefetchOptions | undefined,
-  ) => Promise<
-    QueryObserverResult<ResponseServicioReproductivoInterface, Error>
-  >;
-  isFetching: boolean;
+interface FiltersPartoProps {
+  filtros: {
+    finca_id: string;
+    hembra_id: string;
+    estado: string;
+    tipo_parto: string;
+    fecha_desde?: Date;
+    fecha_hasta?: Date;
+    limit: number;
+    page: number;
+  };
+  setFiltros: React.Dispatch<React.SetStateAction<any>>;
+  fincas: { data: { fincas: Finca[] } } | undefined;
+  hembras: Animal[] | undefined;
+  clearFilters: () => void;
+  isMobile?: boolean;
+  onApplyMobile?: () => void;
 }
 
-const CardFilters = ({
+export const FiltersParto = ({
   filtros,
+  setFiltros,
   fincas,
-  fincaSeleccionada,
   hembras,
-  fincasLoading,
-  animalesLoading,
-  handleFilterChange,
-  refetch,
-  limpiarFiltros,
-  isFetching,
-}: Props) => {
+  clearFilters,
+  isMobile = false,
+  onApplyMobile,
+}: FiltersPartoProps) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -59,10 +64,8 @@ const CardFilters = ({
     (animal) => animal.id === filtros.hembra_id,
   );
 
-  // Filtrar hembras por término de búsqueda y finca
   const filteredHembras =
     hembras?.filter((animal) => {
-      // Filtrar por finca si está seleccionada
       if (filtros.finca_id && animal.finca?.id !== filtros.finca_id) {
         return false;
       }
@@ -83,7 +86,6 @@ const CardFilters = ({
       );
     }) || [];
 
-  // Cerrar buscador al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -98,7 +100,6 @@ const CardFilters = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Actualizar searchTerm cuando se selecciona un animal desde el padre
   useEffect(() => {
     if (selectedAnimal) {
       setSearchTerm(
@@ -110,7 +111,11 @@ const CardFilters = ({
   }, [selectedAnimal]);
 
   const handleSelectAnimal = (animalId: string) => {
-    handleFilterChange("hembra_id", animalId);
+    setFiltros({
+      ...filtros,
+      hembra_id: animalId,
+      page: 1,
+    });
     const animal = hembras?.find((a) => a.id === animalId);
     if (animal) {
       setSearchTerm(
@@ -121,47 +126,70 @@ const CardFilters = ({
   };
 
   const handleClearAnimal = () => {
-    handleFilterChange("hembra_id", undefined);
+    setFiltros({
+      ...filtros,
+      hembra_id: "",
+      page: 1,
+    });
     setSearchTerm("");
     setIsSearchOpen(false);
   };
 
-  // Filtrar hembras por finca para el badge de cantidad
-  const hembrasFiltradasPorFinca = filtros.finca_id
+  const contarFiltrosActivos = () => {
+    let count = 0;
+    if (filtros.hembra_id) count++;
+    if (filtros.estado) count++;
+    if (filtros.tipo_parto) count++;
+    if (filtros.fecha_desde || filtros.fecha_hasta) count++;
+    return count;
+  };
+
+  const hembrasEnFinca = filtros.finca_id
     ? hembras?.filter((h) => h.finca?.id === filtros.finca_id)
     : hembras;
 
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg flex items-center justify-between">
-          <span>Filtros</span>
-          <Badge variant="outline" className="ml-2">
-            {fincaSeleccionada?.nombre_finca || "Todas las fincas"}
-          </Badge>
-        </CardTitle>
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Filter className="h-4 w-4" />
+            Filtros
+            {contarFiltrosActivos() > 0 && (
+              <Badge variant="secondary" className="ml-2">
+                {contarFiltrosActivos()} activos
+              </Badge>
+            )}
+          </CardTitle>
+          <Button variant="ghost" size="sm" onClick={clearFilters}>
+            <X className="h-4 w-4 mr-1" />
+            Limpiar
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="space-y-2">
-            <Label>Finca</Label>
+            <Label className="text-sm font-medium">Finca</Label>
             <Select
-              value={filtros.finca_id || ""}
+              value={filtros.finca_id}
               onValueChange={(value) => {
-                handleFilterChange("finca_id", value);
-                // Limpiar la hembra seleccionada cuando cambia la finca
-                handleFilterChange("hembra_id", undefined);
+                setFiltros({
+                  ...filtros,
+                  finca_id: value,
+                  hembra_id: "",
+                  page: 1,
+                });
                 setSearchTerm("");
               }}
-              disabled={fincasLoading}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Seleccionar finca" />
               </SelectTrigger>
               <SelectContent>
-                {fincas.map((finca) => (
-                  <SelectItem key={finca.id} value={finca.id}>
-                    {finca.nombre_finca}
+                {fincas?.data?.fincas?.map((f) => (
+                  <SelectItem key={f.id} value={f.id}>
+                    {f.nombre_finca}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -169,7 +197,7 @@ const CardFilters = ({
           </div>
 
           <div className="space-y-2" ref={searchRef}>
-            <Label>Hembra</Label>
+            <Label className="text-sm font-medium">Hembra</Label>
             <div className="relative">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50" />
@@ -192,9 +220,7 @@ const CardFilters = ({
                   className={cn(
                     "pl-9 pr-10",
                     selectedAnimal && "bg-blue-50 border-blue-300",
-                    animalesLoading && "bg-gray-100 cursor-not-allowed",
                   )}
-                  disabled={animalesLoading}
                 />
                 {selectedAnimal && (
                   <button
@@ -299,141 +325,170 @@ const CardFilters = ({
               </div>
             )}
 
-            {hembrasFiltradasPorFinca &&
-              hembrasFiltradasPorFinca.length > 0 &&
-              !selectedAnimal && (
-                <p className="text-xs text-muted-foreground">
-                  {hembrasFiltradasPorFinca.length} hembra(s) disponible(s)
-                </p>
-              )}
+            {hembrasEnFinca && hembrasEnFinca.length > 0 && !selectedAnimal && (
+              <p className="text-xs text-muted-foreground">
+                {hembrasEnFinca.length} hembra(s) disponible(s)
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
-            <Label>Estado</Label>
+            <Label className="text-sm font-medium">Estado</Label>
             <Select
               value={filtros.estado || "todos"}
               onValueChange={(value) =>
-                handleFilterChange(
-                  "estado",
-                  value === "todos" ? undefined : value,
-                )
+                setFiltros({
+                  ...filtros,
+                  estado: value === "todos" ? "" : value,
+                  page: 1,
+                })
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Estado" />
+                <SelectValue placeholder="Todos los estados" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos">Todos</SelectItem>
-                {estadoReproductivo.map((estado) => (
-                  <SelectItem key={estado.id} value={estado.value}>
-                    {estado.label}
-                  </SelectItem>
-                ))}
+                <SelectItem value="todos">Todos los estados</SelectItem>
+                <SelectItem value={EstadoParto.PROGRAMADO}>
+                  Programado
+                </SelectItem>
+                <SelectItem value={EstadoParto.EN_PROGRESO}>
+                  En progreso
+                </SelectItem>
+                <SelectItem value={EstadoParto.COMPLETADO}>
+                  Completado
+                </SelectItem>
+                <SelectItem value={EstadoParto.COMPLICADO}>
+                  Complicado
+                </SelectItem>
+                <SelectItem value={EstadoParto.ABORTADO}>Abortado</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <div className="flex items-end space-x-2">
-            <Button onClick={() => refetch()} className="flex-1">
-              <Search className="h-4 w-4 mr-2" />
-              Buscar
-            </Button>
-            <Button variant="outline" onClick={limpiarFiltros} size="icon">
-              <X className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" onClick={() => refetch()} size="icon">
-              <RefreshCw
-                className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
-              />
-            </Button>
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Tipo de parto</Label>
+            <Select
+              value={filtros.tipo_parto || "todos"}
+              onValueChange={(value) =>
+                setFiltros({
+                  ...filtros,
+                  tipo_parto: value === "todos" ? "" : value,
+                  page: 1,
+                })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Todos los tipos" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos los tipos</SelectItem>
+                <SelectItem value={TipoParto.NORMAL}>Normal</SelectItem>
+                <SelectItem value={TipoParto.DISTOCICO}>Distócico</SelectItem>
+                <SelectItem value={TipoParto.CESAREA}>Cesárea</SelectItem>
+                <SelectItem value={TipoParto.MUERTE_NATAL}>
+                  Muerte Natal
+                </SelectItem>
+                <SelectItem value={TipoParto.ABORTO}>Aborto</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-        </div>
 
-        <div className="mt-4 pt-4 border-t">
-          <details className="group">
-            <summary className="flex items-center gap-2 text-sm font-medium cursor-pointer list-none">
-              <ChevronDown className="h-4 w-4 group-open:rotate-180 transition-transform" />
-              Filtros avanzados
-            </summary>
-            <div className="mt-4 grid grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label>Tipo</Label>
-                <Select
-                  value={filtros.tipo_servicio || "todos"}
-                  onValueChange={(value) =>
-                    handleFilterChange(
-                      "tipo_servicio",
-                      value === "todos" ? undefined : value,
-                    )
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Todos" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos</SelectItem>
-                    {tipoReproduccionOptions.map((tipo) => (
-                      <SelectItem key={tipo.value} value={tipo.value}>
-                        {tipo.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Exitoso</Label>
-                <Select
-                  value={
-                    filtros.exitoso === undefined
-                      ? "todos"
-                      : filtros.exitoso.toString()
-                  }
-                  onValueChange={(value) =>
-                    handleFilterChange(
-                      "exitoso",
-                      value === "todos" ? undefined : value === "true",
-                    )
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Todos" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos</SelectItem>
-                    <SelectItem value="true">Sí</SelectItem>
-                    <SelectItem value="false">No</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Fecha desde</Label>
-                <Input
-                  type="date"
-                  value={filtros.fecha_desde || ""}
-                  onChange={(e) =>
-                    handleFilterChange("fecha_desde", e.target.value)
-                  }
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Fecha hasta</Label>
-                <Input
-                  type="date"
-                  value={filtros.fecha_hasta || ""}
-                  onChange={(e) =>
-                    handleFilterChange("fecha_hasta", e.target.value)
-                  }
-                />
-              </div>
+          <div className="space-y-2 sm:col-span-2 lg:col-span-2">
+            <Label className="text-sm font-medium">Rango de fechas</Label>
+            <div className="flex gap-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "flex-1 justify-start text-left font-normal",
+                      !filtros.fecha_desde && "text-muted-foreground",
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {filtros.fecha_desde
+                      ? format(filtros.fecha_desde, "dd/MM/yyyy", {
+                          locale: es,
+                        })
+                      : "Fecha desde"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={filtros.fecha_desde}
+                    onSelect={(date) =>
+                      setFiltros({ ...filtros, fecha_desde: date, page: 1 })
+                    }
+                    initialFocus
+                    locale={es}
+                  />
+                </PopoverContent>
+              </Popover>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "flex-1 justify-start text-left font-normal",
+                      !filtros.fecha_hasta && "text-muted-foreground",
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {filtros.fecha_hasta
+                      ? format(filtros.fecha_hasta, "dd/MM/yyyy", {
+                          locale: es,
+                        })
+                      : "Fecha hasta"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={filtros.fecha_hasta}
+                    onSelect={(date) =>
+                      setFiltros({ ...filtros, fecha_hasta: date, page: 1 })
+                    }
+                    initialFocus
+                    locale={es}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
-          </details>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Items por página</Label>
+            <Select
+              value={filtros.limit.toString()}
+              onValueChange={(value) =>
+                setFiltros({ ...filtros, limit: parseInt(value), page: 1 })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="10" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {isMobile && onApplyMobile && (
+            <div className="col-span-full flex gap-2 pt-2">
+              <Button onClick={onApplyMobile} className="flex-1">
+                Aplicar filtros
+              </Button>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
   );
 };
 
-export default CardFilters;
+export default FiltersParto;

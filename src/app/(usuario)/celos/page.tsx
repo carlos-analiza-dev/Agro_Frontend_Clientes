@@ -19,6 +19,7 @@ import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { useRouter } from "next/navigation";
 import MobileFilters from "./ui/MobileFilters";
 import DesktopFilters from "./ui/DesktopFilters";
+import { SexoAnimal } from "@/interfaces/enums/animales/sexo-animal.enum";
 
 const CelosAnimalPage = () => {
   const { cliente } = useAuthStore();
@@ -45,11 +46,23 @@ const CelosAnimalPage = () => {
     useFincasPropietarios(clienteId);
   const { data: animales, isLoading: animalesLoading } =
     useGetAnimalesPropietario();
-  const hembras = animales?.filter((animal) => animal.sexo === "Hembra");
+  const hembras = animales?.filter(
+    (animal) => animal.sexo === SexoAnimal.Hembra,
+  );
 
   const { data: especies, isLoading: especiesLoading } = useGetEspecies();
 
-  const { data, isLoading, error, refetch } = useGetCelosAnimal(filtros);
+  const { data, isLoading, error, refetch } = useGetCelosAnimal({
+    limit: filtros.limit,
+    offset: filtros.offset,
+    fincaId: tempFiltros.fincaId,
+    especie: tempFiltros.especie,
+    activos: tempFiltros.activos,
+    animalId: tempFiltros.animalId,
+    fechaInicio: tempFiltros.fechaInicio,
+    fechaFin: tempFiltros.fechaFin,
+    intensidad: tempFiltros.intensidad,
+  });
 
   useEffect(() => {
     if (tempFiltros.fincaId) {
@@ -196,6 +209,7 @@ const CelosAnimalPage = () => {
                 setDetalleOpen={setDetalleOpen}
                 detalleOpen={detalleOpen}
                 selectedCelo={selectedCelo}
+                hembras={hembras}
               />
 
               {(!data?.celos || data.celos.length === 0) && (

@@ -1,3 +1,4 @@
+import { TipoAve } from "@/interfaces/enums/animales/animales-enums";
 import { UsoEquinoEnum } from "@/interfaces/enums/animales/use-equino.enum";
 
 export interface ResponseAnimalesByPropietario {
@@ -64,6 +65,25 @@ export interface Animal {
   historial_reproductivo?: string;
   valor_estimado?: number;
   asegurado?: boolean;
+
+  //AVICOLA
+  fincaId: string;
+  cantidad_lote?: number;
+  tipo_ave?: TipoAve;
+  proveedor_aves?: string;
+  galpon?: string;
+  mortalidad_diaria?: number;
+  consumo_alimento?: string;
+  consumo_agua?: string;
+  peso_promedio?: string;
+  huevos_diarios?: number;
+  huevos_rotos?: number;
+  calificacion_huevos?: string;
+  vacunas_lote?: string;
+  tratamientos?: string;
+  porcentaje_postura?: string;
+  tipo_concentrado?: string;
+  fecha_postura?: Date | string;
 }
 
 export interface ProfileImage {
