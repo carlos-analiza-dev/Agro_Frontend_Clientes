@@ -41,7 +41,10 @@ import { UsoEquinoEnum } from "@/interfaces/enums/animales/use-equino.enum";
 import { extractNumberFromIdentifier } from "@/helpers/funciones/extractNumberFromIdentifier ";
 import { tipoReproduccionOptions } from "@/helpers/data/tipoReproduccionOptions";
 import { dataTipoProduccion } from "@/helpers/data/dataTipoProduccion";
-import { alimentosOptions } from "@/helpers/data/alimentos";
+import {
+  alimentosEquinosOptions,
+  alimentosOptions,
+} from "@/helpers/data/alimentos";
 
 interface Props {
   animalId: string;
@@ -93,29 +96,48 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
         tipo_produccion: animal?.tipo_produccion || "",
         identificador_temp: extractNumberFromIdentifier(animal?.identificador),
         identificador: animal?.identificador || "",
+        registro_genealogico: animal?.registro_genealogico || "",
+        microchip: animal?.microchip || "",
         razaIds: animal?.razas?.map((raza) => raza.id) || [],
         pureza: animal?.pureza || "",
+
         edad_promedio: Number(animal?.edad_promedio) || 0,
         fecha_nacimiento: animal?.fecha_nacimiento || "",
+
+        peso_actual: animal?.peso_actual || 0,
+        alzada: animal?.alzada || 0,
+        unidad_alzada: animal?.unidad_alzada || "cm",
+        condicion_corporal: animal?.condicion_corporal || "",
+
         castrado: animal?.castrado || false,
         esterelizado: animal?.esterelizado || false,
+
         observaciones: animal?.observaciones || "",
+
         fincaId: animal?.finca?.id || "",
         propietarioId: animal?.propietario?.id || "",
+
         medicamento: animal?.medicamento || "",
         vacunas: animal?.vacunas || "",
-        tipo_reproduccion: animal?.tipo_reproduccion || "",
-        tipo_alimentacion: animal?.tipo_alimentacion || [],
         desparasitado: animal?.desparasitado || false,
         veterinario: animal?.veterinario || "",
-        peso_actual: animal?.peso_actual || 0,
-        condicion_corporal: animal?.condicion_corporal || "",
+        lesiones: animal?.lesiones || "",
+        alergias: animal?.alergias || "",
+        odontologia: animal?.odontologia || "",
+
+        tipo_reproduccion: animal?.tipo_reproduccion || "",
+        tipo_alimentacion: animal?.tipo_alimentacion || [],
+
         nivel_entrenamiento: animal?.nivel_entrenamiento || "",
         resultados_competencias: animal?.resultados_competencias || "",
         historial_reproductivo: animal?.historial_reproductivo || "",
+
         valor_estimado: animal?.valor_estimado || 0,
+        precio_compra: animal?.precio_compra || 0,
         asegurado: animal?.asegurado || false,
+
         uso_equino: animal?.uso_equino || UsoEquinoEnum.REPRODUCCION,
+
         compra_animal: animal?.compra_animal || false,
         nombre_criador_origen_animal:
           animal?.nombre_criador_origen_animal || "",
@@ -125,6 +147,7 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
         nombre_criador_padre: animal?.nombre_criador_padre || "",
         nombre_propietario_padre: animal?.nombre_propietario_padre || "",
         nombre_finca_origen_padre: animal?.nombre_finca_origen_padre || "",
+
         nombre_madre: animal?.nombre_madre || "",
         razas_madre: animal?.razas_madre?.map((raza) => raza.id) || [],
         pureza_madre: animal?.pureza_madre || "",
@@ -226,30 +249,25 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
   const fechaNacimiento = watch("fecha_nacimiento");
 
   useEffect(() => {
-    if (!fechaNacimiento) {
-      setEdadAnimal(0);
-      setValue("edad_promedio", 0);
-      return;
+    if (fechaNacimiento) {
+      const nacimiento = new Date(fechaNacimiento);
+      const hoy = new Date();
+
+      let edad = hoy.getFullYear() - nacimiento.getFullYear();
+      const mes = hoy.getMonth() - nacimiento.getMonth();
+      const dia = hoy.getDate() - nacimiento.getDate();
+
+      if (mes < 0 || (mes === 0 && dia < 0)) {
+        edad--;
+      }
+
+      edad = Math.max(0, edad);
+
+      setEdadAnimal(edad);
+      setValue("edad_promedio", edad, {
+        shouldValidate: true,
+      });
     }
-
-    const nacimiento = new Date(fechaNacimiento);
-    const hoy = new Date();
-
-    let edad = hoy.getFullYear() - nacimiento.getFullYear();
-
-    const mes = hoy.getMonth() - nacimiento.getMonth();
-    const dia = hoy.getDate() - nacimiento.getDate();
-
-    if (mes < 0 || (mes === 0 && dia < 0)) {
-      edad--;
-    }
-
-    edad = Math.max(0, edad);
-
-    setEdadAnimal(edad);
-    setValue("edad_promedio", edad, {
-      shouldValidate: true,
-    });
   }, [fechaNacimiento, setValue]);
 
   useEffect(() => {
@@ -339,9 +357,169 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
           </CardHeader>
 
           <CardContent className="space-y-6">
+            {/* IDENTIFICACIÓN */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
                 Identificación
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Arete/Código <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <Input
+                        {...register("identificador")}
+                        onChange={(e) => {
+                          const value = e.target.value.slice(0, 6);
+                          e.target.value = value;
+                          setValue("identificador", value);
+                        }}
+                        placeholder="Ej: 123ABC, A1B2C3, etc."
+                        maxLength={6}
+                        className="w-full font-mono text-lg tracking-wider uppercase"
+                      />
+                      <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                        <span className="text-xs text-muted-foreground">
+                          6 caracteres
+                        </span>
+                      </div>
+                    </div>
+                    <TooltipProvider>
+                      <Tooltip
+                        open={showIdentifierHelp}
+                        onOpenChange={setShowIdentifierHelp}
+                      >
+                        <TooltipTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="shrink-0"
+                          >
+                            <InfoIcon className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="max-w-xs">
+                          <p className="text-xs">
+                            Código de identificación del arete (máximo 6
+                            caracteres)
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  {errors.identificador && (
+                    <p className="text-sm text-red-500">
+                      {errors.identificador.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Nombre (opcional)
+                  </Label>
+                  <Input
+                    {...register("nombre_animal")}
+                    placeholder="Ej: Lucero, Toro, etc."
+                    className="w-full"
+                  />
+                  {errors.nombre_animal && (
+                    <p className="text-sm text-red-500">
+                      {errors.nombre_animal.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Registro Genealógico <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <Input
+                        {...register("registro_genealogico")}
+                        placeholder="Ej: ARG-12345-2024, BR-9876, etc."
+                        className="w-full font-mono uppercase"
+                      />
+                    </div>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="shrink-0"
+                          >
+                            <InfoIcon className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="max-w-xs">
+                          <p className="text-xs">
+                            Número de registro genealógico del animal. Puede
+                            incluir letras, números y guiones.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  {errors.registro_genealogico && (
+                    <p className="text-sm text-red-500">
+                      {errors.registro_genealogico.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Código / Microchip <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <Input
+                        {...register("microchip")}
+                        placeholder="Ej: 985141001234567, 900123456789012, etc."
+                        className="w-full font-mono"
+                      />
+                    </div>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="shrink-0"
+                          >
+                            <InfoIcon className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="max-w-xs">
+                          <p className="text-xs">
+                            Código de identificación del microchip (15 dígitos
+                            recomendado)
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  {errors.microchip && (
+                    <p className="text-sm text-red-500">
+                      {errors.microchip.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* CARACTERÍSTICAS */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
+                CARACTERÍSTICAS
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -378,24 +556,6 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
                     </p>
                   )}
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">
-                    Nombre (opcional)
-                  </Label>
-                  <Input
-                    {...register("nombre_animal")}
-                    placeholder="Ej: Lucero, Toro, etc."
-                    className="w-full"
-                  />
-                  {errors.nombre_animal && (
-                    <p className="text-sm text-red-500">
-                      {errors.nombre_animal.message}
-                    </p>
-                  )}
-                </div>
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
@@ -412,69 +572,7 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
                     </p>
                   )}
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">
-                  Codigo / Microchip <span className="text-red-500">*</span>
-                </Label>
-                <div className="flex items-center gap-2">
-                  <div className="relative flex-1">
-                    <Input
-                      {...register("identificador")}
-                      onChange={(e) => {
-                        const value = e.target.value.slice(0, 6);
-                        e.target.value = value;
-                        setValue("identificador", value);
-                      }}
-                      placeholder="Ej: 123ABC, A1B2C3, etc."
-                      maxLength={6}
-                      className="w-full font-mono text-lg tracking-wider uppercase"
-                    />
-                    <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                      <span className="text-xs text-muted-foreground">
-                        6 caracteres
-                      </span>
-                    </div>
-                  </div>
-                  <TooltipProvider>
-                    <Tooltip
-                      open={showIdentifierHelp}
-                      onOpenChange={setShowIdentifierHelp}
-                    >
-                      <TooltipTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          className="shrink-0"
-                        >
-                          <InfoIcon className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent side="right" className="max-w-xs">
-                        <p className="text-xs">
-                          Código de identificación del arete o Microchip (máximo
-                          6 caracteres)
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-                {errors.identificador && (
-                  <p className="text-sm text-red-500">
-                    {errors.identificador.message}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Razas y Pureza
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
                     Razas <span className="text-red-500">*</span>
@@ -546,15 +644,7 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
                     ))}
                   </RadioGroup>
                 </div>
-              </div>
-            </div>
 
-            <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Edad y Nacimiento
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label
                     htmlFor="fecha_nacimiento"
@@ -610,48 +700,203 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
                     </p>
                   )}
                 </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Peso actual (kg) <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    {...register("peso_actual")}
+                    placeholder="Ej: 450.5"
+                    className="w-full"
+                  />
+                  {errors.peso_actual && (
+                    <p className="text-sm text-red-500">
+                      {errors.peso_actual.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Alzada (opcional)
+                  </Label>
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <Input
+                        type="number"
+                        step="0.01"
+                        {...register("alzada")}
+                        placeholder="Ej: 150"
+                        className="w-full"
+                      />
+                    </div>
+                    <div className="w-32">
+                      <Select
+                        key={animal?.unidad_alzada || "cm"}
+                        value={
+                          watch("unidad_alzada") ||
+                          animal?.unidad_alzada ||
+                          "cm"
+                        }
+                        onValueChange={(value) =>
+                          setValue("unidad_alzada", value as "cm" | "manos")
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Unidad" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="cm">cm</SelectItem>
+                          <SelectItem value="manos">Manos</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  {errors.alzada && (
+                    <p className="text-sm text-red-500">
+                      {errors.alzada.message}
+                    </p>
+                  )}
+                  {watch("unidad_alzada") === "manos" && (
+                    <p className="text-xs text-muted-foreground">
+                      1 mano = 4 pulgadas (10.16 cm)
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Condición corporal <span className="text-red-500">*</span>
+                  </Label>
+                  <Select
+                    value={
+                      watch("condicion_corporal") ||
+                      animal?.condicion_corporal ||
+                      ""
+                    }
+                    onValueChange={(value) =>
+                      setValue(
+                        "condicion_corporal",
+                        value as
+                          | "excelente"
+                          | "muy_buena"
+                          | "buena"
+                          | "regular"
+                          | "mala"
+                          | "muy_mala"
+                          | "caquexica"
+                          | "obesa",
+                      )
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecciona una condición" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="excelente">Excelente</SelectItem>
+                      <SelectItem value="muy_buena">Muy Buena</SelectItem>
+                      <SelectItem value="buena">Buena</SelectItem>
+                      <SelectItem value="regular">Regular</SelectItem>
+                      <SelectItem value="mala">Mala</SelectItem>
+                      <SelectItem value="muy_mala">Muy Mala</SelectItem>
+                      <SelectItem value="caquexica">Caquéxica</SelectItem>
+                      <SelectItem value="obesa">Obesa</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.condicion_corporal && (
+                    <p className="text-sm text-red-500">
+                      {errors.condicion_corporal.message}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
 
+            {/* USO */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
+                USO
+              </h3>
+              <div className="space-y-2">
+                <Label>Uso del Equino</Label>
+                <Select
+                  value={watch("uso_equino") || animal?.uso_equino || ""}
+                  onValueChange={(value) =>
+                    setValue("uso_equino", value as any)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona el uso del equino" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={UsoEquinoEnum.TRABAJO}>
+                      Trabajo
+                    </SelectItem>
+                    <SelectItem value={UsoEquinoEnum.DEPORTE}>
+                      Deporte
+                    </SelectItem>
+                    <SelectItem value={UsoEquinoEnum.REPRODUCCION}>
+                      Reproducción
+                    </SelectItem>
+                    <SelectItem value={UsoEquinoEnum.PASEO}>Paseo</SelectItem>
+                    <SelectItem value={UsoEquinoEnum.CARGA}>Carga</SelectItem>
+                    <SelectItem value={UsoEquinoEnum.GANADERIA}>
+                      Ganadería
+                    </SelectItem>
+                    <SelectItem value={UsoEquinoEnum.POLICIA}>
+                      Policía
+                    </SelectItem>
+                    <SelectItem value={UsoEquinoEnum.TERAPIA}>
+                      Terapia
+                    </SelectItem>
+                    <SelectItem value={UsoEquinoEnum.COMPANIA}>
+                      Compañía
+                    </SelectItem>
+                    <SelectItem value={UsoEquinoEnum.OTRO}>Otro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* SANIDAD */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
                 SANIDAD
               </h3>
 
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">
-                    Medicamentos (opcional)
-                  </Label>
-                  <Input
-                    {...register("medicamento")}
-                    placeholder="Ej: Ivermectina, Vitaminas, etc."
-                    className="w-full"
-                  />
-                  {errors.medicamento && (
-                    <p className="text-sm text-red-500">
-                      {errors.medicamento.message}
-                    </p>
-                  )}
-                </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">
+                  Medicamentos (opcional)
+                </Label>
+                <Input
+                  {...register("medicamento")}
+                  placeholder="Ej: Ivermectina, Vitaminas, etc."
+                  className="w-full"
+                />
+                {errors.medicamento && (
+                  <p className="text-sm text-red-500">
+                    {errors.medicamento.message}
+                  </p>
+                )}
               </div>
 
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">
-                    Vacunas (opcional)
-                  </Label>
-                  <Input
-                    {...register("vacunas")}
-                    placeholder="Ej: Vitamina A, Vitamina B, etc."
-                    className="w-full"
-                  />
-                  {errors.vacunas && (
-                    <p className="text-sm text-red-500">
-                      {errors.vacunas.message}
-                    </p>
-                  )}
-                </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">
+                  Vacunas (opcional)
+                </Label>
+                <Input
+                  {...register("vacunas")}
+                  placeholder="Ej: Vitamina A, Vitamina B, etc."
+                  className="w-full"
+                />
+                {errors.vacunas && (
+                  <p className="text-sm text-red-500">
+                    {errors.vacunas.message}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -671,12 +916,60 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
+                  Lesiones (opcional)
+                </Label>
+                <Input
+                  {...register("lesiones")}
+                  placeholder="Lesiones del animal"
+                  className="w-full"
+                />
+                {errors.lesiones && (
+                  <p className="text-sm text-red-500">
+                    {errors.lesiones.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">
+                  Alergias (opcional)
+                </Label>
+                <Input
+                  {...register("alergias")}
+                  placeholder="Alergias del Animal"
+                  className="w-full"
+                />
+                {errors.alergias && (
+                  <p className="text-sm text-red-500">
+                    {errors.alergias.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">
+                  Odontología (opcional)
+                </Label>
+                <Input
+                  {...register("odontologia")}
+                  placeholder="Odontología del animal"
+                  className="w-full"
+                />
+                {errors.odontologia && (
+                  <p className="text-sm text-red-500">
+                    {errors.odontologia.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">
                   Veterinario (opcional)
                 </Label>
                 <Input
                   {...register("veterinario")}
-                  placeholder="Describe el historial veterinario del animal"
-                  className=" w-full"
+                  placeholder="Nombre de veterinario del animal"
+                  className="w-full"
                 />
                 {errors.veterinario && (
                   <p className="text-sm text-red-500">
@@ -686,6 +979,7 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
               </div>
             </div>
 
+            {/* REPRODUCCIÓN Y PRODUCCIÓN */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
                 Reproducción y Producción
@@ -730,52 +1024,66 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
                     </p>
                   )}
                 </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Tipo de Producción <span className="text-red-500">*</span>
+                  </Label>
+                  <RadioGroup
+                    value={
+                      watch("tipo_produccion") ||
+                      (animal ? animal.tipo_produccion : "")
+                    }
+                    onValueChange={(value) =>
+                      setValue("tipo_produccion", value)
+                    }
+                    className="grid grid-cols-2 sm:grid-cols-3 gap-2"
+                  >
+                    {tipoProduccionItems.map((item) => (
+                      <div
+                        key={item.value}
+                        className="flex items-center space-x-2"
+                      >
+                        <RadioGroupItem
+                          value={item.value}
+                          id={`tipo-produccion-${item.value}`}
+                        />
+                        <Label
+                          htmlFor={`tipo-produccion-${item.value}`}
+                          className="text-sm"
+                        >
+                          {item.label}
+                        </Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                  {errors.tipo_produccion && (
+                    <p className="text-sm text-red-500">
+                      {errors.tipo_produccion.message}
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Tipo de Producción <span className="text-red-500">*</span>
+                  Historial reproductivo
                 </Label>
-                <RadioGroup
-                  value={
-                    watch("tipo_produccion") ||
-                    (animal ? animal.tipo_produccion : "")
-                  }
-                  onValueChange={(value) => setValue("tipo_produccion", value)}
-                  className="grid grid-cols-2 sm:grid-cols-3 gap-2"
-                >
-                  {tipoProduccionItems.map((item) => (
-                    <div
-                      key={item.value}
-                      className="flex items-center space-x-2"
-                    >
-                      <RadioGroupItem
-                        value={item.value}
-                        id={`tipo-produccion-${item.value}`}
-                      />
-                      <Label
-                        htmlFor={`tipo-produccion-${item.value}`}
-                        className="text-sm"
-                      >
-                        {item.label}
-                      </Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-                {errors.tipo_produccion && (
-                  <p className="text-sm text-red-500">
-                    {errors.tipo_produccion.message}
-                  </p>
-                )}
+                <Textarea
+                  {...register("historial_reproductivo")}
+                  placeholder="Servicios, partos, crías registradas, fertilidad..."
+                />
               </div>
             </div>
+
+            {/* ALIMENTACIÓN */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
                 Alimentación <span className="text-red-500">*</span>
               </h3>
 
               <div className="border rounded-lg p-4 space-y-4 bg-gray-50">
-                {alimentosOptions.map((alimento) => {
+                {alimentosEquinosOptions.map((alimento) => {
                   const alimentoSeleccionado = watch("tipo_alimentacion")?.find(
                     (a: any) => a.alimento === alimento.value,
                   );
@@ -944,30 +1252,12 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
                 })}
               </div>
             </div>
+
+            {/* PRODUCCIÓN / DESEMPEÑO */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                PRODUCCION / DESEMPEÑO
+                PRODUCCIÓN / DESEMPEÑO
               </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Peso actual (kg)</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    {...register("peso_actual")}
-                    placeholder="Ej: 450"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Condición corporal</Label>
-                  <Input
-                    {...register("condicion_corporal")}
-                    placeholder="Excelente, Buena, Regular..."
-                  />
-                </div>
-              </div>
 
               <div className="space-y-2">
                 <Label>Nivel de entrenamiento</Label>
@@ -978,46 +1268,6 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
               </div>
 
               <div className="space-y-2">
-                <Label>Uso del Equino</Label>
-                <Select
-                  value={watch("uso_equino") || animal?.uso_equino || ""}
-                  onValueChange={(value) =>
-                    setValue("uso_equino", value as any)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecciona el uso del equino" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={UsoEquinoEnum.TRABAJO}>
-                      Trabajo
-                    </SelectItem>
-                    <SelectItem value={UsoEquinoEnum.DEPORTE}>
-                      Deporte
-                    </SelectItem>
-                    <SelectItem value={UsoEquinoEnum.REPRODUCCION}>
-                      Reproducción
-                    </SelectItem>
-                    <SelectItem value={UsoEquinoEnum.PASEO}>Paseo</SelectItem>
-                    <SelectItem value={UsoEquinoEnum.CARGA}>Carga</SelectItem>
-                    <SelectItem value={UsoEquinoEnum.GANADERIA}>
-                      Ganadería
-                    </SelectItem>
-                    <SelectItem value={UsoEquinoEnum.POLICIA}>
-                      Policía
-                    </SelectItem>
-                    <SelectItem value={UsoEquinoEnum.TERAPIA}>
-                      Terapia
-                    </SelectItem>
-                    <SelectItem value={UsoEquinoEnum.COMPANIA}>
-                      Compañía
-                    </SelectItem>
-                    <SelectItem value={UsoEquinoEnum.OTRO}>Otro</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
                 <Label>Competencias / Resultados</Label>
                 <Textarea
                   {...register("resultados_competencias")}
@@ -1025,15 +1275,17 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label>Historial reproductivo</Label>
-                <Textarea
-                  {...register("historial_reproductivo")}
-                  placeholder="Servicios, partos, crías registradas, fertilidad..."
-                />
-              </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Precio de compra</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    {...register("precio_compra")}
+                    placeholder="Ej: 150000"
+                  />
+                </div>
+
                 <div className="space-y-2">
                   <Label>Valor estimado</Label>
                   <Input
@@ -1057,34 +1309,9 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
                   </div>
                 </div>
               </div>
-
-              <div className="space-y-4">
-                {watch("sexo") === "Macho" && (
-                  <div className="flex items-center space-x-2 p-2 bg-blue-50 rounded-md">
-                    <Checkbox
-                      checked={watch("castrado") || false}
-                      onCheckedChange={(checked) =>
-                        setValue("castrado", checked === true)
-                      }
-                    />
-                    <Label className="font-medium">Castrado</Label>
-                  </div>
-                )}
-
-                {watch("sexo") === "Hembra" && (
-                  <div className="flex items-center space-x-2 p-2 bg-purple-50 rounded-md">
-                    <Checkbox
-                      checked={watch("esterelizado") || false}
-                      onCheckedChange={(checked) =>
-                        setValue("esterelizado", checked === true)
-                      }
-                    />
-                    <Label className="font-medium">Esterilizado</Label>
-                  </div>
-                )}
-              </div>
             </div>
 
+            {/* UBICACIÓN Y ORIGEN */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
                 Ubicación y Origen
@@ -1147,15 +1374,16 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
               </div>
             </div>
 
+            {/* BOTONES DE NAVEGACIÓN */}
             <div className="pt-4 border-t flex gap-4 justify-end">
               <Button
                 type="button"
+                variant="outline"
                 onClick={() => setActiveTab("padre")}
-                className="group"
               >
-                <span>Datos del Padre</span>
-                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                Datos del Padre
               </Button>
+              <Button type="submit">Guardar Cambios</Button>
             </div>
           </CardContent>
         </Card>

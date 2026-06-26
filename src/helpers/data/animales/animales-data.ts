@@ -1,3 +1,4 @@
+import { EtapaPez } from "@/api/animales/interfaces/crear-peces.interface";
 import { TipoAve } from "@/interfaces/enums/animales/animales-enums";
 
 export const tipoAveOptions = [
@@ -79,4 +80,10 @@ export const calificacionHuevosOptions = [
   { label: "A", value: "a" },
   { label: "B", value: "b" },
   { label: "C", value: "c" },
+];
+
+export const etapaOptions = [
+  { value: EtapaPez.ALEVIN, label: "Alevín" },
+  { value: EtapaPez.JUVENIL, label: "Juvenil" },
+  { value: EtapaPez.ENGORDE, label: "Engorde" },
 ];

@@ -64,6 +64,7 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
     reset,
   } = useForm<AvicolaData & { identificador_temp: string }>({
     defaultValues: {
+      lote_activo: true,
       identificador: "",
     },
   });
@@ -150,7 +151,10 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
       ) {
         return;
       }
-
+      if (key === "lote_activo") {
+        formData.append(key, String(value));
+        return;
+      }
       formData.append(key, String(value));
     });
 
@@ -760,6 +764,24 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                   </p>
                 )}
               </div>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
+              Estado del Lote
+            </h3>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                checked={watch("lote_activo")}
+                onCheckedChange={(checked) =>
+                  setValue("lote_activo", checked === true)
+                }
+                id="lote_activo"
+              />
+              <Label htmlFor="lote_activo" className="text-sm font-medium">
+                Lote Activo
+              </Label>
             </div>
           </div>
           <div className="space-y-4">

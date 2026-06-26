@@ -47,6 +47,7 @@ import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import CargaMasivaModal from "./ui/CargaMasivaModal";
 import { Badge } from "@/components/ui/badge";
 import AvicolaCard from "./ui/AvicolaCard";
+import PiscicolaCard from "./ui/PiscicolaCard";
 
 const ESPECIES = {
   AVES: ["aves", "avicola", "pollos", "gallinas"],
@@ -277,7 +278,7 @@ const AnimalesPageGanadero = () => {
       case "aves":
         return <AvicolaCard key={key} {...commonProps} />;
       case "piscicola":
-        return <AnimalCard key={key} {...commonProps} />;
+        return <PiscicolaCard key={key} {...commonProps} />;
       case "equino":
         return <AnimalCard key={key} {...commonProps} />;
       case "bovino":

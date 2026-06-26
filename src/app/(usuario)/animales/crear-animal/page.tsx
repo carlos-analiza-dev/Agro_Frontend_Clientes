@@ -12,7 +12,7 @@ import FormAddPeces from "@/components/animales/FormAddPeces";
 import FormAddEquino from "@/components/animales/FormAddEquino";
 
 const CrearAnimalPage = () => {
-  const especiesConPadres = ["caprino", "ovino", "bovino"];
+  const especiesConPadres = ["caprino", "ovino", "bovino", "porcino"];
   const [activeTab, setActiveTab] = useState("animal");
   const [especieName, setEspecieName] = useState("");
   const [selectedEspecieId, setSelectedEspecieId] = useState("");
@@ -98,11 +98,12 @@ const CrearAnimalPage = () => {
         </div>
       )}
 
-      {especieName.toLowerCase() === "porcino" && <FormAddPorcino />}
       {especieName.toLowerCase() === "avicola" && (
         <FormAddAvicola selectedEspecieId={selectedEspecieId} />
       )}
-      {especieName.toLowerCase() === "piscicola" && <FormAddPeces />}
+      {especieName.toLowerCase() === "piscicola" && (
+        <FormAddPeces selectedEspecieId={selectedEspecieId} />
+      )}
       {especieName.toLowerCase() === "equino" && (
         <Tabs
           value={activeTab}

@@ -218,30 +218,25 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
   const fechaNacimiento = watch("fecha_nacimiento");
 
   useEffect(() => {
-    if (!fechaNacimiento) {
-      setEdadAnimal(0);
-      setValue("edad_promedio", 0);
-      return;
+    if (fechaNacimiento) {
+      const nacimiento = new Date(fechaNacimiento);
+      const hoy = new Date();
+
+      let edad = hoy.getFullYear() - nacimiento.getFullYear();
+      const mes = hoy.getMonth() - nacimiento.getMonth();
+      const dia = hoy.getDate() - nacimiento.getDate();
+
+      if (mes < 0 || (mes === 0 && dia < 0)) {
+        edad--;
+      }
+
+      edad = Math.max(0, edad);
+
+      setEdadAnimal(edad);
+      setValue("edad_promedio", edad, {
+        shouldValidate: true,
+      });
     }
-
-    const nacimiento = new Date(fechaNacimiento);
-    const hoy = new Date();
-
-    let edad = hoy.getFullYear() - nacimiento.getFullYear();
-
-    const mes = hoy.getMonth() - nacimiento.getMonth();
-    const dia = hoy.getDate() - nacimiento.getDate();
-
-    if (mes < 0 || (mes === 0 && dia < 0)) {
-      edad--;
-    }
-
-    edad = Math.max(0, edad);
-
-    setEdadAnimal(edad);
-    setValue("edad_promedio", edad, {
-      shouldValidate: true,
-    });
   }, [fechaNacimiento, setValue]);
 
   useEffect(() => {

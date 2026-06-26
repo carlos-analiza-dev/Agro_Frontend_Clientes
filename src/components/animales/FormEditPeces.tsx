@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -25,27 +27,31 @@ import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useForm, useFieldArray } from "react-hook-form";
 import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
-import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
-import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
+import { Animal } from "@/api/animales/interfaces/response-animales.interface";
 import {
   EtapaPez,
   PecesData,
 } from "@/api/animales/interfaces/crear-peces.interface";
-import { CreateAnimalPeces } from "@/api/animales/accions/crear-animal";
+import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
+import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
+import { ActualizarPeces } from "@/api/animales/accions/update-animal";
 import { etapaOptions } from "@/helpers/data/animales/animales-data";
 
 interface Props {
-  selectedEspecieId: string;
+  animalId: string;
+  animal: Animal;
 }
 
-const FormAddPeces = ({ selectedEspecieId }: Props) => {
+const FormEditPeces = ({ animalId, animal }: Props) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { cliente } = useAuthStore();
   const [showIdentifierHelp, setShowIdentifierHelp] = useState(false);
-  const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-  const { data: razas } = useGetRazasByEspecie(selectedEspecieId);
+  const [isFormReady, setIsFormReady] = useState(false);
+
+  const especieId = animal?.especie?.id || "";
+
+  const { data: razas } = useGetRazasByEspecie(especieId);
   const { data: fincas } = useFincasPropietarios(cliente?.id ?? "");
 
   const fincasItems =
@@ -93,53 +99,69 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
     name: "calidad_agua.historial_recambios",
   });
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-
-    if (files.length + selectedImages.length > 5) {
-      toast.error("Máximo 5 imágenes permitidas");
-      return;
-    }
-
-    const validFiles = files.filter((file) => {
-      const isValidType = file.type.startsWith("image/");
-      const isValidSize = file.size <= 5 * 1024 * 1024;
-
-      if (!isValidType) {
-        toast.error(`El archivo ${file.name} no es una imagen válida`);
-        return false;
-      }
-      if (!isValidSize) {
-        toast.error(`La imagen ${file.name} excede el límite de 5MB`);
-        return false;
-      }
-      return true;
-    });
-
-    setSelectedImages((prev) => [...prev, ...validFiles]);
-
-    const newPreviews = validFiles.map((file) => URL.createObjectURL(file));
-    setImagePreviews((prev) => [...prev, ...newPreviews]);
-  };
-
-  const removeImage = (index: number) => {
-    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
-    URL.revokeObjectURL(imagePreviews[index]);
-    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
-  };
-
   useEffect(() => {
-    return () => {
-      imagePreviews.forEach((preview) => URL.revokeObjectURL(preview));
-    };
-  }, []);
+    if (animal) {
+      const parseJsonField = (field: any) => {
+        if (typeof field === "string") {
+          try {
+            return JSON.parse(field);
+          } catch {
+            return field;
+          }
+        }
+        return field;
+      };
+
+      const muestreos = parseJsonField(animal.muestreos) || [];
+      const calidad_agua = parseJsonField(animal.calidad_agua) || {};
+      const sanidad = parseJsonField(animal.sanidad) || {};
+      const cosecha = parseJsonField(animal.cosecha) || {};
+
+      reset({
+        especie: animal?.especie?.id || "",
+        identificador: animal.identificador || "",
+        fincaId: animal.finca?.id || "",
+        razaIds: animal.razas?.map((raza) => raza.id) || [],
+        estanque_tanque_jaula: animal.estanque_tanque_jaula || "",
+        proveedor_alevines: animal.proveedor_alevines || "",
+        fecha_siembra: animal.fecha_siembra
+          ? new Date(animal.fecha_siembra).toISOString().split("T")[0]
+          : "",
+        cantidad_inicial: animal.cantidad_inicial || 0,
+        talla_peso_inicial: animal.talla_peso_inicial || "",
+        densidad_por_m3_m2: animal.densidad_por_m3_m2 || 0,
+        cantidad_actual: animal.cantidad_actual || 0,
+        mortalidad_diaria_acum: animal.mortalidad_diaria_acum || "",
+        muestreos: muestreos,
+        etapa: (animal.etapa as EtapaPez) || undefined,
+        peso_promedio: animal.peso_promedio_pez || 0,
+        biomasa_estimada: animal.biomasa_estimada || 0,
+        talla: animal.talla_pez || 0,
+        fecha_muestreo: animal.fecha_muestreo_pez
+          ? new Date(animal.fecha_muestreo_pez).toISOString().split("T")[0]
+          : "",
+        calidad_agua: calidad_agua,
+        tipo_concentrado: animal.tipo_concentrado_pez || "",
+        proteina_porcentaje: animal.proteina_porcentaje || 0,
+        racion_diaria: animal.racion_diaria || "",
+        consumo: animal.consumo_pez || "",
+        conversion_alimenticia: animal.conversion_alimenticia || 0,
+        sanidad: sanidad,
+        cosecha: cosecha,
+        lote_activo:
+          animal.lote_activo !== undefined ? animal.lote_activo : true,
+      });
+
+      setIsFormReady(true);
+    }
+  }, [animal, reset]);
 
   const mutation = useMutation({
-    mutationFn: (data: FormData) => CreateAnimalPeces(data),
+    mutationFn: (data: PecesData) => ActualizarPeces(animalId, data),
     onSuccess: () => {
-      toast.success("Lote de peces creado correctamente");
+      toast.success("Lote de peces actualizado correctamente");
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
-      reset();
+      queryClient.invalidateQueries({ queryKey: ["animal-id", animalId] });
       router.push("/animales");
     },
     onError: (error) => {
@@ -149,7 +171,7 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear el lote de peces";
+            : "Hubo un error al actualizar el lote de peces";
 
         toast.error(errorMessage);
       } else {
@@ -160,142 +182,67 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
 
   const onSubmit = (data: PecesData) => {
     if (!cliente?.id) return;
-    if (!selectedEspecieId) {
-      toast.error("No se ha seleccionado una especie válida");
+
+    if (!data.fincaId) {
+      toast.error("Debes seleccionar una finca");
       return;
     }
 
-    const formData = new FormData();
-
-    Object.entries(data).forEach(([key, value]) => {
-      if (
-        value === undefined ||
-        value === null ||
-        key === "razaIds" ||
-        key === "muestreos" ||
-        key === "calidad_agua" ||
-        key === "sanidad" ||
-        key === "cosecha"
-      ) {
-        return;
-      }
-
-      if (key === "lote_activo") {
-        formData.append(key, String(value));
-        return;
-      }
-
-      if (typeof value !== "object") {
-        formData.append(key, String(value));
-      }
-    });
-
-    formData.append("especie", selectedEspecieId);
-    formData.append("lote_activo", String(data.lote_activo ?? true));
-    formData.append("razaIds", JSON.stringify(data.razaIds));
-
-    if (data.muestreos && data.muestreos.length > 0) {
-      data.muestreos.forEach((muestreo, index) => {
-        if (muestreo.fecha_muestreo) {
-          formData.append(
-            `muestreos[${index}][fecha_muestreo]`,
-            muestreo.fecha_muestreo,
-          );
-        }
-        if (muestreo.peso !== undefined && muestreo.peso !== null) {
-          formData.append(`muestreos[${index}][peso]`, String(muestreo.peso));
-        }
-        if (muestreo.talla !== undefined && muestreo.talla !== null) {
-          formData.append(`muestreos[${index}][talla]`, String(muestreo.talla));
-        }
-      });
+    if (!data.razaIds || data.razaIds.length === 0) {
+      toast.error("Debes seleccionar al menos una raza");
+      return;
     }
 
-    if (data.sanidad) {
-      Object.entries(data.sanidad).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          formData.append(`sanidad[${key}]`, String(value));
-        }
-      });
+    if (!data.identificador || data.identificador.trim() === "") {
+      toast.error("El identificador es obligatorio");
+      return;
     }
 
-    if (data.cosecha) {
-      Object.entries(data.cosecha).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          formData.append(`cosecha[${key}]`, String(value));
-        }
-      });
+    if (!data.fecha_siembra) {
+      toast.error("La fecha de siembra es obligatoria");
+      return;
     }
 
-    if (data.calidad_agua) {
-      const { historial_recambios, ...calidadCampos } = data.calidad_agua;
-
-      Object.entries(calidadCampos).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          formData.append(`calidad_agua[${key}]`, String(value));
-        }
-      });
-
-      if (historial_recambios && historial_recambios.length > 0) {
-        historial_recambios.forEach((recambio, index) => {
-          if (recambio.fecha_recambio) {
-            formData.append(
-              `calidad_agua[historial_recambios][${index}][fecha_recambio]`,
-              recambio.fecha_recambio,
-            );
-          }
-          if (
-            recambio.porcentaje_recambio !== undefined &&
-            recambio.porcentaje_recambio !== null
-          ) {
-            formData.append(
-              `calidad_agua[historial_recambios][${index}][porcentaje_recambio]`,
-              String(recambio.porcentaje_recambio),
-            );
-          }
-          if (
-            recambio.volumen_m3 !== undefined &&
-            recambio.volumen_m3 !== null
-          ) {
-            formData.append(
-              `calidad_agua[historial_recambios][${index}][volumen_m3]`,
-              String(recambio.volumen_m3),
-            );
-          }
-          if (recambio.motivo) {
-            formData.append(
-              `calidad_agua[historial_recambios][${index}][motivo]`,
-              recambio.motivo,
-            );
-          }
-          if (recambio.responsable) {
-            formData.append(
-              `calidad_agua[historial_recambios][${index}][responsable]`,
-              recambio.responsable,
-            );
-          }
-        });
-      }
+    if (!data.cantidad_inicial || data.cantidad_inicial <= 0) {
+      toast.error("La cantidad inicial debe ser mayor a 0");
+      return;
     }
 
-    selectedImages.forEach((image) => {
-      formData.append("images", image);
-    });
-
-    mutation.mutate(formData as any);
+    mutation.mutate(data);
   };
+
+  const handleSelectChange = (field: keyof PecesData, value: any) => {
+    setValue(field, value);
+  };
+
+  if (!isFormReady) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-600 mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">
+            Cargando datos del lote...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Card className="max-w-4xl mx-auto">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">
-            Datos del Lote de Peces
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Completa la información del lote piscícola. Los campos con{" "}
-            <span className="text-red-500">*</span> son obligatorios.
-          </p>
+          <div className="flex items-center gap-4">
+            <div>
+              <CardTitle className="text-2xl font-bold">
+                Editar Lote de Peces
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Actualiza la información del lote piscícola. Los campos con{" "}
+                <span className="text-red-500">*</span> son obligatorios.
+              </p>
+            </div>
+          </div>
         </CardHeader>
 
         <CardContent className="space-y-6">
@@ -320,9 +267,7 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
                   </p>
                 )}
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
                   Identificador del Lote <span className="text-red-500">*</span>
@@ -376,16 +321,16 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
                   </p>
                 )}
               </div>
+            </div>
 
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">
-                  Proveedor de Alevines
-                </Label>
-                <Input
-                  {...register("proveedor_alevines")}
-                  placeholder="Nombre del proveedor"
-                />
-              </div>
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">
+                Proveedor de Alevines
+              </Label>
+              <Input
+                {...register("proveedor_alevines")}
+                placeholder="Nombre del proveedor"
+              />
             </div>
           </div>
 
@@ -442,6 +387,7 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
             </div>
           </div>
 
+          {/* SIEMBRA */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
               Siembra
@@ -503,6 +449,7 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
             </div>
           </div>
 
+          {/* POBLACIÓN */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
               Población
@@ -524,7 +471,7 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
                 <Select
                   value={watch("etapa") || ""}
                   onValueChange={(value) =>
-                    setValue("etapa", value as EtapaPez)
+                    handleSelectChange("etapa", value as EtapaPez)
                   }
                 >
                   <SelectTrigger>
@@ -747,8 +694,7 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
               <Label className="text-sm font-medium">Turbidez</Label>
               <Input
                 {...register("calidad_agua.turbidez")}
-                type="number"
-                placeholder="Ej: 1, 2,3"
+                placeholder="Ej: 5 NTU"
               />
             </div>
 
@@ -1050,7 +996,7 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
               </Label>
               <Select
                 value={watch("fincaId") || ""}
-                onValueChange={(value) => setValue("fincaId", value)}
+                onValueChange={(value) => handleSelectChange("fincaId", value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecciona una finca" />
@@ -1069,81 +1015,6 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
             </div>
           </div>
 
-          {/* IMÁGENES */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Imágenes del Lote
-            </h3>
-
-            <div className="space-y-4">
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50 hover:bg-gray-100 transition-colors">
-                <div className="flex flex-col items-center justify-center text-center">
-                  <div className="mb-2">
-                    <svg
-                      className="w-8 h-8 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-2">
-                    Arrastra y suelta imágenes o haz clic para seleccionar
-                  </p>
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageSelect}
-                    disabled={selectedImages.length >= 5}
-                    className="w-full max-w-xs cursor-pointer text-sm file:mr-2 file:py-2 file:px-3 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 file:border-none file:rounded-md hover:file:bg-blue-100 disabled:opacity-50"
-                  />
-                  <p className="text-xs text-gray-500 mt-3">
-                    <span className="font-medium">Máximo 5 imágenes</span> ·
-                    Formatos: JPG, PNG, GIF · Máximo 5MB cada una
-                    <br />
-                    <span className="text-blue-600">
-                      {selectedImages.length}/5 imágenes seleccionadas
-                    </span>
-                  </p>
-                </div>
-              </div>
-
-              {imagePreviews.length > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                  {imagePreviews.map((preview, index) => (
-                    <div key={index} className="relative group aspect-square">
-                      <img
-                        src={preview}
-                        alt={`Preview ${index + 1}`}
-                        className="w-full h-full object-cover rounded-lg border shadow-sm hover:shadow-md transition-shadow"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-all shadow-md active:scale-95 opacity-0 group-hover:opacity-100"
-                        aria-label="Eliminar imagen"
-                      >
-                        ×
-                      </button>
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <span className="text-white text-xs">
-                          Imagen {index + 1}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
           {/* BOTONES */}
           <div className="pt-4 border-t flex justify-end gap-3">
             <Button
@@ -1156,7 +1027,7 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
             <Button
               type="submit"
               disabled={mutation.isPending}
-              className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-cyan-600 hover:bg-cyan-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {mutation.isPending ? (
                 <>
@@ -1180,10 +1051,10 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Creando...
+                  Actualizando...
                 </>
               ) : (
-                "Ingresar Lote de Peces"
+                "Actualizar Lote de Peces"
               )}
             </Button>
           </div>
@@ -1193,4 +1064,4 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
   );
 };
 
-export default FormAddPeces;
+export default FormEditPeces;

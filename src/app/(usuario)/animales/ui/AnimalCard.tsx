@@ -263,6 +263,16 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             </div>
           )}
 
+          {animal.precio_compra && (
+            <div className="flex items-center gap-2">
+              <Wallet className="h-3 w-3 text-purple-600" />
+              <span className="text-xs">
+                <span className="font-medium">Valor Compra:</span> {moneda}{" "}
+                {animal.precio_compra.toLocaleString()}
+              </span>
+            </div>
+          )}
+
           {animal.asegurado !== undefined && (
             <div className="flex items-center gap-2">
               <Shield className="h-3 w-3 text-purple-600" />
@@ -396,7 +406,6 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             numeroParto={animal.numero_parto_madre}
           />
 
-          {/* Información específica de equinos */}
           {renderEquinoInfo()}
 
           <Separator className="my-4" />

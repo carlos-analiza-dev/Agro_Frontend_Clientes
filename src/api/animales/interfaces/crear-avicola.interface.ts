@@ -27,6 +27,6 @@ export interface AvicolaData {
   tratamientos?: string;
   porcentaje_postura?: string;
   tipo_concentrado?: string;
-
+  lote_activo?: boolean;
   fecha_postura?: string | Date;
 }

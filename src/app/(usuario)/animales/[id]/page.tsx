@@ -10,6 +10,7 @@ import FormAddPeces from "@/components/animales/FormAddPeces";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import FormEditEquino from "@/components/animales/FormEditEquino";
 import FormEditAvicola from "@/components/animales/FormEditAvicola";
+import FormEditPeces from "@/components/animales/FormEditPeces";
 
 const AnimalDetailsPage = () => {
   const params = useParams();
@@ -18,13 +19,8 @@ const AnimalDetailsPage = () => {
   const { data: animalData, isLoading } = useAnimalById(animalId);
   const animal = animalData?.data;
 
-  const especiesConPadres = ["caprino", "ovino", "bovino"];
-  const especiesConFormularioEspecifico = [
-    "porcino",
-    "avicola",
-    "piscicola",
-    "equino",
-  ];
+  const especiesConPadres = ["caprino", "ovino", "bovino", "porcino"];
+  const especiesConFormularioEspecifico = ["avicola", "piscicola", "equino"];
 
   if (isLoading) {
     return (
@@ -66,7 +62,9 @@ const AnimalDetailsPage = () => {
           {especieNombre === "avicola" && (
             <FormEditAvicola animal={animal} animalId={animalId} />
           )}
-          {especieNombre === "piscicola" && <FormAddPeces />}
+          {especieNombre === "piscicola" && (
+            <FormEditPeces animal={animal} animalId={animalId} />
+          )}
 
           {especieNombre === "equino" && (
             <Tabs

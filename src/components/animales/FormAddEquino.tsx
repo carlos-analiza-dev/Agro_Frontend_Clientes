@@ -38,7 +38,7 @@ import { CreateAnimal } from "@/api/animales/accions/crear-animal";
 import { isAxiosError } from "axios";
 import { Switch } from "../ui/switch";
 import { UsoEquinoEnum } from "@/interfaces/enums/animales/use-equino.enum";
-import { alimentosOptions } from "@/helpers/data/alimentos";
+import { alimentosEquinosOptions } from "@/helpers/data/alimentos";
 import { dataTipoProduccion } from "@/helpers/data/dataTipoProduccion";
 import { tipoReproduccionOptions } from "@/helpers/data/tipoReproduccionOptions";
 
@@ -374,6 +374,241 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
                 Identificación
               </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Arete/Código <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <Input
+                        {...register("identificador")}
+                        onChange={(e) => {
+                          const value = e.target.value.slice(0, 6);
+                          e.target.value = value;
+                          setValue("identificador", value);
+                        }}
+                        placeholder="Ej: 123ABC, A1B2C3, etc."
+                        maxLength={6}
+                        className="w-full font-mono text-lg tracking-wider uppercase"
+                      />
+                      <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                        <span className="text-xs text-muted-foreground">
+                          6 caracteres
+                        </span>
+                      </div>
+                    </div>
+                    <TooltipProvider>
+                      <Tooltip
+                        open={showIdentifierHelp}
+                        onOpenChange={setShowIdentifierHelp}
+                      >
+                        <TooltipTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="shrink-0"
+                          >
+                            <InfoIcon className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="max-w-xs">
+                          <p className="text-xs">
+                            Código de identificación del arete (máximo 6
+                            caracteres)
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  {errors.identificador && (
+                    <p className="text-sm text-red-500">
+                      {errors.identificador.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Nombre (opcional)
+                  </Label>
+                  <Input
+                    {...register("nombre_animal")}
+                    placeholder="Ej: Lucero, Toro, etc."
+                    className="w-full"
+                  />
+                  {errors.nombre_animal && (
+                    <p className="text-sm text-red-500">
+                      {errors.nombre_animal.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Registro Genealógico <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <Input
+                        {...register("registro_genealogico")}
+                        placeholder="Ej: ARG-12345-2024, BR-9876, etc."
+                        className="w-full font-mono uppercase"
+                      />
+                    </div>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="shrink-0"
+                          >
+                            <InfoIcon className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="max-w-xs">
+                          <p className="text-xs">
+                            Número de registro genealógico del animal. Puede
+                            incluir letras, números y guiones.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  {errors.registro_genealogico && (
+                    <p className="text-sm text-red-500">
+                      {errors.registro_genealogico.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Código / Microchip <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <Input
+                        {...register("microchip")}
+                        placeholder="Ej: 985141001234567, 900123456789012, etc."
+                        className="w-full font-mono"
+                      />
+                    </div>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="shrink-0"
+                          >
+                            <InfoIcon className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="max-w-xs">
+                          <p className="text-xs">
+                            Código de identificación del microchip (15 dígitos
+                            recomendado)
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  {errors.microchip && (
+                    <p className="text-sm text-red-500">
+                      {errors.microchip.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
+                  Imágenes del Animal
+                </h3>
+
+                <div className="space-y-4">
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50 hover:bg-gray-100 transition-colors">
+                    <div className="flex flex-col items-center justify-center text-center">
+                      <div className="mb-2">
+                        <svg
+                          className="w-8 h-8 text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-2">
+                        Arrastra y suelta imágenes o haz clic para seleccionar
+                      </p>
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleImageSelect}
+                        disabled={selectedImages.length >= 5}
+                        className="w-full max-w-xs cursor-pointer text-sm file:mr-2 file:py-2 file:px-3 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 file:border-none file:rounded-md hover:file:bg-blue-100 disabled:opacity-50"
+                      />
+                      <p className="text-xs text-gray-500 mt-3">
+                        <span className="font-medium">Máximo 5 imágenes</span> ·
+                        Formatos: JPG, PNG, GIF · Máximo 5MB cada una
+                        <br />
+                        <span className="text-blue-600">
+                          {selectedImages.length}/5 imágenes seleccionadas
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+
+                  {imagePreviews.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                      {imagePreviews.map((preview, index) => (
+                        <div
+                          key={index}
+                          className="relative group aspect-square"
+                        >
+                          <img
+                            src={preview}
+                            alt={`Preview ${index + 1}`}
+                            className="w-full h-full object-cover rounded-lg border shadow-sm hover:shadow-md transition-shadow"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-all shadow-md active:scale-95 opacity-0 group-hover:opacity-100"
+                            aria-label="Eliminar imagen"
+                          >
+                            ×
+                          </button>
+                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span className="text-white text-xs">
+                              Imagen {index + 1}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
+                CARACTERÍSTICAS
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
@@ -408,23 +643,6 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                     </p>
                   )}
                 </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">
-                    Nombre (opcional)
-                  </Label>
-                  <Input
-                    {...register("nombre_animal")}
-                    placeholder="Ej: Lucero, Toro, etc."
-                    className="w-full"
-                  />
-                  {errors.nombre_animal && (
-                    <p className="text-sm text-red-500">
-                      {errors.nombre_animal.message}
-                    </p>
-                  )}
-                </div>
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
@@ -441,69 +659,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                     </p>
                   )}
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">
-                  Codigo / Microchip <span className="text-red-500">*</span>
-                </Label>
-                <div className="flex items-center gap-2">
-                  <div className="relative flex-1">
-                    <Input
-                      {...register("identificador")}
-                      onChange={(e) => {
-                        const value = e.target.value.slice(0, 6);
-                        e.target.value = value;
-                        setValue("identificador", value);
-                      }}
-                      placeholder="Ej: 123ABC, A1B2C3, etc."
-                      maxLength={6}
-                      className="w-full font-mono text-lg tracking-wider uppercase"
-                    />
-                    <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                      <span className="text-xs text-muted-foreground">
-                        6 caracteres
-                      </span>
-                    </div>
-                  </div>
-                  <TooltipProvider>
-                    <Tooltip
-                      open={showIdentifierHelp}
-                      onOpenChange={setShowIdentifierHelp}
-                    >
-                      <TooltipTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          className="shrink-0"
-                        >
-                          <InfoIcon className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent side="right" className="max-w-xs">
-                        <p className="text-xs">
-                          Código de identificación del arete o Microchip (máximo
-                          6 caracteres)
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-                {errors.identificador && (
-                  <p className="text-sm text-red-500">
-                    {errors.identificador.message}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Razas y Pureza
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
                     Razas <span className="text-red-500">*</span>
@@ -575,15 +731,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                     ))}
                   </RadioGroup>
                 </div>
-              </div>
-            </div>
 
-            <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Edad y Nacimiento
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label
                     htmlFor="fecha_nacimiento"
@@ -639,6 +787,154 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                     </p>
                   )}
                 </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Peso actual (kg) <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    {...register("peso_actual")}
+                    placeholder="Ej: 450.5"
+                    className="w-full"
+                  />
+                  {errors.peso_actual && (
+                    <p className="text-sm text-red-500">
+                      {errors.peso_actual.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Alzada (opcional)
+                  </Label>
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <Input
+                        type="number"
+                        step="0.01"
+                        {...register("alzada")}
+                        placeholder="Ej: 150"
+                        className="w-full"
+                      />
+                    </div>
+                    <div className="w-32">
+                      <Select
+                        value={watch("unidad_alzada") || "cm"}
+                        onValueChange={(value) =>
+                          setValue("unidad_alzada", value as "cm" | "manos")
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Unidad" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="cm">cm</SelectItem>
+                          <SelectItem value="manos">Manos</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  {errors.alzada && (
+                    <p className="text-sm text-red-500">
+                      {errors.alzada.message}
+                    </p>
+                  )}
+                  {watch("unidad_alzada") === "manos" && (
+                    <p className="text-xs text-muted-foreground">
+                      1 mano = 4 pulgadas (10.16 cm)
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Condición corporal <span className="text-red-500">*</span>
+                  </Label>
+                  <Select
+                    value={watch("condicion_corporal") || ""}
+                    onValueChange={(value) =>
+                      setValue(
+                        "condicion_corporal",
+                        value as
+                          | "excelente"
+                          | "muy_buena"
+                          | "buena"
+                          | "regular"
+                          | "mala"
+                          | "muy_mala"
+                          | "caquexica"
+                          | "obesa",
+                      )
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecciona una condición" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="excelente">Excelente</SelectItem>
+                      <SelectItem value="muy_buena">Muy Buena</SelectItem>
+                      <SelectItem value="buena">Buena</SelectItem>
+                      <SelectItem value="regular">Regular</SelectItem>
+                      <SelectItem value="mala">Mala</SelectItem>
+                      <SelectItem value="muy_mala">Muy Mala</SelectItem>
+                      <SelectItem value="caquexica">Caquéxica</SelectItem>
+                      <SelectItem value="obesa">Obesa</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.condicion_corporal && (
+                    <p className="text-sm text-red-500">
+                      {errors.condicion_corporal.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
+                USO
+              </h3>
+              <div className="space-y-2">
+                <Label>Uso del Equino</Label>
+                <Select
+                  value={watch("uso_equino") || ""}
+                  onValueChange={(value) =>
+                    setValue("uso_equino", value as any)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona el uso del equino" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={UsoEquinoEnum.TRABAJO}>
+                      Trabajo
+                    </SelectItem>
+                    <SelectItem value={UsoEquinoEnum.DEPORTE}>
+                      Deporte
+                    </SelectItem>
+                    <SelectItem value={UsoEquinoEnum.REPRODUCCION}>
+                      Reproducción
+                    </SelectItem>
+                    <SelectItem value={UsoEquinoEnum.PASEO}>Paseo</SelectItem>
+                    <SelectItem value={UsoEquinoEnum.CARGA}>Carga</SelectItem>
+                    <SelectItem value={UsoEquinoEnum.GANADERIA}>
+                      Ganadería
+                    </SelectItem>
+                    <SelectItem value={UsoEquinoEnum.POLICIA}>
+                      Policía
+                    </SelectItem>
+                    <SelectItem value={UsoEquinoEnum.TERAPIA}>
+                      Terapia
+                    </SelectItem>
+                    <SelectItem value={UsoEquinoEnum.COMPANIA}>
+                      Compañía
+                    </SelectItem>
+                    <SelectItem value={UsoEquinoEnum.OTRO}>Otro</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -675,9 +971,9 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                     placeholder="Ej:  Vitamina A, Vitamina B, etc."
                     className="w-full"
                   />
-                  {errors.medicamento && (
+                  {errors.vacunas && (
                     <p className="text-sm text-red-500">
-                      {errors.medicamento.message}
+                      {errors.vacunas.message}
                     </p>
                   )}
                 </div>
@@ -701,6 +997,54 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
+                  Lesiones (opcional)
+                </Label>
+                <Input
+                  {...register("lesiones")}
+                  placeholder="Lesiones del animal"
+                  className=" w-full"
+                />
+                {errors.lesiones && (
+                  <p className="text-sm text-red-500">
+                    {errors.lesiones.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">
+                  Alergias (opcional)
+                </Label>
+                <Input
+                  {...register("alergias")}
+                  placeholder="Alergias del Animal"
+                  className=" w-full"
+                />
+                {errors.alergias && (
+                  <p className="text-sm text-red-500">
+                    {errors.alergias.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">
+                  Odontologia (opcional)
+                </Label>
+                <Input
+                  {...register("odontologia")}
+                  placeholder="Odontologia del animal"
+                  className=" w-full"
+                />
+                {errors.odontologia && (
+                  <p className="text-sm text-red-500">
+                    {errors.odontologia.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">
                   Veterinario (opcional)
                 </Label>
                 <Input
@@ -708,9 +1052,9 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                   placeholder="Nombre de veterinario del animal"
                   className=" w-full"
                 />
-                {errors.observaciones && (
+                {errors.veterinario && (
                   <p className="text-sm text-red-500">
-                    {errors.observaciones.message}
+                    {errors.veterinario.message}
                   </p>
                 )}
               </div>
@@ -800,7 +1144,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
               </h3>
 
               <div className="border rounded-lg p-4 space-y-4 bg-gray-50">
-                {alimentosOptions.map((alimento) => {
+                {alimentosEquinosOptions.map((alimento) => {
                   const alimentoSeleccionado = watch("tipo_alimentacion")?.find(
                     (a: any) => a.alimento === alimento.value,
                   );
@@ -975,25 +1319,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                 PRODUCCION / DESEMPEÑO
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Peso actual (kg)</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    {...register("peso_actual")}
-                    placeholder="Ej: 450"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Condición corporal</Label>
-                  <Input
-                    {...register("condicion_corporal")}
-                    placeholder="Excelente, Buena, Regular..."
-                  />
-                </div>
-              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
               <div className="space-y-2">
                 <Label>Nivel de entrenamiento</Label>
                 <Input
@@ -1008,45 +1334,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                   placeholder="Participaciones, campeonatos, premios obtenidos..."
                 />
               </div>
-              <div className="space-y-2">
-                <Label>Uso del Equino</Label>
-                <Select
-                  value={watch("uso_equino") || ""}
-                  onValueChange={(value) =>
-                    setValue("uso_equino", value as any)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecciona el uso del equino" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={UsoEquinoEnum.TRABAJO}>
-                      Trabajo
-                    </SelectItem>
-                    <SelectItem value={UsoEquinoEnum.DEPORTE}>
-                      Deporte
-                    </SelectItem>
-                    <SelectItem value={UsoEquinoEnum.REPRODUCCION}>
-                      Reproducción
-                    </SelectItem>
-                    <SelectItem value={UsoEquinoEnum.PASEO}>Paseo</SelectItem>
-                    <SelectItem value={UsoEquinoEnum.CARGA}>Carga</SelectItem>
-                    <SelectItem value={UsoEquinoEnum.GANADERIA}>
-                      Ganadería
-                    </SelectItem>
-                    <SelectItem value={UsoEquinoEnum.POLICIA}>
-                      Policía
-                    </SelectItem>
-                    <SelectItem value={UsoEquinoEnum.TERAPIA}>
-                      Terapia
-                    </SelectItem>
-                    <SelectItem value={UsoEquinoEnum.COMPANIA}>
-                      Compañía
-                    </SelectItem>
-                    <SelectItem value={UsoEquinoEnum.OTRO}>Otro</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+
               <div className="space-y-2">
                 <Label>Historial reproductivo</Label>
                 <Textarea
@@ -1055,6 +1343,15 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Precio de compra</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    {...register("precio_compra")}
+                    placeholder="Ej: 150000"
+                  />
+                </div>
                 <div className="space-y-2">
                   <Label>Valor estimado</Label>
                   <Input
@@ -1138,80 +1435,6 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                         {errors.nombre_criador_origen_animal.message}
                       </p>
                     )}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Imágenes del Animal
-              </h3>
-
-              <div className="space-y-4">
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50 hover:bg-gray-100 transition-colors">
-                  <div className="flex flex-col items-center justify-center text-center">
-                    <div className="mb-2">
-                      <svg
-                        className="w-8 h-8 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
-                    </div>
-                    <p className="text-sm text-gray-600 mb-2">
-                      Arrastra y suelta imágenes o haz clic para seleccionar
-                    </p>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={handleImageSelect}
-                      disabled={selectedImages.length >= 5}
-                      className="w-full max-w-xs cursor-pointer text-sm file:mr-2 file:py-2 file:px-3 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 file:border-none file:rounded-md hover:file:bg-blue-100 disabled:opacity-50"
-                    />
-                    <p className="text-xs text-gray-500 mt-3">
-                      <span className="font-medium">Máximo 5 imágenes</span> ·
-                      Formatos: JPG, PNG, GIF · Máximo 5MB cada una
-                      <br />
-                      <span className="text-blue-600">
-                        {selectedImages.length}/5 imágenes seleccionadas
-                      </span>
-                    </p>
-                  </div>
-                </div>
-
-                {imagePreviews.length > 0 && (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                    {imagePreviews.map((preview, index) => (
-                      <div key={index} className="relative group aspect-square">
-                        <img
-                          src={preview}
-                          alt={`Preview ${index + 1}`}
-                          className="w-full h-full object-cover rounded-lg border shadow-sm hover:shadow-md transition-shadow"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeImage(index)}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-all shadow-md active:scale-95 opacity-0 group-hover:opacity-100"
-                          aria-label="Eliminar imagen"
-                        >
-                          ×
-                        </button>
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <span className="text-white text-xs">
-                            Imagen {index + 1}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
                   </div>
                 )}
               </div>

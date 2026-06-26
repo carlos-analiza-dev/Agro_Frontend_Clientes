@@ -52,21 +52,38 @@ export interface Animal {
   razas_madre: EspecieClass[];
   razas_padre: EspecieClass[];
   profileImages: ProfileImage[];
+  lote_activo?: boolean;
 
-  //EQUINO
+  // EQUINO
   uso_equino?: UsoEquinoEnum;
   desparasitado?: boolean;
   vacunas?: string;
   veterinario?: string;
   peso_actual?: number;
-  condicion_corporal?: string;
   nivel_entrenamiento?: string;
   resultados_competencias?: string;
   historial_reproductivo?: string;
   valor_estimado?: number;
   asegurado?: boolean;
+  alzada?: number;
+  unidad_alzada: "cm" | "manos";
+  condicion_corporal:
+    | "excelente"
+    | "muy_buena"
+    | "buena"
+    | "regular"
+    | "mala"
+    | "muy_mala"
+    | "caquexica"
+    | "obesa";
+  registro_genealogico?: string;
+  microchip?: string;
+  odontologia?: string;
+  alergias?: string;
+  lesiones?: string;
+  precio_compra?: number;
 
-  //AVICOLA
+  // AVICOLA
   fincaId: string;
   cantidad_lote?: number;
   tipo_ave?: TipoAve;
@@ -84,6 +101,67 @@ export interface Animal {
   porcentaje_postura?: string;
   tipo_concentrado?: string;
   fecha_postura?: Date | string;
+  estanque_tanque_jaula?: string;
+  proveedor_alevines?: string;
+  fecha_siembra?: Date | string;
+  cantidad_inicial?: number;
+  talla_peso_inicial?: string;
+  densidad_por_m3_m2?: number;
+  cantidad_actual?: number;
+  mortalidad_diaria_acum?: string;
+  muestreos?: Muestreo[] | string;
+  etapa?: string;
+  peso_promedio_pez?: number;
+  biomasa_estimada?: number;
+  talla_pez?: number;
+  fecha_muestreo_pez?: Date | string;
+  calidad_agua?: CalidadAgua | string;
+  tipo_concentrado_pez?: string;
+  proteina_porcentaje?: number;
+  racion_diaria?: string;
+  consumo_pez?: string;
+  conversion_alimenticia?: number;
+  sanidad?: Sanidad | string;
+  cosecha?: Cosecha | string;
+}
+
+export interface Muestreo {
+  fecha_muestreo: string;
+  peso?: number;
+  talla?: number;
+}
+
+export interface RecambioAgua {
+  fecha_recambio: string;
+  porcentaje_recambio?: number;
+  volumen_m3?: number;
+  motivo?: string;
+  responsable?: string;
+}
+
+export interface CalidadAgua {
+  temperatura?: number;
+  oxigeno_disuelto?: number;
+  ph?: number;
+  amonio?: number;
+  nitrito?: number;
+  turbidez?: string;
+  historial_recambios?: RecambioAgua[];
+}
+
+export interface Sanidad {
+  signos_clinicos?: string;
+  tratamientos?: string;
+  banos_salinidad?: string;
+  laboratorio?: string;
+}
+
+export interface Cosecha {
+  fecha_cosecha?: string;
+  kilos_cosechados?: number;
+  sobrevivencia_porcentaje?: number;
+  comprador?: string;
+  precio?: number;
 }
 
 export interface ProfileImage {

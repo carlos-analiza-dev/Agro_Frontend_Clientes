@@ -51,13 +51,29 @@ export interface CrearAnimalByFinca {
   desparasitado?: boolean;
   vacunas?: string;
   veterinario?: string;
-  peso_actual?: number;
-  condicion_corporal?: string;
   nivel_entrenamiento?: string;
   resultados_competencias?: string;
   historial_reproductivo?: string;
   valor_estimado?: number;
   asegurado?: boolean;
+  peso_actual: number;
+  alzada?: number;
+  unidad_alzada: "cm" | "manos";
+  condicion_corporal:
+    | "excelente"
+    | "muy_buena"
+    | "buena"
+    | "regular"
+    | "mala"
+    | "muy_mala"
+    | "caquexica"
+    | "obesa";
+  registro_genealogico?: string;
+  microchip?: string;
+  odontologia?: string;
+  alergias?: string;
+  lesiones?: string;
+  precio_compra?: number;
 }
 
 export interface TipoAlimentacion {
