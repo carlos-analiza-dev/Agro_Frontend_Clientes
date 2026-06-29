@@ -6,13 +6,14 @@ import FormAddAnimal from "@/components/animales/FormAddAnimal";
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import FormAddPorcino from "@/components/animales/FormAddPorcino";
 import FormAddAvicola from "@/components/animales/FormAddAvicola";
 import FormAddPeces from "@/components/animales/FormAddPeces";
 import FormAddEquino from "@/components/animales/FormAddEquino";
+import FormAddCaprino from "@/components/animales/FormAddCaprino";
+import FormAddOvino from "@/components/animales/FormAddOvino";
 
 const CrearAnimalPage = () => {
-  const especiesConPadres = ["caprino", "ovino", "bovino", "porcino"];
+  const especiesConPadres = ["bovino", "porcino"];
   const [activeTab, setActiveTab] = useState("animal");
   const [especieName, setEspecieName] = useState("");
   const [selectedEspecieId, setSelectedEspecieId] = useState("");
@@ -101,7 +102,43 @@ const CrearAnimalPage = () => {
       {especieName.toLowerCase() === "avicola" && (
         <FormAddAvicola selectedEspecieId={selectedEspecieId} />
       )}
-      {especieName.toLowerCase() === "piscicola" && (
+      {especieName.toLowerCase() === "caprino" && (
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="w-full h-[90vh]"
+        >
+          <TabsList className="grid grid-cols-3 mb-6">
+            <TabsTrigger value="animal">Datos Animal</TabsTrigger>
+            <TabsTrigger value="padre">Datos Padre</TabsTrigger>
+            <TabsTrigger value="madre">Datos Madre</TabsTrigger>
+          </TabsList>
+
+          <FormAddCaprino
+            setActiveTab={setActiveTab}
+            selectedEspecieId={selectedEspecieId}
+          />
+        </Tabs>
+      )}
+      {especieName.toLowerCase() === "ovino" && (
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="w-full h-[90vh]"
+        >
+          <TabsList className="grid grid-cols-3 mb-6">
+            <TabsTrigger value="animal">Datos Animal</TabsTrigger>
+            <TabsTrigger value="padre">Datos Padre</TabsTrigger>
+            <TabsTrigger value="madre">Datos Madre</TabsTrigger>
+          </TabsList>
+
+          <FormAddOvino
+            setActiveTab={setActiveTab}
+            selectedEspecieId={selectedEspecieId}
+          />
+        </Tabs>
+      )}
+      {especieName.toLowerCase() === "peces" && (
         <FormAddPeces selectedEspecieId={selectedEspecieId} />
       )}
       {especieName.toLowerCase() === "equino" && (

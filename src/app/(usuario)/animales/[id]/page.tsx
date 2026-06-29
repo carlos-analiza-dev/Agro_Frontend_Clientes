@@ -11,6 +11,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import FormEditEquino from "@/components/animales/FormEditEquino";
 import FormEditAvicola from "@/components/animales/FormEditAvicola";
 import FormEditPeces from "@/components/animales/FormEditPeces";
+import FormEditCaprino from "@/components/animales/FormEditCaprino";
+import FormEditOvino from "@/components/animales/FormEditOvinos";
 
 const AnimalDetailsPage = () => {
   const params = useParams();
@@ -19,8 +21,14 @@ const AnimalDetailsPage = () => {
   const { data: animalData, isLoading } = useAnimalById(animalId);
   const animal = animalData?.data;
 
-  const especiesConPadres = ["caprino", "ovino", "bovino", "porcino"];
-  const especiesConFormularioEspecifico = ["avicola", "piscicola", "equino"];
+  const especiesConPadres = ["bovino", "porcino"];
+  const especiesConFormularioEspecifico = [
+    "avicola",
+    "peces",
+    "equino",
+    "caprino",
+    "ovino",
+  ];
 
   if (isLoading) {
     return (
@@ -58,11 +66,50 @@ const AnimalDetailsPage = () => {
 
       {tieneFormulario ? (
         <>
+          {especieNombre === "caprino" && (
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full"
+            >
+              <TabsList className="grid grid-cols-3 mb-6">
+                <TabsTrigger value="animal">Datos Animal</TabsTrigger>
+                <TabsTrigger value="padre">Datos Padre</TabsTrigger>
+                <TabsTrigger value="madre">Datos Madre</TabsTrigger>
+              </TabsList>
+
+              <FormEditCaprino
+                animal={animal}
+                animalId={animalId}
+                setActiveTab={setActiveTab}
+              />
+            </Tabs>
+          )}
+          {especieNombre === "ovino" && (
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full"
+            >
+              <TabsList className="grid grid-cols-3 mb-6">
+                <TabsTrigger value="animal">Datos Animal</TabsTrigger>
+                <TabsTrigger value="padre">Datos Padre</TabsTrigger>
+                <TabsTrigger value="madre">Datos Madre</TabsTrigger>
+              </TabsList>
+
+              <FormEditOvino
+                animal={animal}
+                animalId={animalId}
+                setActiveTab={setActiveTab}
+              />
+            </Tabs>
+          )}
           {especieNombre === "porcino" && <FormAddPorcino />}
+
           {especieNombre === "avicola" && (
             <FormEditAvicola animal={animal} animalId={animalId} />
           )}
-          {especieNombre === "piscicola" && (
+          {especieNombre === "peces" && (
             <FormEditPeces animal={animal} animalId={animalId} />
           )}
 

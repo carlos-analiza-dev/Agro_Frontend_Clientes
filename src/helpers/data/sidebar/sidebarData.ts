@@ -1,12 +1,14 @@
 import {
+  Beef,
+  Bird,
   BriefcaseMedical,
   Building2,
-  CalendarDays,
   ChartColumnIncreasing,
   ClipboardList,
   Clock,
   DollarSign,
   FileText,
+  Fish,
   FlaskConical,
   GitBranch,
   Heart,
@@ -18,6 +20,7 @@ import {
   PackageXIcon,
   PawPrint,
   Pill,
+  Rabbit,
   Settings,
   ShoppingBag,
   Sprout,
@@ -28,6 +31,31 @@ import {
   Wheat,
   Wrench,
 } from "lucide-react";
+import { especiesData } from "../especies/especiesData";
+
+const iconosEspecies = {
+  Bovino: Beef,
+  Equino: PawPrint,
+  Porcino: Beef,
+  Avicola: Bird,
+  Caprino: Rabbit,
+  Ovino: Rabbit,
+  Peces: Fish,
+};
+
+const animalesItems = [
+  {
+    name: "Todos los Animales",
+    href: "/animales",
+    icon: Layers3,
+  },
+  ...especiesData.map((especie) => ({
+    name: especie.nombre,
+    href: `/animales/especies/${especie.nombre.toLowerCase()}`,
+    icon:
+      iconosEspecies[especie.nombre as keyof typeof iconosEspecies] ?? PawPrint,
+  })),
+];
 
 export const navItems = [
   {
@@ -38,12 +66,16 @@ export const navItems = [
     category: "Finca",
     items: [
       { name: "Fincas", href: "/fincas", icon: Building2 },
-      { name: "Animales", href: "/animales", icon: Layers3 },
       { name: "Cultivos", href: "/cultivos", icon: Sprout },
       { name: "Producción", href: "/produccion", icon: FlaskConical },
       { name: "Trabajadores", href: "/trabajadores", icon: UserCog },
     ],
   },
+  {
+    category: "Animales",
+    items: animalesItems,
+  },
+
   {
     category: "Solicitudes El Sembrador",
     items: [

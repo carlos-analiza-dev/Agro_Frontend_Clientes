@@ -2,6 +2,8 @@ import { veterinariaAPI } from "@/helpers/api/veterinariaAPI";
 import { CrearAnimalByFinca } from "../interfaces/crear-animal.interface";
 import { AvicolaData } from "../interfaces/crear-avicola.interface";
 import { PecesData } from "../interfaces/crear-peces.interface";
+import { FormCaprinoData } from "../interfaces/crear-caprino.interface";
+import { FormOvinoData } from "../interfaces/crear-ovino.interface";
 
 export const ActualizarAnimal = async (
   id: string,
@@ -25,6 +27,26 @@ export const ActualizarAvicola = async (
 
 export const ActualizarPeces = async (id: string, data: Partial<PecesData>) => {
   const url = `${process.env.NEXT_PUBLIC_API_URL}/animal-finca/peces/${id}`;
+
+  const response = await veterinariaAPI.patch(url, data);
+  return response;
+};
+
+export const UpdateAnimalCaprino = async (
+  id: string,
+  data: Partial<FormCaprinoData>,
+) => {
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/animal-finca/caprino/${id}`;
+
+  const response = await veterinariaAPI.patch(url, data);
+  return response;
+};
+
+export const UpdateAnimalOvino = async (
+  id: string,
+  data: Partial<FormOvinoData>,
+) => {
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/animal-finca/ovino/${id}`;
 
   const response = await veterinariaAPI.patch(url, data);
   return response;

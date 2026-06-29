@@ -44,6 +44,30 @@ export const CreateAnimalPeces = async (formData: FormData) => {
   return response;
 };
 
+export const CreateAnimalCaprino = async (formData: FormData) => {
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/animal-finca/caprino`;
+
+  const response = await veterinariaAPI.post(url, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return response;
+};
+
+export const CreateAnimalOvino = async (formData: FormData) => {
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/animal-finca/ovino`;
+
+  const response = await veterinariaAPI.post(url, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return response;
+};
+
 export const cargaMasivaAnimales = async (
   file: File,
   fincaId: string,

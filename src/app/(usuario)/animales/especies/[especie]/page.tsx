@@ -1,12 +1,28 @@
 "use client";
-
-import { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
-
-import useAnimalesByPropietario from "@/hooks/animales/useAnimalesByPropietario";
-import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dna,
+  Filter,
+  PawPrint,
+  RefreshCw,
+  Scale,
+  UploadCloud,
+  Utensils,
+  Wheat,
+  X,
+} from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import CargaMasivaModal from "../../ui/CargaMasivaModal";
+import { FAB } from "@/components/generics/FAB";
+import EmptyStateAnimales from "../../ui/EmptyStateAnimales";
+import { Buscador } from "@/components/generics/Buscador";
 import {
   Select,
   SelectContent,
@@ -14,42 +30,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  RefreshCw,
-  Scale,
-  PawPrint,
-  Dna,
-  Wheat,
-  Utensils,
-  UploadCloud,
-  X,
-  Filter,
-  Egg,
-  Fish,
-} from "lucide-react";
+import SkeletonCard from "@/components/generics/SkeletonCard";
+import AnimalCard from "../../ui/AnimalCard";
+import PiscicolaCard from "../../ui/PiscicolaCard";
+import AvicolaCard from "../../ui/AvicolaCard";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useDebounce } from "@/hooks/debounce/useDebounce";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
-import { Buscador } from "@/components/generics/Buscador";
-import { FAB } from "@/components/generics/FAB";
-import AnimalCard from "./ui/AnimalCard";
+import useGetEspecies from "@/hooks/especies/useGetEspecies";
+import useAnimalesByPropietario from "@/hooks/animales/useAnimalesByPropietario";
 import { uploadProfileImageAnimal } from "@/api/animales_profile/accions/uploadProfileImageAnimal";
 import { toast } from "react-toastify";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import SkeletonCard from "@/components/generics/SkeletonCard";
-import EmptyStateAnimales from "./ui/EmptyStateAnimales";
-import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
-import CargaMasivaModal from "./ui/CargaMasivaModal";
 import { Badge } from "@/components/ui/badge";
-import AvicolaCard from "./ui/AvicolaCard";
-import PiscicolaCard from "./ui/PiscicolaCard";
-import CaprinoCard from "./ui/CaprinoCard";
-import OvinoCard from "./ui/OvinoCard";
+import CaprinoCard from "../../ui/CaprinoCard";
+import OvinoCard from "../../ui/OvinoCard";
 
 const ESPECIES = {
   AVES: ["aves", "avicola", "pollos", "gallinas"],
@@ -86,7 +82,10 @@ const getEspecieTipo = (nombreEspecie: string): string => {
   return "default";
 };
 
-const AnimalesPageGanadero = () => {
+const EspeciesPageAnimales = () => {
+  const params = useParams();
+  const especie = params.especie as string;
+
   const router = useRouter();
   const queryClient = useQueryClient();
   const { cliente } = useAuthStore();
@@ -113,7 +112,7 @@ const AnimalesPageGanadero = () => {
   } = useAnimalesByPropietario(
     cliente?.id ?? "",
     finca,
-    "",
+    especie,
     debouncedSearchTerm,
   );
 
@@ -287,7 +286,6 @@ const AnimalesPageGanadero = () => {
         return <OvinoCard key={key} {...commonProps} />;
       case "bovino":
       case "porcino":
-
       default:
         return <AnimalCard key={key} {...commonProps} />;
     }
@@ -431,7 +429,9 @@ const AnimalesPageGanadero = () => {
   return (
     <div className="container mx-auto p-4 pb-20">
       <div className="block md:flex justify-between items-center mb-6">
-        <h1 className="text-lg md:text-3xl font-bold">Mis Animales</h1>
+        <h1 className="text-lg md:text-3xl font-bold">
+          Mis Animales - {especie.toUpperCase()}
+        </h1>
 
         <div className="mt-4 md:mt-0 flex flex-col sm:flex-row flex-wrap justify-center gap-3 w-full md:w-auto">
           <Button
@@ -527,4 +527,4 @@ const AnimalesPageGanadero = () => {
   );
 };
 
-export default AnimalesPageGanadero;
+export default EspeciesPageAnimales;

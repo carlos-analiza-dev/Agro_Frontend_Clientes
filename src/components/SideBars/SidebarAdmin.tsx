@@ -48,8 +48,10 @@ const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
   const filteredNavItems = navItems
     .map((section) => {
       const filteredItems = section.items.filter((item) => {
-        if (item.href === "/panel") {
-          return true;
+        if (item.href === "/panel") return true;
+
+        if (item.href.startsWith("/animales/especies")) {
+          return permisosVer.includes("/animales");
         }
 
         return permisosVer.includes(item.href);

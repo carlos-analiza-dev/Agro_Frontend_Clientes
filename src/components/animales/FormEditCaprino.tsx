@@ -11,6 +11,7 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import { Button } from "../ui/button";
+import { ArrowRight, InfoIcon } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
 import { Textarea } from "../ui/textarea";
 import {
@@ -20,56 +21,50 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { ArrowRight, InfoIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/providers/store/useAuthStore";
+import { Animal } from "@/api/animales/interfaces/response-animales.interface";
 import { useForm } from "react-hook-form";
+import { extractNumberFromIdentifier } from "@/helpers/funciones/extractNumberFromIdentifier ";
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import useGetAnimalesPropietario from "@/hooks/animales/useGetAnimalesPropietario";
 import { SexoAnimal } from "@/interfaces/enums/animales/sexo-animal.enum";
-import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
-import { CreateAnimalOvino } from "@/api/animales/accions/crear-animal";
-import { Animal } from "@/api/animales/interfaces/response-animales.interface";
-import { FormOvinoData } from "@/api/animales/interfaces/crear-ovino.interface";
 import { purezaOptions } from "@/helpers/data/purezaOptions";
 import {
-  categoriaEdadOptions,
   condicionCorporalOptions,
-  edadOvinoOptions,
-  propositoOvinoOptions,
+  edadCaprinoOptions,
+  propositoCaprinoOptions,
   sexoCaprinoOptions,
   tipoAlimentacionCaprinoOptions,
-  tipoNacimientoOptions,
 } from "@/helpers/data/animales/animales-data";
-import { PurezaEnum } from "@/interfaces/enums/animales/animales-enums";
+import { UpdateAnimalCaprino } from "@/api/animales/accions/update-animal";
+import { FormCaprinoData } from "@/api/animales/interfaces/crear-caprino.interface";
 
 interface Props {
+  animalId: string;
   setActiveTab: Dispatch<SetStateAction<string>>;
-  selectedEspecieId: string;
+  animal: Animal;
 }
 
-const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
-  const router = useRouter();
+const FormEditCaprino = ({ animal, animalId, setActiveTab }: Props) => {
   const queryClient = useQueryClient();
   const { cliente } = useAuthStore();
-  const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [showIdentifierHelp, setShowIdentifierHelp] = useState(false);
   const [showIdentifierHelpPadre, setShowIdentifierHelpPadre] = useState(false);
   const [showIdentifierHelpMadre, setShowIdentifierHelpMadre] = useState(false);
   const [isPadreFinca, setIsPadreFinca] = useState(false);
-  const [selectedPadreId, setSelectedPadreId] = useState("");
-  const [searchPadreTerm, setSearchPadreTerm] = useState("");
-  const [filteredMachos, setFilteredMachos] = useState<Animal[]>([]);
-  const [isPadreDropdownOpen, setIsPadreDropdownOpen] = useState(false);
   const [isMadreFinca, setIsMadreFinca] = useState(false);
   const [selectedMadreId, setSelectedMadreId] = useState("");
+  const [selectedPadreId, setSelectedPadreId] = useState("");
+  const [searchPadreTerm, setSearchPadreTerm] = useState("");
   const [searchMadreTerm, setSearchMadreTerm] = useState("");
+  const [filteredMachos, setFilteredMachos] = useState<Animal[]>([]);
   const [filteredHembras, setFilteredHembras] = useState<Animal[]>([]);
+  const [isPadreDropdownOpen, setIsPadreDropdownOpen] = useState(false);
   const [isMadreDropdownOpen, setIsMadreDropdownOpen] = useState(false);
 
   const {
@@ -80,7 +75,7 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
     formState: { errors },
     reset,
   } = useForm<
-    FormOvinoData & {
+    FormCaprinoData & {
       identificador_temp: string;
       identificador_temp_padre: string;
       identificador_temp_madre: string;
@@ -93,16 +88,100 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
     },
   });
 
+  useEffect(() => {
+    if (animal) {
+      reset({
+        identificador: animal?.identificador || "",
+        nombre_animal: animal?.nombre_animal || "",
+        fincaId: animal?.finca?.id || "",
+        padreId: animal?.padre?.id || undefined,
+        madreId: animal?.madre?.id || undefined,
+        potrero: animal?.potrero || "",
+        razaIds: animal?.razas?.map((raza) => raza.id) || [],
+        sexo: animal?.sexo || "",
+        edad_promedio: Number(animal?.edad_promedio) || 0,
+        fecha_nacimiento: animal?.fecha_nacimiento || "",
+        color: animal?.color || "",
+        peso: Number(animal?.peso) || 0,
+        condicion_corporal: animal?.condicion_corporal || "",
+        proposito: animal?.proposito || "",
+        nombre_padre: animal?.nombre_padre || "",
+        arete_padre: animal?.arete_padre || "",
+        razas_padre: animal?.razas_padre?.map((raza) => raza.id) || [],
+        pureza_padre: animal?.pureza_padre || undefined,
+        nombre_criador_padre: animal?.nombre_criador_padre || "",
+        nombre_propietario_padre: animal?.nombre_propietario_padre || "",
+        nombre_finca_origen_padre: animal?.nombre_finca_origen_padre || "",
+        nombre_madre: animal?.nombre_madre || "",
+        arete_madre: animal?.arete_madre || "",
+        razas_madre: animal?.razas_madre?.map((raza) => raza.id) || [],
+        pureza_madre: animal?.pureza_madre || undefined,
+        nombre_criador_madre: animal?.nombre_criador_madre || "",
+        nombre_propietario_madre: animal?.nombre_propietario_madre || "",
+        nombre_finca_origen_madre: animal?.nombre_finca_origen_madre || "",
+        numero_parto_madre: animal?.numero_parto_madre || 0,
+        nombre_criador_origen_animal:
+          animal?.nombre_criador_origen_animal || "",
+        linea_genetica: animal?.linea_genetica || "",
+        litros_leche_dia: Number(animal?.litros_leche_dia) || 0,
+        peso_destete: Number(animal?.peso_destete) || 0,
+        ganancia_peso: Number(animal?.ganancia_peso) || 0,
+        calidad_leche_grasa: Number(animal?.calidad_leche_grasa) || 0,
+        calidad_leche_proteina: Number(animal?.calidad_leche_proteina) || 0,
+        calidad_leche_celulas: Number(animal?.calidad_leche_celulas) || 0,
+        desparasitado: animal?.desparasitado || false,
+        vacunas: animal?.vacunas || "",
+        mastitis: animal?.mastitis || "",
+        pezunas: animal?.pezunas || "",
+        tratamientos: animal?.tratamientos || "",
+        mortalidad: animal?.mortalidad || false,
+        tipo_alimentacion: animal?.tipo_alimentacion || [],
+        observaciones: animal?.observaciones || "",
+        propietarioId: animal?.propietario?.id || "",
+        especie: animal?.especie?.id || "",
+      });
+
+      setValue(
+        "identificador_temp",
+        extractNumberFromIdentifier(animal?.identificador || ""),
+      );
+      setValue(
+        "identificador_temp_padre",
+        extractNumberFromIdentifier(animal?.arete_padre || ""),
+      );
+      setValue(
+        "identificador_temp_madre",
+        extractNumberFromIdentifier(animal?.arete_madre || ""),
+      );
+
+      if (animal.padre) {
+        setSelectedPadreId(animal.padre.id);
+        setSearchPadreTerm(
+          `${animal.padre.identificador} - ${animal.padre.nombre_animal || "Sin nombre"}`,
+        );
+        setIsPadreFinca(true);
+      }
+
+      if (animal.madre) {
+        setSelectedMadreId(animal.madre.id);
+        setSearchMadreTerm(
+          `${animal.madre.identificador} - ${animal.madre.nombre_animal || "Sin nombre"}`,
+        );
+        setIsMadreFinca(true);
+      }
+    }
+  }, [animal, reset]);
+
   const { data: especies } = useGetEspecies();
-  const { data: razas } = useGetRazasByEspecie(selectedEspecieId);
+  const { data: razas } = useGetRazasByEspecie(animal?.especie?.id || "");
   const { data: fincas } = useFincasPropietarios(cliente?.id ?? "");
   const { data: machos } = useGetAnimalesPropietario({
     sexo: SexoAnimal.Macho,
-    especieId: selectedEspecieId,
+    especieId: animal?.especie?.id || "",
   });
   const { data: hembras } = useGetAnimalesPropietario({
     sexo: SexoAnimal.Hembra,
-    especieId: selectedEspecieId,
+    especieId: animal?.especie?.id || "",
   });
 
   useEffect(() => {
@@ -137,47 +216,6 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
     }
   }, [searchMadreTerm, hembras]);
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-
-    if (files.length + selectedImages.length > 5) {
-      toast.error("Máximo 5 imágenes permitidas");
-      return;
-    }
-
-    const validFiles = files.filter((file) => {
-      const isValidType = file.type.startsWith("image/");
-      const isValidSize = file.size <= 5 * 1024 * 1024;
-
-      if (!isValidType) {
-        toast.error(`El archivo ${file.name} no es una imagen válida`);
-        return false;
-      }
-      if (!isValidSize) {
-        toast.error(`La imagen ${file.name} excede el límite de 5MB`);
-        return false;
-      }
-      return true;
-    });
-
-    setSelectedImages((prev) => [...prev, ...validFiles]);
-
-    const newPreviews = validFiles.map((file) => URL.createObjectURL(file));
-    setImagePreviews((prev) => [...prev, ...newPreviews]);
-  };
-
-  const removeImage = (index: number) => {
-    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
-    URL.revokeObjectURL(imagePreviews[index]);
-    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  useEffect(() => {
-    return () => {
-      imagePreviews.forEach((preview) => URL.revokeObjectURL(preview));
-    };
-  }, []);
-
   const fincasItems =
     fincas?.data.fincas.map((finca) => ({
       label: finca.nombre_finca,
@@ -185,7 +223,7 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
     })) || [];
 
   const getIdentifierPrefix = () => {
-    const especie = especies?.data.find((e) => e.id === selectedEspecieId);
+    const especie = especies?.data.find((e) => e.id === animal?.especie?.id);
     const razaIds: string[] = watch("razaIds");
     const sexo = watch("sexo");
 
@@ -210,7 +248,7 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
   };
 
   const getIdentifierPrefixPadre = () => {
-    const especie = especies?.data.find((e) => e.id === selectedEspecieId);
+    const especie = especies?.data.find((e) => e.id === animal?.especie?.id);
     const razaIdsPadre: string[] = watch("razas_padre") || [];
     const sexo = "1";
 
@@ -233,7 +271,7 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
   };
 
   const getIdentifierPrefixMadre = () => {
-    const especie = especies?.data.find((e) => e.id === selectedEspecieId);
+    const especie = especies?.data.find((e) => e.id === animal?.especie?.id);
     const razaIdsMadre: string[] = watch("razas_madre") || [];
     const sexo = "2";
 
@@ -268,12 +306,7 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
         setValue("identificador", identificadorCompleto);
       }
     }
-  }, [
-    watch("identificador_temp"),
-    selectedEspecieId,
-    watch("razaIds"),
-    watch("sexo"),
-  ]);
+  }, [watch("identificador_temp"), watch("razaIds"), watch("sexo")]);
 
   useEffect(() => {
     const temp = watch("identificador_temp_padre");
@@ -284,11 +317,7 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
         setValue("arete_padre", aretePadreCompleto);
       }
     }
-  }, [
-    watch("identificador_temp_padre"),
-    selectedEspecieId,
-    watch("razas_padre"),
-  ]);
+  }, [watch("identificador_temp_padre"), watch("razas_padre")]);
 
   useEffect(() => {
     const temp = watch("identificador_temp_madre");
@@ -299,11 +328,7 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
         setValue("arete_madre", areteMadreCompleto);
       }
     }
-  }, [
-    watch("identificador_temp_madre"),
-    selectedEspecieId,
-    watch("razas_madre"),
-  ]);
+  }, [watch("identificador_temp_madre"), watch("razas_madre")]);
 
   const handleIdentifierChange = (input: string) => {
     const numbersOnly = input.replace(/\D/g, "").slice(0, 6);
@@ -321,16 +346,12 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
   };
 
   const mutation = useMutation({
-    mutationFn: (data: FormData) => CreateAnimalOvino(data),
+    mutationFn: (data: FormCaprinoData) => UpdateAnimalCaprino(animalId, data),
     onSuccess: () => {
-      toast.success("Ovino creado correctamente");
+      toast.success("Caprino actualizado correctamente");
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
-      reset();
-      setSelectedMadreId("");
-      setSelectedPadreId("");
-      setSelectedImages([]);
-      setImagePreviews([]);
-      router.push("/animales");
+      queryClient.invalidateQueries({ queryKey: ["animal-id", animalId] });
+      window.location.reload();
     },
     onError: (error) => {
       if (isAxiosError(error)) {
@@ -339,7 +360,8 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear el ovino";
+            : "Hubo un error al actualizar el caprino";
+
         toast.error(errorMessage);
       } else {
         toast.error("Error inesperado. Contacte al administrador");
@@ -347,206 +369,61 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
     },
   });
 
-  const onSubmit = (data: FormOvinoData) => {
+  const onSubmit = (data: FormCaprinoData) => {
     if (!cliente?.id) return;
 
-    if (isMadreFinca && !selectedMadreId) {
-      toast.error("Debes seleccionar la madre para poder crear el ovino");
+    if (!data.especie) {
+      toast.error("Debes seleccionar una especie");
+      return;
+    }
+
+    if (!data.razaIds || data.razaIds.length === 0) {
+      toast.error("Debes seleccionar al menos una raza");
+      return;
+    }
+
+    if (!data.sexo) {
+      toast.error("Debes seleccionar un sexo");
+      return;
+    }
+
+    if (
+      !data.identificador ||
+      !/^[A-ZÁÉÍÓÚÑ]{2}[A-ZÁÉÍÓÚÑ]{3,7}[12]-\d{6}$/.test(data.identificador)
+    ) {
+      toast.error("El identificador debe tener 6 dígitos");
       return;
     }
 
     if (isPadreFinca && !selectedPadreId) {
-      toast.error("Debes seleccionar el padre para poder crear el ovino");
+      toast.error("Debes seleccionar un padre de la finca");
+      return;
+    }
+
+    if (isMadreFinca && !selectedMadreId) {
+      toast.error("Debes seleccionar una madre de la finca");
       return;
     }
 
     const animalData = {
       ...data,
       propietarioId: cliente.id,
+      padreId: isPadreFinca ? selectedPadreId : undefined,
+      madreId: isMadreFinca ? selectedMadreId : undefined,
     };
+
+    if (animalData.fecha_nacimiento) {
+      const fecha = new Date(animalData.fecha_nacimiento);
+      fecha.setDate(fecha.getDate() + 1);
+
+      animalData.fecha_nacimiento = fecha.toISOString().split("T")[0];
+    }
 
     delete (animalData as any).identificador_temp;
     delete (animalData as any).identificador_temp_padre;
     delete (animalData as any).identificador_temp_madre;
 
-    const formData = new FormData();
-
-    Object.entries(animalData).forEach(([key, value]) => {
-      if (
-        value === undefined ||
-        value === null ||
-        key === "razaIds" ||
-        key === "razas_padre" ||
-        key === "razas_madre" ||
-        key === "tipo_alimentacion" ||
-        key === "fecha_nacimiento" ||
-        key === "edad_promedio" ||
-        key === "categoria_edad" ||
-        key === "tipo_nacimiento" ||
-        key === "peso_nacimiento" ||
-        key === "peso_destete" ||
-        key === "peso" ||
-        key === "lana" ||
-        key === "famacha" ||
-        key === "parasitos"
-      ) {
-        return;
-      }
-
-      if (typeof value === "boolean") {
-        formData.append(key, String(value));
-      } else {
-        formData.append(key, String(value));
-      }
-    });
-
-    formData.append("especie", String(selectedEspecieId));
-
-    if (data.fecha_nacimiento) {
-      formData.append("fecha_nacimiento", data.fecha_nacimiento);
-    }
-
-    if (data.razaIds && data.razaIds.length > 0) {
-      formData.append("razaIds", JSON.stringify(data.razaIds));
-    }
-
-    if (data.razas_padre && data.razas_padre.length > 0) {
-      formData.append("razas_padre", JSON.stringify(data.razas_padre));
-    }
-
-    if (data.razas_madre && data.razas_madre.length > 0) {
-      formData.append("razas_madre", JSON.stringify(data.razas_madre));
-    }
-
-    if (data.tipo_alimentacion && data.tipo_alimentacion.length > 0) {
-      data.tipo_alimentacion.forEach((item, index) => {
-        formData.append(`tipo_alimentacion[${index}][alimento]`, item.alimento);
-        formData.append(`tipo_alimentacion[${index}][origen]`, item.origen);
-
-        if (item.porcentaje_comprado != null) {
-          formData.append(
-            `tipo_alimentacion[${index}][porcentaje_comprado]`,
-            String(item.porcentaje_comprado),
-          );
-        }
-
-        if (item.porcentaje_producido != null) {
-          formData.append(
-            `tipo_alimentacion[${index}][porcentaje_producido]`,
-            String(item.porcentaje_producido),
-          );
-        }
-      });
-    }
-
-    formData.append("vacunas", data.vacunas || "");
-    formData.append("tratamientos", data.tratamientos || "");
-    if (data.observaciones) {
-      formData.append("observaciones", data.observaciones || "");
-    }
-
-    formData.append("edad_promedio", String(data.edad_promedio));
-
-    if (data.peso_nacimiento) {
-      formData.append("peso_nacimiento", String(data.peso_nacimiento));
-    }
-
-    if (data.peso_destete) {
-      formData.append("peso_destete", String(data.peso_destete));
-    }
-
-    if (data.categoria_edad) {
-      formData.append("categoria_edad", String(data.categoria_edad));
-    }
-
-    if (data.tipo_nacimiento) {
-      formData.append("tipo_nacimiento", data.tipo_nacimiento);
-    }
-
-    if (data.famacha) {
-      formData.append("famacha", String(data.famacha));
-    }
-
-    if (data.lana) {
-      Object.entries(data.lana).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          formData.append(`lana[${key}]`, String(value));
-        }
-      });
-    }
-
-    if (data.historial_esquila && data.historial_esquila.length > 0) {
-      data.historial_esquila.forEach((item, index) => {
-        if (item.fecha_esquila) {
-          formData.append(
-            `historial_esquila[${index}][fecha_esquila]`,
-            item.fecha_esquila,
-          );
-        }
-        if (item.peso_vellon_kg) {
-          formData.append(
-            `historial_esquila[${index}][peso_vellon_kg]`,
-            String(item.peso_vellon_kg),
-          );
-        }
-        if (item.calidad_clasificacion) {
-          formData.append(
-            `historial_esquila[${index}][calidad_clasificacion]`,
-            item.calidad_clasificacion,
-          );
-        }
-        if (item.esquilador_responsable) {
-          formData.append(
-            `historial_esquila[${index}][esquilador_responsable]`,
-            item.esquilador_responsable,
-          );
-        }
-        if (item.observaciones) {
-          formData.append(
-            `historial_esquila[${index}][observaciones]`,
-            item.observaciones,
-          );
-        }
-      });
-    }
-
-    // Parásitos (si existe)
-    if (data.parasitos && data.parasitos.length > 0) {
-      data.parasitos.forEach((item, index) => {
-        if (item.famacha) {
-          formData.append(`parasitos[${index}][famacha]`, String(item.famacha));
-        }
-        if (item.tratamiento) {
-          formData.append(`parasitos[${index}][tratamiento]`, item.tratamiento);
-        }
-        if (item.fecha_tratamiento) {
-          formData.append(
-            `parasitos[${index}][fecha_tratamiento]`,
-            item.fecha_tratamiento,
-          );
-        }
-        if (item.observaciones) {
-          formData.append(
-            `parasitos[${index}][observaciones]`,
-            item.observaciones,
-          );
-        }
-      });
-    }
-
-    if (selectedMadreId) {
-      formData.append("madreId", selectedMadreId);
-    }
-
-    if (selectedPadreId) {
-      formData.append("padreId", selectedPadreId);
-    }
-
-    selectedImages.forEach((image) => {
-      formData.append("images", image);
-    });
-
-    mutation.mutate(formData as any);
+    mutation.mutate(animalData);
   };
 
   return (
@@ -555,55 +432,21 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
         <Card className="max-w-4xl mx-auto">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold flex items-center gap-2">
-              <span>🐑</span> Datos del Ovino
+              <span>🐐</span> Editar Caprino
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              Completa la información del ovino. Los campos con{" "}
+              Actualiza la información del caprino. Los campos con{" "}
               <span className="text-red-500">*</span> son obligatorios.
             </p>
           </CardHeader>
 
           <CardContent className="space-y-6">
-            {/* Identificación */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
                 Identificación
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">
-                    Sexo <span className="text-red-500">*</span>
-                  </Label>
-                  <RadioGroup
-                    value={watch("sexo") || ""}
-                    onValueChange={(value) => setValue("sexo", value)}
-                    className="space-y-2"
-                  >
-                    {sexoCaprinoOptions.map((sexo) => (
-                      <div
-                        key={sexo.value}
-                        className="flex items-center space-x-2"
-                      >
-                        <RadioGroupItem
-                          value={sexo.value}
-                          id={`sexo-${sexo.value}`}
-                        />
-                        <Label
-                          htmlFor={`sexo-${sexo.value}`}
-                          className="text-sm"
-                        >
-                          {sexo.label}
-                        </Label>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                  {errors.sexo && (
-                    <p className="text-sm text-red-500">
-                      {errors.sexo.message}
-                    </p>
-                  )}
-                </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
                     Arete / código <span className="text-red-500">*</span>
@@ -665,11 +508,9 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">
-                    Finca <span className="text-red-500">*</span>
-                  </Label>
+                  <Label className="text-sm font-medium">Finca</Label>
                   <Select
-                    value={watch("fincaId") || ""}
+                    defaultValue={animal ? animal.finca.id : watch("fincaId")}
                     onValueChange={(value) => setValue("fincaId", value)}
                   >
                     <SelectTrigger>
@@ -701,46 +542,8 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
                   />
                 </div>
               </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Foto</Label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageSelect}
-                    disabled={selectedImages.length >= 5}
-                    className="w-full cursor-pointer"
-                  />
-                  <p className="text-xs text-gray-500 mt-2">
-                    Máximo 5 imágenes · Formatos: JPG, PNG · Máximo 5MB cada una
-                  </p>
-                </div>
-                {imagePreviews.length > 0 && (
-                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 mt-2">
-                    {imagePreviews.map((preview, index) => (
-                      <div key={index} className="relative aspect-square">
-                        <img
-                          src={preview}
-                          alt={`Preview ${index + 1}`}
-                          className="w-full h-full object-cover rounded-lg border"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeImage(index)}
-                          className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center hover:bg-red-600 text-xs"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
             </div>
 
-            {/* Características */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
                 Características
@@ -784,6 +587,40 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
                     </p>
                   )}
                 </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Sexo <span className="text-red-500">*</span>
+                  </Label>
+                  <RadioGroup
+                    value={watch("sexo") || ""}
+                    onValueChange={(value) => setValue("sexo", value)}
+                    className="space-y-2"
+                  >
+                    {sexoCaprinoOptions.map((sexo) => (
+                      <div
+                        key={sexo.value}
+                        className="flex items-center space-x-2"
+                      >
+                        <RadioGroupItem
+                          value={sexo.value}
+                          id={`sexo-${sexo.value}`}
+                        />
+                        <Label
+                          htmlFor={`sexo-${sexo.value}`}
+                          className="text-sm"
+                        >
+                          {sexo.label}
+                        </Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                  {errors.sexo && (
+                    <p className="text-sm text-red-500">
+                      {errors.sexo.message}
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -791,6 +628,7 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
                   <Label className="text-sm font-medium">
                     Edad <span className="text-red-500">*</span>
                   </Label>
+
                   <RadioGroup
                     value={watch("edad_promedio")?.toString() ?? ""}
                     onValueChange={(value) =>
@@ -801,7 +639,7 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
                     }
                     className="space-y-2"
                   >
-                    {edadOvinoOptions.map((edad) => (
+                    {edadCaprinoOptions.map((edad) => (
                       <div
                         key={edad.value}
                         className="flex items-center space-x-2"
@@ -819,6 +657,7 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
                       </div>
                     ))}
                   </RadioGroup>
+
                   {errors.edad_promedio && (
                     <p className="text-sm text-red-500">
                       {errors.edad_promedio.message}
@@ -895,7 +734,6 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
               </div>
             </div>
 
-            {/* Propósito */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
                 Propósito <span className="text-red-500">*</span>
@@ -907,7 +745,7 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
                   onValueChange={(value) => setValue("proposito", value)}
                   className="grid grid-cols-2 md:grid-cols-3 gap-2"
                 >
-                  {propositoOvinoOptions.map((prop) => (
+                  {propositoCaprinoOptions.map((prop) => (
                     <div
                       key={prop.value}
                       className="flex items-center space-x-2"
@@ -930,67 +768,45 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
               </div>
             </div>
 
-            {/* Categoría y Nacimiento */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Categoría y Nacimiento
+                Genealogía
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Criador</Label>
+                  <Input
+                    {...register("nombre_criador_origen_animal")}
+                    placeholder="Nombre del criador"
+                    className="w-full"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Línea genética</Label>
+                  <Input
+                    {...register("linea_genetica")}
+                    placeholder="Línea genética del animal"
+                    className="w-full"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
+                Producción
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Categoría de edad
-                  </Label>
-                  <Select
-                    value={watch("categoria_edad") || ""}
-                    onValueChange={(value) => setValue("categoria_edad", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona una categoría" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categoriaEdadOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">
-                    Tipo de nacimiento
-                  </Label>
-                  <Select
-                    value={watch("tipo_nacimiento") || ""}
-                    onValueChange={(value) =>
-                      setValue("tipo_nacimiento", value)
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona tipo de nacimiento" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {tipoNacimientoOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">
-                    Peso al nacimiento (kg)
+                    Litros leche / día
                   </Label>
                   <Input
                     type="number"
                     step="0.1"
-                    {...register("peso_nacimiento")}
+                    {...register("litros_leche_dia")}
                     placeholder="Ej: 3.5"
                     className="w-full"
                   />
@@ -1009,82 +825,57 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
                   />
                 </div>
               </div>
-            </div>
 
-            {/* Genealogía */}
-            <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Genealogía
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Criador</Label>
-                  <Input
-                    {...register("nombre_criador_origen_animal")}
-                    placeholder="Nombre del criador"
-                    className="w-full"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Producción de Lana */}
-            <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Producción de Lana
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">
-                    Fecha de esquila
-                  </Label>
-                  <Input
-                    type="date"
-                    {...register("lana.fecha_esquila")}
-                    className="w-full"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">
-                    Calidad (micras)
-                  </Label>
+                  <Label className="text-sm font-medium">% Grasa</Label>
                   <Input
                     type="number"
                     step="0.1"
-                    {...register("lana.calidad_micras")}
-                    placeholder="Ej: 22.5"
-                    className="w-full"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Color de lana</Label>
-                  <Input
-                    {...register("lana.color_lana")}
-                    placeholder="Ej: Blanco, Negro, Marrón"
-                    className="w-full"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">
-                    Peso del vellón (kg)
-                  </Label>
-                  <Input
-                    type="number"
-                    step="0.1"
-                    {...register("lana.peso_vellon")}
+                    {...register("calidad_leche_grasa")}
                     placeholder="Ej: 3.5"
                     className="w-full"
                   />
                 </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">% Proteína</Label>
+                  <Input
+                    type="number"
+                    step="0.1"
+                    {...register("calidad_leche_proteina")}
+                    placeholder="Ej: 3.2"
+                    className="w-full"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Recuento células somáticas
+                  </Label>
+                  <Input
+                    type="number"
+                    {...register("calidad_leche_celulas")}
+                    placeholder="Ej: 200000"
+                    className="w-full"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">
+                  Ganancia de peso (kg/día)
+                </Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  {...register("ganancia_peso")}
+                  placeholder="Ej: 0.15"
+                  className="w-full"
+                />
               </div>
             </div>
 
-            {/* Sanidad */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
                 Sanidad
@@ -1119,7 +910,7 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
                 <Label className="text-sm font-medium">Vacunas</Label>
                 <Input
                   {...register("vacunas")}
-                  placeholder="Ej: Brucelosis, Clostridiosis, Etc."
+                  placeholder="Ej: Enterotoxemia, Pasteurelosis, Brucelosis"
                   className="w-full"
                 />
                 {errors.vacunas && (
@@ -1127,6 +918,26 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
                     {errors.vacunas.message}
                   </p>
                 )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Mastitis</Label>
+                  <Input
+                    {...register("mastitis")}
+                    placeholder="Observaciones y tratamientos"
+                    className="w-full"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Pezuñas (casco)</Label>
+                  <Input
+                    {...register("pezunas")}
+                    placeholder="Estado y tratamientos"
+                    className="w-full"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -1149,7 +960,6 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
               </div>
             </div>
 
-            {/* Alimentación */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
                 Alimentación
@@ -1326,70 +1136,19 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
               </div>
             </div>
 
-            {/* Famacha y Parásitos */}
-            <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Famacha y Parásitos
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Famacha</Label>
-                  <Input
-                    type="number"
-                    min={1}
-                    max={5}
-                    {...register("famacha")}
-                    placeholder="Ej: 2"
-                    className="w-full"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Valor de 1 a 5 (1 = sano, 5 = anémico)
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Tratamiento</Label>
-                  <Input
-                    {...register("parasitos.0.tratamiento")}
-                    placeholder="Nombre del tratamiento"
-                    className="w-full"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">
-                    Fecha de tratamiento
-                  </Label>
-                  <Input
-                    type="date"
-                    {...register("parasitos.0.fecha_tratamiento")}
-                    className="w-full"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Observaciones</Label>
-                  <Input
-                    {...register("parasitos.0.observaciones")}
-                    placeholder="Observaciones sobre parásitos"
-                    className="w-full"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Observaciones */}
             <div className="space-y-2">
               <Label className="text-sm font-medium">Observaciones</Label>
               <Textarea
                 {...register("observaciones")}
-                placeholder="Observaciones adicionales sobre el ovino"
+                placeholder="Observaciones adicionales sobre el caprino"
                 className="min-h-[100px]"
               />
             </div>
 
-            <div className="pt-4 border-t flex justify-end">
+            <div className="pt-4 border-t flex gap-4 justify-end">
+              <Button type="submit" disabled={mutation.isPending}>
+                {mutation.isPending ? "Actualizando..." : "Actualizar Caprino"}
+              </Button>
               <Button
                 type="button"
                 onClick={() => setActiveTab("padre")}
@@ -1403,7 +1162,7 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
         </Card>
       </TabsContent>
 
-      {/* PESTAÑA DATOS PADRE - Similar al de caprino */}
+      {/* PESTAÑA DATOS PADRE */}
       <TabsContent value="padre">
         <Card className="shadow-sm">
           <CardHeader className="bg-gray-50/50 border-b">
@@ -1428,7 +1187,6 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
           </CardHeader>
 
           <CardContent className="space-y-6 pt-6">
-            {/* Mismo contenido que en caprino para padre */}
             <div className="flex items-start space-x-3 p-3 bg-blue-50/50 rounded-lg border border-blue-100">
               <Checkbox
                 id="padreFinca"
@@ -1437,6 +1195,7 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
                   setIsPadreFinca(checked === true);
                   if (checked === false) {
                     setSelectedPadreId("");
+                    setSearchPadreTerm("");
                   }
                 }}
                 className="mt-0.5"
@@ -1758,7 +1517,7 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
                       onValueChange={(value) =>
                         setValue(
                           "pureza_padre",
-                          value === "none" ? undefined : (value as PurezaEnum),
+                          value === "none" ? undefined : value,
                         )
                       }
                     >
@@ -1885,7 +1644,7 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
         </Card>
       </TabsContent>
 
-      {/* PESTAÑA DATOS MADRE - Similar al de caprino */}
+      {/* PESTAÑA DATOS MADRE */}
       <TabsContent value="madre">
         <Card className="shadow-sm">
           <CardHeader className="bg-gray-50/50 border-b">
@@ -1923,6 +1682,7 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
                   setIsMadreFinca(checked === true);
                   if (checked === false) {
                     setSelectedMadreId("");
+                    setSearchMadreTerm("");
                   }
                 }}
                 className="mt-0.5"
@@ -2273,7 +2033,7 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
                       onValueChange={(value) =>
                         setValue(
                           "pureza_madre",
-                          value === "none" ? undefined : (value as PurezaEnum),
+                          value === "none" ? undefined : value,
                         )
                       }
                     >
@@ -2318,7 +2078,7 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
                       </span>
                     </div>
                     {errors.numero_parto_madre && (
-                      <p className="text-sm text-red-500 flex-items-center gap-1">
+                      <p className="text-sm text-red-500 flex items-center gap-1">
                         <span className="text-red-400">⚠</span>{" "}
                         {errors.numero_parto_madre.message}
                       </p>
@@ -2429,11 +2189,11 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       ></path>
                     </svg>
-                    Creando...
+                    Actualizando...
                   </>
                 ) : (
                   <>
-                    Crear Ovino
+                    Actualizar Caprino
                     <svg
                       className="w-4 h-4 ml-2"
                       fill="none"
@@ -2458,4 +2218,4 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
   );
 };
 
-export default FormAddOvino;
+export default FormEditCaprino;

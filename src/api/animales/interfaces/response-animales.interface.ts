@@ -123,6 +123,47 @@ export interface Animal {
   conversion_alimenticia?: number;
   sanidad?: Sanidad | string;
   cosecha?: Cosecha | string;
+
+  // CAPRINO
+  peso?: number;
+  proposito?: string;
+  potrero?: string;
+  linea_genetica?: string;
+  litros_leche_dia?: number;
+  peso_destete?: number;
+  ganancia_peso?: number;
+  calidad_leche_grasa?: number;
+  calidad_leche_proteina?: number;
+  calidad_leche_celulas?: number;
+  mastitis?: string;
+  pezunas?: string;
+  mortalidad?: boolean;
+  nombre_criador?: string;
+
+  // OVINO
+  categoria_edad?: string;
+  peso_nacimiento?: number;
+  tipo_nacimiento?: string;
+  lana?: {
+    fecha_esquila?: string;
+    calidad_micras?: number;
+    color_lana?: string;
+    peso_vellon?: number;
+  };
+  historial_esquila?: {
+    fecha_esquila: string;
+    peso_vellon_kg?: number;
+    calidad_clasificacion?: string;
+    esquilador_responsable?: string;
+    observaciones?: string;
+  }[];
+  famacha?: number;
+  parasitos?: {
+    famacha?: number;
+    tratamiento?: string;
+    fecha_tratamiento?: string;
+    observaciones?: string;
+  }[];
 }
 
 export interface Muestreo {
