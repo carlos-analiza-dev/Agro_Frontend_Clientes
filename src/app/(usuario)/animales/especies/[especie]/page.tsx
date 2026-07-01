@@ -46,6 +46,7 @@ import { toast } from "react-toastify";
 import { Badge } from "@/components/ui/badge";
 import CaprinoCard from "../../ui/CaprinoCard";
 import OvinoCard from "../../ui/OvinoCard";
+import PorcinoCard from "../../ui/PorcinoCard";
 
 const ESPECIES = {
   AVES: ["aves", "avicola", "pollos", "gallinas"],
@@ -284,8 +285,10 @@ const EspeciesPageAnimales = () => {
         return <CaprinoCard key={key} {...commonProps} />;
       case "ovino":
         return <OvinoCard key={key} {...commonProps} />;
-      case "bovino":
       case "porcino":
+        return <PorcinoCard key={key} {...commonProps} />;
+      case "bovino":
+
       default:
         return <AnimalCard key={key} {...commonProps} />;
     }

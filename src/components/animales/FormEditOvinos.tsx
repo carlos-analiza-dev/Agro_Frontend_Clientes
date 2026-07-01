@@ -187,7 +187,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
         vacunas: animal?.vacunas || "",
         pezunas: animal?.pezunas || "",
         tratamientos: animal?.tratamientos || "",
-        mortalidad: animal?.mortalidad || false,
+
         tipo_alimentacion: animal?.tipo_alimentacion || [],
         observaciones: animal?.observaciones || "",
         propietarioId: animal?.propietario?.id || "",
@@ -491,7 +491,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
         <Card className="max-w-4xl mx-auto">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold flex items-center gap-2">
-              <span>🐑</span> Editar Ovino
+              Editar Ovino
             </CardTitle>
             <p className="text-sm text-muted-foreground">
               Actualiza la información del ovino. Los campos con{" "}
@@ -1111,16 +1111,6 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                   placeholder="Descripción de tratamientos realizados"
                   className="min-h-[80px]"
                 />
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  checked={watch("mortalidad") || false}
-                  onCheckedChange={(checked) =>
-                    setValue("mortalidad", checked === true)
-                  }
-                />
-                <Label className="text-sm font-medium">Mortalidad</Label>
               </div>
             </div>
 

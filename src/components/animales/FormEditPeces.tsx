@@ -843,18 +843,6 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
                 <Input {...register("consumo")} placeholder="Ej: 12.5 kg/día" />
               </div>
             </div>
-
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">
-                Conversión Alimenticia
-              </Label>
-              <Input
-                type="number"
-                step="0.01"
-                {...register("conversion_alimenticia", { valueAsNumber: true })}
-                placeholder="Ej: 1.8"
-              />
-            </div>
           </div>
 
           {/* SANIDAD */}

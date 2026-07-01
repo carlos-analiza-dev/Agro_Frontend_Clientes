@@ -20,7 +20,7 @@ const AnimalFincaByPropietarion = ({
         <CardContent className="flex items-start gap-2 p-3">
           <Home className="w-5 h-5 text-muted-foreground" />
           <p className="text-sm text-foreground">
-            <span className="font-medium">Finca:</span> {fincaNombre} (
+            <span className="font-medium">Finca:</span> {fincaNombre ?? "N/D"} (
             {fincaAbreviatura})
           </p>
         </CardContent>

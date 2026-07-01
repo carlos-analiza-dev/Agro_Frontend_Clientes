@@ -453,7 +453,7 @@ const FormAddCaprino = ({ setActiveTab, selectedEspecieId }: Props) => {
         <Card className="max-w-4xl mx-auto">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold flex items-center gap-2">
-              <span>🐐</span> Datos del Caprino
+              Datos del Caprino
             </CardTitle>
             <p className="text-sm text-muted-foreground">
               Completa la información del caprino. Los campos con{" "}
@@ -995,16 +995,6 @@ const FormAddCaprino = ({ setActiveTab, selectedEspecieId }: Props) => {
                   placeholder="Descripción de tratamientos realizados"
                   className="min-h-[80px]"
                 />
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  checked={watch("mortalidad") || false}
-                  onCheckedChange={(checked) =>
-                    setValue("mortalidad", checked === true)
-                  }
-                />
-                <Label className="text-sm font-medium">Mortalidad</Label>
               </div>
             </div>
 

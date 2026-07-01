@@ -1,6 +1,14 @@
 import { TipoAve } from "@/interfaces/enums/animales/animales-enums";
 import { TipoAlimentacion } from "./crear-animal.interface";
 
+export enum EtapaAvicola {
+  RECEPCION = "Recepcion",
+  CRIA = "Cria",
+  CRECIMIENTO = "Crecimiento",
+  ENGORDE = "Engorde",
+  AYUNO = "Ayuno",
+}
+
 export interface AvicolaData {
   especie: string;
   fincaId: string;
@@ -29,4 +37,5 @@ export interface AvicolaData {
   tipo_concentrado?: string;
   lote_activo?: boolean;
   fecha_postura?: string | Date;
+  etapa_avicola?: EtapaAvicola;
 }

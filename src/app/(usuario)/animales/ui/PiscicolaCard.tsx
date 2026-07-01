@@ -665,7 +665,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     </div>
                   )}
 
-                  {animal.conversion_alimenticia !== undefined &&
+                  {/* {animal.conversion_alimenticia !== undefined &&
                     animal.conversion_alimenticia !== null && (
                       <div className="flex items-center gap-2 col-span-2">
                         <Scale className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
@@ -674,7 +674,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                           {animal.conversion_alimenticia}
                         </span>
                       </div>
-                    )}
+                    )} */}
                 </div>
               </div>
 

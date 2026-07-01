@@ -1,5 +1,6 @@
 import { TipoAve } from "@/interfaces/enums/animales/animales-enums";
 import { UsoEquinoEnum } from "@/interfaces/enums/animales/use-equino.enum";
+import { EtapaAvicola } from "./crear-avicola.interface";
 
 export interface ResponseAnimalesByPropietario {
   data: Animal[];
@@ -123,6 +124,7 @@ export interface Animal {
   conversion_alimenticia?: number;
   sanidad?: Sanidad | string;
   cosecha?: Cosecha | string;
+  etapa_avicola?: EtapaAvicola;
 
   // CAPRINO
   peso?: number;
@@ -164,6 +166,27 @@ export interface Animal {
     fecha_tratamiento?: string;
     observaciones?: string;
   }[];
+
+  // PORCINO
+  tipo_registro_porcino?: string;
+  etapa_porcino?: string;
+  corral_galera?: string;
+  lote?: string;
+  proveedor?: string;
+  fecha_ingreso_porcino?: string | Date;
+  cantidad_inicial_porcino?: number;
+  cantidad_actual_porcino?: number;
+  peso_inicial_porcino?: number;
+  fecha_pesaje_porcino?: string | Date;
+  consumo_diario_porcino?: number;
+  conversion_alimenticia_porcino?: number;
+  bajas_mortalidad_porcino?: number;
+  cuarentena_porcino?: boolean;
+  fecha_salida_porcino?: string | Date;
+  peso_salida_porcino?: number;
+  comprador_porcino?: string;
+  precio_porcino?: number;
+  rendimiento_canal_porcino?: number;
 }
 
 export interface Muestreo {

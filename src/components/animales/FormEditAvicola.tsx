@@ -28,11 +28,15 @@ import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
-import { AvicolaData } from "@/api/animales/interfaces/crear-avicola.interface";
+import {
+  AvicolaData,
+  EtapaAvicola,
+} from "@/api/animales/interfaces/crear-avicola.interface";
 import { TipoAve } from "@/interfaces/enums/animales/animales-enums";
 import {
   alimentoOptionsAves,
   calificacionHuevosOptions,
+  etapaAvicolaOptions,
   tipoAveOptions,
 } from "@/helpers/data/animales/animales-data";
 import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
@@ -77,6 +81,7 @@ const FormEditAvicola = ({ animalId, animal }: Props) => {
       razaIds: [],
       cantidad_lote: 0,
       tipo_alimentacion: [],
+      etapa_avicola: undefined,
     },
   });
 
@@ -107,6 +112,7 @@ const FormEditAvicola = ({ animalId, animal }: Props) => {
         tipo_produccion: animal.tipo_produccion || "",
         fincaId: animal.finca?.id || "",
         tipo_alimentacion: animal.tipo_alimentacion || [],
+        etapa_avicola: (animal.etapa_avicola as EtapaAvicola) || undefined,
       });
 
       setIsFormReady(true);
@@ -389,6 +395,66 @@ const FormEditAvicola = ({ animalId, animal }: Props) => {
                   {...register("mortalidad_diaria", { valueAsNumber: true })}
                   placeholder="Ej: 5"
                 />
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
+              Etapa del Lote <span className="text-red-500">*</span>
+            </h3>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Etapa Actual</Label>
+              <Select
+                value={watch("etapa_avicola") || ""}
+                onValueChange={(value) =>
+                  handleSelectChange("etapa_avicola", value as EtapaAvicola)
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona la etapa actual del lote" />
+                </SelectTrigger>
+                <SelectContent>
+                  {etapaAvicolaOptions.map((etapa) => (
+                    <SelectItem key={etapa.value} value={etapa.value}>
+                      {etapa.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.etapa_avicola && (
+                <p className="text-sm text-red-500">
+                  {errors.etapa_avicola.message}
+                </p>
+              )}
+
+              <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-md border border-blue-100 dark:border-blue-900">
+                <p className="text-xs text-blue-700 dark:text-blue-400">
+                  <span className="font-semibold">📌 Etapas:</span>
+                </p>
+                <ul className="text-xs text-blue-600 dark:text-blue-400 mt-1 space-y-1 list-disc list-inside">
+                  <li>
+                    <span className="font-medium">Recepción:</span> Primeros
+                    días después de la llegada de las aves
+                  </li>
+                  <li>
+                    <span className="font-medium">Cría:</span> Etapa inicial de
+                    desarrollo
+                  </li>
+                  <li>
+                    <span className="font-medium">Crecimiento:</span> Desarrollo
+                    y aumento de peso
+                  </li>
+                  <li>
+                    <span className="font-medium">Engorde:</span> Etapa final
+                    antes de la producción
+                  </li>
+                  <li>
+                    <span className="font-medium">Ayuno:</span> Período de
+                    descanso o preparación
+                  </li>
+                </ul>
               </div>
             </div>
           </div>

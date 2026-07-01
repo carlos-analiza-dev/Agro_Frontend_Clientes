@@ -1,3 +1,4 @@
+import { EtapaAvicola } from "@/api/animales/interfaces/crear-avicola.interface";
 import { EtapaPez } from "@/api/animales/interfaces/crear-peces.interface";
 import { TipoAve } from "@/interfaces/enums/animales/animales-enums";
 
@@ -153,4 +154,41 @@ export const propositoOvinoOptions = [
   { label: "Doble propósito", value: "doble_proposito" },
   { label: "Reproductor", value: "reproductor" },
   { label: "Cría", value: "cria" },
+];
+
+export const etapaAvicolaOptions = [
+  { value: EtapaAvicola.RECEPCION, label: "Recepción" },
+  { value: EtapaAvicola.CRIA, label: "Cría" },
+  { value: EtapaAvicola.CRECIMIENTO, label: "Crecimiento" },
+  { value: EtapaAvicola.ENGORDE, label: "Engorde" },
+  { value: EtapaAvicola.AYUNO, label: "Ayuno" },
+];
+
+export const sexoPorcinoOptions = [
+  { value: "Macho", label: "Macho" },
+  { value: "Hembra", label: "Hembra" },
+];
+
+export const tipoRegistroPorcinoOptions = [
+  { value: "Puro", label: "Puro" },
+  { value: "Cruce", label: "Cruce" },
+  { value: "Comercial", label: "Comercial" },
+  { value: "Registro", label: "Registro" },
+  { value: "Certificado", label: "Certificado" },
+];
+
+export const etapaPorcinoOptions = [
+  { value: "Lactancia", label: "Lactancia" },
+  { value: "Destete", label: "Destete" },
+  { value: "Recría", label: "Recría" },
+  { value: "Engorde", label: "Engorde" },
+  { value: "Reproducción", label: "Reproducción" },
+];
+
+export const tipoAlimentacionPorcinoOptions = [
+  { value: "Concentrados", label: "Concentrados" },
+  { value: "Granos", label: "Granos" },
+  { value: "Forrajes", label: "Forrajes" },
+  { value: "Suplementos", label: "Suplementos" },
+  { value: "Balanceados", label: "Balanceados" },
 ];

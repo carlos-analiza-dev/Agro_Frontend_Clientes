@@ -13,6 +13,7 @@ import FormEditAvicola from "@/components/animales/FormEditAvicola";
 import FormEditPeces from "@/components/animales/FormEditPeces";
 import FormEditCaprino from "@/components/animales/FormEditCaprino";
 import FormEditOvino from "@/components/animales/FormEditOvinos";
+import FormEditPorcino from "@/components/animales/FormEditPorcino";
 
 const AnimalDetailsPage = () => {
   const params = useParams();
@@ -21,13 +22,14 @@ const AnimalDetailsPage = () => {
   const { data: animalData, isLoading } = useAnimalById(animalId);
   const animal = animalData?.data;
 
-  const especiesConPadres = ["bovino", "porcino"];
   const especiesConFormularioEspecifico = [
     "avicola",
     "peces",
     "equino",
     "caprino",
     "ovino",
+    "bovino",
+    "porcino",
   ];
 
   if (isLoading) {
@@ -54,8 +56,7 @@ const AnimalDetailsPage = () => {
 
   const tieneFormularioEspecifico =
     especiesConFormularioEspecifico.includes(especieNombre);
-  const tienePadres = especiesConPadres.includes(especieNombre);
-  const tieneFormulario = tieneFormularioEspecifico || tienePadres;
+  const tieneFormulario = tieneFormularioEspecifico;
 
   return (
     <div className="container mx-auto p-4 max-w-4xl">
@@ -104,7 +105,9 @@ const AnimalDetailsPage = () => {
               />
             </Tabs>
           )}
-          {especieNombre === "porcino" && <FormAddPorcino />}
+          {especieNombre === "porcino" && (
+            <FormEditPorcino animal={animal} animalId={animalId} />
+          )}
 
           {especieNombre === "avicola" && (
             <FormEditAvicola animal={animal} animalId={animalId} />
@@ -133,7 +136,7 @@ const AnimalDetailsPage = () => {
             </Tabs>
           )}
 
-          {especiesConPadres.includes(especieNombre) && (
+          {especieNombre === "bovino" && (
             <Tabs
               value={activeTab}
               onValueChange={setActiveTab}

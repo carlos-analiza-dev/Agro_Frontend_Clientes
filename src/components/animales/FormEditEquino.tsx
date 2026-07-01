@@ -40,11 +40,7 @@ import { Switch } from "../ui/switch";
 import { UsoEquinoEnum } from "@/interfaces/enums/animales/use-equino.enum";
 import { extractNumberFromIdentifier } from "@/helpers/funciones/extractNumberFromIdentifier ";
 import { tipoReproduccionOptions } from "@/helpers/data/tipoReproduccionOptions";
-import { dataTipoProduccion } from "@/helpers/data/dataTipoProduccion";
-import {
-  alimentosEquinosOptions,
-  alimentosOptions,
-} from "@/helpers/data/alimentos";
+import { alimentosEquinosOptions } from "@/helpers/data/alimentos";
 
 interface Props {
   animalId: string;
@@ -93,7 +89,6 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
         sexo: animal?.sexo || "",
         color: animal?.color || "",
         nombre_animal: animal?.nombre_animal || "",
-        tipo_produccion: animal?.tipo_produccion || "",
         identificador_temp: extractNumberFromIdentifier(animal?.identificador),
         identificador: animal?.identificador || "",
         registro_genealogico: animal?.registro_genealogico || "",
@@ -206,11 +201,6 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
     sexo: SexoAnimal.Hembra,
     especieId,
   });
-
-  const tipoProduccionItems = dataTipoProduccion.map((produccion) => ({
-    label: produccion.label,
-    value: produccion.value,
-  }));
 
   const selectedSexo = watch("sexo") || animal?.sexo;
 
@@ -1021,45 +1011,6 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
                   {errors.tipo_reproduccion && (
                     <p className="text-sm text-red-500">
                       {errors.tipo_reproduccion.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">
-                    Tipo de Producción <span className="text-red-500">*</span>
-                  </Label>
-                  <RadioGroup
-                    value={
-                      watch("tipo_produccion") ||
-                      (animal ? animal.tipo_produccion : "")
-                    }
-                    onValueChange={(value) =>
-                      setValue("tipo_produccion", value)
-                    }
-                    className="grid grid-cols-2 sm:grid-cols-3 gap-2"
-                  >
-                    {tipoProduccionItems.map((item) => (
-                      <div
-                        key={item.value}
-                        className="flex items-center space-x-2"
-                      >
-                        <RadioGroupItem
-                          value={item.value}
-                          id={`tipo-produccion-${item.value}`}
-                        />
-                        <Label
-                          htmlFor={`tipo-produccion-${item.value}`}
-                          className="text-sm"
-                        >
-                          {item.label}
-                        </Label>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                  {errors.tipo_produccion && (
-                    <p className="text-sm text-red-500">
-                      {errors.tipo_produccion.message}
                     </p>
                   )}
                 </div>

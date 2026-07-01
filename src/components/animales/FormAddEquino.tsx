@@ -39,7 +39,6 @@ import { isAxiosError } from "axios";
 import { Switch } from "../ui/switch";
 import { UsoEquinoEnum } from "@/interfaces/enums/animales/use-equino.enum";
 import { alimentosEquinosOptions } from "@/helpers/data/alimentos";
-import { dataTipoProduccion } from "@/helpers/data/dataTipoProduccion";
 import { tipoReproduccionOptions } from "@/helpers/data/tipoReproduccionOptions";
 
 interface Props {
@@ -96,11 +95,6 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
   });
 
   const selectedSexo = watch("sexo");
-
-  const tipoProduccionItems = dataTipoProduccion.map((produccion) => ({
-    label: produccion.label,
-    value: produccion.value,
-  }));
 
   useEffect(() => {
     if (machos) {
@@ -169,18 +163,22 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
       return;
     }
 
+    const MAX_SIZE = 1024 * 1024;
+
     const validFiles = files.filter((file) => {
       const isValidType = file.type.startsWith("image/");
-      const isValidSize = file.size <= 5 * 1024 * 1024;
+      const isValidSize = file.size <= MAX_SIZE;
 
       if (!isValidType) {
         toast.error(`El archivo ${file.name} no es una imagen válida`);
         return false;
       }
+
       if (!isValidSize) {
-        toast.error(`La imagen ${file.name} excede el límite de 5MB`);
+        toast.error(`La imagen ${file.name} excede el límite de 1 MB`);
         return false;
       }
+
       return true;
     });
 
@@ -563,7 +561,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                       />
                       <p className="text-xs text-gray-500 mt-3">
                         <span className="font-medium">Máximo 5 imágenes</span> ·
-                        Formatos: JPG, PNG, GIF · Máximo 5MB cada una
+                        Formatos: JPG, PNG, GIF · Máximo 1MB cada una
                         <br />
                         <span className="text-blue-600">
                           {selectedImages.length}/5 imágenes seleccionadas
@@ -1102,39 +1100,12 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                   )}
                 </div>
               </div>
-
               <div className="space-y-2">
-                <Label className="text-sm font-medium">
-                  Tipo de Producción <span className="text-red-500">*</span>
-                </Label>
-                <RadioGroup
-                  value={watch("tipo_produccion") || ""}
-                  onValueChange={(value) => setValue("tipo_produccion", value)}
-                  className="grid grid-cols-2 sm:grid-cols-3 gap-2"
-                >
-                  {tipoProduccionItems.map((item) => (
-                    <div
-                      key={item.value}
-                      className="flex items-center space-x-2"
-                    >
-                      <RadioGroupItem
-                        value={item.value}
-                        id={`tipo-produccion-${item.value}`}
-                      />
-                      <Label
-                        htmlFor={`tipo-produccion-${item.value}`}
-                        className="text-sm"
-                      >
-                        {item.label}
-                      </Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-                {errors.tipo_produccion && (
-                  <p className="text-sm text-red-500">
-                    {errors.tipo_produccion.message}
-                  </p>
-                )}
+                <Label>Historial reproductivo</Label>
+                <Textarea
+                  {...register("historial_reproductivo")}
+                  placeholder="Servicios, partos, crías registradas, fertilidad..."
+                />
               </div>
             </div>
 
@@ -1335,13 +1306,6 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label>Historial reproductivo</Label>
-                <Textarea
-                  {...register("historial_reproductivo")}
-                  placeholder="Servicios, partos, crías registradas, fertilidad..."
-                />
-              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Precio de compra</Label>

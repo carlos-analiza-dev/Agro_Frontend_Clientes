@@ -410,11 +410,13 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
           <Separator className="my-4" />
 
-          <AnimalFincaByPropietarion
-            fincaNombre={animal.finca.nombre_finca}
-            fincaAbreviatura={animal.finca.abreviatura}
-            observaciones={animal.observaciones}
-          />
+          {animal.finca && (
+            <AnimalFincaByPropietarion
+              fincaNombre={animal.finca ? animal.finca.nombre_finca : "N/D"}
+              fincaAbreviatura={animal.finca.abreviatura}
+              observaciones={animal.observaciones}
+            />
+          )}
 
           <div className="flex justify-center w-full space-x-2 mt-4">
             <Button className="w-full" variant="outline" onClick={onEdit}>

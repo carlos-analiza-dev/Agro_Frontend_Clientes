@@ -939,7 +939,8 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
               <div className="border rounded-lg p-4 space-y-4 bg-gray-50">
                 {alimentosOptions.map((alimento) => {
-                  const alimentoSeleccionado = watch("tipo_alimentacion")?.find(
+                  const tipoAlimentacion = watch("tipo_alimentacion") || [];
+                  const alimentoSeleccionado = tipoAlimentacion.find(
                     (a: any) => a.alimento === alimento.value,
                   );
 
@@ -1231,7 +1232,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Finca</Label>
                   <Select
-                    defaultValue={animal ? animal.finca.id : watch("fincaId")}
+                    value={watch("fincaId") || animal?.finca?.id || ""}
                     onValueChange={(value) => setValue("fincaId", value)}
                   >
                     <SelectTrigger>

@@ -34,19 +34,45 @@ import {
   Syringe,
   AlertCircle,
   Package,
+  TrendingUp,
+  Clock,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import { ActualizarAnimalMuerte } from "@/api/animales/accions/update-animal-status-muerte";
 import { eliminarImagenAnimal } from "@/api/animales_profile/accions/delete-image-animal";
 import ImageGallery from "@/components/generics/ImageGallery";
 import { Badge } from "@/components/ui/badge";
-import { useAuthStore } from "@/providers/store/useAuthStore";
+import { EtapaAvicola } from "@/api/animales/interfaces/crear-avicola.interface";
 
 interface Props {
   animal: Animal;
   onEdit: () => void;
   onUpdateProfileImage: (imageUri: string, animalId: string) => Promise<void>;
 }
+
+const etapaColors: Record<EtapaAvicola, string> = {
+  [EtapaAvicola.RECEPCION]: "bg-blue-500 hover:bg-blue-600",
+  [EtapaAvicola.CRIA]: "bg-green-500 hover:bg-green-600",
+  [EtapaAvicola.CRECIMIENTO]: "bg-yellow-500 hover:bg-yellow-600",
+  [EtapaAvicola.ENGORDE]: "bg-orange-500 hover:bg-orange-600",
+  [EtapaAvicola.AYUNO]: "bg-purple-500 hover:bg-purple-600",
+};
+
+const etapaIcons: Record<EtapaAvicola, React.ReactNode> = {
+  [EtapaAvicola.RECEPCION]: <Clock className="h-3 w-3 mr-1" />,
+  [EtapaAvicola.CRIA]: <TrendingUp className="h-3 w-3 mr-1" />,
+  [EtapaAvicola.CRECIMIENTO]: <TrendingUp className="h-3 w-3 mr-1" />,
+  [EtapaAvicola.ENGORDE]: <Package className="h-3 w-3 mr-1" />,
+  [EtapaAvicola.AYUNO]: <Clock className="h-3 w-3 mr-1" />,
+};
+
+const etapaDescriptions: Record<EtapaAvicola, string> = {
+  [EtapaAvicola.RECEPCION]: "Recepción de aves",
+  [EtapaAvicola.CRIA]: "Etapa de cría",
+  [EtapaAvicola.CRECIMIENTO]: "Etapa de crecimiento",
+  [EtapaAvicola.ENGORDE]: "Etapa de engorde",
+  [EtapaAvicola.AYUNO]: "Período de ayuno",
+};
 
 const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const [deathDialogVisible, setDeathDialogVisible] = useState(false);
@@ -58,6 +84,7 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const queryClient = useQueryClient();
 
   const imageUrl = animal.profileImages?.[0]?.url;
+  const etapaActual = animal.etapa_avicola as EtapaAvicola;
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -229,6 +256,31 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
         </CardHeader>
 
         <CardContent className="p-4 pt-3">
+          {etapaActual && (
+            <div className="mb-3">
+              <div className="flex items-center gap-2 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/20 p-2 rounded-lg border border-amber-200 dark:border-amber-800">
+                <div className="flex items-center gap-2 flex-1">
+                  <TrendingUp className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                  <span className="text-xs font-medium text-amber-700 dark:text-amber-400">
+                    Etapa Actual:
+                  </span>
+                  <Badge
+                    className={`${etapaColors[etapaActual] || "bg-amber-500"} text-white text-xs px-3 py-1`}
+                  >
+                    {etapaIcons[etapaActual]}
+                    {etapaDescriptions[etapaActual] || etapaActual}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></div>
+                  <span className="text-[10px] text-muted-foreground">
+                    Activo
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-2 mb-3">
             {animal.cantidad_lote !== undefined &&
               animal.cantidad_lote !== null && (

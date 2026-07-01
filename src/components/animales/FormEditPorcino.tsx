@@ -24,7 +24,6 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useForm } from "react-hook-form";
-import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import { toast } from "react-toastify";
@@ -37,19 +36,22 @@ import {
   tipoAlimentacionPorcinoOptions,
   tipoRegistroPorcinoOptions,
 } from "@/helpers/data/animales/animales-data";
-import { CreateAnimalPorcino } from "@/api/animales/accions/crear-animal";
+import { UpdateAnimalPorcino } from "@/api/animales/accions/update-animal";
+import { Animal } from "@/api/animales/interfaces/response-animales.interface";
 
 interface Props {
-  selectedEspecieId: string;
+  animalId: string;
+  animal: Animal;
 }
 
-const FormAddPorcino = ({ selectedEspecieId }: Props) => {
+const FormEditPorcino = ({ animalId, animal }: Props) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { cliente } = useAuthStore();
-  const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [showIdentifierHelp, setShowIdentifierHelp] = useState(false);
+  const [isFormReady, setIsFormReady] = useState(false);
+
+  const especieId = animal?.especie?.id || "";
 
   const {
     register,
@@ -69,49 +71,59 @@ const FormAddPorcino = ({ selectedEspecieId }: Props) => {
     },
   });
 
-  const { data: razas } = useGetRazasByEspecie(selectedEspecieId);
+  const { data: razas } = useGetRazasByEspecie(especieId);
   const { data: fincas } = useFincasPropietarios(cliente?.id ?? "");
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-
-    if (files.length + selectedImages.length > 5) {
-      toast.error("Máximo 5 imágenes permitidas");
-      return;
-    }
-
-    const validFiles = files.filter((file) => {
-      const isValidType = file.type.startsWith("image/");
-      const isValidSize = file.size <= 5 * 1024 * 1024;
-
-      if (!isValidType) {
-        toast.error(`El archivo ${file.name} no es una imagen válida`);
-        return false;
-      }
-      if (!isValidSize) {
-        toast.error(`La imagen ${file.name} excede el límite de 5MB`);
-        return false;
-      }
-      return true;
-    });
-
-    setSelectedImages((prev) => [...prev, ...validFiles]);
-
-    const newPreviews = validFiles.map((file) => URL.createObjectURL(file));
-    setImagePreviews((prev) => [...prev, ...newPreviews]);
-  };
-
-  const removeImage = (index: number) => {
-    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
-    URL.revokeObjectURL(imagePreviews[index]);
-    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
-  };
-
   useEffect(() => {
-    return () => {
-      imagePreviews.forEach((preview) => URL.revokeObjectURL(preview));
-    };
-  }, []);
+    if (animal) {
+      reset({
+        identificador: animal.identificador || "",
+        nombre_animal: animal.nombre_animal || "",
+        fincaId: animal.finca?.id || "",
+        sexo: animal.sexo || "",
+        color: animal.color || "",
+        razaIds: animal.razas?.map((raza) => raza.id) || [],
+        tipo_registro_porcino: animal.tipo_registro_porcino || "",
+        etapa_porcino: animal.etapa_porcino || "",
+        corral_galera: animal.corral_galera || "",
+        lote: animal.lote || "",
+        proveedor: animal.proveedor || "",
+        fecha_ingreso_porcino: animal.fecha_ingreso_porcino
+          ? new Date(animal.fecha_ingreso_porcino).toISOString().split("T")[0]
+          : "",
+        cantidad_inicial_porcino: animal.cantidad_inicial_porcino || 1,
+        cantidad_actual_porcino: animal.cantidad_actual_porcino || 1,
+        peso_inicial_porcino: animal.peso_inicial_porcino || undefined,
+        peso_promedio: animal.peso_promedio || "",
+        ganancia_peso: animal.ganancia_peso || undefined,
+        fecha_pesaje_porcino: animal.fecha_pesaje_porcino
+          ? new Date(animal.fecha_pesaje_porcino).toISOString().split("T")[0]
+          : "",
+        tipo_alimentacion: animal.tipo_alimentacion || [],
+        consumo_diario_porcino: animal.consumo_diario_porcino || undefined,
+        vacunas: animal.vacunas || "",
+        tratamientos: animal.tratamientos || "",
+        condicion_corporal: animal.condicion_corporal || "",
+        desparasitado: animal.desparasitado || false,
+        mortalidad: animal.mortalidad || false,
+        bajas_mortalidad_porcino: animal.bajas_mortalidad_porcino || 0,
+        cuarentena_porcino: animal.cuarentena_porcino || false,
+        fecha_salida_porcino: animal.fecha_salida_porcino
+          ? new Date(animal.fecha_salida_porcino).toISOString().split("T")[0]
+          : "",
+        peso_salida_porcino: animal.peso_salida_porcino || undefined,
+        comprador_porcino: animal.comprador_porcino || "",
+        precio_porcino: animal.precio_porcino || undefined,
+        rendimiento_canal_porcino:
+          animal.rendimiento_canal_porcino || undefined,
+        nombre_criador_origen_animal: animal.nombre_criador_origen_animal || "",
+        observaciones: animal.observaciones || "",
+        especie: animal.especie?.id || "",
+      });
+
+      setIsFormReady(true);
+    }
+  }, [animal, reset]);
 
   const fincasItems =
     fincas?.data.fincas.map((finca) => ({
@@ -120,13 +132,12 @@ const FormAddPorcino = ({ selectedEspecieId }: Props) => {
     })) || [];
 
   const mutation = useMutation({
-    mutationFn: (data: FormData) => CreateAnimalPorcino(data),
+    mutationFn: (data: FormPorcinoData) =>
+      UpdateAnimalPorcino(animalId, data as any),
     onSuccess: () => {
-      toast.success("Porcino creado correctamente");
+      toast.success("Porcino actualizado correctamente");
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
-      reset();
-      setSelectedImages([]);
-      setImagePreviews([]);
+      queryClient.invalidateQueries({ queryKey: ["animal-id", animalId] });
       router.push("/animales");
     },
     onError: (error) => {
@@ -136,7 +147,7 @@ const FormAddPorcino = ({ selectedEspecieId }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear el porcino";
+            : "Hubo un error al actualizar el porcino";
         toast.error(errorMessage);
       } else {
         toast.error("Error inesperado. Contacte al administrador");
@@ -147,73 +158,52 @@ const FormAddPorcino = ({ selectedEspecieId }: Props) => {
   const onSubmit = (data: FormPorcinoData) => {
     if (!cliente?.id) return;
 
-    const formData = new FormData();
-
-    Object.entries(data).forEach(([key, value]) => {
-      if (
-        value === undefined ||
-        value === null ||
-        key === "razaIds" ||
-        key === "tipo_alimentacion"
-      ) {
-        return;
-      }
-
-      if (typeof value === "boolean") {
-        formData.append(key, String(value));
-      } else {
-        formData.append(key, String(value));
-      }
-    });
-
-    formData.append("especie", String(selectedEspecieId));
-
-    if (data.razaIds && data.razaIds.length > 0) {
-      formData.append("razaIds", JSON.stringify(data.razaIds));
+    if (!data.fincaId) {
+      toast.error("Debes seleccionar una finca");
+      return;
     }
 
-    if (data.tipo_alimentacion && data.tipo_alimentacion.length > 0) {
-      data.tipo_alimentacion.forEach((item, index) => {
-        formData.append(`tipo_alimentacion[${index}][alimento]`, item.alimento);
-        formData.append(`tipo_alimentacion[${index}][origen]`, item.origen);
-
-        if (item.porcentaje_comprado != null) {
-          formData.append(
-            `tipo_alimentacion[${index}][porcentaje_comprado]`,
-            String(item.porcentaje_comprado),
-          );
-        }
-
-        if (item.porcentaje_producido != null) {
-          formData.append(
-            `tipo_alimentacion[${index}][porcentaje_producido]`,
-            String(item.porcentaje_producido),
-          );
-        }
-      });
+    if (!data.identificador || data.identificador.trim() === "") {
+      toast.error("El identificador es obligatorio");
+      return;
     }
 
-    selectedImages.forEach((image) => {
-      formData.append("images", image);
-    });
+    if (!data.razaIds || data.razaIds.length === 0) {
+      toast.error("Debes seleccionar al menos una raza");
+      return;
+    }
 
-    mutation.mutate(formData as any);
+    mutation.mutate(data);
   };
+
+  if (!isFormReady) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">
+            Cargando datos del porcino...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Card className="max-w-4xl mx-auto">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold flex items-center gap-2">
-            Datos del Porcino
+            Editar Porcino
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Completa la información del porcino. Los campos con{" "}
+            Actualiza la información del porcino. Los campos con{" "}
             <span className="text-red-500">*</span> son obligatorios.
           </p>
         </CardHeader>
 
         <CardContent className="space-y-6">
+          {/* Identificación */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
               Identificación
@@ -337,6 +327,7 @@ const FormAddPorcino = ({ selectedEspecieId }: Props) => {
             </div>
           </div>
 
+          {/* Características */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
               Características
@@ -371,6 +362,11 @@ const FormAddPorcino = ({ selectedEspecieId }: Props) => {
                     </div>
                   ))}
                 </div>
+                {errors.razaIds && (
+                  <p className="text-sm text-red-500">
+                    {errors.razaIds.message}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -900,10 +896,10 @@ const FormAddPorcino = ({ selectedEspecieId }: Props) => {
             </div>
           </div>
 
-          {/* Observaciones y Fotos */}
+          {/* Observaciones */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Observaciones y Fotos
+              Observaciones
             </h3>
 
             <div className="space-y-2">
@@ -925,50 +921,20 @@ const FormAddPorcino = ({ selectedEspecieId }: Props) => {
                 className="min-h-[100px]"
               />
             </div>
-
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Fotos</Label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
-                <Input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleImageSelect}
-                  disabled={selectedImages.length >= 5}
-                  className="w-full cursor-pointer"
-                />
-                <p className="text-xs text-gray-500 mt-2">
-                  Máximo 5 imágenes · Formatos: JPG, PNG · Máximo 5MB cada una
-                </p>
-              </div>
-              {imagePreviews.length > 0 && (
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 mt-2">
-                  {imagePreviews.map((preview, index) => (
-                    <div key={index} className="relative aspect-square">
-                      <img
-                        src={preview}
-                        alt={`Preview ${index + 1}`}
-                        className="w-full h-full object-cover rounded-lg border"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(index)}
-                        className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center hover:bg-red-600 text-xs"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
           </div>
 
-          <div className="pt-4 border-t flex justify-end">
+          <div className="pt-4 border-t flex justify-end gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.push("/animales")}
+            >
+              Cancelar
+            </Button>
             <Button
               type="submit"
               disabled={mutation.isPending}
-              className="bg-amber-600 hover:bg-amber-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-pink-600 hover:bg-pink-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {mutation.isPending ? (
                 <>
@@ -992,25 +958,10 @@ const FormAddPorcino = ({ selectedEspecieId }: Props) => {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Creando...
+                  Actualizando...
                 </>
               ) : (
-                <>
-                  Crear Porcino
-                  <svg
-                    className="w-4 h-4 ml-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 7l5 5m0 0l-5 5m5-5H6"
-                    />
-                  </svg>
-                </>
+                "Actualizar Porcino"
               )}
             </Button>
           </div>
@@ -1020,4 +971,4 @@ const FormAddPorcino = ({ selectedEspecieId }: Props) => {
   );
 };
 
-export default FormAddPorcino;
+export default FormEditPorcino;

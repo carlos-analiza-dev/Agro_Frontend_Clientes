@@ -17,6 +17,7 @@ import { useAuthStore } from "@/providers/store/useAuthStore";
 import { TipoCliente } from "@/interfaces/enums/clientes.enums";
 import useGetPermisosByClientePaquete from "@/hooks/permisos/useGetPermisosByClientePaquete";
 import useGetPermisosByCliente from "@/hooks/permisos/useGetPermisosByCliente";
+import SidebarSkeleton from "../SideBars/SidebarSkeleton";
 
 interface Props {
   setMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -39,7 +40,11 @@ const SheetContentComp = ({
 
   const { data: permisosPaquete } = useGetPermisosByClientePaquete(paqueteId);
 
-  const { data: permisosCliente } = useGetPermisosByCliente(clienteId);
+  const {
+    data: permisosCliente,
+    isLoading,
+    isError,
+  } = useGetPermisosByCliente(clienteId);
 
   const permisos = esPropietario ? permisosPaquete : permisosCliente;
 
@@ -55,6 +60,10 @@ const SheetContentComp = ({
           return true;
         }
 
+        if (item.href.startsWith("/animales/especies")) {
+          return permisosVer.includes("/animales");
+        }
+
         return permisosVer.includes(item.href);
       });
 
@@ -66,6 +75,21 @@ const SheetContentComp = ({
     .filter((section) => section.items.length > 0);
 
   const isItemActive = (href: string) => pathname === href;
+
+  if (isLoading || isError) {
+    return (
+      <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
+        <SheetContent
+          side="left"
+          className="w-64 p-0 h-screen flex flex-col overflow-hidden"
+        >
+          <div className="p-4">
+            <SidebarSkeleton />
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
 
   return (
     <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
