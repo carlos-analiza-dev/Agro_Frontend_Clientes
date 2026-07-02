@@ -62,8 +62,8 @@ export interface Animal {
   veterinario?: string;
   peso_actual?: number;
   nivel_entrenamiento?: string;
-  resultados_competencias?: string;
-  historial_reproductivo?: string;
+  resultados_competencias?: string[];
+  historial_reproductivo?: string[];
   valor_estimado?: number;
   asegurado?: boolean;
   alzada?: number;

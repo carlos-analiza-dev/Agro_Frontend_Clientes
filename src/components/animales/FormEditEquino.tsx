@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { ArrowRight, InfoIcon } from "lucide-react";
+import { ArrowRight, InfoIcon, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/providers/store/useAuthStore";
@@ -41,6 +41,7 @@ import { UsoEquinoEnum } from "@/interfaces/enums/animales/use-equino.enum";
 import { extractNumberFromIdentifier } from "@/helpers/funciones/extractNumberFromIdentifier ";
 import { tipoReproduccionOptions } from "@/helpers/data/tipoReproduccionOptions";
 import { alimentosEquinosOptions } from "@/helpers/data/alimentos";
+import SummaryList from "../generics/SummaryList";
 
 interface Props {
   animalId: string;
@@ -64,6 +65,13 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
   const [filteredHembras, setFilteredHembras] = useState<Animal[]>([]);
   const [isPadreDropdownOpen, setIsPadreDropdownOpen] = useState(false);
   const [isMadreDropdownOpen, setIsMadreDropdownOpen] = useState(false);
+  const [historialReproductivoInput, setHistorialReproductivoInput] =
+    useState("");
+  const [competenciasInput, setCompetenciasInput] = useState("");
+  const [historialReproductivoList, setHistorialReproductivoList] = useState<
+    string[]
+  >([]);
+  const [competenciasList, setCompetenciasList] = useState<string[]>([]);
 
   const {
     register,
@@ -79,6 +87,8 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
   >({
     defaultValues: {
       identificador: "",
+      historial_reproductivo: [],
+      resultados_competencias: [],
     },
   });
 
@@ -95,23 +105,17 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
         microchip: animal?.microchip || "",
         razaIds: animal?.razas?.map((raza) => raza.id) || [],
         pureza: animal?.pureza || "",
-
         edad_promedio: Number(animal?.edad_promedio) || 0,
         fecha_nacimiento: animal?.fecha_nacimiento || "",
-
         peso_actual: animal?.peso_actual || 0,
         alzada: animal?.alzada || 0,
         unidad_alzada: animal?.unidad_alzada || "cm",
         condicion_corporal: animal?.condicion_corporal || "",
-
         castrado: animal?.castrado || false,
         esterelizado: animal?.esterelizado || false,
-
         observaciones: animal?.observaciones || "",
-
         fincaId: animal?.finca?.id || "",
         propietarioId: animal?.propietario?.id || "",
-
         medicamento: animal?.medicamento || "",
         vacunas: animal?.vacunas || "",
         desparasitado: animal?.desparasitado || false,
@@ -119,20 +123,15 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
         lesiones: animal?.lesiones || "",
         alergias: animal?.alergias || "",
         odontologia: animal?.odontologia || "",
-
         tipo_reproduccion: animal?.tipo_reproduccion || "",
         tipo_alimentacion: animal?.tipo_alimentacion || [],
-
         nivel_entrenamiento: animal?.nivel_entrenamiento || "",
-        resultados_competencias: animal?.resultados_competencias || "",
-        historial_reproductivo: animal?.historial_reproductivo || "",
-
+        resultados_competencias: animal?.resultados_competencias || [],
+        historial_reproductivo: animal?.historial_reproductivo || [],
         valor_estimado: animal?.valor_estimado || 0,
         precio_compra: animal?.precio_compra || 0,
         asegurado: animal?.asegurado || false,
-
         uso_equino: animal?.uso_equino || UsoEquinoEnum.REPRODUCCION,
-
         compra_animal: animal?.compra_animal || false,
         nombre_criador_origen_animal:
           animal?.nombre_criador_origen_animal || "",
@@ -142,7 +141,6 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
         nombre_criador_padre: animal?.nombre_criador_padre || "",
         nombre_propietario_padre: animal?.nombre_propietario_padre || "",
         nombre_finca_origen_padre: animal?.nombre_finca_origen_padre || "",
-
         nombre_madre: animal?.nombre_madre || "",
         razas_madre: animal?.razas_madre?.map((raza) => raza.id) || [],
         pureza_madre: animal?.pureza_madre || "",
@@ -151,6 +149,9 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
         nombre_finca_origen_madre: animal?.nombre_finca_origen_madre || "",
         numero_parto_madre: animal?.numero_parto_madre || 0,
       });
+
+      setHistorialReproductivoList(animal.historial_reproductivo || []);
+      setCompetenciasList(animal.resultados_competencias || []);
 
       if (animal.fecha_nacimiento) {
         const nacimiento = new Date(animal.fecha_nacimiento);
@@ -201,6 +202,82 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
     sexo: SexoAnimal.Hembra,
     especieId,
   });
+
+  const agregarHistorialReproductivo = () => {
+    if (!historialReproductivoInput.trim()) return;
+
+    const nuevoItem = historialReproductivoInput.trim();
+
+    if (historialReproductivoList.includes(nuevoItem)) {
+      toast.info("Este elemento ya fue agregado");
+      setHistorialReproductivoInput("");
+      return;
+    }
+
+    const listaActualizada = [...historialReproductivoList, nuevoItem];
+    setHistorialReproductivoList(listaActualizada);
+    setHistorialReproductivoInput("");
+    setValue("historial_reproductivo", listaActualizada);
+  };
+
+  const eliminarHistorialReproductivo = (index: number) => {
+    const nuevosItems = historialReproductivoList.filter((_, i) => i !== index);
+    setHistorialReproductivoList(nuevosItems);
+    setValue("historial_reproductivo", nuevosItems);
+  };
+
+  const limpiarHistorialReproductivo = () => {
+    setHistorialReproductivoList([]);
+    setHistorialReproductivoInput("");
+    setValue("historial_reproductivo", []);
+  };
+
+  const handleHistorialKeyDown = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>,
+  ) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      agregarHistorialReproductivo();
+    }
+  };
+
+  const agregarCompetencia = () => {
+    if (!competenciasInput.trim()) return;
+
+    const nuevoItem = competenciasInput.trim();
+
+    if (competenciasList.includes(nuevoItem)) {
+      toast.info("Este elemento ya fue agregado");
+      setCompetenciasInput("");
+      return;
+    }
+
+    const listaActualizada = [...competenciasList, nuevoItem];
+    setCompetenciasList(listaActualizada);
+    setCompetenciasInput("");
+    setValue("resultados_competencias", listaActualizada);
+  };
+
+  const eliminarCompetencia = (index: number) => {
+    const nuevosItems = competenciasList.filter((_, i) => i !== index);
+    setCompetenciasList(nuevosItems);
+    setValue("resultados_competencias", nuevosItems);
+  };
+
+  const limpiarCompetencias = () => {
+    setCompetenciasList([]);
+    setCompetenciasInput("");
+    setValue("resultados_competencias", []);
+  };
+
+  const handleCompetenciaKeyDown = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>,
+  ) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      agregarCompetencia();
+    }
+  };
 
   const selectedSexo = watch("sexo") || animal?.sexo;
 
@@ -321,6 +398,12 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
       propietarioId: cliente.id,
       padreId: isPadreFinca ? selectedPadreId : undefined,
       madreId: isMadreFinca ? selectedMadreId : undefined,
+      historial_reproductivo: Array.isArray(data.historial_reproductivo)
+        ? data.historial_reproductivo
+        : [],
+      resultados_competencias: Array.isArray(data.resultados_competencias)
+        ? data.resultados_competencias
+        : [],
     };
 
     if (animalData.fecha_nacimiento) {
@@ -1017,13 +1100,68 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">
+                <Label className="flex items-center gap-2">
                   Historial reproductivo
+                  <span className="text-xs text-muted-foreground font-normal">
+                    (Agrega eventos uno por uno)
+                  </span>
                 </Label>
-                <Textarea
-                  {...register("historial_reproductivo")}
-                  placeholder="Servicios, partos, crías registradas, fertilidad..."
-                />
+
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Textarea
+                    placeholder="Ej: Servicio con toro X - 15/01/2024, Parto gemelar - 10/06/2024, etc."
+                    className={`min-h-[80px] w-full sm:flex-1`}
+                    value={historialReproductivoInput}
+                    onChange={(e) =>
+                      setHistorialReproductivoInput(e.target.value)
+                    }
+                    onKeyDown={handleHistorialKeyDown}
+                  />
+
+                  <div className="flex sm:flex-col gap-2 w-full sm:w-auto">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={agregarHistorialReproductivo}
+                      className="flex-1 sm:flex-none h-10"
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      Agregar
+                    </Button>
+
+                    {historialReproductivoList.length > 0 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={limpiarHistorialReproductivo}
+                        className="flex-1 sm:flex-none h-10 text-red-500 hover:text-red-600"
+                      >
+                        Limpiar
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                <p className="text-xs text-muted-foreground">
+                  Escribe un evento y presiona Enter o haz clic en "Agregar"
+                </p>
+
+                {errors.historial_reproductivo && (
+                  <p className="text-sm text-red-500">
+                    {typeof errors.historial_reproductivo === "string"
+                      ? errors.historial_reproductivo
+                      : errors.historial_reproductivo.message}
+                  </p>
+                )}
+
+                {historialReproductivoList.length > 0 && (
+                  <SummaryList
+                    items={historialReproductivoList}
+                    onRemoveItem={eliminarHistorialReproductivo}
+                    label="Eventos registrados"
+                    emptyMessage="No hay eventos registrados"
+                  />
+                )}
               </div>
             </div>
 
@@ -1219,11 +1357,67 @@ const FormEditEquino = ({ animal, animalId, setActiveTab }: Props) => {
               </div>
 
               <div className="space-y-2">
-                <Label>Competencias / Resultados</Label>
-                <Textarea
-                  {...register("resultados_competencias")}
-                  placeholder="Participaciones, campeonatos, premios obtenidos..."
-                />
+                <Label className="flex items-center gap-2">
+                  Competencias / Resultados
+                  <span className="text-xs text-muted-foreground font-normal">
+                    (Agrega participaciones una por una)
+                  </span>
+                </Label>
+
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Textarea
+                    placeholder="Ej: Campeonato Nacional - 1er lugar 2023, Feria Regional - Mejor ejemplar 2024, etc."
+                    className={`min-h-[80px] w-full sm:flex-1`}
+                    value={competenciasInput}
+                    onChange={(e) => setCompetenciasInput(e.target.value)}
+                    onKeyDown={handleCompetenciaKeyDown}
+                  />
+
+                  <div className="flex sm:flex-col gap-2 w-full sm:w-auto">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={agregarCompetencia}
+                      className="flex-1 sm:flex-none h-10"
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      Agregar
+                    </Button>
+
+                    {competenciasList.length > 0 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={limpiarCompetencias}
+                        className="flex-1 sm:flex-none h-10 text-red-500 hover:text-red-600"
+                      >
+                        Limpiar
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                <p className="text-xs text-muted-foreground">
+                  Escribe una competencia y presiona Enter o haz clic en
+                  "Agregar"
+                </p>
+
+                {errors.resultados_competencias && (
+                  <p className="text-sm text-red-500">
+                    {typeof errors.resultados_competencias === "string"
+                      ? errors.resultados_competencias
+                      : errors.resultados_competencias.message}
+                  </p>
+                )}
+
+                {competenciasList.length > 0 && (
+                  <SummaryList
+                    items={competenciasList}
+                    onRemoveItem={eliminarCompetencia}
+                    label="Competencias registradas"
+                    emptyMessage="No hay competencias registradas"
+                  />
+                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

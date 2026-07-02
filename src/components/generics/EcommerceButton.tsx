@@ -22,7 +22,7 @@ export const EcommerceButton = () => {
         size="sm"
         className="
           gap-2
-          bg-gradient-to-r from-blue-600 to-indigo-600
+          bg-gradient-to-r from-green-600 to-green-500
           text-white
           font-medium
           shadow-md

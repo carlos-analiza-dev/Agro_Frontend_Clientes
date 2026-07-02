@@ -103,14 +103,14 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
 
     const validFiles = files.filter((file) => {
       const isValidType = file.type.startsWith("image/");
-      const isValidSize = file.size <= 5 * 1024 * 1024;
+      const isValidSize = file.size <= 1024 * 1024;
 
       if (!isValidType) {
         toast.error(`El archivo ${file.name} no es una imagen válida`);
         return false;
       }
       if (!isValidSize) {
-        toast.error(`La imagen ${file.name} excede el límite de 5MB`);
+        toast.error(`La imagen ${file.name} excede el límite de 1MB`);
         return false;
       }
       return true;
@@ -1094,7 +1094,7 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
                   />
                   <p className="text-xs text-gray-500 mt-3">
                     <span className="font-medium">Máximo 5 imágenes</span> ·
-                    Formatos: JPG, PNG, GIF · Máximo 5MB cada una
+                    Formatos: JPG, PNG, GIF · Máximo 1MB cada una
                     <br />
                     <span className="text-blue-600">
                       {selectedImages.length}/5 imágenes seleccionadas

@@ -144,14 +144,14 @@ const FormAddCaprino = ({ setActiveTab, selectedEspecieId }: Props) => {
 
     const validFiles = files.filter((file) => {
       const isValidType = file.type.startsWith("image/");
-      const isValidSize = file.size <= 5 * 1024 * 1024;
+      const isValidSize = file.size <= 1024 * 1024;
 
       if (!isValidType) {
         toast.error(`El archivo ${file.name} no es una imagen válida`);
         return false;
       }
       if (!isValidSize) {
-        toast.error(`La imagen ${file.name} excede el límite de 5MB`);
+        toast.error(`La imagen ${file.name} excede el límite de 1MB`);
         return false;
       }
       return true;
@@ -611,7 +611,7 @@ const FormAddCaprino = ({ setActiveTab, selectedEspecieId }: Props) => {
                     className="w-full cursor-pointer"
                   />
                   <p className="text-xs text-gray-500 mt-2">
-                    Máximo 5 imágenes · Formatos: JPG, PNG · Máximo 5MB cada una
+                    Máximo 5 imágenes · Formatos: JPG, PNG · Máximo 1MB cada una
                   </p>
                 </div>
                 {imagePreviews.length > 0 && (

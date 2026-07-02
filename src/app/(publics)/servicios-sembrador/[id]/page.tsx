@@ -74,7 +74,6 @@ const ServicioPage = () => {
   };
 
   const handleLoginRedirect = () => {
-    localStorage.setItem("redirectAfterLogin", window.location.pathname);
     localStorage.setItem(
       "selectedSubServicio",
       JSON.stringify(selectedSubServicio),
@@ -83,7 +82,6 @@ const ServicioPage = () => {
   };
 
   const handleRegisterRedirect = () => {
-    localStorage.setItem("redirectAfterRegister", window.location.pathname);
     localStorage.setItem(
       "selectedSubServicio",
       JSON.stringify(selectedSubServicio),

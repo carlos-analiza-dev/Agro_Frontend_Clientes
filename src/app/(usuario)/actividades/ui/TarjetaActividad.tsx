@@ -127,10 +127,16 @@ const TarjetaActividad = ({
     const filesArray = Array.from(selectedFiles);
 
     const validFiles = filesArray.filter((file) => {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error(`La imagen ${file.name} es demasiado grande (máx 5MB)`);
+      if (!file.type.startsWith("image/")) {
+        toast.error(`${file.name} no es una imagen válida.`);
         return false;
       }
+
+      if (file.size > 1024 * 1024) {
+        toast.error(`La imagen ${file.name} es demasiado grande (máx. 1 MB).`);
+        return false;
+      }
+
       return true;
     });
 

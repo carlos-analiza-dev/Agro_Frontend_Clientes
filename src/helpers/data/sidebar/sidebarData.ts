@@ -45,7 +45,7 @@ const iconosEspecies = {
 
 const animalesItems = [
   {
-    name: "Todos los Animales",
+    name: "Todos",
     href: "/animales",
     icon: Layers3,
   },

@@ -295,7 +295,7 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   return (
     <>
       <Card className="mb-4 overflow-hidden transition-all duration-200 hover:shadow-md">
-        <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
+        <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between bg-green-200">
           <div className="flex items-center space-x-3">
             <div className="relative">
               <Avatar
@@ -419,7 +419,7 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           )}
 
           <div className="flex justify-center w-full space-x-2 mt-4">
-            <Button className="w-full" variant="outline" onClick={onEdit}>
+            <Button className="w-full bg-green-600" onClick={onEdit}>
               Editar
             </Button>
           </div>

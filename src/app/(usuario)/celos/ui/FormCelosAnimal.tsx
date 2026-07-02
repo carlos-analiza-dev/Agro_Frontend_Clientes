@@ -110,7 +110,6 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
           const minutes = String(date.getMinutes()).padStart(2, "0");
           return `${year}-${month}-${day}T${hours}:${minutes}`;
         } catch (error) {
-          console.error("Error formateando fecha:", error);
           return "";
         }
       };

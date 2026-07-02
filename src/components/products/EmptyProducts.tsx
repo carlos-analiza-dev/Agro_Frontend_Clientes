@@ -40,7 +40,7 @@ export const EmptyProducts = ({ onRefresh }: Props) => {
       {onRefresh && (
         <button
           onClick={onRefresh}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg"
         >
           <svg
             className="w-4 h-4"

@@ -175,10 +175,10 @@ export const ChatFloating = ({
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
-    const MAX_SIZE = 5 * 1024 * 1024;
+    const MAX_SIZE = 1024 * 1024;
     const validFiles = files.filter((file) => {
       if (file.size > MAX_SIZE) {
-        toast.error(`La imagen ${file.name} excede el tamaño máximo de 5MB`);
+        toast.error(`La imagen ${file.name} excede el tamaño máximo de 1MB`);
         return false;
       }
       if (!file.type.startsWith("image/")) {

@@ -52,8 +52,8 @@ export interface CrearAnimalByFinca {
   vacunas?: string;
   veterinario?: string;
   nivel_entrenamiento?: string;
-  resultados_competencias?: string;
-  historial_reproductivo?: string;
+  resultados_competencias?: string[];
+  historial_reproductivo?: string[];
   valor_estimado?: number;
   asegurado?: boolean;
   peso_actual: number;

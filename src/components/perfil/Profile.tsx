@@ -57,8 +57,8 @@ const Profile = ({ user, height, onUpdateProfileImage }: Props) => {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("La imagen no debe exceder los 5MB");
+    if (file.size > 1024 * 1024) {
+      toast.error("La imagen no debe exceder los 1MB");
       return;
     }
 

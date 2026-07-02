@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { ArrowRight, InfoIcon } from "lucide-react";
+import { ArrowRight, InfoIcon, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/providers/store/useAuthStore";
@@ -40,6 +40,7 @@ import { Switch } from "../ui/switch";
 import { UsoEquinoEnum } from "@/interfaces/enums/animales/use-equino.enum";
 import { alimentosEquinosOptions } from "@/helpers/data/alimentos";
 import { tipoReproduccionOptions } from "@/helpers/data/tipoReproduccionOptions";
+import SummaryList from "../generics/SummaryList";
 
 interface Props {
   setActiveTab: Dispatch<SetStateAction<string>>;
@@ -63,6 +64,13 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
   const [filteredHembras, setFilteredHembras] = useState<Animal[]>([]);
   const [isPadreDropdownOpen, setIsPadreDropdownOpen] = useState(false);
   const [isMadreDropdownOpen, setIsMadreDropdownOpen] = useState(false);
+  const [historialReproductivoInput, setHistorialReproductivoInput] =
+    useState("");
+  const [competenciasInput, setCompetenciasInput] = useState("");
+  const [historialReproductivoList, setHistorialReproductivoList] = useState<
+    string[]
+  >([]);
+  const [competenciasList, setCompetenciasList] = useState<string[]>([]);
   const {
     register,
     handleSubmit,
@@ -93,6 +101,93 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
     sexo: SexoAnimal.Hembra,
     especieId,
   });
+
+  const agregarHistorialReproductivo = () => {
+    if (!historialReproductivoInput.trim()) return;
+
+    const nuevoItem = historialReproductivoInput.trim();
+
+    const currentHistorial = watch("historial_reproductivo") || [];
+
+    if (currentHistorial.includes(nuevoItem)) {
+      toast.info("Este elemento ya fue agregado");
+      setHistorialReproductivoInput("");
+      return;
+    }
+
+    const historialActualizado = [...currentHistorial, nuevoItem];
+
+    setValue("historial_reproductivo", historialActualizado);
+
+    setHistorialReproductivoList(historialActualizado);
+    setHistorialReproductivoInput("");
+  };
+
+  const eliminarHistorialReproductivo = (index: number) => {
+    const currentHistorial = watch("historial_reproductivo") || [];
+    const nuevosItems = currentHistorial.filter((_, i) => i !== index);
+
+    setValue("historial_reproductivo", nuevosItems);
+    setHistorialReproductivoList(nuevosItems);
+  };
+
+  const agregarCompetencia = () => {
+    if (!competenciasInput.trim()) return;
+
+    const nuevoItem = competenciasInput.trim();
+
+    const currentCompetencias = watch("resultados_competencias") || [];
+
+    if (currentCompetencias.includes(nuevoItem)) {
+      toast.info("Este elemento ya fue agregado");
+      setCompetenciasInput("");
+      return;
+    }
+
+    const competenciasActualizadas = [...currentCompetencias, nuevoItem];
+
+    setValue("resultados_competencias", competenciasActualizadas);
+    setCompetenciasList(competenciasActualizadas);
+    setCompetenciasInput("");
+  };
+
+  const eliminarCompetencia = (index: number) => {
+    const currentCompetencias = watch("resultados_competencias") || [];
+    const nuevosItems = currentCompetencias.filter((_, i) => i !== index);
+
+    setValue("resultados_competencias", nuevosItems);
+    setCompetenciasList(nuevosItems);
+  };
+
+  const limpiarHistorialReproductivo = () => {
+    setValue("historial_reproductivo", []);
+    setHistorialReproductivoList([]);
+    setHistorialReproductivoInput("");
+  };
+
+  const limpiarCompetencias = () => {
+    setValue("resultados_competencias", []);
+    setCompetenciasList([]);
+    setCompetenciasInput("");
+  };
+
+  const handleHistorialKeyDown = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>,
+  ) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      agregarHistorialReproductivo();
+    }
+  };
+
+  const handleCompetenciaKeyDown = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>,
+  ) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      agregarCompetencia();
+    }
+  };
 
   const selectedSexo = watch("sexo");
 
@@ -276,8 +371,17 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
         key === "fecha_nacimiento" ||
         key === "numero_parto_madre" ||
         key === "tipo_alimentacion" ||
-        key === "edad_promedio"
+        key === "edad_promedio" ||
+        key === "historial_reproductivo" ||
+        key === "resultados_competencias"
       ) {
+        return;
+      }
+
+      if (Array.isArray(value)) {
+        if (value.length > 0) {
+          formData.append(key, JSON.stringify(value));
+        }
         return;
       }
 
@@ -314,7 +418,22 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
     if (data.razas_madre && data.razas_madre.length > 0) {
       formData.append("razas_madre", JSON.stringify(data.razas_madre));
     }
+    if (data.historial_reproductivo && data.historial_reproductivo.length > 0) {
+      formData.append(
+        "historial_reproductivo",
+        JSON.stringify(data.historial_reproductivo),
+      );
+    }
 
+    if (
+      data.resultados_competencias &&
+      data.resultados_competencias.length > 0
+    ) {
+      formData.append(
+        "resultados_competencias",
+        JSON.stringify(data.resultados_competencias),
+      );
+    }
     data.tipo_alimentacion.forEach((item, index) => {
       formData.append(`tipo_alimentacion[${index}][alimento]`, item.alimento);
       formData.append(`tipo_alimentacion[${index}][origen]`, item.origen);
@@ -1101,11 +1220,66 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>Historial reproductivo</Label>
-                <Textarea
-                  {...register("historial_reproductivo")}
-                  placeholder="Servicios, partos, crías registradas, fertilidad..."
-                />
+                <Label className="flex items-center gap-2">
+                  Historial reproductivo
+                  <span className="text-xs text-muted-foreground font-normal">
+                    (Agrega eventos uno por uno)
+                  </span>
+                </Label>
+
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Textarea
+                    placeholder="Ej: Servicio con toro X - 15/01/2024, Parto gemelar - 10/06/2024, etc."
+                    className={`min-h-[80px] w-full sm:flex-1`}
+                    value={historialReproductivoInput}
+                    onChange={(e) =>
+                      setHistorialReproductivoInput(e.target.value)
+                    }
+                    onKeyDown={handleHistorialKeyDown}
+                  />
+
+                  <div className="flex sm:flex-col gap-2 w-full sm:w-auto">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={agregarHistorialReproductivo}
+                      className="flex-1 sm:flex-none h-10"
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      Agregar
+                    </Button>
+
+                    {historialReproductivoList.length > 0 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={limpiarHistorialReproductivo}
+                        className="flex-1 sm:flex-none h-10 text-red-500 hover:text-red-600"
+                      >
+                        Limpiar
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                <p className="text-xs text-muted-foreground">
+                  Escribe un evento y presiona Enter o haz clic en "Agregar"
+                </p>
+
+                {errors.historial_reproductivo && (
+                  <p className="text-sm text-red-500">
+                    {errors.historial_reproductivo.message}
+                  </p>
+                )}
+
+                {historialReproductivoList.length > 0 && (
+                  <SummaryList
+                    items={historialReproductivoList}
+                    onRemoveItem={eliminarHistorialReproductivo}
+                    label="Eventos registrados"
+                    emptyMessage="No hay eventos registrados"
+                  />
+                )}
               </div>
             </div>
 
@@ -1299,11 +1473,65 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Competencias / Resultados</Label>
-                <Textarea
-                  {...register("resultados_competencias")}
-                  placeholder="Participaciones, campeonatos, premios obtenidos..."
-                />
+                <Label className="flex items-center gap-2">
+                  Competencias / Resultados
+                  <span className="text-xs text-muted-foreground font-normal">
+                    (Agrega participaciones una por una)
+                  </span>
+                </Label>
+
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Textarea
+                    placeholder="Ej: Campeonato Nacional - 1er lugar 2023, Feria Regional - Mejor ejemplar 2024, etc."
+                    className={`min-h-[80px] w-full sm:flex-1`}
+                    value={competenciasInput}
+                    onChange={(e) => setCompetenciasInput(e.target.value)}
+                    onKeyDown={handleCompetenciaKeyDown}
+                  />
+
+                  <div className="flex sm:flex-col gap-2 w-full sm:w-auto">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={agregarCompetencia}
+                      className="flex-1 sm:flex-none h-10"
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      Agregar
+                    </Button>
+
+                    {competenciasList.length > 0 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={limpiarCompetencias}
+                        className="flex-1 sm:flex-none h-10 text-red-500 hover:text-red-600"
+                      >
+                        Limpiar
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                <p className="text-xs text-muted-foreground">
+                  Escribe una competencia y presiona Enter o haz clic en
+                  "Agregar"
+                </p>
+
+                {errors.resultados_competencias && (
+                  <p className="text-sm text-red-500">
+                    {errors.resultados_competencias.message}
+                  </p>
+                )}
+
+                {competenciasList.length > 0 && (
+                  <SummaryList
+                    items={competenciasList}
+                    onRemoveItem={eliminarCompetencia}
+                    label="Competencias registradas"
+                    emptyMessage="No hay competencias registradas"
+                  />
+                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

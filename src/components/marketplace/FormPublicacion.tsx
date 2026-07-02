@@ -306,8 +306,8 @@ const FormPublicacion = ({
     }
 
     files.forEach((file) => {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error(`La imagen ${file.name} excede 5MB`);
+      if (file.size > 3 * 1024 * 1024) {
+        toast.error(`La imagen ${file.name} excede 3MB`);
         return;
       }
       setImages((prev) => [...prev, file]);
@@ -613,7 +613,7 @@ const FormPublicacion = ({
 
                 <div className="mt-3 space-y-1">
                   <p className="text-xs text-gray-500">
-                    📸 Sube hasta 10 imágenes (máx. 5MB cada una)
+                    📸 Sube hasta 10 imágenes (máx. 3MB cada una)
                   </p>
                   <p className="text-xs text-gray-400">
                     💡 La primera imagen será la portada

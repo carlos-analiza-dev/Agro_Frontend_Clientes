@@ -489,8 +489,8 @@ const OvinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
   return (
     <>
-      <Card className="mb-4 overflow-hidden transition-all duration-200 hover:shadow-md border-l-4 border-l-green-500">
-        <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
+      <Card className="mb-4 overflow-hidden transition-all duration-200 hover:shadow-md border-l-4 border-l-purple-500">
+        <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between bg-purple-100">
           <div className="flex items-center space-x-3">
             <div className="relative">
               <Avatar

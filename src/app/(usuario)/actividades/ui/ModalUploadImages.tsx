@@ -54,7 +54,7 @@ const ModalUploadImages = ({
             <Upload className="w-10 h-10 text-gray-400" />
             <span className="text-sm text-gray-600">Haz clic aquí</span>
             <span className="text-xs text-gray-400">
-              Formatos: JPG, PNG, GIF (Máx 5MB por imagen)
+              Formatos: JPG, PNG, GIF (Máx 1MB por imagen)
             </span>
           </label>
         </div>
