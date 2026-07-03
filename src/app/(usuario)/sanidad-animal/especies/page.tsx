@@ -1,4 +1,5 @@
 "use client";
+
 import CardEspecies from "@/components/especies/CardEspecies";
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
 
@@ -29,7 +30,7 @@ const EspeciesPage = () => {
             <CardEspecies
               key={especie.id}
               especie={especie}
-              link_page={`/animales/especies/${especie.nombre.toLowerCase()}`}
+              link_page={`/sanidad-animal/especies/${especie.nombre.toLowerCase()}`}
             />
           ))}
         </div>

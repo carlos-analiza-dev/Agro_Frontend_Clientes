@@ -138,6 +138,10 @@ const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
           return permisosVer.includes("/animales");
         }
 
+        if (item.href.startsWith("/sanidad-animal/especies")) {
+          return permisosVer.includes("/sanidad-animal");
+        }
+
         return permisosVer.includes(item.href);
       });
 

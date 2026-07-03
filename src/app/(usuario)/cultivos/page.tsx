@@ -24,6 +24,7 @@ import InfoCultivos from "./ui/InfoCultivos";
 import FormCultivo from "./ui/FormCultivo";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { useRouter } from "next/navigation";
+import ButtonAdd from "@/components/generics/ButtonAdd";
 
 const CultivoPage = () => {
   const { cliente } = useAuthStore();
@@ -88,13 +89,12 @@ const CultivoPage = () => {
             Registra y monitorea todos los cultivos de tus fincas
           </p>
         </div>
-        <Button
-          onClick={() => handleAddCultivo()}
-          className="w-full mt-4 md:w-auto md:mt-0"
-        >
-          <Sprout className="h-4 w-4" />
-          Agregar Cultivo
-        </Button>
+
+        <ButtonAdd
+          title="Agregar Cultivo"
+          Icon={Sprout}
+          action={handleAddCultivo}
+        />
       </div>
 
       <Card className="p-4">

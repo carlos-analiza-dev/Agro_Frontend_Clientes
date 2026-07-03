@@ -22,6 +22,7 @@ import {
   Pill,
   Rabbit,
   Settings,
+  ShieldPlus,
   ShoppingBag,
   Sprout,
   Stethoscope,
@@ -57,6 +58,21 @@ const animalesItems = [
   })),
 ];
 
+const sanidadAnimalItems = [
+  {
+    name: "Todos",
+    href: "/sanidad-animal",
+    icon: ShieldPlus,
+  },
+  ...especiesData.map((especie) => ({
+    name: especie.nombre,
+    href: `/sanidad-animal/especies/${especie.nombre.toLowerCase()}`,
+    icon:
+      iconosEspecies[especie.nombre as keyof typeof iconosEspecies] ??
+      ShieldPlus,
+  })),
+];
+
 export const navItems = [
   {
     category: "Panel",
@@ -75,7 +91,10 @@ export const navItems = [
     category: "Animales",
     items: animalesItems,
   },
-
+  {
+    category: "Sanidad Animal",
+    items: sanidadAnimalItems,
+  },
   {
     category: "Solicitudes El Sembrador",
     items: [

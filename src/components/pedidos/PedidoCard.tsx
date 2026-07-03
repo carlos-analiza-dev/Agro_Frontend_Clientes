@@ -4,7 +4,10 @@ import {
   EstadoPedido,
   TipoEntrega,
 } from "@/api/pedidos/interface/crear-pedido.interface";
-import { Pedido } from "@/api/pedidos/interface/response-pedidos.interface";
+import {
+  Detalle,
+  Pedido,
+} from "@/api/pedidos/interface/response-pedidos.interface";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -238,7 +241,7 @@ const PedidoCard = ({ pedido, cliente }: Props) => {
               </h3>
 
               <div className="space-y-3">
-                {pedido.detalles.map((detalle: any) => (
+                {pedido.detalles.map((detalle: Detalle) => (
                   <div
                     key={detalle.id}
                     className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"

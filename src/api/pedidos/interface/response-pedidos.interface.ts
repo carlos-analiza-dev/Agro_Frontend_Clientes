@@ -6,6 +6,7 @@ export interface ResponsePedidosInterface {
 export interface Pedido {
   id: string;
   id_cliente: string;
+  id_sucursal_cercana: string;
   sub_total: string;
   importe_exento: string;
   importe_exonerado: string;
@@ -16,15 +17,18 @@ export interface Pedido {
   total: string;
   estado: string;
   direccion_entrega: string;
-  latitud: null | string;
-  longitud: null | string;
+  latitud: string;
+  longitud: string;
   tipo_entrega: string;
   costo_delivery: string;
-  nombre_finca: null | string;
-  created_at: string;
-  updated_at: string;
+  nombre_finca: string;
+  created_at: Date;
+  updated_at: Date;
+  creadoPorId: string;
+  actualizadoPorId: null;
   cliente: Cliente;
   detalles: Detalle[];
+  sucursal: Sucursal;
 }
 
 export interface Cliente {
@@ -35,8 +39,11 @@ export interface Cliente {
   email: string;
   direccion: string;
   sexo: string;
+  verified: boolean;
+  rol: string;
   isActive: boolean;
   createdAt: Date;
+  propietarioId: null;
   pais: Pais;
   departamento: Departamento;
   municipio: Departamento;
@@ -102,15 +109,23 @@ export interface Producto {
   unidad_fraccionamiento: number;
   distribucion_minima: number;
   venta_minima: number;
+  componentes: null;
+  tipos_uso: null;
+  forma_uso: null;
+  indicaciones: null;
   createdAt: Date;
   updatedAt: Date;
   categoriaId: string;
+  subcategoriaId: null;
+  tipo_producto_id: null;
 }
 
 export interface Sucursal {
   id: string;
   nombre: string;
   tipo: string;
+  latitud: null;
+  longitud: null;
   direccion_complemento: string;
   paisId: string;
   departamentoId: string;
@@ -119,7 +134,7 @@ export interface Sucursal {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
-  pais: Pais;
-  departamento: Departamento;
-  municipio: Departamento;
+  pais?: Pais;
+  departamento?: Departamento;
+  municipio?: Departamento;
 }

@@ -14,6 +14,7 @@ export interface PaginationInterface {
   tipo_producto?: string;
   indicaciones?: string;
   tipo_uso?: string;
+  tipo_servicio?: string;
   tipo_publicacion?: TipoPublicacion;
   marca?: string;
   proveedor?: string;
