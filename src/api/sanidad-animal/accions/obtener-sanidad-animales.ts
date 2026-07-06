@@ -14,3 +14,18 @@ export const obtenerSanidadAnimal = async (filters?: PaginationInterface) => {
 
   return response.data;
 };
+
+export const obtenerEventosEliminados = async (
+  filters?: PaginationInterface,
+) => {
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/sanidad-animal/eliminados`;
+
+  const response = await veterinariaAPI.get<ResponseSanidadAnimalInterface>(
+    url,
+    {
+      params: filters,
+    },
+  );
+
+  return response.data;
+};

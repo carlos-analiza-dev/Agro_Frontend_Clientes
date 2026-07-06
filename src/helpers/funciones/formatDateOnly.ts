@@ -79,3 +79,28 @@ export function formatDateLocalAnyo(date: string | Date): string {
 
   return ` ${year}`;
 }
+
+export const parseLocalDate = (date: string) => {
+  const [year, month, day] = date.split("-").map(Number);
+  return new Date(year, month - 1, day);
+};
+
+export const formatDateToISOString = (
+  dateStr: string | null | undefined,
+): string => {
+  if (!dateStr) {
+    return new Date().toISOString();
+  }
+
+  if (dateStr.includes("T")) {
+    return dateStr;
+  }
+
+  const date = new Date(dateStr + "T00:00:00");
+
+  if (isNaN(date.getTime())) {
+    return new Date().toISOString();
+  }
+
+  return date.toISOString();
+};

@@ -3,7 +3,7 @@ export interface CreateSanidadAnimal {
   animalId: string;
 
   // CAMPOS GLOBALES
-  tipo_Servicio: string;
+  tipo_servicio: string;
   responsable: string;
   fecha_evento: Date | string;
   proxima_fecha_evento?: Date | string | null;

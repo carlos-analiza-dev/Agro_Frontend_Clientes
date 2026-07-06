@@ -1,6 +1,7 @@
-"use client";
-
+import { Animal } from "@/api/animales/interfaces/response-animales.interface";
+import { ingresarSanidad } from "@/api/sanidad-animal/accions/ingresar-sanidad";
 import { CreateSanidadAnimal } from "@/api/sanidad-animal/interface/crear-sanidad.interface";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,11 +15,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import useGetAnimalesPropietario from "@/hooks/animales/useGetAnimalesPropietario";
 import { cn } from "@/lib/utils";
-import { LucideProps } from "lucide-react";
-import React, { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
+import {
+  AlertCircleIcon,
+  ChevronDown,
+  LucideProps,
+  Search,
+  X,
+} from "lucide-react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { Sanidad } from "@/api/sanidad-animal/interface/response-sanidad-animal.interface";
+import { editarSanidad } from "@/api/sanidad-animal/accions/editar-sanidad-animal";
+import { formatDateToISOString } from "@/helpers/funciones/formatDateOnly";
 
 interface Props {
   opciones_especie: {
@@ -32,12 +46,104 @@ interface Props {
   }[];
   setOpenModal?: (open: boolean) => void;
   onSuccess?: () => void;
+  especie_animal: string;
+  sanidad?: Sanidad | null;
 }
 
-const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
+const formatearFecha = (fecha: string | Date | undefined): string => {
+  if (!fecha) return new Date().toISOString().split("T")[0];
+
+  if (typeof fecha === "string") {
+    return fecha.split("T")[0];
+  }
+
+  if (fecha instanceof Date) {
+    return fecha.toISOString().split("T")[0];
+  }
+
+  return new Date().toISOString().split("T")[0];
+};
+
+const FormSanidad = ({
+  opciones_especie,
+  setOpenModal,
+  onSuccess,
+  especie_animal,
+  sanidad = null,
+}: Props) => {
   const [selectedService, setSelectedService] = useState<string>("");
   const [selectedServiceData, setSelectedServiceData] = useState<any>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedAnimal, setSelectedAnimal] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { data: animales, isLoading: isLoadingAnimales } =
+    useGetAnimalesPropietario();
+  const queryClient = useQueryClient();
+
+  const isEditing = !!sanidad;
+
+  const animalesFiltrados = useMemo(() => {
+    if (!animales) return [];
+    if (!especie_animal) return animales;
+
+    return animales.filter((animal) => {
+      const especieAnimal = animal.especie?.nombre?.toLowerCase() || "";
+      const especieBusqueda = especie_animal.toLowerCase();
+      return especieAnimal === especieBusqueda;
+    });
+  }, [animales, especie_animal]);
+
+  const resultadosBusqueda = useMemo(() => {
+    if (!searchTerm.trim()) return animalesFiltrados;
+
+    const term = searchTerm.toLowerCase().trim();
+    return animalesFiltrados.filter((animal) => {
+      const nombre = animal.nombre_animal?.toLowerCase() || "";
+      const identificador = animal.identificador?.toLowerCase() || "";
+      const galpon = animal.galpon?.toLowerCase() || "";
+      const lote = animal.lote?.toLowerCase() || "";
+
+      return (
+        nombre.includes(term) ||
+        identificador.includes(term) ||
+        galpon.includes(term) ||
+        lote.includes(term)
+      );
+    });
+  }, [animalesFiltrados, searchTerm]);
+
+  const { animalesIndividuales, lotesGalpones } = useMemo(() => {
+    const individuales: Animal[] = [];
+    const lotes: Animal[] = [];
+
+    resultadosBusqueda.forEach((animal) => {
+      if (animal.galpon || animal.lote || animal.cantidad_lote) {
+        lotes.push(animal);
+      } else {
+        individuales.push(animal);
+      }
+    });
+
+    return { animalesIndividuales: individuales, lotesGalpones: lotes };
+  }, [resultadosBusqueda]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const {
     register,
@@ -45,11 +151,11 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
     handleSubmit,
     setValue,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<CreateSanidadAnimal>({
     defaultValues: {
       animalId: "",
-      tipo_Servicio: "",
+      tipo_servicio: "",
       responsable: "",
       fecha_evento: new Date().toISOString().slice(0, 16),
       proxima_fecha_evento: null,
@@ -122,24 +228,300 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
     },
   });
 
-  const onSubmit = async (data: CreateSanidadAnimal) => {
-    setIsSubmitting(true);
-    try {
-      data.tipo_Servicio = selectedService;
+  useEffect(() => {
+    if (sanidad) {
+      const servicio = opciones_especie.find(
+        (op) => op.value === sanidad.tipo_servicio,
+      );
 
-      toast.success("Sanidad registrada correctamente");
+      if (servicio) {
+        setSelectedService(servicio.value);
+        setSelectedServiceData(servicio);
+        setValue("tipo_servicio", servicio.value);
+      }
+
+      if (sanidad.animal) {
+        const animal = sanitizedAnimalData(sanidad.animal);
+        setSelectedAnimal(animal);
+        setValue("animalId", animal.id);
+        setSearchTerm(
+          animal.nombre_animal ||
+            animal.identificador ||
+            animal.galpon ||
+            animal.lote ||
+            "",
+        );
+
+        if (animal.cantidad_lote || animal.cantidad_inicial) {
+          const cantidad = animal.cantidad_lote || animal.cantidad_inicial || 0;
+          if (cantidad > 0) {
+            setValue("carga_animal", cantidad);
+          }
+        }
+      }
+
+      setValue("responsable", sanidad.responsable || "");
+      setValue("fecha_evento", formatearFecha(sanidad.fecha_evento));
+      setValue(
+        "proxima_fecha_evento",
+        sanidad.proxima_fecha_evento
+          ? formatearFecha(sanidad.proxima_fecha_evento)
+          : null,
+      );
+      setValue("observaciones", sanidad.observaciones || "");
+      setValue("costo_base", Number(sanidad.costo_base) || 0);
+      setValue("precio_referencia", Number(sanidad.precio_referencia) || 0);
+      setValue("costo_real", Number(sanidad.costo_real) || 0);
+      setValue("valor_estimado", Number(sanidad.valor_estimado) || 0);
+      setValue("tratamiento_aplicado", sanidad.tratamiento_aplicado || "");
+      setValue("motivo", sanidad.motivo || "");
+
+      loadSpecificFields(sanidad);
+    } else {
+      reset({
+        ...reset,
+        fecha_evento: new Date().toISOString().slice(0, 16),
+      });
+    }
+    setIsLoading(false);
+  }, [sanidad, opciones_especie, setValue, reset]);
+
+  const sanitizedAnimalData = (animal: Animal): any => {
+    return {
+      id: animal.id || "",
+      nombre_animal: animal.nombre_animal || "",
+      identificador: animal.identificador || "",
+      galpon: animal.galpon || "",
+      lote: animal.lote || "",
+      cantidad_lote: animal.cantidad_lote || 0,
+      cantidad_inicial: animal.cantidad_inicial || 0,
+      especie: animal.especie || { nombre: "" },
+    };
+  };
+
+  const loadSpecificFields = (sanidad: Sanidad) => {
+    const service = sanidad.tipo_servicio;
+
+    switch (service) {
+      case "Vacunacion":
+        setValue("vacuna_aplicada", sanidad.vacuna_aplicada || "");
+        setValue("via_aplicacion_vacuna", sanidad.via_aplicacion_vacuna || "");
+        setValue("dosis", Number(sanidad.dosis) || 0);
+        setValue("dosis_tratamiento", sanidad.dosis_tratamiento || "");
+        break;
+
+      case "Desparasitacion":
+        setValue("tipo_desparasitacion", sanidad.tipo_desparasitacion || "");
+        setValue("peso_usado", Number(sanidad.peso_usado) || 0);
+        break;
+
+      case "RevisionUbre":
+        setValue("prueba_evento", sanidad.prueba_evento || "");
+        setValue("cuarto_afectado", sanidad.cuarto_afectado || "");
+        setValue("dias_retiro_leche", sanidad.dias_retiro_leche || 0);
+        setValue(
+          "litros_diarios_actuales",
+          Number(sanidad.litros_diarios_actuales) || 0,
+        );
+        break;
+
+      case "AtencionPezunas":
+        setValue("tipo_atencion", sanidad.tipo_atencion || "");
+        setValue("grado_cojera", sanidad.grado_cojera || "");
+        setValue("miembro_afectado", sanidad.miembro_afectado || "");
+        break;
+
+      case "LimpiezaCorral":
+      case "LimpiezaGalpon":
+        setValue("potrero_corral_area", sanidad.potrero_corral_area || "");
+        setValue("actividad", sanidad.actividad || "");
+        setValue("dias_descanso", sanidad.dias_descanso || []);
+        setValue(
+          "producto_maquinaria_utilizada",
+          sanidad.producto_maquinaria_utilizada || [],
+        );
+        setValue("carga_animal", Number(sanidad.carga_animal) || 0);
+        setValue(
+          "costo_producto_maquinaria",
+          Number(sanidad.costo_producto_maquinaria) || 0,
+        );
+        break;
+
+      case "Esquila":
+        setValue("peso_lana", Number(sanidad.peso_lana) || 0);
+        setValue("calidad_lana", sanidad.calidad_lana || "");
+        setValue("color_lana", sanidad.color_lana || "");
+        setValue("responsable_esquila", sanidad.responsable_esquila || "");
+        break;
+
+      case "BanoSanitario":
+        setValue("motivo_baño", sanidad.motivo_baño || "");
+        setValue("tiempo_baño", sanidad.tiempo_baño || 0);
+        setValue("hallazgos_piel", sanidad.hallazgos_piel || "");
+        break;
+
+      case "Odontologia":
+        setValue("procedimiento", sanidad.procedimiento || "");
+        setValue("hallazgos", sanidad.hallazgos || "");
+        break;
+
+      case "AtencionCascos":
+        setValue("tipo", sanidad.tipo || "");
+        setValue("herrador", sanidad.herrador || "");
+        break;
+
+      case "RevisionLesiones":
+        setValue("tipo_lesion", sanidad.tipo_lesion || "");
+        setValue("zona_afectada", sanidad.zona_afectada || "");
+        setValue("severidad", sanidad.severidad || "");
+        break;
+
+      case "EvaluacionCondicionCorporal":
+        setValue("peso_estimado", Number(sanidad.peso_estimado) || 0);
+        setValue("condicion_corporal", sanidad.condicion_corporal || "");
+        setValue("cambio_dieta", sanidad.cambio_dieta || "");
+        break;
+
+      case "ControlMortalidad":
+        setValue("cantidad_bajas", sanidad.cantidad_bajas || 0);
+        setValue("causa_baja_probable", sanidad.causa_baja_probable || "");
+        setValue("accion_correctiva", sanidad.accion_correctiva || "");
+        break;
+
+      case "CambioCamaNido":
+        setValue("tipo_accion", sanidad.tipo_accion || "");
+        setValue("material_utilizado", sanidad.material_utilizado || "");
+        setValue("cantidad_usada", Number(sanidad.cantidad_usada) || 0);
+        break;
+
+      case "ControlProduccion":
+        setValue("huevos_diarios", sanidad.huevos_diarios || 0);
+        setValue("huevos_rotos", sanidad.huevos_rotos || 0);
+        setValue("porcentaje_postura", sanidad.porcentaje_postura || 0);
+        setValue("calidad_huevo", sanidad.calidad_huevo || "");
+        break;
+
+      case "ControlCalidadAgua":
+        setValue("temperatura", Number(sanidad.temperatura) || 0);
+        setValue("oxigeno", Number(sanidad.oxigeno) || 0);
+        setValue("ph", Number(sanidad.ph) || 0);
+        setValue("amonio", Number(sanidad.amonio) || 0);
+        setValue("nitritos", Number(sanidad.nitritos) || 0);
+        break;
+
+      case "RecambioAgua":
+        setValue("porcentaje_recambio", sanidad.porcentaje_recambio || 0);
+        setValue("volumen_estimado", Number(sanidad.volumen_estimado) || 0);
+        break;
+
+      case "MuestreoBiometrico":
+        setValue("cantidad_muestreo", Number(sanidad.cantidad_muestreo) || 0);
+        setValue("peso_promedio", Number(sanidad.peso_promedio) || 0);
+        setValue("talla_promedio", Number(sanidad.talla_promedio) || 0);
+        setValue("biomasa_estimada", Number(sanidad.biomasa_estimada) || 0);
+        setValue("etapa_peces", sanidad.etapa_peces || "");
+        break;
+
+      default:
+        break;
+    }
+  };
+
+  const mutation = useMutation({
+    mutationFn: (data: CreateSanidadAnimal) => {
+      if (isEditing && sanidad) {
+        return editarSanidad(sanidad.id, data);
+      }
+      return ingresarSanidad(data);
+    },
+    onSuccess: () => {
+      toast.success(
+        isEditing
+          ? "Sanidad actualizada correctamente"
+          : "Sanidad ingresada correctamente",
+      );
+      queryClient.invalidateQueries({ queryKey: ["sanidad-animal"] });
+      queryClient.invalidateQueries({ queryKey: ["costos-mensuales-sanidad"] });
+      queryClient.invalidateQueries({ queryKey: ["sanidad-eliminados"] });
       reset();
       setSelectedService("");
       setSelectedServiceData(null);
-
+      setErrorMessage("");
       if (onSuccess) {
         onSuccess();
       }
+    },
+    onError: (error) => {
+      if (isAxiosError(error)) {
+        const messages = error.response?.data?.message;
+        const errorMessage = Array.isArray(messages)
+          ? messages[0]
+          : typeof messages === "string"
+            ? messages
+            : "Hubo un error al procesar la sanidad";
+        setErrorMessage(errorMessage);
+      } else {
+        toast.error("Error inesperado. Contacte al administrador");
+      }
+    },
+  });
+
+  const onSubmit = async (data: CreateSanidadAnimal) => {
+    try {
+      const dataToSend = {
+        ...data,
+        fecha_evento: formatDateToISOString(data.fecha_evento as string),
+        proxima_fecha_evento: data.proxima_fecha_evento
+          ? formatDateToISOString(data.proxima_fecha_evento as string)
+          : null,
+      };
+
+      dataToSend.tipo_servicio = selectedService;
+      mutation.mutate(dataToSend as CreateSanidadAnimal);
     } catch (error) {
       toast.error("Error al registrar la sanidad");
-    } finally {
-      setIsSubmitting(false);
     }
+  };
+
+  const handleSelectAnimal = (animal: Animal) => {
+    setSelectedAnimal(animal);
+    setValue("animalId", animal.id);
+    setSearchTerm(
+      animal.nombre_animal ||
+        animal.identificador ||
+        animal.galpon ||
+        animal.lote ||
+        "",
+    );
+    setIsDropdownOpen(false);
+
+    if (animal.cantidad_lote || animal.cantidad_inicial) {
+      const cantidad = animal.cantidad_lote || animal.cantidad_inicial || 0;
+      if (cantidad > 0) {
+        setValue("carga_animal", cantidad);
+      }
+    }
+  };
+
+  const clearSelection = () => {
+    setSelectedAnimal(null);
+    setValue("animalId", "");
+    setSearchTerm("");
+    setIsDropdownOpen(false);
+  };
+
+  const getAnimalDisplayInfo = (animal: Animal) => {
+    const nombre = animal.nombre_animal || "Sin nombre";
+    const identificador = animal.identificador
+      ? `#${animal.identificador}`
+      : "";
+    const galpon = animal.galpon ? `Galpón: ${animal.galpon}` : "";
+    const lote = animal.lote ? `Lote: ${animal.lote}` : "";
+    const cantidad = animal.cantidad_lote
+      ? `${animal.cantidad_lote} animales`
+      : "";
+
+    return { nombre, identificador, galpon, lote, cantidad };
   };
 
   const renderDynamicFields = () => {
@@ -232,7 +614,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 onValueChange={(value) =>
                   setValue("tipo_desparasitacion", value)
                 }
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar tipo" />
@@ -261,7 +643,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 step="0.1"
                 {...register("peso_usado", { valueAsNumber: true })}
                 placeholder="Peso del animal para calcular dosis"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
           </div>
@@ -277,7 +659,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
               <Select
                 value={watch("prueba_evento") || ""}
                 onValueChange={(value) => setValue("prueba_evento", value)}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar prueba" />
@@ -312,7 +694,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
               <Select
                 value={watch("cuarto_afectado") || ""}
                 onValueChange={(value) => setValue("cuarto_afectado", value)}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar cuarto" />
@@ -345,7 +727,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 type="number"
                 {...register("dias_retiro_leche", { valueAsNumber: true })}
                 placeholder="Días sin consumo de leche"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
 
@@ -361,7 +743,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                   valueAsNumber: true,
                 })}
                 placeholder="Producción diaria actual"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
           </div>
@@ -377,7 +759,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
               <Select
                 value={watch("tipo_atencion") || ""}
                 onValueChange={(value) => setValue("tipo_atencion", value)}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar tipo" />
@@ -404,7 +786,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
               <Select
                 value={watch("grado_cojera") || ""}
                 onValueChange={(value) => setValue("grado_cojera", value)}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar grado" />
@@ -425,7 +807,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
               <Select
                 value={watch("miembro_afectado") || ""}
                 onValueChange={(value) => setValue("miembro_afectado", value)}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar miembro" />
@@ -468,7 +850,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 })}
                 placeholder="Nombre del área o potrero"
                 className={errors.potrero_corral_area ? "border-red-500" : ""}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
               {errors.potrero_corral_area && (
                 <p className="text-sm text-red-500 mt-1">
@@ -483,7 +865,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 id="actividad"
                 {...register("actividad")}
                 placeholder="Ej: Limpieza profunda, desinfección"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
 
@@ -493,7 +875,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 id="dias_descanso"
                 {...register("dias_descanso")}
                 placeholder="Ej: 30, 45, 60 (separados por coma)"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
 
@@ -505,7 +887,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 id="producto_maquinaria_utilizada"
                 {...register("producto_maquinaria_utilizada")}
                 placeholder="Ej: Cal, Hidrolavadora"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
 
@@ -516,7 +898,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 type="number"
                 {...register("carga_animal", { valueAsNumber: true })}
                 placeholder="Cantidad de animales en el área"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
 
@@ -532,7 +914,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                   valueAsNumber: true,
                 })}
                 placeholder="Costo en $"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
           </div>
@@ -555,7 +937,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 })}
                 placeholder="Peso en kilogramos"
                 className={errors.peso_lana ? "border-red-500" : ""}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
               {errors.peso_lana && (
                 <p className="text-sm text-red-500 mt-1">
@@ -569,7 +951,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
               <Select
                 value={watch("calidad_lana") || ""}
                 onValueChange={(value) => setValue("calidad_lana", value)}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar calidad" />
@@ -592,7 +974,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 id="color_lana"
                 {...register("color_lana")}
                 placeholder="Ej: Blanca, Negra, Marrón"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
 
@@ -604,7 +986,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 id="responsable_esquila"
                 {...register("responsable_esquila")}
                 placeholder="Nombre del esquilador"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
           </div>
@@ -620,7 +1002,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
               <Select
                 value={watch("motivo_baño") || ""}
                 onValueChange={(value) => setValue("motivo_baño", value)}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar motivo" />
@@ -651,7 +1033,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 type="number"
                 {...register("tiempo_baño", { valueAsNumber: true })}
                 placeholder="Tiempo en minutos"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
 
@@ -661,7 +1043,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 id="hallazgos_piel"
                 {...register("hallazgos_piel")}
                 placeholder="Ej: Irritación, heridas, parásitos"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
           </div>
@@ -677,7 +1059,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
               <Select
                 value={watch("procedimiento") || ""}
                 onValueChange={(value) => setValue("procedimiento", value)}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar procedimiento" />
@@ -705,7 +1087,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 id="hallazgos"
                 {...register("hallazgos")}
                 placeholder="Ej: Caries, desgaste, inflamación"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
           </div>
@@ -721,7 +1103,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
               <Select
                 value={watch("tipo") || ""}
                 onValueChange={(value) => setValue("tipo", value)}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar tipo" />
@@ -749,7 +1131,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 id="herrador"
                 {...register("herrador")}
                 placeholder="Nombre del herrador"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
           </div>
@@ -765,7 +1147,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
               <Select
                 value={watch("tipo_lesion") || ""}
                 onValueChange={(value) => setValue("tipo_lesion", value)}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar tipo" />
@@ -797,7 +1179,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 id="zona_afectada"
                 {...register("zona_afectada")}
                 placeholder="Ej: Pata delantera, lomo, cabeza"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
 
@@ -806,7 +1188,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
               <Select
                 value={watch("severidad") || ""}
                 onValueChange={(value) => setValue("severidad", value)}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar severidad" />
@@ -842,7 +1224,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 })}
                 placeholder="Peso en kilogramos"
                 className={errors.peso_estimado ? "border-red-500" : ""}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
               {errors.peso_estimado && (
                 <p className="text-sm text-red-500 mt-1">
@@ -856,7 +1238,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
               <Select
                 value={watch("condicion_corporal") || ""}
                 onValueChange={(value) => setValue("condicion_corporal", value)}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar condición" />
@@ -880,7 +1262,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 id="cambio_dieta"
                 {...register("cambio_dieta")}
                 placeholder="Ej: Aumento de concentrado, cambio de forraje"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
           </div>
@@ -902,7 +1284,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 })}
                 placeholder="Número de animales"
                 className={errors.cantidad_bajas ? "border-red-500" : ""}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
               {errors.cantidad_bajas && (
                 <p className="text-sm text-red-500 mt-1">
@@ -919,7 +1301,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 id="causa_baja_probable"
                 {...register("causa_baja_probable")}
                 placeholder="Ej: Enfermedad, accidente, edad"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
 
@@ -929,7 +1311,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 id="accion_correctiva"
                 {...register("accion_correctiva")}
                 placeholder="Ej: Aislamiento, vacunación, cambio de dieta"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
           </div>
@@ -945,7 +1327,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
               <Select
                 value={watch("tipo_accion") || ""}
                 onValueChange={(value) => setValue("tipo_accion", value)}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar acción" />
@@ -975,7 +1357,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 id="material_utilizado"
                 {...register("material_utilizado")}
                 placeholder="Ej: Viruta, Paja, Aserrín"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
 
@@ -987,7 +1369,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 step="0.1"
                 {...register("cantidad_usada", { valueAsNumber: true })}
                 placeholder="Cantidad en kg o m²"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
           </div>
@@ -1009,7 +1391,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 })}
                 placeholder="Cantidad de huevos por día"
                 className={errors.huevos_diarios ? "border-red-500" : ""}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
               {errors.huevos_diarios && (
                 <p className="text-sm text-red-500 mt-1">
@@ -1025,7 +1407,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 type="number"
                 {...register("huevos_rotos", { valueAsNumber: true })}
                 placeholder="Cantidad de huevos rotos"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
 
@@ -1037,7 +1419,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 step="0.1"
                 {...register("porcentaje_postura", { valueAsNumber: true })}
                 placeholder="Porcentaje (0-100)"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
 
@@ -1046,7 +1428,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
               <Select
                 value={watch("calidad_huevo") || ""}
                 onValueChange={(value) => setValue("calidad_huevo", value)}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar calidad" />
@@ -1082,7 +1464,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 })}
                 placeholder="Temperatura del agua"
                 className={errors.temperatura ? "border-red-500" : ""}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
               {errors.temperatura && (
                 <p className="text-sm text-red-500 mt-1">
@@ -1099,7 +1481,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 step="0.1"
                 {...register("oxigeno", { valueAsNumber: true })}
                 placeholder="Nivel de oxígeno disuelto"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
 
@@ -1111,7 +1493,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 step="0.1"
                 {...register("ph", { valueAsNumber: true })}
                 placeholder="pH del agua"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
 
@@ -1123,7 +1505,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 step="0.1"
                 {...register("amonio", { valueAsNumber: true })}
                 placeholder="Nivel de amonio"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
 
@@ -1135,7 +1517,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 step="0.1"
                 {...register("nitritos", { valueAsNumber: true })}
                 placeholder="Nivel de nitritos"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
           </div>
@@ -1159,7 +1541,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 })}
                 placeholder="Porcentaje (0-100)"
                 className={errors.porcentaje_recambio ? "border-red-500" : ""}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
               {errors.porcentaje_recambio && (
                 <p className="text-sm text-red-500 mt-1">
@@ -1176,7 +1558,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 step="0.1"
                 {...register("volumen_estimado", { valueAsNumber: true })}
                 placeholder="Volumen en metros cúbicos"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
           </div>
@@ -1198,7 +1580,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 })}
                 placeholder="Número de peces muestreados"
                 className={errors.cantidad_muestreo ? "border-red-500" : ""}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
               {errors.cantidad_muestreo && (
                 <p className="text-sm text-red-500 mt-1">
@@ -1215,7 +1597,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 step="0.1"
                 {...register("peso_promedio", { valueAsNumber: true })}
                 placeholder="Peso en gramos"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
 
@@ -1227,7 +1609,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 step="0.1"
                 {...register("talla_promedio", { valueAsNumber: true })}
                 placeholder="Talla en centímetros"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
 
@@ -1239,7 +1621,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 step="0.1"
                 {...register("biomasa_estimada", { valueAsNumber: true })}
                 placeholder="Biomasa total estimada"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               />
             </div>
 
@@ -1248,7 +1630,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
               <Select
                 value={watch("etapa_peces") || ""}
                 onValueChange={(value) => setValue("etapa_peces", value)}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar etapa" />
@@ -1274,13 +1656,25 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {errorMessage && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircleIcon className="h-4 w-4" />
+          <AlertTitle>
+            Error al {isEditing ? "actualizar" : "registrar"} la Sanidad
+          </AlertTitle>
+          <AlertDescription className="whitespace-pre-line">
+            {errorMessage}
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div>
         <Label className="text-base font-semibold">
           Servicio de Sanidad <span className="text-red-500">*</span>
         </Label>
-        {errors.tipo_Servicio && (
+        {errors.tipo_servicio && (
           <p className="text-sm text-red-500 mt-1">
-            {errors.tipo_Servicio.message}
+            {errors.tipo_servicio.message}
           </p>
         )}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mt-2">
@@ -1294,7 +1688,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
                 onClick={() => {
                   if (!isSubmitting) {
                     setSelectedService(opcion.value);
-                    setValue("tipo_Servicio", opcion.value);
+                    setValue("tipo_servicio", opcion.value);
                     setSelectedServiceData(opcion);
                   }
                 }}
@@ -1357,7 +1751,174 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
         <h3 className="text-lg font-semibold mb-4">Información General</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="md:col-span-2">
+          <div className="md:col-span-2 relative" ref={dropdownRef}>
+            <Label htmlFor="buscador">
+              Buscar animal, lote o galpón{" "}
+              <span className="text-red-500">*</span>
+            </Label>
+            <div className="relative">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  ref={inputRef}
+                  id="buscador"
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setIsDropdownOpen(true);
+                    if (!e.target.value) {
+                      setSelectedAnimal(null);
+                      setValue("animalId", "");
+                    }
+                  }}
+                  onFocus={() => setIsDropdownOpen(true)}
+                  placeholder="Buscar por nombre, identificación, galpón o lote..."
+                  className="pl-10 pr-20"
+                  disabled={isSubmitting}
+                />
+                {searchTerm && (
+                  <button
+                    type="button"
+                    onClick={clearSelection}
+                    className="absolute right-12 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+                <ChevronDown
+                  className={cn(
+                    "absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground transition-transform",
+                    isDropdownOpen && "rotate-180",
+                  )}
+                />
+              </div>
+              {errors.animalId && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.animalId.message}
+                </p>
+              )}
+            </div>
+
+            {isDropdownOpen && searchTerm && (
+              <div className="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-80 overflow-y-auto">
+                {isLoadingAnimales ? (
+                  <div className="p-4 text-center text-muted-foreground">
+                    Cargando...
+                  </div>
+                ) : resultadosBusqueda.length === 0 ? (
+                  <div className="p-4 text-center text-muted-foreground">
+                    No se encontraron resultados
+                  </div>
+                ) : (
+                  <>
+                    {animalesIndividuales.length > 0 && (
+                      <div>
+                        <div className="px-3 py-2 bg-gray-50 text-xs font-semibold text-muted-foreground uppercase sticky top-0">
+                          Animales
+                        </div>
+                        {animalesIndividuales.map((animal) => {
+                          const info = getAnimalDisplayInfo(animal);
+                          return (
+                            <div
+                              key={animal.id}
+                              onClick={() => handleSelectAnimal(animal)}
+                              className="px-4 py-2 hover:bg-gray-100 cursor-pointer border-b last:border-b-0 flex items-center justify-between"
+                            >
+                              <div>
+                                <div className="font-medium">{info.nombre}</div>
+                                <div className="text-xs text-muted-foreground flex gap-2">
+                                  {info.identificador && (
+                                    <span>{info.identificador}</span>
+                                  )}
+                                  {info.identificador && info.galpon && (
+                                    <span>•</span>
+                                  )}
+                                  {info.galpon && <span>{info.galpon}</span>}
+                                  {info.lote && <span>{info.lote}</span>}
+                                </div>
+                              </div>
+                              <Badge variant="outline" className="text-xs">
+                                {animal.especie?.nombre || "Sin especie"}
+                              </Badge>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {lotesGalpones.length > 0 && (
+                      <div>
+                        <div className="px-3 py-2 bg-gray-50 text-xs font-semibold text-muted-foreground uppercase sticky top-0">
+                          Lotes y Galpones
+                        </div>
+                        {lotesGalpones.map((animal) => {
+                          const info = getAnimalDisplayInfo(animal);
+                          return (
+                            <div
+                              key={animal.id}
+                              onClick={() => handleSelectAnimal(animal)}
+                              className="px-4 py-2 hover:bg-gray-100 cursor-pointer border-b last:border-b-0 flex items-center justify-between"
+                            >
+                              <div>
+                                <div className="font-medium">
+                                  {info.galpon || info.lote || info.nombre}
+                                </div>
+                                <div className="text-xs text-muted-foreground flex gap-2">
+                                  {info.cantidad && (
+                                    <span>{info.cantidad}</span>
+                                  )}
+                                  {info.identificador && (
+                                    <>
+                                      <span>•</span>
+                                      <span>{info.identificador}</span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                              <Badge variant="secondary" className="text-xs">
+                                {animal.cantidad_lote ? "Lote" : "Galpón"}
+                              </Badge>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+
+            {selectedAnimal && (
+              <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
+                <div>
+                  <span className="text-sm font-medium text-green-800">
+                    {selectedAnimal.nombre_animal ||
+                      selectedAnimal.galpon ||
+                      selectedAnimal.lote ||
+                      "Seleccionado"}
+                  </span>
+                  <span className="text-xs text-green-600 ml-2">
+                    {selectedAnimal.identificador &&
+                      `ID: ${selectedAnimal.identificador}`}
+                    {selectedAnimal.galpon &&
+                      ` • Galpón: ${selectedAnimal.galpon}`}
+                    {selectedAnimal.lote && ` • Lote: ${selectedAnimal.lote}`}
+                    {selectedAnimal.cantidad_lote &&
+                      ` • ${selectedAnimal.cantidad_lote} animales`}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={clearSelection}
+                  className="text-green-600 hover:text-green-800"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div>
             <Label htmlFor="responsable">
               Responsable <span className="text-red-500">*</span>
             </Label>
@@ -1383,7 +1944,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
             </Label>
             <Input
               id="fecha_evento"
-              type="datetime-local"
+              type="date"
               {...register("fecha_evento", {
                 required: "La fecha es requerida",
               })}
@@ -1403,7 +1964,7 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
             </Label>
             <Input
               id="proxima_fecha_evento"
-              type="datetime-local"
+              type="date"
               {...register("proxima_fecha_evento")}
               disabled={isSubmitting}
             />
@@ -1426,10 +1987,23 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
               id="costo_base"
               type="number"
               step="0.01"
-              {...register("costo_base", { valueAsNumber: true })}
+              min="0"
+              {...register("costo_base", {
+                valueAsNumber: true,
+                min: {
+                  value: 0,
+                  message: "El costo debe ser mayor o igual a 0",
+                },
+              })}
               placeholder="Costo base"
+              className={errors.costo_base ? "border-red-500" : ""}
               disabled={isSubmitting}
             />
+            {errors.costo_base && (
+              <p className="text-sm text-red-500 mt-1">
+                {errors.costo_base.message}
+              </p>
+            )}
           </div>
 
           <div>
@@ -1438,10 +2012,23 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
               id="precio_referencia"
               type="number"
               step="0.01"
-              {...register("precio_referencia", { valueAsNumber: true })}
+              min="0"
+              {...register("precio_referencia", {
+                valueAsNumber: true,
+                min: {
+                  value: 0,
+                  message: "El precio debe ser mayor o igual a 0",
+                },
+              })}
               placeholder="Precio de referencia"
+              className={errors.precio_referencia ? "border-red-500" : ""}
               disabled={isSubmitting}
             />
+            {errors.precio_referencia && (
+              <p className="text-sm text-red-500 mt-1">
+                {errors.precio_referencia.message}
+              </p>
+            )}
           </div>
 
           <div>
@@ -1450,10 +2037,23 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
               id="costo_real"
               type="number"
               step="0.01"
-              {...register("costo_real", { valueAsNumber: true })}
+              min="0"
+              {...register("costo_real", {
+                valueAsNumber: true,
+                min: {
+                  value: 0,
+                  message: "El costo debe ser mayor o igual a 0",
+                },
+              })}
               placeholder="Costo real"
+              className={errors.costo_real ? "border-red-500" : ""}
               disabled={isSubmitting}
             />
+            {errors.costo_real && (
+              <p className="text-sm text-red-500 mt-1">
+                {errors.costo_real.message}
+              </p>
+            )}
           </div>
 
           <div>
@@ -1462,10 +2062,23 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
               id="valor_estimado"
               type="number"
               step="0.01"
-              {...register("valor_estimado", { valueAsNumber: true })}
+              min="0"
+              {...register("valor_estimado", {
+                valueAsNumber: true,
+                min: {
+                  value: 0,
+                  message: "El valor debe ser mayor o igual a 0",
+                },
+              })}
               placeholder="Valor estimado"
+              className={errors.valor_estimado ? "border-red-500" : ""}
               disabled={isSubmitting}
             />
+            {errors.valor_estimado && (
+              <p className="text-sm text-red-500 mt-1">
+                {errors.valor_estimado.message}
+              </p>
+            )}
           </div>
 
           <div className="md:col-span-2">
@@ -1506,7 +2119,16 @@ const FormSanidad = ({ opciones_especie, setOpenModal, onSuccess }: Props) => {
           type="submit"
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Guardando..." : "Guardar"}
+          {isSubmitting ? (
+            <span className="flex items-center gap-2">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              {isEditing ? "Actualizando..." : "Guardando..."}
+            </span>
+          ) : isEditing ? (
+            "Actualizar Sanidad"
+          ) : (
+            "Guardar Sanidad"
+          )}
         </Button>
       </div>
     </form>
