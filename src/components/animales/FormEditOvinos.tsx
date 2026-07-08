@@ -237,11 +237,11 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
   const { data: fincas } = useFincasPropietarios(cliente?.id ?? "");
   const { data: machos } = useGetAnimalesPropietario({
     sexo: SexoAnimal.Macho,
-    especieId: animal?.especie?.id || "",
+    especie: animal?.especie?.id || "",
   });
   const { data: hembras } = useGetAnimalesPropietario({
     sexo: SexoAnimal.Hembra,
-    especieId: animal?.especie?.id || "",
+    especie: animal?.especie?.id || "",
   });
 
   useEffect(() => {

@@ -16,9 +16,10 @@ import {
   TrendingUp,
   TrendingDown,
   Layers,
+  X,
 } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import FormSanidad from "../../ui/FormSanidad";
 import useGetSanidadAnimal from "@/hooks/sanidad-animal/useGetSanidadAnimal";
 import CardSanidad from "../../ui/CardSanidad";
@@ -52,34 +53,101 @@ import EvolucionMensual from "@/components/reportes/sanidad-animal/EvolucionMens
 import DistribucionServicio from "@/components/reportes/sanidad-animal/DistribucionServicio";
 import ResumenPorServicio from "@/components/reportes/sanidad-animal/ResumenPorServicio";
 import { formatCurrency } from "@/helpers/funciones/formatCurrency";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
+import { Button } from "@/components/ui/button";
+import { Animal } from "@/api/animales/interfaces/response-animales.interface";
+import useGetAnimalesPropietario from "@/hooks/animales/useGetAnimalesPropietario";
+import SearchAnimales from "../../ui/SearchAnimales";
+import { ESPECIE_COLORS } from "@/helpers/data/colors/colors-espcies";
+import ProximosEventosAlerta from "@/components/sanidad-animal/eventos/ProximosEventosAlerta";
 
 const SanidadByEspeciePage = () => {
   const { cliente } = useAuthStore();
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const { especie } = useParams();
   const especie_animal = especie as string;
+  const colors = ESPECIE_COLORS[especie_animal] || ESPECIE_COLORS.bovino;
   const [openModal, setOpenModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize] = useState(isMobile ? 5 : 10);
   const [selectedSanidad, setSelectedSanidad] = useState<Sanidad | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterTipo, setFilterTipo] = useState("todos");
   const [selectedServicioGrafico, setSelectedServicioGrafico] =
     useState<string>("todos");
-
+  const [isFiltersVisible, setIsFiltersVisible] = useState(false);
+  const [animalSearchTerm, setAnimalSearchTerm] = useState("");
+  const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
+  const [isAnimalDropdownOpen, setIsAnimalDropdownOpen] = useState(false);
+  const animalDropdownRef = useRef<HTMLDivElement>(null);
+  const animalId = selectedAnimal?.id || "";
   const tipos_servicio = filterTipo === "todos" ? "" : filterTipo;
+
+  const { data: animales, isLoading: cargando_animales } =
+    useGetAnimalesPropietario({ especie: especie_animal });
   const { data: sanidadResponse, isLoading } = useGetSanidadAnimal({
     especie: especie_animal,
     tipo_servicio: tipos_servicio,
+    animalId,
   });
   const { data: costos_mensuales, isLoading: cargando_costos } =
-    useGetCostosMensualesSanidad({ especie: especie_animal });
+    useGetCostosMensualesSanidad({
+      especie: especie_animal,
+      animalId: animalId,
+    });
 
   const sanidadData = sanidadResponse?.sanidad || [];
+
+  const animalesFiltrados = useMemo(() => {
+    if (!animales) return [];
+    if (!animalSearchTerm.trim()) return animales.slice(0, 10);
+
+    const term = animalSearchTerm.toLowerCase().trim();
+    return animales
+      .filter((animal) => {
+        const nombre = animal.nombre_animal?.toLowerCase() || "";
+        const identificador = animal.identificador?.toLowerCase() || "";
+        const especie = animal.especie?.nombre?.toLowerCase() || "";
+        return (
+          nombre.includes(term) ||
+          identificador.includes(term) ||
+          especie.includes(term)
+        );
+      })
+      .slice(0, 10);
+  }, [animales, animalSearchTerm]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        animalDropdownRef.current &&
+        !animalDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsAnimalDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleEditSanidad = (sanidad: Sanidad) => {
     setSelectedSanidad(sanidad);
     setOpenModal(true);
+  };
+
+  const handleSelectAnimal = (animal: Animal) => {
+    setSelectedAnimal(animal);
+    setAnimalSearchTerm(animal.nombre_animal || animal.identificador || "");
+    setIsAnimalDropdownOpen(false);
+    setCurrentPage(1);
+  };
+
+  const clearAnimalSelection = () => {
+    setSelectedAnimal(null);
+    setAnimalSearchTerm("");
+    setIsAnimalDropdownOpen(false);
+    setCurrentPage(1);
   };
 
   const filteredData = useMemo(() => {
@@ -246,7 +314,7 @@ const SanidadByEspeciePage = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm]);
+  }, [searchTerm, filterTipo]);
 
   const estadisticas = useMemo(() => {
     if (!sanidadData || sanidadData.length === 0) {
@@ -400,31 +468,73 @@ const SanidadByEspeciePage = () => {
   );
 
   return (
-    <div className="container mx-auto p-4 md:p-6 space-y-6">
-      <div className="md:flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2 capitalize">
-            <ShieldPlus className="h-7 w-7 text-green-600" />
-            Sanidad - {especie_animal}
-          </h1>
-          <p className="text-sm md:text-base text-muted-foreground mt-1">
-            Registra y monitorea la sanidad de tus animales por especie
-          </p>
+    <div className="container mx-auto px-3 sm:px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6">
+      <div className={`pl-4 ${colors.border}`}>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+          <div className="w-full sm:w-auto">
+            <h1
+              className={`text-xl sm:text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2 capitalize ${colors.title}`}
+            >
+              <ShieldPlus
+                className={`h-6 w-6 sm:h-7 sm:w-7 ${colors.icon} flex-shrink-0`}
+              />
+              <span className="truncate">Sanidad - {especie_animal}</span>
+            </h1>
+            <p className="text-xs sm:text-sm md:text-base text-muted-foreground mt-0.5 sm:mt-1">
+              Registra y monitorea la sanidad de tus animales por especie
+            </p>
+          </div>
+          <ButtonAdd
+            title={`Ingresar sanidad ${especie_animal}`}
+            Icon={ShieldPlus}
+            action={() => setOpenModal(true)}
+            className={`${colors.button} text-white shadow-sm hover:shadow-md transition-all duration-300`}
+          />
         </div>
-        <ButtonAdd
-          title={`Ingresar sanidad ${especie_animal}`}
-          Icon={ShieldPlus}
-          action={() => setOpenModal(true)}
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <SearchAnimales
+          animalDropdownRef={animalDropdownRef}
+          selectedAnimal={selectedAnimal}
+          clearAnimalSelection={clearAnimalSelection}
+          animalSearchTerm={animalSearchTerm}
+          setAnimalSearchTerm={setAnimalSearchTerm}
+          setIsAnimalDropdownOpen={setIsAnimalDropdownOpen}
+          isAnimalDropdownOpen={isAnimalDropdownOpen}
+          animalesFiltrados={animalesFiltrados}
+          cargando_animales={cargando_animales}
+          handleSelectAnimal={handleSelectAnimal}
+          borderColor={colors.border
+            .replace("border-l-4 border-l-", "")
+            .replace("-500", "-200")}
+          bgColor={colors.tag.replace("bg-", "bg-").replace(" text-", "/50")}
+          textColor={colors.title}
+          iconColor={colors.icon}
+          inputBorderColor={colors.border
+            .replace("border-l-4 border-l-", "")
+            .replace("-500", "-200")}
+          inputFocusColor={`focus:border-${colors.icon.split("-")[1]}-400`}
+          hoverBgColor={`hover:bg-${colors.icon.split("-")[1]}-50`}
+          badgeBgColor={`bg-${colors.icon.split("-")[1]}-100`}
+          badgeTextColor={`text-${colors.icon.split("-")[1]}-700`}
+          badgeBorderColor={`border-${colors.icon.split("-")[1]}-200`}
         />
       </div>
 
-      <div className="mt-5">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="mt-3 sm:mt-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           <CardSanidad
             title="Estado sanitario"
             description={estadisticas.estadoSanitario}
             parrafo={estadisticas.parrafoEstado}
             Icon={getEstadoIcon()}
+            className={colors.border}
+            iconClassName={colors.icon}
+            iconBgClassName={`bg-${colors.icon.split("-")[1]}-50`}
+            titleClassName="text-slate-900 dark:text-white"
+            descriptionClassName="text-slate-500 dark:text-slate-400"
+            parrafoClassName="text-slate-600 dark:text-slate-300"
           />
           <CardSanidad
             title="Último evento"
@@ -437,34 +547,48 @@ const SanidadByEspeciePage = () => {
                   ? Pill
                   : FileText
             }
+            className={colors.border}
+            iconClassName={colors.icon}
+            iconBgClassName={`bg-${colors.icon.split("-")[1]}-50`}
+            titleClassName="text-slate-900 dark:text-white"
+            descriptionClassName="text-slate-500 dark:text-slate-400"
+            parrafoClassName="text-slate-600 dark:text-slate-300"
           />
           <CardSanidad
             title="Próximo evento"
             description={estadisticas.proximoEvento}
             parrafo={estadisticas.parrafoProximo}
             Icon={Calendar}
+            className={colors.border}
+            iconClassName={colors.icon}
+            iconBgClassName={`bg-${colors.icon.split("-")[1]}-50`}
+            titleClassName="text-slate-900 dark:text-white"
+            descriptionClassName="text-slate-500 dark:text-slate-400"
+            parrafoClassName="text-slate-600 dark:text-slate-300"
           />
           <CardSanidad
             title="Costo sanitario mes"
             description={estadisticas.costoSanitarioStr}
             parrafo={`Promedio: ${moneda}${estadisticas.promedioPorEvento.toFixed(2)} por evento`}
             Icon={DollarSign}
+            className={colors.border}
+            iconClassName={colors.icon}
+            iconBgClassName={`bg-${colors.icon.split("-")[1]}-50`}
+            titleClassName="text-slate-900 dark:text-white"
+            descriptionClassName="text-slate-500 dark:text-slate-400"
+            parrafoClassName="text-slate-600 dark:text-slate-300"
           />
         </div>
 
-        {estadisticas.tieneEventosPendientes && (
-          <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-yellow-500" />
-            <p className="text-sm text-yellow-700">
-              <strong>
-                {estadisticas.eventosPendientes} evento(s) pendiente(s)
-              </strong>{" "}
-              - Requieren atención en los próximos 7 días
-            </p>
-          </div>
-        )}
+        <ProximosEventosAlerta
+          eventos={sanidadData}
+          borderColor={colors.alertBorder}
+          bgColor={colors.alertBg}
+          textColor={colors.alertText}
+          iconColor={colors.icon}
+        />
 
-        <div className="mt-2 text-sm text-muted-foreground">
+        <div className="mt-2 text-xs sm:text-sm text-muted-foreground">
           {sanidadData.length > 0 ? (
             <p>Total de registros: {filteredData.length}</p>
           ) : (
@@ -475,72 +599,136 @@ const SanidadByEspeciePage = () => {
         </div>
       </div>
 
-      <div className="mt-5">
+      <div className="mt-4 sm:mt-5">
         <Tabs defaultValue="resumen" className="w-full">
           <TabsList className="w-full grid grid-cols-2">
-            <TabsTrigger value="resumen">Resumen</TabsTrigger>
-            <TabsTrigger value="costos">Costos Mensuales</TabsTrigger>
+            <TabsTrigger
+              className={`text-xs sm:text-sm data-[state=active]:border-b-2 data-[state=active]:${colors.border.split(" ")[1]}`}
+              value="resumen"
+            >
+              Resumen
+            </TabsTrigger>
+            <TabsTrigger
+              className={`text-xs sm:text-sm data-[state=active]:border-b-2 data-[state=active]:${colors.border.split(" ")[1]}`}
+              value="costos"
+            >
+              Costos Mensuales
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="resumen" className="mt-4">
+          <TabsContent value="resumen" className="mt-3 sm:mt-4">
             <Card>
-              <CardHeader>
-                <CardTitle>Resumen de Sanidad</CardTitle>
-                <CardDescription>
+              <CardHeader className="p-3 sm:p-6">
+                <CardTitle className="text-base sm:text-lg">
+                  Resumen de Sanidad
+                </CardTitle>
+                <CardDescription className="text-xs sm:text-sm">
                   Lista completa de eventos sanitarios registrados
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="flex flex-col md:flex-row gap-4 mb-4">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Buscar por servicio, responsable, animal..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
+              <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
+                <div className="flex flex-col gap-3 mb-4">
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder={
+                          isMobile
+                            ? "Buscar..."
+                            : "Buscar por servicio, responsable, animal..."
+                        }
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className={`pl-9 text-sm h-9 sm:h-10 focus-visible:ring-1 focus-visible:ring-${colors.icon.split("-")[1]}-500`}
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      {isMobile && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setIsFiltersVisible(!isFiltersVisible)}
+                          className="h-9"
+                        >
+                          {isFiltersVisible ? (
+                            <X className="h-4 w-4" />
+                          ) : (
+                            <Filter className="h-4 w-4" />
+                          )}
+                        </Button>
+                      )}
+                      <Select value={filterTipo} onValueChange={setFilterTipo}>
+                        <SelectTrigger
+                          className={`${isMobile && !isFiltersVisible ? "hidden" : "w-[150px] sm:w-[180px]"} h-9 sm:h-10`}
+                        >
+                          <Filter className="h-4 w-4 mr-2 hidden sm:inline" />
+                          <SelectValue placeholder="Filtrar por tipo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todos">Todos los tipos</SelectItem>
+                          {opciones_servicios_especie.map((tipo) => (
+                            <SelectItem key={tipo.id} value={tipo.value}>
+                              {tipo.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Select value={filterTipo} onValueChange={setFilterTipo}>
-                      <SelectTrigger className="w-[180px]">
-                        <Filter className="h-4 w-4 mr-2" />
-                        <SelectValue placeholder="Filtrar por tipo" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="todos">Todos los tipos</SelectItem>
-                        {opciones_servicios_especie.map((tipo) => (
-                          <SelectItem key={tipo.id} value={tipo.value}>
-                            {tipo.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  {isMobile && isFiltersVisible && (
+                    <div className="flex flex-wrap gap-2 p-2 bg-gray-50 rounded-lg">
+                      {opciones_servicios_especie.map((tipo) => (
+                        <Button
+                          key={tipo.id}
+                          variant={
+                            filterTipo === tipo.value ? "default" : "outline"
+                          }
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => setFilterTipo(tipo.value)}
+                        >
+                          {tipo.label}
+                        </Button>
+                      ))}
+                      {filterTipo !== "todos" && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => setFilterTipo("todos")}
+                        >
+                          Limpiar
+                        </Button>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {isLoading ? (
                   <div className="flex justify-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    <div
+                      className={`animate-spin rounded-full h-8 w-8 border-b-2 ${colors.icon}`}
+                    ></div>
                   </div>
                 ) : paginatedData.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     No se encontraron registros con los filtros aplicados
                   </div>
                 ) : (
-                  <div className="rounded-md border">
+                  <div className="rounded-md border overflow-x-auto">
                     <TableResumenSanidad
                       paginatedData={paginatedData}
                       moneda={moneda}
                       handleEditSanidad={handleEditSanidad}
                       acciones={true}
+                      isMobile={isMobile}
                     />
                   </div>
                 )}
 
                 {filteredData.length > 0 && (
-                  <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <p className="text-sm text-muted-foreground">
+                  <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
                       Mostrando {(currentPage - 1) * pageSize + 1} -{" "}
                       {Math.min(currentPage * pageSize, filteredData.length)} de{" "}
                       {filteredData.length} registros
@@ -556,21 +744,25 @@ const SanidadByEspeciePage = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="costos" className="mt-4">
+          <TabsContent value="costos" className="mt-3 sm:mt-4">
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
+              <CardHeader className="p-3 sm:p-6">
                 <div>
-                  <CardTitle>Costos Mensuales por Servicio</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-base sm:text-lg">
+                    Costos Mensuales por Servicio
+                  </CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">
                     Análisis de costos sanitarios mensuales desglosados por tipo
                     de servicio (últimos 12 meses)
                   </CardDescription>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
                 {cargando_costos ? (
                   <div className="flex justify-center py-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    <div
+                      className={`animate-spin rounded-full h-8 w-8 border-b-2 ${colors.icon}`}
+                    ></div>
                   </div>
                 ) : datosCostosProcesados.totalGeneral === 0 ? (
                   <div className="text-center py-12 text-muted-foreground">
@@ -582,8 +774,8 @@ const SanidadByEspeciePage = () => {
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-8">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="space-y-6 sm:space-y-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
                       <StatCard
                         title="Total gastado"
                         value={formatCurrency(
@@ -634,7 +826,7 @@ const SanidadByEspeciePage = () => {
                       />
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                       <Label className="text-sm font-medium">
                         Filtrar por servicio:
                       </Label>
@@ -642,7 +834,7 @@ const SanidadByEspeciePage = () => {
                         value={selectedServicioGrafico}
                         onValueChange={setSelectedServicioGrafico}
                       >
-                        <SelectTrigger className="w-[200px]">
+                        <SelectTrigger className="w-full sm:w-[200px]">
                           <SelectValue placeholder="Todos los servicios" />
                         </SelectTrigger>
                         <SelectContent>
@@ -660,13 +852,15 @@ const SanidadByEspeciePage = () => {
                       </Select>
                     </div>
 
-                    <EvolucionMensual
-                      datosEvolucionFiltrados={datosEvolucionFiltrados}
-                      selectedServicioGrafico={selectedServicioGrafico}
-                      moneda={moneda}
-                    />
+                    <div className="overflow-x-auto -mx-3 sm:mx-0">
+                      <EvolucionMensual
+                        datosEvolucionFiltrados={datosEvolucionFiltrados}
+                        selectedServicioGrafico={selectedServicioGrafico}
+                        moneda={moneda}
+                      />
+                    </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                       <DistribucionServicio
                         datosCostosProcesados={
                           datosCostosProcesados.datosPorServicio
@@ -682,7 +876,7 @@ const SanidadByEspeciePage = () => {
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       {datosCostosProcesados.mesConMayorCosto && (
                         <CardSanidad
                           title="Mes de mayor gasto"
@@ -694,6 +888,12 @@ const SanidadByEspeciePage = () => {
                             moneda,
                           )} (${datosCostosProcesados.mesConMayorCosto.cantidad} eventos)`}
                           Icon={TrendingUp}
+                          className={colors.border}
+                          iconClassName={colors.icon}
+                          iconBgClassName={`bg-${colors.icon.split("-")[1]}-50`}
+                          titleClassName="text-slate-900 dark:text-white"
+                          descriptionClassName="text-slate-500 dark:text-slate-400"
+                          parrafoClassName="text-slate-600 dark:text-slate-300"
                         />
                       )}
 
@@ -708,6 +908,12 @@ const SanidadByEspeciePage = () => {
                             moneda,
                           )} (${datosCostosProcesados.mesConMenorCosto.cantidad} eventos)`}
                           Icon={TrendingDown}
+                          className={colors.border}
+                          iconClassName={colors.icon}
+                          iconBgClassName={`bg-${colors.icon.split("-")[1]}-50`}
+                          titleClassName="text-slate-900 dark:text-white"
+                          descriptionClassName="text-slate-500 dark:text-slate-400"
+                          parrafoClassName="text-slate-600 dark:text-slate-300"
                         />
                       )}
                     </div>
@@ -722,15 +928,20 @@ const SanidadByEspeciePage = () => {
       <Modal
         open={openModal}
         onOpenChange={setOpenModal}
-        title={selectedSanidad ? "Editar Sanidad" : "Ingresar Sanidad"}
+        title={
+          selectedSanidad
+            ? `Editar Sanidad ${especie_animal}`
+            : `Ingresar Sanidad ${especie_animal}`
+        }
         description={
           selectedSanidad
             ? "Aquí podrás editar datos de sanidad dependiendo de la especie"
             : "Aquí podrás ingresar datos de sanidad dependiendo de la especie"
         }
         height="auto"
-        size="2xl"
+        size={isMobile ? "full" : "2xl"}
         showCloseButton={false}
+        color_title={colors.title}
       >
         <FormSanidad
           opciones_especie={opciones_servicios_especie}
@@ -741,6 +952,21 @@ const SanidadByEspeciePage = () => {
           }}
           especie_animal={especie_animal}
           sanidad={selectedSanidad}
+          borderColor={colors.border
+            .replace("border-l-4 border-l-", "")
+            .replace("-500", "-200")}
+          bgColor={colors.tag.replace("bg-", "bg-").replace(" text-", "/50")}
+          textColor={colors.title}
+          iconColor={colors.icon}
+          hoverBgColor={`hover:bg-${colors.icon.split("-")[1]}-50`}
+          selectedBgColor={`bg-${colors.icon.split("-")[1]}-50`}
+          selectedBorderColor={`border-${colors.icon.split("-")[1]}-500`}
+          selectedTextColor={`text-${colors.icon.split("-")[1]}-700`}
+          buttonBgColor={colors.button}
+          buttonHoverColor={colors.buttonHover}
+          tagBgColor={`bg-${colors.icon.split("-")[1]}-100`}
+          tagTextColor={`text-${colors.icon.split("-")[1]}-700`}
+          tagBorderColor={`border-${colors.icon.split("-")[1]}-200`}
         />
       </Modal>
     </div>

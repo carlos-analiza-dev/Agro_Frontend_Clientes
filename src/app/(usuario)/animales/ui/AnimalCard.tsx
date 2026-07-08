@@ -6,35 +6,13 @@ import { isAxiosError } from "axios";
 import { Animal } from "@/api/animales/interfaces/response-animales.interface";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import {
-  Camera,
-  CircleAlert,
-  Heart,
-  PawPrint,
-  Award,
-  Activity,
-  Syringe,
-  Scale,
-  Dumbbell,
-  Medal,
-  Baby,
-  Shield,
-  Wallet,
-  Dna,
-} from "lucide-react";
+import { Camera, CircleAlert, Heart, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { ActualizarAnimalMuerte } from "@/api/animales/accions/update-animal-status-muerte";
 import InfoAnimal from "./InfoAnimal";
@@ -46,8 +24,9 @@ import AnimalParentInfo from "./AnimalParentInfo";
 import AnimalFincaByPropietarion from "./AnimalFincaByPropietarion";
 import { eliminarImagenAnimal } from "@/api/animales_profile/accions/delete-image-animal";
 import ImageGallery from "@/components/generics/ImageGallery";
-import { Badge } from "@/components/ui/badge";
-import { useAuthStore } from "@/providers/store/useAuthStore";
+import { descartarAnimal } from "@/api/animales/accions/update-animal";
+import Modal from "@/components/generics/Modal";
+import { format } from "date-fns";
 
 interface Props {
   animal: Animal;
@@ -56,18 +35,18 @@ interface Props {
 }
 
 const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
-  const { cliente } = useAuthStore();
-  const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const [deathDialogVisible, setDeathDialogVisible] = useState(false);
   const [deathStatus, setDeathStatus] = useState(animal.animal_muerte);
   const [deathReason, setDeathReason] = useState(animal.razon_muerte);
+  const [discardDialogVisible, setDiscardDialogVisible] = useState(false);
+  const [discardReason, setDiscardReason] = useState("");
   const [galleryVisible, setGalleryVisible] = useState(false);
   const [localImage, setLocalImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
 
+  const todayDate = format(new Date(), "yyyy-MM-dd");
   const imageUrl = animal.profileImages[0]?.url;
-  const isEquino = animal.especie.nombre.toLowerCase() === "equino";
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -157,145 +136,45 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
     }
   };
 
-  const renderEquinoInfo = () => {
-    if (!isEquino) return null;
+  const handleDiscardAnimal = async () => {
+    try {
+      if (!discardReason || discardReason.trim() === "") {
+        toast.error("Debe ingresar una razón de descarte válida");
+        return;
+      }
 
-    return (
-      <div className="mt-3 space-y-2">
-        <div className="flex items-center gap-2">
-          <PawPrint className="h-4 w-4 text-purple-600" />
-          <h4 className="text-sm font-semibold text-purple-700">
-            Información Equina
-          </h4>
-        </div>
+      await descartarAnimal(animal.id, {
+        descartado: true,
+        razon_descarte: discardReason,
+        fecha_descarte: todayDate,
+      });
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 bg-purple-50 p-3 rounded-lg">
-          {animal.desparasitado !== undefined && (
-            <div className="flex items-center gap-2">
-              <Syringe className="h-3 w-3 text-purple-600" />
-              <span className="text-xs">
-                <span className="font-medium">Desparasitado:</span>{" "}
-                <Badge
-                  variant={animal.desparasitado ? "default" : "secondary"}
-                  className="text-xs"
-                >
-                  {animal.desparasitado ? "Sí" : "No"}
-                </Badge>
-              </span>
-            </div>
-          )}
+      toast("Animal descartado exitosamente");
+      queryClient.invalidateQueries({
+        queryKey: ["animales-propietario", animal.propietario.id],
+      });
+      setDiscardDialogVisible(false);
+      setDiscardReason("");
+    } catch (error) {
+      if (isAxiosError(error)) {
+        const messages = error.response?.data?.message;
+        const errorMessage = Array.isArray(messages)
+          ? messages[0]
+          : typeof messages === "string"
+            ? messages
+            : "Hubo un error al descartar el animal";
 
-          {animal.vacunas && animal.vacunas !== "Sin vacunas" && (
-            <div className="flex items-center gap-2">
-              <Syringe className="h-3 w-3 text-purple-600" />
-              <span className="text-xs">
-                <span className="font-medium">Vacunas:</span> {animal.vacunas}
-              </span>
-            </div>
-          )}
-
-          {animal.peso_actual && (
-            <div className="flex items-center gap-2">
-              <Scale className="h-3 w-3 text-purple-600" />
-              <span className="text-xs">
-                <span className="font-medium">Peso:</span> {animal.peso_actual}{" "}
-                kg
-              </span>
-            </div>
-          )}
-
-          {animal.condicion_corporal && (
-            <div className="flex items-center gap-2">
-              <Activity className="h-3 w-3 text-purple-600" />
-              <span className="text-xs">
-                <span className="font-medium">Condición:</span>{" "}
-                {animal.condicion_corporal}
-              </span>
-            </div>
-          )}
-
-          {animal.nivel_entrenamiento && (
-            <div className="flex items-center gap-2">
-              <Dumbbell className="h-3 w-3 text-purple-600" />
-              <span className="text-xs">
-                <span className="font-medium">Entrenamiento:</span>{" "}
-                {animal.nivel_entrenamiento}
-              </span>
-            </div>
-          )}
-
-          {animal.resultados_competencias && (
-            <div className="flex items-center gap-2 col-span-2">
-              <Award className="h-3 w-3 text-purple-600" />
-              <span className="text-xs">
-                <span className="font-medium">Resultados:</span>{" "}
-                {animal.resultados_competencias}
-              </span>
-            </div>
-          )}
-
-          {animal.historial_reproductivo && (
-            <div className="flex items-center gap-2 col-span-2">
-              <Baby className="h-3 w-3 text-purple-600" />
-              <span className="text-xs">
-                <span className="font-medium">Historial Reproductivo:</span>{" "}
-                {animal.historial_reproductivo}
-              </span>
-            </div>
-          )}
-
-          {animal.uso_equino && (
-            <div className="flex items-center gap-2 col-span-2">
-              <Dna className="h-3 w-3 text-purple-600" />
-              <span className="text-xs">
-                <span className="font-medium">Uso:</span> {animal.uso_equino}
-              </span>
-            </div>
-          )}
-
-          {animal.valor_estimado && (
-            <div className="flex items-center gap-2">
-              <Wallet className="h-3 w-3 text-purple-600" />
-              <span className="text-xs">
-                <span className="font-medium">Valor:</span> {moneda}{" "}
-                {animal.valor_estimado.toLocaleString()}
-              </span>
-            </div>
-          )}
-
-          {animal.precio_compra && (
-            <div className="flex items-center gap-2">
-              <Wallet className="h-3 w-3 text-purple-600" />
-              <span className="text-xs">
-                <span className="font-medium">Valor Compra:</span> {moneda}{" "}
-                {animal.precio_compra.toLocaleString()}
-              </span>
-            </div>
-          )}
-
-          {animal.asegurado !== undefined && (
-            <div className="flex items-center gap-2">
-              <Shield className="h-3 w-3 text-purple-600" />
-              <span className="text-xs">
-                <span className="font-medium">Asegurado:</span>{" "}
-                <Badge
-                  variant={animal.asegurado ? "default" : "secondary"}
-                  className="text-xs"
-                >
-                  {animal.asegurado ? "Sí" : "No"}
-                </Badge>
-              </span>
-            </div>
-          )}
-        </div>
-      </div>
-    );
+        toast.error(errorMessage);
+      } else {
+        toast.error("Contacte al administrador");
+      }
+    }
   };
 
   return (
     <>
       <Card className="mb-4 overflow-hidden transition-all duration-200 hover:shadow-md">
-        <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between bg-green-200">
+        <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between bg-green-400/25">
           <div className="flex items-center space-x-3">
             <div className="relative">
               <Avatar
@@ -348,6 +227,16 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               ) : (
                 <Heart className="h-4 w-4" />
               )}
+            </Button>
+
+            <Button
+              variant="outline"
+              size="icon"
+              title="Descartar Animal"
+              className="h-8 w-8 rounded-full"
+              onClick={() => setDiscardDialogVisible(true)}
+            >
+              <Trash2 className="h-4 w-4" />
             </Button>
 
             <Button
@@ -406,8 +295,6 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             numeroParto={animal.numero_parto_madre}
           />
 
-          {renderEquinoInfo()}
-
           <Separator className="my-4" />
 
           {animal.finca && (
@@ -433,42 +320,39 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
         onDelete={handleDeleteImage}
       />
 
-      <Dialog open={deathDialogVisible} onOpenChange={setDeathDialogVisible}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {deathStatus ? "Marcar como fallecido" : "Marcar como vivo"}
-            </DialogTitle>
-            <DialogDescription>
-              Actualiza el estado de vida del animal
-            </DialogDescription>
-          </DialogHeader>
+      <Modal
+        open={deathDialogVisible}
+        onOpenChange={setDeathDialogVisible}
+        title={deathStatus ? "Marcar como fallecido" : "Marcar como vivo"}
+        description="Actualiza el estado de vida del animal"
+        showCloseButton={false}
+      >
+        <div className="flex items-center justify-between py-4">
+          <Label htmlFor="death-status">¿El animal ha fallecido?</Label>
+          <Switch
+            id="death-status"
+            checked={deathStatus}
+            onCheckedChange={(value) => {
+              setDeathStatus(value);
+              if (!value) setDeathReason("N/D");
+            }}
+          />
+        </div>
 
-          <div className="flex items-center justify-between py-4">
-            <Label htmlFor="death-status">¿El animal ha fallecido?</Label>
-            <Switch
-              id="death-status"
-              checked={deathStatus}
-              onCheckedChange={(value) => {
-                setDeathStatus(value);
-                if (!value) setDeathReason("N/D");
-              }}
+        {deathStatus && (
+          <div className="space-y-2">
+            <Label htmlFor="death-reason">Razón de la muerte</Label>
+            <Input
+              id="death-reason"
+              value={deathReason}
+              onChange={(e) => setDeathReason(e.target.value)}
+              placeholder="Ingrese la razón de la muerte"
             />
           </div>
+        )}
 
-          {deathStatus && (
-            <div className="space-y-2">
-              <Label htmlFor="death-reason">Razón de la muerte</Label>
-              <Input
-                id="death-reason"
-                value={deathReason}
-                onChange={(e) => setDeathReason(e.target.value)}
-                placeholder="Ingrese la razón de la muerte"
-              />
-            </div>
-          )}
-
-          <DialogFooter>
+        <div className="flex justify-end">
+          <div className="flex gap-4">
             <Button
               variant="outline"
               onClick={() => setDeathDialogVisible(false)}
@@ -476,9 +360,58 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               Cancelar
             </Button>
             <Button onClick={handleDeathStatusUpdate}>Guardar</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        title="Descartar Animal"
+        description="Esta acción marcará al animal como descartado. Asegúrese de
+              ingresar toda la información requerida."
+        open={discardDialogVisible}
+        onOpenChange={setDiscardDialogVisible}
+        showCloseButton={false}
+      >
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="discard-reason">Razón de descarte *</Label>
+            <Input
+              id="discard-reason"
+              value={discardReason}
+              onChange={(e) => setDiscardReason(e.target.value)}
+              placeholder="Ej: Venta, Muerte, Traslado, etc."
+            />
+          </div>
+
+          <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
+            <p className="text-sm text-yellow-800">
+              <strong>⚠️ Advertencia:</strong> Esta acción no se puede deshacer.
+              El animal será marcado como descartado en el sistema.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex justify-end">
+          <div className="flex gap-4">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDiscardDialogVisible(false);
+                setDiscardReason("");
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDiscardAnimal}
+              disabled={!discardReason}
+            >
+              Descartar Animal
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 };

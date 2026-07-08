@@ -36,6 +36,7 @@ interface Props {
   handleEditSanidad: (sanidad: Sanidad) => void;
   onDeleteSuccess?: () => void;
   acciones: boolean;
+  isMobile: boolean;
 }
 
 const TableResumenSanidad = ({
@@ -44,6 +45,7 @@ const TableResumenSanidad = ({
   handleEditSanidad,
   onDeleteSuccess,
   acciones,
+  isMobile,
 }: Props) => {
   const queryClient = useQueryClient();
   const [openDelete, setOpenDelete] = useState(false);
@@ -95,50 +97,74 @@ const TableResumenSanidad = ({
 
   return (
     <>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Servicio</TableHead>
-            <TableHead>Animal/Galpón/Lote</TableHead>
-            <TableHead>Fecha</TableHead>
-            <TableHead>Próxima fecha</TableHead>
-            <TableHead>Responsable</TableHead>
-            <TableHead>Costo real</TableHead>
-            {acciones && <TableHead className="text-right">Acciones</TableHead>}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+      {isMobile ? (
+        <div className="space-y-4">
           {paginatedData.length === 0 ? (
-            <TableRow>
-              <TableCell
-                colSpan={7}
-                className="text-center py-8 text-muted-foreground"
-              >
-                No hay registros para mostrar
-              </TableCell>
-            </TableRow>
+            <div className="text-center py-8 text-muted-foreground border rounded-lg">
+              No hay registros para mostrar
+            </div>
           ) : (
             paginatedData.map((item) => {
               const Icon = getServiceIcon(item.tipo_servicio);
+
               return (
-                <TableRow key={item.id}>
-                  <TableCell>
+                <div
+                  key={item.id}
+                  className="rounded-xl border bg-background p-4 shadow-sm"
+                >
+                  <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-2">
-                      <Icon className="h-4 w-4 text-muted-foreground" />
+                      <Icon className="h-5 w-5 text-muted-foreground" />
                       <Badge className={getBadgeColor(item.tipo_servicio)}>
                         {item.tipo_servicio}
                       </Badge>
                     </div>
-                  </TableCell>
-                  <TableCell>
+
+                    {acciones && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            disabled={mutation.isPending}
+                          >
+                            <ChevronDown className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => handleEditSanidad(item)}
+                          >
+                            <Edit className="mr-2 h-4 w-4" />
+                            Editar
+                          </DropdownMenuItem>
+
+                          <DropdownMenuItem
+                            onClick={() => openDeleteModal(item)}
+                            className="text-red-600"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Eliminar
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
+                  </div>
+
+                  <div className="mt-4 space-y-3 text-sm">
                     <div>
-                      <div className="font-medium">
+                      <p className="text-muted-foreground">
+                        Animal / Galpón / Lote
+                      </p>
+                      <p className="font-medium">
                         {item.animal?.nombre_animal ||
                           item.animal?.galpon ||
                           item.animal?.lote ||
                           "N/A"}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
+                      </p>
+
+                      <p className="text-xs text-muted-foreground">
                         {item.animal?.identificador
                           ? `ID: ${item.animal.identificador}`
                           : item.animal?.galpon
@@ -146,60 +172,166 @@ const TableResumenSanidad = ({
                             : item.animal?.lote
                               ? `Lote: ${item.animal.lote}`
                               : "Sin identificación"}
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <p className="text-muted-foreground">Fecha</p>
+                        <p>{formatDate(item.fecha_evento)}</p>
+                      </div>
+
+                      <div>
+                        <p className="text-muted-foreground">Próxima</p>
+                        <p>{formatDate(item.proxima_fecha_evento)}</p>
+                      </div>
+
+                      <div>
+                        <p className="text-muted-foreground">Responsable</p>
+                        <p>{item.responsable || "N/A"}</p>
+                      </div>
+
+                      <div>
+                        <p className="text-muted-foreground">Costo</p>
+
+                        {item.costo_real ? (
+                          <p className="font-semibold">
+                            {moneda}
+                            {parseFloat(item.costo_real).toFixed(2)}
+                          </p>
+                        ) : (
+                          <p>-</p>
+                        )}
                       </div>
                     </div>
-                  </TableCell>
-                  <TableCell>{formatDate(item.fecha_evento)}</TableCell>
-                  <TableCell>{formatDate(item.proxima_fecha_evento)}</TableCell>
-                  <TableCell>{item.responsable || "N/A"}</TableCell>
-                  <TableCell>
-                    {item.costo_real ? (
-                      <span className="font-medium">
-                        {moneda}
-                        {parseFloat(item.costo_real).toFixed(2)}
-                      </span>
-                    ) : (
-                      <span className="text-muted-foreground">-</span>
-                    )}
-                  </TableCell>
-                  {acciones && (
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            disabled={mutation.isPending}
-                          >
-                            <ChevronDown className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() => handleEditSanidad(item)}
-                            disabled={mutation.isPending}
-                          >
-                            <Edit className="h-4 w-4 mr-2" />
-                            Editar
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => openDeleteModal(item)}
-                            className="text-red-600"
-                            disabled={mutation.isPending}
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Eliminar
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  )}
-                </TableRow>
+                  </div>
+                </div>
               );
             })
           )}
-        </TableBody>
-      </Table>
+        </div>
+      ) : (
+        <div className="overflow-x-auto rounded-lg border">
+          <Table className="min-w-[900px]">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Servicio</TableHead>
+                <TableHead>Animal/Galpón/Lote</TableHead>
+                <TableHead>Fecha</TableHead>
+                <TableHead>Próxima fecha</TableHead>
+                <TableHead>Responsable</TableHead>
+                <TableHead>Costo real</TableHead>
+                {acciones && (
+                  <TableHead className="text-right">Acciones</TableHead>
+                )}
+              </TableRow>
+            </TableHeader>
+
+            <TableBody>
+              {paginatedData.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={7}
+                    className="text-center py-8 text-muted-foreground"
+                  >
+                    No hay registros para mostrar
+                  </TableCell>
+                </TableRow>
+              ) : (
+                paginatedData.map((item) => {
+                  const Icon = getServiceIcon(item.tipo_servicio);
+
+                  return (
+                    <TableRow key={item.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Icon className="h-4 w-4 text-muted-foreground" />
+                          <Badge className={getBadgeColor(item.tipo_servicio)}>
+                            {item.tipo_servicio}
+                          </Badge>
+                        </div>
+                      </TableCell>
+
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">
+                            {item.animal?.nombre_animal ||
+                              item.animal?.galpon ||
+                              item.animal?.lote ||
+                              "N/A"}
+                          </div>
+
+                          <div className="text-xs text-muted-foreground">
+                            {item.animal?.identificador
+                              ? `ID: ${item.animal.identificador}`
+                              : item.animal?.galpon
+                                ? `Galpón: ${item.animal.galpon}`
+                                : item.animal?.lote
+                                  ? `Lote: ${item.animal.lote}`
+                                  : "Sin identificación"}
+                          </div>
+                        </div>
+                      </TableCell>
+
+                      <TableCell>{formatDate(item.fecha_evento)}</TableCell>
+
+                      <TableCell>
+                        {formatDate(item.proxima_fecha_evento)}
+                      </TableCell>
+
+                      <TableCell>{item.responsable || "N/A"}</TableCell>
+
+                      <TableCell>
+                        {item.costo_real ? (
+                          <span className="font-medium">
+                            {moneda}
+                            {parseFloat(item.costo_real).toFixed(2)}
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </TableCell>
+
+                      {acciones && (
+                        <TableCell className="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                disabled={mutation.isPending}
+                              >
+                                <ChevronDown className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() => handleEditSanidad(item)}
+                              >
+                                <Edit className="mr-2 h-4 w-4" />
+                                Editar
+                              </DropdownMenuItem>
+
+                              <DropdownMenuItem
+                                onClick={() => openDeleteModal(item)}
+                                className="text-red-600"
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Eliminar
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  );
+                })
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
       <Modal
         open={openDelete}

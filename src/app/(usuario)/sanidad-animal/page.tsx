@@ -13,7 +13,6 @@ import {
   DollarSign,
   Eye,
   FileText,
-  Filter,
   Layers,
   Pill,
   Search,
@@ -22,7 +21,7 @@ import {
   TrendingDown,
   TrendingUp,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import CardSanidad from "./ui/CardSanidad";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -45,7 +44,6 @@ import Paginacion from "@/components/generics/Paginacion";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import Modal from "@/components/generics/Modal";
-import FormSanidad from "./ui/FormSanidad";
 import { ResponseEspecies } from "@/api/especies/interfaces/response-especies.interface";
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import { Sanidad } from "@/api/sanidad-animal/interface/response-sanidad-animal.interface";
@@ -55,36 +53,103 @@ import EvolucionMensual from "@/components/reportes/sanidad-animal/EvolucionMens
 import { formatCurrency } from "@/helpers/funciones/formatCurrency";
 import DistribucionServicio from "@/components/reportes/sanidad-animal/DistribucionServicio";
 import ResumenPorServicio from "@/components/reportes/sanidad-animal/ResumenPorServicio";
+import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
+import useGetAnimalesPropietario from "@/hooks/animales/useGetAnimalesPropietario";
+import { Animal } from "@/api/animales/interfaces/response-animales.interface";
+import SearchAnimales from "./ui/SearchAnimales";
+import ProximosEventosAlerta from "@/components/sanidad-animal/eventos/ProximosEventosAlerta";
+import TableHistorialCambios from "./ui/TableHistorialCambios";
+import useGetSanidadHistorialCambios from "@/hooks/sanidad-animal/useGetSanidadHistorialCambios";
 
 const SanidadAnimalPage = () => {
   const { cliente } = useAuthStore();
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const [openViewsEliminados, setOpenViewsEliminados] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize] = useState(isMobile ? 5 : 10);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterTipo, setFilterTipo] = useState("todos");
   const [especieSeleccionada, setEspecieSeleccionada] = useState("");
   const [selectedSanidad, setSelectedSanidad] = useState<Sanidad | null>(null);
   const [selectedServicioGrafico, setSelectedServicioGrafico] =
     useState<string>("todos");
+  const [animalSearchTerm, setAnimalSearchTerm] = useState("");
+  const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
+  const [isAnimalDropdownOpen, setIsAnimalDropdownOpen] = useState(false);
+  const animalDropdownRef = useRef<HTMLDivElement>(null);
+
+  const [currentPageEliminados, setCurrentPageEliminados] = useState(1);
+  const [currentPageHistorial, setCurrentPageHistorial] = useState(1);
+  const [pageSizeModal] = useState(isMobile ? 5 : 10);
+
   const especie = especieSeleccionada === "todos" ? "" : especieSeleccionada;
   const { data: especies } = useGetEspecies();
-  const tipos_servicio = filterTipo === "todos" ? "" : filterTipo;
   const { data: eliminados } = useGetSanidadEliminados();
+  const { data: historial } = useGetSanidadHistorialCambios();
+  const { data: animales, isLoading: cargando_animales } =
+    useGetAnimalesPropietario({ especie: especie });
+  const animalId = selectedAnimal?.id || "";
   const { data: sanidadResponse, isLoading } = useGetSanidadAnimal({
     especie: especie,
-    tipo_servicio: tipos_servicio,
+    animalId: animalId,
   });
+
   const { data: costos_mensuales, isLoading: cargando_costos } =
-    useGetCostosMensualesSanidad({ especie });
+    useGetCostosMensualesSanidad({
+      especie: especie,
+      animalId: animalId,
+    });
 
   const sanidadData = sanidadResponse?.sanidad || [];
 
+  const animalesFiltrados = useMemo(() => {
+    if (!animales) return [];
+    if (!animalSearchTerm.trim()) return animales.slice(0, 10);
+
+    const term = animalSearchTerm.toLowerCase().trim();
+    return animales
+      .filter((animal) => {
+        const nombre = animal.nombre_animal?.toLowerCase() || "";
+        const identificador = animal.identificador?.toLowerCase() || "";
+        const especie = animal.especie?.nombre?.toLowerCase() || "";
+        return (
+          nombre.includes(term) ||
+          identificador.includes(term) ||
+          especie.includes(term)
+        );
+      })
+      .slice(0, 10);
+  }, [animales, animalSearchTerm]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        animalDropdownRef.current &&
+        !animalDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsAnimalDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const handleEditSanidad = (sanidad: Sanidad) => {
     setSelectedSanidad(sanidad);
-    setOpenModal(true);
+  };
+
+  const handleSelectAnimal = (animal: Animal) => {
+    setSelectedAnimal(animal);
+    setAnimalSearchTerm(animal.nombre_animal || animal.identificador || "");
+    setIsAnimalDropdownOpen(false);
+    setCurrentPage(1);
+  };
+
+  const clearAnimalSelection = () => {
+    setSelectedAnimal(null);
+    setAnimalSearchTerm("");
+    setIsAnimalDropdownOpen(false);
+    setCurrentPage(1);
   };
 
   const filteredData = useMemo(() => {
@@ -104,6 +169,29 @@ const SanidadAnimalPage = () => {
 
     return filtered;
   }, [sanidadData, searchTerm]);
+
+  const eliminadosData = eliminados?.sanidad || [];
+  const totalPagesEliminados = Math.ceil(eliminadosData.length / pageSizeModal);
+  const paginatedEliminados = useMemo(() => {
+    const start = (currentPageEliminados - 1) * pageSizeModal;
+    const end = start + pageSizeModal;
+    return eliminadosData.slice(start, end);
+  }, [eliminadosData, currentPageEliminados, pageSizeModal]);
+
+  const historialData = historial?.historial || [];
+  const totalPagesHistorial = Math.ceil(historialData.length / pageSizeModal);
+  const paginatedHistorial = useMemo(() => {
+    const start = (currentPageHistorial - 1) * pageSizeModal;
+    const end = start + pageSizeModal;
+    return historialData.slice(start, end);
+  }, [historialData, currentPageHistorial, pageSizeModal]);
+
+  useEffect(() => {
+    if (openViewsEliminados) {
+      setCurrentPageEliminados(1);
+      setCurrentPageHistorial(1);
+    }
+  }, [openViewsEliminados]);
 
   const datosCostosProcesados = useMemo(() => {
     if (!costos_mensuales || costos_mensuales.length === 0) {
@@ -251,7 +339,7 @@ const SanidadAnimalPage = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm]);
+  }, [searchTerm, especieSeleccionada]);
 
   const estadisticas = useMemo(() => {
     if (!sanidadData || sanidadData.length === 0) {
@@ -405,55 +493,77 @@ const SanidadAnimalPage = () => {
   );
 
   return (
-    <div className="container mx-auto p-4 md:p-6 space-y-6">
-      <div className="md:flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2 capitalize">
-            <ShieldPlus className="h-7 w-7 text-green-600" />
-            Sanidad {especieSeleccionada ? `- ${especieSeleccionada}` : ""}
+    <div className="container mx-auto px-3 sm:px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+        <div className="w-full sm:w-auto">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2 capitalize">
+            <ShieldPlus className="h-6 w-6 sm:h-7 sm:w-7 text-green-600 flex-shrink-0" />
+            <span className="truncate">
+              Sanidad {especieSeleccionada ? `- ${especieSeleccionada}` : ""}
+            </span>
           </h1>
-          <p className="text-sm md:text-base text-muted-foreground mt-1">
+          <p className="text-xs sm:text-sm md:text-base text-muted-foreground mt-0.5 sm:mt-1">
             Registra y monitorea la sanidad de tus animales por especie
           </p>
         </div>
         {eliminados && eliminados.total > 0 && (
           <Button
             onClick={() => setOpenViewsEliminados(true)}
-            variant={"outline"}
+            variant="outline"
+            size={isMobile ? "sm" : "default"}
+            className="w-full sm:w-auto"
           >
-            Ver Eliminados ({eliminados.total}) <Eye />
+            Ver Eventos ({eliminados.total + historial?.total!}){" "}
+            <Eye className="h-4 w-4 ml-1" />
           </Button>
         )}
       </div>
 
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 bg-gray-50 rounded-lg">
-        <label className="text-sm font-medium">Filtrar por especie:</label>
-        <Select
-          value={especieSeleccionada}
-          onValueChange={(value) => {
-            setEspecieSeleccionada(value);
-            setCurrentPage(1);
-          }}
-        >
-          <SelectTrigger className="w-full sm:w-[200px]">
-            <SelectValue placeholder="Seleccionar especie" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos">Todas las especies</SelectItem>
-            {especies?.data.map((especie: ResponseEspecies) => (
-              <SelectItem key={especie.id} value={especie.nombre}>
-                {especie.nombre}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <span className="text-sm text-muted-foreground">
-          Mostrando: <strong>{especieSeleccionada}</strong>
-        </span>
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-gray-50 rounded-lg">
+          <label className="text-xs sm:text-sm font-medium">
+            Filtrar por especie:
+          </label>
+          <Select
+            value={especieSeleccionada}
+            onValueChange={(value) => {
+              setEspecieSeleccionada(value);
+              setCurrentPage(1);
+            }}
+          >
+            <SelectTrigger className="w-full sm:w-[200px]">
+              <SelectValue placeholder="Seleccionar especie" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todas las especies</SelectItem>
+              {especies?.data.map((especie: ResponseEspecies) => (
+                <SelectItem key={especie.id} value={especie.nombre}>
+                  {especie.nombre}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <span className="text-xs sm:text-sm text-muted-foreground">
+            Mostrando: <strong>{especieSeleccionada || "Todas"}</strong>
+          </span>
+        </div>
+
+        <SearchAnimales
+          animalDropdownRef={animalDropdownRef}
+          selectedAnimal={selectedAnimal}
+          clearAnimalSelection={clearAnimalSelection}
+          animalSearchTerm={animalSearchTerm}
+          setAnimalSearchTerm={setAnimalSearchTerm}
+          setIsAnimalDropdownOpen={setIsAnimalDropdownOpen}
+          isAnimalDropdownOpen={isAnimalDropdownOpen}
+          animalesFiltrados={animalesFiltrados}
+          cargando_animales={cargando_animales}
+          handleSelectAnimal={handleSelectAnimal}
+        />
       </div>
 
-      <div className="mt-5">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="mt-3 sm:mt-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           <CardSanidad
             title="Estado sanitario"
             description={estadisticas.estadoSanitario}
@@ -486,19 +596,9 @@ const SanidadAnimalPage = () => {
           />
         </div>
 
-        {estadisticas.tieneEventosPendientes && (
-          <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-yellow-500" />
-            <p className="text-sm text-yellow-700">
-              <strong>
-                {estadisticas.eventosPendientes} evento(s) pendiente(s)
-              </strong>{" "}
-              - Requieren atención en los próximos 7 días
-            </p>
-          </div>
-        )}
+        <ProximosEventosAlerta eventos={sanidadData} />
 
-        <div className="mt-2 text-sm text-muted-foreground">
+        <div className="mt-2 text-xs sm:text-sm text-muted-foreground">
           {sanidadData.length > 0 ? (
             <p>Total de registros: {filteredData.length}</p>
           ) : (
@@ -509,47 +609,43 @@ const SanidadAnimalPage = () => {
         </div>
       </div>
 
-      <div className="mt-5">
+      <div className="mt-4 sm:mt-5 grid grid-col-1 lg:grid-col-3 gap-2">
         <Tabs defaultValue="resumen" className="w-full">
           <TabsList className="w-full grid grid-cols-2">
-            <TabsTrigger value="resumen">Resumen</TabsTrigger>
-            <TabsTrigger value="costos">Costos Mensuales</TabsTrigger>
+            <TabsTrigger className="text-xs sm:text-sm" value="resumen">
+              Resumen
+            </TabsTrigger>
+            <TabsTrigger className="text-xs sm:text-sm" value="costos">
+              Costos Mensuales
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="resumen" className="mt-4">
+          <TabsContent value="resumen" className="mt-3 sm:mt-4">
             <Card>
-              <CardHeader>
-                <CardTitle>Resumen de Sanidad</CardTitle>
-                <CardDescription>
+              <CardHeader className="p-3 sm:p-6">
+                <CardTitle className="text-base sm:text-lg">
+                  Resumen de Sanidad
+                </CardTitle>
+                <CardDescription className="text-xs sm:text-sm">
                   Lista completa de eventos sanitarios registrados
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="flex flex-col md:flex-row gap-4 mb-4">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Buscar por servicio, responsable, animal..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <Select value={filterTipo} onValueChange={setFilterTipo}>
-                      <SelectTrigger className="w-[180px]">
-                        <Filter className="h-4 w-4 mr-2" />
-                        <SelectValue placeholder="Filtrar por tipo" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="todos">Todos los tipos</SelectItem>
-                        {opciones_servicios_especie.map((tipo) => (
-                          <SelectItem key={tipo.id} value={tipo.value}>
-                            {tipo.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+              <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
+                <div className="flex flex-col gap-3 mb-4">
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder={
+                          isMobile
+                            ? "Buscar..."
+                            : "Buscar por servicio, responsable, animal..."
+                        }
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-9 text-sm h-9 sm:h-10"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -562,19 +658,20 @@ const SanidadAnimalPage = () => {
                     No se encontraron registros con los filtros aplicados
                   </div>
                 ) : (
-                  <div className="rounded-md border">
+                  <div className="rounded-md border overflow-x-auto">
                     <TableResumenSanidad
                       paginatedData={paginatedData}
                       moneda={moneda}
                       handleEditSanidad={handleEditSanidad}
-                      acciones={true}
+                      acciones={false}
+                      isMobile={isMobile}
                     />
                   </div>
                 )}
 
                 {filteredData.length > 0 && (
-                  <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <p className="text-sm text-muted-foreground">
+                  <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
                       Mostrando {(currentPage - 1) * pageSize + 1} -{" "}
                       {Math.min(currentPage * pageSize, filteredData.length)} de{" "}
                       {filteredData.length} registros
@@ -590,18 +687,20 @@ const SanidadAnimalPage = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="costos" className="mt-4">
+          <TabsContent value="costos" className="mt-3 sm:mt-4">
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
+              <CardHeader className="p-3 sm:p-6">
                 <div>
-                  <CardTitle>Costos Mensuales por Servicio</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-base sm:text-lg">
+                    Costos Mensuales por Servicio
+                  </CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">
                     Análisis de costos sanitarios mensuales desglosados por tipo
                     de servicio (últimos 12 meses)
                   </CardDescription>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
                 {cargando_costos ? (
                   <div className="flex justify-center py-12">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -616,8 +715,8 @@ const SanidadAnimalPage = () => {
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-8">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="space-y-6 sm:space-y-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
                       <StatCard
                         title="Total gastado"
                         value={formatCurrency(
@@ -668,7 +767,7 @@ const SanidadAnimalPage = () => {
                       />
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                       <Label className="text-sm font-medium">
                         Filtrar por servicio:
                       </Label>
@@ -676,7 +775,7 @@ const SanidadAnimalPage = () => {
                         value={selectedServicioGrafico}
                         onValueChange={setSelectedServicioGrafico}
                       >
-                        <SelectTrigger className="w-[200px]">
+                        <SelectTrigger className="w-full sm:w-[200px]">
                           <SelectValue placeholder="Todos los servicios" />
                         </SelectTrigger>
                         <SelectContent>
@@ -694,13 +793,15 @@ const SanidadAnimalPage = () => {
                       </Select>
                     </div>
 
-                    <EvolucionMensual
-                      datosEvolucionFiltrados={datosEvolucionFiltrados}
-                      selectedServicioGrafico={selectedServicioGrafico}
-                      moneda={moneda}
-                    />
+                    <div className="overflow-x-auto -mx-3 sm:mx-0">
+                      <EvolucionMensual
+                        datosEvolucionFiltrados={datosEvolucionFiltrados}
+                        selectedServicioGrafico={selectedServicioGrafico}
+                        moneda={moneda}
+                      />
+                    </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                       <DistribucionServicio
                         datosCostosProcesados={
                           datosCostosProcesados.datosPorServicio
@@ -716,7 +817,7 @@ const SanidadAnimalPage = () => {
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       {datosCostosProcesados.mesConMayorCosto && (
                         <CardSanidad
                           title="Mes de mayor gasto"
@@ -754,43 +855,98 @@ const SanidadAnimalPage = () => {
       </div>
 
       <Modal
-        open={openModal}
-        onOpenChange={setOpenModal}
-        title={selectedSanidad ? "Editar Sanidad" : "Ingresar Sanidad"}
-        description={
-          selectedSanidad
-            ? "Aquí podrás editar datos de sanidad dependiendo de la especie"
-            : "Aquí podrás ingresar datos de sanidad dependiendo de la especie"
-        }
-        height="auto"
-        size="2xl"
-        showCloseButton={false}
-      >
-        <FormSanidad
-          opciones_especie={opciones_servicios_especie}
-          setOpenModal={setOpenModal}
-          onSuccess={() => {
-            setOpenModal(false);
-            setSelectedSanidad(null);
-          }}
-          especie_animal={especieSeleccionada}
-          sanidad={selectedSanidad}
-        />
-      </Modal>
-      <Modal
         open={openViewsEliminados}
         onOpenChange={setOpenViewsEliminados}
-        title="Eventos Eliminados"
-        description="Aqui podras ver todos los eventos eliminados"
+        title="Eventos"
+        description="Aquí podrás ver todos los eventos eliminados"
         height="auto"
-        size="5xl"
+        size={isMobile ? "full" : "6xl"}
       >
-        <TableResumenSanidad
-          paginatedData={eliminados?.sanidad ?? []}
-          moneda={moneda}
-          handleEditSanidad={handleEditSanidad}
-          acciones={false}
-        />
+        <Tabs defaultValue="eliminados" className="w-full">
+          <TabsList className="w-full">
+            <TabsTrigger className="w-full" value="eliminados">
+              Eliminados ({eliminadosData.length})
+            </TabsTrigger>
+            <TabsTrigger className="w-full" value="historial">
+              Historial de Cambios ({historialData.length})
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="eliminados" className="mt-4">
+            <div className="space-y-4">
+              {paginatedEliminados.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  No hay eventos eliminados
+                </div>
+              ) : (
+                <>
+                  <TableResumenSanidad
+                    paginatedData={paginatedEliminados}
+                    moneda={moneda}
+                    handleEditSanidad={handleEditSanidad}
+                    acciones={false}
+                    isMobile={isMobile}
+                  />
+
+                  {eliminadosData.length > pageSizeModal && (
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
+                      <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
+                        Mostrando{" "}
+                        {(currentPageEliminados - 1) * pageSizeModal + 1} -{" "}
+                        {Math.min(
+                          currentPageEliminados * pageSizeModal,
+                          eliminadosData.length,
+                        )}{" "}
+                        de {eliminadosData.length} registros
+                      </p>
+                      <Paginacion
+                        currentPage={currentPageEliminados}
+                        totalPages={totalPagesEliminados}
+                        onPageChange={setCurrentPageEliminados}
+                      />
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="historial" className="mt-4">
+            <div className="space-y-4">
+              {paginatedHistorial.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  No hay cambios registrados en el historial
+                </div>
+              ) : (
+                <>
+                  <TableHistorialCambios
+                    historial={paginatedHistorial}
+                    isMobile={isMobile}
+                  />
+
+                  {historialData.length > pageSizeModal && (
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
+                      <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
+                        Mostrando{" "}
+                        {(currentPageHistorial - 1) * pageSizeModal + 1} -{" "}
+                        {Math.min(
+                          currentPageHistorial * pageSizeModal,
+                          historialData.length,
+                        )}{" "}
+                        de {historialData.length} registros
+                      </p>
+                      <Paginacion
+                        currentPage={currentPageHistorial}
+                        totalPages={totalPagesHistorial}
+                        onPageChange={setCurrentPageHistorial}
+                      />
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
       </Modal>
     </div>
   );

@@ -21,16 +21,26 @@ export function StatCard({
   textColor,
 }: StatCardProps) {
   return (
-    <Card className={`bg-gradient-to-br ${gradientFrom} ${gradientTo} border`}>
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className={`text-sm ${textColor}`}>{title}</p>
-            <p className={`text-2xl font-bold ${textColor}`}>{value}</p>
+    <Card
+      className={`bg-gradient-to-br ${gradientFrom} ${gradientTo} border transition-all duration-200 hover:shadow-md`}
+    >
+      <CardContent className="p-3 sm:p-4">
+        <div className="flex items-center justify-between gap-2 sm:gap-3">
+          <div className="min-w-0 flex-1">
+            <p
+              className={`text-xs sm:text-sm font-medium truncate ${textColor}`}
+            >
+              {title}
+            </p>
+            <p
+              className={`text-base sm:text-lg md:text-2xl font-bold truncate ${textColor}`}
+            >
+              {value}
+            </p>
           </div>
 
-          <div className="p-3 bg-white/20 rounded-full">
-            <Icon className={`h-6 w-6 ${iconColor}`} />
+          <div className="p-2 sm:p-3 bg-white/20 rounded-full flex-shrink-0">
+            <Icon className={`h-4 w-4 sm:h-5 sm:w-6 ${iconColor}`} />
           </div>
         </div>
       </CardContent>

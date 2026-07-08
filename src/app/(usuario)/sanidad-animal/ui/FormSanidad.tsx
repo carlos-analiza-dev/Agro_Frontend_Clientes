@@ -48,6 +48,19 @@ interface Props {
   onSuccess?: () => void;
   especie_animal: string;
   sanidad?: Sanidad | null;
+  borderColor?: string;
+  bgColor?: string;
+  textColor?: string;
+  iconColor?: string;
+  hoverBgColor?: string;
+  selectedBgColor?: string;
+  selectedBorderColor?: string;
+  selectedTextColor?: string;
+  buttonBgColor?: string;
+  buttonHoverColor?: string;
+  tagBgColor?: string;
+  tagTextColor?: string;
+  tagBorderColor?: string;
 }
 
 const formatearFecha = (fecha: string | Date | undefined): string => {
@@ -70,6 +83,19 @@ const FormSanidad = ({
   onSuccess,
   especie_animal,
   sanidad = null,
+  borderColor = "border-green-200",
+  bgColor = "bg-green-50",
+  textColor = "text-green-700",
+  iconColor = "text-green-600",
+  hoverBgColor = "hover:bg-green-50",
+  selectedBgColor = "bg-green-50",
+  selectedBorderColor = "border-green-500",
+  selectedTextColor = "text-green-700",
+  buttonBgColor = "bg-green-600",
+  buttonHoverColor = "hover:bg-green-700",
+  tagBgColor = "bg-green-100",
+  tagTextColor = "text-green-700",
+  tagBorderColor = "border-green-200",
 }: Props) => {
   const [selectedService, setSelectedService] = useState<string>("");
   const [selectedServiceData, setSelectedServiceData] = useState<any>(null);
@@ -225,6 +251,9 @@ const FormSanidad = ({
       talla_promedio: 0,
       biomasa_estimada: 0,
       etapa_peces: "",
+      area_sifoneo: "",
+      equipo_utilizado: "",
+      horas_trabajo: 0,
     },
   });
 
@@ -422,6 +451,12 @@ const FormSanidad = ({
         setValue("etapa_peces", sanidad.etapa_peces || "");
         break;
 
+      case "Sifoneo":
+        setValue("area_sifoneo", sanidad.area_sifoneo || "");
+        setValue("equipo_utilizado", sanidad.equipo_utilizado || "");
+        setValue("horas_trabajo", Number(sanidad.horas_trabajo) || 0);
+        break;
+
       default:
         break;
     }
@@ -443,6 +478,7 @@ const FormSanidad = ({
       queryClient.invalidateQueries({ queryKey: ["sanidad-animal"] });
       queryClient.invalidateQueries({ queryKey: ["costos-mensuales-sanidad"] });
       queryClient.invalidateQueries({ queryKey: ["sanidad-eliminados"] });
+      queryClient.invalidateQueries({ queryKey: ["sanidad-cambios"] });
       reset();
       setSelectedService("");
       setSelectedServiceData(null);
@@ -1648,6 +1684,115 @@ const FormSanidad = ({
             </div>
           </div>
         );
+      case "Sifoneo":
+        return (
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="area_sifoneo">
+                Área sifoneada <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="area_sifoneo"
+                {...register("area_sifoneo", {
+                  required: "El área sifoneada es requerida",
+                })}
+                placeholder="Ej: Estanque 3, Piscina 5, Sector Norte"
+                className={errors.area_sifoneo ? "border-red-500" : ""}
+                disabled={isSubmitting}
+              />
+              {errors.area_sifoneo && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.area_sifoneo.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="equipo_utilizado">
+                Equipo utilizado <span className="text-red-500">*</span>
+              </Label>
+              <Select
+                value={watch("equipo_utilizado") || ""}
+                onValueChange={(value) => setValue("equipo_utilizado", value)}
+                disabled={isSubmitting}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar equipo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Equipos</SelectLabel>
+                    <SelectItem value="sifon_manual">Sifón manual</SelectItem>
+                    <SelectItem value="sifon_electrico">
+                      Sifón eléctrico
+                    </SelectItem>
+                    <SelectItem value="bomba_centrifuga">
+                      Bomba centrífuga
+                    </SelectItem>
+                    <SelectItem value="bomba_diafragma">
+                      Bomba de diafragma
+                    </SelectItem>
+                    <SelectItem value="aspiradora_fondos">
+                      Aspiradora de fondos
+                    </SelectItem>
+                    <SelectItem value="sifon_comercial">
+                      Sifón comercial
+                    </SelectItem>
+                    <SelectItem value="otro">Otro</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              {errors.equipo_utilizado && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.equipo_utilizado.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="horas_trabajo">
+                Horas de trabajo <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="horas_trabajo"
+                type="number"
+                step="0.5"
+                {...register("horas_trabajo", {
+                  required: "Las horas de trabajo son requeridas",
+                  valueAsNumber: true,
+                  min: {
+                    value: 0.5,
+                    message: "El tiempo mínimo es 0.5 horas",
+                  },
+                })}
+                placeholder="Ej: 2.5 horas"
+                className={errors.horas_trabajo ? "border-red-500" : ""}
+                disabled={isSubmitting}
+              />
+              {errors.horas_trabajo && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.horas_trabajo.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="costo_producto_maquinaria">
+                Costo de operación ($)
+              </Label>
+              <Input
+                id="costo_producto_maquinaria"
+                type="number"
+                step="0.01"
+                {...register("costo_producto_maquinaria", {
+                  valueAsNumber: true,
+                })}
+                placeholder="Costo total de la operación"
+                disabled={isSubmitting}
+              />
+            </div>
+          </div>
+        );
 
       default:
         return null;
@@ -1694,9 +1839,9 @@ const FormSanidad = ({
                 }}
                 className={cn(
                   "cursor-pointer rounded-lg border-2 p-4 transition-all duration-200",
-                  "hover:shadow-md hover:border-primary/50",
+                  "hover:shadow-md",
                   isSelected
-                    ? "border-primary bg-primary/5 shadow-sm ring-2 ring-primary/20"
+                    ? `${selectedBorderColor} ${selectedBgColor} shadow-sm ring-2 ${selectedBorderColor.replace("border", "ring")}/20`
                     : "border-gray-200 hover:bg-gray-50",
                   isSubmitting && "cursor-not-allowed opacity-50",
                 )}
@@ -1706,7 +1851,7 @@ const FormSanidad = ({
                     className={cn(
                       "rounded-full p-2 transition-colors",
                       isSelected
-                        ? "bg-primary/10 text-primary"
+                        ? `${selectedBgColor} ${iconColor}`
                         : "bg-gray-100 text-gray-600",
                     )}
                   >
@@ -1715,13 +1860,15 @@ const FormSanidad = ({
                   <span
                     className={cn(
                       "text-sm font-medium transition-colors",
-                      isSelected ? "text-primary" : "text-gray-700",
+                      isSelected ? selectedTextColor : "text-gray-700",
                     )}
                   >
                     {opcion.label}
                   </span>
                   {isSelected && (
-                    <div className="h-1 w-6 rounded-full bg-primary" />
+                    <div
+                      className={`h-1 w-6 rounded-full ${selectedBorderColor.replace("border", "bg")}`}
+                    />
                   )}
                 </div>
               </div>
@@ -1737,7 +1884,7 @@ const FormSanidad = ({
         <div className="border-t pt-4 mt-6">
           <div className="flex items-center gap-2 mb-4">
             {selectedServiceData.icon && (
-              <selectedServiceData.icon className="h-5 w-5 text-green-600" />
+              <selectedServiceData.icon className={`h-5 w-5 ${iconColor}`} />
             )}
             <h3 className="text-lg font-semibold">
               {selectedServiceData.label}
@@ -1822,7 +1969,7 @@ const FormSanidad = ({
                             <div
                               key={animal.id}
                               onClick={() => handleSelectAnimal(animal)}
-                              className="px-4 py-2 hover:bg-gray-100 cursor-pointer border-b last:border-b-0 flex items-center justify-between"
+                              className={`px-4 py-2 ${hoverBgColor} cursor-pointer border-b last:border-b-0 flex items-center justify-between`}
                             >
                               <div>
                                 <div className="font-medium">{info.nombre}</div>
@@ -1857,7 +2004,7 @@ const FormSanidad = ({
                             <div
                               key={animal.id}
                               onClick={() => handleSelectAnimal(animal)}
-                              className="px-4 py-2 hover:bg-gray-100 cursor-pointer border-b last:border-b-0 flex items-center justify-between"
+                              className={`px-4 py-2 ${hoverBgColor} cursor-pointer border-b last:border-b-0 flex items-center justify-between`}
                             >
                               <div>
                                 <div className="font-medium">
@@ -1889,15 +2036,17 @@ const FormSanidad = ({
             )}
 
             {selectedAnimal && (
-              <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
+              <div
+                className={`mt-2 p-3 ${bgColor} border ${borderColor} rounded-lg flex items-center justify-between`}
+              >
                 <div>
-                  <span className="text-sm font-medium text-green-800">
+                  <span className={`text-sm font-medium ${textColor}`}>
                     {selectedAnimal.nombre_animal ||
                       selectedAnimal.galpon ||
                       selectedAnimal.lote ||
                       "Seleccionado"}
                   </span>
-                  <span className="text-xs text-green-600 ml-2">
+                  <span className={`text-xs ${textColor} ml-2`}>
                     {selectedAnimal.identificador &&
                       `ID: ${selectedAnimal.identificador}`}
                     {selectedAnimal.galpon &&
@@ -1910,7 +2059,7 @@ const FormSanidad = ({
                 <button
                   type="button"
                   onClick={clearSelection}
-                  className="text-green-600 hover:text-green-800"
+                  className={`${iconColor} hover:${textColor}`}
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -2115,7 +2264,7 @@ const FormSanidad = ({
           </Button>
         )}
         <Button
-          className="bg-green-600 hover:bg-green-700"
+          className={`${buttonBgColor} ${buttonHoverColor} text-white`}
           type="submit"
           disabled={isSubmitting}
         >

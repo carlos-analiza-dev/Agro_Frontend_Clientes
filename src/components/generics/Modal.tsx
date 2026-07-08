@@ -20,6 +20,7 @@ export type ModalSize =
   | "3xl"
   | "4xl"
   | "5xl"
+  | "6xl"
   | "full";
 export type ModalHeight = "auto" | "sm" | "md" | "lg" | "xl" | "full";
 
@@ -34,6 +35,7 @@ interface Props {
   showCloseButton?: boolean;
   className?: string;
   contentClassName?: string;
+  color_title?: string;
 }
 
 const sizeClasses: Record<ModalSize, string> = {
@@ -46,6 +48,7 @@ const sizeClasses: Record<ModalSize, string> = {
   "3xl": "sm:max-w-3xl",
   "4xl": "sm:max-w-4xl",
   "5xl": "sm:max-w-5xl",
+  "6xl": "sm:max-w-6xl",
   full: "sm:max-w-[95vw] md:max-w-[90vw]",
 };
 
@@ -69,6 +72,7 @@ const Modal = ({
   showCloseButton = true,
   className = "",
   contentClassName = "",
+  color_title = "",
 }: Props) => {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -77,7 +81,9 @@ const Modal = ({
       >
         <div className="flex items-center justify-between px-6 py-4 border-b">
           <AlertDialogHeader className="p-0">
-            <AlertDialogTitle className="text-xl font-semibold">
+            <AlertDialogTitle
+              className={`text-xl font-semibold capitalize ${color_title}`}
+            >
               {title}
             </AlertDialogTitle>
             {description && (

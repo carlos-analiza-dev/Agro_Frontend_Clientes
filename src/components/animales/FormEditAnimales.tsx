@@ -208,12 +208,12 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
   const selectedSexo = watch("sexo");
   const { data: machos } = useGetAnimalesPropietario({
     sexo: SexoAnimal.Macho,
-    especieId,
+    especie: especieId,
   });
 
   const { data: hembras } = useGetAnimalesPropietario({
     sexo: SexoAnimal.Hembra,
-    especieId,
+    especie: especieId,
   });
   const fechaNacimiento = watch("fecha_nacimiento");
 

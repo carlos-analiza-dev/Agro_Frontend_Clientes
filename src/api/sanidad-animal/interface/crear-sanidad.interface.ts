@@ -107,4 +107,9 @@ export interface CreateSanidadAnimal {
   talla_promedio?: number | null;
   biomasa_estimada?: number | null;
   etapa_peces?: string | null;
+
+  //SIFONEO PECES
+  area_sifoneo?: string | null;
+  horas_trabajo?: number | null;
+  equipo_utilizado?: string | null;
 }

@@ -6,14 +6,6 @@ import { isAxiosError } from "axios";
 import { Animal } from "@/api/animales/interfaces/response-animales.interface";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,6 +28,7 @@ import {
   Package,
   TrendingUp,
   Clock,
+  Trash2,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import { ActualizarAnimalMuerte } from "@/api/animales/accions/update-animal-status-muerte";
@@ -43,6 +36,9 @@ import { eliminarImagenAnimal } from "@/api/animales_profile/accions/delete-imag
 import ImageGallery from "@/components/generics/ImageGallery";
 import { Badge } from "@/components/ui/badge";
 import { EtapaAvicola } from "@/api/animales/interfaces/crear-avicola.interface";
+import { descartarAnimal } from "@/api/animales/accions/update-animal";
+import { format } from "date-fns";
+import Modal from "@/components/generics/Modal";
 
 interface Props {
   animal: Animal;
@@ -82,7 +78,9 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const [localImage, setLocalImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
-
+  const [discardDialogVisible, setDiscardDialogVisible] = useState(false);
+  const [discardReason, setDiscardReason] = useState("");
+  const todayDate = format(new Date(), "yyyy-MM-dd");
   const imageUrl = animal.profileImages?.[0]?.url;
   const etapaActual = animal.etapa_avicola as EtapaAvicola;
 
@@ -174,6 +172,41 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
     }
   };
 
+  const handleDiscardAnimal = async () => {
+    try {
+      if (!discardReason || discardReason.trim() === "") {
+        toast.error("Debe ingresar una razón de descarte válida");
+        return;
+      }
+
+      await descartarAnimal(animal.id, {
+        descartado: true,
+        razon_descarte: discardReason,
+        fecha_descarte: todayDate,
+      });
+
+      toast("Animal descartado exitosamente");
+      queryClient.invalidateQueries({
+        queryKey: ["animales-propietario", animal.propietario.id],
+      });
+      setDiscardDialogVisible(false);
+      setDiscardReason("");
+    } catch (error) {
+      if (isAxiosError(error)) {
+        const messages = error.response?.data?.message;
+        const errorMessage = Array.isArray(messages)
+          ? messages[0]
+          : typeof messages === "string"
+            ? messages
+            : "Hubo un error al descartar el animal";
+
+        toast.error(errorMessage);
+      } else {
+        toast.error("Contacte al administrador");
+      }
+    }
+  };
+
   return (
     <>
       <Card className="mb-4 overflow-hidden transition-all duration-200 hover:shadow-md border-amber-200 dark:border-amber-800">
@@ -234,7 +267,15 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <Heart className="h-4 w-4 text-amber-500" />
               )}
             </Button>
-
+            <Button
+              variant="outline"
+              size="icon"
+              title="Descartar Animal"
+              className="h-8 w-8 rounded-full"
+              onClick={() => setDiscardDialogVisible(true)}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
             <Button
               variant="outline"
               size="icon"
@@ -539,59 +580,98 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
         onDelete={handleDeleteImage}
       />
 
-      <Dialog open={deathDialogVisible} onOpenChange={setDeathDialogVisible}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {deathStatus ? "Finalizar Lote" : "Activar Lote"}
-            </DialogTitle>
-            <DialogDescription>
-              {deathStatus
-                ? "Marca este lote como finalizado o descartado"
-                : "Marca este lote como activo nuevamente"}
-            </DialogDescription>
-          </DialogHeader>
+      <Modal
+        open={deathDialogVisible}
+        onOpenChange={setDeathDialogVisible}
+        title={deathStatus ? "Marcar como fallecido" : "Marcar como vivo"}
+        description="Actualiza el estado de vida del animal"
+        showCloseButton={false}
+      >
+        <div className="flex items-center justify-between py-4">
+          <Label htmlFor="death-status">¿El animal ha fallecido?</Label>
+          <Switch
+            id="death-status"
+            checked={deathStatus}
+            onCheckedChange={(value) => {
+              setDeathStatus(value);
+              if (!value) setDeathReason("N/D");
+            }}
+          />
+        </div>
 
-          <div className="flex items-center justify-between py-4">
-            <Label htmlFor="death-status">¿El lote ha sido finalizado?</Label>
-            <Switch
-              id="death-status"
-              checked={deathStatus}
-              onCheckedChange={(value) => {
-                setDeathStatus(value);
-                if (!value) setDeathReason("N/D");
-              }}
+        {deathStatus && (
+          <div className="space-y-2">
+            <Label htmlFor="death-reason">Razón de la muerte</Label>
+            <Input
+              id="death-reason"
+              value={deathReason}
+              onChange={(e) => setDeathReason(e.target.value)}
+              placeholder="Ingrese la razón de la muerte"
             />
           </div>
+        )}
 
-          {deathStatus && (
-            <div className="space-y-2">
-              <Label htmlFor="death-reason">Razón de finalización</Label>
-              <Input
-                id="death-reason"
-                value={deathReason}
-                onChange={(e) => setDeathReason(e.target.value)}
-                placeholder="Ej: Fin de ciclo productivo, Venta, Mortandad, etc."
-              />
-            </div>
-          )}
-
-          <DialogFooter>
+        <div className="flex justify-end">
+          <div className="flex gap-4">
             <Button
               variant="outline"
               onClick={() => setDeathDialogVisible(false)}
             >
               Cancelar
             </Button>
+            <Button onClick={handleDeathStatusUpdate}>Guardar</Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        title="Descartar Lote"
+        description="Esta acción marcará el lote como descartado. Asegúrese de
+              ingresar toda la información requerida."
+        open={discardDialogVisible}
+        onOpenChange={setDiscardDialogVisible}
+        showCloseButton={false}
+      >
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="discard-reason">Razón de descarte *</Label>
+            <Input
+              id="discard-reason"
+              value={discardReason}
+              onChange={(e) => setDiscardReason(e.target.value)}
+              placeholder="Ej: Venta, Muerte, Traslado, etc."
+            />
+          </div>
+
+          <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
+            <p className="text-sm text-yellow-800">
+              <strong>⚠️ Advertencia:</strong> Esta acción no se puede deshacer.
+              El animal será marcado como descartado en el sistema.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex justify-end">
+          <div className="flex gap-4">
             <Button
-              className="bg-amber-600 hover:bg-amber-700"
-              onClick={handleDeathStatusUpdate}
+              variant="outline"
+              onClick={() => {
+                setDiscardDialogVisible(false);
+                setDiscardReason("");
+              }}
             >
-              Guardar
+              Cancelar
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <Button
+              variant="destructive"
+              onClick={handleDiscardAnimal}
+              disabled={!discardReason}
+            >
+              Descartar Animal
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 };

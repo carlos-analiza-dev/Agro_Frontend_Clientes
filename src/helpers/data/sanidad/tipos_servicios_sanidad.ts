@@ -16,6 +16,7 @@ import {
   Droplet,
   Ruler,
   Home,
+  BrushCleaning,
 } from "lucide-react";
 
 export const tiposServiciosSanidadData = [
@@ -133,7 +134,7 @@ export const tiposServiciosSanidadData = [
     value: "Odontologia",
     label: "Odontología",
     especies: ["equino"],
-    icon: Smile, // Cambiado a Smile ✅
+    icon: Smile,
   },
   {
     id: 16,
@@ -208,6 +209,13 @@ export const tiposServiciosSanidadData = [
     label: "Muestreo biométrico",
     especies: ["peces"],
     icon: Ruler,
+  },
+  {
+    id: 26,
+    value: "Sifoneo",
+    label: "Sifoneo de estanques",
+    especies: ["peces"],
+    icon: BrushCleaning,
   },
 ];
 

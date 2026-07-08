@@ -94,12 +94,12 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
   const { data: fincas } = useFincasPropietarios(cliente?.id ?? "");
   const { data: machos } = useGetAnimalesPropietario({
     sexo: SexoAnimal.Macho,
-    especieId,
+    especie: especieId,
   });
 
   const { data: hembras } = useGetAnimalesPropietario({
     sexo: SexoAnimal.Hembra,
-    especieId,
+    especie: especieId,
   });
 
   const agregarHistorialReproductivo = () => {

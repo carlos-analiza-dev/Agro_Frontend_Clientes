@@ -63,6 +63,16 @@ export const UpdateAnimalPorcino = async (
   return response;
 };
 
+export const descartarAnimal = async (
+  id: string,
+  data: { descartado: boolean; razon_descarte: string; fecha_descarte: string },
+) => {
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/animal-finca/descartar/${id}`;
+
+  const response = await veterinariaAPI.post(url, data);
+  return response;
+};
+
 /* export const ActualizarAnimal = async (
   id: string,
   data: Partial<CrearAnimalByFinca>

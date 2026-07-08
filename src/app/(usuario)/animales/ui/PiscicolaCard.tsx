@@ -67,7 +67,6 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
   const imageUrl = animal.profileImages?.[0]?.url;
 
-  // Helper para formatear fechas
   const formatDate = (dateString: string | Date) => {
     if (!dateString) return "N/A";
     try {
@@ -81,7 +80,6 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
     }
   };
 
-  // Helper para obtener datos de calidad de agua
   const getCalidadAgua = () => {
     if (!animal.calidad_agua) return null;
     if (typeof animal.calidad_agua === "string") {
@@ -94,7 +92,6 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
     return animal.calidad_agua;
   };
 
-  // Helper para obtener datos de sanidad
   const getSanidad = () => {
     if (!animal.sanidad) return null;
     if (typeof animal.sanidad === "string") {
@@ -107,7 +104,6 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
     return animal.sanidad;
   };
 
-  // Helper para obtener datos de cosecha
   const getCosecha = () => {
     if (!animal.cosecha) return null;
     if (typeof animal.cosecha === "string") {
@@ -120,7 +116,6 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
     return animal.cosecha;
   };
 
-  // Helper para obtener muestreos
   const getMuestreos = () => {
     if (!animal.muestreos) return [];
     if (typeof animal.muestreos === "string") {

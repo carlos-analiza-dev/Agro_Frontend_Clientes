@@ -36,7 +36,8 @@ const useAnimalesByPropietario = (
       return totalLoaded < lastPage.total ? allPages.length : undefined;
     },
     initialPageParam: 0,
-    retry: 0,
+    retry: 1,
+    enabled: !!propietarioId,
   });
 };
 

@@ -98,11 +98,11 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
   const { data: fincas } = useFincasPropietarios(cliente?.id ?? "");
   const { data: machos } = useGetAnimalesPropietario({
     sexo: SexoAnimal.Macho,
-    especieId: selectedEspecieId,
+    especie: selectedEspecieId,
   });
   const { data: hembras } = useGetAnimalesPropietario({
     sexo: SexoAnimal.Hembra,
-    especieId: selectedEspecieId,
+    especie: selectedEspecieId,
   });
 
   useEffect(() => {

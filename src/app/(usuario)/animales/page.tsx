@@ -51,6 +51,7 @@ import PiscicolaCard from "./ui/PiscicolaCard";
 import CaprinoCard from "./ui/CaprinoCard";
 import OvinoCard from "./ui/OvinoCard";
 import PorcinoCard from "./ui/PorcinoCard";
+import EquinoCard from "./ui/EquinoCard";
 
 const ESPECIES = {
   AVES: ["aves", "avicola", "pollos", "gallinas"],
@@ -281,7 +282,7 @@ const AnimalesPageGanadero = () => {
       case "peces":
         return <PiscicolaCard key={key} {...commonProps} />;
       case "equino":
-        return <AnimalCard key={key} {...commonProps} />;
+        return <EquinoCard key={key} {...commonProps} />;
       case "caprino":
         return <CaprinoCard key={key} {...commonProps} />;
       case "ovino":
