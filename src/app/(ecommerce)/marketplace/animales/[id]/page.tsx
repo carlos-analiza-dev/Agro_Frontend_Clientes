@@ -33,6 +33,7 @@ import { GuardarButton } from "@/components/marketplace/GuardarButton";
 import PublicacionNoEncontrada from "@/components/marketplace/PublicacionNoEncontrada";
 import { ChatModal } from "@/components/chat/ChatModal";
 import { TipoPublicacion } from "@/interfaces/enums/market/tipo_publicacion.enum";
+import { formatCurrency } from "@/helpers/funciones/formatCurrency";
 
 const DetailsAnimalesPage = () => {
   const { cliente } = useAuthStore();
@@ -152,7 +153,7 @@ const DetailsAnimalesPage = () => {
                   <span className="text-sm text-gray-600">{precio.label}</span>
                 </div>
                 <p className="text-xl font-bold text-blue-600">
-                  {animal?.moneda} {Number(precio.valor).toLocaleString()}
+                  {formatCurrency(precio.valor, animal.moneda)}
                 </p>
               </div>
             ))}
@@ -165,8 +166,7 @@ const DetailsAnimalesPage = () => {
                   Depósito de garantía
                 </p>
                 <p className="text-sm text-yellow-600">
-                  {animal?.moneda}{" "}
-                  {Number(animal?.montoDeposito).toLocaleString()}
+                  {formatCurrency(animal.montoDeposito ?? 0, animal.moneda)}
                 </p>
               </div>
             </div>
@@ -183,10 +183,10 @@ const DetailsAnimalesPage = () => {
       return (
         <div className="mt-3">
           <p className="text-sm text-gray-400 line-through">
-            {animal?.moneda} {Number(animal?.precio).toLocaleString()}
+            {formatCurrency(animal.precio ?? 0, animal.moneda)}
           </p>
           <p className="text-2xl font-bold text-green-600">
-            {animal?.moneda} {Number(animal?.precio_oferta).toLocaleString()}
+            {formatCurrency(animal.precio_oferta ?? 0, animal.moneda)}
           </p>
         </div>
       );
@@ -194,7 +194,7 @@ const DetailsAnimalesPage = () => {
 
     return (
       <p className="mt-3 text-2xl font-bold text-green-600">
-        {animal?.moneda} {Number(animal?.precio).toLocaleString()}
+        {formatCurrency(animal?.precio ?? 0, animal?.moneda ?? "$")}
       </p>
     );
   };

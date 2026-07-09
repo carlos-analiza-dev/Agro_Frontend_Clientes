@@ -43,12 +43,18 @@ import {
   User,
   FlaskConical,
   Waves,
+  Skull,
 } from "lucide-react";
 import { toast } from "react-toastify";
-import { ActualizarAnimalMuerte } from "@/api/animales/accions/update-animal-status-muerte";
+import { ActualizarAnimalMuertePez } from "@/api/animales/accions/update-animal-status-muerte";
 import { eliminarImagenAnimal } from "@/api/animales_profile/accions/delete-image-animal";
 import ImageGallery from "@/components/generics/ImageGallery";
 import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
+import { descartarPeces } from "@/api/animales/accions/update-animal";
+import Modal from "@/components/generics/Modal";
+import { formatDate } from "@/helpers/funciones/formatDate";
+import { formatDateOnly } from "@/helpers/funciones/formatDateOnly";
 
 interface Props {
   animal: Animal;
@@ -64,21 +70,16 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const [localImage, setLocalImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
-
+  const [discardDialogVisible, setDiscardDialogVisible] = useState(false);
+  const [discardReason, setDiscardReason] = useState("");
+  const todayDate = format(new Date(), "yyyy-MM-dd");
   const imageUrl = animal.profileImages?.[0]?.url;
+  const [deathQuantity, setDeathQuantity] = useState<number>(0);
+  const [discardQuantity, setDiscardQuantity] = useState<number>(0);
 
-  const formatDate = (dateString: string | Date) => {
-    if (!dateString) return "N/A";
-    try {
-      return new Date(dateString).toLocaleDateString("es-ES", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
-    } catch {
-      return "N/A";
-    }
-  };
+  const [remainingQuantity, setRemainingQuantity] = useState<number>(
+    animal.cantidad_actual || 0,
+  );
 
   const getCalidadAgua = () => {
     if (!animal.calidad_agua) return null;
@@ -185,31 +186,54 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
   const handleDeathStatusUpdate = async () => {
     try {
-      if (
-        deathStatus &&
-        (!deathReason || deathReason.trim() === "" || deathReason === "N/D")
-      ) {
+      if (deathQuantity <= 0) {
+        toast.error("Debe ingresar una cantidad válida de peces fallecidas");
+        return;
+      }
+
+      if (!deathReason || deathReason.trim() === "" || deathReason === "N/D") {
         toast.error(
-          "Debe ingresar una razón de finalización válida (no puede estar vacía o ser 'N/D')",
+          "Debe ingresar una razón de muerte válida (no puede estar vacía o ser 'N/D')",
         );
         return;
       }
 
-      await ActualizarAnimalMuerte(animal.id, {
-        animal_muerte: deathStatus,
+      if (deathQuantity > remainingQuantity) {
+        toast.error(
+          `La cantidad de peces fallecidas (${deathQuantity}) excede la cantidad disponible (${remainingQuantity})`,
+        );
+        return;
+      }
+
+      const isCompleteDeath = remainingQuantity - deathQuantity === 0;
+
+      await ActualizarAnimalMuertePez(animal.id, {
+        cantidad: deathQuantity,
         razon_muerte: deathReason,
+        fecha_mortalidad: todayDate,
+        muerto: isCompleteDeath,
       });
 
-      toast.success(
-        deathStatus
-          ? "Lote marcado como finalizado"
-          : "Lote marcado como activo",
-      );
+      if (isCompleteDeath) {
+        toast.success(
+          `Lote completamente finalizado. Se registraron ${deathQuantity} peces fallecidas.`,
+        );
+      } else {
+        toast.success(
+          `Se registraron ${deathQuantity} peces fallecidas. Quedan ${remainingQuantity - deathQuantity} peces activas en el lote.`,
+        );
+      }
+
+      setRemainingQuantity((prev) => prev - deathQuantity);
 
       queryClient.invalidateQueries({
         queryKey: ["animales-propietario", animal.propietario?.id],
       });
+
       setDeathDialogVisible(false);
+      setDeathQuantity(0);
+      setDeathReason("");
+      setDeathStatus(false);
     } catch (error) {
       if (isAxiosError(error)) {
         const messages = error.response?.data?.message;
@@ -217,7 +241,61 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar el estado";
+            : "Hubo un error al registrar la mortalidad";
+
+        toast.error(errorMessage);
+      } else {
+        toast.error("Contacte al administrador");
+      }
+    }
+  };
+
+  const handleDiscardAnimal = async () => {
+    try {
+      if (discardQuantity <= 0) {
+        toast.error("Debe ingresar una cantidad válida de peces a descartar");
+        return;
+      }
+
+      if (!discardReason || discardReason.trim() === "") {
+        toast.error("Debe ingresar una razón de descarte válida");
+        return;
+      }
+
+      const currentQuantity = animal?.cantidad_actual ?? 0;
+      const newQuantity = currentQuantity - discardQuantity;
+
+      const isCompleteDiscard = newQuantity === 0;
+
+      await descartarPeces(animal.id, {
+        cantidad: discardQuantity,
+        razon_descarte: discardReason,
+        fecha_descarte: todayDate,
+        descartado: isCompleteDiscard,
+      });
+
+      if (isCompleteDiscard) {
+        toast("Lote descartado exitosamente");
+      } else {
+        toast(
+          `Se han descartado ${discardQuantity} peces del lote exitosamente`,
+        );
+      }
+      queryClient.invalidateQueries({
+        queryKey: ["animales-propietario", animal.propietario.id],
+      });
+      setDiscardDialogVisible(false);
+      setDiscardDialogVisible(false);
+      setDiscardQuantity(0);
+      setDiscardReason("");
+    } catch (error) {
+      if (isAxiosError(error)) {
+        const messages = error.response?.data?.message;
+        const errorMessage = Array.isArray(messages)
+          ? messages[0]
+          : typeof messages === "string"
+            ? messages
+            : "Hubo un error al descartar el lote";
 
         toast.error(errorMessage);
       } else {
@@ -288,7 +366,15 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <Fish className="h-4 w-4 text-cyan-500" />
               )}
             </Button>
-
+            <Button
+              variant="outline"
+              size="icon"
+              title="Subir Foto"
+              className="h-8 w-8 rounded-full border-cyan-300 dark:border-cyan-700 hover:bg-cyan-100 dark:hover:bg-cyan-900"
+              onClick={() => setDiscardDialogVisible(true)}
+            >
+              <Skull className="h-4 w-4" />
+            </Button>
             <Button
               variant="outline"
               size="icon"
@@ -310,7 +396,6 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
         </CardHeader>
 
         <CardContent className="p-4 pt-3">
-          {/* IDENTIFICACIÓN Y SIEMBRA */}
           <div className="grid grid-cols-2 gap-2 mb-3">
             {animal.estanque_tanque_jaula && (
               <div className="flex items-center gap-2 col-span-2">
@@ -335,7 +420,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     </Badge>
                     {animal.fecha_siembra && (
                       <span className="text-xs text-muted-foreground ml-2">
-                        {formatDate(animal.fecha_siembra)}
+                        {formatDateOnly(animal.fecha_siembra)}
                       </span>
                     )}
                   </span>
@@ -366,7 +451,6 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
           <Separator className="my-3" />
 
-          {/* POBLACIÓN ACTUAL */}
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Users className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />
@@ -401,7 +485,6 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
           <Separator className="my-3" />
 
-          {/* CRECIMIENTO */}
           {(animal.peso_promedio_pez !== undefined ||
             animal.biomasa_estimada !== undefined ||
             animal.talla_pez !== undefined) && (
@@ -453,7 +536,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                       <Calendar className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
                       <span className="text-xs">
                         <span className="font-medium">Muestreo:</span>{" "}
-                        {formatDate(animal.fecha_muestreo_pez)}
+                        {formatDateOnly(animal.fecha_muestreo_pez)}
                       </span>
                     </div>
                   )}
@@ -464,7 +547,6 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             </>
           )}
 
-          {/* MUESTREOS */}
           {muestreos && muestreos.length > 0 && (
             <>
               <div className="space-y-2">
@@ -506,7 +588,6 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             </>
           )}
 
-          {/* CALIDAD DE AGUA */}
           {calidadAgua && (
             <>
               <div className="space-y-2">
@@ -606,7 +687,6 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             </>
           )}
 
-          {/* ALIMENTACIÓN */}
           {(animal.tipo_concentrado_pez ||
             animal.proteina_porcentaje !== undefined ||
             animal.racion_diaria ||
@@ -659,17 +739,6 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                       </span>
                     </div>
                   )}
-
-                  {/* {animal.conversion_alimenticia !== undefined &&
-                    animal.conversion_alimenticia !== null && (
-                      <div className="flex items-center gap-2 col-span-2">
-                        <Scale className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
-                        <span className="text-xs">
-                          <span className="font-medium">Conversión:</span>{" "}
-                          {animal.conversion_alimenticia}
-                        </span>
-                      </div>
-                    )} */}
                 </div>
               </div>
 
@@ -677,7 +746,6 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             </>
           )}
 
-          {/* SANIDAD */}
           {sanidad && (
             <>
               <div className="space-y-2">
@@ -735,7 +803,6 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             </>
           )}
 
-          {/* COSECHA */}
           {cosecha && (
             <>
               <div className="space-y-2">
@@ -798,7 +865,6 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             </>
           )}
 
-          {/* INFORMACIÓN ADICIONAL */}
           <div className="grid grid-cols-2 gap-2">
             <div className="flex items-center gap-2">
               <Building2 className="h-3.5 w-3.5 text-gray-500" />
@@ -826,13 +892,12 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2 col-span-2">
                 <Calendar className="h-3.5 w-3.5 text-gray-500" />
                 <span className="text-xs text-muted-foreground">
-                  Siembra: {formatDate(animal.fecha_siembra)}
+                  Siembra: {formatDateOnly(animal.fecha_siembra)}
                 </span>
               </div>
             )}
           </div>
 
-          {/* BOTÓN DE EDICIÓN */}
           <div className="flex justify-center w-full space-x-2 mt-4">
             <Button
               className="w-full bg-cyan-600 hover:bg-cyan-700 text-white"
@@ -852,59 +917,159 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
         onDelete={handleDeleteImage}
       />
 
-      <Dialog open={deathDialogVisible} onOpenChange={setDeathDialogVisible}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {deathStatus ? "Finalizar Lote" : "Activar Lote"}
-            </DialogTitle>
-            <DialogDescription>
-              {deathStatus
-                ? "Marca este lote como finalizado o descartado"
-                : "Marca este lote como activo nuevamente"}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="flex items-center justify-between py-4">
-            <Label htmlFor="death-status">¿El lote ha sido finalizado?</Label>
-            <Switch
-              id="death-status"
-              checked={deathStatus}
-              onCheckedChange={(value) => {
-                setDeathStatus(value);
-                if (!value) setDeathReason("N/D");
+      <Modal
+        open={deathDialogVisible}
+        onOpenChange={setDeathDialogVisible}
+        title="Registrar mortalidad en el lote"
+        description="Registre la cantidad de peces que han fallecido y la razón."
+        showCloseButton={false}
+      >
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="death-quantity">Cantidad de peces fallecidas</Label>
+            <Input
+              id="death-quantity"
+              type="number"
+              min={1}
+              max={remainingQuantity}
+              value={deathQuantity}
+              onChange={(e) => {
+                const value = parseInt(e.target.value) || 0;
+                setDeathQuantity(Math.min(value, remainingQuantity));
               }}
+              placeholder="Ingrese la cantidad de peces"
+            />
+            <p className="text-xs text-muted-foreground">
+              Cantidad disponible en el lote: {remainingQuantity} peces
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="death-reason">Razón de la muerte *</Label>
+            <Input
+              id="death-reason"
+              value={deathReason}
+              onChange={(e) => setDeathReason(e.target.value)}
+              placeholder="Ej: Enfermedad, Accidentes, etc."
             />
           </div>
 
-          {deathStatus && (
-            <div className="space-y-2">
-              <Label htmlFor="death-reason">Razón de finalización</Label>
-              <Input
-                id="death-reason"
-                value={deathReason}
-                onChange={(e) => setDeathReason(e.target.value)}
-                placeholder="Ej: Cosecha completada, Mortandad, Venta, etc."
-              />
+          {remainingQuantity - deathQuantity === 0 && (
+            <div className="bg-red-50 border border-red-200 rounded-md p-3">
+              <p className="text-sm text-red-800 font-medium">
+                ⚠️ Esta acción marcará todo el lote como finalizado
+              </p>
             </div>
           )}
 
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeathDialogVisible(false)}
-            >
-              Cancelar
-            </Button>
-            <Button
-              className="bg-cyan-600 hover:bg-cyan-700"
-              onClick={handleDeathStatusUpdate}
-            >
-              Guardar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          {deathQuantity > 0 && remainingQuantity - deathQuantity > 0 && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
+              <p className="text-sm text-yellow-800">
+                💡 Quedarán {remainingQuantity - deathQuantity} peces activas en
+                el lote
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div className="flex justify-end gap-4">
+          <Button
+            variant="outline"
+            onClick={() => {
+              setDeathDialogVisible(false);
+              setDeathQuantity(0);
+              setDeathReason("");
+              setDeathStatus(false);
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleDeathStatusUpdate}
+            disabled={deathQuantity <= 0 || !deathReason}
+          >
+            Registrar Mortalidad
+          </Button>
+        </div>
+      </Modal>
+
+      <Modal
+        title="Descartar peces del lote"
+        description="Registre la cantidad de peces a descartar y la razón."
+        open={discardDialogVisible}
+        onOpenChange={setDiscardDialogVisible}
+        showCloseButton={false}
+      >
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="discard-quantity">
+              Cantidad de peces a descartar
+            </Label>
+            <Input
+              id="discard-quantity"
+              type="number"
+              min={1}
+              max={remainingQuantity}
+              value={discardQuantity}
+              onChange={(e) => {
+                const value = parseInt(e.target.value) || 0;
+                setDiscardQuantity(Math.min(value, remainingQuantity));
+              }}
+              placeholder="Ingrese la cantidad de peces"
+            />
+            <p className="text-xs text-muted-foreground">
+              Cantidad disponible en el lote: {remainingQuantity} peces
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="discard-reason">Razón del descarte *</Label>
+            <Input
+              id="discard-reason"
+              value={discardReason}
+              onChange={(e) => setDiscardReason(e.target.value)}
+              placeholder="Ej: Venta, Traslado, Baja calidad, etc."
+            />
+          </div>
+
+          {remainingQuantity - discardQuantity === 0 && (
+            <div className="bg-red-50 border border-red-200 rounded-md p-3">
+              <p className="text-sm text-red-800 font-medium">
+                ⚠️ Esta acción descartará todo el lote
+              </p>
+            </div>
+          )}
+
+          {discardQuantity > 0 && remainingQuantity - discardQuantity > 0 && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
+              <p className="text-sm text-yellow-800">
+                💡 Quedarán {remainingQuantity - discardQuantity} peces activas
+                en el lote
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div className="flex justify-end gap-4">
+          <Button
+            variant="outline"
+            onClick={() => {
+              setDiscardDialogVisible(false);
+              setDiscardQuantity(0);
+              setDiscardReason("");
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={handleDiscardAnimal}
+            disabled={discardQuantity <= 0 || !discardReason}
+          >
+            Descartar {discardQuantity} peces
+          </Button>
+        </div>
+      </Modal>
     </>
   );
 };

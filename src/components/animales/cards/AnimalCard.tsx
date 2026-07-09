@@ -12,16 +12,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Camera, CircleAlert, Heart, Trash2 } from "lucide-react";
+import { Camera, CircleAlert, Heart, Skull } from "lucide-react";
 import { toast } from "react-toastify";
 import { ActualizarAnimalMuerte } from "@/api/animales/accions/update-animal-status-muerte";
-import InfoAnimal from "./InfoAnimal";
-import AnimalTipoAlimentacion from "./AnimalTipoAlimentacion";
-import AnimalComplementos from "./AnimalComplementos";
-import AnimalMedicamento from "./AnimalMedicamento";
-import ReproductiveStatus from "./ReproductiveStatus";
-import AnimalParentInfo from "./AnimalParentInfo";
-import AnimalFincaByPropietarion from "./AnimalFincaByPropietarion";
+import InfoAnimal from "../info/InfoAnimal";
+import AnimalTipoAlimentacion from "../info/AnimalTipoAlimentacion";
+import AnimalComplementos from "../info/AnimalComplementos";
+import AnimalMedicamento from "../info/AnimalMedicamento";
+import ReproductiveStatus from "../info/ReproductiveStatus";
+import AnimalParentInfo from "../info/AnimalParentInfo";
+import AnimalFincaByPropietarion from "../info/AnimalFincaByPropietarion";
 import { eliminarImagenAnimal } from "@/api/animales_profile/accions/delete-image-animal";
 import ImageGallery from "@/components/generics/ImageGallery";
 import { descartarAnimal } from "@/api/animales/accions/update-animal";
@@ -106,8 +106,10 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
       }
 
       await ActualizarAnimalMuerte(animal.id, {
-        animal_muerte: deathStatus,
+        cantidad: 1,
         razon_muerte: deathReason,
+        fecha_mortalidad: todayDate,
+        muerto: true,
       });
 
       toast(
@@ -147,6 +149,7 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
         descartado: true,
         razon_descarte: discardReason,
         fecha_descarte: todayDate,
+        cantidad: 1,
       });
 
       toast("Animal descartado exitosamente");
@@ -174,7 +177,7 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   return (
     <>
       <Card className="mb-4 overflow-hidden transition-all duration-200 hover:shadow-md">
-        <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between bg-green-400/25">
+        <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between bg-green-600/25">
           <div className="flex items-center space-x-3">
             <div className="relative">
               <Avatar
@@ -236,7 +239,7 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               className="h-8 w-8 rounded-full"
               onClick={() => setDiscardDialogVisible(true)}
             >
-              <Trash2 className="h-4 w-4" />
+              <Skull className="h-4 w-4" />
             </Button>
 
             <Button
@@ -323,8 +326,8 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
       <Modal
         open={deathDialogVisible}
         onOpenChange={setDeathDialogVisible}
-        title={deathStatus ? "Marcar como fallecido" : "Marcar como vivo"}
-        description="Actualiza el estado de vida del animal"
+        title="Actualizar estado de vida"
+        description="Indique si el animal está vivo o ha fallecido."
         showCloseButton={false}
       >
         <div className="flex items-center justify-between py-4">

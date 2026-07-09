@@ -6,7 +6,6 @@ import { isAxiosError } from "axios";
 import { Animal } from "@/api/animales/interfaces/response-animales.interface";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -28,15 +27,15 @@ import {
   Package,
   TrendingUp,
   Clock,
-  Trash2,
+  Skull,
 } from "lucide-react";
 import { toast } from "react-toastify";
-import { ActualizarAnimalMuerte } from "@/api/animales/accions/update-animal-status-muerte";
+import { ActualizarAnimalMuerteAve } from "@/api/animales/accions/update-animal-status-muerte";
 import { eliminarImagenAnimal } from "@/api/animales_profile/accions/delete-image-animal";
 import ImageGallery from "@/components/generics/ImageGallery";
 import { Badge } from "@/components/ui/badge";
 import { EtapaAvicola } from "@/api/animales/interfaces/crear-avicola.interface";
-import { descartarAnimal } from "@/api/animales/accions/update-animal";
+import { descartarAves } from "@/api/animales/accions/update-animal";
 import { format } from "date-fns";
 import Modal from "@/components/generics/Modal";
 
@@ -83,7 +82,12 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const todayDate = format(new Date(), "yyyy-MM-dd");
   const imageUrl = animal.profileImages?.[0]?.url;
   const etapaActual = animal.etapa_avicola as EtapaAvicola;
+  const [deathQuantity, setDeathQuantity] = useState<number>(0);
+  const [discardQuantity, setDiscardQuantity] = useState<number>(0);
 
+  const [remainingQuantity, setRemainingQuantity] = useState<number>(
+    animal.cantidad_lote || 0,
+  );
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !animal.id) return;
@@ -131,31 +135,54 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
   const handleDeathStatusUpdate = async () => {
     try {
-      if (
-        deathStatus &&
-        (!deathReason || deathReason.trim() === "" || deathReason === "N/D")
-      ) {
+      if (deathQuantity <= 0) {
+        toast.error("Debe ingresar una cantidad válida de aves fallecidas");
+        return;
+      }
+
+      if (!deathReason || deathReason.trim() === "" || deathReason === "N/D") {
         toast.error(
           "Debe ingresar una razón de muerte válida (no puede estar vacía o ser 'N/D')",
         );
         return;
       }
 
-      await ActualizarAnimalMuerte(animal.id, {
-        animal_muerte: deathStatus,
+      if (deathQuantity > remainingQuantity) {
+        toast.error(
+          `La cantidad de aves fallecidas (${deathQuantity}) excede la cantidad disponible (${remainingQuantity})`,
+        );
+        return;
+      }
+
+      const isCompleteDeath = remainingQuantity - deathQuantity === 0;
+
+      await ActualizarAnimalMuerteAve(animal.id, {
+        cantidad: deathQuantity,
         razon_muerte: deathReason,
+        fecha_mortalidad: todayDate,
+        muerto: isCompleteDeath,
       });
 
-      toast.success(
-        deathStatus
-          ? "Lote marcado como finalizado"
-          : "Lote marcado como activo",
-      );
+      if (isCompleteDeath) {
+        toast.success(
+          `Lote completamente finalizado. Se registraron ${deathQuantity} aves fallecidas.`,
+        );
+      } else {
+        toast.success(
+          `Se registraron ${deathQuantity} aves fallecidas. Quedan ${remainingQuantity - deathQuantity} aves activas en el lote.`,
+        );
+      }
+
+      setRemainingQuantity((prev) => prev - deathQuantity);
 
       queryClient.invalidateQueries({
         queryKey: ["animales-propietario", animal.propietario?.id],
       });
+
       setDeathDialogVisible(false);
+      setDeathQuantity(0);
+      setDeathReason("");
+      setDeathStatus(false);
     } catch (error) {
       if (isAxiosError(error)) {
         const messages = error.response?.data?.message;
@@ -163,7 +190,7 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar el estado";
+            : "Hubo un error al registrar la mortalidad";
 
         toast.error(errorMessage);
       } else {
@@ -174,22 +201,41 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
   const handleDiscardAnimal = async () => {
     try {
+      if (discardQuantity <= 0) {
+        toast.error("Debe ingresar una cantidad válida de aves a descartar");
+        return;
+      }
+
       if (!discardReason || discardReason.trim() === "") {
         toast.error("Debe ingresar una razón de descarte válida");
         return;
       }
 
-      await descartarAnimal(animal.id, {
-        descartado: true,
+      const currentQuantity = animal?.cantidad_lote ?? 0;
+      const newQuantity = currentQuantity - discardQuantity;
+
+      const isCompleteDiscard = newQuantity === 0;
+
+      await descartarAves(animal.id, {
+        cantidad: discardQuantity,
         razon_descarte: discardReason,
         fecha_descarte: todayDate,
+        descartado: isCompleteDiscard,
       });
 
-      toast("Animal descartado exitosamente");
+      if (isCompleteDiscard) {
+        toast("Lote descartado exitosamente");
+      } else {
+        toast(
+          `Se han descartado ${discardQuantity} aves del lote exitosamente`,
+        );
+      }
       queryClient.invalidateQueries({
         queryKey: ["animales-propietario", animal.propietario.id],
       });
       setDiscardDialogVisible(false);
+      setDiscardDialogVisible(false);
+      setDiscardQuantity(0);
       setDiscardReason("");
     } catch (error) {
       if (isAxiosError(error)) {
@@ -198,7 +244,7 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al descartar el animal";
+            : "Hubo un error al descartar el lote";
 
         toast.error(errorMessage);
       } else {
@@ -274,7 +320,7 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               className="h-8 w-8 rounded-full"
               onClick={() => setDiscardDialogVisible(true)}
             >
-              <Trash2 className="h-4 w-4" />
+              <Skull className="h-4 w-4" />
             </Button>
             <Button
               variant="outline"
@@ -583,93 +629,154 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
       <Modal
         open={deathDialogVisible}
         onOpenChange={setDeathDialogVisible}
-        title={deathStatus ? "Marcar como fallecido" : "Marcar como vivo"}
-        description="Actualiza el estado de vida del animal"
+        title="Registrar mortalidad en el lote"
+        description="Registre la cantidad de aves que han fallecido y la razón."
         showCloseButton={false}
       >
-        <div className="flex items-center justify-between py-4">
-          <Label htmlFor="death-status">¿El animal ha fallecido?</Label>
-          <Switch
-            id="death-status"
-            checked={deathStatus}
-            onCheckedChange={(value) => {
-              setDeathStatus(value);
-              if (!value) setDeathReason("N/D");
-            }}
-          />
-        </div>
-
-        {deathStatus && (
+        <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="death-reason">Razón de la muerte</Label>
+            <Label htmlFor="death-quantity">Cantidad de aves fallecidas</Label>
+            <Input
+              id="death-quantity"
+              type="number"
+              min={1}
+              max={remainingQuantity}
+              value={deathQuantity}
+              onChange={(e) => {
+                const value = parseInt(e.target.value) || 0;
+                setDeathQuantity(Math.min(value, remainingQuantity));
+              }}
+              placeholder="Ingrese la cantidad de aves"
+            />
+            <p className="text-xs text-muted-foreground">
+              Cantidad disponible en el lote: {remainingQuantity} aves
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="death-reason">Razón de la muerte *</Label>
             <Input
               id="death-reason"
               value={deathReason}
               onChange={(e) => setDeathReason(e.target.value)}
-              placeholder="Ingrese la razón de la muerte"
+              placeholder="Ej: Enfermedad, Accidentes, etc."
             />
           </div>
-        )}
 
-        <div className="flex justify-end">
-          <div className="flex gap-4">
-            <Button
-              variant="outline"
-              onClick={() => setDeathDialogVisible(false)}
-            >
-              Cancelar
-            </Button>
-            <Button onClick={handleDeathStatusUpdate}>Guardar</Button>
-          </div>
+          {remainingQuantity - deathQuantity === 0 && (
+            <div className="bg-red-50 border border-red-200 rounded-md p-3">
+              <p className="text-sm text-red-800 font-medium">
+                ⚠️ Esta acción marcará todo el lote como finalizado
+              </p>
+            </div>
+          )}
+
+          {deathQuantity > 0 && remainingQuantity - deathQuantity > 0 && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
+              <p className="text-sm text-yellow-800">
+                💡 Quedarán {remainingQuantity - deathQuantity} aves activas en
+                el lote
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div className="flex justify-end gap-4">
+          <Button
+            variant="outline"
+            onClick={() => {
+              setDeathDialogVisible(false);
+              setDeathQuantity(0);
+              setDeathReason("");
+              setDeathStatus(false);
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleDeathStatusUpdate}
+            disabled={deathQuantity <= 0 || !deathReason}
+          >
+            Registrar Mortalidad
+          </Button>
         </div>
       </Modal>
 
       <Modal
-        title="Descartar Lote"
-        description="Esta acción marcará el lote como descartado. Asegúrese de
-              ingresar toda la información requerida."
+        title="Descartar aves del lote"
+        description="Registre la cantidad de aves a descartar y la razón."
         open={discardDialogVisible}
         onOpenChange={setDiscardDialogVisible}
         showCloseButton={false}
       >
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="discard-reason">Razón de descarte *</Label>
+            <Label htmlFor="discard-quantity">
+              Cantidad de aves a descartar
+            </Label>
+            <Input
+              id="discard-quantity"
+              type="number"
+              min={1}
+              max={remainingQuantity}
+              value={discardQuantity}
+              onChange={(e) => {
+                const value = parseInt(e.target.value) || 0;
+                setDiscardQuantity(Math.min(value, remainingQuantity));
+              }}
+              placeholder="Ingrese la cantidad de aves"
+            />
+            <p className="text-xs text-muted-foreground">
+              Cantidad disponible en el lote: {remainingQuantity} aves
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="discard-reason">Razón del descarte *</Label>
             <Input
               id="discard-reason"
               value={discardReason}
               onChange={(e) => setDiscardReason(e.target.value)}
-              placeholder="Ej: Venta, Muerte, Traslado, etc."
+              placeholder="Ej: Venta, Traslado, Baja calidad, etc."
             />
           </div>
 
-          <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
-            <p className="text-sm text-yellow-800">
-              <strong>⚠️ Advertencia:</strong> Esta acción no se puede deshacer.
-              El animal será marcado como descartado en el sistema.
-            </p>
-          </div>
+          {remainingQuantity - discardQuantity === 0 && (
+            <div className="bg-red-50 border border-red-200 rounded-md p-3">
+              <p className="text-sm text-red-800 font-medium">
+                ⚠️ Esta acción descartará todo el lote
+              </p>
+            </div>
+          )}
+
+          {discardQuantity > 0 && remainingQuantity - discardQuantity > 0 && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
+              <p className="text-sm text-yellow-800">
+                💡 Quedarán {remainingQuantity - discardQuantity} aves activas
+                en el lote
+              </p>
+            </div>
+          )}
         </div>
 
-        <div className="flex justify-end">
-          <div className="flex gap-4">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setDiscardDialogVisible(false);
-                setDiscardReason("");
-              }}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDiscardAnimal}
-              disabled={!discardReason}
-            >
-              Descartar Animal
-            </Button>
-          </div>
+        <div className="flex justify-end gap-4">
+          <Button
+            variant="outline"
+            onClick={() => {
+              setDiscardDialogVisible(false);
+              setDiscardQuantity(0);
+              setDiscardReason("");
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={handleDiscardAnimal}
+            disabled={discardQuantity <= 0 || !discardReason}
+          >
+            Descartar {discardQuantity} aves
+          </Button>
         </div>
       </Modal>
     </>

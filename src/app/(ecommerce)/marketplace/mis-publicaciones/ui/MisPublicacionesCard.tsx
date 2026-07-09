@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatCurrency } from "@/helpers/funciones/formatCurrency";
 import { formatDateLocal } from "@/helpers/funciones/formatDateOnly";
 import useGetViewsPublicacion from "@/hooks/views-publicaciones/useGetViewsPublicacion";
 import { TipoPublicacion } from "@/interfaces/enums/market/tipo_publicacion.enum";
@@ -169,7 +170,7 @@ const MisPublicacionesCard = ({ producto }: Props) => {
           <div className="flex items-center gap-2">
             {getTimeIcon(precioMasBajo.unidad)}
             <p className="text-2xl font-black text-blue-600">
-              {producto.moneda} {Number(precioMasBajo.valor).toLocaleString()}
+              {formatCurrency(precioMasBajo.valor, producto.moneda)}
             </p>
             <span className="text-sm text-muted-foreground">
               /{precioMasBajo.unidad}
@@ -178,8 +179,8 @@ const MisPublicacionesCard = ({ producto }: Props) => {
           {producto.requiereDeposito && (
             <div className="flex items-center gap-1 text-xs text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-full">
               <DollarSign className="w-3 h-3" />
-              Depósito: {producto.moneda}{" "}
-              {Number(producto.montoDeposito).toLocaleString()}
+              Depósito:
+              {formatCurrency(producto.montoDeposito ?? 0, producto.moneda)}
             </div>
           )}
         </div>
@@ -188,7 +189,7 @@ const MisPublicacionesCard = ({ producto }: Props) => {
 
     return (
       <p className="text-2xl font-black text-green-600">
-        {producto.moneda} {Number(producto.precio).toLocaleString()}
+        {formatCurrency(producto.precio, producto.moneda)}
       </p>
     );
   };

@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import CargaMasivaModal from "../../ui/CargaMasivaModal";
+import CargaMasivaModal from "../../../../../components/animales/info/CargaMasivaModal";
 import { FAB } from "@/components/generics/FAB";
 import EmptyStateAnimales from "../../ui/EmptyStateAnimales";
 import { Buscador } from "@/components/generics/Buscador";
@@ -31,9 +31,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import SkeletonCard from "@/components/generics/SkeletonCard";
-import AnimalCard from "../../ui/AnimalCard";
-import PiscicolaCard from "../../ui/PiscicolaCard";
-import AvicolaCard from "../../ui/AvicolaCard";
+import AnimalCard from "../../../../../components/animales/cards/AnimalCard";
+import PiscicolaCard from "../../../../../components/animales/cards/PiscicolaCard";
+import AvicolaCard from "../../../../../components/animales/cards/AvicolaCard";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useDebounce } from "@/hooks/debounce/useDebounce";
@@ -44,10 +44,10 @@ import useAnimalesByPropietario from "@/hooks/animales/useAnimalesByPropietario"
 import { uploadProfileImageAnimal } from "@/api/animales_profile/accions/uploadProfileImageAnimal";
 import { toast } from "react-toastify";
 import { Badge } from "@/components/ui/badge";
-import CaprinoCard from "../../ui/CaprinoCard";
-import OvinoCard from "../../ui/OvinoCard";
-import PorcinoCard from "../../ui/PorcinoCard";
-import EquinoCard from "../../ui/EquinoCard";
+import CaprinoCard from "../../../../../components/animales/cards/CaprinoCard";
+import OvinoCard from "../../../../../components/animales/cards/OvinoCard";
+import PorcinoCard from "../../../../../components/animales/cards/PorcinoCard";
+import EquinoCard from "../../../../../components/animales/cards/EquinoCard";
 
 const ESPECIES = {
   AVES: ["aves", "avicola", "pollos", "gallinas"],

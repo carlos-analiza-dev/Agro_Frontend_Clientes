@@ -73,6 +73,26 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
     },
   });
 
+  useEffect(() => {
+    const cantidadLote = watch("cantidad_lote");
+    const huevosDiarios = watch("huevos_diarios");
+
+    if (
+      cantidadLote &&
+      cantidadLote > 0 &&
+      huevosDiarios !== undefined &&
+      huevosDiarios !== null &&
+      huevosDiarios >= 0
+    ) {
+      const porcentaje = (huevosDiarios / cantidadLote) * 100;
+
+      const porcentajeCalculado = Math.min(100, Number(porcentaje.toFixed(2)));
+      setValue("porcentaje_postura", String(porcentajeCalculado));
+    } else {
+      setValue("porcentaje_postura", String(0));
+    }
+  }, [watch("cantidad_lote"), watch("huevos_diarios")]);
+
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
 
@@ -716,14 +736,27 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
                   Porcentaje de Postura
+                  <span className="text-xs text-muted-foreground ml-2">
+                    (Calculado automáticamente)
+                  </span>
                 </Label>
                 <Input
                   type="number"
                   min={0}
                   max={100}
+                  step={0.01}
                   {...register("porcentaje_postura")}
-                  placeholder="Ej: 85"
+                  readOnly
+                  className="bg-gray-50 cursor-not-allowed"
+                  placeholder="Se calcula automáticamente"
                 />
+                {watch("cantidad_lote") && watch("huevos_diarios") && (
+                  <p className="text-xs text-green-600">
+                    ✓ Calculado: {watch("porcentaje_postura")}% (Basado en{" "}
+                    {watch("huevos_diarios")} huevos / {watch("cantidad_lote")}{" "}
+                    aves)
+                  </p>
+                )}
               </div>
             </div>
 

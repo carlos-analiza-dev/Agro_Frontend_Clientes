@@ -5,6 +5,7 @@ import { PecesData } from "../interfaces/crear-peces.interface";
 import { FormCaprinoData } from "../interfaces/crear-caprino.interface";
 import { FormOvinoData } from "../interfaces/crear-ovino.interface";
 import { FormPorcinoData } from "../interfaces/crear-porcino.interface";
+import { DescarteData } from "../interfaces/ingresar-descartes.interface";
 
 export const ActualizarAnimal = async (
   id: string,
@@ -63,11 +64,22 @@ export const UpdateAnimalPorcino = async (
   return response;
 };
 
-export const descartarAnimal = async (
-  id: string,
-  data: { descartado: boolean; razon_descarte: string; fecha_descarte: string },
-) => {
+export const descartarAnimal = async (id: string, data: DescarteData) => {
   const url = `${process.env.NEXT_PUBLIC_API_URL}/animal-finca/descartar/${id}`;
+
+  const response = await veterinariaAPI.post(url, data);
+  return response;
+};
+
+export const descartarAves = async (id: string, data: DescarteData) => {
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/animal-finca/descartar-aves/${id}`;
+
+  const response = await veterinariaAPI.post(url, data);
+  return response;
+};
+
+export const descartarPeces = async (id: string, data: DescarteData) => {
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/animal-finca/descartar-peces/${id}`;
 
   const response = await veterinariaAPI.post(url, data);
   return response;

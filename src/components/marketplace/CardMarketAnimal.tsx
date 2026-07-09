@@ -15,6 +15,7 @@ import { newViewPublicacion } from "@/api/view-publicaciones/acciones/new-view-p
 import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { TipoPublicacion } from "@/interfaces/enums/market/tipo_publicacion.enum";
+import { formatCurrency } from "@/helpers/funciones/formatCurrency";
 
 interface Props {
   animal: ProductoAnimal;
@@ -108,7 +109,8 @@ const CardMarketAnimal = ({ animal }: Props) => {
               variant="outline"
               className="text-xs border-yellow-400 text-yellow-600"
             >
-              Depósito: {animal.moneda} {animal.montoDeposito}
+              Depósito:{" "}
+              {formatCurrency(animal.montoDeposito ?? 0, animal.moneda)}
             </Badge>
           )}
         </div>
@@ -119,10 +121,10 @@ const CardMarketAnimal = ({ animal }: Props) => {
       return (
         <div>
           <p className="text-xs text-muted-foreground line-through">
-            {animal.moneda} {animal.precio}
+            {formatCurrency(animal.precio ?? 0, animal.moneda)}
           </p>
           <h3 className="text-2xl font-extrabold text-emerald-600">
-            {animal.moneda} {animal.precio_oferta}
+            {formatCurrency(animal.precio_oferta, animal.moneda)}
           </h3>
         </div>
       );
@@ -130,7 +132,7 @@ const CardMarketAnimal = ({ animal }: Props) => {
 
     return (
       <h3 className="text-2xl font-extrabold text-emerald-600">
-        {animal.moneda} {animal.precio}
+        {formatCurrency(animal.precio ?? 0, animal.moneda)}
       </h3>
     );
   };

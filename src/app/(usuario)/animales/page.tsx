@@ -32,7 +32,7 @@ import { useDebounce } from "@/hooks/debounce/useDebounce";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import { Buscador } from "@/components/generics/Buscador";
 import { FAB } from "@/components/generics/FAB";
-import AnimalCard from "./ui/AnimalCard";
+import AnimalCard from "../../../components/animales/cards/AnimalCard";
 import { uploadProfileImageAnimal } from "@/api/animales_profile/accions/uploadProfileImageAnimal";
 import { toast } from "react-toastify";
 import {
@@ -44,14 +44,14 @@ import {
 import SkeletonCard from "@/components/generics/SkeletonCard";
 import EmptyStateAnimales from "./ui/EmptyStateAnimales";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
-import CargaMasivaModal from "./ui/CargaMasivaModal";
+import CargaMasivaModal from "../../../components/animales/info/CargaMasivaModal";
 import { Badge } from "@/components/ui/badge";
-import AvicolaCard from "./ui/AvicolaCard";
-import PiscicolaCard from "./ui/PiscicolaCard";
-import CaprinoCard from "./ui/CaprinoCard";
-import OvinoCard from "./ui/OvinoCard";
-import PorcinoCard from "./ui/PorcinoCard";
-import EquinoCard from "./ui/EquinoCard";
+import AvicolaCard from "../../../components/animales/cards/AvicolaCard";
+import PiscicolaCard from "../../../components/animales/cards/PiscicolaCard";
+import CaprinoCard from "../../../components/animales/cards/CaprinoCard";
+import OvinoCard from "../../../components/animales/cards/OvinoCard";
+import PorcinoCard from "../../../components/animales/cards/PorcinoCard";
+import EquinoCard from "../../../components/animales/cards/EquinoCard";
 
 const ESPECIES = {
   AVES: ["aves", "avicola", "pollos", "gallinas"],
