@@ -27,7 +27,13 @@ import {
   Cell,
   Legend,
 } from "recharts";
-import { Calendar, Package, TrendingDown, AlertCircle } from "lucide-react";
+import {
+  Calendar,
+  Package,
+  TrendingDown,
+  AlertCircle,
+  Building2,
+} from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -37,6 +43,7 @@ import {
   DISCARD_COLORS,
   MORTALITY_COLORS,
 } from "@/helpers/data/colors/mortalidad_descartes";
+import { Finca } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
 
 interface DescartesData {
   especieId: string;
@@ -52,6 +59,10 @@ interface Props {
   title: string;
   sub_title: string;
   isDescarte: boolean;
+  fincas?: Finca[] | undefined;
+  setSelectedFincas?: Dispatch<SetStateAction<Finca | null>>;
+  selectedFincas?: Finca | null;
+  showFincaFilter?: boolean;
 }
 
 const DescartesMortalidadDashboard = ({
@@ -62,6 +73,10 @@ const DescartesMortalidadDashboard = ({
   title,
   sub_title,
   isDescarte,
+  fincas,
+  selectedFincas,
+  setSelectedFincas,
+  showFincaFilter = true,
 }: Props) => {
   const monthOptions = React.useMemo(() => {
     const options = [];
@@ -323,6 +338,39 @@ const DescartesMortalidadDashboard = ({
     </Card>
   );
 
+  const FincaFilter = () => {
+    if (!showFincaFilter || !fincas || !setSelectedFincas) return null;
+
+    return (
+      <div className="flex items-center gap-2">
+        <Building2 className="h-4 w-4 text-muted-foreground" />
+        <Select
+          value={selectedFincas?.id || "all"}
+          onValueChange={(value) => {
+            if (value === "all") {
+              setSelectedFincas(null);
+            } else {
+              const finca = fincas.find((f) => f.id === value);
+              setSelectedFincas(finca || null);
+            }
+          }}
+        >
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder="Todas las fincas" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas las fincas</SelectItem>
+            {fincas.map((finca) => (
+              <SelectItem key={finca.id} value={finca.id}>
+                {finca.nombre_finca}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    );
+  };
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -340,22 +388,30 @@ const DescartesMortalidadDashboard = ({
           </h1>
           <p className="text-muted-foreground capitalize">
             Análisis de animales {title} por especie
+            {selectedFincas && (
+              <span className="ml-2 font-medium text-foreground">
+                • {selectedFincas.nombre_finca}
+              </span>
+            )}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-muted-foreground" />
-          <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Seleccionar mes" />
-            </SelectTrigger>
-            <SelectContent>
-              {monthOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="flex items-center gap-3 flex-wrap">
+          <FincaFilter />
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Seleccionar mes" />
+              </SelectTrigger>
+              <SelectContent>
+                {monthOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 

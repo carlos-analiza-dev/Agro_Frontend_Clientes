@@ -35,14 +35,6 @@ export interface Sanidad {
   laboratorio?: string;
 }
 
-export interface Cosecha {
-  fecha_cosecha?: string;
-  kilos_cosechados?: number;
-  sobrevivencia_porcentaje?: number;
-  comprador?: string;
-  precio?: number;
-}
-
 export interface PecesData {
   especie: string;
   fincaId: string;
@@ -78,8 +70,6 @@ export interface PecesData {
   conversion_alimenticia?: number;
 
   sanidad?: Sanidad;
-
-  cosecha?: Cosecha;
 
   lote_activo?: boolean;
 }

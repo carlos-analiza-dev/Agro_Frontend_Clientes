@@ -17,6 +17,8 @@ import DescartesMortalidadDashboard from "./ui/produccion/DescartesMortalidadDas
 import useGetDescartesEspcies from "@/hooks/dashboard/produccion/useGetDescartesEspcies";
 import { format } from "date-fns";
 import useGetMortalidadEspcies from "@/hooks/dashboard/produccion/useGetMortalidadEspcies";
+import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
+import { Finca } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
 
 const PanelPageGanadero = () => {
   const { cliente } = useAuthStore();
@@ -36,11 +38,18 @@ const PanelPageGanadero = () => {
   );
   const [selectedMonthMortalidad, setSelectedMonthMortalidad] =
     useState<string>(format(new Date(), "yyyy-MM"));
+  const [selectedFincas, setSelectedFincas] = useState<Finca | null>(null);
+  const [selectedFincasMortalidad, setSelectedFincasMortalidad] =
+    useState<Finca | null>(null);
+  const { data: fincas } = useFincasPropietarios(cliente?.id ?? "");
 
   const { data: descartes, isLoading: cargando_descartes } =
-    useGetDescartesEspcies(selectedMonth);
+    useGetDescartesEspcies({ mes: selectedMonth, fincaId: selectedFincas?.id });
   const { data: mortalidad, isLoading: cargando_mortalidad } =
-    useGetMortalidadEspcies(selectedMonthMortalidad);
+    useGetMortalidadEspcies({
+      mes: selectedMonthMortalidad,
+      fincaId: selectedFincasMortalidad?.id,
+    });
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -126,6 +135,10 @@ const PanelPageGanadero = () => {
                 sub_title="descartes"
                 title="descartados"
                 isDescarte={true}
+                fincas={fincas?.data.fincas}
+                setSelectedFincas={setSelectedFincas}
+                selectedFincas={selectedFincas}
+                showFincaFilter={true}
               />
               <DescartesMortalidadDashboard
                 descartes_mortalidad={mortalidad}
@@ -135,6 +148,10 @@ const PanelPageGanadero = () => {
                 sub_title="mortalidad"
                 title="mortalidad"
                 isDescarte={false}
+                fincas={fincas?.data.fincas}
+                setSelectedFincas={setSelectedFincasMortalidad}
+                selectedFincas={selectedFincasMortalidad}
+                showFincaFilter={true}
               />
             </div>
           </TabsContent>

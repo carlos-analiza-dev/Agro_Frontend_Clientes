@@ -123,7 +123,6 @@ export interface Animal {
   consumo_pez?: string;
   conversion_alimenticia?: number;
   sanidad?: Sanidad | string;
-  cosecha?: Cosecha | string;
   etapa_avicola?: EtapaAvicola;
 
   // CAPRINO
@@ -218,14 +217,6 @@ export interface Sanidad {
   tratamientos?: string;
   banos_salinidad?: string;
   laboratorio?: string;
-}
-
-export interface Cosecha {
-  fecha_cosecha?: string;
-  kilos_cosechados?: number;
-  sobrevivencia_porcentaje?: number;
-  comprador?: string;
-  precio?: number;
 }
 
 export interface ProfileImage {

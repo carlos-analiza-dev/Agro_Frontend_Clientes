@@ -105,18 +105,6 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
     return animal.sanidad;
   };
 
-  const getCosecha = () => {
-    if (!animal.cosecha) return null;
-    if (typeof animal.cosecha === "string") {
-      try {
-        return JSON.parse(animal.cosecha);
-      } catch {
-        return null;
-      }
-    }
-    return animal.cosecha;
-  };
-
   const getMuestreos = () => {
     if (!animal.muestreos) return [];
     if (typeof animal.muestreos === "string") {
@@ -131,7 +119,6 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
   const calidadAgua = getCalidadAgua();
   const sanidad = getSanidad();
-  const cosecha = getCosecha();
   const muestreos = getMuestreos();
   const etapaColors: Record<string, string> = {
     Alevín: "bg-blue-500",
@@ -794,68 +781,6 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                         <span className="font-medium">Laboratorio:</span>{" "}
                         {sanidad.laboratorio}
                       </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <Separator className="my-3" />
-            </>
-          )}
-
-          {cosecha && (
-            <>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Package className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />
-                  <span className="text-xs font-medium text-cyan-700 dark:text-cyan-400">
-                    Cosecha
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-1 bg-gray-50 dark:bg-gray-900/50 p-2 rounded-lg">
-                  {cosecha.fecha_cosecha && (
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
-                      <span className="text-xs">
-                        {formatDate(cosecha.fecha_cosecha)}
-                      </span>
-                    </div>
-                  )}
-
-                  {cosecha.kilos_cosechados !== undefined &&
-                    cosecha.kilos_cosechados !== null && (
-                      <div className="flex items-center gap-2">
-                        <Weight className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
-                        <span className="text-xs">
-                          {cosecha.kilos_cosechados} kg
-                        </span>
-                      </div>
-                    )}
-
-                  {cosecha.sobrevivencia_porcentaje !== undefined &&
-                    cosecha.sobrevivencia_porcentaje !== null && (
-                      <div className="flex items-center gap-2">
-                        <Percent className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
-                        <span className="text-xs">
-                          Sobrevivencia: {cosecha.sobrevivencia_porcentaje}%
-                        </span>
-                      </div>
-                    )}
-
-                  {cosecha.comprador && (
-                    <div className="flex items-center gap-2">
-                      <User className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
-                      <span className="text-xs">
-                        Comprador: {cosecha.comprador}
-                      </span>
-                    </div>
-                  )}
-
-                  {cosecha.precio !== undefined && cosecha.precio !== null && (
-                    <div className="flex items-center gap-2">
-                      <DollarSign className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
-                      <span className="text-xs">${cosecha.precio}</span>
                     </div>
                   )}
                 </div>

@@ -77,7 +77,6 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
         historial_recambios: [],
       },
       sanidad: {},
-      cosecha: {},
     },
   });
 
@@ -115,7 +114,6 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
       const muestreos = parseJsonField(animal.muestreos) || [];
       const calidad_agua = parseJsonField(animal.calidad_agua) || {};
       const sanidad = parseJsonField(animal.sanidad) || {};
-      const cosecha = parseJsonField(animal.cosecha) || {};
 
       reset({
         especie: animal?.especie?.id || "",
@@ -147,7 +145,7 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
         consumo: animal.consumo_pez || "",
         conversion_alimenticia: animal.conversion_alimenticia || 0,
         sanidad: sanidad,
-        cosecha: cosecha,
+
         lote_activo:
           animal.lote_activo !== undefined ? animal.lote_activo : true,
       });
@@ -387,7 +385,6 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
             </div>
           </div>
 
-          {/* SIEMBRA */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
               Siembra
@@ -449,7 +446,6 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
             </div>
           </div>
 
-          {/* POBLACIÓN */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
               Población
@@ -499,7 +495,6 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
             </div>
           </div>
 
-          {/* MUESTREOS */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
               Muestreos
@@ -569,7 +564,6 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
             </Button>
           </div>
 
-          {/* CRECIMIENTO */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
               Crecimiento
@@ -617,7 +611,6 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
             </div>
           </div>
 
-          {/* CALIDAD DE AGUA */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
               Calidad de Agua
@@ -698,7 +691,6 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
               />
             </div>
 
-            {/* HISTORIAL DE RECAMBIOS */}
             <div className="space-y-3">
               <Label className="text-sm font-medium">
                 Historial de Recambios de Agua
@@ -801,7 +793,6 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
             </div>
           </div>
 
-          {/* ALIMENTACIÓN */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
               Alimentación
@@ -845,7 +836,6 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
             </div>
           </div>
 
-          {/* SANIDAD */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
               Sanidad
@@ -892,67 +882,6 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
             </div>
           </div>
 
-          {/* COSECHA */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Cosecha
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Fecha de Cosecha</Label>
-                <Input type="date" {...register("cosecha.fecha_cosecha")} />
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Kilos Cosechados</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  {...register("cosecha.kilos_cosechados", {
-                    valueAsNumber: true,
-                  })}
-                  placeholder="Ej: 500"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Sobrevivencia %</Label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  min={0}
-                  max={100}
-                  {...register("cosecha.sobrevivencia_porcentaje", {
-                    valueAsNumber: true,
-                  })}
-                  placeholder="Ej: 85"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Comprador</Label>
-                <Input
-                  {...register("cosecha.comprador")}
-                  placeholder="Nombre del comprador"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Precio</Label>
-              <Input
-                type="number"
-                step="0.01"
-                {...register("cosecha.precio", { valueAsNumber: true })}
-                placeholder="Ej: 5000"
-              />
-            </div>
-          </div>
-
-          {/* ESTADO DEL LOTE */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
               Estado del Lote
@@ -972,7 +901,6 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
             </div>
           </div>
 
-          {/* UBICACIÓN */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
               Ubicación
@@ -1003,7 +931,6 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
             </div>
           </div>
 
-          {/* BOTONES */}
           <div className="pt-4 border-t flex justify-end gap-3">
             <Button
               type="button"

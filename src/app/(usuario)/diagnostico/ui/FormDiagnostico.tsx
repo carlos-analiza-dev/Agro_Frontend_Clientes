@@ -127,8 +127,8 @@ const FormDiagnostico = ({
 
     if (!data.edad || data.edad <= 0) {
       newErrors.edad = "La edad debe ser mayor a 0";
-    } else if (data.edad > 30) {
-      newErrors.edad = "La edad no puede ser mayor a 30 años";
+    } else if (data.edad > 360) {
+      newErrors.edad = "La edad no puede ser mayor a 360 meses";
     }
 
     if (!data.sintomas || data.sintomas.length === 0) {
@@ -289,7 +289,7 @@ const FormDiagnostico = ({
 
       <div className="space-y-2">
         <Label htmlFor="edad" className="font-bold">
-          Edad (años) <span className="text-red-500">*</span>
+          Edad (meses) <span className="text-red-500">*</span>
         </Label>
         <Input
           id="edad"
