@@ -83,7 +83,7 @@ export default function HeroSection() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/register">
+              <Link href="/login">
                 <Button
                   size="lg"
                   className="rounded-full px-8 py-3 h-auto text-base font-medium bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-[0_4px_16px_rgba(34,197,94,0.25)] hover:shadow-[0_6px_24px_rgba(34,197,94,0.35)] transition-all duration-300"

@@ -17,6 +17,8 @@ import FormEquipos from "./ui/FormEquipos";
 import { Equipo } from "@/api/equipos-maquinaria/interface/response-equipos.interface";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { useRouter } from "next/navigation";
+import ButtonAdd from "@/components/generics/ButtonAdd";
+import { Plus } from "lucide-react";
 
 const EquiposPage = () => {
   const { cliente } = useAuthStore();
@@ -84,9 +86,12 @@ const EquiposPage = () => {
             Registra y monitorea tus equipos y maquinaria
           </p>
         </div>
-        <Button onClick={() => handleAddEquipos()} className="w-full md:w-auto">
-          + Agregar Equipo
-        </Button>
+        <ButtonAdd
+          Icon={Plus}
+          title="Agregar Equipo"
+          action={() => handleAddEquipos()}
+          className="bg-green-600 hover:bg-green-700"
+        />
       </div>
       {!isLoading && equipos.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

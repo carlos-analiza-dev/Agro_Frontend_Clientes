@@ -27,8 +27,8 @@ const DiagnosticoAnimalPage = () => {
   return (
     <div className="container mx-auto py-6 px-4 md:px-6 space-y-6">
       <div className="flex items-center gap-3 mb-6">
-        <div className="bg-primary/10 p-3 rounded-full">
-          <Stethoscope className="h-6 w-6 text-primary" />
+        <div className="bg-green-500/10 p-3 rounded-full">
+          <Stethoscope className="h-6 w-6 text-green-600" />
         </div>
         <h1 className="text-lg md:text-3xl font-bold">
           Diagnóstico Veterinario

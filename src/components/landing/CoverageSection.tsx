@@ -32,7 +32,7 @@ export default function CoverageSection() {
               Cobertura Regional
             </span>
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-700 via-green-600 to-green-700 bg-clip-text text-transparent">
             Presentes en toda Centroamérica
           </h2>
           <p className="text-xl text-gray-600">

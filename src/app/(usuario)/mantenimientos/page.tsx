@@ -7,7 +7,7 @@ import { useAuthStore } from "@/providers/store/useAuthStore";
 import Paginacion from "@/components/generics/Paginacion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { WrenchIcon, AlertCircleIcon } from "lucide-react";
+import { WrenchIcon, AlertCircleIcon, Plus } from "lucide-react";
 import { Mantenimiento } from "@/api/mantenimientos/interface/response-mantenimientos.interface";
 import SkeletonCard from "@/components/generics/SkeletonCard";
 import CardMantenimientos from "./ui/CardMantenimientos";
@@ -16,6 +16,7 @@ import Modal from "@/components/generics/Modal";
 import FormMantenimiento from "./ui/FormMantenimiento";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { useRouter } from "next/navigation";
+import ButtonAdd from "@/components/generics/ButtonAdd";
 
 const MantenimientosPage = () => {
   const { cliente } = useAuthStore();
@@ -151,13 +152,12 @@ const MantenimientosPage = () => {
             Gestiona y visualiza los mantenimientos de tus equipos
           </p>
         </div>
-
-        <Button
-          className="w-full md:w-auto"
-          onClick={() => handeAddMantenimiento()}
-        >
-          + Ingresar Mantenimiento
-        </Button>
+        <ButtonAdd
+          Icon={Plus}
+          title="Ingresar Mantenimiento"
+          action={() => handeAddMantenimiento()}
+          className="bg-green-600 hover:bg-green-700"
+        />
       </div>
 
       <CardFilters

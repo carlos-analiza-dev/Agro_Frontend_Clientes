@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Filter, X, Baby } from "lucide-react";
+import { Filter, X, Baby, Plus } from "lucide-react";
 import { startOfDay, endOfDay } from "date-fns";
 import useGetPartosAnimales from "@/hooks/reproduccion/useGetPartosAnimales";
 import { useAuthStore } from "@/providers/store/useAuthStore";
@@ -27,6 +27,7 @@ import {
 import { Parto } from "@/api/reproduccion/interfaces/response-partos.interface";
 import FiltersParto from "./ui/FiltersParto";
 import { SexoAnimal } from "@/interfaces/enums/animales/sexo-animal.enum";
+import ButtonAdd from "@/components/generics/ButtonAdd";
 
 const PartosAnimalesPage = () => {
   const { cliente } = useAuthStore();
@@ -182,14 +183,12 @@ const PartosAnimalesPage = () => {
             {totalPartos > 0 && ` Total: ${totalPartos} partos`}
           </p>
         </div>
-        <Button
-          onClick={handleClickNewRegister}
-          className="w-full sm:w-auto"
-          size={isMobile ? "default" : "default"}
-        >
-          <Baby className="h-4 w-4 mr-2" />
-          Nuevo Registro
-        </Button>
+        <ButtonAdd
+          Icon={Plus}
+          title="Nuevo Parto"
+          action={handleClickNewRegister}
+          className="bg-green-600 hover:bg-green-700"
+        />
       </div>
       {!isMobile ? (
         <FiltersParto

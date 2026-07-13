@@ -15,7 +15,6 @@ import { Search, UserCheck, Users, Plus, Filter, X } from "lucide-react";
 import Paginacion from "@/components/generics/Paginacion";
 import TableTrabajadores from "./ui/TableTrabajadores";
 import SkeletonTable from "@/components/generics/SkeletonTable";
-import CardTrabajadores from "./ui/CardTrabajadores";
 import Modal from "@/components/generics/Modal";
 import FormTrabajador from "./ui/FormTrabajador";
 import { Trabajador } from "@/api/trabajadores/interface/response-trabajadores.interface";
@@ -23,6 +22,8 @@ import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/providers/store/useAuthStore";
+import ButtonAdd from "@/components/generics/ButtonAdd";
+import { StatCard } from "@/components/generics/StatCard";
 
 const TrabajadoresPage = () => {
   const { cliente } = useAuthStore();
@@ -127,13 +128,12 @@ const TrabajadoresPage = () => {
                   </Badge>
                 )}
               </Button>
-              <Button
-                onClick={() => handleAddTrabajador()}
-                className="w-full sm:w-auto"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Nuevo Trabajador
-              </Button>
+              <ButtonAdd
+                Icon={Plus}
+                title="Nuevo Trabajador"
+                action={() => handleAddTrabajador()}
+                className="bg-green-600 hover:bg-green-700"
+              />
             </div>
           </div>
 
@@ -213,18 +213,27 @@ const TrabajadoresPage = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-          <CardTrabajadores
+          <StatCard
             title="Total Trabajadores"
-            Icon={Users}
-            total={trabajadoresData?.total || 0}
+            icon={Users}
+            value={trabajadoresData?.total || 0}
+            gradientFrom="from-blue-50"
+            gradientTo="to-blue-100"
+            iconColor="text-blue-600"
+            textColor="text-blue-900"
           />
-          <CardTrabajadores
+
+          <StatCard
             title="Verificados"
-            Icon={UserCheck}
-            total={
+            icon={UserCheck}
+            value={
               trabajadoresData?.trabajadores?.filter((t) => t.verified)
                 .length || 0
             }
+            gradientFrom="from-green-50"
+            gradientTo="to-green-100"
+            iconColor="text-green-600"
+            textColor="text-green-900"
           />
         </div>
 

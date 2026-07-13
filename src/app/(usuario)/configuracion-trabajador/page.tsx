@@ -32,6 +32,7 @@ import { StatCard } from "@/components/generics/StatCard";
 import SkeletonJornadas from "@/components/generics/SkeletonJornadas";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { useRouter } from "next/navigation";
+import ButtonAdd from "@/components/generics/ButtonAdd";
 
 const ConfiguracionTrabajadoresPage = () => {
   const { cliente } = useAuthStore();
@@ -105,13 +106,12 @@ const ConfiguracionTrabajadoresPage = () => {
               Gestiona los salarios, cargos y configuraciones de tus empleados
             </p>
           </div>
-          <Button
-            className="w-full md:w-auto"
-            onClick={() => handleAddConfig()}
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Nuevo Trabajador
-          </Button>
+          <ButtonAdd
+            Icon={Plus}
+            title="Nuevo Trabajador"
+            action={() => handleAddConfig()}
+            className="bg-green-600 hover:bg-green-700"
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

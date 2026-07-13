@@ -24,6 +24,7 @@ import Modal from "@/components/generics/Modal";
 import { CardIngresoMobile } from "./ui/CardIngresoMobile";
 import { TableIngresos } from "./ui/TableIngresos";
 import FormIngresos from "./ui/FormIngresos";
+import ButtonAdd from "@/components/generics/ButtonAdd";
 
 const IngresosPage = () => {
   const { cliente } = useAuthStore();
@@ -170,10 +171,12 @@ const IngresosPage = () => {
               )}
             </Button>
           )}
-          <Button onClick={handleNewIngreso} className="flex-1 sm:flex-none">
-            <Plus className="h-4 w-4 mr-2" />
-            Nuevo Ingreso
-          </Button>
+          <ButtonAdd
+            Icon={Plus}
+            title="Nuevo Ingreso"
+            action={handleNewIngreso}
+            className="bg-green-600 hover:bg-green-700"
+          />
         </div>
       </div>
 

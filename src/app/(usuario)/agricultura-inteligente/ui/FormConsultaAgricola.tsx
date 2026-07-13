@@ -323,7 +323,11 @@ const FormConsultaAgricola = ({
         />
       )}
 
-      <Button type="submit" className="w-full" disabled={mutation.isPending}>
+      <Button
+        type="submit"
+        className="w-full bg-green-600 hover:bg-green-700"
+        disabled={mutation.isPending}
+      >
         {mutation.isPending ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

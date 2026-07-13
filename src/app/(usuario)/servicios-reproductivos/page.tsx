@@ -34,6 +34,7 @@ import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
 import { EstadoServicio } from "@/interfaces/enums/servicios-reproductivos.enum";
 import { SexoAnimal } from "@/interfaces/enums/animales/sexo-animal.enum";
+import ButtonAdd from "@/components/generics/ButtonAdd";
 
 const ServiciosReproductivosPage = () => {
   const { cliente } = useAuthStore();
@@ -311,14 +312,12 @@ const ServiciosReproductivosPage = () => {
                 </TabsList>
               </Tabs>
             )}
-
-            <Button
-              onClick={() => handleClickAdd()}
-              className="flex-1 sm:flex-none"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Nuevo Servicio
-            </Button>
+            <ButtonAdd
+              Icon={Plus}
+              title="Nuevo Servicio"
+              action={() => handleClickAdd()}
+              className="bg-green-600 hover:bg-green-700"
+            />
           </div>
         </div>
 

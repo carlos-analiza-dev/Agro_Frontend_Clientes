@@ -33,20 +33,10 @@ const ServicesUser = () => {
     return <SkeletonCard />;
   }
 
-  if (isError) {
+  if (isError || servicios?.length === 0) {
     return (
       <div className="min-h-screen flex justify-center items-center bg-gradient-to-b from-background to-muted/20 p-4">
         <div className="max-w-7xl mx-auto ">
-          <EmptyServices onRefresh={onRefresh} countryName={paisName} />
-        </div>
-      </div>
-    );
-  }
-
-  if (servicios?.length === 0) {
-    return (
-      <div className="min-h-screen flex justify-center items-center bg-gradient-to-b from-background to-muted/20 p-4">
-        <div className="max-w-7xl mx-auto">
           <EmptyServices onRefresh={onRefresh} countryName={paisName} />
         </div>
       </div>

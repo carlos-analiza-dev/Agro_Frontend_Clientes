@@ -25,6 +25,7 @@ import Modal from "@/components/generics/Modal";
 import FormGastos from "./ui/FormGastos";
 import { Gastos } from "@/api/finanzas/gastos/interface/gastos-response.interface";
 import { FiltrosGastosIngresos } from "@/components/generics/FiltrosGastosIngresos";
+import ButtonAdd from "@/components/generics/ButtonAdd";
 
 const GastosPage = () => {
   const { cliente } = useAuthStore();
@@ -170,10 +171,12 @@ const GastosPage = () => {
               )}
             </Button>
           )}
-          <Button onClick={handleNewGasto} className="flex-1 sm:flex-none">
-            <Plus className="h-4 w-4 mr-2" />
-            Nuevo Gasto
-          </Button>
+          <ButtonAdd
+            Icon={Plus}
+            title="Nuevo Gasto"
+            action={handleNewGasto}
+            className="bg-green-600 hover:bg-green-700"
+          />
         </div>
       </div>
 

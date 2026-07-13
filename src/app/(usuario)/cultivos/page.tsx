@@ -94,6 +94,7 @@ const CultivoPage = () => {
           title="Agregar Cultivo"
           Icon={Sprout}
           action={handleAddCultivo}
+          className="bg-green-600 hover:bg-green-700"
         />
       </div>
 

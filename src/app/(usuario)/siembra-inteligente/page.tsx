@@ -29,8 +29,8 @@ const SiembraInteligentePage = () => {
   return (
     <div className="container mx-auto py-6 px-4 md:px-6 space-y-6">
       <div className="flex items-center gap-3 mb-6">
-        <div className="bg-blue-500/10 p-3 rounded-full">
-          <Ruler className="h-6 w-6 text-blue-600" />
+        <div className="bg-green-500/10 p-3 rounded-full">
+          <Ruler className="h-6 w-6 text-green-600" />
         </div>
         <h1 className="text-lg md:text-3xl font-bold">
           Calculadora de Densidad de Siembra
@@ -51,7 +51,7 @@ const SiembraInteligentePage = () => {
       </Alert>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="shadow-lg border-t-4 border-t-blue-600">
+        <Card className="shadow-lg border-t-4 border-t-green-600">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <LandPlot className="h-5 w-5" />

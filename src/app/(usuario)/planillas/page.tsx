@@ -36,6 +36,7 @@ import { Planilla } from "@/api/planillas-trabajadores/interfaces/response-plani
 import Modal from "@/components/generics/Modal";
 import FormPlanilla from "./ui/FormPlanilla";
 import { useRouter } from "next/navigation";
+import ButtonAdd from "@/components/generics/ButtonAdd";
 
 const PlanillaTrabajadoresPage = () => {
   const { cliente } = useAuthStore();
@@ -157,13 +158,12 @@ const PlanillaTrabajadoresPage = () => {
               Gestión de nóminas y pagos de trabajadores
             </p>
           </div>
-          <Button
-            onClick={() => handleAddPlanilla()}
-            className="shadow-lg w-full md:w-auto"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Nueva Planilla
-          </Button>
+          <ButtonAdd
+            Icon={Plus}
+            title="Nueva Planilla"
+            action={() => handleAddPlanilla()}
+            className="bg-green-600 hover:bg-green-700"
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

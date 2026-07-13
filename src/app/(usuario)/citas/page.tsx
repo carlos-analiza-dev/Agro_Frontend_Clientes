@@ -57,9 +57,7 @@ const CitasPage = () => {
 
   return (
     <div className="min-h-screen bg-background p-4 relative pb-24">
-      <h1 className="text-3xl font-bold text-center mb-8 text-foreground">
-        Historial de Citas
-      </h1>
+      <h1 className="text-lg md:text-3xl font-bold">Historial de Citas</h1>
 
       <ScrollArea className="h-[calc(100vh-200px)]">
         <div className="space-y-4">

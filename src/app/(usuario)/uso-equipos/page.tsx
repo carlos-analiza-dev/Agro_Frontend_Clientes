@@ -23,6 +23,7 @@ import FormUsoEquipo from "./ui/FormUsoEquipo";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { useRouter } from "next/navigation";
+import ButtonAdd from "@/components/generics/ButtonAdd";
 
 const UsoDeEquiposPage = () => {
   const { cliente } = useAuthStore();
@@ -125,10 +126,12 @@ const UsoDeEquiposPage = () => {
             Registro de uso de equipos por operadores y actividades
           </p>
         </div>
-        <Button onClick={() => handleAddUso()} className="w-full md:w-auto">
-          <WrenchIcon className="h-4 w-4" />
-          Registrar Uso
-        </Button>
+        <ButtonAdd
+          Icon={WrenchIcon}
+          title="Registrar Uso"
+          action={() => handleAddUso()}
+          className="bg-green-600 hover:bg-green-700"
+        />
       </div>
 
       <FiltersUsoEquipos

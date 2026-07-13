@@ -1,8 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { Servicio } from "@/api/servicios/interfaces/response-servicios.interface";
+import ButtonAdd from "../generics/ButtonAdd";
 
 interface Props {
   services: Servicio;
@@ -29,11 +29,12 @@ const CardServiceUsers = ({ services, onPress }: Props) => {
               {services.nombre}
             </h3>
           </div>
-
-          <Button onClick={onPress} className="w-full mt-2">
-            Agendar Cita
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+          <ButtonAdd
+            Icon={ArrowRight}
+            title="Agendar Cita"
+            action={onPress}
+            className="bg-green-600 hover:bg-green-700"
+          />
         </div>
       </CardContent>
     </Card>

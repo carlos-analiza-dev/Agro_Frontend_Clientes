@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Filter, Loader2 } from "lucide-react";
+import { Filter, Loader2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import useGetCelosAnimal from "@/hooks/reproduccion/useGetCelosAnimal";
@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import MobileFilters from "./ui/MobileFilters";
 import DesktopFilters from "./ui/DesktopFilters";
 import { SexoAnimal } from "@/interfaces/enums/animales/sexo-animal.enum";
+import ButtonAdd from "@/components/generics/ButtonAdd";
 
 const CelosAnimalPage = () => {
   const { cliente } = useAuthStore();
@@ -148,12 +149,12 @@ const CelosAnimalPage = () => {
             <Filter className="h-4 w-4 mr-2" />
             Filtros
           </Button>
-          <Button
-            onClick={handleCreateRegistro}
-            className="flex-1 sm:flex-none"
-          >
-            Nuevo Registro
-          </Button>
+          <ButtonAdd
+            Icon={Plus}
+            title="Nuevo Celo"
+            action={handleCreateRegistro}
+            className="bg-green-600 hover:bg-green-700"
+          />
         </div>
       </div>
 

@@ -31,6 +31,7 @@ import Modal from "@/components/generics/Modal";
 import FormJornadaTrabajador from "./ui/FormJornadaTrabajador";
 import { generarOpcionesMeses } from "@/helpers/funciones/generarOpcionesMeses";
 import { useRouter } from "next/navigation";
+import ButtonAdd from "@/components/generics/ButtonAdd";
 
 const JornadasTrabajadoresPage = () => {
   const router = useRouter();
@@ -169,13 +170,12 @@ const JornadasTrabajadoresPage = () => {
               Registro diario de asistencia y horas extras
             </p>
           </div>
-          <Button
-            onClick={() => handleAddJornada()}
-            className="shadow-lg w-full md:w-auto"
-          >
-            <Calendar className="mr-2 h-4 w-4" />
-            Registrar Jornada
-          </Button>
+          <ButtonAdd
+            Icon={Calendar}
+            title="Registrar Jornada"
+            action={() => handleAddJornada()}
+            className="bg-green-600 hover:bg-green-700"
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

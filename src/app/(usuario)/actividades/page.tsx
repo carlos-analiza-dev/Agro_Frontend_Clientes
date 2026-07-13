@@ -6,7 +6,7 @@ import { useAuthStore } from "@/providers/store/useAuthStore";
 import { FiltrosActividades } from "@/interfaces/filtros/filters-actividades.interface";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarIcon, Filter } from "lucide-react";
+import { CalendarIcon, Filter, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import FiltrosActividadesComponent from "./ui/FiltrosActividades";
@@ -20,6 +20,7 @@ import ModalActividad from "./ui/ModalActividad";
 import { Actividade } from "@/api/actividades/interfaces/response-actividades.interface";
 import { estadosActividad } from "@/helpers/data/actividades/actividadesdData";
 import { useRouter } from "next/navigation";
+import ButtonAdd from "@/components/generics/ButtonAdd";
 
 const ActividadesPage = () => {
   const { cliente } = useAuthStore();
@@ -167,14 +168,12 @@ const ActividadesPage = () => {
             </div>
             {(cliente?.rol === TipoCliente.PROPIETARIO ||
               cliente?.rol === TipoCliente.SUPERVISOR) && (
-              <Button
-                onClick={() => handleAddActividad()}
-                disabled={isLoading}
-                size={isMobile ? "sm" : "default"}
-                className="gap-2 w-full sm:w-auto"
-              >
-                <span>Agregar Actividad</span>
-              </Button>
+              <ButtonAdd
+                Icon={Plus}
+                title="Agregar Actividad"
+                action={() => handleAddActividad()}
+                className="bg-green-600 hover:bg-green-700"
+              />
             )}
           </div>
         </div>
