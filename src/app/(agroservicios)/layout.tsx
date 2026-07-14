@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { toast } from "react-toastify";
 import { FullScreenLoader } from "@/components/generics/FullScreenLoader";
@@ -12,6 +12,15 @@ import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
 import NavBarAgro from "@/components/NavBars/NavBarAgro";
 import SidebarAgro from "@/components/SideBars/SidebarAgro";
 import ShetContentCompAgro from "@/components/generics/ShetContentCompAgro";
+import useGetPermisosAgro from "@/hooks/permisos/useGetPermisosAgro";
+import useGetPermisosByCliente from "@/hooks/permisos/useGetPermisosByCliente";
+import { publicRoutes } from "@/helpers/data/publics-routes";
+import {
+  Permiso,
+  ResponsePermisosInterface,
+} from "@/api/permisos/interface/response-permisos.interface";
+
+const RUTA_PERMITIDA_SIN_PERMISOS = "/agro-servicios";
 
 export default function AgroServiciosLayout({
   children,
@@ -22,6 +31,7 @@ export default function AgroServiciosLayout({
   const { limpiarFavoritos } = useFavoritos();
   const { clearCart } = useCartStore();
   const router = useRouter();
+  const pathname = usePathname();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showSessionModal, setShowSessionModal] = useState(false);
@@ -29,6 +39,16 @@ export default function AgroServiciosLayout({
 
   const tieneAgroGestion =
     cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_GESTION;
+  const clienteId = cliente?.id ?? "";
+
+  const { data: permisosAgro, isLoading: isLoadingAgros } =
+    useGetPermisosAgro();
+  const { data: permisosCliente, isLoading: isLoadingCliente } =
+    useGetPermisosByCliente(clienteId);
+  const permisos = tieneAgroGestion ? permisosAgro : permisosCliente;
+  const isLoadingPermisos = tieneAgroGestion
+    ? isLoadingAgros
+    : isLoadingCliente;
 
   useEffect(() => {
     setIsHydrated(true);
@@ -84,13 +104,67 @@ export default function AgroServiciosLayout({
     if (!token) return;
     if (!cliente) return;
     if (isTokenExpired(token)) return;
+    if (isLoadingPermisos) return;
+
+    const isPublicRoute =
+      publicRoutes.includes(pathname) ||
+      publicRoutes.some((route) => pathname.startsWith(route + "/"));
+
+    if (isPublicRoute) {
+      return;
+    }
 
     if (!tieneAgroGestion) {
       toast.warning("No tienes acceso a Agro Servicios");
       router.push("/panel");
       return;
     }
-  }, [tieneAgroGestion, token, cliente, router, isHydrated]);
+
+    if (pathname === RUTA_PERMITIDA_SIN_PERMISOS) {
+      return;
+    }
+
+    const hasPermissionForCurrentRoute = () => {
+      if (!permisos || permisos.length === 0) {
+        return false;
+      }
+
+      if (tieneAgroGestion) {
+        const permisosAgroArray = permisos as Permiso[];
+        return permisosAgroArray.some((permiso) => {
+          return (
+            permiso.isActive &&
+            (pathname === permiso.url || pathname.startsWith(permiso.url + "/"))
+          );
+        });
+      } else {
+        const permisosClienteArray = permisos as ResponsePermisosInterface[];
+        return permisosClienteArray.some((permiso) => {
+          return (
+            permiso.ver &&
+            permiso.permiso.isActive &&
+            (pathname === permiso.permiso.url ||
+              pathname.startsWith(permiso.permiso.url + "/"))
+          );
+        });
+      }
+    };
+
+    const hasPermission = hasPermissionForCurrentRoute();
+
+    if (!hasPermission) {
+      router.push(RUTA_PERMITIDA_SIN_PERMISOS);
+    }
+  }, [
+    cliente,
+    pathname,
+    token,
+    isLoadingPermisos,
+    isHydrated,
+    router,
+    permisos,
+    tieneAgroGestion,
+  ]);
 
   const handleLogout = async () => {
     try {

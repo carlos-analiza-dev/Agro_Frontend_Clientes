@@ -33,6 +33,7 @@ import { editarInfoAgro } from "@/api/agroservicio/mi-agroservicio/accions/edita
 import Image from "next/image";
 import { subirLogoAgro } from "@/api/agroservicio/mi-agroservicio/accions/subir-logo";
 import { useAuthStore } from "@/providers/store/useAuthStore";
+import { formatDateLocal } from "@/helpers/funciones/formatDateOnly";
 
 const AgroPerfilPage = () => {
   const { cliente } = useAuthStore();
@@ -537,16 +538,7 @@ const AgroPerfilPage = () => {
                     Creado
                   </Label>
                   <p className="text-sm">
-                    {new Date(info_agro.created_at).toLocaleDateString(
-                      "es-HN",
-                      {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      },
-                    )}
+                    {formatDateLocal(info_agro.created_at)}
                   </p>
                 </div>
                 <div className="space-y-1">
@@ -554,16 +546,7 @@ const AgroPerfilPage = () => {
                     Última actualización
                   </Label>
                   <p className="text-sm">
-                    {new Date(info_agro.updated_at).toLocaleDateString(
-                      "es-HN",
-                      {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      },
-                    )}
+                    {formatDateLocal(info_agro.updated_at)}
                   </p>
                 </div>
               </div>

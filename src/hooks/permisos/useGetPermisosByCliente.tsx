@@ -6,7 +6,7 @@ const useGetPermisosByCliente = (cliendeId: string) => {
     queryKey: ["permisos-clienteId", cliendeId],
     queryFn: () => ObtenerPermisosClienteId(cliendeId),
     enabled: !!cliendeId,
-    retry: 0,
+    retry: 1,
     staleTime: 60 * 5 * 1000,
   });
 };

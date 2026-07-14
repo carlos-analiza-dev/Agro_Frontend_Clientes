@@ -11,6 +11,7 @@ import {
   UserCog,
   Bell,
   Building2,
+  House,
 } from "lucide-react";
 
 export const agroRoutes = [
@@ -23,6 +24,16 @@ export const agroRoutes = [
     name: "Mi Agroservicio",
     href: "/agro-perfil",
     icon: Building2,
+  },
+  {
+    name: "Roles",
+    href: "/roles-agro",
+    icon: UserCog,
+  },
+  {
+    name: "Sucursales",
+    href: "/agro-sucursales",
+    icon: House,
   },
   {
     name: "Productos",
