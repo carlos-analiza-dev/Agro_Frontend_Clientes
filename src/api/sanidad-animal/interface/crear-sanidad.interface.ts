@@ -40,8 +40,8 @@ export interface CreateSanidadAnimal {
   // LIMPIEZA GENERAL
   potrero_corral_area?: string | null;
   actividad?: string | null;
-  dias_descanso?: string[] | null;
-  producto_maquinaria_utilizada?: string[] | null;
+  dias_descanso?: string | null;
+  producto_maquinaria_utilizada?: string | null;
   carga_animal?: number | null;
   costo_producto_maquinaria?: number | null;
 

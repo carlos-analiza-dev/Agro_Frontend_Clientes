@@ -104,7 +104,9 @@ const FormSanidad = ({
   const [selectedAnimal, setSelectedAnimal] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string>("");
-
+  const [diasDescansoInput, setDiasDescansoInput] = useState<string>("");
+  const [productosMaquinariaInput, setProductosMaquinariaInput] =
+    useState<string>("");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { data: animales, isLoading: isLoadingAnimales } =
@@ -208,8 +210,8 @@ const FormSanidad = ({
       miembro_afectado: "",
       potrero_corral_area: "",
       actividad: "",
-      dias_descanso: [],
-      producto_maquinaria_utilizada: [],
+      dias_descanso: "",
+      producto_maquinaria_utilizada: "",
       carga_animal: 0,
       costo_producto_maquinaria: 0,
       peso_lana: 0,
@@ -364,10 +366,10 @@ const FormSanidad = ({
       case "LimpiezaGalpon":
         setValue("potrero_corral_area", sanidad.potrero_corral_area || "");
         setValue("actividad", sanidad.actividad || "");
-        setValue("dias_descanso", sanidad.dias_descanso || []);
+        setValue("dias_descanso", sanidad.dias_descanso || "");
         setValue(
           "producto_maquinaria_utilizada",
-          sanidad.producto_maquinaria_utilizada || [],
+          sanidad.producto_maquinaria_utilizada || "",
         );
         setValue("carga_animal", Number(sanidad.carga_animal) || 0);
         setValue(
@@ -2257,7 +2259,7 @@ const FormSanidad = ({
           <Button
             type="button"
             variant="outline"
-            onClick={() => setOpenModal(false)}
+            onClick={() => onSuccess!()}
             disabled={isSubmitting}
           >
             Cancelar
