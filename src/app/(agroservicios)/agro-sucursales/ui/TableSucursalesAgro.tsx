@@ -1,4 +1,4 @@
-import { Sucursale } from "@/api/agroservicio/agro-sucursales/interface/response-sucursales-agro.interface";
+import { SucursaleAgro } from "@/api/agroservicio/agro-sucursales/interface/response-sucursales-agro.interface";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -10,14 +10,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatDateOnly } from "@/helpers/funciones/formatDateOnly";
-import { Building2, Globe, User } from "lucide-react";
-import React from "react";
+import { Building2, Edit2, Globe, User } from "lucide-react";
 
 interface Props {
   isLoading: boolean;
   limit: number;
-  currentData: Sucursale[];
+  currentData: SucursaleAgro[];
   offset: number;
+  handleEditSucursal: (sucursal: SucursaleAgro) => void;
 }
 
 const TableSucursalesAgro = ({
@@ -25,6 +25,7 @@ const TableSucursalesAgro = ({
   isLoading,
   limit,
   offset,
+  handleEditSucursal,
 }: Props) => {
   return (
     <Table>
@@ -108,7 +109,7 @@ const TableSucursalesAgro = ({
                 {sucursal.gerente ? (
                   <div className="flex items-center gap-1">
                     <User className="h-3 w-3 text-gray-400" />
-                    <span className="text-sm">{sucursal.gerente}</span>
+                    <span className="text-sm">{sucursal.gerente.nombre}</span>
                   </div>
                 ) : (
                   <Badge variant="secondary" className="text-xs">
@@ -125,39 +126,9 @@ const TableSucursalesAgro = ({
                 <div className="flex justify-center gap-2">
                   <button
                     className="p-1 hover:bg-blue-50 rounded transition-colors"
-                    onClick={() => {}}
+                    onClick={() => handleEditSucursal(sucursal)}
                   >
-                    <svg
-                      className="h-4 w-4 text-blue-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                      />
-                    </svg>
-                  </button>
-                  <button
-                    className="p-1 hover:bg-red-50 rounded transition-colors"
-                    onClick={() => {}}
-                  >
-                    <svg
-                      className="h-4 w-4 text-red-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      />
-                    </svg>
+                    <Edit2 size={15} />
                   </button>
                 </div>
               </TableCell>

@@ -8,8 +8,18 @@ import Paginacion from "@/components/generics/Paginacion";
 import { Card, CardContent } from "@/components/ui/card";
 import TableSucursalesAgro from "./ui/TableSucursalesAgro";
 import { StatCard } from "@/components/generics/StatCard";
+import Modal from "@/components/generics/Modal";
+import FormAddSucursalAgro from "./ui/FormAddSucursalAgro";
+import { SucursaleAgro } from "@/api/agroservicio/agro-sucursales/interface/response-sucursales-agro.interface";
+import { useAuthStore } from "@/providers/store/useAuthStore";
 
 const AgroSucursalesPage = () => {
+  const { cliente } = useAuthStore();
+  const paisId = cliente?.pais.id ?? "";
+  const [openAddSucursal, setOpenAddSucursal] = useState(false);
+  const [selectedSucursal, setSelectedSucursal] =
+    useState<SucursaleAgro | null>(null);
+  const [editarSucursal, setEditarSucursal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [limit] = useState(10);
 
@@ -32,14 +42,20 @@ const AgroSucursalesPage = () => {
     setCurrentPage(page);
   };
 
+  const handleEditSucursal = (sucursal: SucursaleAgro) => {
+    setOpenAddSucursal(true);
+    setEditarSucursal(true);
+    setSelectedSucursal(sucursal);
+  };
+
   return (
     <div className="container mx-auto p-4 md:p-6 space-y-6">
       <div className="md:flex justify-between items-center gap-4">
-        <TitlePage Icon={House} title="Control de sucursales" />
+        <TitlePage Icon={House} title="Control de Sucursales" />
         <ButtonAdd
           title="Agregar Sucursal"
           Icon={House}
-          action={() => {}}
+          action={() => setOpenAddSucursal(true)}
           className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
         />
       </div>
@@ -52,6 +68,7 @@ const AgroSucursalesPage = () => {
               limit={limit}
               currentData={currentData}
               offset={offset}
+              handleEditSucursal={handleEditSucursal}
             />
           </div>
         </CardContent>
@@ -111,6 +128,26 @@ const AgroSucursalesPage = () => {
           />
         </div>
       )}
+      <Modal
+        open={openAddSucursal}
+        onOpenChange={setOpenAddSucursal}
+        title="Agregar Nueva Sucursal"
+        description="Aqui puede agregar sucursales de tu agroservicio"
+        size="2xl"
+        height="auto"
+        showCloseButton={false}
+      >
+        <FormAddSucursalAgro
+          onSuccess={() => {
+            setOpenAddSucursal(false);
+            setSelectedSucursal(null);
+            setEditarSucursal(false);
+          }}
+          editSucursal={selectedSucursal}
+          isEdit={editarSucursal}
+          paisId={paisId}
+        />
+      </Modal>
     </div>
   );
 };

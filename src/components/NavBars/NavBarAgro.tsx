@@ -9,6 +9,7 @@ import {
   Crown,
   AlertCircle,
   PanelsTopLeft,
+  Copy,
 } from "lucide-react";
 
 import {
@@ -35,6 +36,7 @@ import useGetPermisosByClientePaquete from "@/hooks/permisos/useGetPermisosByCli
 import useGetPermisosByCliente from "@/hooks/permisos/useGetPermisosByCliente";
 import { FullScreenLoader } from "../generics/FullScreenLoader";
 import { getPlanInfo } from "@/helpers/funciones/paquetes/get-infos";
+import { toast } from "react-toastify";
 
 interface Props {
   setMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -42,6 +44,7 @@ interface Props {
 }
 
 const NavBarAgro = ({ handleLogout, setMobileSidebarOpen }: Props) => {
+  const linkLoginEmpleados = `${process.env.NEXT_PUBLIC_APP_URL}/login-empleados`;
   const { cliente } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
@@ -109,6 +112,15 @@ const NavBarAgro = ({ handleLogout, setMobileSidebarOpen }: Props) => {
       router.push("/panel");
       setIsLoading(false);
     }, 1000);
+  };
+
+  const handleCopyEmployeeLink = async () => {
+    try {
+      await navigator.clipboard.writeText(linkLoginEmpleados);
+      toast.success("Enlace copiado al portapapeles.");
+    } catch {
+      toast.error("No se pudo copiar el enlace.");
+    }
   };
 
   if (isLoading) {
@@ -291,6 +303,20 @@ const NavBarAgro = ({ handleLogout, setMobileSidebarOpen }: Props) => {
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />
+
+            {esPropietario && (
+              <>
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem
+                  onClick={handleCopyEmployeeLink}
+                  className="cursor-pointer"
+                >
+                  <Copy className="mr-2 h-4 w-4" />
+                  Copiar enlace para empleados
+                </DropdownMenuItem>
+              </>
+            )}
 
             <DropdownMenuItem
               onClick={handleLogout}

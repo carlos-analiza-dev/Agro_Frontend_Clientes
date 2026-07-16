@@ -32,6 +32,11 @@ import { dataRoles } from "@/helpers/data/roles/dataRolesTrabajador";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import { Badge } from "@/components/ui/badge";
 import { Finca } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
+import {
+  validateEmail,
+  validateIdentification,
+} from "@/helpers/funciones/validaciones-form/valid";
+import { ID_REGEX } from "@/helpers/data/formularios/identificacion";
 
 interface Props {
   onSuccess: () => void;
@@ -82,29 +87,6 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
   const currentMunicipio = watch("municipio");
   const currentSexo = watch("sexo");
   const currentRol = watch("rol");
-
-  const ID_REGEX = {
-    HN: {
-      regex: /^\d{4}-\d{4}-\d{5}$/,
-      message: "Formato inválido. Use: xxxx-xxxx-xxxxx",
-      example: "Ejemplo: 0801-1999-01234",
-    },
-    SV: {
-      regex: /^\d{8}-\d{1}$/,
-      message: "Formato inválido. Use: xxxxxxxx-x",
-      example: "Ejemplo: 04210000-5",
-    },
-    GT: {
-      regex: /^\d{4}-\d{5}-\d{4}$/,
-      message: "Formato inválido. Use: xxxx-xxxxx-xxxx",
-      example: "Ejemplo: 1234-56789-0123",
-    },
-    PASSPORT: {
-      regex: /^[A-Za-z0-9]{6,20}$/,
-      message: "Formato inválido. Use 6-20 caracteres alfanuméricos",
-      example: "Ejemplo: AB123456",
-    },
-  };
 
   const { data: departamentos } = useGetDeptosActivesByPais(paisId);
   const { data: municipios } = useGetMunicipiosActivosByDepto(departamentoId);
@@ -171,21 +153,6 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
     setValue("pais", paisId);
   }, [pais, paisId, setValue]);
 
-  const validateIdentification = (value: string, codigoPais: string) => {
-    if (!value) return "La identificación es requerida";
-
-    switch (codigoPais) {
-      case "HN":
-        return ID_REGEX.HN.regex.test(value) || ID_REGEX.HN.message;
-      case "SV":
-        return ID_REGEX.SV.regex.test(value) || ID_REGEX.SV.message;
-      case "GT":
-        return ID_REGEX.GT.regex.test(value) || ID_REGEX.GT.message;
-      default:
-        return ID_REGEX.PASSPORT.regex.test(value) || ID_REGEX.PASSPORT.message;
-    }
-  };
-
   const createMutation = useMutation({
     mutationFn: crearTrabajador,
     onSuccess: () => {
@@ -249,12 +216,6 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
         `Hubo un error al ${action} el trabajador. Inténtalo de nuevo.`,
       );
     }
-  };
-
-  const validateEmail = (email: string) => {
-    const re =
-      /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
-    return re.test(email) || "El correo electrónico no tiene formato adecuado";
   };
 
   const validatePassword = (password: string) => {

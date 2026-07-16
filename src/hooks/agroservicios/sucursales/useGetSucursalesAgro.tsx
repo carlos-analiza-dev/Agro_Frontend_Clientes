@@ -1,7 +1,6 @@
 import { obtenerSucursalesAgro } from "@/api/agroservicio/agro-sucursales/accions/obtener-sucursales-agro";
 import { PaginationInterface } from "@/interfaces/filtros/paginacion/paginacion.interface";
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
 
 const useGetSucursalesAgro = (filters?: PaginationInterface) => {
   return useQuery({

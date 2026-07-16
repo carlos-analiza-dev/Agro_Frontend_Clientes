@@ -1,12 +1,15 @@
+import { Cliente } from "@/interfaces/auth/cliente";
+import { TipoSucursal } from "./crear-sucursal.interface";
+
 export interface ResponseSucursalesAgro {
-  sucursales: Sucursale[];
+  sucursales: SucursaleAgro[];
   total: number;
 }
 
-export interface Sucursale {
+export interface SucursaleAgro {
   id: string;
   nombre: string;
-  tipo: string;
+  tipo: TipoSucursal;
   latitud: string;
   longitud: string;
   direccion_complemento: string;
@@ -14,7 +17,7 @@ export interface Sucursale {
   pais: Departamento;
   departamento: Departamento;
   municipio: Departamento;
-  gerente: null;
+  gerente: Cliente;
 }
 
 export interface Departamento {
