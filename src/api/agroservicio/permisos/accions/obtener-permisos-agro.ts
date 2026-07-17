@@ -7,3 +7,10 @@ export const obtenerPermisosAgro = async () => {
   const response = await veterinariaAPI.get<Permiso[]>(url);
   return response.data;
 };
+
+export const obtenerPermisosByRol = async (rolId: string) => {
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/roles-permisos-agro/rol/${rolId}`;
+
+  const response = await veterinariaAPI.get<Permiso[]>(url);
+  return response.data;
+};

@@ -9,81 +9,199 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { agroRoutes } from "@/helpers/data/sidebar/siderbarAgro";
+import {
+  agroRoutes,
+  agroEmpleadoRoutes,
+} from "@/helpers/data/sidebar/siderbarAgro";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
 import useGetPermisosAgro from "@/hooks/permisos/useGetPermisosAgro";
-import useGetPermisosByCliente from "@/hooks/permisos/useGetPermisosByCliente";
 import { useMemo } from "react";
-import {
-  Permiso,
-  ResponsePermisosInterface,
-} from "@/api/permisos/interface/response-permisos.interface";
+import { Permiso } from "@/api/permisos/interface/response-permisos.interface";
+import { useAuthEmpleadoStore } from "@/providers/store/useAuthEmpleados";
+import useGetPermisosByRol from "@/hooks/permisos/useGetPermisosByRol";
+import { FullScreenLoader } from "../generics/FullScreenLoader";
+import useGetLogoAgro from "@/hooks/agroservicios/logo/useGetLogoAgro";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 interface SidebarAgroProps {
   handleLogout: () => Promise<void>;
+  isPropietario: boolean;
 }
 
-const SidebarAgro = ({ handleLogout }: SidebarAgroProps) => {
+const SidebarAgro = ({ handleLogout, isPropietario }: SidebarAgroProps) => {
   const pathname = usePathname();
   const { cliente } = useAuthStore();
-  const tieneAgroGestion =
-    cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_GESTION;
-  const clienteId = cliente?.id ?? "";
+  const { empleado } = useAuthEmpleadoStore();
 
-  const { data: permisosAgro, isLoading: isLoadingAgros } =
-    useGetPermisosAgro();
-  const { data: permisosCliente, isLoading: isLoadingCliente } =
-    useGetPermisosByCliente(clienteId);
-  const permisos = tieneAgroGestion ? permisosAgro : permisosCliente;
-  const isLoadingPermisos = tieneAgroGestion
-    ? isLoadingAgros
-    : isLoadingCliente;
+  const rolId = empleado?.role?.id ?? "";
 
-  const rutasPermitidas = useMemo(() => {
-    if (!permisos) return [];
+  const propietarioId =
+    cliente?.paqueteActivo?.paquete.tipo === TipoPaquete.AGRO_GESTION
+      ? cliente.id
+      : (empleado?.agroservicio?.propietario?.id ??
+        empleado?.agroservicio?.propietario.id ??
+        null);
 
-    if (tieneAgroGestion) {
-      const permisosAgroArray = permisos as Permiso[];
-      return permisosAgroArray.filter((p) => p.isActive).map((p) => p.url);
-    } else {
-      const permisosClienteArray = permisos as ResponsePermisosInterface[];
-      return permisosClienteArray
-        .filter((p) => p.ver && p.permiso.isActive)
-        .map((p) => p.permiso.url);
-    }
-  }, [permisos, tieneAgroGestion]);
-
-  const rutasVisibles = useMemo(
-    () => agroRoutes.filter((ruta) => rutasPermitidas.includes(ruta.href)),
-    [rutasPermitidas],
+  const { data: logo, isLoading: cargando_logo } = useGetLogoAgro(
+    propietarioId ?? "",
   );
 
+  const { data: permisosAgro, isLoading: isLoadingPermisosAgro } =
+    useGetPermisosAgro();
+
+  const { data: permisosEmpleados, isLoading: isLoadingPermisosEmpleados } =
+    useGetPermisosByRol(rolId);
+
+  const rutasBase = useMemo(() => {
+    if (isPropietario) {
+      return agroRoutes;
+    } else {
+      return agroEmpleadoRoutes;
+    }
+  }, [isPropietario]);
+
+  const rutasPermitidas = useMemo(() => {
+    if (!isPropietario) {
+      if (!permisosEmpleados || permisosEmpleados.length === 0) {
+        return [];
+      }
+
+      const permisosActivos = permisosEmpleados.filter(
+        (permiso: any) => permiso.permiso?.isActive !== false,
+      );
+
+      return permisosActivos.map(
+        (permiso: any) => permiso.permiso?.url || permiso.url,
+      );
+    }
+
+    if (!permisosAgro || permisosAgro.length === 0) {
+      return [];
+    }
+
+    const permisosActivos = permisosAgro.filter((p: Permiso) => p.isActive);
+    return permisosActivos.map((p: Permiso) => p.url);
+  }, [permisosAgro, permisosEmpleados, isPropietario]);
+
+  const rutasVisibles = useMemo(() => {
+    if (!isPropietario) {
+      return rutasBase.filter(
+        (ruta) =>
+          rutasPermitidas.includes(ruta.href) ||
+          ruta.href === "/agro-empleados/agro-servicios",
+      );
+    }
+
+    return rutasBase.filter((ruta) => rutasPermitidas.includes(ruta.href));
+  }, [rutasBase, rutasPermitidas, isPropietario]);
+
   const isActive = (href: string) => {
-    if (href === "/agro-servicios") {
+    if (
+      href === "/agro-propietario/agro-servicios" ||
+      href === "/agro-empleados/agro-servicios"
+    ) {
       return pathname === href;
     }
     return pathname.startsWith(href);
   };
 
-  if (isLoadingPermisos) {
+  const isLoading = isPropietario
+    ? isLoadingPermisosAgro
+    : isLoadingPermisosEmpleados;
+
+  if (isLoading || cargando_logo) {
     return (
       <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 bg-white border-r border-gray-200">
         <div className="flex items-center justify-center h-full">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+          <FullScreenLoader />
         </div>
       </aside>
     );
   }
 
+  const userInfo = isPropietario
+    ? {
+        nombre: cliente?.nombre || cliente?.nombre || "Propietario",
+        tipo: "Propietario",
+        rol: "Administrador",
+        email: cliente?.email || "",
+        imagen:
+          logo?.url ||
+          (cliente?.profileImages && cliente?.profileImages?.length > 0
+            ? cliente.profileImages[0].url
+            : null),
+        tieneLogo: !!logo?.url,
+      }
+    : {
+        nombre: empleado?.nombre || "Empleado",
+        tipo: "Empleado",
+        rol: empleado?.role?.name || "Sin rol",
+        email: empleado?.email || "",
+        imagen: logo?.url || null,
+        tieneLogo: !!logo?.url,
+      };
+
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   return (
     <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 bg-white border-r border-gray-200">
       <div className="flex flex-col flex-1 min-h-0">
         <div className="flex items-center h-16 px-6 border-b border-gray-200">
-          <Sprout className="h-8 w-8 text-green-600" />
-          <span className="ml-2 text-lg font-semibold text-gray-900">
-            Agro Servicios
-          </span>
+          {userInfo.tieneLogo ? (
+            <div className="flex items-center">
+              <div className="h-10 w-10 rounded-full overflow-hidden border border-gray-200 flex-shrink-0">
+                <img
+                  src={userInfo.imagen!}
+                  alt="Logo agroservicio"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <span className="ml-2 text-lg font-semibold text-gray-900">
+                Agro Servicios
+              </span>
+            </div>
+          ) : (
+            <>
+              <Sprout className="h-8 w-8 text-green-600" />
+              <span className="ml-2 text-lg font-semibold text-gray-900">
+                Agro Servicios
+              </span>
+            </>
+          )}
+        </div>
+
+        <div className="px-4 py-3 border-b border-gray-200 bg-gray-50">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900 truncate">
+                {userInfo.nombre}
+              </p>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-xs text-gray-500">{userInfo.tipo}</span>
+                {!isPropietario && (
+                  <>
+                    <span className="text-xs text-gray-300">•</span>
+                    <span className="text-xs text-blue-600 font-medium truncate">
+                      {userInfo.rol}
+                    </span>
+                  </>
+                )}
+              </div>
+              {userInfo.email && (
+                <p className="text-xs text-gray-400 truncate mt-0.5">
+                  {userInfo.email}
+                </p>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto py-4 px-3">
@@ -116,7 +234,9 @@ const SidebarAgro = ({ handleLogout }: SidebarAgroProps) => {
               })
             ) : (
               <div className="text-center text-gray-500 py-4">
-                No tienes permisos para ver ninguna ruta
+                {isPropietario
+                  ? "No tienes permisos para ver ninguna ruta"
+                  : "No tienes permisos para ver ninguna ruta"}
               </div>
             )}
           </nav>

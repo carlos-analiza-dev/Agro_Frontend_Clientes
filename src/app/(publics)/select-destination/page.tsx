@@ -44,7 +44,7 @@ const SelectDestinationPage = () => {
 
   const handleSelect = (destination: "agro" | "panel") => {
     if (destination === "agro") {
-      router.push("/agro-servicios");
+      router.push("/agro-propietario/agro-servicios");
     } else {
       router.push("/panel");
     }

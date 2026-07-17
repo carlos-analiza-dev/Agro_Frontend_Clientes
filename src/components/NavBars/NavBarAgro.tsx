@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Button } from "../ui/button";
 import {
   LogOut,
@@ -10,6 +10,7 @@ import {
   AlertCircle,
   PanelsTopLeft,
   Copy,
+  Building2,
 } from "lucide-react";
 
 import {
@@ -23,6 +24,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/providers/store/useAuthStore";
+import { useAuthEmpleadoStore } from "@/providers/store/useAuthEmpleados";
 import { navItems } from "@/helpers/data/sidebar/sidebarData";
 import { Badge } from "../ui/badge";
 import {
@@ -34,21 +36,38 @@ import {
 import { TipoCliente } from "@/interfaces/enums/clientes.enums";
 import useGetPermisosByClientePaquete from "@/hooks/permisos/useGetPermisosByClientePaquete";
 import useGetPermisosByCliente from "@/hooks/permisos/useGetPermisosByCliente";
+import useGetPermisosByRol from "@/hooks/permisos/useGetPermisosByRol";
 import { FullScreenLoader } from "../generics/FullScreenLoader";
 import { getPlanInfo } from "@/helpers/funciones/paquetes/get-infos";
 import { toast } from "react-toastify";
+import {
+  agroRoutes,
+  agroEmpleadoRoutes,
+} from "@/helpers/data/sidebar/siderbarAgro";
 
 interface Props {
   setMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
   handleLogout: () => Promise<void>;
+  isPropietario: boolean;
 }
 
-const NavBarAgro = ({ handleLogout, setMobileSidebarOpen }: Props) => {
+const NavBarAgro = ({
+  handleLogout,
+  setMobileSidebarOpen,
+  isPropietario,
+}: Props) => {
   const linkLoginEmpleados = `${process.env.NEXT_PUBLIC_APP_URL}/login-empleados`;
+
   const { cliente } = useAuthStore();
+  const { empleado } = useAuthEmpleadoStore();
+  const rolId = empleado?.role?.id ?? "";
+
   const router = useRouter();
   const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(false);
+
+  const rutasBase = isPropietario ? agroRoutes : agroEmpleadoRoutes;
+
   const firstPath = `/${pathname.split("/")[1] || ""}`;
 
   const esPropietario = cliente?.rol === TipoCliente.PROPIETARIO;
@@ -56,8 +75,14 @@ const NavBarAgro = ({ handleLogout, setMobileSidebarOpen }: Props) => {
   const paqueteId = cliente?.paqueteActivo?.paquete?.id ?? "";
   const clienteId = cliente?.id ?? "";
 
-  const { data: permisosPaquete } = useGetPermisosByClientePaquete(paqueteId);
-  const { data: permisosCliente } = useGetPermisosByCliente(clienteId);
+  const { data: permisosPaquete, isLoading: isLoadingPaquete } =
+    useGetPermisosByClientePaquete(isPropietario ? paqueteId : "");
+
+  const { data: permisosCliente, isLoading: isLoadingCliente } =
+    useGetPermisosByCliente(isPropietario ? clienteId : "");
+
+  const { data: permisosEmpleados, isLoading: isLoadingPermisosEmpleados } =
+    useGetPermisosByRol(!isPropietario ? rolId : "");
 
   const permisos = esPropietario ? permisosPaquete : permisosCliente;
 
@@ -66,10 +91,26 @@ const NavBarAgro = ({ handleLogout, setMobileSidebarOpen }: Props) => {
     ? cliente?.tienePlanActivo || false
     : false;
 
-  const permisosVer =
-    permisos
-      ?.filter((permiso) => permiso.ver === true)
-      ?.map((permiso) => permiso.permiso.url) || [];
+  const permisosVer = useMemo(() => {
+    if (isPropietario && permisos) {
+      return permisos
+        .filter((permiso) => permiso.ver === true)
+        .map((permiso) => permiso.permiso.url);
+    }
+    return [];
+  }, [isPropietario, permisos]);
+
+  const permisosEmpleadosVer = useMemo(() => {
+    if (!isPropietario && permisosEmpleados) {
+      return permisosEmpleados
+        .filter(
+          (permiso: any) =>
+            permiso.ver === true || permiso.permiso?.isActive !== false,
+        )
+        .map((permiso: any) => permiso.permiso?.url || permiso.url);
+    }
+    return [];
+  }, [isPropietario, permisosEmpleados]);
 
   const planInfo = getPlanInfo(esPropietario, planActivo!);
   const estaPorVencer = esPropietario
@@ -81,24 +122,67 @@ const NavBarAgro = ({ handleLogout, setMobileSidebarOpen }: Props) => {
     "/panel",
     "/not-found",
     "/unauthorized",
-    "/agro-servicios",
-
+    "/agro-propietario/agro-servicios",
     ...(esPropietario
       ? ["/mi-plan", "/comprar-plan", "/historial-paquetes"]
       : []),
   ];
 
-  const navItemsConPermisos = navItems.flatMap((section) =>
-    section.items.filter((item) => {
-      if (allowedRoutes.includes(item.href)) {
-        return true;
-      }
-      return permisosVer.includes(item.href);
-    }),
-  );
+  const allowedRoutesEmpleados = [
+    "/not-found",
+    "/unauthorized",
+    "/agro-empleados/agro-servicios",
+  ];
 
-  const activePage =
-    navItemsConPermisos.find((item) => item.href === firstPath)?.name || "";
+  const navItemsConPermisos = useMemo(() => {
+    if (isPropietario) {
+      return navItems.flatMap((section) =>
+        section.items.filter((item) => {
+          if (allowedRoutes.includes(item.href)) {
+            return true;
+          }
+          return permisosVer.includes(item.href);
+        }),
+      );
+    } else {
+      return navItems.flatMap((section) =>
+        section.items.filter((item) => {
+          if (allowedRoutesEmpleados.includes(item.href)) {
+            return true;
+          }
+          return permisosEmpleadosVer.includes(item.href);
+        }),
+      );
+    }
+  }, [
+    isPropietario,
+    permisosVer,
+    permisosEmpleadosVer,
+    allowedRoutes,
+    allowedRoutesEmpleados,
+  ]);
+
+  const getActivePageName = () => {
+    if (isPropietario) {
+      const activeItem = navItemsConPermisos.find(
+        (item) => item.href === firstPath || pathname.startsWith(item.href),
+      );
+      return activeItem?.name || "";
+    } else {
+      const activeItem = rutasBase.find((item) => {
+        if (item.href === firstPath) return true;
+        if (pathname.startsWith(item.href)) return true;
+        return false;
+      });
+      return activeItem?.name || "Dashboard";
+    }
+  };
+
+  const activePage = getActivePageName();
+
+  const isLoadingPermisos = isPropietario
+    ? isLoadingPaquete || isLoadingCliente
+    : isLoadingPermisosEmpleados;
 
   const handleNavigateToActivePage = () => {
     if (firstPath && firstPath !== "/") {
@@ -123,9 +207,33 @@ const NavBarAgro = ({ handleLogout, setMobileSidebarOpen }: Props) => {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || isLoadingPermisos) {
     return <FullScreenLoader />;
   }
+
+  const getUserInfo = () => {
+    if (isPropietario) {
+      return {
+        nombre: cliente?.nombre || cliente?.nombre || "Propietario",
+        email: cliente?.email || "",
+        imagen:
+          cliente?.profileImages && cliente?.profileImages?.length > 0
+            ? cliente.profileImages[0].url
+            : "/images/ProfileImage.png",
+      };
+    } else {
+      return {
+        nombre: empleado?.nombre || "Empleado",
+        email: empleado?.email || "",
+        imagen: "/images/ProfileImage.png",
+        rol: empleado?.role?.name || "Sin rol",
+        sucursal: empleado?.sucursal?.nombre || "",
+        isActive: empleado?.isActive || false,
+      };
+    }
+  };
+
+  const userInfo = getUserInfo();
 
   return (
     <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6">
@@ -149,7 +257,7 @@ const NavBarAgro = ({ handleLogout, setMobileSidebarOpen }: Props) => {
       </div>
 
       <div className="flex items-center space-x-1 md:space-x-4">
-        {esPropietario && tienePlanActivo && planActivo && (
+        {isPropietario && esPropietario && tienePlanActivo && planActivo && (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -180,18 +288,21 @@ const NavBarAgro = ({ handleLogout, setMobileSidebarOpen }: Props) => {
           </TooltipProvider>
         )}
 
+        {!isPropietario && (
+          <Badge
+            variant="outline"
+            className="hidden md:flex items-center gap-1"
+          >
+            <Building2 className="h-3 w-3" />
+            {userInfo.rol}
+          </Badge>
+        )}
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
               <Avatar className="h-8 w-8">
-                <AvatarImage
-                  src={
-                    cliente && cliente?.profileImages.length > 0
-                      ? cliente?.profileImages[0].url
-                      : "/images/ProfileImage.png"
-                  }
-                  alt="Usuario"
-                />
+                <AvatarImage src={userInfo.imagen} alt="Usuario" />
                 <AvatarFallback>
                   <User className="h-4 w-4" />
                 </AvatarFallback>
@@ -202,13 +313,41 @@ const NavBarAgro = ({ handleLogout, setMobileSidebarOpen }: Props) => {
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-2">
                 <p className="text-sm font-medium text-gray-900">
-                  {cliente?.nombre || "Usuario"}
+                  {userInfo.nombre}
                 </p>
                 <p className="text-xs leading-none text-gray-500">
-                  {cliente?.email}
+                  {userInfo.email}
                 </p>
 
-                {esPropietario && (
+                {!isPropietario && empleado && (
+                  <div className="mt-2 pt-2 border-t border-gray-100">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs text-gray-500">Rol:</span>
+                      <Badge variant="outline" className="text-xs">
+                        {empleado.role?.name || "Empleado"}
+                      </Badge>
+                    </div>
+                    {empleado.sucursal && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-500">Sucursal:</span>
+                        <span className="text-xs font-medium">
+                          {empleado.sucursal.nombre}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-xs text-gray-500">Estado:</span>
+                      <Badge
+                        variant={empleado.isActive ? "default" : "destructive"}
+                        className="text-xs"
+                      >
+                        {empleado.isActive ? "Activo" : "Inactivo"}
+                      </Badge>
+                    </div>
+                  </div>
+                )}
+
+                {isPropietario && esPropietario && (
                   <div className="mt-2 pt-2 border-t border-gray-100">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs text-gray-500">
@@ -294,29 +433,30 @@ const NavBarAgro = ({ handleLogout, setMobileSidebarOpen }: Props) => {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem
-              onClick={handleNavigateToPanel}
-              className="cursor-pointer text-blue-600"
-            >
-              <PanelsTopLeft className="mr-2 h-4 w-4" />
-              Panel
-            </DropdownMenuItem>
-
-            <DropdownMenuSeparator />
-
-            {esPropietario && (
+            {isPropietario && esPropietario && (
               <>
-                <DropdownMenuSeparator />
-
                 <DropdownMenuItem
-                  onClick={handleCopyEmployeeLink}
-                  className="cursor-pointer"
+                  onClick={handleNavigateToPanel}
+                  className="cursor-pointer text-blue-600"
                 >
-                  <Copy className="mr-2 h-4 w-4" />
-                  Copiar enlace para empleados
+                  <PanelsTopLeft className="mr-2 h-4 w-4" />
+                  Panel
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
               </>
             )}
+
+            {isPropietario && esPropietario && (
+              <DropdownMenuItem
+                onClick={handleCopyEmployeeLink}
+                className="cursor-pointer"
+              >
+                <Copy className="mr-2 h-4 w-4" />
+                Copiar enlace para empleados
+              </DropdownMenuItem>
+            )}
+
+            {isPropietario && esPropietario && <DropdownMenuSeparator />}
 
             <DropdownMenuItem
               onClick={handleLogout}

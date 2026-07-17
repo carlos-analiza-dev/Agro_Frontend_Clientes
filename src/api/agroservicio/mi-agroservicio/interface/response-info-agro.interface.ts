@@ -1,4 +1,4 @@
-import { Cliente, ProfileImage } from "@/interfaces/auth/cliente";
+import { Cliente } from "@/interfaces/auth/cliente";
 
 export interface ResponseInfoAgro {
   id: string;
@@ -12,5 +12,15 @@ export interface ResponseInfoAgro {
   created_at: Date;
   updated_at: Date;
   propietario: Cliente;
-  logo: ProfileImage;
+  logo: LogoImage;
+}
+
+export interface LogoImage {
+  id: string;
+  agroservicioId: string;
+  url: string;
+  key: string;
+  mimeType: string;
+  createdAt: string;
+  updatedAt: string;
 }

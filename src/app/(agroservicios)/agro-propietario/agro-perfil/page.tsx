@@ -31,9 +31,9 @@ import { ingresarInfoAgro } from "@/api/agroservicio/mi-agroservicio/accions/ing
 import AgroPerfilSkeleton from "./ui/AgroPerfilSkeleton";
 import { editarInfoAgro } from "@/api/agroservicio/mi-agroservicio/accions/editar-info-agro";
 import Image from "next/image";
-import { subirLogoAgro } from "@/api/agroservicio/mi-agroservicio/accions/subir-logo";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { formatDateLocal } from "@/helpers/funciones/formatDateOnly";
+import { ingresarLogoAgro } from "@/api/agroservicio/logo/accions/ingresar-logo";
 
 const AgroPerfilPage = () => {
   const { cliente } = useAuthStore();
@@ -107,19 +107,26 @@ const AgroPerfilPage = () => {
   };
 
   const uploadLogoMutation = useMutation({
-    mutationFn: (file: File) => {
+    mutationFn: async (file: File) => {
+      if (!info_agro?.id) {
+        throw new Error("No hay ID del agroservicio");
+      }
+
       const formData = new FormData();
-      formData.append("logo", file);
-      return subirLogoAgro(info_agro?.id ?? "", formData);
+      formData.append("file", file);
+
+      return ingresarLogoAgro(info_agro.id, formData);
     },
     onSuccess: () => {
       toast.success("Logo actualizado exitosamente");
       queryClient.invalidateQueries({ queryKey: ["info-agro"] });
+      queryClient.invalidateQueries({ queryKey: ["logo-agro"] });
       setLogoFile(null);
       setIsUploadingLogo(false);
     },
     onError: (error) => {
       setIsUploadingLogo(false);
+
       if (isAxiosError(error)) {
         const messages = error.response?.data?.message;
         const errorMessage = Array.isArray(messages)
@@ -311,6 +318,7 @@ const AgroPerfilPage = () => {
                       src={logoPreview}
                       alt="Logo del agroservicio"
                       fill
+                      unoptimized
                       className="object-cover"
                     />
                   ) : (
@@ -321,7 +329,7 @@ const AgroPerfilPage = () => {
                 <div className="flex-1">
                   {info_agro?.id ? (
                     <div className="space-y-2">
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
                         <Label
                           htmlFor="logo-upload"
                           className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 rounded-md transition-colors"

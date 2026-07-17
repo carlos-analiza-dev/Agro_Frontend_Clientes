@@ -1,240 +1,50 @@
-"use client";
-import { useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import { useAuthStore } from "@/providers/store/useAuthStore";
-import { toast } from "react-toastify";
-import { FullScreenLoader } from "@/components/generics/FullScreenLoader";
-import { useFavoritos } from "@/hooks/favoritos/useFavoritos";
-import { useCartStore } from "@/providers/store/useCartStore";
-import { isTokenExpired } from "@/helpers/funciones/tokenExpired";
-import { SessionExpiredModal } from "@/components/generics/SessionExpiredModal";
-import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
-import NavBarAgro from "@/components/NavBars/NavBarAgro";
-import SidebarAgro from "@/components/SideBars/SidebarAgro";
-import ShetContentCompAgro from "@/components/generics/ShetContentCompAgro";
-import useGetPermisosAgro from "@/hooks/permisos/useGetPermisosAgro";
-import useGetPermisosByCliente from "@/hooks/permisos/useGetPermisosByCliente";
-import { publicRoutes } from "@/helpers/data/publics-routes";
-import {
-  Permiso,
-  ResponsePermisosInterface,
-} from "@/api/permisos/interface/response-permisos.interface";
+import type { Metadata } from "next";
 
-const RUTA_PERMITIDA_SIN_PERMISOS = "/agro-servicios";
+export const metadata: Metadata = {
+  metadataBase: new URL("https://www.clientes.interactivecore.app"),
+  title: {
+    default: "El Sembrador | Agroservicios y Veterinaria",
+    template: "%s | El Sembrador",
+  },
+  description:
+    "Sistema de agroservicios y veterinaria para control de ganado, razas, pesos, reproducción y gestión agrícola.",
+  keywords: [
+    "agroservicios",
+    "veterinaria",
+    "ganado",
+    "control de ganado",
+    "software ganadero",
+    "agricultura",
+    "ganaderia",
+  ],
+  authors: [{ name: "Carlos Alcerro" }],
 
-export default function AgroServiciosLayout({
+  robots: {
+    index: true,
+    follow: true,
+  },
+
+  openGraph: {
+    title: "El Sembrador | Sistema Agropecuario",
+    description:
+      "Plataforma para gestión de ganado, celos, reproducción, razas y control agrícola.",
+    url: "https://www.clientes.interactivecore.app",
+    siteName: "El Sembrador",
+    locale: "es_ES",
+    type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "El Sembrador",
+    description: "Sistema inteligente para gestión de ganado y agroservicios.",
+  },
+};
+
+export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-  const { logout, cliente, token } = useAuthStore();
-  const { limpiarFavoritos } = useFavoritos();
-  const { clearCart } = useCartStore();
-  const router = useRouter();
-  const pathname = usePathname();
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [showSessionModal, setShowSessionModal] = useState(false);
-  const [isHydrated, setIsHydrated] = useState(false);
-
-  const tieneAgroGestion =
-    cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_GESTION;
-  const clienteId = cliente?.id ?? "";
-
-  const { data: permisosAgro, isLoading: isLoadingAgros } =
-    useGetPermisosAgro();
-  const { data: permisosCliente, isLoading: isLoadingCliente } =
-    useGetPermisosByCliente(clienteId);
-  const permisos = tieneAgroGestion ? permisosAgro : permisosCliente;
-  const isLoadingPermisos = tieneAgroGestion
-    ? isLoadingAgros
-    : isLoadingCliente;
-
-  useEffect(() => {
-    setIsHydrated(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isHydrated) return;
-
-    const checkExpiration = () => {
-      if (token && isTokenExpired(token)) {
-        setShowSessionModal(true);
-        return true;
-      }
-      return false;
-    };
-
-    checkExpiration();
-  }, [token, isHydrated]);
-
-  useEffect(() => {
-    if (!token) return;
-
-    const interval = setInterval(() => {
-      if (isTokenExpired(token)) {
-        setShowSessionModal(true);
-        clearInterval(interval);
-      }
-    }, 10000);
-
-    return () => clearInterval(interval);
-  }, [token]);
-
-  useEffect(() => {
-    if (!isHydrated) return;
-
-    const checkAuth = () => {
-      if (!token) {
-        router.push("/");
-        return;
-      }
-
-      if (isTokenExpired(token)) {
-        setShowSessionModal(true);
-        return;
-      }
-    };
-
-    checkAuth();
-  }, [token, router, isHydrated]);
-
-  useEffect(() => {
-    if (!isHydrated) return;
-    if (!token) return;
-    if (!cliente) return;
-    if (isTokenExpired(token)) return;
-    if (isLoadingPermisos) return;
-
-    const isPublicRoute =
-      publicRoutes.includes(pathname) ||
-      publicRoutes.some((route) => pathname.startsWith(route + "/"));
-
-    if (isPublicRoute) {
-      return;
-    }
-
-    if (!tieneAgroGestion) {
-      toast.warning("No tienes acceso a Agro Servicios");
-      router.push("/panel");
-      return;
-    }
-
-    if (pathname === RUTA_PERMITIDA_SIN_PERMISOS) {
-      return;
-    }
-
-    const hasPermissionForCurrentRoute = () => {
-      if (!permisos || permisos.length === 0) {
-        return false;
-      }
-
-      if (tieneAgroGestion) {
-        const permisosAgroArray = permisos as Permiso[];
-        return permisosAgroArray.some((permiso) => {
-          return (
-            permiso.isActive &&
-            (pathname === permiso.url || pathname.startsWith(permiso.url + "/"))
-          );
-        });
-      } else {
-        const permisosClienteArray = permisos as ResponsePermisosInterface[];
-        return permisosClienteArray.some((permiso) => {
-          return (
-            permiso.ver &&
-            permiso.permiso.isActive &&
-            (pathname === permiso.permiso.url ||
-              pathname.startsWith(permiso.permiso.url + "/"))
-          );
-        });
-      }
-    };
-
-    const hasPermission = hasPermissionForCurrentRoute();
-
-    if (!hasPermission) {
-      router.push(RUTA_PERMITIDA_SIN_PERMISOS);
-    }
-  }, [
-    cliente,
-    pathname,
-    token,
-    isLoadingPermisos,
-    isHydrated,
-    router,
-    permisos,
-    tieneAgroGestion,
-  ]);
-
-  const handleLogout = async () => {
-    try {
-      setMobileSidebarOpen(false);
-      setLoading(true);
-      await logout();
-      limpiarFavoritos();
-      clearCart();
-      localStorage.removeItem("user_location");
-
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      router.push("/");
-      toast.success("Sesión cerrada correctamente");
-    } catch (error) {
-      toast.error("Ocurrió un error al cerrar la sesión");
-      router.push("/");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSessionExpired = async () => {
-    setShowSessionModal(false);
-    setLoading(true);
-    try {
-      await logout();
-      router.push("/");
-    } catch (error) {
-      toast.error("Error al cerrar sesión expirada");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, []);
-
-  if (loading) {
-    return <FullScreenLoader />;
-  }
-
-  return (
-    <div className="flex h-screen bg-gray-50">
-      <SidebarAgro handleLogout={handleLogout} />
-
-      <ShetContentCompAgro
-        setMobileSidebarOpen={setMobileSidebarOpen}
-        handleLogout={handleLogout}
-        mobileSidebarOpen={mobileSidebarOpen}
-      />
-
-      <div className="flex flex-1 flex-col overflow-hidden lg:ml-64">
-        <NavBarAgro
-          setMobileSidebarOpen={setMobileSidebarOpen}
-          handleLogout={handleLogout}
-        />
-        <main className="flex-1 overflow-y-auto bg-gray-50 md:p-6">
-          {children}
-        </main>
-      </div>
-
-      <SessionExpiredModal
-        isOpen={showSessionModal}
-        onClose={handleSessionExpired}
-      />
-    </div>
-  );
+}) {
+  return <>{children}</>;
 }

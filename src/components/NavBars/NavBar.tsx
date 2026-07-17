@@ -213,7 +213,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
     "/unauthorized",
     "/cart",
     "/favoritos",
-    "/agro-servicios",
+    "/agro-propietario/agro-servicios",
 
     ...(esPropietario
       ? ["/mi-plan", "/comprar-plan", "/historial-paquetes"]
@@ -256,7 +256,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
   const handleNavigateToAgroServicios = () => {
     setIsLoading(true);
     setTimeout(() => {
-      router.push("/agro-servicios");
+      router.push("/agro-propietario/agro-servicios");
       setIsLoading(false);
     }, 1000);
   };
