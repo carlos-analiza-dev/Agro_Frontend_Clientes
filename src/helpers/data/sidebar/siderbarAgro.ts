@@ -36,6 +36,11 @@ export const agroRoutes = [
     icon: ShoppingBag,
   },
   {
+    name: "Proveedores",
+    href: "/agro-propietario/agro-proveedores",
+    icon: Truck,
+  },
+  {
     name: "Inventario",
     href: "/agro-inventario",
     icon: Warehouse,
@@ -50,16 +55,13 @@ export const agroRoutes = [
     href: "/agro-servicios-veterinarios",
     icon: BriefcaseMedical,
   },
+
   {
     name: "Clientes",
     href: "/agro-clientes",
     icon: Users,
   },
-  {
-    name: "Proveedores",
-    href: "/agro-proveedores",
-    icon: Truck,
-  },
+
   {
     name: "Facturación",
     href: "/agro-facturas",
@@ -99,6 +101,11 @@ export const agroEmpleadoRoutes = [
     icon: ShoppingBag,
   },
   {
+    name: "Proveedores",
+    href: "/agro-empleados/agro-proveedores",
+    icon: Truck,
+  },
+  {
     name: "Inventario",
     href: "/agro-inventario",
     icon: Warehouse,
@@ -118,11 +125,7 @@ export const agroEmpleadoRoutes = [
     href: "/agro-clientes",
     icon: Users,
   },
-  {
-    name: "Proveedores",
-    href: "/agro-proveedores",
-    icon: Truck,
-  },
+
   {
     name: "Facturación",
     href: "/agro-facturas",

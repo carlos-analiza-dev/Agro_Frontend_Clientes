@@ -10,6 +10,7 @@ export interface PaginationInterface {
   sexo?: string;
   nombre?: string;
   categoria?: string;
+  search?: string;
   subcategoria?: string;
   tipo_producto?: string;
   indicaciones?: string;

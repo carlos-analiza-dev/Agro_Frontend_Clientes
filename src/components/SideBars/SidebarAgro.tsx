@@ -22,7 +22,6 @@ import { useAuthEmpleadoStore } from "@/providers/store/useAuthEmpleados";
 import useGetPermisosByRol from "@/hooks/permisos/useGetPermisosByRol";
 import { FullScreenLoader } from "../generics/FullScreenLoader";
 import useGetLogoAgro from "@/hooks/agroservicios/logo/useGetLogoAgro";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 interface SidebarAgroProps {
   handleLogout: () => Promise<void>;
@@ -132,6 +131,7 @@ const SidebarAgro = ({ handleLogout, isPropietario }: SidebarAgroProps) => {
             ? cliente.profileImages[0].url
             : null),
         tieneLogo: !!logo?.url,
+        agroservicio: logo?.agroservicio || "Agro Servicios",
       }
     : {
         nombre: empleado?.nombre || "Empleado",
@@ -140,23 +140,15 @@ const SidebarAgro = ({ handleLogout, isPropietario }: SidebarAgroProps) => {
         email: empleado?.email || "",
         imagen: logo?.url || null,
         tieneLogo: !!logo?.url,
+        agroservicio: logo?.agroservicio || "Agro Servicios",
       };
-
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((word) => word[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
 
   return (
     <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 bg-white border-r border-gray-200">
       <div className="flex flex-col flex-1 min-h-0">
         <div className="flex items-center h-16 px-6 border-b border-gray-200">
           {userInfo.tieneLogo ? (
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
               <div className="h-10 w-10 rounded-full overflow-hidden border border-gray-200 flex-shrink-0">
                 <img
                   src={userInfo.imagen!}
@@ -164,17 +156,25 @@ const SidebarAgro = ({ handleLogout, isPropietario }: SidebarAgroProps) => {
                   className="h-full w-full object-cover"
                 />
               </div>
-              <span className="ml-2 text-lg font-semibold text-gray-900">
-                Agro Servicios
+
+              <span
+                className="max-w-[180px] truncate font-semibold text-gray-900"
+                title={userInfo.agroservicio}
+              >
+                {userInfo.agroservicio}
               </span>
             </div>
           ) : (
-            <>
-              <Sprout className="h-8 w-8 text-green-600" />
-              <span className="ml-2 text-lg font-semibold text-gray-900">
-                Agro Servicios
+            <div className="flex items-center gap-2">
+              <Sprout className="h-8 w-8 text-green-600 flex-shrink-0" />
+
+              <span
+                className="max-w-[180px] truncate font-semibold text-gray-900"
+                title={userInfo.agroservicio}
+              >
+                {userInfo.agroservicio}
               </span>
-            </>
+            </div>
           )}
         </div>
 

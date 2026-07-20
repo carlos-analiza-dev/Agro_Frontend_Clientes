@@ -374,11 +374,6 @@ const AgroPerfilPage = () => {
                           Archivo seleccionado: {logoFile.name}
                         </p>
                       )}
-                      {info_agro.logo && !logoFile && (
-                        <p className="text-xs text-blue-600">
-                          Logo actual: {info_agro.logo.mimeType}
-                        </p>
-                      )}
                     </div>
                   ) : (
                     <div>
