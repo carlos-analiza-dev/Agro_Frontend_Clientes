@@ -10,7 +10,6 @@ const useGetProveedoresAgro = (
     queryKey: ["agro-proveedores", , propietarioId, filters],
     queryFn: () => obtenerProveedoresAgro(propietarioId, filters),
     enabled: !!propietarioId,
-    staleTime: 60 * 5 * 1000,
     retry: 1,
   });
 };
