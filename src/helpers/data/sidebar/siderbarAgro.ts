@@ -14,136 +14,203 @@ import {
   House,
 } from "lucide-react";
 
-export const agroRoutes = [
+export const agroNavItems = [
   {
-    name: "Dashboard",
-    href: "/agro-propietario/agro-servicios",
-    icon: LayoutDashboard,
+    category: "Panel",
+    items: [
+      {
+        name: "Dashboard",
+        href: "/agro-propietario/agro-servicios",
+        icon: LayoutDashboard,
+      },
+    ],
   },
   {
-    name: "Mi Agroservicio",
-    href: "/agro-propietario/agro-perfil",
-    icon: Building2,
+    category: "Agroservicio",
+    items: [
+      {
+        name: "Mi Agroservicio",
+        href: "/agro-propietario/agro-perfil",
+        icon: Building2,
+      },
+      {
+        name: "Sucursales",
+        href: "/agro-propietario/agro-sucursales",
+        icon: House,
+      },
+      {
+        name: "Personal",
+        href: "/agro-propietario/agro-empleados",
+        icon: UserCog,
+      },
+    ],
   },
   {
-    name: "Sucursales",
-    href: "/agro-propietario/agro-sucursales",
-    icon: House,
+    category: "Inventario",
+    items: [
+      {
+        name: "Productos",
+        href: "/agro-propietario/agro-productos",
+        icon: ShoppingBag,
+      },
+      {
+        name: "Proveedores",
+        href: "/agro-propietario/agro-proveedores",
+        icon: Truck,
+      },
+      {
+        name: "Inventario",
+        href: "/agro-inventario",
+        icon: Warehouse,
+      },
+    ],
   },
   {
-    name: "Productos",
-    href: "/agro-propietario/agro-productos",
-    icon: ShoppingBag,
+    category: "Ventas",
+    items: [
+      {
+        name: "Pedidos",
+        href: "/agro-pedidos",
+        icon: Package,
+      },
+      {
+        name: "Clientes",
+        href: "/agro-clientes",
+        icon: Users,
+      },
+      {
+        name: "Facturación",
+        href: "/agro-facturas",
+        icon: FileText,
+      },
+    ],
   },
   {
-    name: "Proveedores",
-    href: "/agro-propietario/agro-proveedores",
-    icon: Truck,
+    category: "Servicios",
+    items: [
+      {
+        name: "Servicios Veterinarios",
+        href: "/agro-servicios-veterinarios",
+        icon: BriefcaseMedical,
+      },
+    ],
   },
   {
-    name: "Inventario",
-    href: "/agro-inventario",
-    icon: Warehouse,
+    category: "Finanzas",
+    items: [
+      {
+        name: "Ingresos",
+        href: "/agro-ingresos",
+        icon: DollarSign,
+      },
+    ],
   },
   {
-    name: "Pedidos",
-    href: "/agro-pedidos",
-    icon: Package,
-  },
-  {
-    name: "Servicios Veterinarios",
-    href: "/agro-servicios-veterinarios",
-    icon: BriefcaseMedical,
-  },
-
-  {
-    name: "Clientes",
-    href: "/agro-clientes",
-    icon: Users,
-  },
-
-  {
-    name: "Facturación",
-    href: "/agro-facturas",
-    icon: FileText,
-  },
-  {
-    name: "Ingresos",
-    href: "/agro-ingresos",
-    icon: DollarSign,
-  },
-  {
-    name: "Personal",
-    href: "/agro-propietario/agro-empleados",
-    icon: UserCog,
-  },
-  {
-    name: "Notificaciones",
-    href: "/agro-notificaciones",
-    icon: Bell,
+    category: "Sistema",
+    items: [
+      {
+        name: "Notificaciones",
+        href: "/agro-notificaciones",
+        icon: Bell,
+      },
+    ],
   },
 ];
 
-export const agroEmpleadoRoutes = [
+export const agroEmpleadoNavItems = [
   {
-    name: "Dashboard",
-    href: "/agro-empleados/agro-servicios",
-    icon: LayoutDashboard,
+    category: "Panel",
+    items: [
+      {
+        name: "Dashboard",
+        href: "/agro-empleados/agro-servicios",
+        icon: LayoutDashboard,
+      },
+    ],
   },
   {
-    name: "Mi Agroservicio",
-    href: "/agro-empleados/agro-perfil",
-    icon: Building2,
+    category: "Agroservicio",
+    items: [
+      {
+        name: "Mi Agroservicio",
+        href: "/agro-empleados/agro-perfil",
+        icon: Building2,
+      },
+      {
+        name: "Personal",
+        href: "/agro-empleados/agro-empleados",
+        icon: UserCog,
+      },
+    ],
   },
   {
-    name: "Productos",
-    href: "/agro-empleados/agro-productos",
-    icon: ShoppingBag,
+    category: "Inventario",
+    items: [
+      {
+        name: "Productos",
+        href: "/agro-empleados/agro-productos",
+        icon: ShoppingBag,
+      },
+      {
+        name: "Proveedores",
+        href: "/agro-empleados/agro-proveedores",
+        icon: Truck,
+      },
+      {
+        name: "Inventario",
+        href: "/agro-inventario",
+        icon: Warehouse,
+      },
+    ],
   },
   {
-    name: "Proveedores",
-    href: "/agro-empleados/agro-proveedores",
-    icon: Truck,
+    category: "Ventas",
+    items: [
+      {
+        name: "Pedidos",
+        href: "/agro-pedidos",
+        icon: Package,
+      },
+      {
+        name: "Clientes",
+        href: "/agro-clientes",
+        icon: Users,
+      },
+      {
+        name: "Facturación",
+        href: "/agro-facturas",
+        icon: FileText,
+      },
+    ],
   },
   {
-    name: "Inventario",
-    href: "/agro-inventario",
-    icon: Warehouse,
+    category: "Servicios",
+    items: [
+      {
+        name: "Servicios Veterinarios",
+        href: "/agro-servicios-veterinarios",
+        icon: BriefcaseMedical,
+      },
+    ],
   },
   {
-    name: "Pedidos",
-    href: "/agro-pedidos",
-    icon: Package,
+    category: "Finanzas",
+    items: [
+      {
+        name: "Ingresos",
+        href: "/agro-ingresos",
+        icon: DollarSign,
+      },
+    ],
   },
   {
-    name: "Servicios Veterinarios",
-    href: "/agro-servicios-veterinarios",
-    icon: BriefcaseMedical,
-  },
-  {
-    name: "Clientes",
-    href: "/agro-clientes",
-    icon: Users,
-  },
-
-  {
-    name: "Facturación",
-    href: "/agro-facturas",
-    icon: FileText,
-  },
-  {
-    name: "Ingresos",
-    href: "/agro-ingresos",
-    icon: DollarSign,
-  },
-  {
-    name: "Personal",
-    href: "/agro-empleados/agro-empleados",
-    icon: UserCog,
-  },
-  {
-    name: "Notificaciones",
-    href: "/agro-notificaciones",
-    icon: Bell,
+    category: "Sistema",
+    items: [
+      {
+        name: "Notificaciones",
+        href: "/agro-notificaciones",
+        icon: Bell,
+      },
+    ],
   },
 ];

@@ -9,11 +9,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Eye, Package, Pencil, Image } from "lucide-react";
+import {
+  Package,
+  Pencil,
+  Image,
+  Cog,
+  Layers3,
+  BadgePercent,
+} from "lucide-react";
 import { useState } from "react";
 import { ProductImageUpload } from "./ProductImageUpload";
 import { ProductImagesDialog } from "./ProductImagesDialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Modal from "@/components/generics/Modal";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import TableEscalasProducto from "../escalas/TableEscalasProducto";
+import TableDescuentoProductos from "../descuentos-productos/TableDescuentoProductos";
 
 interface Props {
   filteredProducts: AgroProducto[];
@@ -21,6 +32,7 @@ interface Props {
   clearFilters: () => void;
   handleEditProducto: (producto: AgroProducto) => void;
   refetch?: () => void;
+  propietarioId: string;
 }
 
 const TableAgroProductos = ({
@@ -29,16 +41,24 @@ const TableAgroProductos = ({
   hasActiveFilters,
   handleEditProducto,
   refetch,
+  propietarioId,
 }: Props) => {
   const [imageUploadOpen, setImageUploadOpen] = useState(false);
   const [imagesDialogOpen, setImagesDialogOpen] = useState(false);
   const [selectedProducto, setSelectedProducto] = useState<AgroProducto | null>(
     null,
   );
+  const [openModalEcalasDescuentos, setOpenModalEcalasDescuentos] =
+    useState(false);
 
   const handleViewImages = (producto: AgroProducto) => {
     setSelectedProducto(producto);
     setImagesDialogOpen(true);
+  };
+
+  const handleViewEscalas = (producto: AgroProducto) => {
+    setOpenModalEcalasDescuentos(true);
+    setSelectedProducto(producto);
   };
 
   const handleUploadImages = (producto: AgroProducto) => {
@@ -153,13 +173,13 @@ const TableAgroProductos = ({
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
                     <Button
+                      onClick={() => handleViewEscalas(producto)}
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
-                      onClick={() => {}}
-                      title="Ver Producto"
+                      title="Configuracion"
                     >
-                      <Eye className="h-4 w-4" />
+                      <Cog className="h-4 w-4" />
                     </Button>
                     <Button
                       onClick={() => handleEditProducto(producto)}
@@ -201,6 +221,57 @@ const TableAgroProductos = ({
         producto={selectedProducto}
         onSuccess={handleSuccess}
       />
+
+      <Modal
+        open={openModalEcalasDescuentos}
+        onOpenChange={setOpenModalEcalasDescuentos}
+        title="Configuración de escalas y descuentos"
+        height="auto"
+        size="6xl"
+      >
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-lg font-semibold">
+              {selectedProducto?.nombre}
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Administra las escalas de compra y los descuentos aplicables a
+              este producto.
+            </p>
+          </div>
+
+          <Tabs defaultValue="escalas" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="escalas" className="gap-2">
+                <Layers3 className="h-4 w-4" />
+                Escalas
+              </TabsTrigger>
+
+              <TabsTrigger value="descuentos" className="gap-2">
+                <BadgePercent className="h-4 w-4" />
+                Descuentos
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="escalas" className="mt-6">
+              <TableEscalasProducto
+                moneda={selectedProducto?.pais.simbolo_moneda ?? "$"}
+                paisId={selectedProducto?.pais.id ?? ""}
+                selectedProducto={selectedProducto}
+                propietarioId={propietarioId}
+              />
+            </TabsContent>
+
+            <TabsContent value="descuentos" className="mt-6">
+              <TableDescuentoProductos
+                paisId={selectedProducto?.pais.id ?? ""}
+                selectedProducto={selectedProducto}
+                propietarioId={propietarioId}
+              />
+            </TabsContent>
+          </Tabs>
+        </div>
+      </Modal>
     </div>
   );
 };

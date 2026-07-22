@@ -131,6 +131,7 @@ const AgroProductosPage = () => {
               hasActiveFilters={hasActiveFilters}
               clearFilters={clearFilters}
               handleEditProducto={handleEditProducto}
+              propietarioId={propietarioId}
             />
           </div>
         </CardContent>

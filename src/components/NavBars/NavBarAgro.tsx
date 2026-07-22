@@ -41,8 +41,8 @@ import { FullScreenLoader } from "../generics/FullScreenLoader";
 import { getPlanInfo } from "@/helpers/funciones/paquetes/get-infos";
 import { toast } from "react-toastify";
 import {
-  agroRoutes,
-  agroEmpleadoRoutes,
+  agroNavItems,
+  agroEmpleadoNavItems,
 } from "@/helpers/data/sidebar/siderbarAgro";
 import { getUserAgroInfo } from "@/helpers/funciones/agroservicio/profile/obtener-info-perfil";
 
@@ -67,7 +67,7 @@ const NavBarAgro = ({
   const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(false);
 
-  const rutasBase = isPropietario ? agroRoutes : agroEmpleadoRoutes;
+  const rutasBase = isPropietario ? agroNavItems : agroEmpleadoNavItems;
 
   const firstPath = `/${pathname.split("/")[1] || ""}`;
 
@@ -168,15 +168,23 @@ const NavBarAgro = ({
       const activeItem = navItemsConPermisos.find(
         (item) => item.href === firstPath || pathname.startsWith(item.href),
       );
+
       return activeItem?.name || "";
-    } else {
-      const activeItem = rutasBase.find((item) => {
+    }
+
+    for (const categoria of rutasBase) {
+      const activeItem = categoria.items.find((item) => {
         if (item.href === firstPath) return true;
         if (pathname.startsWith(item.href)) return true;
         return false;
       });
-      return activeItem?.name || "Dashboard";
+
+      if (activeItem) {
+        return activeItem.name;
+      }
     }
+
+    return "Dashboard";
   };
 
   const activePage = getActivePageName();

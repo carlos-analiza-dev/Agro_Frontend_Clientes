@@ -10,8 +10,8 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import {
-  agroRoutes,
-  agroEmpleadoRoutes,
+  agroNavItems,
+  agroEmpleadoNavItems,
 } from "@/helpers/data/sidebar/siderbarAgro";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
@@ -53,11 +53,7 @@ const SidebarAgro = ({ handleLogout, isPropietario }: SidebarAgroProps) => {
     useGetPermisosByRol(rolId);
 
   const rutasBase = useMemo(() => {
-    if (isPropietario) {
-      return agroRoutes;
-    } else {
-      return agroEmpleadoRoutes;
-    }
+    return isPropietario ? agroNavItems : agroEmpleadoNavItems;
   }, [isPropietario]);
 
   const rutasPermitidas = useMemo(() => {
@@ -84,15 +80,21 @@ const SidebarAgro = ({ handleLogout, isPropietario }: SidebarAgroProps) => {
   }, [permisosAgro, permisosEmpleados, isPropietario]);
 
   const rutasVisibles = useMemo(() => {
-    if (!isPropietario) {
-      return rutasBase.filter(
-        (ruta) =>
-          rutasPermitidas.includes(ruta.href) ||
-          ruta.href === "/agro-empleados/agro-servicios",
-      );
-    }
+    return rutasBase
+      .map((categoria) => ({
+        ...categoria,
+        items: categoria.items.filter((ruta) => {
+          if (!isPropietario) {
+            return (
+              rutasPermitidas.includes(ruta.href) ||
+              ruta.href === "/agro-empleados/agro-servicios"
+            );
+          }
 
-    return rutasBase.filter((ruta) => rutasPermitidas.includes(ruta.href));
+          return rutasPermitidas.includes(ruta.href);
+        }),
+      }))
+      .filter((categoria) => categoria.items.length > 0);
   }, [rutasBase, rutasPermitidas, isPropietario]);
 
   const isActive = (href: string) => {
@@ -205,38 +207,46 @@ const SidebarAgro = ({ handleLogout, isPropietario }: SidebarAgroProps) => {
         </div>
 
         <div className="flex-1 overflow-y-auto py-4 px-3">
-          <nav className="space-y-1">
+          <nav className="space-y-6">
             {rutasVisibles.length > 0 ? (
-              rutasVisibles.map((item) => {
-                const Icon = item.icon;
-                const active = isActive(item.href);
+              rutasVisibles.map((categoria) => (
+                <div key={categoria.category}>
+                  <h3 className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                    {categoria.category}
+                  </h3>
 
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`group flex items-center px-3 py-2 text-sm font-medium rounded-md ${
-                      active
-                        ? "bg-green-50 text-green-700"
-                        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-                    }`}
-                  >
-                    <Icon
-                      className={`mr-3 h-5 w-5 flex-shrink-0 ${
-                        active
-                          ? "text-green-600"
-                          : "text-gray-400 group-hover:text-gray-500"
-                      }`}
-                    />
-                    {item.name}
-                  </Link>
-                );
-              })
+                  <div className="space-y-1">
+                    {categoria.items.map((item) => {
+                      const Icon = item.icon;
+                      const active = isActive(item.href);
+
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className={`group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                            active
+                              ? "bg-green-50 text-green-700"
+                              : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                          }`}
+                        >
+                          <Icon
+                            className={`mr-3 h-5 w-5 flex-shrink-0 ${
+                              active
+                                ? "text-green-600"
+                                : "text-gray-400 group-hover:text-gray-500"
+                            }`}
+                          />
+                          {item.name}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))
             ) : (
               <div className="text-center text-gray-500 py-4">
-                {isPropietario
-                  ? "No tienes permisos para ver ninguna ruta"
-                  : "No tienes permisos para ver ninguna ruta"}
+                No tienes permisos para ver ninguna ruta
               </div>
             )}
           </nav>

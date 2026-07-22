@@ -7,8 +7,8 @@ import { Separator } from "../ui/separator";
 import { LogOut, Sprout } from "lucide-react";
 import { usePathname } from "next/navigation";
 import {
-  agroRoutes,
-  agroEmpleadoRoutes,
+  agroNavItems,
+  agroEmpleadoNavItems,
 } from "@/helpers/data/sidebar/siderbarAgro";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useAuthEmpleadoStore } from "@/providers/store/useAuthEmpleados";
@@ -42,11 +42,7 @@ const ShetContentCompAgro = ({
     useGetPermisosByRol(rolId);
 
   const rutasBase = useMemo(() => {
-    if (isPropietario) {
-      return agroRoutes;
-    } else {
-      return agroEmpleadoRoutes;
-    }
+    return isPropietario ? agroNavItems : agroEmpleadoNavItems;
   }, [isPropietario]);
 
   const rutasPermitidas = useMemo(() => {
@@ -85,7 +81,14 @@ const ShetContentCompAgro = ({
   }, [permisosAgro, permisosEmpleados, isPropietario]);
 
   const rutasVisibles = useMemo(() => {
-    return rutasBase.filter((ruta) => rutasPermitidas.includes(ruta.href));
+    return rutasBase
+      .map((categoria) => ({
+        ...categoria,
+        items: categoria.items.filter((ruta) =>
+          rutasPermitidas.includes(ruta.href),
+        ),
+      }))
+      .filter((categoria) => categoria.items.length > 0);
   }, [rutasBase, rutasPermitidas]);
 
   const isActive = (href: string) => {
@@ -158,36 +161,42 @@ const ShetContentCompAgro = ({
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
               </div>
             ) : (
-              <nav className="space-y-1">
+              <nav className="space-y-5">
                 {rutasVisibles.length > 0 ? (
-                  rutasVisibles.map((item) => {
-                    const Icon = item.icon;
-                    const active = isActive(item.href);
+                  rutasVisibles.map((categoria) => (
+                    <div key={categoria.category}>
+                      <h3 className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                        {categoria.category}
+                      </h3>
 
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setMobileSidebarOpen(false)}
-                        className={`
-                          flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors
-                          ${
-                            active
-                              ? "bg-green-50 text-green-700"
-                              : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                          }
-                        `}
-                      >
-                        <Icon
-                          className={`
-                            mr-2 h-4 w-4 flex-shrink-0
-                            ${active ? "text-green-600" : "text-gray-400"}
-                          `}
-                        />
-                        {item.name}
-                      </Link>
-                    );
-                  })
+                      <div className="space-y-1">
+                        {categoria.items.map((item) => {
+                          const Icon = item.icon;
+                          const active = isActive(item.href);
+
+                          return (
+                            <Link
+                              key={item.href}
+                              href={item.href}
+                              onClick={() => setMobileSidebarOpen(false)}
+                              className={`flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                                active
+                                  ? "bg-green-50 text-green-700"
+                                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                              }`}
+                            >
+                              <Icon
+                                className={`mr-2 h-4 w-4 flex-shrink-0 ${
+                                  active ? "text-green-600" : "text-gray-400"
+                                }`}
+                              />
+                              {item.name}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))
                 ) : (
                   <div className="text-center text-gray-500 py-8">
                     <p>No tienes permisos para ver rutas</p>
