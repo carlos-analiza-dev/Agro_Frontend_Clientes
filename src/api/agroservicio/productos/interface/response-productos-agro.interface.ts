@@ -15,6 +15,7 @@ export interface AgroProducto {
   isActive: boolean;
   disponible: boolean;
   codigo_barra: string;
+  codigo: string;
   atributos: string;
   precio: string;
   costo: string;

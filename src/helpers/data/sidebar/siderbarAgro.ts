@@ -12,6 +12,7 @@ import {
   Bell,
   Building2,
   House,
+  ShoppingCart,
 } from "lucide-react";
 
 export const agroNavItems = [
@@ -42,6 +43,16 @@ export const agroNavItems = [
         name: "Personal",
         href: "/agro-propietario/agro-empleados",
         icon: UserCog,
+      },
+    ],
+  },
+  {
+    category: "Compras",
+    items: [
+      {
+        name: "Compras de Productos",
+        href: "/agro-propietario/agro-compras-productos",
+        icon: ShoppingCart,
       },
     ],
   },
@@ -140,6 +151,16 @@ export const agroEmpleadoNavItems = [
         name: "Personal",
         href: "/agro-empleados/agro-empleados",
         icon: UserCog,
+      },
+    ],
+  },
+  {
+    category: "Compras",
+    items: [
+      {
+        name: "Compras de Productos",
+        href: "/agro-empleados/agro-compras-productos",
+        icon: ShoppingCart,
       },
     ],
   },
