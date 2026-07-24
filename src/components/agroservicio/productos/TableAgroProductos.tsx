@@ -17,7 +17,7 @@ import {
   Layers3,
   BadgePercent,
 } from "lucide-react";
-import { useState } from "react";
+import { use, useState } from "react";
 import { ProductImageUpload } from "./ProductImageUpload";
 import { ProductImagesDialog } from "./ProductImagesDialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -25,6 +25,7 @@ import Modal from "@/components/generics/Modal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TableEscalasProducto from "../escalas/TableEscalasProducto";
 import TableDescuentoProductos from "../descuentos-productos/TableDescuentoProductos";
+import LotesByProducto from "./LotesByProducto";
 
 interface Props {
   filteredProducts: AgroProducto[];
@@ -33,6 +34,7 @@ interface Props {
   handleEditProducto: (producto: AgroProducto) => void;
   refetch?: () => void;
   propietarioId: string;
+  moneda: string;
 }
 
 const TableAgroProductos = ({
@@ -42,7 +44,9 @@ const TableAgroProductos = ({
   handleEditProducto,
   refetch,
   propietarioId,
+  moneda,
 }: Props) => {
+  const [openModalLotes, setOpenModalLotes] = useState(false);
   const [imageUploadOpen, setImageUploadOpen] = useState(false);
   const [imagesDialogOpen, setImagesDialogOpen] = useState(false);
   const [selectedProducto, setSelectedProducto] = useState<AgroProducto | null>(
@@ -50,6 +54,7 @@ const TableAgroProductos = ({
   );
   const [openModalEcalasDescuentos, setOpenModalEcalasDescuentos] =
     useState(false);
+  const [productoId, setProductoId] = useState("");
 
   const handleViewImages = (producto: AgroProducto) => {
     setSelectedProducto(producto);
@@ -71,6 +76,11 @@ const TableAgroProductos = ({
     setImagesDialogOpen(false);
   };
 
+  const handleViewLotes = (productoId: string) => {
+    setOpenModalLotes(true);
+    setProductoId(productoId);
+  };
+
   return (
     <div>
       <Table>
@@ -83,6 +93,7 @@ const TableAgroProductos = ({
             <TableHead>Proveedor</TableHead>
             <TableHead className="text-right">Precio</TableHead>
             <TableHead className="text-center">Disponible</TableHead>
+            <TableHead className="text-center">Lotes</TableHead>
             <TableHead className="text-right">Acciones</TableHead>
           </TableRow>
         </TableHeader>
@@ -158,6 +169,7 @@ const TableAgroProductos = ({
                   {producto.pais?.simbolo_moneda || "L"}{" "}
                   {parseFloat(producto.precio).toFixed(2)}
                 </TableCell>
+
                 <TableCell className="text-center">
                   <Badge
                     variant={producto.disponible ? "default" : "destructive"}
@@ -169,6 +181,14 @@ const TableAgroProductos = ({
                   >
                     {producto.disponible ? "Disponible" : "No disponible"}
                   </Badge>
+                </TableCell>
+                <TableCell className="text-center font-medium">
+                  <Button
+                    onClick={() => handleViewLotes(producto.id)}
+                    variant={"ghost"}
+                  >
+                    Ver Lotes
+                  </Button>
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
@@ -270,6 +290,20 @@ const TableAgroProductos = ({
               />
             </TabsContent>
           </Tabs>
+        </div>
+      </Modal>
+
+      <Modal
+        open={openModalLotes}
+        onOpenChange={setOpenModalLotes}
+        title="Lotes del Producto"
+        description="En esta seccion podras observar los lotes del producto
+              seleccionado"
+        size="4xl"
+        height="auto"
+      >
+        <div className="flex-1">
+          <LotesByProducto productoId={productoId} moneda={moneda} />
         </div>
       </Modal>
     </div>

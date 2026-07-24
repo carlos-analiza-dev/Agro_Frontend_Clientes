@@ -23,6 +23,7 @@ const AgroProductosPage = () => {
   const { cliente } = useAuthStore();
   const propietarioId = cliente?.id ?? "";
   const paisId = cliente?.pais.id ?? "";
+  const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const [openModalProductos, setOpenModalProductos] = useState(false);
   const [selectedProducto, setSelectedProducto] = useState<AgroProducto | null>(
     null,
@@ -132,6 +133,7 @@ const AgroProductosPage = () => {
               clearFilters={clearFilters}
               handleEditProducto={handleEditProducto}
               propietarioId={propietarioId}
+              moneda={moneda}
             />
           </div>
         </CardContent>

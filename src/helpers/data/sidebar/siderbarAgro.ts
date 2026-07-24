@@ -13,6 +13,7 @@ import {
   Building2,
   House,
   ShoppingCart,
+  ShieldEllipsis,
 } from "lucide-react";
 
 export const agroNavItems = [
@@ -23,6 +24,11 @@ export const agroNavItems = [
         name: "Dashboard",
         href: "/agro-propietario/agro-servicios",
         icon: LayoutDashboard,
+      },
+      {
+        name: "Auditoria",
+        href: "/agro-propietario/auditoria",
+        icon: ShieldEllipsis,
       },
     ],
   },

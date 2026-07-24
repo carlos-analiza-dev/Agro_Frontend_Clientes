@@ -1,7 +1,7 @@
 import { Compra } from "@/api/agroservicio/compras_productos/interface/response-compras.interface";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency } from "@/helpers/funciones/formatCurrency";
-import { formatDate } from "@/helpers/funciones/formatDate";
+import { formatDateLocal } from "@/helpers/funciones/formatDateOnly";
 
 interface Props {
   selectedCompra: Compra;
@@ -35,7 +35,7 @@ const InfoCompra = ({ selectedCompra, moneda }: Props) => {
         </p>
         <p>
           <span className="font-medium">Fecha:</span>{" "}
-          {formatDate(selectedCompra.fecha)}
+          {formatDateLocal(selectedCompra.fecha)}
         </p>
         <div className="flex items-center">
           <span className="font-medium">Tipo de Pago:</span>

@@ -68,7 +68,7 @@ const ComprasProductosPage = () => {
         <TitlePage
           Icon={ShoppingCart}
           title="Compras"
-          description="Gestión de compras agropecuarios"
+          description="Gestión de compras agro servicio"
         />
         <ButtonAdd
           title="Agregar Compra"
