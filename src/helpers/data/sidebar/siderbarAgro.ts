@@ -14,6 +14,7 @@ import {
   House,
   ShoppingCart,
   ShieldEllipsis,
+  ArrowLeftRight,
 } from "lucide-react";
 
 export const agroNavItems = [
@@ -63,6 +64,21 @@ export const agroNavItems = [
     ],
   },
   {
+    category: "Lotes",
+    items: [
+      {
+        name: "Lotes",
+        href: "/agro-propietario/agro-lotes",
+        icon: Package,
+      },
+      {
+        name: "Traslados",
+        href: "/agro-propietario/agro-traslados",
+        icon: ArrowLeftRight,
+      },
+    ],
+  },
+  {
     category: "Inventario",
     items: [
       {
@@ -76,8 +92,8 @@ export const agroNavItems = [
         icon: Truck,
       },
       {
-        name: "Inventario",
-        href: "/agro-inventario",
+        name: "Existencia Productos",
+        href: "/agro-propietario/agro-existencia",
         icon: Warehouse,
       },
     ],
@@ -171,6 +187,21 @@ export const agroEmpleadoNavItems = [
     ],
   },
   {
+    category: "Lotes",
+    items: [
+      {
+        name: "Lotes",
+        href: "/agro-empleados/agro-lotes",
+        icon: Package,
+      },
+      {
+        name: "Traslados",
+        href: "/agro-empleados/agro-traslados",
+        icon: ArrowLeftRight,
+      },
+    ],
+  },
+  {
     category: "Inventario",
     items: [
       {
@@ -184,8 +215,8 @@ export const agroEmpleadoNavItems = [
         icon: Truck,
       },
       {
-        name: "Inventario",
-        href: "/agro-inventario",
+        name: "Existencia Productos",
+        href: "/agro-empleados/agro-existencia",
         icon: Warehouse,
       },
     ],

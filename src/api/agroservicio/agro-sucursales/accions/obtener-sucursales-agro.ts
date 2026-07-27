@@ -4,6 +4,7 @@ import {
   ResponseSucursalesAgro,
   SucursaleAgro,
 } from "../interface/response-sucursales-agro.interface";
+import { empleadosAPI } from "@/helpers/api/empleadosAPI";
 
 export const obtenerSucursalesAgro = async (filtros?: PaginationInterface) => {
   const url = `${process.env.NEXT_PUBLIC_API_URL}/agro-sucursales`;
@@ -23,10 +24,20 @@ export const obtenerTodasSucursalesAgro = async () => {
   return response.data;
 };
 
-export const obtenerSucursalByEmpleado = async (empleadoId: string) => {
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/agro-sucursales/empleado/${empleadoId}`;
+export const obtenerTodasSucursalesAgroByPropietario = async (
+  propietarioId: string,
+) => {
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/agro-sucursales/sucursales/empleado/${propietarioId}`;
 
-  const response = await veterinariaAPI.get<SucursaleAgro>(url);
+  const response = await veterinariaAPI.get<SucursaleAgro[]>(url);
+
+  return response.data;
+};
+
+export const obtenerSucursalByEmpleado = async () => {
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/agro-sucursales/empleado`;
+
+  const response = await empleadosAPI.get<SucursaleAgro>(url);
 
   return response.data;
 };

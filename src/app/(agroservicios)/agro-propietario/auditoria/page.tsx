@@ -4,7 +4,13 @@ import useGetAuditoriaProductos from "@/hooks/agroservicios/auditoria/useGetAudi
 import useGetAuditoriaCompras from "@/hooks/agroservicios/auditoria/useGetAuditoriaCompras";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Truck, ShieldEllipsis, ShoppingBag, ShoppingCart } from "lucide-react";
+import {
+  Truck,
+  ShieldEllipsis,
+  ShoppingBag,
+  ShoppingCart,
+  ArrowRightLeft,
+} from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import TitlePage from "@/components/generics/TitlePage";
@@ -12,6 +18,8 @@ import { useAuthStore } from "@/providers/store/useAuthStore";
 import { AuditoriaProductosContent } from "@/components/agroservicio/auditorias/AuditoriaProductosContent";
 import { AuditoriaComprasContent } from "@/components/agroservicio/auditorias/AuditoriaComprasContent";
 import { AuditoriaProveedoresContent } from "@/components/agroservicio/auditorias/AuditoriaProveedoresContent";
+import { AuditoriaMovimientosLoteContent } from "@/components/agroservicio/auditorias/AuditoriaMovimientosLoteContent";
+import useGetAuditoriaMovimientosLote from "@/hooks/agroservicios/auditoria/useGetAuditoriaMovimientosLote";
 
 const AuditoriaPage = () => {
   const { cliente } = useAuthStore();
@@ -19,7 +27,15 @@ const AuditoriaPage = () => {
   const [currentPageProveedores, setCurrentPageProveedores] = useState(1);
   const [currentPageProductos, setCurrentPageProductos] = useState(1);
   const [currentPageCompras, setCurrentPageCompras] = useState(1);
+  const [currentPageMovimientosLote, setCurrentPageMovimientosLote] =
+    useState(1);
   const limit = 10;
+
+  const { data: audit_movimientos_lote, isLoading: isLoadingMovimientosLote } =
+    useGetAuditoriaMovimientosLote({
+      limit: limit,
+      offset: (currentPageMovimientosLote - 1) * limit,
+    });
 
   const { data: audit_proveedores, isLoading: isLoadingProveedores } =
     useGetAuditoriaProveedores({
@@ -48,12 +64,15 @@ const AuditoriaPage = () => {
   const totalPagesCompras = audit_compras
     ? Math.ceil(audit_compras.total / limit)
     : 0;
+  const totalPagesMovimientosLote = audit_movimientos_lote
+    ? Math.ceil(audit_movimientos_lote.total / limit)
+    : 0;
 
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <TitlePage Icon={ShieldEllipsis} title="Auditorías" />
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Badge variant="outline" className="flex items-center gap-1">
             <Truck className="h-3 w-3" />
             {audit_proveedores?.total || 0}
@@ -66,13 +85,17 @@ const AuditoriaPage = () => {
             <ShoppingCart className="h-3 w-3" />
             {audit_compras?.total || 0}
           </Badge>
+          <Badge variant="outline" className="flex items-center gap-1">
+            <ArrowRightLeft className="h-3 w-3" />
+            {audit_movimientos_lote?.total || 0}
+          </Badge>
         </div>
       </div>
 
       <Separator />
 
       <Tabs defaultValue="proveedores" className="w-full">
-        <TabsList className="grid w-full max-w-2xl grid-cols-3">
+        <TabsList className="grid w-full max-w-4xl grid-cols-4">
           <TabsTrigger value="proveedores" className="flex items-center gap-2">
             <Truck className="h-4 w-4" />
             Proveedores
@@ -84,6 +107,13 @@ const AuditoriaPage = () => {
           <TabsTrigger value="compras" className="flex items-center gap-2">
             <ShoppingCart className="h-4 w-4" />
             Compras
+          </TabsTrigger>
+          <TabsTrigger
+            value="movimientos-lote"
+            className="flex items-center gap-2"
+          >
+            <ArrowRightLeft className="h-4 w-4" />
+            Movimientos Lote
           </TabsTrigger>
         </TabsList>
 
@@ -115,6 +145,16 @@ const AuditoriaPage = () => {
             currentPageCompras={currentPageCompras}
             setCurrentPageCompras={setCurrentPageCompras}
             moneda={moneda}
+          />
+        </TabsContent>
+
+        <TabsContent value="movimientos-lote" className="mt-6">
+          <AuditoriaMovimientosLoteContent
+            isLoadingMovimientosLote={isLoadingMovimientosLote}
+            audit_movimientos_lote={audit_movimientos_lote}
+            totalPagesMovimientosLote={totalPagesMovimientosLote}
+            currentPageMovimientosLote={currentPageMovimientosLote}
+            setCurrentPageMovimientosLote={setCurrentPageMovimientosLote}
           />
         </TabsContent>
       </Tabs>

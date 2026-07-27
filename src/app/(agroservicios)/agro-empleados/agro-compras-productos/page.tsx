@@ -32,9 +32,7 @@ const ComprasProductosPage = () => {
   const [proveedor, setProveedor] = useState("");
   const [tipoPago, setTipoPago] = useState("");
   const { data: proveedores } = useGetAllProveedores(propietarioId);
-  const { data: sucursalEmpleado } = useGetSucursalByEmpleado(
-    empleado?.id ?? "",
-  );
+  const { data: sucursalEmpleado } = useGetSucursalByEmpleado();
 
   const sucursalId = sucursalEmpleado?.id ?? "";
 

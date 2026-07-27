@@ -8,7 +8,7 @@ import {
   User,
 } from "lucide-react";
 import { getAccionBadge } from "./getAccionBadge";
-import { formatDateLocal } from "@/helpers/funciones/formatDateOnly";
+import { formatDateTimeLocal } from "@/helpers/funciones/formatDateOnly";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency } from "@/helpers/funciones/formatCurrency";
 import Paginacion from "@/components/generics/Paginacion";
@@ -55,7 +55,7 @@ export const AuditoriaComprasContent = ({
                 {getAccionBadge(audit.accion)}
                 <span className="text-sm text-muted-foreground flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
-                  {formatDateLocal(audit.fecha)}
+                  {formatDateTimeLocal(audit.fecha)}
                 </span>
               </div>
               <span className="text-xs text-muted-foreground">
@@ -86,9 +86,6 @@ export const AuditoriaComprasContent = ({
                     <Building className="h-3 w-3 text-muted-foreground" />
                     <span>{audit.compra.proveedor.nombre_legal}</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Fecha: {formatDateLocal(audit.compra.fecha)}
-                  </p>
                 </div>
               </div>
 
