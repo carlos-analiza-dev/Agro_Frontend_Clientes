@@ -36,6 +36,7 @@ import {
   editarAgroProductoEmpleados,
 } from "@/api/agroservicio/productos/accions/editar-producto";
 import { AgroProducto } from "@/api/agroservicio/productos/interface/response-productos-agro.interface";
+import useGetImpuestosByAgroservicio from "@/hooks/agroservicios/impuestos/useGetImpuestosByAgroservicio";
 
 interface Props {
   propietarioId: string;
@@ -72,7 +73,8 @@ const FormAgroProductos = ({
     offset: 0,
     is_market: false,
   });
-  const { data: impuestos } = useGetTaxesPais(paisId);
+
+  const { data: impuestos } = useGetImpuestosByAgroservicio(propietarioId);
 
   const { data: subcategorias, refetch: refetchSubcategorias } =
     useGetSubCategoriaByCat(categoriaSeleccionada);

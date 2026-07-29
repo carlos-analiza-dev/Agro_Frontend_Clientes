@@ -11,6 +11,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { LoginInterface } from "@/interfaces/auth/login.interface";
 import { isAxiosError } from "axios";
 import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
+import { TipoCliente } from "@/interfaces/enums/clientes.enums";
 
 const LoginForm = () => {
   const router = useRouter();
@@ -61,7 +62,10 @@ const LoginForm = () => {
         return;
       }
 
-      if (cliente.paqueteActivo?.paquete.tipo === TipoPaquete.AGRO_GESTION) {
+      if (
+        cliente.paqueteActivo?.paquete.tipo === TipoPaquete.AGRO_GESTION &&
+        cliente.rol === TipoCliente.PROPIETARIO
+      ) {
         router.replace("/select-destination");
       } else {
         router.replace("/panel");

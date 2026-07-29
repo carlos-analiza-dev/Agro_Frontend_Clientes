@@ -184,7 +184,8 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
   const clienteId = cliente?.id ?? "";
 
   const tieneAgroGestion =
-    cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_GESTION;
+    cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_GESTION &&
+    cliente.rol === TipoCliente.PROPIETARIO;
 
   const { data: permisosPaquete } = useGetPermisosByClientePaquete(paqueteId);
   const { data: permisosCliente } = useGetPermisosByCliente(clienteId);

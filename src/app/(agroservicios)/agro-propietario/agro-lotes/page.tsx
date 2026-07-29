@@ -30,6 +30,7 @@ import CardDetails from "@/components/agroservicio/lotes-movimientos/CardDetails
 import TableLotes from "@/components/agroservicio/lotes-movimientos/TableLotes";
 import Modal from "@/components/generics/Modal";
 import FormTransferirProducto from "@/components/agroservicio/lotes-movimientos/FormTransferirProducto";
+import TitlePage from "@/components/generics/TitlePage";
 
 const LotesPage = () => {
   const { cliente } = useAuthStore();
@@ -104,15 +105,12 @@ const LotesPage = () => {
 
   return (
     <div className="container mx-auto p-4 sm:p-6 space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-            Gestión de Lotes
-          </h1>
-          <p className="text-gray-600 mt-1 text-sm sm:text-base">
-            Administra el inventario de productos por sucursal
-          </p>
-        </div>
+      <div className="md:flex justify-between items-center gap-4">
+        <TitlePage
+          Icon={Package}
+          title=" Gestión de Lotes"
+          description=" Administra el inventario de productos por sucursal"
+        />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

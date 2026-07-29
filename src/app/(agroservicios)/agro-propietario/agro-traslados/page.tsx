@@ -20,6 +20,7 @@ import {
   Package,
   Building,
   AlertCircle,
+  ArrowLeftRight,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Paginacion from "@/components/generics/Paginacion";
@@ -27,6 +28,7 @@ import useGetMovimientosInventario from "@/hooks/agroservicios/movimientos-inven
 import useGetAllSucursales from "@/hooks/agroservicios/sucursales/useGetAllSucursales";
 import CardDetails from "@/components/agroservicio/lotes-movimientos/CardDetails";
 import TableTraslados from "@/components/agroservicio/traslados/TableTraslados";
+import TitlePage from "@/components/generics/TitlePage";
 
 const LotesTrasladosPage = () => {
   const { cliente } = useAuthStore();
@@ -109,15 +111,12 @@ const LotesTrasladosPage = () => {
 
   return (
     <div className="container mx-auto p-4 sm:p-6 space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-            Traslados de Inventario
-          </h1>
-          <p className="text-gray-600 mt-1 text-sm sm:text-base">
-            Historial de transferencias de productos entre sucursales
-          </p>
-        </div>
+      <div className="md:flex justify-between items-center gap-4">
+        <TitlePage
+          Icon={ArrowLeftRight}
+          title="Traslados de Inventario"
+          description="Historial de transferencias de productos entre sucursales"
+        />
       </div>
 
       <form onSubmit={handleSearch} className="flex gap-2">

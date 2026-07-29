@@ -15,6 +15,7 @@ import {
   ShoppingCart,
   ShieldEllipsis,
   ArrowLeftRight,
+  Receipt,
 } from "lucide-react";
 
 export const agroNavItems = [
@@ -64,6 +65,21 @@ export const agroNavItems = [
     ],
   },
   {
+    category: "Facturación",
+    items: [
+      {
+        name: "Facturas",
+        href: "/agro-propietario/agro-facturas",
+        icon: FileText,
+      },
+      {
+        name: "Rangos de Facturación",
+        href: "/agro-propietario/agro-rangos-facturas",
+        icon: Receipt,
+      },
+    ],
+  },
+  {
     category: "Lotes",
     items: [
       {
@@ -96,6 +112,11 @@ export const agroNavItems = [
         href: "/agro-propietario/agro-existencia",
         icon: Warehouse,
       },
+      {
+        name: "Impuestos",
+        href: "/agro-propietario/agro-impuestos",
+        icon: Receipt,
+      },
     ],
   },
   {
@@ -110,11 +131,6 @@ export const agroNavItems = [
         name: "Clientes",
         href: "/agro-clientes",
         icon: Users,
-      },
-      {
-        name: "Facturación",
-        href: "/agro-facturas",
-        icon: FileText,
       },
     ],
   },
@@ -187,6 +203,21 @@ export const agroEmpleadoNavItems = [
     ],
   },
   {
+    category: "Facturación",
+    items: [
+      {
+        name: "Facturas",
+        href: "/agro-empleados/agro-facturas",
+        icon: FileText,
+      },
+      {
+        name: "Rangos de Facturación",
+        href: "/agro-empleados/agro-rangos-facturas",
+        icon: Receipt,
+      },
+    ],
+  },
+  {
     category: "Lotes",
     items: [
       {
@@ -219,6 +250,11 @@ export const agroEmpleadoNavItems = [
         href: "/agro-empleados/agro-existencia",
         icon: Warehouse,
       },
+      {
+        name: "Impuestos",
+        href: "/agro-empleados/agro-impuestos",
+        icon: Receipt,
+      },
     ],
   },
   {
@@ -233,11 +269,6 @@ export const agroEmpleadoNavItems = [
         name: "Clientes",
         href: "/agro-clientes",
         icon: Users,
-      },
-      {
-        name: "Facturación",
-        href: "/agro-facturas",
-        icon: FileText,
       },
     ],
   },
