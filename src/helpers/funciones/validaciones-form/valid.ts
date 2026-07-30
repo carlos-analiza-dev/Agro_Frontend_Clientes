@@ -20,3 +20,15 @@ export const validateEmail = (email: string) => {
     /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
   return re.test(email) || "El correo electrónico no tiene formato adecuado";
 };
+
+export const validatePhone = (value: string) => {
+  const cleanPhone = value.replace(/\s/g, "");
+
+  const phoneRegex = /^\d{4}-\d{4}$/;
+
+  if (!phoneRegex.test(cleanPhone)) {
+    return "El teléfono debe tener el formato xxxx-xxxx (ej: 9876-5432)";
+  }
+
+  return true;
+};

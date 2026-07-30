@@ -10,7 +10,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ID_REGEX } from "@/helpers/data/formularios/identificacion";
 import { sexos } from "@/helpers/data/sexos";
+import {
+  validateEmail,
+  validateIdentification,
+} from "@/helpers/funciones/validaciones-form/valid";
 import useGetDeptosActivesByPais from "@/hooks/departamentos/useGetDeptosActivesByPais";
 import useGetMunicipiosActivosByDepto from "@/hooks/municipios/useGetMunicipiosActivosByDepto";
 import useGetPaisesActivos from "@/hooks/paises/useGetPaisesActivos";
@@ -18,10 +23,10 @@ import usePaisesById from "@/hooks/paises/usePaisesById";
 
 import { useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
-import { Eye, EyeClosed, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
@@ -54,29 +59,6 @@ const FormRegister = () => {
     },
   });
 
-  const ID_REGEX = {
-    HN: {
-      regex: /^\d{4}-\d{4}-\d{5}$/,
-      message: "Formato inválido. Use: xxxx-xxxx-xxxxx",
-      example: "Ejemplo: 0801-1999-01234",
-    },
-    SV: {
-      regex: /^\d{8}-\d{1}$/,
-      message: "Formato inválido. Use: xxxxxxxx-x",
-      example: "Ejemplo: 04210000-5",
-    },
-    GT: {
-      regex: /^\d{4}-\d{5}-\d{4}$/,
-      message: "Formato inválido. Use: xxxx-xxxxx-xxxx",
-      example: "Ejemplo: 1234-56789-0123",
-    },
-    PASSPORT: {
-      regex: /^[A-Za-z0-9]{6,20}$/,
-      message: "Formato inválido. Use 6-20 caracteres alfanuméricos",
-      example: "Ejemplo: AB123456",
-    },
-  };
-
   const { data: paises } = useGetPaisesActivos();
 
   const { data: departamentos } = useGetDeptosActivesByPais(paisId);
@@ -91,21 +73,6 @@ const FormRegister = () => {
       setPrefijoNumber(pais.data.code_phone);
     }
   }, [pais]);
-
-  const validateIdentification = (value: string, codigoPais: string) => {
-    if (!value) return "La identificación es requerida";
-
-    switch (codigoPais) {
-      case "HN":
-        return ID_REGEX.HN.regex.test(value) || ID_REGEX.HN.message;
-      case "SV":
-        return ID_REGEX.SV.regex.test(value) || ID_REGEX.SV.message;
-      case "GT":
-        return ID_REGEX.GT.regex.test(value) || ID_REGEX.GT.message;
-      default:
-        return true;
-    }
-  };
 
   const mutation = useMutation({
     mutationFn: CreateCliente,
@@ -150,12 +117,6 @@ const FormRegister = () => {
       }
     },
   });
-
-  const validateEmail = (email: string) => {
-    const re =
-      /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
-    return re.test(email) || "El correo electrónico no tiene formato adecuado";
-  };
 
   const validatePassword = (password: string) => {
     const re = /^(?=\w*\d)(?=\w*[A-Z])(?=\w*[a-z])\S{8,16}$/;

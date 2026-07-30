@@ -16,6 +16,7 @@ import {
   ShieldEllipsis,
   ArrowLeftRight,
   Receipt,
+  BadgePercent,
 } from "lucide-react";
 
 export const agroNavItems = [
@@ -51,6 +52,11 @@ export const agroNavItems = [
         name: "Personal",
         href: "/agro-propietario/agro-empleados",
         icon: UserCog,
+      },
+      {
+        name: "Clientes",
+        href: "/agro-propietario/agro-clientes",
+        icon: Users,
       },
     ],
   },
@@ -117,6 +123,11 @@ export const agroNavItems = [
         href: "/agro-propietario/agro-impuestos",
         icon: Receipt,
       },
+      {
+        name: "Descuentos",
+        href: "/agro-propietario/agro-descuentos",
+        icon: BadgePercent,
+      },
     ],
   },
   {
@@ -126,11 +137,6 @@ export const agroNavItems = [
         name: "Pedidos",
         href: "/agro-pedidos",
         icon: Package,
-      },
-      {
-        name: "Clientes",
-        href: "/agro-clientes",
-        icon: Users,
       },
     ],
   },
@@ -168,27 +174,17 @@ export const agroNavItems = [
 
 export const agroEmpleadoNavItems = [
   {
-    category: "Panel",
+    category: "Agroservicio",
     items: [
       {
         name: "Dashboard",
         href: "/agro-empleados/agro-servicios",
         icon: LayoutDashboard,
       },
-    ],
-  },
-  {
-    category: "Agroservicio",
-    items: [
       {
-        name: "Mi Agroservicio",
-        href: "/agro-empleados/agro-perfil",
-        icon: Building2,
-      },
-      {
-        name: "Personal",
-        href: "/agro-empleados/agro-empleados",
-        icon: UserCog,
+        name: "Clientes",
+        href: "/agro-empleados/agro-clientes",
+        icon: Users,
       },
     ],
   },
@@ -254,6 +250,11 @@ export const agroEmpleadoNavItems = [
         name: "Impuestos",
         href: "/agro-empleados/agro-impuestos",
         icon: Receipt,
+      },
+      {
+        name: "Descuentos",
+        href: "/agro-empleados/agro-descuentos",
+        icon: BadgePercent,
       },
     ],
   },
