@@ -13,5 +13,6 @@ export const obtenerExistenciaProductos = async (
   >(url, {
     params: filters,
   });
+
   return response.data;
 };
