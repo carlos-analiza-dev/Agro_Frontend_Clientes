@@ -6,36 +6,43 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import useGetAgroFacturas from "@/hooks/agroservicios/facturacion/useGetAgroFacturas";
-import useGetAllSucursalesByPropietario from "@/hooks/agroservicios/sucursales/useGetAllSucursalesByPropietario";
-import { useAuthStore } from "@/providers/store/useAuthStore";
-import { Building, Calendar, FileText, Filter, X } from "lucide-react";
+import { Calendar, FileText, Filter, X } from "lucide-react";
 import { useState, useMemo } from "react";
 import Paginacion from "@/components/generics/Paginacion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import TableFacturas from "@/components/agroservicio/facturacion/TableFacturas";
 import { MessageError } from "@/components/generics/MessageError";
+import Modal from "@/components/generics/Modal";
+import FormCreateFactura from "@/components/agroservicio/facturacion/FormCreateFactura";
+import { AgroFactura } from "@/api/agroservicio/facturacion/interface/response-facturas-agro.interface";
+import FormEditFactura from "@/components/agroservicio/facturacion/FormEditFactura";
+import { useAuthEmpleadoStore } from "@/providers/store/useAuthEmpleados";
+import useGetSucursalByEmpleado from "@/hooks/agroservicios/sucursales/useGetSucursalByEmpleado";
 
 const FacturasAgroPage = () => {
-  const { cliente } = useAuthStore();
-  const propietarioId = cliente?.id ?? "";
-  const moneda = cliente?.pais?.simbolo_moneda ?? "L";
+  const { empleado } = useAuthEmpleadoStore();
+  const propietarioId = empleado?.agroservicio.propietario.id ?? "";
+  const [selectedFactura, setSelectedFactura] = useState<AgroFactura | null>(
+    null,
+  );
+  const moneda = empleado?.pais?.simbolo_moneda ?? "L";
+  const [isOpenCreate, setIsOpenCreate] = useState(false);
+  const [isOpenEdit, setIsOpenEdit] = useState(false);
   const [offset, setOffset] = useState(0);
-  const [sucursalSeleccionada, setSucursalSeleccionada] = useState<string>("");
   const [fechaInicio, setFechaInicio] = useState<string>("");
   const [fechaFin, setFechaFin] = useState<string>("");
   const limit = 10;
 
-  const { data: sucursales, isLoading: isLoadingSucursales } =
-    useGetAllSucursalesByPropietario(propietarioId);
+  const { data: sucursalEmpleado, isLoading: isLoadingSucursalEmpleado } =
+    useGetSucursalByEmpleado();
+  const sucursalId = sucursalEmpleado?.id ?? "";
+
+  const handleEditFactura = (factura: AgroFactura) => {
+    setSelectedFactura(factura);
+    setIsOpenEdit(true);
+  };
 
   const params = useMemo(() => {
     const baseParams = {
@@ -45,8 +52,8 @@ const FacturasAgroPage = () => {
 
     const filters: any = { ...baseParams };
 
-    if (sucursalSeleccionada && sucursalSeleccionada.trim() !== "") {
-      filters.sucursal = sucursalSeleccionada;
+    if (sucursalId.trim() !== "") {
+      filters.sucursal = sucursalId;
     }
 
     if (fechaInicio && fechaInicio.trim() !== "") {
@@ -58,7 +65,7 @@ const FacturasAgroPage = () => {
     }
 
     return filters;
-  }, [limit, offset, sucursalSeleccionada, fechaInicio, fechaFin]);
+  }, [limit, offset, sucursalId, fechaInicio, fechaFin]);
 
   const {
     data: facturas,
@@ -70,8 +77,8 @@ const FacturasAgroPage = () => {
   const currentPage = Math.floor(offset / limit) + 1;
 
   const hasActiveFilters = useMemo(() => {
-    return sucursalSeleccionada || fechaInicio || fechaFin;
-  }, [sucursalSeleccionada, fechaInicio, fechaFin]);
+    return sucursalId || fechaInicio || fechaFin;
+  }, [sucursalId, fechaInicio, fechaFin]);
 
   const handlePageChange = (page: number) => {
     setOffset((page - 1) * limit);
@@ -81,40 +88,62 @@ const FacturasAgroPage = () => {
   };
 
   const limpiarFiltros = () => {
-    setSucursalSeleccionada("");
     setFechaInicio("");
     setFechaFin("");
     setOffset(0);
   };
 
-  const sucursalesValidas =
-    sucursales?.filter((s) => s.id?.trim() !== "") || [];
-
   const activeFiltersCount = useMemo(() => {
     let count = 0;
-    if (sucursalSeleccionada) count++;
     if (fechaInicio) count++;
     if (fechaFin) count++;
     return count;
-  }, [sucursalSeleccionada, fechaInicio, fechaFin]);
+  }, [sucursalId, fechaInicio, fechaFin]);
+
+  const handleCloseEditModal = () => {
+    setIsOpenEdit(false);
+    setSelectedFactura(null);
+  };
+
+  const handleSuccessCreate = () => {
+    setIsOpenCreate(false);
+    refetch();
+  };
+
+  const handleSuccessEdit = () => {
+    setIsOpenEdit(false);
+    setSelectedFactura(null);
+    refetch();
+  };
+
+  if (isLoadingSucursalEmpleado) {
+    return (
+      <div className="container mx-auto p-4 md:p-6">
+        <Skeleton className="h-12 w-full max-w-md mb-4" />
+        <Skeleton className="h-96 w-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-4 md:p-6 space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <TitlePage Icon={FileText} title="Facturación de Agroservicio" />
+        <TitlePage
+          Icon={FileText}
+          title={`Facturación de - ${sucursalEmpleado?.nombre}`}
+        />
+        <ButtonAdd
+          title="Generar Factura"
+          Icon={FileText}
+          action={() => setIsOpenCreate(true)}
+          className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
+        />
       </div>
 
-      {(sucursalSeleccionada || fechaInicio || fechaFin) && (
+      {(fechaInicio || fechaFin) && (
         <div className="bg-blue-50 p-3 rounded-lg">
           <p className="text-sm text-blue-800">
             Filtros aplicados:{" "}
-            {sucursalSeleccionada && (
-              <span className="font-medium">
-                Sucursal:{" "}
-                {sucursalesValidas.find((s) => s.id === sucursalSeleccionada)
-                  ?.nombre || "Seleccionada"}
-              </span>
-            )}
             {fechaInicio && (
               <span className="ml-2">
                 desde{" "}
@@ -164,36 +193,6 @@ const FacturasAgroPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label
-                htmlFor="sucursal"
-                className="flex items-center gap-2 text-sm font-medium"
-              >
-                <Building className="h-4 w-4 text-gray-500" />
-                Sucursal
-              </Label>
-              <Select
-                value={sucursalSeleccionada || "all"}
-                onValueChange={(value) => {
-                  setSucursalSeleccionada(value === "all" ? "" : value);
-                  setOffset(0);
-                }}
-                disabled={isLoadingSucursales}
-              >
-                <SelectTrigger className="bg-white">
-                  <SelectValue placeholder="Todas las sucursales" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas las sucursales</SelectItem>
-                  {sucursalesValidas.map((sucursal) => (
-                    <SelectItem key={sucursal.id} value={sucursal.id}>
-                      {sucursal.nombre}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label
                 htmlFor="fechaInicio"
                 className="flex items-center gap-2 text-sm font-medium"
               >
@@ -240,22 +239,7 @@ const FacturasAgroPage = () => {
               <span className="text-sm text-gray-500 font-medium">
                 Filtros activos:
               </span>
-              {sucursalSeleccionada && (
-                <Badge variant="secondary" className="flex items-center gap-1">
-                  <Building className="h-3 w-3" />
-                  {sucursalesValidas.find((s) => s.id === sucursalSeleccionada)
-                    ?.nombre || "Seleccionada"}
-                  <button
-                    onClick={() => {
-                      setSucursalSeleccionada("");
-                      setOffset(0);
-                    }}
-                    className="ml-1 hover:text-gray-700"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              )}
+
               {fechaInicio && (
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
@@ -324,9 +308,11 @@ const FacturasAgroPage = () => {
                 <TableFacturas
                   facturas={facturas}
                   onFacturaActualizada={refetch}
-                  isPropietario={true}
+                  isPropietario={false}
                   propietarioId={propietarioId}
                   moneda={moneda}
+                  handleEditFactura={handleEditFactura}
+                  sucursalId={sucursalId}
                 />
               ) : (
                 <MessageError
@@ -380,6 +366,42 @@ const FacturasAgroPage = () => {
           </Card>
         )}
       </div>
+
+      <Modal
+        open={isOpenCreate}
+        onOpenChange={setIsOpenCreate}
+        title="Generación de Factura"
+        description="Aquí puede generar las facturas de ventas realizadas"
+        size="6xl"
+        height="auto"
+      >
+        <FormCreateFactura
+          simbolo={moneda}
+          onSuccess={handleSuccessCreate}
+          propietarioId={propietarioId}
+          sucursal_id={sucursalId}
+        />
+      </Modal>
+
+      <Modal
+        open={isOpenEdit}
+        onOpenChange={setIsOpenEdit}
+        title="Editar datos Factura"
+        description="Aquí puede editar las facturas de ventas realizadas"
+        size="6xl"
+        height="auto"
+      >
+        {selectedFactura && (
+          <FormEditFactura
+            factura={selectedFactura}
+            simbolo={moneda}
+            onSuccess={handleSuccessEdit}
+            onCancel={handleCloseEditModal}
+            propietarioId={propietarioId}
+            sucursal_id={sucursalId}
+          />
+        )}
+      </Modal>
     </div>
   );
 };

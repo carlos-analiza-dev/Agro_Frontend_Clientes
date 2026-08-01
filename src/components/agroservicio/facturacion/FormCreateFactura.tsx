@@ -98,10 +98,6 @@ const FormCreateFactura = ({
   const [productosDisponibles, setProductosDisponibles] = useState<
     AgroProducto[]
   >([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [productoNoVendido, setProductoNoVendido] = useState<
-    AgroProducto | undefined
-  >(undefined);
   const [forceUpdate, setForceUpdate] = useState(0);
   const [descuentos, setDescuentos] = useState(0);
 
@@ -132,6 +128,11 @@ const FormCreateFactura = ({
       sub_total: 0,
       importe_exento: 0,
       importe_exonerado: 0,
+      importe_gravado_15: 0,
+      importe_gravado_18: 0,
+      isv_15: 0,
+      isv_18: 0,
+      descuentos_rebajas: 0,
       cargos_extra: 0,
       descuento_id: "",
     },
@@ -339,16 +340,20 @@ const FormCreateFactura = ({
           Number(descuentoSeleccionado.porcentaje) / 100;
         const descuento_final = subTotal * descuento_calculado;
         setDescuentos(descuento_final);
+
+        setValue("descuentos_rebajas", descuento_final);
       }
     } else {
       setDescuentos(0);
+      setValue("descuentos_rebajas", 0);
     }
-  }, [subTotal, watch("descuento_id"), descuentos_clientes]);
+  }, [subTotal, watch("descuento_id"), descuentos_clientes, setValue]);
 
   const handleDescuentoChange = (value: string) => {
     if (value === "ninguno") {
       setDescuentos(0);
       setValue("descuento_id", "");
+      setValue("descuentos_rebajas", 0);
     } else {
       const descuentoSeleccionado = descuentos_clientes?.find(
         (d: ResponseDescuentosAgroInterface) => d.id === value,
@@ -359,9 +364,11 @@ const FormCreateFactura = ({
         const descuento_final = subTotal * descuento_calculado;
         setDescuentos(descuento_final);
         setValue("descuento_id", descuentoSeleccionado.id);
+        setValue("descuentos_rebajas", descuento_final);
       } else {
         setDescuentos(0);
         setValue("descuento_id", "");
+        setValue("descuentos_rebajas", 0);
       }
     }
   };
@@ -440,7 +447,17 @@ const FormCreateFactura = ({
       return;
     }
 
-    mutation.mutate({ ...data, sucursal_id: sucursal_id });
+    const payload: CrearFacturaAgroInterface = {
+      ...data,
+      sucursal_id: sucursal_id,
+      importe_gravado_15: data.importe_gravado_15 || 0,
+      importe_gravado_18: data.importe_gravado_18 || 0,
+      isv_15: data.isv_15 || 0,
+      isv_18: data.isv_18 || 0,
+      descuentos_rebajas: data.descuentos_rebajas || 0,
+    };
+
+    mutation.mutate(payload);
   };
 
   const eliminarDetalle = (index: number) => {
@@ -467,6 +484,7 @@ const FormCreateFactura = ({
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <input type="hidden" {...register("descuento_id")} />
+        <input type="hidden" {...register("descuentos_rebajas")} />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card>
@@ -634,6 +652,12 @@ const FormCreateFactura = ({
                     )}
                   </SelectContent>
                 </Select>
+                {watch("descuentos_rebajas") > 0 && (
+                  <p className="text-sm text-green-600">
+                    Descuento aplicado: {simbolo}{" "}
+                    {watch("descuentos_rebajas").toFixed(2)}
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>

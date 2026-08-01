@@ -1,3 +1,5 @@
+import { AgroProducto } from "../../productos/interface/response-productos-agro.interface";
+
 export interface ResponseFacturasAgroInterface {
   total: number;
   data: AgroFactura[];
@@ -34,7 +36,7 @@ export interface AgroFactura {
   cliente: Cliente;
   rango_factura: RangoFactura;
   agroservicio: Agroservicio;
-  detalles: Detalle[];
+  detalles: DetalleAgro[];
   descuento: Descuento;
   sucursal: Sucursal;
 }
@@ -70,7 +72,7 @@ export interface Descuento {
   porcentaje: string;
 }
 
-export interface Detalle {
+export interface DetalleAgro {
   id: string;
   id_factura: string;
   id_producto: string;
@@ -79,6 +81,7 @@ export interface Detalle {
   total: string;
   created_at: Date;
   updated_at: Date;
+  producto: AgroProducto;
 }
 
 export interface RangoFactura {

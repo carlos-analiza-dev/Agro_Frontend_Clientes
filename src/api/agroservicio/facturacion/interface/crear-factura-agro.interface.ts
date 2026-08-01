@@ -9,6 +9,7 @@ export interface CrearFacturaAgroInterface {
   importe_exonerado: number;
   importe_gravado_15: number;
   importe_gravado_18: number;
+  descuentos_rebajas: number;
   isv_15: number;
   isv_18: number;
   cargos_extra: number;

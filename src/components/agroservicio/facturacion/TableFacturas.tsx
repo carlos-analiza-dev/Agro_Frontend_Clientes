@@ -51,6 +51,8 @@ interface Props {
   propietarioId: string;
   isPropietario: boolean;
   moneda: string;
+  handleEditFactura?: (factura: AgroFactura) => void;
+  sucursalId?: string;
 }
 
 const TableFacturas = ({
@@ -59,14 +61,12 @@ const TableFacturas = ({
   propietarioId,
   isPropietario,
   moneda,
+  handleEditFactura,
+  sucursalId,
 }: Props) => {
   const queryClient = useQueryClient();
   const [descargandoId, setDescargandoId] = useState<string | null>(null);
   const [facturaPreview, setFacturaPreview] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const [facturaEditando, setFacturaEditando] = useState<AgroFactura | null>(
-    null,
-  );
   const [procesandoId, setProcesandoId] = useState<string | null>(null);
   const [cancelandoId, setCancelandoId] = useState<string | null>(null);
   const [autorizandoId, setAutorizandoId] = useState<string | null>(null);
@@ -88,8 +88,7 @@ const TableFacturas = ({
     useState<ResponseExistenciaInterface | null>(null);
   const [isVerificacionDialogOpen, setIsVerificacionDialogOpen] =
     useState(false);
-  const { descargarFactura, verFactura, loading } =
-    useFacturaDownload(propietarioId);
+  const { descargarFactura, verFactura } = useFacturaDownload(propietarioId);
 
   const handleDescargarFactura = async (factura: AgroFactura) => {
     setDescargandoId(factura.id);
@@ -126,27 +125,17 @@ const TableFacturas = ({
     setIsAutorizarDialogOpen(true);
   };
 
-  const handleEditFactura = (factura: AgroFactura) => {
-    setFacturaEditando(factura);
-    setIsOpen(true);
-  };
-
-  const handleEditSuccess = () => {
-    setIsOpen(false);
-    setFacturaEditando(null);
-    onFacturaActualizada?.();
-  };
-
-  const handleCancelEdit = () => {
-    setIsOpen(false);
-    setFacturaEditando(null);
-  };
-
   const verificarExistencia = async (factura: AgroFactura) => {
     setVerificandoExistencia(factura.id);
 
     try {
-      const data = await VerificarExistencia(factura.id);
+      if (!sucursalId) {
+        toast.error(
+          "Es necesario que estes asociado a una sucursal para poder ejecutar esta accion",
+        );
+        return;
+      }
+      const data = await VerificarExistencia(factura.id, sucursalId ?? "");
 
       setResultadoVerificacion(data);
       setIsVerificacionDialogOpen(true);
@@ -174,7 +163,13 @@ const TableFacturas = ({
 
     setVerificandoExistencia(factura.id);
     try {
-      const data = await VerificarExistencia(factura.id);
+      if (!sucursalId) {
+        toast.error(
+          "Es necesario que estes asociado a una sucursal para poder ejecutar esta accion",
+        );
+        return;
+      }
+      const data = await VerificarExistencia(factura.id, sucursalId ?? "");
 
       if (data.suficiente) {
         setIsConfirmDialogOpen(true);
@@ -398,56 +393,63 @@ const TableFacturas = ({
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleEditFactura(factura)}
+                          onClick={() => handleEditFactura!(factura)}
                           title="Editar Factura"
                           className="flex items-center gap-1"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
                       )}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        title="Verificar Stock"
-                        onClick={() => verificarExistencia(factura)}
-                        disabled={verificandoExistencia === factura.id}
-                        className="flex items-center gap-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200 hover:text-blue-800"
-                      >
-                        {verificandoExistencia === factura.id ? (
-                          <>
-                            <div className="h-3 w-3 animate-spin rounded-full border border-blue-300 border-t-blue-600" />
-                            <span>Verificando...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Package className="h-4 w-4" />
-                            <span>Verificar Stock</span>
-                          </>
-                        )}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleAbrirConfirmacionProcesar(factura)}
-                        title="Procesar Factura"
-                        disabled={
-                          procesandoId === factura.id ||
-                          verificandoExistencia === factura.id
-                        }
-                        className="flex items-center gap-1 bg-green-50 hover:bg-green-100 text-green-700 border-green-200 hover:text-green-800"
-                      >
-                        {procesandoId === factura.id ? (
-                          <>
-                            <div className="h-3 w-3 animate-spin rounded-full border border-green-300 border-t-green-600" />
-                            <span>Procesando...</span>
-                          </>
-                        ) : (
-                          <>
-                            <CheckCircle className="h-4 w-4" />
-                            <span>Procesar</span>
-                          </>
-                        )}
-                      </Button>
+
+                      {!isPropietario && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          title="Verificar Stock"
+                          onClick={() => verificarExistencia(factura)}
+                          disabled={verificandoExistencia === factura.id}
+                          className="flex items-center gap-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200 hover:text-blue-800"
+                        >
+                          {verificandoExistencia === factura.id ? (
+                            <>
+                              <div className="h-3 w-3 animate-spin rounded-full border border-blue-300 border-t-blue-600" />
+                              <span>Verificando...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Package className="h-4 w-4" />
+                              <span>Verificar Stock</span>
+                            </>
+                          )}
+                        </Button>
+                      )}
+                      {!isPropietario && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            handleAbrirConfirmacionProcesar(factura)
+                          }
+                          title="Procesar Factura"
+                          disabled={
+                            procesandoId === factura.id ||
+                            verificandoExistencia === factura.id
+                          }
+                          className="flex items-center gap-1 bg-green-50 hover:bg-green-100 text-green-700 border-green-200 hover:text-green-800"
+                        >
+                          {procesandoId === factura.id ? (
+                            <>
+                              <div className="h-3 w-3 animate-spin rounded-full border border-green-300 border-t-green-600" />
+                              <span>Procesando...</span>
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle className="h-4 w-4" />
+                              <span>Procesar</span>
+                            </>
+                          )}
+                        </Button>
+                      )}
                     </>
                   )}
 
@@ -822,30 +824,6 @@ const TableFacturas = ({
           </div>
         </div>
       )}
-
-      <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-        <AlertDialogContent className="p-4 md:max-w-5xl h-full overflow-y-auto">
-          <div className="flex justify-end">
-            <AlertDialogCancel onClick={handleCancelEdit}>X</AlertDialogCancel>
-          </div>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              Edición de Factura {facturaEditando?.numero_factura}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              Aquí puede editar las facturas que aún no están procesadas
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          {/*  {facturaEditando && (
-            <FormEditFactura
-              factura={facturaEditando}
-              onSuccess={handleEditSuccess}
-              onCancel={handleCancelEdit}
-              simbolo={simbolo}
-            />
-          )} */}
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 };
