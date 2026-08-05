@@ -17,6 +17,7 @@ import {
   ArrowLeftRight,
   Receipt,
   BadgePercent,
+  FlaskConical,
 } from "lucide-react";
 
 export const agroNavItems = [
@@ -107,6 +108,11 @@ export const agroNavItems = [
         name: "Productos",
         href: "/agro-propietario/agro-productos",
         icon: ShoppingBag,
+      },
+      {
+        name: "Insumos",
+        href: "/agro-propietario/agro-insumos",
+        icon: FlaskConical,
       },
       {
         name: "Proveedores",
@@ -235,6 +241,11 @@ export const agroEmpleadoNavItems = [
         name: "Productos",
         href: "/agro-empleados/agro-productos",
         icon: ShoppingBag,
+      },
+      {
+        name: "Insumos",
+        href: "/agro-empleados/agro-insumos",
+        icon: FlaskConical,
       },
       {
         name: "Proveedores",
