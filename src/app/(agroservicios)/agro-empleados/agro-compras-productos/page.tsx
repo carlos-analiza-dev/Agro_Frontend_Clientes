@@ -23,7 +23,6 @@ import useGetSucursalByEmpleado from "@/hooks/agroservicios/sucursales/useGetSuc
 
 const ComprasProductosPage = () => {
   const { empleado } = useAuthEmpleadoStore();
-  const paisId = empleado?.pais.id || "";
   const moneda = empleado?.pais.simbolo_moneda ?? "$";
   const propietarioId = empleado?.agroservicio.propietario.id ?? "";
   const [isOpen, setIsOpen] = useState(false);
@@ -148,7 +147,6 @@ const ComprasProductosPage = () => {
       >
         <FormCompraProductos
           onSuccess={() => setIsOpen(false)}
-          paisId={paisId}
           propietarioId={propietarioId}
           sucursalId={sucursalEmpleado?.id ?? ""}
           isPropietario={false}

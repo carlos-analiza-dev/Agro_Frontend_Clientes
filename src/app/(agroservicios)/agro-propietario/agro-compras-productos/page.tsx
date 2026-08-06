@@ -23,7 +23,6 @@ import useGetAllSucursales from "@/hooks/agroservicios/sucursales/useGetAllSucur
 
 const ComprasProductosPage = () => {
   const { cliente } = useAuthStore();
-  const paisId = cliente?.pais.id || "";
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const propietarioId = cliente?.id ?? "";
   const [isOpen, setIsOpen] = useState(false);
@@ -167,7 +166,6 @@ const ComprasProductosPage = () => {
       >
         <FormCompraProductos
           onSuccess={() => setIsOpen(false)}
-          paisId={paisId}
           propietarioId={propietarioId}
           sucursalId=""
           isPropietario={true}

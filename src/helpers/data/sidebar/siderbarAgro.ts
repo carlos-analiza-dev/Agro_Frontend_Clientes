@@ -65,9 +65,14 @@ export const agroNavItems = [
     category: "Compras",
     items: [
       {
-        name: "Compras de Productos",
+        name: "Productos",
         href: "/agro-propietario/agro-compras-productos",
         icon: ShoppingCart,
+      },
+      {
+        name: "Insumos",
+        href: "/agro-propietario/agro-compras-insumos",
+        icon: FlaskConical,
       },
     ],
   },
@@ -198,12 +203,18 @@ export const agroEmpleadoNavItems = [
     category: "Compras",
     items: [
       {
-        name: "Compras de Productos",
+        name: "Productos",
         href: "/agro-empleados/agro-compras-productos",
         icon: ShoppingCart,
       },
+      {
+        name: "Insumos",
+        href: "/agro-empleados/agro-compras-insumos",
+        icon: FlaskConical,
+      },
     ],
   },
+
   {
     category: "Facturación",
     items: [

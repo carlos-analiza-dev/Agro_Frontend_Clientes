@@ -35,7 +35,6 @@ import {
   CrearCompraAgroProductoByEmpleado,
 } from "@/api/agroservicio/compras_productos/accions/crear-compra";
 import useGetAllProveedores from "@/hooks/agroservicios/proveedores/useGetAllProveedores";
-import useGetTaxesPais from "@/hooks/impuestos/useGetTaxesPais";
 import { ObtenerDescuentoProveedorAndProducto } from "@/api/agroservicio/descuentos_producto/accions/descuentos-proveedor-producto";
 import { ObtenerEscalasProveedorAndProducto } from "@/api/agroservicio/escala-producto/accions/escalas-proveedor-producto";
 import { tiposPagos } from "@/helpers/data/compras/tiposPagos";
@@ -46,6 +45,7 @@ import DetailsConfirmCompra from "./DetailsConfirmCompra";
 import useGetAllProducts from "@/hooks/agroservicios/productos/useGetAllProducts";
 import Modal from "@/components/generics/Modal";
 import useGetAllSucursales from "@/hooks/agroservicios/sucursales/useGetAllSucursales";
+import useGetImpuestosByAgroservicio from "@/hooks/agroservicios/impuestos/useGetImpuestosByAgroservicio";
 
 interface FormCompra {
   sucursalId: string;
@@ -58,7 +58,6 @@ interface FormCompra {
 interface Props {
   onSuccess: () => void;
   propietarioId: string;
-  paisId: string;
   sucursalId: string;
   isPropietario: boolean;
   moneda: string;
@@ -67,7 +66,6 @@ interface Props {
 const FormCompraProductos = ({
   onSuccess,
   propietarioId,
-  paisId,
   sucursalId,
   isPropietario,
   moneda,
@@ -150,7 +148,7 @@ const FormCompraProductos = ({
   const { data: productosData } = useGetAllProducts(propietarioId);
   const { data: sucursales } = useGetAllSucursales();
 
-  const { data: impuestos } = useGetTaxesPais(paisId);
+  const { data: impuestos } = useGetImpuestosByAgroservicio(propietarioId);
   const productos = productosData || [];
 
   const productosWatch = watch("productos");
@@ -881,8 +879,8 @@ const FormCompraProductos = ({
                             />
                           </div>
 
-                          <div className="space-y-2">
-                            <Label className="font-semibold">Impuesto %</Label>
+                          <div className="space-y-1">
+                            <Label>Impuesto %</Label>
                             <Select
                               value={productosWatch?.[
                                 index
@@ -896,7 +894,7 @@ const FormCompraProductos = ({
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectGroup>
-                                  <SelectLabel>Impuestos</SelectLabel>
+                                  <SelectLabel>Impuesto</SelectLabel>
                                   {impuestos?.map((imp) => (
                                     <SelectItem
                                       value={String(parseFloat(imp.porcentaje))}
@@ -913,7 +911,7 @@ const FormCompraProductos = ({
                         </div>
 
                         <ResumenCompra
-                          moneda="$"
+                          moneda={moneda}
                           descuentoProducto={descuentoProducto}
                           bonificacion={bonificacion}
                           cantidadPagada={cantidadPagada}

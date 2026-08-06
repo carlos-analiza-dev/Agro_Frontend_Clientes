@@ -43,7 +43,7 @@ const FormImpuestos = ({
     if (isEdit && editImpuesto) {
       reset({
         nombre: editImpuesto.nombre,
-        porcentaje: editImpuesto.porcentaje,
+        porcentaje: Number(editImpuesto.porcentaje),
       });
     }
   }, [editImpuesto, isEdit, reset]);

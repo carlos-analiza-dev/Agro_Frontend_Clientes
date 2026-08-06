@@ -2,6 +2,7 @@ import {
   AgroInsumo,
   ResponseAgroInsumos,
 } from "@/api/agroservicio/insumos/interfaces/response-agro-insumos.interface";
+import Modal from "@/components/generics/Modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,15 +15,29 @@ import {
 } from "@/components/ui/table";
 import { formatCurrency } from "@/helpers/funciones/formatCurrency";
 import { formatDateOnly } from "@/helpers/funciones/formatDateOnly";
-import { Edit, Package, Truck } from "lucide-react";
+import { Cog, Edit, Package, Truck } from "lucide-react";
+import { useState } from "react";
+import OptionsInsumos from "../escalas-insumos/OptionsInsumos";
 
 interface Props {
   insumosData: ResponseAgroInsumos | undefined;
   handleEditInsumo: (insumo: AgroInsumo) => void;
   moneda: string;
+  propietarioId: string;
 }
 
-const TableAgroInsumos = ({ insumosData, handleEditInsumo, moneda }: Props) => {
+const TableAgroInsumos = ({
+  insumosData,
+  handleEditInsumo,
+  moneda,
+  propietarioId,
+}: Props) => {
+  const [openModalEscala, setOpenModalEscala] = useState(false);
+  const [selectedInsumo, setSelectedInsumo] = useState<AgroInsumo | null>(null);
+  const handleOpenModal = (insumo: AgroInsumo) => {
+    setOpenModalEscala(true);
+    setSelectedInsumo(insumo);
+  };
   return (
     <div>
       <Table>
@@ -96,6 +111,15 @@ const TableAgroInsumos = ({ insumosData, handleEditInsumo, moneda }: Props) => {
                 </TableCell>
                 <TableCell className="text-right">
                   <Button
+                    onClick={() => handleOpenModal(insumo)}
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    title="Configuracion"
+                  >
+                    <Cog className="h-4 w-4" />
+                  </Button>
+                  <Button
                     onClick={() => handleEditInsumo(insumo)}
                     type="button"
                     variant={"ghost"}
@@ -108,6 +132,23 @@ const TableAgroInsumos = ({ insumosData, handleEditInsumo, moneda }: Props) => {
           )}
         </TableBody>
       </Table>
+
+      <Modal
+        open={openModalEscala}
+        onOpenChange={setOpenModalEscala}
+        title={`Gestionar Datos del Insumo - ${selectedInsumo?.nombre}`}
+        description=" En esta seccion podras gestionar diferentes datos de los insumos"
+        size="6xl"
+        height="auto"
+      >
+        <div className="flex-1">
+          <OptionsInsumos
+            selectedInsumo={selectedInsumo}
+            moneda={moneda}
+            propietarioId={propietarioId}
+          />
+        </div>
+      </Modal>
     </div>
   );
 };

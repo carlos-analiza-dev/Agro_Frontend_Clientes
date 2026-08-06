@@ -155,6 +155,7 @@ const AgroInsumosPage = () => {
               insumosData={insumosData}
               handleEditInsumo={handleEditInsumo}
               moneda={moneda}
+              propietarioId={propietarioId}
             />
           </div>
 

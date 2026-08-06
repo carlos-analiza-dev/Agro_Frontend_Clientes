@@ -3,6 +3,6 @@ import { Agroservicio } from "../../proveedores/interface/response-agro-proveedo
 export interface ImpuestosAgroProductosInterface {
   id: string;
   nombre: string;
-  porcentaje: number;
+  porcentaje: string;
   agroservicio: Agroservicio;
 }
