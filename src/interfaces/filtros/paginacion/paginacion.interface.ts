@@ -7,6 +7,7 @@ export interface PaginationInterface {
   principal?: boolean;
   mostrar?: boolean;
   name?: string;
+  empleado?: string;
   departamento?: string;
   municipio?: string;
   sexo?: string;

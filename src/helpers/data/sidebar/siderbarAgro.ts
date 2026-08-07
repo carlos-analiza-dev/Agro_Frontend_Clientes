@@ -125,6 +125,11 @@ export const agroNavItems = [
         icon: Truck,
       },
       {
+        name: "Consumo de Insumos",
+        href: "/agro-propietario/agro-consumo-insumos",
+        icon: FlaskConical,
+      },
+      {
         name: "Existencia Productos",
         href: "/agro-propietario/agro-existencia",
         icon: Warehouse,
@@ -262,6 +267,11 @@ export const agroEmpleadoNavItems = [
         name: "Proveedores",
         href: "/agro-empleados/agro-proveedores",
         icon: Truck,
+      },
+      {
+        name: "Consumo de Insumos",
+        href: "/agro-empleados/agro-consumo-insumos",
+        icon: FlaskConical,
       },
       {
         name: "Existencia Productos",

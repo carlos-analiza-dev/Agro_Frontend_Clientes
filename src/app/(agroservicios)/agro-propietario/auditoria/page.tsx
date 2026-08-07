@@ -10,6 +10,7 @@ import {
   ShoppingBag,
   ShoppingCart,
   ArrowRightLeft,
+  Users,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
@@ -19,7 +20,9 @@ import { AuditoriaProductosContent } from "@/components/agroservicio/auditorias/
 import { AuditoriaComprasContent } from "@/components/agroservicio/auditorias/AuditoriaComprasContent";
 import { AuditoriaProveedoresContent } from "@/components/agroservicio/auditorias/AuditoriaProveedoresContent";
 import { AuditoriaMovimientosLoteContent } from "@/components/agroservicio/auditorias/AuditoriaMovimientosLoteContent";
+import { AuditoriaEmpleadosContent } from "@/components/agroservicio/auditorias/AuditoriaEmpleadosContent";
 import useGetAuditoriaMovimientosLote from "@/hooks/agroservicios/auditoria/useGetAuditoriaMovimientosLote";
+import useGetAuditoriaEmpleados from "@/hooks/agroservicios/auditoria/useGetAuditoriaEmpleados";
 
 const AuditoriaPage = () => {
   const { cliente } = useAuthStore();
@@ -29,6 +32,7 @@ const AuditoriaPage = () => {
   const [currentPageCompras, setCurrentPageCompras] = useState(1);
   const [currentPageMovimientosLote, setCurrentPageMovimientosLote] =
     useState(1);
+  const [currentPageEmpleados, setCurrentPageEmpleados] = useState(1);
   const limit = 10;
 
   const { data: audit_movimientos_lote, isLoading: isLoadingMovimientosLote } =
@@ -55,6 +59,12 @@ const AuditoriaPage = () => {
       offset: (currentPageCompras - 1) * limit,
     });
 
+  const { data: audit_empleados, isLoading: isLoadingAuditEmpleados } =
+    useGetAuditoriaEmpleados({
+      limit: limit,
+      offset: (currentPageEmpleados - 1) * limit,
+    });
+
   const totalPagesProveedores = audit_proveedores
     ? Math.ceil(audit_proveedores.total / limit)
     : 0;
@@ -66,6 +76,9 @@ const AuditoriaPage = () => {
     : 0;
   const totalPagesMovimientosLote = audit_movimientos_lote
     ? Math.ceil(audit_movimientos_lote.total / limit)
+    : 0;
+  const totalPagesEmpleados = audit_empleados
+    ? Math.ceil(audit_empleados.total / limit)
     : 0;
 
   return (
@@ -89,13 +102,17 @@ const AuditoriaPage = () => {
             <ArrowRightLeft className="h-3 w-3" />
             {audit_movimientos_lote?.total || 0}
           </Badge>
+          <Badge variant="outline" className="flex items-center gap-1">
+            <Users className="h-3 w-3" />
+            {audit_empleados?.total || 0}
+          </Badge>
         </div>
       </div>
 
       <Separator />
 
       <Tabs defaultValue="proveedores" className="w-full">
-        <TabsList className="grid w-full max-w-4xl grid-cols-4">
+        <TabsList className="grid w-full max-w-5xl grid-cols-5">
           <TabsTrigger value="proveedores" className="flex items-center gap-2">
             <Truck className="h-4 w-4" />
             Proveedores
@@ -114,6 +131,10 @@ const AuditoriaPage = () => {
           >
             <ArrowRightLeft className="h-4 w-4" />
             Movimientos Lote
+          </TabsTrigger>
+          <TabsTrigger value="empleados" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            Empleados
           </TabsTrigger>
         </TabsList>
 
@@ -155,6 +176,16 @@ const AuditoriaPage = () => {
             totalPagesMovimientosLote={totalPagesMovimientosLote}
             currentPageMovimientosLote={currentPageMovimientosLote}
             setCurrentPageMovimientosLote={setCurrentPageMovimientosLote}
+          />
+        </TabsContent>
+
+        <TabsContent value="empleados" className="mt-6">
+          <AuditoriaEmpleadosContent
+            isLoadingEmpleados={isLoadingAuditEmpleados}
+            audit_empleados={audit_empleados}
+            totalPagesEmpleados={totalPagesEmpleados}
+            currentPageEmpleados={currentPageEmpleados}
+            setCurrentPageEmpleados={setCurrentPageEmpleados}
           />
         </TabsContent>
       </Tabs>
