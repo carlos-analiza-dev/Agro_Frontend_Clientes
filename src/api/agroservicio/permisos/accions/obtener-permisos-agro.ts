@@ -1,10 +1,13 @@
 import { Permiso } from "@/api/permisos/interface/response-permisos.interface";
 import { veterinariaAPI } from "@/helpers/api/veterinariaAPI";
+import { PaginationInterface } from "@/interfaces/filtros/paginacion/paginacion.interface";
 
-export const obtenerPermisosAgro = async () => {
+export const obtenerPermisosAgro = async (filters?: PaginationInterface) => {
   const url = `${process.env.NEXT_PUBLIC_API_URL}/permisos-clientes-agro/activos`;
 
-  const response = await veterinariaAPI.get<Permiso[]>(url);
+  const response = await veterinariaAPI.get<Permiso[]>(url, {
+    params: filters,
+  });
   return response.data;
 };
 

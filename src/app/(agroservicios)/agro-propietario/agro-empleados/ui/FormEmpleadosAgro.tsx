@@ -37,6 +37,7 @@ interface Props {
   editEmpleado?: EmpleadoAgro | null;
   isEdit?: boolean;
   paisId?: string;
+  mostrarLight: boolean;
 }
 
 const FormEmpleadosAgro = ({
@@ -44,6 +45,7 @@ const FormEmpleadosAgro = ({
   editEmpleado,
   isEdit = false,
   paisId = "",
+  mostrarLight,
 }: Props) => {
   const queryClient = useQueryClient();
   const [departamentoSeleccionado, setDepartamentoSeleccionado] = useState("");
@@ -54,7 +56,9 @@ const FormEmpleadosAgro = ({
     useGetDepartamentosByPais(paisId || "");
   const { data: municipios, isLoading: cargandoMunicipios } =
     useGetMunicipiosActivosByDepto(departamentoSeleccionado);
-  const { data: roles, isLoading: cargandoRoles } = useGetRolesAgro();
+  const { data: roles, isLoading: cargandoRoles } = useGetRolesAgro({
+    mostrarLight,
+  });
   const { data: sucursales, isLoading: cargandoSucursales } =
     useGetSucursalesAgro({
       limit: 100,

@@ -19,8 +19,9 @@ const SelectDestinationPage = () => {
   const router = useRouter();
   const { cliente, token, hasHydrated } = useAuthStore();
 
-  const tieneAgroElite =
-    cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_GESTION;
+  const esAgro =
+    cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_GESTION ||
+    cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_LIGHT;
 
   useEffect(() => {
     if (hasHydrated && (!token || !cliente)) {
@@ -28,17 +29,17 @@ const SelectDestinationPage = () => {
       return;
     }
 
-    if (hasHydrated && token && cliente && !tieneAgroElite) {
+    if (hasHydrated && token && cliente && !esAgro) {
       router.push("/panel");
       return;
     }
-  }, [token, cliente, hasHydrated, router, tieneAgroElite]);
+  }, [token, cliente, hasHydrated, router, esAgro]);
 
   if (!hasHydrated || !token || !cliente) {
     return <FullScreenLoader />;
   }
 
-  if (!tieneAgroElite) {
+  if (!esAgro) {
     return <FullScreenLoader />;
   }
 

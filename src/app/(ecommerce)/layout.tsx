@@ -76,6 +76,18 @@ export default function MarketPlaceLayout({
       return false;
     }
 
+    const tieneEcommerce = cliente.paqueteActivo?.paquete?.ecommerce === true;
+
+    if (!tieneEcommerce) {
+      toast.error("Tu paquete actual no tiene habilitado el ecommerce.", {
+        position: "top-center",
+        autoClose: 3000,
+      });
+
+      router.push("/");
+      return false;
+    }
+
     return true;
   };
 

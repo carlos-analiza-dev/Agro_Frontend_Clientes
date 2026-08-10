@@ -1,5 +1,6 @@
 import { EstadoPedido } from "@/api/pedidos/interface/crear-pedido.interface";
 import { TipoPublicacion } from "@/interfaces/enums/market/tipo_publicacion.enum";
+import { TipoAgroservicio } from "@/interfaces/enums/paquetes/paquetes.enum";
 
 export interface PaginationInterface {
   limit?: number;
@@ -9,10 +10,12 @@ export interface PaginationInterface {
   name?: string;
   empleado?: string;
   departamento?: string;
+  mostrarLight?: boolean;
   municipio?: string;
   sexo?: string;
   nombre?: string;
   categoria?: string;
+  tipo_agro?: TipoAgroservicio;
   search?: string;
   subcategoria?: string;
   tipo_producto?: string;

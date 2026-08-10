@@ -177,15 +177,15 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const firstPath = `/${pathname.split("/")[1] || ""}`;
   const cantidadCarrito = totalItems();
-
+  const ecommer = cliente?.paqueteActivo?.paquete.ecommerce;
   const esPropietario = cliente?.rol === TipoCliente.PROPIETARIO;
-
+  const esAgro =
+    cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_GESTION ||
+    cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_LIGHT;
   const paqueteId = cliente?.paqueteActivo?.paquete?.id ?? "";
   const clienteId = cliente?.id ?? "";
 
-  const tieneAgroGestion =
-    cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_GESTION &&
-    cliente.rol === TipoCliente.PROPIETARIO;
+  const tieneAgroGestion = esAgro && cliente.rol === TipoCliente.PROPIETARIO;
 
   const { data: permisosPaquete } = useGetPermisosByClientePaquete(paqueteId);
   const { data: permisosCliente } = useGetPermisosByCliente(clienteId);
@@ -323,7 +323,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
           </TooltipProvider>
         )}
 
-        {esPropietario && tienePlanActivo && <EcommerceButton />}
+        {esPropietario && tienePlanActivo && ecommer && <EcommerceButton />}
 
         {esPropietario && !tienePlanActivo && (
           <PlanButton onClick={handleNavigateToPlanes} variant="default">

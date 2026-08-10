@@ -14,7 +14,10 @@ import {
   agroEmpleadoNavItems,
 } from "@/helpers/data/sidebar/siderbarAgro";
 import { useAuthStore } from "@/providers/store/useAuthStore";
-import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
+import {
+  TipoAgroservicio,
+  TipoPaquete,
+} from "@/interfaces/enums/paquetes/paquetes.enum";
 import useGetPermisosAgro from "@/hooks/permisos/useGetPermisosAgro";
 import { useMemo } from "react";
 import { Permiso } from "@/api/permisos/interface/response-permisos.interface";
@@ -32,22 +35,25 @@ const SidebarAgro = ({ handleLogout, isPropietario }: SidebarAgroProps) => {
   const pathname = usePathname();
   const { cliente } = useAuthStore();
   const { empleado } = useAuthEmpleadoStore();
-
+  const tipoPaquete =
+    cliente?.paqueteActivo?.paquete.tipo ?? TipoAgroservicio.AGRO_GESTION;
+  const esAgro =
+    cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_GESTION ||
+    cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_LIGHT;
   const rolId = empleado?.role?.id ?? "";
 
-  const propietarioId =
-    cliente?.paqueteActivo?.paquete.tipo === TipoPaquete.AGRO_GESTION
-      ? cliente.id
-      : (empleado?.agroservicio?.propietario?.id ??
-        empleado?.agroservicio?.propietario.id ??
-        null);
+  const propietarioId = esAgro
+    ? cliente.id
+    : (empleado?.agroservicio?.propietario?.id ??
+      empleado?.agroservicio?.propietario.id ??
+      null);
 
   const { data: logo, isLoading: cargando_logo } = useGetLogoAgro(
     propietarioId ?? "",
   );
 
   const { data: permisosAgro, isLoading: isLoadingPermisosAgro } =
-    useGetPermisosAgro();
+    useGetPermisosAgro({ tipo_agro: tipoPaquete as TipoAgroservicio });
 
   const { data: permisosEmpleados, isLoading: isLoadingPermisosEmpleados } =
     useGetPermisosByRol(rolId);

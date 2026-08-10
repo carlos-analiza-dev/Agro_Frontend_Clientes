@@ -15,6 +15,7 @@ import { useAuthEmpleadoStore } from "@/providers/store/useAuthEmpleados";
 import useGetPermisosAgro from "@/hooks/permisos/useGetPermisosAgro";
 import useGetPermisosByRol from "@/hooks/permisos/useGetPermisosByRol";
 import { Permiso } from "@/api/permisos/interface/response-permisos.interface";
+import { TipoAgroservicio } from "@/interfaces/enums/paquetes/paquetes.enum";
 
 interface ShetContentCompAgroProps {
   mobileSidebarOpen: boolean;
@@ -32,11 +33,12 @@ const ShetContentCompAgro = ({
   const pathname = usePathname();
   const { cliente } = useAuthStore();
   const { empleado } = useAuthEmpleadoStore();
-
+  const tipoPaquete =
+    cliente?.paqueteActivo?.paquete.tipo ?? TipoAgroservicio.AGRO_GESTION;
   const rolId = empleado?.role?.id ?? "";
 
   const { data: permisosAgro, isLoading: isLoadingPermisosAgro } =
-    useGetPermisosAgro();
+    useGetPermisosAgro({ tipo_agro: tipoPaquete as TipoAgroservicio });
 
   const { data: permisosEmpleados, isLoading: isLoadingPermisosEmpleados } =
     useGetPermisosByRol(rolId);

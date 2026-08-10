@@ -11,7 +11,10 @@ import { isTokenExpired } from "@/helpers/funciones/tokenExpired";
 import { useFavoritos } from "@/hooks/favoritos/useFavoritos";
 import useGetPermisosAgro from "@/hooks/permisos/useGetPermisosAgro";
 import { TipoCliente } from "@/interfaces/enums/clientes.enums";
-import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
+import {
+  TipoAgroservicio,
+  TipoPaquete,
+} from "@/interfaces/enums/paquetes/paquetes.enum";
 import { useAuthEmpleadoStore } from "@/providers/store/useAuthEmpleados";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useCartStore } from "@/providers/store/useCartStore";
@@ -36,15 +39,17 @@ export default function AgroServiciosLayout({
   const [loading, setLoading] = useState(false);
   const [showSessionModal, setShowSessionModal] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
-
+  const tipoPaquete =
+    cliente?.paqueteActivo?.paquete.tipo ?? TipoAgroservicio.AGRO_GESTION;
   const isEmpleado = !!empleado && !!token_empleado;
 
-  const tieneAgroGestion =
-    cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_GESTION &&
-    cliente.rol === TipoCliente.PROPIETARIO;
+  const esAgro =
+    cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_GESTION ||
+    cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_LIGHT;
+  const tieneAgroGestion = esAgro && cliente.rol === TipoCliente.PROPIETARIO;
 
   const { data: permisosAgro, isLoading: isLoadingPermisos } =
-    useGetPermisosAgro();
+    useGetPermisosAgro({ tipo_agro: tipoPaquete as TipoAgroservicio });
 
   useEffect(() => {
     setIsHydrated(true);

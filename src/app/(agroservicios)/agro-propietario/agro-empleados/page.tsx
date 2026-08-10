@@ -13,6 +13,7 @@ import Modal from "@/components/generics/Modal";
 import FormEmpleadosAgro from "./ui/FormEmpleadosAgro";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { EmpleadoAgro } from "@/api/agroservicio/empleados/interface/response-empleados-agro.interface";
+import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
 
 const EmpleadosAgroPage = () => {
   const { cliente } = useAuthStore();
@@ -21,6 +22,10 @@ const EmpleadosAgroPage = () => {
   const [selectedEmpleado, setSelectedEmpleado] = useState<EmpleadoAgro | null>(
     null,
   );
+  const mostrarLight =
+    cliente?.paqueteActivo?.paquete.tipo === TipoPaquete.AGRO_LIGHT
+      ? true
+      : false;
   const [isEdit, setIsEdit] = useState(false);
   const [limit] = useState(10);
   const [openModalForm, setOpenModalForm] = useState(false);
@@ -151,6 +156,7 @@ const EmpleadosAgroPage = () => {
           }}
           editEmpleado={selectedEmpleado}
           isEdit={isEdit}
+          mostrarLight={mostrarLight}
         />
       </Modal>
     </div>

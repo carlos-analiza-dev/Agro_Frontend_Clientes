@@ -47,6 +47,10 @@ const LoginForm = () => {
 
       const { cliente, token } = authResponse;
 
+      const esAgro =
+        cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_GESTION ||
+        cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_LIGHT;
+
       if (!cliente || !cliente.id) {
         toast.error("Credenciales inválidas");
         return;
@@ -62,10 +66,7 @@ const LoginForm = () => {
         return;
       }
 
-      if (
-        cliente.paqueteActivo?.paquete.tipo === TipoPaquete.AGRO_GESTION &&
-        cliente.rol === TipoCliente.PROPIETARIO
-      ) {
+      if (esAgro && cliente.rol === TipoCliente.PROPIETARIO) {
         router.replace("/select-destination");
       } else {
         router.replace("/panel");
