@@ -11,6 +11,7 @@ import {
   PanelsTopLeft,
   Copy,
   Building2,
+  AlertTriangle,
 } from "lucide-react";
 
 import {
@@ -45,6 +46,7 @@ import {
   agroEmpleadoNavItems,
 } from "@/helpers/data/sidebar/siderbarAgro";
 import { getUserAgroInfo } from "@/helpers/funciones/agroservicio/profile/obtener-info-perfil";
+import useGetInfoAgro from "@/hooks/agroservicios/mi-agro/useGetInfoAgro";
 
 interface Props {
   setMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -58,6 +60,7 @@ const NavBarAgro = ({
   isPropietario,
 }: Props) => {
   const linkLoginEmpleados = `${process.env.NEXT_PUBLIC_APP_URL}/login-empleados`;
+  const { data: info_agro, isLoading: cargando_info } = useGetInfoAgro();
 
   const { cliente } = useAuthStore();
   const { empleado } = useAuthEmpleadoStore();
@@ -66,6 +69,8 @@ const NavBarAgro = ({
   const router = useRouter();
   const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(false);
+
+  const tieneAgroservicio = !!info_agro;
 
   const rutasBase = isPropietario ? agroNavItems : agroEmpleadoNavItems;
 
@@ -216,11 +221,89 @@ const NavBarAgro = ({
     }
   };
 
-  if (isLoading || isLoadingPermisos) {
+  const userInfo = getUserAgroInfo(isPropietario, cliente!, empleado!);
+
+  if (cargando_info || isLoading || isLoadingPermisos) {
     return <FullScreenLoader />;
   }
 
-  const userInfo = getUserAgroInfo(isPropietario, cliente!, empleado!);
+  if (isPropietario && esPropietario && !tieneAgroservicio) {
+    return (
+      <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6">
+        <div className="flex items-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden"
+            onClick={() => setMobileSidebarOpen(true)}
+          >
+            <Menu className="h-6 w-6" />
+          </Button>
+          {activePage && (
+            <button
+              onClick={handleNavigateToActivePage}
+              className="ml-4 text-base md:text-lg font-medium text-gray-900 hover:text-green-600 transition-colors cursor-pointer"
+            >
+              {activePage}
+            </button>
+          )}
+        </div>
+
+        <div className="flex items-center space-x-1 md:space-x-4">
+          <div className="hidden md:flex items-center gap-2 bg-yellow-50 border border-yellow-200 rounded-md px-3 py-1.5">
+            <AlertTriangle className="h-4 w-4 text-yellow-600" />
+            <span className="text-xs text-yellow-700 whitespace-nowrap">
+              Primero debe ingresar los datos de su agroservicio
+            </span>
+          </div>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={userInfo.imagen} alt="Usuario" />
+                  <AvatarFallback>
+                    <User className="h-4 w-4" />
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-80" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-2">
+                  <p className="text-sm font-medium text-gray-900">
+                    {userInfo.nombre}
+                  </p>
+                  <p className="text-xs leading-none text-gray-500">
+                    {userInfo.email}
+                  </p>
+
+                  <div className="mt-2 pt-2 border-t border-gray-100">
+                    <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 rounded-md p-2">
+                      <AlertTriangle className="h-4 w-4 text-yellow-600 flex-shrink-0" />
+                      <p className="text-xs text-yellow-700">
+                        Para acceder a todos los módulos, primero debe crear su
+                        agroservicio
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="cursor-pointer text-red-600"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Cerrar sesión
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6">

@@ -137,7 +137,7 @@ const TableAgroInsumos = ({
         open={openModalEscala}
         onOpenChange={setOpenModalEscala}
         title={`Gestionar Datos del Insumo - ${selectedInsumo?.nombre}`}
-        description=" En esta seccion podras gestionar diferentes datos de los insumos"
+        description=" En esta sección podras gestionar diferentes datos de los insumos"
         size="6xl"
         height="auto"
       >

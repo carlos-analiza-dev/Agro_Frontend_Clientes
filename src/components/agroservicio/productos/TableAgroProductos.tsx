@@ -297,7 +297,7 @@ const TableAgroProductos = ({
         open={openModalLotes}
         onOpenChange={setOpenModalLotes}
         title="Lotes del Producto"
-        description="En esta seccion podras observar los lotes del producto
+        description="En esta sección podras observar los lotes del producto
               seleccionado"
         size="4xl"
         height="auto"

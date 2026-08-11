@@ -317,7 +317,7 @@ const FacturasAgroPage = () => {
               ) : (
                 <MessageError
                   titulo="No se encontraron facturas"
-                  descripcion="En este momento no se encotraron facturas disponibles"
+                  descripcion="En este momento no se encontraron facturas disponibles"
                 />
               )}
             </Card>

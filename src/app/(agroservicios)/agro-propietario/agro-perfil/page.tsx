@@ -161,6 +161,7 @@ const AgroPerfilPage = () => {
     onSuccess: () => {
       toast.success("Información del agroservicio creada exitosamente");
       queryClient.invalidateQueries({ queryKey: ["info-agro"] });
+      queryClient.invalidateQueries({ queryKey: ["permisos-agro"] });
       setIsEditing(false);
     },
     onError: (error) => {

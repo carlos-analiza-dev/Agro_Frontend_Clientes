@@ -232,8 +232,8 @@ const ConfiguracionTrabajadoresPage = () => {
         onOpenChange={setOpenAddConfig}
         title={
           selectedConfig
-            ? "Editar Configuracion a Trabajadores"
-            : "Agregar Configuracion a Trabajadores"
+            ? "Editar Configuración a Trabajadores"
+            : "Agregar Configuración a Trabajadores"
         }
         description={
           selectedConfig
