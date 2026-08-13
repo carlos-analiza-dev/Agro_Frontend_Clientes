@@ -6,6 +6,8 @@ const useGetConversaciones = () => {
     queryKey: ["conversaciones"],
     queryFn: () => obtenerConversaciones(),
     retry: 0,
+    refetchInterval: 60000,
+    refetchOnWindowFocus: true,
   });
 };
 

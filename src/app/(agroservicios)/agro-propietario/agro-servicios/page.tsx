@@ -1,334 +1,552 @@
 "use client";
+
+import { useState, useEffect } from "react";
+import useGetMetricasFacturas from "@/hooks/agroservicios/dashboards/useGetMetricasFacturas";
+import useGetAllSucursales from "@/hooks/agroservicios/sucursales/useGetAllSucursales";
 import {
-  ShoppingBag,
-  Truck,
-  Warehouse,
-  Package,
-  Users,
-  FileText,
-  DollarSign,
-  TrendingUp,
-  TrendingDown,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
+} from "recharts";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  CalendarIcon,
+  DollarSign,
+  FileCheck,
+  FileText,
+  Filter,
+  Receipt,
+  X,
+} from "lucide-react";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import { cn } from "@/lib/utils";
+import useGetTopProductos from "@/hooks/agroservicios/dashboards/useGetTopProductos";
+import TopProductosComponent from "@/components/agroservicio/dashboard/TopProductosComponent";
+import useGetTopClientes from "@/hooks/agroservicios/dashboards/useGetTopClientes";
+import TopClientesComponent from "@/components/agroservicio/dashboard/TopClientesComponent";
+import { useAuthStore } from "@/providers/store/useAuthStore";
+import useGetTopSucursales from "@/hooks/agroservicios/dashboards/useGetTopSucursales";
+import TopSucursalesComponent from "@/components/agroservicio/dashboard/TopSucursalesComponent";
+import useGetEstadosFacturas from "@/hooks/agroservicios/dashboards/useGetEstadosFacturas";
+import EstadosFacturasComponent from "@/components/agroservicio/dashboard/EstadosFacturasComponent";
+import { StatCard } from "@/components/generics/StatCard";
 
-const statsData = [
-  {
-    title: "Ventas Totales",
-    value: "$45,231.89",
-    change: "+20.1%",
-    trend: "up",
-    icon: DollarSign,
-  },
-  {
-    title: "Pedidos Pendientes",
-    value: "12",
-    change: "-2.5%",
-    trend: "down",
-    icon: Package,
-  },
-  {
-    title: "Productos en Stock",
-    value: "1,234",
-    change: "+5.4%",
-    trend: "up",
-    icon: Warehouse,
-  },
-  {
-    title: "Empleados Activos",
-    value: "89",
-    change: "+12.3%",
-    trend: "up",
-    icon: Users,
-  },
-];
+const AgroservicioDashboard = () => {
+  const { cliente } = useAuthStore();
+  const moneda = cliente?.pais.simbolo_moneda ?? "$";
+  const [fechaInicio, setFechaInicio] = useState<Date | undefined>(undefined);
+  const [fechaFin, setFechaFin] = useState<Date | undefined>(undefined);
+  const [sucursal, setSucursal] = useState<string>("todas");
+  const [mostrarFiltros, setMostrarFiltros] = useState(true);
 
-const recentOrders = [
-  {
-    id: "ORD-001",
-    cliente: "Juan Pérez",
-    total: "$156.00",
-    estado: "Completado",
-    fecha: "2024-01-15",
-  },
-  {
-    id: "ORD-002",
-    cliente: "María García",
-    total: "$89.50",
-    estado: "Pendiente",
-    fecha: "2024-01-15",
-  },
-  {
-    id: "ORD-003",
-    cliente: "Carlos López",
-    total: "$234.00",
-    estado: "En Proceso",
-    fecha: "2024-01-14",
-  },
-  {
-    id: "ORD-004",
-    cliente: "Ana Martínez",
-    total: "$67.25",
-    estado: "Completado",
-    fecha: "2024-01-14",
-  },
-];
+  const { data: sucursales, isLoading: cargandoSucursales } =
+    useGetAllSucursales();
+  const getQueryParams = () => {
+    const params: {
+      fechaInicio?: string;
+      fechaFin?: string;
+      sucursal?: string;
+    } = {};
 
-const lowStockProducts = [
-  {
-    name: "Alimento para Perros",
-    stock: 5,
-    maxStock: 50,
-    category: "Alimentos",
-  },
-  {
-    name: "Vacuna Antirrábica",
-    stock: 3,
-    maxStock: 20,
-    category: "Veterinaria",
-  },
-  {
-    name: "Collar Antipulgas",
-    stock: 8,
-    maxStock: 30,
-    category: "Accesorios",
-  },
-];
+    if (fechaInicio) {
+      params.fechaInicio = format(fechaInicio, "yyyy-MM-dd");
+    }
 
-const AgroservicioPage = () => {
+    if (fechaFin) {
+      params.fechaFin = format(fechaFin, "yyyy-MM-dd");
+    }
+
+    if (sucursal !== "todas") {
+      params.sucursal = sucursal;
+    }
+
+    return params;
+  };
+
+  const {
+    data: metricas_facturas,
+    isLoading,
+    refetch,
+  } = useGetMetricasFacturas(getQueryParams());
+
+  const { data: metricas_productos, isLoading: cargando_products } =
+    useGetTopProductos(getQueryParams());
+
+  const { data: top_clientes, isLoading: cargando_clientes } =
+    useGetTopClientes(getQueryParams());
+
+  const { data: top_sucursales, isLoading: cargando_sucursales } =
+    useGetTopSucursales(getQueryParams());
+
+  const { data: estados_facturas, isLoading: cargando_estados } =
+    useGetEstadosFacturas(getQueryParams());
+
+  useEffect(() => {
+    refetch();
+  }, [fechaInicio, fechaFin, sucursal, refetch]);
+
+  const hayFiltrosActivos = fechaInicio || fechaFin || sucursal !== "todas";
+
+  const resetFiltros = () => {
+    setFechaInicio(undefined);
+    setFechaFin(undefined);
+    setSucursal("todas");
+  };
+
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
+
+  const datosVentas = [
+    {
+      name: "Ventas Totales",
+      value: metricas_facturas?.ventasTotales || 0,
+    },
+    { name: "Subtotal", value: metricas_facturas?.subtotal || 0 },
+  ];
+
+  const datosImpuestos = [
+    { name: "ISV 15%", value: metricas_facturas?.isv15 || 0 },
+    { name: "ISV 18%", value: metricas_facturas?.isv18 || 0 },
+    {
+      name: "Impuestos",
+      value: metricas_facturas?.impuestos || 0,
+    },
+  ];
+
+  const datosFinancieros = [
+    {
+      name: "Descuentos",
+      value: metricas_facturas?.descuentos || 0,
+    },
+    {
+      name: "Cargos Extra",
+      value: metricas_facturas?.cargosExtra || 0,
+    },
+  ];
+
+  const datosResumen = [
+    {
+      name: "Facturas",
+      cantidad: metricas_facturas?.cantidadFacturas || 0,
+    },
+    {
+      name: "Ticket Promedio",
+      cantidad: metricas_facturas?.ticketPromedio || 0,
+    },
+  ];
+
+  if (isLoading || cargandoSucursales) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Cargando métricas...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Bienvenido de vuelta, aquí está tu resumen de agroservicio
-          </p>
+        <h1 className="text-3xl font-bold">Dashboard Agroservicio</h1>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setMostrarFiltros(!mostrarFiltros)}
+            className="flex items-center gap-2"
+          >
+            <Filter className="h-4 w-4" />
+            {mostrarFiltros ? "Ocultar Filtros" : "Mostrar Filtros"}
+            {hayFiltrosActivos && (
+              <span className="ml-1 h-2 w-2 rounded-full bg-blue-500"></span>
+            )}
+          </Button>
+          {hayFiltrosActivos && (
+            <Button
+              variant="ghost"
+              onClick={resetFiltros}
+              className="flex items-center gap-2 text-red-600 hover:text-red-700"
+            >
+              <X className="h-4 w-4" />
+              Limpiar Filtros
+            </Button>
+          )}
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {statsData.map((stat, index) => {
-          const Icon = stat.icon;
-          const isPositive = stat.trend === "up";
-          const TrendIcon = isPositive ? TrendingUp : TrendingDown;
-          const trendColor = isPositive ? "text-green-600" : "text-red-600";
-
-          return (
-            <Card key={index}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  {stat.title}
-                </CardTitle>
-                <Icon className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-                <div className={`flex items-center text-xs ${trendColor}`}>
-                  <TrendIcon className="mr-1 h-3 w-3" />
-                  {stat.change} desde el mes pasado
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="lg:col-span-4">
+      {mostrarFiltros && (
+        <Card>
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>Pedidos Recientes</span>
-              <Button variant="outline" size="sm">
-                Ver Todos
-              </Button>
-            </CardTitle>
+            <CardTitle className="text-lg">Filtros</CardTitle>
+            <CardDescription>
+              Selecciona el rango de fechas y sucursal para filtrar los datos
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Pedido</TableHead>
-                  <TableHead>Cliente</TableHead>
-                  <TableHead>Total</TableHead>
-                  <TableHead>Estado</TableHead>
-                  <TableHead>Fecha</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {recentOrders.map((order) => {
-                  let statusColor;
-                  let StatusIcon;
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Fecha Inicio</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !fechaInicio && "text-muted-foreground",
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {fechaInicio ? (
+                        format(fechaInicio, "dd/MM/yyyy", { locale: es })
+                      ) : (
+                        <span>Seleccionar fecha</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={fechaInicio}
+                      onSelect={setFechaInicio}
+                      initialFocus
+                      locale={es}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
 
-                  switch (order.estado) {
-                    case "Completado":
-                      statusColor = "bg-green-100 text-green-800";
-                      StatusIcon = CheckCircle;
-                      break;
-                    case "Pendiente":
-                      statusColor = "bg-yellow-100 text-yellow-800";
-                      StatusIcon = Clock;
-                      break;
-                    case "En Proceso":
-                      statusColor = "bg-blue-100 text-blue-800";
-                      StatusIcon = AlertCircle;
-                      break;
-                    default:
-                      statusColor = "bg-gray-100 text-gray-800";
-                      StatusIcon = Clock;
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Fecha Fin</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !fechaFin && "text-muted-foreground",
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {fechaFin ? (
+                        format(fechaFin, "dd/MM/yyyy", { locale: es })
+                      ) : (
+                        <span>Seleccionar fecha</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={fechaFin}
+                      onSelect={setFechaFin}
+                      initialFocus
+                      locale={es}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Sucursal</label>
+                <Select value={sucursal} onValueChange={setSucursal}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Todas las sucursales" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todas">Todas las sucursales</SelectItem>
+                    {sucursales?.map((suc: any) => (
+                      <SelectItem key={suc.id} value={suc.id}>
+                        {suc.nombre}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {hayFiltrosActivos && (
+              <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                <p className="text-sm text-blue-700">
+                  <span className="font-semibold">Filtros aplicados:</span>
+                  {fechaInicio && (
+                    <span className="ml-2">
+                      Desde: {format(fechaInicio, "dd/MM/yyyy", { locale: es })}
+                    </span>
+                  )}
+                  {fechaFin && (
+                    <span className="ml-2">
+                      Hasta: {format(fechaFin, "dd/MM/yyyy", { locale: es })}
+                    </span>
+                  )}
+                  {sucursal !== "todas" && (
+                    <span className="ml-2">
+                      Sucursal:{" "}
+                      {sucursales?.find((s: any) => s.id === sucursal)
+                        ?.nombre || sucursal}
+                    </span>
+                  )}
+                </p>
+              </div>
+            )}
+
+            {!hayFiltrosActivos && (
+              <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600">
+                  <span className="font-semibold">Mostrando:</span> Todos los
+                  datos disponibles
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          title="Total Facturas"
+          value={metricas_facturas?.cantidadFacturas || 0}
+          icon={FileText}
+          gradientFrom="from-blue-500"
+          gradientTo="to-blue-600"
+          iconColor="text-white"
+          textColor="text-white"
+        />
+
+        <StatCard
+          title="Ventas Totales"
+          value={`${moneda} ${metricas_facturas?.ventasTotales?.toFixed(2) || "0.00"}`}
+          icon={DollarSign}
+          gradientFrom="from-green-500"
+          gradientTo="to-green-600"
+          iconColor="text-white"
+          textColor="text-white"
+        />
+
+        <StatCard
+          title="Ticket Promedio"
+          value={`${moneda} ${metricas_facturas?.ticketPromedio?.toFixed(2) || "0.00"}`}
+          icon={Receipt}
+          gradientFrom="from-purple-500"
+          gradientTo="to-purple-600"
+          iconColor="text-white"
+          textColor="text-white"
+        />
+
+        <StatCard
+          title="Impuestos"
+          value={`${moneda} ${metricas_facturas?.impuestos?.toFixed(2) || "0.00"}`}
+          icon={FileCheck}
+          gradientFrom="from-orange-500"
+          gradientTo="to-orange-600"
+          iconColor="text-white"
+          textColor="text-white"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Análisis de Ventas</CardTitle>
+            <CardDescription>
+              Comparativa entre ventas totales y subtotal
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={datosVentas}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip
+                  formatter={(value) => `${moneda} ${Number(value).toFixed(2)}`}
+                />
+                <Legend />
+                <Bar dataKey="value" fill="#0088FE" name="Monto" />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Distribución de Impuestos</CardTitle>
+            <CardDescription>Desglose de impuestos aplicados</CardDescription>
+          </CardHeader>
+          <CardContent className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={datosImpuestos}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) =>
+                    `${name} ${(percent * 100).toFixed(0)}%`
                   }
-
-                  return (
-                    <TableRow key={order.id}>
-                      <TableCell className="font-medium">{order.id}</TableCell>
-                      <TableCell>{order.cliente}</TableCell>
-                      <TableCell>{order.total}</TableCell>
-                      <TableCell>
-                        <Badge className={`${statusColor} border-none`}>
-                          <StatusIcon className="mr-1 h-3 w-3" />
-                          {order.estado}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{order.fecha}</TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {datosImpuestos.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value) => `${moneda} ${Number(value).toFixed(2)}`}
+                />
+              </PieChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-3">
+        <Card>
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>Stock Bajo</span>
-              <Badge variant="destructive">¡Atención!</Badge>
-            </CardTitle>
+            <CardTitle>Descuentos y Cargos Extra</CardTitle>
+            <CardDescription>
+              Análisis de ajustes en las facturas
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {lowStockProducts.map((product, index) => {
-                const stockPercentage =
-                  (product.stock / product.maxStock) * 100;
-                const isCritical = stockPercentage < 20;
-                const isWarning = stockPercentage < 40;
+          <CardContent className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={datosFinancieros}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip
+                  formatter={(value) => `${moneda} ${Number(value).toFixed(2)}`}
+                />
+                <Legend />
+                <Bar dataKey="value" fill="#FF8042" name="Monto" />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
 
-                let progressColor;
-                if (isCritical) progressColor = "bg-red-500";
-                else if (isWarning) progressColor = "bg-yellow-500";
-                else progressColor = "bg-green-500";
-
-                return (
-                  <div key={index} className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <div>
-                        <p className="font-medium">{product.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {product.category}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-medium">{product.stock} unidades</p>
-                        <p className="text-xs text-muted-foreground">
-                          Máx: {product.maxStock}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="relative w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full transition-all ${progressColor}`}
-                        style={{ width: `${Math.min(stockPercentage, 100)}%` }}
-                      />
-                    </div>
-                    {isCritical && (
-                      <p className="text-xs text-red-500 flex items-center">
-                        <AlertCircle className="mr-1 h-3 w-3" />
-                        Stock crítico, reabastecer pronto
-                      </p>
-                    )}
-                    {isWarning && !isCritical && (
-                      <p className="text-xs text-yellow-500 flex items-center">
-                        <Clock className="mr-1 h-3 w-3" />
-                        Stock bajo, considerar reabastecimiento
-                      </p>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Resumen de Indicadores</CardTitle>
+            <CardDescription>Facturas y ticket promedio</CardDescription>
+          </CardHeader>
+          <CardContent className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={datosResumen}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip
+                  formatter={(value) =>
+                    typeof value === "number" ? value.toFixed(2) : value
+                  }
+                />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="cantidad"
+                  stroke="#8884d8"
+                  name="Valor"
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <ShoppingBag className="h-6 w-6 text-blue-600" />
-            </div>
-            <div>
-              <h4 className="font-medium">Nuevo Producto</h4>
-              <p className="text-sm text-muted-foreground">
-                Agregar al inventario
+      <Card>
+        <CardHeader>
+          <CardTitle>Detalles Financieros</CardTitle>
+          <CardDescription>Desglose completo de las métricas</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-500">Subtotal</p>
+              <p className="text-lg font-semibold">
+                {moneda} {metricas_facturas?.subtotal?.toFixed(2) || "0.00"}
               </p>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="p-3 bg-green-100 rounded-lg">
-              <Users className="h-6 w-6 text-green-600" />
-            </div>
-            <div>
-              <h4 className="font-medium">Nuevo Empleado</h4>
-              <p className="text-sm text-muted-foreground">
-                Registrar empleado
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-500">ISV 15%</p>
+              <p className="text-lg font-semibold">
+                {moneda} {metricas_facturas?.isv15?.toFixed(2) || "0.00"}
               </p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-500">ISV 18%</p>
+              <p className="text-lg font-semibold">
+                {moneda} {metricas_facturas?.isv18?.toFixed(2) || "0.00"}
+              </p>
+            </div>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-500">Descuentos</p>
+              <p className="text-lg font-semibold text-red-600">
+                {moneda} {metricas_facturas?.descuentos?.toFixed(2) || "0.00"}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="p-3 bg-purple-100 rounded-lg">
-              <Truck className="h-6 w-6 text-purple-600" />
-            </div>
-            <div>
-              <h4 className="font-medium">Nuevo Proveedor</h4>
-              <p className="text-sm text-muted-foreground">Agregar proveedor</p>
-            </div>
-          </CardContent>
-        </Card>
+      <TopSucursalesComponent
+        data={top_sucursales || []}
+        isLoading={cargando_sucursales}
+        title="Top Sucursales"
+        description="Ranking de sucursales con mayores ventas"
+        moneda={moneda}
+      />
 
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="p-3 bg-orange-100 rounded-lg">
-              <FileText className="h-6 w-6 text-orange-600" />
-            </div>
-            <div>
-              <h4 className="font-medium">Nueva Factura</h4>
-              <p className="text-sm text-muted-foreground">Generar factura</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <TopClientesComponent
+        data={top_clientes || []}
+        isLoading={cargando_clientes}
+        moneda={moneda}
+      />
+
+      <TopProductosComponent
+        data={metricas_productos || []}
+        isLoading={cargando_products}
+        title="Productos Más Vendidos"
+        description="Top productos con mayor cantidad de ventas en el período seleccionado"
+      />
+
+      <EstadosFacturasComponent
+        data={estados_facturas || []}
+        isLoading={cargando_estados}
+      />
     </div>
   );
 };
 
-export default AgroservicioPage;
+export default AgroservicioDashboard;

@@ -522,6 +522,12 @@ const FormCreateFactura = ({
                     <SelectItem value={FormaPago.TRANSFERENCIA}>
                       Transferencia
                     </SelectItem>
+                    <SelectItem value={FormaPago.NOTA_CREDITO}>
+                      Nota de Crédito
+                    </SelectItem>
+                    <SelectItem value={FormaPago.COMBINACION}>
+                      Combinación
+                    </SelectItem>
                   </SelectContent>
                 </Select>
                 {errors.forma_pago && (
