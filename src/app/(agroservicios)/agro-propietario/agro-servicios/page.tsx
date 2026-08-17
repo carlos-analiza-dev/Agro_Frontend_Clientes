@@ -137,10 +137,6 @@ const AgroservicioDashboard = () => {
   const datosImpuestos = [
     { name: "ISV 15%", value: metricas_facturas?.isv15 || 0 },
     { name: "ISV 18%", value: metricas_facturas?.isv18 || 0 },
-    {
-      name: "Impuestos",
-      value: metricas_facturas?.impuestos || 0,
-    },
   ];
 
   const datosFinancieros = [

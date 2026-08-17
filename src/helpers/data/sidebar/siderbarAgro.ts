@@ -18,6 +18,7 @@ import {
   Receipt,
   BadgePercent,
   FlaskConical,
+  FileMinus,
 } from "lucide-react";
 
 export const agroNavItems = [
@@ -83,6 +84,11 @@ export const agroNavItems = [
         name: "Facturas",
         href: "/agro-propietario/agro-facturas",
         icon: FileText,
+      },
+      {
+        name: "Notas de Crédito",
+        href: "/agro-propietario/agro-notas-credito",
+        icon: FileMinus,
       },
       {
         name: "Rangos de Facturación",
@@ -227,6 +233,11 @@ export const agroEmpleadoNavItems = [
         name: "Facturas",
         href: "/agro-empleados/agro-facturas",
         icon: FileText,
+      },
+      {
+        name: "Notas de Crédito",
+        href: "/agro-empleados/agro-notas-credito",
+        icon: FileMinus,
       },
       {
         name: "Rangos de Facturación",
