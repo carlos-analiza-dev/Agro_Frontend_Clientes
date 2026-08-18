@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -23,6 +21,15 @@ import {
   CrearNotaCreditoEmpleado,
 } from "@/api/agroservicio/notas-credito/accions/crear-nota-credito";
 import useGetAllSucursalesByPropietario from "@/hooks/agroservicios/sucursales/useGetAllSucursalesByPropietario";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import Modal from "@/components/generics/Modal";
 
 interface Props {
   onSucces: () => void;
@@ -43,6 +50,10 @@ const FormCrearNotaCredito = ({
   const [selectedSucursal, setSelectedSucursal] = useState(
     isPropietario ? "" : sucursalId || "",
   );
+
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [formDataToSubmit, setFormDataToSubmit] =
+    useState<CrearNotaCreditoInterface | null>(null);
 
   const { data: sucursales } = useGetAllSucursalesByPropietario(propietarioId);
 
@@ -274,6 +285,8 @@ const FormCrearNotaCredito = ({
       setBusquedaFactura("");
       setBusquedasProductos({});
       setMostrarOpcionesProductos({});
+      setShowConfirmModal(false);
+      setFormDataToSubmit(null);
     },
     onError: (error) => {
       if (isAxiosError(error)) {
@@ -287,6 +300,7 @@ const FormCrearNotaCredito = ({
       } else {
         toast.error("Hubo un error al crear la nota de crédito");
       }
+      setShowConfirmModal(false);
     },
   });
 
@@ -342,7 +356,14 @@ const FormCrearNotaCredito = ({
       monto: montoTotal,
     };
 
-    mutation.mutate(dataConMontoActualizado);
+    setFormDataToSubmit(dataConMontoActualizado);
+    setShowConfirmModal(true);
+  };
+
+  const confirmSubmit = () => {
+    if (formDataToSubmit) {
+      mutation.mutate(formDataToSubmit);
+    }
   };
 
   const getProductosFiltrados = (index: number) => {
@@ -386,230 +407,336 @@ const FormCrearNotaCredito = ({
     );
   }
 
+  const facturaParaModal = facturas?.find((f) => f.id === watch("factura_id"));
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {isPropietario && (
-        <div className="space-y-1">
-          <Label>Sucursal*</Label>
-          <Select
-            value={selectedSucursal}
-            onValueChange={(value) => {
-              setSelectedSucursal(value);
-
-              limpiarFactura();
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Seleccione una sucursal" />
-            </SelectTrigger>
-            <SelectContent>
-              {sucursales?.map((sucursal) => (
-                <SelectItem key={sucursal.id} value={sucursal.id}>
-                  {sucursal.nombre}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {!selectedSucursal && (
-            <p className="text-red-500 text-sm">
-              Debe seleccionar una sucursal
-            </p>
-          )}
-        </div>
-      )}
-
-      <div className="space-y-1">
-        <Label>Numero de Factura*</Label>
-        <div className="relative">
-          <Input
-            placeholder="Buscar por número de factura o nombre del cliente..."
-            value={busquedaFactura}
-            onChange={(e) => {
-              setBusquedaFactura(e.target.value);
-              setMostrarOpcionesFactura(true);
-            }}
-            onFocus={() => setMostrarOpcionesFactura(true)}
-            className="w-full"
-            disabled={isPropietario && !selectedSucursal}
-          />
-          {facturaSeleccionada && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="absolute right-2 top-1/2 transform -translate-y-1/2"
-              onClick={limpiarFactura}
+    <>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {isPropietario && (
+          <div className="space-y-1">
+            <Label>Sucursal*</Label>
+            <Select
+              value={selectedSucursal}
+              onValueChange={(value) => {
+                setSelectedSucursal(value);
+                limpiarFactura();
+              }}
             >
-              ×
-            </Button>
-          )}
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccione una sucursal" />
+              </SelectTrigger>
+              <SelectContent>
+                {sucursales?.map((sucursal) => (
+                  <SelectItem key={sucursal.id} value={sucursal.id}>
+                    {sucursal.nombre}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {!selectedSucursal && (
+              <p className="text-red-500 text-sm">
+                Debe seleccionar una sucursal
+              </p>
+            )}
+          </div>
+        )}
 
-          {mostrarOpcionesFactura && facturasFiltradas.length > 0 && (
-            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-              {facturasFiltradas.map((factura) => (
-                <div
-                  key={factura.id}
-                  className="px-4 py-2 cursor-pointer hover:bg-gray-100 border-b last:border-b-0"
-                  onClick={() => seleccionarFactura(factura)}
-                >
-                  <div className="font-medium">{factura.numero_factura}</div>
-                  <div className="text-sm text-gray-600">
-                    Cliente: {factura.cliente?.nombre || "N/A"}
+        <div className="space-y-1">
+          <Label>Numero de Factura*</Label>
+          <div className="relative">
+            <Input
+              placeholder="Buscar por número de factura o nombre del cliente..."
+              value={busquedaFactura}
+              onChange={(e) => {
+                setBusquedaFactura(e.target.value);
+                setMostrarOpcionesFactura(true);
+              }}
+              onFocus={() => setMostrarOpcionesFactura(true)}
+              className="w-full"
+              disabled={isPropietario && !selectedSucursal}
+            />
+            {facturaSeleccionada && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                onClick={limpiarFactura}
+              >
+                ×
+              </Button>
+            )}
+
+            {mostrarOpcionesFactura && facturasFiltradas.length > 0 && (
+              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                {facturasFiltradas.map((factura) => (
+                  <div
+                    key={factura.id}
+                    className="px-4 py-2 cursor-pointer hover:bg-gray-100 border-b last:border-b-0"
+                    onClick={() => seleccionarFactura(factura)}
+                  >
+                    <div className="font-medium">{factura.numero_factura}</div>
+                    <div className="text-sm text-gray-600">
+                      Cliente: {factura.cliente?.nombre || "N/A"}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
+          </div>
+          {errors.factura_id && (
+            <p className="text-red-500 text-sm">{errors.factura_id.message}</p>
           )}
         </div>
-        {errors.factura_id && (
-          <p className="text-red-500 text-sm">{errors.factura_id.message}</p>
-        )}
-      </div>
 
-      <div className="space-y-1">
-        <Label>Motivo*</Label>
-        <Input
-          {...register("motivo", { required: "El motivo es obligatorio" })}
-          placeholder="Motivo de la nota de crédito"
-        />
-        {errors.motivo && (
-          <p className="text-red-500 text-sm">{errors.motivo.message}</p>
-        )}
-      </div>
+        <div className="space-y-1">
+          <Label>Motivo*</Label>
+          <Input
+            {...register("motivo", { required: "El motivo es obligatorio" })}
+            placeholder="Motivo de la nota de crédito"
+          />
+          {errors.motivo && (
+            <p className="text-red-500 text-sm">{errors.motivo.message}</p>
+          )}
+        </div>
 
-      <div className="space-y-4">
-        <Label className="font-bold">Detalles de Productos</Label>
-        {fields.map((field, index) => {
-          const productosFiltrados = getProductosFiltrados(index);
-          const productoSeleccionado = getProductoSeleccionado(index);
-          const montoProducto = getMontoProductoActual(index);
+        <div className="space-y-4">
+          <Label className="font-bold">Detalles de Productos</Label>
+          {fields.map((field, index) => {
+            const productosFiltrados = getProductosFiltrados(index);
+            const productoSeleccionado = getProductoSeleccionado(index);
+            const montoProducto = getMontoProductoActual(index);
 
-          return (
-            <div key={field.id} className="block">
-              <div className="mb-4">
-                <Label>Producto*</Label>
-                <div className="relative">
-                  <Input
-                    placeholder="Buscar producto..."
-                    value={busquedasProductos[index] || ""}
-                    onChange={(e) =>
-                      handleBusquedaProductoChange(index, e.target.value)
-                    }
-                    onFocus={() =>
-                      setMostrarOpcionesProductos((prev) => ({
-                        ...prev,
-                        [index]: true,
-                      }))
-                    }
-                  />
-                  {productoSeleccionado && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                      onClick={() => limpiarProducto(index)}
-                    >
-                      ×
-                    </Button>
-                  )}
-
-                  {mostrarOpcionesProductos[index] &&
-                    productosFiltrados.length > 0 && (
-                      <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                        {productosFiltrados.map((producto) => (
-                          <div
-                            key={producto.id}
-                            className="px-4 py-2 cursor-pointer hover:bg-gray-100 border-b last:border-b-0"
-                            onClick={() => seleccionarProducto(index, producto)}
-                          >
-                            <div className="font-medium">{producto.nombre}</div>
-                            <div className="text-sm text-gray-600">
-                              {simbolo}
-                              {calcularPrecioProducto(producto.id).toFixed(2)}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+            return (
+              <div key={field.id} className="block">
+                <div className="mb-4">
+                  <Label>Producto*</Label>
+                  <div className="relative">
+                    <Input
+                      placeholder="Buscar producto..."
+                      value={busquedasProductos[index] || ""}
+                      onChange={(e) =>
+                        handleBusquedaProductoChange(index, e.target.value)
+                      }
+                      onFocus={() =>
+                        setMostrarOpcionesProductos((prev) => ({
+                          ...prev,
+                          [index]: true,
+                        }))
+                      }
+                    />
+                    {productoSeleccionado && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                        onClick={() => limpiarProducto(index)}
+                      >
+                        ×
+                      </Button>
                     )}
-                </div>
-                {errors.detalles?.[index]?.producto_id && (
-                  <p className="text-red-500 text-sm">
-                    {errors.detalles[index]?.producto_id?.message}
-                  </p>
-                )}
-              </div>
-              <div className="grid grid-cols-3 gap-2 items-end border p-2 rounded-md">
-                <div>
-                  <Label>Cantidad*</Label>
-                  <Input
-                    type="number"
-                    {...register(`detalles.${index}.cantidad`, {
-                      required: "Debe indicar la cantidad",
-                      min: { value: 1, message: "Cantidad mínima es 1" },
-                      valueAsNumber: true,
-                    })}
-                    onChange={(e) => handleCantidadChange(e, index)}
-                  />
-                  {errors.detalles?.[index]?.cantidad && (
+
+                    {mostrarOpcionesProductos[index] &&
+                      productosFiltrados.length > 0 && (
+                        <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                          {productosFiltrados.map((producto) => (
+                            <div
+                              key={producto.id}
+                              className="px-4 py-2 cursor-pointer hover:bg-gray-100 border-b last:border-b-0"
+                              onClick={() =>
+                                seleccionarProducto(index, producto)
+                              }
+                            >
+                              <div className="font-medium">
+                                {producto.nombre}
+                              </div>
+                              <div className="text-sm text-gray-600">
+                                {simbolo}
+                                {calcularPrecioProducto(producto.id).toFixed(2)}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                  </div>
+                  {errors.detalles?.[index]?.producto_id && (
                     <p className="text-red-500 text-sm">
-                      {errors.detalles[index]?.cantidad?.message}
+                      {errors.detalles[index]?.producto_id?.message}
                     </p>
                   )}
                 </div>
+                <div className="grid grid-cols-3 gap-2 items-end border p-2 rounded-md">
+                  <div>
+                    <Label>Cantidad*</Label>
+                    <Input
+                      type="number"
+                      {...register(`detalles.${index}.cantidad`, {
+                        required: "Debe indicar la cantidad",
+                        min: { value: 1, message: "Cantidad mínima es 1" },
+                        valueAsNumber: true,
+                      })}
+                      onChange={(e) => handleCantidadChange(e, index)}
+                    />
+                    {errors.detalles?.[index]?.cantidad && (
+                      <p className="text-red-500 text-sm">
+                        {errors.detalles[index]?.cantidad?.message}
+                      </p>
+                    )}
+                  </div>
 
-                <div>
-                  <Label>Monto Devuelto</Label>
-                  <Input
-                    type="number"
-                    value={montoProducto}
-                    readOnly
-                    className="bg-gray-100"
-                  />
-                </div>
+                  <div>
+                    <Label>Monto Devuelto</Label>
+                    <Input
+                      type="number"
+                      value={montoProducto}
+                      readOnly
+                      className="bg-gray-100"
+                    />
+                  </div>
 
-                <div>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={() => remove(index)}
-                    disabled={fields.length === 1}
-                  >
-                    Eliminar
-                  </Button>
+                  <div>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      onClick={() => remove(index)}
+                      disabled={fields.length === 1}
+                    >
+                      Eliminar
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
 
-        <Button
-          type="button"
-          onClick={() =>
-            append({ producto_id: "", cantidad: 1, montoDevuelto: 0 })
-          }
-        >
-          Agregar Producto
-        </Button>
-      </div>
-
-      <div className="flex justify-between items-center pt-4 border-t">
-        <div className="text-lg font-bold text-blue-600">
-          Monto total: {simbolo}
-          {montoTotal.toFixed(2)}
+          <Button
+            type="button"
+            onClick={() =>
+              append({ producto_id: "", cantidad: 1, montoDevuelto: 0 })
+            }
+          >
+            Agregar Producto
+          </Button>
         </div>
-        <Button
-          type="submit"
-          disabled={
-            mutation.isPending ||
-            (isPropietario && !selectedSucursal) ||
-            !facturaSeleccionada
-          }
-        >
-          {mutation.isPending ? "Creando..." : "Crear Nota de Crédito"}
-        </Button>
-      </div>
-    </form>
+
+        <div className="flex justify-between items-center pt-4 border-t">
+          <div className="text-lg font-bold text-blue-600">
+            Monto total: {simbolo}
+            {montoTotal.toFixed(2)}
+          </div>
+          <Button
+            type="submit"
+            disabled={
+              mutation.isPending ||
+              (isPropietario && !selectedSucursal) ||
+              !facturaSeleccionada
+            }
+          >
+            {mutation.isPending ? "Creando..." : "Crear Nota de Crédito"}
+          </Button>
+        </div>
+      </form>
+
+      <Modal
+        open={showConfirmModal}
+        onOpenChange={setShowConfirmModal}
+        title="Confirmar Nota de Crédito"
+        description=" ¿Estás seguro de que deseas crear esta nota de crédito? Revisa los
+              detalles a continuación antes de confirmar."
+        size="2xl"
+        height="auto"
+      >
+        <div className="space-y-4 py-4">
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h4 className="font-semibold mb-2">Información de la Factura</h4>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <span className="text-gray-600">Número de Factura:</span>
+              <span className="font-medium">
+                {facturaParaModal?.numero_factura || "N/A"}
+              </span>
+              <span className="text-gray-600">Cliente:</span>
+              <span className="font-medium">
+                {facturaParaModal?.cliente?.nombre || "N/A"}
+              </span>
+              <span className="text-gray-600">Motivo:</span>
+              <span className="font-medium">{watch("motivo") || "N/A"}</span>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">Productos a Devolver</h4>
+            <div className="border rounded-lg overflow-hidden">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="px-4 py-2 text-left">Producto</th>
+                    <th className="px-4 py-2 text-center">Cantidad</th>
+                    <th className="px-4 py-2 text-right">Monto Devuelto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {detalles.map((detalle, index) => {
+                    const producto = productos?.find(
+                      (p) => p.id === detalle.producto_id,
+                    );
+                    if (!producto || !detalle.cantidad || detalle.cantidad <= 0)
+                      return null;
+                    return (
+                      <tr key={index} className="border-t">
+                        <td className="px-4 py-2">{producto.nombre}</td>
+                        <td className="px-4 py-2 text-center">
+                          {detalle.cantidad}
+                        </td>
+                        <td className="px-4 py-2 text-right">
+                          {simbolo}
+                          {detalle.montoDevuelto?.toFixed(2) || "0.00"}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+                <tfoot className="bg-gray-50 font-semibold">
+                  <tr>
+                    <td colSpan={2} className="px-4 py-2 text-right">
+                      Total:
+                    </td>
+                    <td className="px-4 py-2 text-right text-blue-600">
+                      {simbolo}
+                      {montoTotal.toFixed(2)}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+
+          <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+            <p className="text-sm text-yellow-800">
+              ⚠️ Una vez confirmada, la nota de crédito quedará registrada y no
+              podrá ser modificada.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-5 flex justify-end gap-4">
+          <Button
+            variant="outline"
+            onClick={() => setShowConfirmModal(false)}
+            disabled={mutation.isPending}
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={confirmSubmit}
+            disabled={mutation.isPending}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            {mutation.isPending ? "Creando..." : "Confirmar Nota de Crédito"}
+          </Button>
+        </div>
+      </Modal>
+    </>
   );
 };
 

@@ -19,6 +19,7 @@ import {
   BadgePercent,
   FlaskConical,
   FileMinus,
+  History,
 } from "lucide-react";
 
 export const agroNavItems = [
@@ -109,6 +110,11 @@ export const agroNavItems = [
         name: "Traslados",
         href: "/agro-propietario/agro-traslados",
         icon: ArrowLeftRight,
+      },
+      {
+        name: "Movimientos",
+        href: "/agro-propietario/agro-movimientos-lotes",
+        icon: History,
       },
     ],
   },
@@ -258,6 +264,11 @@ export const agroEmpleadoNavItems = [
         name: "Traslados",
         href: "/agro-empleados/agro-traslados",
         icon: ArrowLeftRight,
+      },
+      {
+        name: "Movimientos",
+        href: "/agro-empleados/agro-movimientos-lotes",
+        icon: History,
       },
     ],
   },

@@ -43,6 +43,7 @@ const ClientesAgroServicioPage = () => {
   const { cliente } = useAuthStore();
   const propietarioId = cliente?.id ?? "";
   const paisId = cliente?.pais.id ?? "";
+  const simbolo = cliente?.pais.simbolo_moneda ?? "$";
   const [selectedCliente, setSelectedCliente] = useState<ClienteAgro | null>(
     null,
   );
@@ -413,6 +414,7 @@ const ClientesAgroServicioPage = () => {
               <TableAgroClientes
                 clientes={clientes}
                 handleEditCliente={handleEditCliente}
+                simbolo={simbolo}
               />
             </div>
           )}

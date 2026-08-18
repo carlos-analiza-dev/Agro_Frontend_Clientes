@@ -23,6 +23,7 @@ import TableNotaCredito from "@/components/agroservicio/notas-credito/TableNotaC
 import Modal from "@/components/generics/Modal";
 import FormCrearNotaCredito from "@/components/agroservicio/notas-credito/FormCrearNotaCredito";
 import { formatDate } from "@/helpers/funciones/formatDate";
+import SkeletonPage from "@/components/generics/SkeletonPage";
 
 const NotasCreditoPage = () => {
   const { cliente } = useAuthStore();
@@ -198,12 +199,7 @@ const NotasCreditoPage = () => {
           </div>
 
           {isLoading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto"></div>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Cargando notas...
-              </p>
-            </div>
+            <SkeletonPage />
           ) : notas.length === 0 ? (
             <div className="text-center py-8">
               <FileMinus className="h-12 w-12 text-gray-300 mx-auto mb-3" />

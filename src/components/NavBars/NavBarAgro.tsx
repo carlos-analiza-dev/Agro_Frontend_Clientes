@@ -47,6 +47,7 @@ import {
 } from "@/helpers/data/sidebar/siderbarAgro";
 import { getUserAgroInfo } from "@/helpers/funciones/agroservicio/profile/obtener-info-perfil";
 import useGetInfoAgro from "@/hooks/agroservicios/mi-agro/useGetInfoAgro";
+import Link from "next/link";
 
 interface Props {
   setMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -332,13 +333,15 @@ const NavBarAgro = ({
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className="hidden md:block">
-                  <Badge
-                    className={`${planInfo.color} cursor-help ${estaPorVencer ? "animate-pulse" : ""}`}
-                  >
-                    <Crown className="mr-1 h-3 w-3" />
-                    {planInfo.label}
-                    {estaVencido && <AlertCircle className="ml-1 h-3 w-3" />}
-                  </Badge>
+                  <Link href={"/comprar-plan"}>
+                    <Badge
+                      className={`${planInfo.color} cursor-help hover:cursor-pointer ${estaPorVencer ? "animate-pulse" : ""}`}
+                    >
+                      <Crown className="mr-1 h-3 w-3" />
+                      {planInfo.label}
+                      {estaVencido && <AlertCircle className="ml-1 h-3 w-3" />}
+                    </Badge>
+                  </Link>
                 </div>
               </TooltipTrigger>
               <TooltipContent>
