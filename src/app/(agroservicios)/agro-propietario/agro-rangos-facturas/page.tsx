@@ -102,7 +102,7 @@ const AgroRangosFacturaPage = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-6 space-y-6">
+    <div id="modulo-rangos" className="container mx-auto p-4 md:p-6 space-y-6">
       <div className="md:flex justify-between items-center gap-4">
         <TitlePage
           Icon={FileText}
@@ -114,10 +114,14 @@ const AgroRangosFacturaPage = () => {
           Icon={FileText}
           action={() => setOpenFormRango(true)}
           className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
+          id="add-rango"
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div
+        id="estadisticas-rangos"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      >
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Rangos</CardTitle>
@@ -162,7 +166,7 @@ const AgroRangosFacturaPage = () => {
         </Card>
       </div>
 
-      <div className="relative">
+      <div id="buscador-rangos" className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
         <Input
           placeholder="Buscar por CAI, prefijo o agroservicio..."
@@ -172,7 +176,7 @@ const AgroRangosFacturaPage = () => {
         />
       </div>
 
-      <Card>
+      <Card id="lista-rangos">
         <CardHeader>
           <CardTitle>Lista de Rangos</CardTitle>
           <CardDescription>

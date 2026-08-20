@@ -96,7 +96,10 @@ const MovimientosLotesPage = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-6 space-y-6">
+    <div
+      id="movimientos-lotes-page"
+      className="container mx-auto p-4 md:p-6 space-y-6"
+    >
       <div className="md:flex justify-between items-start gap-4">
         <TitlePage
           Icon={History}
@@ -105,7 +108,7 @@ const MovimientosLotesPage = () => {
         />
       </div>
 
-      <Card>
+      <Card id="filtros-movimientos-lotes">
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
@@ -205,7 +208,7 @@ const MovimientosLotesPage = () => {
           </div>
 
           <div className="flex flex-col md:flex-row gap-4 mt-4">
-            <div className="flex-1 relative">
+            <div id="buscador-movimientos" className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Buscar por producto, factura o compra..."
@@ -271,7 +274,7 @@ const MovimientosLotesPage = () => {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card id="tabla-movimientos-lotes">
         <CardContent className="pt-6">
           <div className="flex justify-between items-center mb-4">
             <div>
@@ -283,7 +286,7 @@ const MovimientosLotesPage = () => {
           </div>
 
           <ScrollArea className="w-full">
-            <div className="min-w-[800px]">
+            <div id="resultados-movimientos" className="min-w-[800px]">
               <TableMovimientosLotes
                 movimientosFiltrados={movimientosFiltrados}
               />

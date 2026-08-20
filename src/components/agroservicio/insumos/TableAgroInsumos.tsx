@@ -116,6 +116,7 @@ const TableAgroInsumos = ({
                     size="icon"
                     className="h-8 w-8"
                     title="Configuracion"
+                    id="config-escalas-descuentos-insumos"
                   >
                     <Cog className="h-4 w-4" />
                   </Button>
@@ -123,6 +124,7 @@ const TableAgroInsumos = ({
                     onClick={() => handleEditInsumo(insumo)}
                     type="button"
                     variant={"ghost"}
+                    id="edit-insumo"
                   >
                     <Edit className="mr-2 h-4 w-4" />
                   </Button>

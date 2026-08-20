@@ -165,6 +165,7 @@ const TableProveedores = ({
                   title="Editar Proveedor"
                   onClick={() => handleEditProveedor(proveedor)}
                   variant={"ghost"}
+                  id="edit-proveedor"
                 >
                   <Pencil />
                 </Button>

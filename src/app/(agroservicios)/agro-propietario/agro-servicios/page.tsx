@@ -202,7 +202,7 @@ const AgroservicioDashboard = () => {
       </div>
 
       {mostrarFiltros && (
-        <Card>
+        <Card id="id-filters-dashboard">
           <CardHeader>
             <CardTitle className="text-lg">Filtros</CardTitle>
             <CardDescription>
@@ -328,7 +328,10 @@ const AgroservicioDashboard = () => {
         </Card>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div
+        id="id-resumen-dashboard"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+      >
         <StatCard
           title="Total Facturas"
           value={metricas_facturas?.cantidadFacturas || 0}
@@ -371,7 +374,7 @@ const AgroservicioDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+        <Card id="id-metrica-ventas">
           <CardHeader>
             <CardTitle>Análisis de Ventas</CardTitle>
             <CardDescription>
@@ -394,7 +397,7 @@ const AgroservicioDashboard = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card id="id-metrica-impuestos">
           <CardHeader>
             <CardTitle>Distribución de Impuestos</CardTitle>
             <CardDescription>Desglose de impuestos aplicados</CardDescription>
@@ -429,7 +432,7 @@ const AgroservicioDashboard = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card id="id-metrica-descuentos">
           <CardHeader>
             <CardTitle>Descuentos y Cargos Extra</CardTitle>
             <CardDescription>
@@ -452,7 +455,7 @@ const AgroservicioDashboard = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card id="id-metrica-indicadores">
           <CardHeader>
             <CardTitle>Resumen de Indicadores</CardTitle>
             <CardDescription>Facturas y ticket promedio</CardDescription>
@@ -481,7 +484,7 @@ const AgroservicioDashboard = () => {
         </Card>
       </div>
 
-      <Card>
+      <Card id="id-detalles-financieros">
         <CardHeader>
           <CardTitle>Detalles Financieros</CardTitle>
           <CardDescription>Desglose completo de las métricas</CardDescription>
@@ -516,31 +519,38 @@ const AgroservicioDashboard = () => {
         </CardContent>
       </Card>
 
-      <TopSucursalesComponent
-        data={top_sucursales || []}
-        isLoading={cargando_sucursales}
-        title="Top Sucursales"
-        description="Ranking de sucursales con mayores ventas"
-        moneda={moneda}
-      />
+      <div id="id-top-sucursales">
+        <TopSucursalesComponent
+          data={top_sucursales || []}
+          isLoading={cargando_sucursales}
+          title="Top Sucursales"
+          description="Ranking de sucursales con mayores ventas"
+          moneda={moneda}
+        />
+      </div>
 
-      <TopClientesComponent
-        data={top_clientes || []}
-        isLoading={cargando_clientes}
-        moneda={moneda}
-      />
+      <div id="id-top-clientes">
+        <TopClientesComponent
+          data={top_clientes || []}
+          isLoading={cargando_clientes}
+          moneda={moneda}
+        />
+      </div>
 
-      <TopProductosComponent
-        data={metricas_productos || []}
-        isLoading={cargando_products}
-        title="Productos Más Vendidos"
-        description="Top productos con mayor cantidad de ventas en el período seleccionado"
-      />
-
-      <EstadosFacturasComponent
-        data={estados_facturas || []}
-        isLoading={cargando_estados}
-      />
+      <div id="id-top-productos">
+        <TopProductosComponent
+          data={metricas_productos || []}
+          isLoading={cargando_products}
+          title="Productos Más Vendidos"
+          description="Top productos con mayor cantidad de ventas en el período seleccionado"
+        />
+      </div>
+      <div id="id-estados-facturas">
+        <EstadosFacturasComponent
+          data={estados_facturas || []}
+          isLoading={cargando_estados}
+        />
+      </div>
     </div>
   );
 };

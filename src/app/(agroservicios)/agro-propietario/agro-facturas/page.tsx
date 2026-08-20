@@ -99,7 +99,10 @@ const FacturasAgroPage = () => {
   }, [sucursalSeleccionada, fechaInicio, fechaFin]);
 
   return (
-    <div className="container mx-auto p-4 md:p-6 space-y-6">
+    <div
+      id="modulo-facturas"
+      className="container mx-auto p-4 md:p-6 space-y-6"
+    >
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <TitlePage Icon={FileText} title="Facturación de Agroservicio" />
       </div>
@@ -135,7 +138,7 @@ const FacturasAgroPage = () => {
         </div>
       )}
 
-      <Card className="border shadow-sm">
+      <Card id="filters-facturacion" className="border shadow-sm">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -162,7 +165,7 @@ const FacturasAgroPage = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
+            <div id="sucusal-facturacion" className="space-y-2">
               <Label
                 htmlFor="sucursal"
                 className="flex items-center gap-2 text-sm font-medium"
@@ -192,7 +195,7 @@ const FacturasAgroPage = () => {
               </Select>
             </div>
 
-            <div className="space-y-2">
+            <div id="fechaIn-facturacion" className="space-y-2">
               <Label
                 htmlFor="fechaInicio"
                 className="flex items-center gap-2 text-sm font-medium"
@@ -213,7 +216,7 @@ const FacturasAgroPage = () => {
               />
             </div>
 
-            <div className="space-y-2">
+            <div id="fechaFin-facturacion" className="space-y-2">
               <Label
                 htmlFor="fechaFin"
                 className="flex items-center gap-2 text-sm font-medium"

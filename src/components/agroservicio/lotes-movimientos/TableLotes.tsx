@@ -75,6 +75,7 @@ const TableLotes = ({ filteredLotes, moneda, handleTransferir }: Props) => {
             </TableCell>
             <TableCell className="text-center">
               <Button
+                id="acciones-lotes"
                 onClick={() => handleTransferir(lote)}
                 variant={"outline"}
               >

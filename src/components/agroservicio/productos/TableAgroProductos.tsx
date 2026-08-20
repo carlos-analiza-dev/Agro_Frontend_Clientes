@@ -198,6 +198,7 @@ const TableAgroProductos = ({
                       size="icon"
                       className="h-8 w-8"
                       title="Configuracion"
+                      id="config-escalas-descuentos"
                     >
                       <Cog className="h-4 w-4" />
                     </Button>
@@ -207,6 +208,7 @@ const TableAgroProductos = ({
                       size="icon"
                       className="h-8 w-8"
                       title="Editar producto"
+                      id="edit-producto"
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -216,6 +218,7 @@ const TableAgroProductos = ({
                       size="icon"
                       className="h-8 w-8"
                       title="Subir imágenes"
+                      id="subir-imagen-producto"
                     >
                       <Image className="h-4 w-4" />
                     </Button>

@@ -9,6 +9,7 @@ interface StatCardProps {
   gradientTo: string;
   iconColor: string;
   textColor: string;
+  id?: string;
 }
 
 export function StatCard({
@@ -19,9 +20,11 @@ export function StatCard({
   gradientTo,
   iconColor,
   textColor,
+  id = "",
 }: StatCardProps) {
   return (
     <Card
+      id={id}
       className={`bg-gradient-to-br ${gradientFrom} ${gradientTo} border transition-all duration-200 hover:shadow-md`}
     >
       <CardContent className="p-3 sm:p-4">

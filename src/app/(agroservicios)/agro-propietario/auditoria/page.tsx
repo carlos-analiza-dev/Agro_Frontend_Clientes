@@ -83,9 +83,12 @@ const AuditoriaPage = () => {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
+      <div
+        id="id-auditoria-header"
+        className="flex items-center justify-between"
+      >
         <TitlePage Icon={ShieldEllipsis} title="Auditorías" />
-        <div className="flex gap-2 flex-wrap">
+        <div id="id-auditoria-badges" className="flex gap-2 flex-wrap">
           <Badge variant="outline" className="flex items-center gap-1">
             <Truck className="h-3 w-3" />
             {audit_proveedores?.total || 0}
@@ -111,84 +114,126 @@ const AuditoriaPage = () => {
 
       <Separator />
 
-      <Tabs defaultValue="proveedores" className="w-full">
-        <TabsList className="grid w-full max-w-5xl grid-cols-5">
-          <TabsTrigger value="proveedores" className="flex items-center gap-2">
-            <Truck className="h-4 w-4" />
-            Proveedores
-          </TabsTrigger>
-          <TabsTrigger value="productos" className="flex items-center gap-2">
-            <ShoppingBag className="h-4 w-4" />
-            Productos
-          </TabsTrigger>
-          <TabsTrigger value="compras" className="flex items-center gap-2">
-            <ShoppingCart className="h-4 w-4" />
-            Compras
-          </TabsTrigger>
-          <TabsTrigger
-            value="movimientos-lote"
-            className="flex items-center gap-2"
+      <div id="id-auditoria-tabs-container">
+        <Tabs defaultValue="proveedores" className="w-full">
+          <TabsList
+            id="id-auditoria-tabs-list"
+            className="grid w-full max-w-5xl grid-cols-5"
           >
-            <ArrowRightLeft className="h-4 w-4" />
-            Movimientos Lote
-          </TabsTrigger>
-          <TabsTrigger value="empleados" className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            Empleados
-          </TabsTrigger>
-        </TabsList>
+            <TabsTrigger
+              id="id-tab-proveedores"
+              value="proveedores"
+              className="flex items-center gap-2"
+            >
+              <Truck className="h-4 w-4" />
+              Proveedores
+            </TabsTrigger>
+            <TabsTrigger
+              id="id-tab-productos"
+              value="productos"
+              className="flex items-center gap-2"
+            >
+              <ShoppingBag className="h-4 w-4" />
+              Productos
+            </TabsTrigger>
+            <TabsTrigger
+              id="id-tab-compras"
+              value="compras"
+              className="flex items-center gap-2"
+            >
+              <ShoppingCart className="h-4 w-4" />
+              Compras
+            </TabsTrigger>
+            <TabsTrigger
+              id="id-tab-movimientos-lote"
+              value="movimientos-lote"
+              className="flex items-center gap-2"
+            >
+              <ArrowRightLeft className="h-4 w-4" />
+              Movimientos Lote
+            </TabsTrigger>
+            <TabsTrigger
+              id="id-tab-empleados"
+              value="empleados"
+              className="flex items-center gap-2"
+            >
+              <Users className="h-4 w-4" />
+              Empleados
+            </TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="proveedores" className="mt-6">
-          <AuditoriaProveedoresContent
-            isLoadingProveedores={isLoadingProveedores}
-            audit_proveedores={audit_proveedores}
-            totalPagesProveedores={totalPagesProveedores}
-            currentPageProveedores={currentPageProveedores}
-            setCurrentPageProveedores={setCurrentPageProveedores}
-          />
-        </TabsContent>
+          <TabsContent
+            id="id-auditoria-proveedores"
+            value="proveedores"
+            className="mt-6"
+          >
+            <AuditoriaProveedoresContent
+              isLoadingProveedores={isLoadingProveedores}
+              audit_proveedores={audit_proveedores}
+              totalPagesProveedores={totalPagesProveedores}
+              currentPageProveedores={currentPageProveedores}
+              setCurrentPageProveedores={setCurrentPageProveedores}
+            />
+          </TabsContent>
 
-        <TabsContent value="productos" className="mt-6">
-          <AuditoriaProductosContent
-            isLoadingProductos={isLoadingProductos}
-            audit_productos={audit_productos}
-            totalPagesProductos={totalPagesProductos}
-            currentPageProductos={currentPageProductos}
-            setCurrentPageProductos={setCurrentPageProductos}
-          />
-        </TabsContent>
+          <TabsContent
+            id="id-auditoria-productos"
+            value="productos"
+            className="mt-6"
+          >
+            <AuditoriaProductosContent
+              isLoadingProductos={isLoadingProductos}
+              audit_productos={audit_productos}
+              totalPagesProductos={totalPagesProductos}
+              currentPageProductos={currentPageProductos}
+              setCurrentPageProductos={setCurrentPageProductos}
+            />
+          </TabsContent>
 
-        <TabsContent value="compras" className="mt-6">
-          <AuditoriaComprasContent
-            isLoadingCompras={isLoadingCompras}
-            audit_compras={audit_compras}
-            totalPagesCompras={totalPagesCompras}
-            currentPageCompras={currentPageCompras}
-            setCurrentPageCompras={setCurrentPageCompras}
-            moneda={moneda}
-          />
-        </TabsContent>
+          <TabsContent
+            id="id-auditoria-compras"
+            value="compras"
+            className="mt-6"
+          >
+            <AuditoriaComprasContent
+              isLoadingCompras={isLoadingCompras}
+              audit_compras={audit_compras}
+              totalPagesCompras={totalPagesCompras}
+              currentPageCompras={currentPageCompras}
+              setCurrentPageCompras={setCurrentPageCompras}
+              moneda={moneda}
+            />
+          </TabsContent>
 
-        <TabsContent value="movimientos-lote" className="mt-6">
-          <AuditoriaMovimientosLoteContent
-            isLoadingMovimientosLote={isLoadingMovimientosLote}
-            audit_movimientos_lote={audit_movimientos_lote}
-            totalPagesMovimientosLote={totalPagesMovimientosLote}
-            currentPageMovimientosLote={currentPageMovimientosLote}
-            setCurrentPageMovimientosLote={setCurrentPageMovimientosLote}
-          />
-        </TabsContent>
+          <TabsContent
+            id="id-auditoria-movimientos-lote"
+            value="movimientos-lote"
+            className="mt-6"
+          >
+            <AuditoriaMovimientosLoteContent
+              isLoadingMovimientosLote={isLoadingMovimientosLote}
+              audit_movimientos_lote={audit_movimientos_lote}
+              totalPagesMovimientosLote={totalPagesMovimientosLote}
+              currentPageMovimientosLote={currentPageMovimientosLote}
+              setCurrentPageMovimientosLote={setCurrentPageMovimientosLote}
+            />
+          </TabsContent>
 
-        <TabsContent value="empleados" className="mt-6">
-          <AuditoriaEmpleadosContent
-            isLoadingEmpleados={isLoadingAuditEmpleados}
-            audit_empleados={audit_empleados}
-            totalPagesEmpleados={totalPagesEmpleados}
-            currentPageEmpleados={currentPageEmpleados}
-            setCurrentPageEmpleados={setCurrentPageEmpleados}
-          />
-        </TabsContent>
-      </Tabs>
+          <TabsContent
+            id="id-auditoria-empleados"
+            value="empleados"
+            className="mt-6"
+          >
+            <AuditoriaEmpleadosContent
+              isLoadingEmpleados={isLoadingAuditEmpleados}
+              audit_empleados={audit_empleados}
+              totalPagesEmpleados={totalPagesEmpleados}
+              currentPageEmpleados={currentPageEmpleados}
+              setCurrentPageEmpleados={setCurrentPageEmpleados}
+            />
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };

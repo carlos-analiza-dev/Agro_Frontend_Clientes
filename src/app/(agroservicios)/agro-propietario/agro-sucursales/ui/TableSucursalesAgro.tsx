@@ -125,6 +125,7 @@ const TableSucursalesAgro = ({
               <TableCell>
                 <div className="flex justify-center gap-2">
                   <button
+                    id="id-edit-sucursal"
                     className="p-1 hover:bg-blue-50 rounded transition-colors"
                     onClick={() => handleEditSucursal(sucursal)}
                   >

@@ -21,6 +21,7 @@ interface Props {
   loading?: boolean;
   fullWidth?: boolean;
   capitalize?: boolean;
+  id?: string;
 }
 
 const ButtonAdd = ({
@@ -35,9 +36,11 @@ const ButtonAdd = ({
   loading = false,
   fullWidth = false,
   capitalize = true,
+  id,
 }: Props) => {
   return (
     <Button
+      id={id}
       onClick={action}
       disabled={disabled || loading}
       variant={variant}

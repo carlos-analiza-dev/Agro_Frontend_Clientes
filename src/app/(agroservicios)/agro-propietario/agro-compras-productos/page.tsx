@@ -60,15 +60,20 @@ const ComprasProductosPage = () => {
     setTipoPago("");
     setOffset(0);
   };
+
   return (
-    <div className="container mx-auto py-6">
-      <div className="md:flex justify-between items-center gap-4">
+    <div id="id-compras-container" className="container mx-auto py-6">
+      <div
+        id="id-compras-header"
+        className="md:flex justify-between items-center gap-4"
+      >
         <TitlePage
           Icon={ShoppingCart}
           title="Compras"
           description="Gestión de compras agro servicio"
         />
         <ButtonAdd
+          id="id-compras-add-btn"
           title="Agregar Compra"
           Icon={ShoppingCart}
           action={() => setIsOpen(true)}
@@ -76,9 +81,9 @@ const ComprasProductosPage = () => {
         />
       </div>
 
-      <div className="mt-5 p-4 bg-muted/50 rounded-lg">
+      <div id="id-compras-filters" className="mt-5 p-4 bg-muted/50 rounded-lg">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
+          <div id="id-compras-filter-proveedor">
             <Select value={proveedor} onValueChange={setProveedor}>
               <SelectTrigger>
                 <SelectValue placeholder="Filtrar por proveedor" />
@@ -97,7 +102,8 @@ const ComprasProductosPage = () => {
               </SelectContent>
             </Select>
           </div>
-          <div>
+
+          <div id="id-compras-filter-sucursal">
             <Select value={sucursal} onValueChange={setSucursal}>
               <SelectTrigger>
                 <SelectValue placeholder="Filtrar por sucursal" />
@@ -116,7 +122,8 @@ const ComprasProductosPage = () => {
               </SelectContent>
             </Select>
           </div>
-          <div>
+
+          <div id="id-compras-filter-tipo-pago">
             <Select value={tipoPago} onValueChange={setTipoPago}>
               <SelectTrigger>
                 <SelectValue placeholder="Filtrar por tipo de pago" />
@@ -131,14 +138,21 @@ const ComprasProductosPage = () => {
               </SelectContent>
             </Select>
           </div>
-          <Button variant="outline" onClick={clearFilters}>
-            <Filter className="mr-2 h-4 w-4" /> Limpiar
-          </Button>
+
+          <div id="id-compras-filter-actions">
+            <Button
+              variant="outline"
+              onClick={clearFilters}
+              className="w-full md:w-auto"
+            >
+              <Filter className="mr-2 h-4 w-4" /> Limpiar
+            </Button>
+          </div>
         </div>
       </div>
 
-      <div className="mt-5">
-        <div className="rounded-md border">
+      <div id="id-compras-table-section" className="mt-5">
+        <div id="id-compras-table" className="rounded-md border">
           <TableComprasProductos
             comprasData={comprasData}
             isLoading={isLoading}
@@ -156,6 +170,7 @@ const ComprasProductosPage = () => {
           </div>
         )}
       </div>
+
       <Modal
         open={isOpen}
         onOpenChange={setIsOpen}

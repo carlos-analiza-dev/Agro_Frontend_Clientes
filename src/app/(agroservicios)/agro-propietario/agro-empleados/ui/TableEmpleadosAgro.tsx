@@ -300,7 +300,10 @@ const TableEmpleadosAgro = ({
                   </span>
                 </TableCell>
                 <TableCell>
-                  <div className="flex justify-center gap-1">
+                  <div
+                    id="id-options-empleados"
+                    className="flex justify-center gap-1"
+                  >
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">

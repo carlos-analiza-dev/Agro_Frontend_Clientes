@@ -132,6 +132,7 @@ const TableAgroClientes = ({
                       className="h-8 w-8 p-0 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
                       title="Editar"
                       onClick={() => handleEditCliente(cliente)}
+                      id="id-edit-cliente"
                     >
                       <span className="sr-only">Editar</span>
                       <Edit className="h-4 w-4" />
@@ -142,6 +143,7 @@ const TableAgroClientes = ({
                       className="h-8 w-8 p-0 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
                       title="Ver productos frecuentes"
                       onClick={() => handleViewProductos(cliente)}
+                      id="id-ver-productos"
                     >
                       <span className="sr-only">Ver productos frecuentes</span>
                       <Eye className="h-4 w-4" />

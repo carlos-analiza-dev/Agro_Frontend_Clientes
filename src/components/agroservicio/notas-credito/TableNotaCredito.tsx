@@ -100,7 +100,7 @@ const TableNotaCredito = ({ notas, propietarioId, moneda }: Props) => {
               </TableCell>
               <TableCell>{formatDateOnly(nota.createdAt)}</TableCell>
               <TableCell>
-                <div className="flex justify-center gap-3">
+                <div id="acciones-nota" className="flex justify-center gap-3">
                   <Button
                     variant="outline"
                     size="sm"

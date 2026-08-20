@@ -70,6 +70,7 @@ const TableImpuestosProductos = ({
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
                     <Button
+                      id="edit-impuesto"
                       onClick={() => handleEditImpuesto(impuesto)}
                       size="icon"
                       variant="outline"

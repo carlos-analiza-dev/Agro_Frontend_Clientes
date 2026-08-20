@@ -131,7 +131,10 @@ const ExistenciaProductosPage = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-6 space-y-6">
+    <div
+      id="existencia-productos-page"
+      className="container mx-auto p-4 md:p-6 space-y-6"
+    >
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <TitlePage Icon={Warehouse} title="Existencia de Productos" />
         {!isLoading && totalRegistros > 0 && (
@@ -145,10 +148,10 @@ const ExistenciaProductosPage = () => {
         )}
       </div>
 
-      <Card>
+      <Card id="filtros-existencia">
         <CardContent className="p-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="relative">
+            <div id="buscador-existencia" className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Buscar producto o sucursal..."
@@ -207,7 +210,7 @@ const ExistenciaProductosPage = () => {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card id="tabla-existencia">
         <CardContent className="p-0">
           <TableExistencia filteredData={filteredData} />
         </CardContent>

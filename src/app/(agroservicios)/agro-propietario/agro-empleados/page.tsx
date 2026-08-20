@@ -49,10 +49,17 @@ const EmpleadosAgroPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 md:p-6 space-y-6">
-      <div className="md:flex justify-between items-center gap-4">
+    <div
+      id="id-empleados-container"
+      className="container mx-auto p-4 md:p-6 space-y-6"
+    >
+      <div
+        id="id-empleados-header"
+        className="md:flex justify-between items-center gap-4"
+      >
         <TitlePage Icon={Users} title="Control de Empleados" />
         <ButtonAdd
+          id="id-empleados-add-btn"
           title="Agregar Empleado"
           Icon={Users}
           action={() => setOpenModalForm(true)}
@@ -60,8 +67,12 @@ const EmpleadosAgroPage = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div
+        id="id-empleados-stats"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      >
         <StatCard
+          id="id-empleados-stat-total"
           title="Total Empleados"
           value={total}
           icon={Users}
@@ -72,6 +83,7 @@ const EmpleadosAgroPage = () => {
         />
 
         <StatCard
+          id="id-empleados-stat-activos"
           title="Activos"
           value={empleados.filter((e) => e.isActive).length}
           icon={UserCheck}
@@ -82,6 +94,7 @@ const EmpleadosAgroPage = () => {
         />
 
         <StatCard
+          id="id-empleados-stat-inactivos"
           title="Inactivos"
           value={empleados.filter((e) => !e.isActive).length}
           icon={UserX}
@@ -92,6 +105,7 @@ const EmpleadosAgroPage = () => {
         />
 
         <StatCard
+          id="id-empleados-stat-porcentaje"
           title="Porcentaje Activos"
           value={`${total > 0 ? Math.round((empleados.filter((e) => e.isActive).length / total) * 100) : 0}%`}
           icon={User}
@@ -102,31 +116,35 @@ const EmpleadosAgroPage = () => {
         />
       </div>
 
-      {isLoading ? (
-        <div className="mt-10 mb-10">
-          <SkeletonTable />
-        </div>
-      ) : empleados.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-600">
-              No hay empleados registrados
-            </h3>
-            <p className="text-gray-400 mt-2">
-              Haz clic en "Agregar Empleado" para registrar uno nuevo
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <TableEmpleadosAgro
-          currentData={empleados}
-          isLoading={isLoading}
-          limit={limit}
-          offset={(currentPage - 1) * limit}
-          handleEditEmpleado={handleEditEmpleado}
-        />
-      )}
+      <div>
+        {isLoading ? (
+          <div className="mt-10 mb-10">
+            <SkeletonTable />
+          </div>
+        ) : empleados.length === 0 ? (
+          <Card>
+            <CardContent className="py-12 text-center">
+              <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-600">
+                No hay empleados registrados
+              </h3>
+              <p className="text-gray-400 mt-2">
+                Haz clic en "Agregar Empleado" para registrar uno nuevo
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div id="id-empleados-table">
+            <TableEmpleadosAgro
+              currentData={empleados}
+              isLoading={isLoading}
+              limit={limit}
+              offset={(currentPage - 1) * limit}
+              handleEditEmpleado={handleEditEmpleado}
+            />
+          </div>
+        )}
+      </div>
 
       {totalPages > 1 && (
         <div className="flex justify-center pt-4">

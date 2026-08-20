@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useMemo, useState } from "react";
 import { Button } from "../ui/button";
 import {
@@ -12,6 +10,7 @@ import {
   Copy,
   Building2,
   AlertTriangle,
+  Cog,
 } from "lucide-react";
 
 import {
@@ -48,6 +47,10 @@ import {
 import { getUserAgroInfo } from "@/helpers/funciones/agroservicio/profile/obtener-info-perfil";
 import useGetInfoAgro from "@/hooks/agroservicios/mi-agro/useGetInfoAgro";
 import Link from "next/link";
+import TourGuide from "../agroservicio/guia/TourGuide";
+import { TOUR_PAGES_ORDER } from "@/helpers/data/guia/tourGuide";
+import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
+import { getAgroTourSteps } from "@/helpers/data/guia/agroTourSteps";
 
 interface Props {
   setMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -62,16 +65,15 @@ const NavBarAgro = ({
 }: Props) => {
   const linkLoginEmpleados = `${process.env.NEXT_PUBLIC_APP_URL}/login-empleados`;
   const { data: info_agro, isLoading: cargando_info } = useGetInfoAgro();
-
+  const [tourOpen, setTourOpen] = useState(false);
   const { cliente } = useAuthStore();
   const { empleado } = useAuthEmpleadoStore();
   const rolId = empleado?.role?.id ?? "";
-
   const router = useRouter();
   const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(false);
 
-  const tieneAgroservicio = !!info_agro;
+  const tieneAgroservicio = !!info_agro && !!info_agro.logo;
 
   const rutasBase = isPropietario ? agroNavItems : agroEmpleadoNavItems;
 
@@ -81,6 +83,11 @@ const NavBarAgro = ({
 
   const paqueteId = cliente?.paqueteActivo?.paquete?.id ?? "";
   const clienteId = cliente?.id ?? "";
+
+  const tipoAgroservicio =
+    cliente?.paqueteActivo?.paquete.tipo || TipoPaquete.AGRO_LIGHT;
+
+  const agroTourSteps = getAgroTourSteps(tipoAgroservicio);
 
   const { data: permisosPaquete, isLoading: isLoadingPaquete } =
     useGetPermisosByClientePaquete(isPropietario ? paqueteId : "");
@@ -92,6 +99,8 @@ const NavBarAgro = ({
     useGetPermisosByRol(!isPropietario ? rolId : "");
 
   const permisos = esPropietario ? permisosPaquete : permisosCliente;
+
+  const currentTourSteps = agroTourSteps[pathname] ?? [];
 
   const planActivo = esPropietario ? cliente?.paqueteActivo : null;
   const tienePlanActivo = esPropietario
@@ -222,6 +231,41 @@ const NavBarAgro = ({
     }
   };
 
+  const handleTourStepComplete = (stepIndex: number) => {
+    const currentSteps = agroTourSteps[pathname];
+
+    if (stepIndex === currentSteps.length - 1) {
+      const availablePages = TOUR_PAGES_ORDER.filter(
+        (page) => agroTourSteps[page] && agroTourSteps[page].length > 0,
+      );
+
+      const currentPageIndex = availablePages.indexOf(pathname);
+
+      if (
+        currentPageIndex !== -1 &&
+        currentPageIndex < availablePages.length - 1
+      ) {
+        const nextPage = availablePages[currentPageIndex + 1];
+
+        if (agroTourSteps[nextPage] && agroTourSteps[nextPage].length > 0) {
+          router.push(nextPage);
+
+          setTourOpen(false);
+
+          setTimeout(() => {
+            setTourOpen(true);
+          }, 500);
+        } else {
+          setTourOpen(false);
+          toast.info("Has completado todas las guías disponibles");
+        }
+      } else {
+        setTourOpen(false);
+        toast.success("¡Has completado el tour completo!");
+      }
+    }
+  };
+
   const userInfo = getUserAgroInfo(isPropietario, cliente!, empleado!);
 
   if (cargando_info || isLoading || isLoadingPermisos) {
@@ -256,6 +300,12 @@ const NavBarAgro = ({
             <span className="text-xs text-yellow-700 whitespace-nowrap">
               Primero debe ingresar los datos de su agroservicio
             </span>
+            <Link
+              className="hover:underline hover:text-blue-800 text-xs"
+              href={"/agro-propietario/agro-perfil"}
+            >
+              Crear
+            </Link>
           </div>
 
           <DropdownMenu>
@@ -329,36 +379,51 @@ const NavBarAgro = ({
 
       <div className="flex items-center space-x-1 md:space-x-4">
         {isPropietario && esPropietario && tienePlanActivo && planActivo && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="hidden md:block">
-                  <Link href={"/comprar-plan"}>
-                    <Badge
-                      className={`${planInfo.color} cursor-help hover:cursor-pointer ${estaPorVencer ? "animate-pulse" : ""}`}
-                    >
-                      <Crown className="mr-1 h-3 w-3" />
-                      {planInfo.label}
-                      {estaVencido && <AlertCircle className="ml-1 h-3 w-3" />}
-                    </Badge>
-                  </Link>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <div className="text-xs">
-                  {estaVencido ? (
-                    <p>Plan vencido. Renueva para seguir usando el sistema.</p>
-                  ) : estaPorVencer ? (
-                    <p>
-                      Quedan {planInfo.daysLeft} días para que venza tu plan
-                    </p>
-                  ) : (
-                    <p>Plan activo. Quedan {planInfo.daysLeft} días</p>
-                  )}
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <div className="flex items-center gap-4">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="hidden md:block">
+                    <Link href={"/comprar-plan"}>
+                      <Badge
+                        className={`${planInfo.color} cursor-help hover:cursor-pointer ${estaPorVencer ? "animate-pulse" : ""}`}
+                      >
+                        <Crown className="mr-1 h-3 w-3" />
+                        {planInfo.label}
+                        {estaVencido && (
+                          <AlertCircle className="ml-1 h-3 w-3" />
+                        )}
+                      </Badge>
+                    </Link>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <div className="text-xs">
+                    {estaVencido ? (
+                      <p>
+                        Plan vencido. Renueva para seguir usando el sistema.
+                      </p>
+                    ) : estaPorVencer ? (
+                      <p>
+                        Quedan {planInfo.daysLeft} días para que venza tu plan
+                      </p>
+                    ) : (
+                      <p>Plan activo. Quedan {planInfo.daysLeft} días</p>
+                    )}
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <Button
+              variant="ghost"
+              onClick={() => setTourOpen(true)}
+              className="relative"
+              disabled={currentTourSteps.length === 0}
+              title="Abrir guía del sistema"
+            >
+              <Cog className="h-5 w-5" />
+            </Button>
+          </div>
         )}
 
         {!isPropietario && (
@@ -541,6 +606,12 @@ const NavBarAgro = ({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+      <TourGuide
+        steps={currentTourSteps}
+        open={tourOpen}
+        onClose={() => setTourOpen(false)}
+        onStepComplete={handleTourStepComplete}
+      />
     </header>
   );
 };

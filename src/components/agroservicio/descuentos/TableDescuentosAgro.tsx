@@ -9,8 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Edit, Trash2 } from "lucide-react";
-import React from "react";
+import { Edit } from "lucide-react";
 
 interface Props {
   descuentos: ResponseDescuentosAgroInterface[];
@@ -71,6 +70,7 @@ const TableDescuentosAgro = ({ descuentos, handleEdit }: Props) => {
               <TableCell className="text-right">
                 <div className="flex items-center justify-end gap-2">
                   <Button
+                    id="edit-descuento"
                     variant="ghost"
                     size="sm"
                     onClick={() => handleEdit(descuento)}

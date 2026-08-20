@@ -41,7 +41,10 @@ const DsescuentosAgroPage = () => {
   };
 
   return (
-    <div className="container mx-auto space-y-6 p-4 md:p-6">
+    <div
+      id="descuentos-page"
+      className="container mx-auto space-y-6 p-4 md:p-6"
+    >
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <TitlePage
           Icon={BadgePercent}
@@ -50,6 +53,7 @@ const DsescuentosAgroPage = () => {
         />
 
         <ButtonAdd
+          id="add-descuento"
           title="Agregar Descuento"
           Icon={BadgePercent}
           action={handleAdd}
@@ -57,7 +61,10 @@ const DsescuentosAgroPage = () => {
         />
       </div>
 
-      <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+      <Card
+        id="tabla-descuentos"
+        className="border-0 shadow-xl bg-white/80 backdrop-blur-sm"
+      >
         <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-xl">
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl font-semibold text-gray-800">

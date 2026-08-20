@@ -57,12 +57,13 @@ const AgroSucursalesPage = () => {
           Icon={House}
           action={() => setOpenAddSucursal(true)}
           className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
+          id="add-sucursal-btn"
         />
       </div>
 
       <Card>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
+          <div id="id-table-sucursales" className="overflow-x-auto">
             <TableSucursalesAgro
               isLoading={isLoading}
               limit={limit}

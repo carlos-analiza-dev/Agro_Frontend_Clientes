@@ -149,7 +149,11 @@ const TableRangosFactura = ({
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
+                      <Button
+                        id="acciones-rango"
+                        variant="ghost"
+                        className="h-8 w-8 p-0"
+                      >
                         <span className="sr-only">Abrir menú</span>
                         <MoreVertical className="h-4 w-4" />
                       </Button>

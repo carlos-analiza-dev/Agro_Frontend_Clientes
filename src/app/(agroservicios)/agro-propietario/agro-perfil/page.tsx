@@ -88,8 +88,8 @@ const AgroPerfilPage = () => {
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (!file.type.startsWith("image/")) {
-        toast.error("Por favor selecciona una imagen válida");
+      if (file.type !== "image/png") {
+        toast.error("Solo se aceptan imágenes en formato PNG");
         return;
       }
 
@@ -121,6 +121,7 @@ const AgroPerfilPage = () => {
       toast.success("Logo actualizado exitosamente");
       queryClient.invalidateQueries({ queryKey: ["info-agro"] });
       queryClient.invalidateQueries({ queryKey: ["logo-agro"] });
+      queryClient.invalidateQueries({ queryKey: ["permisos-agro"] });
       setLogoFile(null);
       setIsUploadingLogo(false);
     },
@@ -188,6 +189,7 @@ const AgroPerfilPage = () => {
     onSuccess: () => {
       toast.success("Información actualizada exitosamente");
       queryClient.invalidateQueries({ queryKey: ["info-agro"] });
+      queryClient.invalidateQueries({ queryKey: ["permisos-agro"] });
       setIsEditing(false);
     },
     onError: (error) => {
@@ -264,10 +266,15 @@ const AgroPerfilPage = () => {
 
   return (
     <div className="container mx-auto p-4 pb-20">
-      <div className="flex items-center justify-between mb-6">
+      {/* ID para el encabezado de la página */}
+      <div
+        id="id-agro-perfil-header"
+        className="flex items-center justify-between mb-6"
+      >
         <TitlePage Icon={Store} title="Mi Agroservicio" />
         {!isEditing ? (
           <Button
+            id="id-agro-perfil-edit-btn"
             onClick={() => setIsEditing(true)}
             className="gap-2 bg-green-600 hover:bg-green-700"
           >
@@ -275,7 +282,7 @@ const AgroPerfilPage = () => {
             {!info_agro?.id ? "Crear Información" : "Editar Información"}
           </Button>
         ) : (
-          <div className="flex gap-2">
+          <div id="id-agro-perfil-actions" className="flex gap-2">
             <Button
               variant="outline"
               onClick={handleCancel}
@@ -297,9 +304,9 @@ const AgroPerfilPage = () => {
         )}
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Card>
-          <CardHeader>
+      <form id="id-agro-perfil-form" onSubmit={handleSubmit(onSubmit)}>
+        <Card id="id-agro-perfil-card">
+          <CardHeader id="id-agro-perfil-card-header">
             <CardTitle>Información del Agroservicio</CardTitle>
             <CardDescription>
               {isEditing
@@ -310,10 +317,14 @@ const AgroPerfilPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="space-y-4">
+            {/* ID para la sección del logo */}
+            <div id="id-agro-perfil-logo-section" className="space-y-4">
               <Label>Logo del Agroservicio</Label>
               <div className="flex items-center gap-6">
-                <div className="relative w-24 h-24 border-2 border-dashed rounded-lg overflow-hidden flex items-center justify-center bg-muted/20">
+                <div
+                  id="id-agro-perfil-logo-preview"
+                  className="relative w-24 h-24 border-2 border-dashed rounded-lg overflow-hidden flex items-center justify-center bg-muted/20"
+                >
                   {logoPreview ? (
                     <Image
                       src={logoPreview}
@@ -327,7 +338,7 @@ const AgroPerfilPage = () => {
                   )}
                 </div>
 
-                <div className="flex-1">
+                <div id="id-agro-perfil-logo-upload" className="flex-1">
                   {info_agro?.id ? (
                     <div className="space-y-2">
                       <div className="flex flex-wrap gap-2">
@@ -340,7 +351,7 @@ const AgroPerfilPage = () => {
                           <Input
                             id="logo-upload"
                             type="file"
-                            accept="image/*"
+                            accept="image/png"
                             className="hidden"
                             onChange={handleLogoChange}
                             disabled={isUploadingLogo}
@@ -368,12 +379,29 @@ const AgroPerfilPage = () => {
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Formatos: JPG, PNG. Máximo 1MB
+                        Formatos: PNG (sin fondo). Máximo 1MB
                       </p>
                       {logoFile && (
                         <p className="text-xs text-green-600">
                           Archivo seleccionado: {logoFile.name}
                         </p>
+                      )}
+
+                      {!info_agro?.logo && !logoFile && (
+                        <div
+                          id="id-agro-perfil-logo-warning"
+                          className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-md"
+                        >
+                          <p className="text-sm text-amber-700 flex items-start gap-2">
+                            <span className="text-amber-500 text-lg">⚠️</span>
+                            <span>
+                              <strong>Logo requerido:</strong> Para acceder a
+                              los demás módulos del sistema, es necesario que
+                              subas un logo para tu agroservicio. Selecciona una
+                              imagen y haz clic en "Subir Logo".
+                            </span>
+                          </p>
+                        </div>
                       )}
                     </div>
                   ) : (
@@ -388,8 +416,12 @@ const AgroPerfilPage = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
+            {/* ID para el contenedor de campos del formulario */}
+            <div
+              id="id-agro-perfil-fields"
+              className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            >
+              <div id="id-agro-perfil-field-nombre" className="space-y-2">
                 <Label htmlFor="nombre_agroservicio">
                   Nombre del Agroservicio
                 </Label>
@@ -419,7 +451,7 @@ const AgroPerfilPage = () => {
                 )}
               </div>
 
-              <div className="space-y-2">
+              <div id="id-agro-perfil-field-rtn" className="space-y-2">
                 <Label htmlFor="rtn">RTN</Label>
                 {isEditing ? (
                   <div className="space-y-1">
@@ -447,7 +479,7 @@ const AgroPerfilPage = () => {
                 )}
               </div>
 
-              <div className="space-y-2">
+              <div id="id-agro-perfil-field-correo" className="space-y-2">
                 <Label htmlFor="correo">Correo Electrónico</Label>
                 {isEditing ? (
                   <div className="space-y-1">
@@ -476,7 +508,7 @@ const AgroPerfilPage = () => {
                 )}
               </div>
 
-              <div className="space-y-2">
+              <div id="id-agro-perfil-field-telefono" className="space-y-2">
                 <Label htmlFor="telefono">Teléfono</Label>
                 {isEditing ? (
                   <div className="space-y-1">
@@ -505,7 +537,8 @@ const AgroPerfilPage = () => {
               </div>
             </div>
 
-            <div className="space-y-2">
+            {/* ID para el campo de dirección */}
+            <div id="id-agro-perfil-field-direccion" className="space-y-2">
               <Label htmlFor="direccion">Dirección</Label>
               {isEditing ? (
                 <div className="space-y-1">
@@ -535,9 +568,13 @@ const AgroPerfilPage = () => {
               )}
             </div>
 
+            {/* ID para la sección de fechas */}
             {!isEditing && info_agro && info_agro.id && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t">
-                <div className="space-y-1">
+              <div
+                id="id-agro-perfil-dates"
+                className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t"
+              >
+                <div id="id-agro-perfil-created-at" className="space-y-1">
                   <Label className="text-xs text-muted-foreground">
                     Creado
                   </Label>
@@ -545,7 +582,7 @@ const AgroPerfilPage = () => {
                     {formatDateLocal(info_agro.created_at)}
                   </p>
                 </div>
-                <div className="space-y-1">
+                <div id="id-agro-perfil-updated-at" className="space-y-1">
                   <Label className="text-xs text-muted-foreground">
                     Última actualización
                   </Label>
@@ -556,9 +593,16 @@ const AgroPerfilPage = () => {
               </div>
             )}
 
+            {/* ID para la sección del propietario */}
             {!isEditing && info_agro && info_agro.propietario && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t">
-                <div className="space-y-1">
+              <div
+                id="id-agro-perfil-propietario"
+                className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t"
+              >
+                <div
+                  id="id-agro-perfil-propietario-nombre"
+                  className="space-y-1"
+                >
                   <Label className="text-xs text-muted-foreground">
                     Propietario
                   </Label>
@@ -566,13 +610,16 @@ const AgroPerfilPage = () => {
                     {info_agro.propietario.nombre}
                   </p>
                 </div>
-                <div className="space-y-1">
+                <div id="id-agro-perfil-propietario-pais" className="space-y-1">
                   <Label className="text-xs text-muted-foreground">País</Label>
                   <p className="text-sm">
                     {info_agro.propietario.pais?.nombre || "No especificado"}
                   </p>
                 </div>
-                <div className="space-y-1">
+                <div
+                  id="id-agro-perfil-propietario-departamento"
+                  className="space-y-1"
+                >
                   <Label className="text-xs text-muted-foreground">
                     Departamento
                   </Label>
@@ -581,7 +628,10 @@ const AgroPerfilPage = () => {
                       "No especificado"}
                   </p>
                 </div>
-                <div className="space-y-1">
+                <div
+                  id="id-agro-perfil-propietario-municipio"
+                  className="space-y-1"
+                >
                   <Label className="text-xs text-muted-foreground">
                     Municipio
                   </Label>

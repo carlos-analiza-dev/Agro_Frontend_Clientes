@@ -88,6 +88,7 @@ const TableComprasProductos = ({ comprasData, isLoading, moneda }: Props) => {
                 <TableCell>
                   <div className="flex justify-center ">
                     <Button
+                      id="id-detalles-compra-producto"
                       onClick={() => handleOpenDetails(compra)}
                       variant="outline"
                       size="icon"

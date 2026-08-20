@@ -54,7 +54,10 @@ const AgroProveedoresPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 md:p-6 space-y-6">
+    <div
+      id="proveedores-page"
+      className="container mx-auto p-4 md:p-6 space-y-6"
+    >
       <div className="md:flex justify-between items-center gap-4">
         <TitlePage
           Icon={Truck}
@@ -66,10 +69,14 @@ const AgroProveedoresPage = () => {
           Icon={Truck}
           action={() => setOpenModalProveedor(true)}
           className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
+          id="add-proveedor"
         />
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+      <div
+        id="buscador-proveedores"
+        className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between"
+      >
         <Buscador
           title="Buscar proveedor por nombre, NIT o NRC..."
           setSearchTerm={handleSearch}
@@ -78,7 +85,7 @@ const AgroProveedoresPage = () => {
         />
       </div>
 
-      <Card>
+      <Card id="tabla-proveedores">
         <CardContent className="p-0">
           <TableProveedores
             isLoading={isLoading}

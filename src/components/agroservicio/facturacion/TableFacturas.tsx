@@ -101,7 +101,13 @@ const TableFacturas = ({
         toast.error(result.error || "Error al descargar la factura");
       }
     } catch (error) {
-      toast.error("Error inesperado al descargar la factura");
+      if (isAxiosError(error)) {
+        const message =
+          error.response?.data?.message || "Error al descargar la factura.";
+        toast.error(message);
+      } else {
+        toast.error("Error inesperado al descargar la factura");
+      }
     } finally {
       setDescargandoId(null);
     }
@@ -386,7 +392,10 @@ const TableFacturas = ({
               </TableCell>
 
               <TableCell>
-                <div className="flex gap-2 justify-center">
+                <div
+                  id="acciones-facturas"
+                  className="flex gap-2 justify-center"
+                >
                   {factura.estado === "Emitida" && (
                     <>
                       {!isPropietario && (

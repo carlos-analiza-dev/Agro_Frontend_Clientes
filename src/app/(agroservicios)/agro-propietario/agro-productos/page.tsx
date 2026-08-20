@@ -92,7 +92,7 @@ const AgroProductosPage = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-6 space-y-6">
+    <div id="productos-page" className="container mx-auto p-4 md:p-6 space-y-6">
       <div className="md:flex justify-between items-center gap-4">
         <TitlePage
           Icon={ShoppingBag}
@@ -104,27 +104,30 @@ const AgroProductosPage = () => {
           Icon={ShoppingBag}
           action={() => setOpenModalProductos(true)}
           className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
+          id="add-productos"
         />
       </div>
 
-      <CardFiltersAgroProductos
-        categorias={categorias}
-        marcas={marcas}
-        proveedores={proveedores}
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        setCurrentPage={setCurrentPage}
-        setCategoriaSelect={setCategoriaSelect}
-        categoriaSelect={categoriaSelect}
-        marcaSelect={marcaSelect}
-        setMarcaSelect={setMarcaSelect}
-        proveedorSelect={proveedorSelect}
-        setProveedorSelect={setProveedorSelect}
-        hasActiveFilters={hasActiveFilters}
-        clearFilters={clearFilters}
-      />
+      <div id="filtros-productos">
+        <CardFiltersAgroProductos
+          categorias={categorias}
+          marcas={marcas}
+          proveedores={proveedores}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          setCurrentPage={setCurrentPage}
+          setCategoriaSelect={setCategoriaSelect}
+          categoriaSelect={categoriaSelect}
+          marcaSelect={marcaSelect}
+          setMarcaSelect={setMarcaSelect}
+          proveedorSelect={proveedorSelect}
+          setProveedorSelect={setProveedorSelect}
+          hasActiveFilters={hasActiveFilters}
+          clearFilters={clearFilters}
+        />
+      </div>
 
-      <Card>
+      <Card id="tabla-productos-agro">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <TableAgroProductos
