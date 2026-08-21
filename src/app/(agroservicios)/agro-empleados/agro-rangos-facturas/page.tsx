@@ -3,7 +3,6 @@ import ButtonAdd from "@/components/generics/ButtonAdd";
 import TitlePage from "@/components/generics/TitlePage";
 import Paginacion from "@/components/generics/Paginacion";
 import useGetAgroRangosFactura from "@/hooks/agroservicios/facturacion/useGetAgroRangosFactura";
-import { useAuthStore } from "@/providers/store/useAuthStore";
 import {
   FileText,
   Search,
@@ -103,7 +102,7 @@ const AgroRangosFacturaPage = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-6 space-y-6">
+    <div id="modulo-rangos" className="container mx-auto p-4 md:p-6 space-y-6">
       <div className="md:flex justify-between items-center gap-4">
         <TitlePage
           Icon={FileText}
@@ -111,6 +110,7 @@ const AgroRangosFacturaPage = () => {
           description="Gestiona los rangos de facturación del agroservicio"
         />
         <ButtonAdd
+          id="add-rango"
           title="Agregar Rango"
           Icon={FileText}
           action={() => setOpenFormRango(true)}
@@ -118,7 +118,10 @@ const AgroRangosFacturaPage = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div
+        id="estadisticas-rangos"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      >
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Rangos</CardTitle>
@@ -163,7 +166,7 @@ const AgroRangosFacturaPage = () => {
         </Card>
       </div>
 
-      <div className="relative">
+      <div id="buscador-rangos" className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
         <Input
           placeholder="Buscar por CAI, prefijo o agroservicio..."
@@ -173,7 +176,7 @@ const AgroRangosFacturaPage = () => {
         />
       </div>
 
-      <Card>
+      <Card id="lista-rangos">
         <CardHeader>
           <CardTitle>Lista de Rangos</CardTitle>
           <CardDescription>

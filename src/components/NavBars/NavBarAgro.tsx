@@ -48,9 +48,15 @@ import { getUserAgroInfo } from "@/helpers/funciones/agroservicio/profile/obtene
 import useGetInfoAgro from "@/hooks/agroservicios/mi-agro/useGetInfoAgro";
 import Link from "next/link";
 import TourGuide from "../agroservicio/guia/TourGuide";
-import { TOUR_PAGES_ORDER } from "@/helpers/data/guia/tourGuide";
+import {
+  TOUR_PAGES_EMPLOYES_ORDER,
+  TOUR_PAGES_ORDER,
+} from "@/helpers/data/guia/tourGuide";
 import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
-import { getAgroTourSteps } from "@/helpers/data/guia/agroTourSteps";
+import {
+  getEmpleadoTourSteps,
+  getPropietarioTourSteps,
+} from "@/helpers/data/guia/agroTourSteps";
 
 interface Props {
   setMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -72,7 +78,6 @@ const NavBarAgro = ({
   const router = useRouter();
   const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(false);
-
   const tieneAgroservicio = !!info_agro && !!info_agro.logo;
 
   const rutasBase = isPropietario ? agroNavItems : agroEmpleadoNavItems;
@@ -85,9 +90,7 @@ const NavBarAgro = ({
   const clienteId = cliente?.id ?? "";
 
   const tipoAgroservicio =
-    cliente?.paqueteActivo?.paquete.tipo || TipoPaquete.AGRO_LIGHT;
-
-  const agroTourSteps = getAgroTourSteps(tipoAgroservicio);
+    cliente?.paqueteActivo?.paquete?.tipo || TipoPaquete.AGRO_LIGHT;
 
   const { data: permisosPaquete, isLoading: isLoadingPaquete } =
     useGetPermisosByClientePaquete(isPropietario ? paqueteId : "");
@@ -98,9 +101,19 @@ const NavBarAgro = ({
   const { data: permisosEmpleados, isLoading: isLoadingPermisosEmpleados } =
     useGetPermisosByRol(!isPropietario ? rolId : "");
 
-  const permisos = esPropietario ? permisosPaquete : permisosCliente;
+  const allTourSteps = useMemo(() => {
+    if (isPropietario) {
+      return getPropietarioTourSteps(tipoAgroservicio);
+    } else {
+      return getEmpleadoTourSteps(permisosEmpleados || []);
+    }
+  }, [isPropietario, tipoAgroservicio, permisosEmpleados]);
 
-  const currentTourSteps = agroTourSteps[pathname] ?? [];
+  const currentTourSteps = useMemo(() => {
+    return allTourSteps[pathname] || [];
+  }, [allTourSteps, pathname]);
+
+  const permisos = esPropietario ? permisosPaquete : permisosCliente;
 
   const planActivo = esPropietario ? cliente?.paqueteActivo : null;
   const tienePlanActivo = esPropietario
@@ -232,22 +245,26 @@ const NavBarAgro = ({
   };
 
   const handleTourStepComplete = (stepIndex: number) => {
-    const currentSteps = agroTourSteps[pathname];
+    const currentSteps = allTourSteps[pathname];
 
     if (stepIndex === currentSteps.length - 1) {
-      const availablePages = TOUR_PAGES_ORDER.filter(
-        (page) => agroTourSteps[page] && agroTourSteps[page].length > 0,
-      );
+      const availablePages = Object.keys(allTourSteps);
 
-      const currentPageIndex = availablePages.indexOf(pathname);
+      const orderedPages = isPropietario
+        ? TOUR_PAGES_ORDER.filter((page) => availablePages.includes(page))
+        : TOUR_PAGES_EMPLOYES_ORDER.filter((page) =>
+            availablePages.includes(page),
+          );
+
+      const currentPageIndex = orderedPages.indexOf(pathname);
 
       if (
         currentPageIndex !== -1 &&
-        currentPageIndex < availablePages.length - 1
+        currentPageIndex < orderedPages.length - 1
       ) {
-        const nextPage = availablePages[currentPageIndex + 1];
+        const nextPage = orderedPages[currentPageIndex + 1];
 
-        if (agroTourSteps[nextPage] && agroTourSteps[nextPage].length > 0) {
+        if (allTourSteps[nextPage] && allTourSteps[nextPage].length > 0) {
           router.push(nextPage);
 
           setTourOpen(false);
@@ -379,51 +396,36 @@ const NavBarAgro = ({
 
       <div className="flex items-center space-x-1 md:space-x-4">
         {isPropietario && esPropietario && tienePlanActivo && planActivo && (
-          <div className="flex items-center gap-4">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="hidden md:block">
-                    <Link href={"/comprar-plan"}>
-                      <Badge
-                        className={`${planInfo.color} cursor-help hover:cursor-pointer ${estaPorVencer ? "animate-pulse" : ""}`}
-                      >
-                        <Crown className="mr-1 h-3 w-3" />
-                        {planInfo.label}
-                        {estaVencido && (
-                          <AlertCircle className="ml-1 h-3 w-3" />
-                        )}
-                      </Badge>
-                    </Link>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <div className="text-xs">
-                    {estaVencido ? (
-                      <p>
-                        Plan vencido. Renueva para seguir usando el sistema.
-                      </p>
-                    ) : estaPorVencer ? (
-                      <p>
-                        Quedan {planInfo.daysLeft} días para que venza tu plan
-                      </p>
-                    ) : (
-                      <p>Plan activo. Quedan {planInfo.daysLeft} días</p>
-                    )}
-                  </div>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <Button
-              variant="ghost"
-              onClick={() => setTourOpen(true)}
-              className="relative"
-              disabled={currentTourSteps.length === 0}
-              title="Abrir guía del sistema"
-            >
-              <Cog className="h-5 w-5" />
-            </Button>
-          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="hidden md:block">
+                  <Link href={"/comprar-plan"}>
+                    <Badge
+                      className={`${planInfo.color} cursor-help hover:cursor-pointer ${estaPorVencer ? "animate-pulse" : ""}`}
+                    >
+                      <Crown className="mr-1 h-3 w-3" />
+                      {planInfo.label}
+                      {estaVencido && <AlertCircle className="ml-1 h-3 w-3" />}
+                    </Badge>
+                  </Link>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <div className="text-xs">
+                  {estaVencido ? (
+                    <p>Plan vencido. Renueva para seguir usando el sistema.</p>
+                  ) : estaPorVencer ? (
+                    <p>
+                      Quedan {planInfo.daysLeft} días para que venza tu plan
+                    </p>
+                  ) : (
+                    <p>Plan activo. Quedan {planInfo.daysLeft} días</p>
+                  )}
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
 
         {!isPropietario && (
@@ -435,7 +437,15 @@ const NavBarAgro = ({
             {userInfo.rol}
           </Badge>
         )}
-
+        <Button
+          variant="ghost"
+          onClick={() => setTourOpen(true)}
+          className="relative"
+          disabled={currentTourSteps.length === 0}
+          title="Abrir guía del sistema"
+        >
+          <Cog className="h-5 w-5" />
+        </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-8 w-8 rounded-full">

@@ -37,7 +37,7 @@ const AgroImpuestosPage = () => {
   };
 
   return (
-    <div className="container mx-auto space-y-6 p-4 md:p-6">
+    <div id="impuestos-page" className="container mx-auto space-y-6 p-4 md:p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <TitlePage Icon={Receipt} title="Control de Impuestos" />
 
@@ -46,10 +46,11 @@ const AgroImpuestosPage = () => {
           Icon={Receipt}
           action={() => setOpenModalImpuesto(true)}
           className="w-full bg-green-600 hover:bg-green-700 md:w-auto"
+          id="add-impuesto"
         />
       </div>
 
-      <Card>
+      <Card id="tabla-impuestos">
         <CardHeader>
           <CardTitle>Impuestos registrados</CardTitle>
           <CardDescription>

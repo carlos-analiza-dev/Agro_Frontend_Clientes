@@ -47,7 +47,10 @@ const AgroConsumoInsumos = () => {
   const totalPages = Math.ceil((consumo?.total || 0) / limit);
 
   return (
-    <div className="container mx-auto p-4 md:p-6 space-y-6">
+    <div
+      id="consumo-insumos-page"
+      className="container mx-auto p-4 md:p-6 space-y-6"
+    >
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <TitlePage
           Icon={FlaskConical}
@@ -56,6 +59,7 @@ const AgroConsumoInsumos = () => {
         />
 
         <ButtonAdd
+          id="add-consumo-insumo"
           title="Agregar Consumo"
           Icon={FlaskConical}
           action={() => setOpenModalForm(true)}
@@ -63,7 +67,7 @@ const AgroConsumoInsumos = () => {
         />
       </div>
 
-      <Card className="border shadow-sm">
+      <Card id="tabla-consumo-insumos" className="border shadow-sm">
         <CardHeader className="pb-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>

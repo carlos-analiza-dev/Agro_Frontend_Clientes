@@ -6,7 +6,6 @@ import TitlePage from "@/components/generics/TitlePage";
 import Paginacion from "@/components/generics/Paginacion";
 import useGetComprasAgroInsumos from "@/hooks/agroservicios/compras-insumos/useGetComprasInsumos";
 import useGetAllProveedores from "@/hooks/agroservicios/proveedores/useGetAllProveedores";
-import useGetAllSucursalesByPropietario from "@/hooks/agroservicios/sucursales/useGetAllSucursalesByPropietario";
 import { tiposPagos } from "@/helpers/data/compras/tiposPagos";
 import {
   FlaskConical,
@@ -83,7 +82,10 @@ const ComprasInsumoInterface = () => {
 
   return (
     <div className="container mx-auto p-4 md:p-6 space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div
+        id="id-compras-header"
+        className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+      >
         <TitlePage
           Icon={FlaskConical}
           title="Compra de Insumos"
@@ -91,6 +93,7 @@ const ComprasInsumoInterface = () => {
         />
 
         <ButtonAdd
+          id="add-compra-insumo"
           title="Agregar Compra"
           Icon={FlaskConical}
           action={() => setOpenModalForm(true)}
@@ -98,7 +101,7 @@ const ComprasInsumoInterface = () => {
         />
       </div>
 
-      <Card>
+      <Card id="id-filters-compra-insumo">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2">
             <FileText className="h-5 w-5" />
@@ -107,7 +110,7 @@ const ComprasInsumoInterface = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
+            <div id="compra-prov-insumo" className="space-y-2">
               <Label className="text-sm font-medium">Proveedor</Label>
               <Select
                 value={filtroProveedor}
@@ -130,7 +133,7 @@ const ComprasInsumoInterface = () => {
               </Select>
             </div>
 
-            <div className="space-y-2">
+            <div id="compra-tipo-insumo" className="space-y-2">
               <Label className="text-sm font-medium">Tipo de Pago</Label>
               <Select value={filtroTipoPago} onValueChange={setFiltroTipoPago}>
                 <SelectTrigger>
@@ -153,7 +156,7 @@ const ComprasInsumoInterface = () => {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card id="table-compra-insumos">
         <CardHeader>
           <CardTitle className="text-lg flex items-center justify-between">
             <span>Lista de Compras</span>

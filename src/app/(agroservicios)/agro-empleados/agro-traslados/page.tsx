@@ -100,7 +100,7 @@ const LotesTrasladosPage = () => {
   });
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 space-y-6">
+    <div id="traslados-page" className="container mx-auto p-4 sm:p-6 space-y-6">
       <div className="md:flex justify-between items-center gap-4">
         <TitlePage
           Icon={ArrowLeftRight}
@@ -110,7 +110,7 @@ const LotesTrasladosPage = () => {
       </div>
 
       <form onSubmit={handleSearch} className="flex gap-2">
-        <div className="flex-1 relative">
+        <div id="buscador-traslados" className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
             placeholder="Buscar por nombre o código de producto..."
@@ -133,7 +133,7 @@ const LotesTrasladosPage = () => {
       </form>
 
       {mostrarFiltros && (
-        <Card>
+        <Card id="filters-tralados">
           <CardContent className="p-4 sm:p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
@@ -165,7 +165,10 @@ const LotesTrasladosPage = () => {
         </Card>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div
+        id="metricas-traslados"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+      >
         <CardDetails
           title="Total Traslados"
           total={totalItems}
@@ -188,7 +191,7 @@ const LotesTrasladosPage = () => {
         />
       </div>
 
-      <Card>
+      <Card id="historial-traslados">
         <CardHeader>
           <CardTitle className="text-xl">Historial de Traslados</CardTitle>
         </CardHeader>

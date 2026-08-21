@@ -128,8 +128,14 @@ const ClientesAgroServicioPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 md:p-6 space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div
+      id="id-clientes-container"
+      className="container mx-auto p-4 md:p-6 space-y-6"
+    >
+      <div
+        id="id-clientes-header"
+        className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+      >
         <TitlePage
           Icon={IdCardLanyard}
           title="Control de Clientes"
@@ -137,6 +143,7 @@ const ClientesAgroServicioPage = () => {
         />
 
         <ButtonAdd
+          id="id-clientes-add-btn"
           title="Agregar Cliente"
           Icon={IdCardLanyard}
           action={handleAdd}
@@ -144,8 +151,12 @@ const ClientesAgroServicioPage = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div
+        id="id-clientes-stats"
+        className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+      >
         <StatCard
+          id="id-clientes-stat-total"
           title="Total Clientes"
           value={total}
           icon={Users}
@@ -156,6 +167,7 @@ const ClientesAgroServicioPage = () => {
         />
 
         <StatCard
+          id="id-clientes-stat-activos"
           title="Activos"
           value={clientes.filter((c) => c.isActive).length}
           icon={User}
@@ -166,6 +178,7 @@ const ClientesAgroServicioPage = () => {
         />
 
         <StatCard
+          id="id-clientes-stat-departamentos"
           title="Departamentos"
           value={new Set(clientes.map((c) => c.departamento?.nombre)).size}
           icon={MapPin}
@@ -176,6 +189,7 @@ const ClientesAgroServicioPage = () => {
         />
 
         <StatCard
+          id="id-clientes-stat-municipios"
           title="Municipios"
           value={new Set(clientes.map((c) => c.municipio?.nombre)).size}
           icon={MapPin}
@@ -186,7 +200,7 @@ const ClientesAgroServicioPage = () => {
         />
       </div>
 
-      <Card className="border-0 shadow-lg">
+      <Card id="id-clientes-filters" className="border-0 shadow-lg">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg font-semibold flex items-center gap-2">
@@ -208,7 +222,10 @@ const ClientesAgroServicioPage = () => {
         <CardContent>
           <div className={`space-y-4 ${!showFilters ? "hidden md:block" : ""}`}>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="space-y-2 md:col-span-1">
+              <div
+                id="id-clientes-filter-search"
+                className="space-y-2 md:col-span-1"
+              >
                 <Label className="text-sm font-medium text-gray-700">
                   Buscar Cliente
                 </Label>
@@ -239,7 +256,7 @@ const ClientesAgroServicioPage = () => {
                 )}
               </div>
 
-              <div className="space-y-2">
+              <div id="id-clientes-filter-departamento" className="space-y-2">
                 <Label className="text-sm font-medium text-gray-700">
                   Departamento
                 </Label>
@@ -258,7 +275,7 @@ const ClientesAgroServicioPage = () => {
                 </Select>
               </div>
 
-              <div className="space-y-2">
+              <div id="id-clientes-filter-municipio" className="space-y-2">
                 <Label className="text-sm font-medium text-gray-700">
                   Municipio
                 </Label>
@@ -287,7 +304,7 @@ const ClientesAgroServicioPage = () => {
                 </Select>
               </div>
 
-              <div className="space-y-2">
+              <div id="id-clientes-filter-actions" className="space-y-2">
                 <Label className="text-sm font-medium text-gray-700">
                   Acciones
                 </Label>
@@ -307,7 +324,10 @@ const ClientesAgroServicioPage = () => {
             {(selectedDepto !== "all" ||
               selectedMunicipio !== "all" ||
               debouncedSearchTerm) && (
-              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-gray-100">
+              <div
+                id="id-clientes-active-filters"
+                className="flex flex-wrap items-center gap-2 pt-2 border-t border-gray-100"
+              >
                 <span className="text-sm text-gray-500">Filtros activos:</span>
                 {debouncedSearchTerm && (
                   <Badge
@@ -376,7 +396,10 @@ const ClientesAgroServicioPage = () => {
         </CardContent>
       </Card>
 
-      <Card className="border-0 shadow-xl bg-white/95 backdrop-blur-sm">
+      <Card
+        id="id-clientes-table-container"
+        className="border-0 shadow-xl bg-white/95 backdrop-blur-sm"
+      >
         <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-xl">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <CardTitle className="text-xl font-semibold text-gray-800 flex items-center gap-2">
@@ -411,7 +434,7 @@ const ClientesAgroServicioPage = () => {
           {loadingClientes && <SkeletonTable />}
 
           {!loadingClientes && clientes.length > 0 && (
-            <div className="overflow-x-auto">
+            <div id="id-clientes-table" className="overflow-x-auto">
               <TableAgroClientes
                 clientes={clientes}
                 handleEditCliente={handleEditCliente}

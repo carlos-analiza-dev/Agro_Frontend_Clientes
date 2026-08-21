@@ -456,7 +456,7 @@ const ClientesAgroServicioPage = () => {
           )}
 
           {!loadingClientes && clientes.length === 0 && (
-            <div id="id-clientes-empty-state">
+            <div>
               <MessageError
                 titulo="No hay clientes registrados"
                 descripcion={

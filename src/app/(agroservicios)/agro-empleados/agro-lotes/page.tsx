@@ -90,7 +90,7 @@ const LotesPage = () => {
   const totalCosto = filteredLotes.reduce((sum, lote) => sum + lote.costo, 0);
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 space-y-6">
+    <div id="lotes-page" className="container mx-auto p-4 sm:p-6 space-y-6">
       <div className="md:flex justify-between items-center gap-4">
         <TitlePage
           Icon={Package}
@@ -99,39 +99,52 @@ const LotesPage = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <CardDetails
-          title="Total Productos"
-          total={totalProductos}
-          Icon={Package}
-          color="blue"
-        />
+      <div
+        id="estadisticas-lotes"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      >
+        <div id="card-total-productos">
+          <CardDetails
+            title="Total Productos"
+            total={totalProductos}
+            Icon={Package}
+            color="blue"
+          />
+        </div>
 
-        <CardDetails
-          title="Unidades Totales"
-          total={totalCantidad}
-          Icon={TrendingUp}
-          color="green"
-        />
+        <div id="card-unidades-totales">
+          <CardDetails
+            title="Unidades Totales"
+            total={totalCantidad}
+            Icon={TrendingUp}
+            color="green"
+          />
+        </div>
 
-        <CardDetails
-          title="Costo Total"
-          total={totalCosto.toFixed(2)}
-          Icon={DollarSign}
-          color="yellow"
-        />
+        <div id="card-costo-total">
+          <CardDetails
+            title="Costo Total"
+            total={totalCosto.toFixed(2)}
+            Icon={DollarSign}
+            color="yellow"
+          />
+        </div>
 
-        <CardDetails
-          title="Valor Promedio"
-          total={
-            totalCantidad > 0 ? (totalCosto / totalCantidad).toFixed(2) : "0.00"
-          }
-          Icon={Building}
-          color="purple"
-        />
+        <div id="card-valor-promedio">
+          <CardDetails
+            title="Valor Promedio"
+            total={
+              totalCantidad > 0
+                ? (totalCosto / totalCantidad).toFixed(2)
+                : "0.00"
+            }
+            Icon={Building}
+            color="purple"
+          />
+        </div>
       </div>
 
-      <Card>
+      <Card id="filtro-sucursal-lotes">
         <CardContent className="p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
@@ -139,7 +152,7 @@ const LotesPage = () => {
                 Buscar producto
               </Label>
               <form onSubmit={handleSearch} className="flex gap-2">
-                <div className="flex-1 relative">
+                <div id="buscador-lotes" className="flex-1 relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
                     placeholder="Nombre o código del producto..."
@@ -157,7 +170,7 @@ const LotesPage = () => {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card id="tabla-lotes">
         <CardHeader>
           <CardTitle className="text-xl">Inventario de Productos</CardTitle>
         </CardHeader>

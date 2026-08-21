@@ -128,30 +128,6 @@ export const agroGestionSteps: Record<string, TourStep[]> = {
         "Aquí puedes ver la lista detallada de todos los registros de auditoría de proveedores con su información completa.",
     },
     {
-      target: "id-auditoria-productos",
-      title: "Tabla de Auditoría de Productos",
-      description:
-        "En esta tabla se muestran todos los cambios realizados en los productos, ordenados por fecha de modificación.",
-    },
-    {
-      target: "id-auditoria-compras",
-      title: "Tabla de Auditoría de Compras",
-      description:
-        "Consulta la lista completa de auditorías de compras con detalles como el monto total y el estado de cada transacción.",
-    },
-    {
-      target: "id-auditoria-movimientos-lote",
-      title: "Tabla de Movimientos de Lote",
-      description:
-        "Visualiza todos los movimientos de lote registrados, incluyendo el producto, cantidad y tipo de movimiento.",
-    },
-    {
-      target: "id-auditoria-empleados",
-      title: "Tabla de Auditoría de Empleados",
-      description:
-        "Revisa la lista de todos los registros de auditoría relacionados con la gestión de empleados.",
-    },
-    {
       target: "id-auditoria-badges",
       title: "Resumen de Auditorías",
       description:

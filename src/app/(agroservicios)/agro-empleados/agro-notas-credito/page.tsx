@@ -77,7 +77,10 @@ const NotasCreditoPage = () => {
   }, [filtros, fechaHaceUnMes]);
 
   return (
-    <div className="container mx-auto p-4 md:p-6 space-y-6">
+    <div
+      id="notas-credito-page"
+      className="container mx-auto p-4 md:p-6 space-y-6"
+    >
       <div className="md:flex justify-between items-start gap-4">
         <TitlePage
           Icon={FileMinus}
@@ -85,6 +88,7 @@ const NotasCreditoPage = () => {
           description="Gestión completa de notas de crédito"
         />
         <ButtonAdd
+          id="add-crear-nota"
           title="Agregar Nota"
           Icon={FileMinus}
           action={() => setOpenFormNota(true)}
@@ -92,7 +96,7 @@ const NotasCreditoPage = () => {
         />
       </div>
 
-      <Card>
+      <Card id="filtros-notas-credito">
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="relative">
@@ -156,7 +160,7 @@ const NotasCreditoPage = () => {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card id="tabla-notas-credito">
         <CardContent className="pt-6">
           <div className="flex justify-between items-center mb-4">
             <p className="text-sm text-muted-foreground">

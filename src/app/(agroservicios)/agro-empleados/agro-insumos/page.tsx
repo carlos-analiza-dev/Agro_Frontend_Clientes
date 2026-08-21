@@ -91,7 +91,7 @@ const AgroInsumosPage = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-6 space-y-6">
+    <div id="insumos-page" className="container mx-auto p-4 md:p-6 space-y-6">
       <div className="md:flex justify-between items-start gap-4">
         <TitlePage
           Icon={FlaskConical}
@@ -99,6 +99,7 @@ const AgroInsumosPage = () => {
           description="Gestión completa de insumos para el campo"
         />
         <ButtonAdd
+          id="add-insumos"
           title="Agregar Insumo"
           Icon={FlaskConical}
           action={() => setOpenModalForm(true)}
@@ -106,7 +107,7 @@ const AgroInsumosPage = () => {
         />
       </div>
 
-      <Card>
+      <Card id="filtros-insumos">
         <CardContent className="p-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Select
@@ -135,7 +136,7 @@ const AgroInsumosPage = () => {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card id="tabla-insumos-agro">
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
