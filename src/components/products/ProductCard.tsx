@@ -26,11 +26,14 @@ interface Props {
 const FavoriteButton = ({
   isFavorite,
   onClick,
+  id,
 }: {
   isFavorite: boolean;
   onClick: (e: React.MouseEvent) => void;
+  id?: string;
 }) => (
   <Button
+    id={id}
     variant="ghost"
     size="icon"
     onClick={onClick}
@@ -63,11 +66,13 @@ const ActionButton = ({
   onClick,
   disabled,
   variant = "primary",
+  id,
 }: {
   children: React.ReactNode;
   onClick: (e: React.MouseEvent) => void;
   disabled?: boolean;
   variant?: "primary" | "outline";
+  id?: string;
 }) => {
   const variants = {
     primary:
@@ -78,6 +83,7 @@ const ActionButton = ({
 
   return (
     <Button
+      id={id}
       onClick={onClick}
       disabled={disabled}
       className={cn(
@@ -170,7 +176,11 @@ const ProductCard = ({ producto, user, onPress, className = "" }: Props) => {
           </div>
 
           <div className="absolute top-3 right-3">
-            <FavoriteButton isFavorite={isFavorite} onClick={handleFavorite} />
+            <FavoriteButton
+              id="add-btn-favorite-product"
+              isFavorite={isFavorite}
+              onClick={handleFavorite}
+            />
           </div>
         </div>
       </CardHeader>
@@ -204,6 +214,7 @@ const ProductCard = ({ producto, user, onPress, className = "" }: Props) => {
       <CardFooter className="p-4 pt-0">
         <div className="flex gap-2 w-full">
           <ActionButton
+            id="id-btn-detalles-productos"
             onClick={handleViewDetails}
             disabled={!producto.disponible}
             variant="primary"

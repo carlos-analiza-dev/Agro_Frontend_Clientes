@@ -107,9 +107,12 @@ const ProductosPage = () => {
     );
   }
 
-  if (isError) {
+  if (isError || todosLosProductos.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50/50 via-white to-green-50/30 p-4">
+      <div
+        id="id-container-productos"
+        className="min-h-screen bg-gradient-to-br from-gray-50/50 via-white to-green-50/30 p-4"
+      >
         <div className="max-w-7xl mx-auto">
           <div className="mb-8 text-center">
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-700 via-green-600 to-green-700 bg-clip-text text-transparent">
@@ -120,22 +123,30 @@ const ProductosPage = () => {
             </p>
           </div>
 
-          <div className="relative mb-6">
+          <div id="id-categorias-productos" className="relative mb-6">
             <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-gray-50/50 to-transparent z-10 pointer-events-none md:hidden" />
+
             <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-50/50 to-transparent z-10 pointer-events-none md:hidden" />
 
             <div
+              id="id-categorias-scroll"
               ref={scrollContainerRef}
               className="overflow-x-auto overflow-y-hidden pb-3 scrollbar-thin scroll-smooth"
               style={{ scrollbarWidth: "thin" }}
             >
-              <div className="flex gap-2 px-1 min-w-max">
-                <CategoryButton
-                  isActive={categoriaId === ""}
-                  onClick={() => setCategoriaId("")}
-                >
-                  Todos
-                </CategoryButton>
+              <div
+                id="id-categorias-list"
+                className="flex gap-2 px-1 min-w-max"
+              >
+                <div id="id-categoria-todos">
+                  <CategoryButton
+                    isActive={categoriaId === ""}
+                    onClick={() => setCategoriaId("")}
+                  >
+                    Todos
+                  </CategoryButton>
+                </div>
+
                 {categorias?.map((categoria) => (
                   <CategoryButton
                     key={categoria.id}
@@ -149,26 +160,24 @@ const ProductosPage = () => {
             </div>
           </div>
 
-          <EmptyProducts onRefresh={onRefresh} />
+          <div id="id-empty-productos">
+            <EmptyProducts onRefresh={onRefresh} />
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50/50 via-white to-green-50/30 p-4">
+    <div
+      id="id-container-productos"
+      className="min-h-screen bg-gradient-to-br from-gray-50/50 via-white to-green-50/30 p-4"
+    >
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8 text-center relative">
+        <div id="id-productos-header" className="mb-8 text-center relative">
           <div className="absolute inset-0 -z-10">
             <div className="absolute top-0 left-1/4 w-64 h-64 bg-green-200/20 rounded-full blur-3xl" />
             <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-blue-200/20 rounded-full blur-3xl" />
-          </div>
-
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/50 backdrop-blur-sm border border-white/40 mb-4">
-            <Sparkles className="h-4 w-4 text-green-500" />
-            <span className="text-xs font-medium text-gray-500">
-              {todosLosProductos.length} productos disponibles
-            </span>
           </div>
 
           <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-700 via-green-600 to-green-700 bg-clip-text text-transparent">
@@ -179,22 +188,27 @@ const ProductosPage = () => {
           </p>
         </div>
 
-        <div className="relative mb-6">
+        <div id="id-categorias-productos" className="relative mb-6">
           <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-gray-50/50 to-transparent z-10 pointer-events-none md:hidden" />
+
           <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-50/50 to-transparent z-10 pointer-events-none md:hidden" />
 
           <div
+            id="id-categorias-scroll"
             ref={scrollContainerRef}
             className="overflow-x-auto overflow-y-hidden pb-3 scrollbar-thin scroll-smooth"
             style={{ scrollbarWidth: "thin" }}
           >
-            <div className="flex gap-2 px-1 min-w-max">
-              <CategoryButton
-                isActive={categoriaId === ""}
-                onClick={() => setCategoriaId("")}
-              >
-                Todos
-              </CategoryButton>
+            <div id="id-categorias-list" className="flex gap-2 px-1 min-w-max">
+              <div id="id-categoria-todos">
+                <CategoryButton
+                  isActive={categoriaId === ""}
+                  onClick={() => setCategoriaId("")}
+                >
+                  Todos
+                </CategoryButton>
+              </div>
+
               {categorias?.map((categoria) => (
                 <CategoryButton
                   key={categoria.id}
@@ -210,7 +224,10 @@ const ProductosPage = () => {
 
         {todosLosProductos.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+            <div
+              id="id-list-productos"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6"
+            >
               {todosLosProductos.map((producto, index) => (
                 <ProductCard
                   key={`${producto.id}-${index}`}
@@ -245,6 +262,7 @@ const ProductosPage = () => {
             {!isMobile && hasNextPage && !isFetchingNextPage && (
               <div className="flex justify-center mt-8">
                 <Button
+                  id="id-load-more-products"
                   onClick={handleLoadMore}
                   className="rounded-full px-6 py-2.5 bg-white/80 backdrop-blur-sm hover:bg-green-50/80 border border-gray-200/50 hover:border-green-200/50 text-gray-600 hover:text-green-600 transition-all duration-300 shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:shadow-[0_6px_20px_rgba(34,197,94,0.1)]"
                   variant="ghost"
@@ -266,7 +284,7 @@ const ProductosPage = () => {
             )}
           </>
         ) : (
-          <div className="text-center mt-16">
+          <div id="id-no-products" className="text-center mt-16">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/80 backdrop-blur-sm border border-gray-200/50 mb-4">
               <ShoppingCart className="w-10 h-10 text-gray-300" />
             </div>

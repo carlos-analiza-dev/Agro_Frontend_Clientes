@@ -6,15 +6,20 @@ interface MessageErrorProps {
   titulo: string;
   descripcion: string;
   onPress?: () => void;
+  id?: string;
 }
 
 export const MessageError = ({
   titulo,
   descripcion,
   onPress,
+  id,
 }: MessageErrorProps) => {
   return (
-    <div className="flex flex-col items-center justify-center p-8 space-y-4">
+    <div
+      id={id}
+      className="flex flex-col items-center justify-center p-8 space-y-4"
+    >
       <Alert variant="destructive" className="w-full max-w-md">
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>{titulo}</AlertTitle>

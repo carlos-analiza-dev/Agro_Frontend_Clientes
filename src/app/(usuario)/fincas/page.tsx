@@ -55,8 +55,8 @@ export default function FincasPageGanaderos() {
 
   if (!fincas || fincas.data.fincas.length === 0 || isError) {
     return (
-      <div className="min-h-screen p-4 bg-background">
-        <div className="p-4 pb-2">
+      <div id="fincas-empty" className="min-h-screen p-4 bg-background">
+        <div id="buscador-empty" className="p-4 pb-2">
           <Buscador
             title="Buscar finca por nombre..."
             setSearchTerm={setSearchTerm}
@@ -64,12 +64,14 @@ export default function FincasPageGanaderos() {
           />
         </div>
         <MessageError
+          id="message-error-empty"
           titulo="Sin fincas"
           descripcion="No se encontraron fincas disponibles en este momento"
           onPress={onRefresh}
         />
         {isPropietario && (
           <FAB
+            id="fab-crear-finca-empty"
             titulo="Crear Finca"
             onPress={() => router.push("/fincas/crear-fincas")}
           />
@@ -79,8 +81,8 @@ export default function FincasPageGanaderos() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="p-4 pb-2">
+    <div id="fincas-container" className="min-h-screen bg-background">
+      <div id="buscador-principal" className="p-4 pb-2">
         <Buscador
           title="Buscar finca por nombre..."
           setSearchTerm={setSearchTerm}
@@ -88,8 +90,13 @@ export default function FincasPageGanaderos() {
         />
       </div>
 
-      <ScrollArea className="h-[calc(100vh-140px)] p-4 pt-0">
-        <h2 className="text-xl font-bold mb-4 mt-2">Mis Fincas</h2>
+      <ScrollArea
+        id="scroll-area-fincas"
+        className="h-[calc(100vh-140px)] p-4 pt-0"
+      >
+        <h2 id="titulo-mis-fincas" className="text-xl font-bold mb-4 mt-2">
+          Mis Fincas
+        </h2>
 
         {fincas.data.fincas.map((finca) => (
           <CardFincas
@@ -104,6 +111,7 @@ export default function FincasPageGanaderos() {
         <FAB
           titulo="Crear Finca"
           onPress={() => router.push("/fincas/crear-fincas")}
+          id="fab-crear-finca"
         />
       )}
     </div>

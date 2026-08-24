@@ -30,6 +30,7 @@ const CardServiceUsers = ({ services, onPress }: Props) => {
             </h3>
           </div>
           <ButtonAdd
+            id="id-add-cita"
             Icon={ArrowRight}
             title="Agendar Cita"
             action={onPress}

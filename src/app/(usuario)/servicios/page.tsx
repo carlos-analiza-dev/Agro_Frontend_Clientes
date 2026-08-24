@@ -35,8 +35,11 @@ const ServicesUser = () => {
 
   if (isError || servicios?.length === 0) {
     return (
-      <div className="min-h-screen flex justify-center items-center bg-gradient-to-b from-background to-muted/20 p-4">
-        <div className="max-w-7xl mx-auto ">
+      <div
+        id="id-servicios-empty-container"
+        className="min-h-screen flex justify-center items-center bg-gradient-to-b from-background to-muted/20 p-4"
+      >
+        <div id="id-servicios-empty-wrapper" className="max-w-7xl mx-auto ">
           <EmptyServices onRefresh={onRefresh} countryName={paisName} />
         </div>
       </div>
@@ -44,10 +47,13 @@ const ServicesUser = () => {
   }
 
   return (
-    <div className="flex-1 w-full">
-      <div className="px-4 pb-8 pt-5">
-        <div className="mb-5 text-center w-full">
-          <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">
+    <div id="id-servicios-container" className="flex-1 w-full">
+      <div id="id-servicios-content" className="px-4 pb-8 pt-5">
+        <div id="id-servicios-header" className="mb-5 text-center w-full">
+          <h1
+            id="id-servicios-title"
+            className="text-2xl md:text-3xl font-bold text-primary mb-2"
+          >
             Nuestros servicios
           </h1>
           <p className="text-muted-foreground text-sm md:text-base max-w-[90%] mx-auto">
@@ -55,7 +61,7 @@ const ServicesUser = () => {
           </p>
         </div>
 
-        <div className="space-y-4">
+        <div id="id-servicios-list" className="space-y-4">
           {servicios?.map((item) => (
             <div key={item.id} className="w-full">
               <CardServiceUsers

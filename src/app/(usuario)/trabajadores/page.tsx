@@ -101,14 +101,19 @@ const TrabajadoresPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div id="id-trabajadores-container" className="min-h-screen bg-background">
       <div className="container mx-auto p-3 sm:p-4 md:p-6 space-y-4 md:space-y-6">
         <div className="flex flex-col space-y-3 sm:space-y-4">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+          {/* HEADER */}
+          <div
+            id="id-trabajadores-header"
+            className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3"
+          >
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
                 Trabajadores
               </h1>
+
               <p className="text-sm text-muted-foreground mt-1">
                 Gestión de trabajadores asignados a fincas
               </p>
@@ -116,6 +121,7 @@ const TrabajadoresPage = () => {
 
             <div className="flex flex-col sm:flex-row gap-2">
               <Button
+                id="id-trabajadores-filters-button"
                 onClick={() => setShowFilters(!showFilters)}
                 variant="outline"
                 className="w-full sm:w-auto"
@@ -128,7 +134,9 @@ const TrabajadoresPage = () => {
                   </Badge>
                 )}
               </Button>
+
               <ButtonAdd
+                id="id-trabajadores-add-button"
                 Icon={Plus}
                 title="Nuevo Trabajador"
                 action={() => handleAddTrabajador()}
@@ -137,16 +145,19 @@ const TrabajadoresPage = () => {
             </div>
           </div>
 
-          <div className="relative">
+          <div id="id-trabajadores-search" className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+
             <Input
               placeholder="Buscar por nombre, identificación o teléfono..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-9 pr-9 w-full"
             />
+
             {searchTerm && (
               <button
+                id="id-trabajadores-clear-search"
                 onClick={() => setSearchTerm("")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
@@ -156,21 +167,30 @@ const TrabajadoresPage = () => {
           </div>
 
           {showFilters && (
-            <Card className="p-4">
+            <Card id="id-trabajadores-filters" className="p-4">
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <h3 className="font-medium">Filtros</h3>
-                  <Button variant="ghost" size="sm" onClick={clearFilters}>
+
+                  <Button
+                    id="id-trabajadores-clear-filters"
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearFilters}
+                  >
                     Limpiar todos
                   </Button>
                 </div>
+
                 <div className="grid grid-cols-1 gap-3">
-                  <div>
+                  <div id="id-trabajadores-filter-verified">
                     <label className="text-sm font-medium mb-2 block">
                       Estado de verificación
                     </label>
+
                     <div className="flex flex-wrap gap-2">
                       <Button
+                        id="id-trabajadores-filter-all"
                         size="sm"
                         variant={
                           filterVerified === "todos" ? "default" : "outline"
@@ -180,7 +200,9 @@ const TrabajadoresPage = () => {
                       >
                         Todos
                       </Button>
+
                       <Button
+                        id="id-trabajadores-filter-verified-button"
                         size="sm"
                         variant={
                           filterVerified === "verificados"
@@ -192,7 +214,9 @@ const TrabajadoresPage = () => {
                       >
                         Verificados
                       </Button>
+
                       <Button
+                        id="id-trabajadores-filter-unverified-button"
                         size="sm"
                         variant={
                           filterVerified === "no_verificados"
@@ -212,7 +236,10 @@ const TrabajadoresPage = () => {
           )}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+        <div
+          id="id-trabajadores-stats"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4"
+        >
           <StatCard
             title="Total Trabajadores"
             icon={Users}
@@ -237,11 +264,12 @@ const TrabajadoresPage = () => {
           />
         </div>
 
-        <Card>
+        <Card id="id-trabajadores-list">
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="text-lg sm:text-xl">
               Lista de Trabajadores
             </CardTitle>
+
             <CardDescription>
               {trabajadoresData?.total || 0} trabajadores registrados en el
               sistema
@@ -258,6 +286,7 @@ const TrabajadoresPage = () => {
               )}
             </CardDescription>
           </CardHeader>
+
           <CardContent className="p-0 sm:p-6">
             {isLoading ? (
               <div className="p-4">
@@ -265,7 +294,7 @@ const TrabajadoresPage = () => {
               </div>
             ) : (
               <>
-                <div className="overflow-x-auto">
+                <div id="id-trabajadores-table" className="overflow-x-auto">
                   <TableTrabajadores
                     filteredTrabajadores={filteredTrabajadores}
                     handleEditTrabajador={handleEditTrabajador}
@@ -275,7 +304,10 @@ const TrabajadoresPage = () => {
                 </div>
 
                 {totalPages > 1 && totalFiltrados > 0 && (
-                  <div className="mt-4 flex justify-center md:justify-end px-4 sm:px-0">
+                  <div
+                    id="id-trabajadores-pagination"
+                    className="mt-4 flex justify-center md:justify-end px-4 sm:px-0"
+                  >
                     <Paginacion
                       currentPage={currentPage}
                       totalPages={totalPages}
@@ -285,7 +317,10 @@ const TrabajadoresPage = () => {
                 )}
 
                 {totalFiltrados > 0 && (
-                  <div className="mt-4 text-xs sm:text-sm text-muted-foreground text-center px-4 sm:px-0">
+                  <div
+                    id="id-trabajadores-results-count"
+                    className="mt-4 text-xs sm:text-sm text-muted-foreground text-center px-4 sm:px-0"
+                  >
                     Mostrando {totalFiltrados} de {trabajadoresData?.total || 0}{" "}
                     trabajadores
                     {currentPage > 1 &&

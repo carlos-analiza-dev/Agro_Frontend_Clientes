@@ -16,7 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import useGetExistenciaProductos from "@/hooks/agroservicios/existencias/useGetExistenciaProductos";
 import useGetSucursalByEmpleado from "@/hooks/agroservicios/sucursales/useGetSucursalByEmpleado";
 import { useAuthEmpleadoStore } from "@/providers/store/useAuthEmpleados";
-import { AlertCircle, Filter, Search, Warehouse } from "lucide-react";
+import { Filter, Search, Warehouse } from "lucide-react";
 import { useMemo, useState } from "react";
 
 const ExistenciaProductosPage = () => {
@@ -93,32 +93,6 @@ const ExistenciaProductosPage = () => {
             <SkeletonTable />
           </div>
         </div>
-      </div>
-    );
-  }
-
-  if (existencia_productos?.length === 0) {
-    return (
-      <div className="p-12 text-center">
-        <AlertCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-        <h3 className="text-lg font-semibold mb-2">
-          No se encontraron resultados
-        </h3>
-        <p className="text-muted-foreground max-w-sm mx-auto">
-          {hasActiveFilters
-            ? "No hay productos que coincidan con los filtros seleccionados. Intenta ajustar tu búsqueda."
-            : "No hay datos de existencia disponibles para este propietario."}
-        </p>
-        {hasActiveFilters && (
-          <Button
-            variant="outline"
-            onClick={handleClearFilters}
-            className="mt-4"
-          >
-            <Filter className="h-4 w-4 mr-2" />
-            Limpiar filtros
-          </Button>
-        )}
       </div>
     );
   }

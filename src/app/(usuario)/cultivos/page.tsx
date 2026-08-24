@@ -78,8 +78,14 @@ const CultivoPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 md:p-6 space-y-6">
-      <div className="md:flex justify-between items-center">
+    <div
+      id="id-cultivo-container"
+      className="container mx-auto p-4 md:p-6 space-y-6"
+    >
+      <div
+        id="id-cultivo-header"
+        className="md:flex justify-between items-center"
+      >
         <div>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2">
             <Sprout className="h-7 w-7 text-green-600" />
@@ -95,12 +101,13 @@ const CultivoPage = () => {
           Icon={Sprout}
           action={handleAddCultivo}
           className="bg-green-600 hover:bg-green-700"
+          id="id-cultivo-add-button"
         />
       </div>
 
-      <Card className="p-4">
+      <Card id="card-cultivo-filters" className="p-4">
         <div className="flex flex-col md:flex-row gap-4">
-          <div className="w-full md:w-64">
+          <div id="id-cultivo-select-trigger" className="w-full md:w-64">
             <Select
               value={filters.fincaId}
               onValueChange={(value) =>
@@ -123,7 +130,12 @@ const CultivoPage = () => {
           </div>
 
           {filters.fincaId && (
-            <Button variant="ghost" onClick={limpiarFiltros} className="gap-2">
+            <Button
+              id="id-cultivo-clear-filters"
+              variant="ghost"
+              onClick={limpiarFiltros}
+              className="gap-2"
+            >
               <X className="h-4 w-4" />
               Limpiar
             </Button>
@@ -144,14 +156,10 @@ const CultivoPage = () => {
               <p className="text-muted-foreground text-center">
                 Comienza registrando tu primer cultivo
               </p>
-              <Button onClick={() => setOpenModal(true)} className="mt-4 gap-2">
-                <Sprout className="h-4 w-4" />
-                Registrar Cultivo
-              </Button>
             </CardContent>
           </Card>
         ) : (
-          <>
+          <div id="id-cultivo-card">
             {cultivosData?.cultivos.map((cultivo: Cultivo) => {
               const estado = getEstadoCultivo(
                 cultivo.fecha_siembra,
@@ -188,7 +196,7 @@ const CultivoPage = () => {
               Mostrando {cultivosData?.cultivos.length} de {cultivosData?.total}{" "}
               cultivos
             </div>
-          </>
+          </div>
         )}
       </div>
       <Modal

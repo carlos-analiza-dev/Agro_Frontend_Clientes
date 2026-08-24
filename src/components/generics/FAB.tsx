@@ -7,6 +7,7 @@ interface FABProps {
   onPress: () => void;
   titulo?: string;
   className?: string;
+  id?: string;
 }
 
 export const FAB = ({
@@ -14,9 +15,11 @@ export const FAB = ({
   onPress,
   className,
   titulo,
+  id,
 }: FABProps) => {
   return (
     <Button
+      id={id}
       className={cn(
         "fixed bottom-8 right-8 z-50 h-14 w-14 rounded-md shadow-lg md:bottom-10 md:right-10 md:h-16 md:w-16 bg-green-600",
         className,

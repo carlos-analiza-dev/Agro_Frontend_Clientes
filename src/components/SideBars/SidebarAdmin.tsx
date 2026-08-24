@@ -2,8 +2,8 @@
 
 import { navItems } from "@/helpers/data/sidebar/sidebarData";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { LogOut, Sparkles, Menu } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { LogOut, Sparkles, Menu, Cog, CircleHelp } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -16,6 +16,12 @@ import useGetPermisosByCliente from "@/hooks/permisos/useGetPermisosByCliente";
 import { TipoCliente } from "@/interfaces/enums/clientes.enums";
 import SidebarSkeleton from "./SidebarSkeleton";
 import { cn } from "@/lib/utils";
+import { useMemo, useState } from "react";
+import { getClientesTourSteps } from "@/helpers/data/guia/sidebarOrder";
+import { TOUR_PAGES_CLIENTES_ORDER } from "@/helpers/data/guia/tourGuide";
+import { toast } from "react-toastify";
+import { Button } from "../ui/button";
+import TourGuide from "../agroservicio/guia/TourGuide";
 
 interface Props {
   handleLogout: () => Promise<void>;
@@ -108,7 +114,8 @@ const SidebarLogo = () => (
 const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
   const { cliente } = useAuthStore();
   const pathname = usePathname();
-
+  const router = useRouter();
+  const [tourOpen, setTourOpen] = useState(false);
   const paqueteId = cliente?.paqueteActivo?.paquete?.id ?? "";
   const clienteId = cliente?.id ?? "";
 
@@ -121,7 +128,6 @@ const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
     isLoading,
     isError,
   } = useGetPermisosByCliente(clienteId);
-
   const permisos = esPropietario ? permisosPaquete : permisosCliente;
 
   const permisosVer =
@@ -153,6 +159,44 @@ const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
     .filter((section) => section.items.length > 0);
 
   const isItemActive = (href: string) => pathname === href;
+
+  const allTourSteps = useMemo(() => {
+    return getClientesTourSteps(permisos ?? []);
+  }, [permisos]);
+
+  const currentTourSteps = useMemo(() => {
+    return allTourSteps[pathname] || [];
+  }, [allTourSteps, pathname]);
+
+  const handleTourFinish = () => {
+    const availablePages = Object.keys(allTourSteps);
+
+    const orderedPages = TOUR_PAGES_CLIENTES_ORDER.filter((page) =>
+      availablePages.includes(page),
+    );
+
+    const currentPageIndex = orderedPages.indexOf(pathname);
+
+    if (currentPageIndex !== -1 && currentPageIndex < orderedPages.length - 1) {
+      const nextPage = orderedPages[currentPageIndex + 1];
+
+      if (allTourSteps[nextPage]?.length > 0) {
+        router.push(nextPage);
+
+        setTourOpen(false);
+
+        setTimeout(() => {
+          setTourOpen(true);
+        }, 500);
+
+        return;
+      }
+    }
+
+    setTourOpen(false);
+
+    toast.success("¡Has completado el tour completo!");
+  };
 
   if (isLoading || isError) {
     return <SidebarSkeleton />;
@@ -203,12 +247,62 @@ const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
           )}
 
           <div className="mt-auto pt-4 border-t border-gray-100/50">
-            <div className="p-2 bg-white/40 backdrop-blur-sm rounded-xl border border-gray-100/50">
+            <div className="space-y-2 rounded-xl border border-gray-100/50 bg-white/40 p-2 backdrop-blur-sm">
+              <Button
+                variant="ghost"
+                onClick={() => setTourOpen(true)}
+                disabled={currentTourSteps.length === 0}
+                className={cn(
+                  "group relative flex w-full items-center justify-start",
+                  "rounded-xl px-3 py-2.5",
+                  "text-sm font-medium transition-all duration-200",
+                  currentTourSteps.length > 0
+                    ? "text-green-700 hover:bg-green-50 hover:text-green-700"
+                    : "text-gray-400",
+                )}
+                title="Abrir guía del sistema"
+              >
+                <span
+                  className={cn(
+                    "mr-3 flex h-8 w-8 items-center justify-center rounded-lg",
+                    "transition-all duration-200",
+                    currentTourSteps.length > 0
+                      ? "bg-green-100 text-green-600 group-hover:bg-green-600 group-hover:text-white"
+                      : "bg-gray-100 text-gray-400",
+                  )}
+                >
+                  <CircleHelp className="h-4 w-4" />
+                </span>
+
+                <span className="flex flex-col items-start">
+                  <span className="font-semibold">Guía del sistema</span>
+
+                  <span className="text-[11px] font-normal text-gray-400">
+                    {currentTourSteps.length > 0
+                      ? "Aprende a utilizar el sistema"
+                      : "No disponible en esta página"}
+                  </span>
+                </span>
+
+                {currentTourSteps.length > 0 && (
+                  <span className="ml-auto flex h-2 w-2 rounded-full bg-green-500 shadow-sm" />
+                )}
+              </Button>
+
               <LogoutButton onClick={handleLogout} />
             </div>
           </div>
         </div>
       </div>
+      <TourGuide
+        steps={currentTourSteps}
+        open={tourOpen}
+        onClose={() => setTourOpen(false)}
+        onFinish={handleTourFinish}
+        onEmpty={() =>
+          toast.info("No hay elementos visibles para la guía en esta página")
+        }
+      />
     </aside>
   );
 };

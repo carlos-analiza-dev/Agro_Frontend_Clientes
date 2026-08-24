@@ -1,11 +1,9 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BadgeDollarSign, PackagePlus, ShoppingBasket } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import { useAuthStore } from "@/providers/store/useAuthStore";
 import useGetProduccionesUserId from "@/hooks/producciones/useGetProduccionesUserId";
 import { MessageError } from "@/components/generics/MessageError";
 import ProduccionList from "./ui/ProduccionList";
@@ -18,9 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const ProduccionGanaderoPage = () => {
-  const { cliente } = useAuthStore();
   const router = useRouter();
-  const [refreshing, setRefreshing] = useState(false);
 
   const {
     data: producciones,
@@ -30,12 +26,7 @@ const ProduccionGanaderoPage = () => {
   } = useGetProduccionesUserId();
 
   const onRefresh = async () => {
-    try {
-      setRefreshing(true);
-      await refetch();
-    } finally {
-      setRefreshing(false);
-    }
+    await refetch();
   };
 
   if (isLoading) {
@@ -43,26 +34,41 @@ const ProduccionGanaderoPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background relative pb-24">
+    <div
+      id="id-produccion-container"
+      className="min-h-screen bg-background relative pb-24"
+    >
       <div className="container mx-auto px-4 py-6">
-        <div className="block md:flex justify-between items-center mb-6">
+        <div
+          id="id-produccion-header"
+          className="block md:flex justify-between items-center mb-6"
+        >
           <h1 className="text-lg md:text-2xl font-bold">Mis Producciones</h1>
+
           <DropdownMenu>
-            <DropdownMenuTrigger asChild className="mt-4 md:mt-0">
+            <DropdownMenuTrigger
+              id="id-produccion-control-productos"
+              asChild
+              className="mt-4 md:mt-0"
+            >
               <Button variant="outline" className="gap-2">
                 <BadgeDollarSign className="h-4 w-4" />
                 Control de Productos
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+
+            <DropdownMenuContent id="id-produccion-control-menu" align="end">
               <DropdownMenuItem
+                id="id-produccion-productos"
                 className="hover:cursor-pointer"
                 onClick={() => router.push("/produccion/precios-productos")}
               >
                 <ShoppingBasket className="h-4 w-4 mr-2" />
                 Productos
               </DropdownMenuItem>
+
               <DropdownMenuItem
+                id="id-produccion-inventario"
                 className="hover:cursor-pointer"
                 onClick={() => router.push("/produccion/inventario-productos")}
               >
@@ -73,14 +79,16 @@ const ProduccionGanaderoPage = () => {
           </DropdownMenu>
         </div>
 
-        <div className="space-y-4">
+        <div id="id-produccion-list" className="space-y-4">
           {producciones?.map((item) => (
-            <ProduccionList key={item.id} produccion={item} />
+            <div id={`id-produccion-card-${item.id}`} key={item.id}>
+              <ProduccionList produccion={item} />
+            </div>
           ))}
         </div>
 
         {!producciones?.length && (
-          <Card className="mt-8">
+          <Card id="id-produccion-empty" className="mt-8">
             <CardContent className="pt-6 text-center">
               <MessageError
                 titulo="No hay producciones registradas"
@@ -92,7 +100,10 @@ const ProduccionGanaderoPage = () => {
         )}
       </div>
 
-      <FAB onPress={() => router.push("/produccion/crear-produccion")} />
+      <FAB
+        id="id-add-produccion"
+        onPress={() => router.push("/produccion/crear-produccion")}
+      />
     </div>
   );
 };

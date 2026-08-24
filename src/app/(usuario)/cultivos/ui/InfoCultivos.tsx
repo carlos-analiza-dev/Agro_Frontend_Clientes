@@ -101,12 +101,14 @@ const CloudButton = ({
   variant = "outline",
   icon: Icon,
   className,
+  id,
 }: {
   children: React.ReactNode;
   onClick?: () => void;
   variant?: "outline" | "ghost" | "default";
   icon?: React.ElementType;
   className?: string;
+  id?: string;
 }) => {
   const variants = {
     outline:
@@ -119,6 +121,7 @@ const CloudButton = ({
   return (
     <Button
       onClick={onClick}
+      id={id}
       variant="ghost"
       className={cn(
         "rounded-full px-4 py-1.5 h-auto text-xs font-medium backdrop-blur-sm border transition-all duration-300",
@@ -237,6 +240,7 @@ const InfoCultivos = ({
 
       <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto lg:flex-nowrap">
         <CloudButton
+          id="id-edit-cultivo"
           onClick={() => handleEditCultivo(cultivo)}
           variant="outline"
           icon={Edit}
@@ -245,6 +249,7 @@ const InfoCultivos = ({
         </CloudButton>
 
         <CloudButton
+          id="id-detalles-cultivo"
           onClick={() => handleViewDetails(cultivo)}
           variant="outline"
           icon={Eye}
@@ -254,6 +259,7 @@ const InfoCultivos = ({
 
         {cultivo.isActive && (
           <CloudButton
+            id="id-finalizar-cultivo"
             onClick={() => setOpenModalStatus(true)}
             variant="default"
             icon={Flag}

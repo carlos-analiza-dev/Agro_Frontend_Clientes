@@ -52,14 +52,20 @@ const PanelPageGanadero = () => {
     });
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div id="id-dashboard-clientes" className="p-4 sm:p-6 lg:p-8 space-y-8">
+      <div
+        id="id-dashboard-header"
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+      >
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
           Panel de {nombreSeccion}
         </h1>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div
+        id="id-dashboard-totales"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+      >
         <CardTotales
           titulo="Total de Animales Registrados"
           total={total_animales || 0}
@@ -79,8 +85,12 @@ const PanelPageGanadero = () => {
 
       <div className="w-full">
         <Tabs defaultValue="ganaderia" className="w-full">
-          <TabsList className="grid grid-cols-1 sm:grid-cols-3 w-full gap-2 mb-20 md:mb-8">
+          <TabsList
+            id="id-dashboard-tabs-list"
+            className="grid grid-cols-1 sm:grid-cols-3 w-full gap-2 mb-20 md:mb-8"
+          >
             <TabsTrigger
+              id="id-tab-ganaderia"
               onClick={() => setNombreSeccion("Ganaderia")}
               value="ganaderia"
               className="text-sm sm:text-base"
@@ -88,6 +98,7 @@ const PanelPageGanadero = () => {
               Ganadería
             </TabsTrigger>
             <TabsTrigger
+              id="id-tab-agricola"
               onClick={() => setNombreSeccion("Agricultura")}
               value="agricola"
               className="text-sm sm:text-base"
@@ -95,6 +106,7 @@ const PanelPageGanadero = () => {
               Agrícola
             </TabsTrigger>
             <TabsTrigger
+              id="id-tab-produccion"
               onClick={() => setNombreSeccion("Produccion")}
               value="produccion"
               className="text-sm sm:text-base"
@@ -103,56 +115,71 @@ const PanelPageGanadero = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="ganaderia">
-            <ProduccionGanadera />
-          </TabsContent>
-
-          <TabsContent value="agricola">
-            <ResumenCultivos
-              data={resumen_cultivos}
-              isLoading={isLoadingCultivos}
-              moneda={moneda}
-            />
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-2 md:mt-5">
-              <CultivosPorTipo
-                data={cultivos_tipo}
-                isLoading={isLoadingCultivosTipo}
-              />
-              <AreaCultivoByFinca
-                data={area_finca_cultivos}
-                isLoading={isLoadingAreaFinca}
-              />
+          <TabsContent id="id-tab-content-ganaderia" value="ganaderia">
+            <div id="id-produccion-ganadera">
+              <ProduccionGanadera />
             </div>
           </TabsContent>
 
-          <TabsContent value="produccion">
-            <div>
-              <DescartesMortalidadDashboard
-                descartes_mortalidad={descartes}
-                setSelectedMonth={setSelectedMonth}
-                selectedMonth={selectedMonth}
-                cargando={cargando_descartes}
-                sub_title="descartes"
-                title="descartados"
-                isDescarte={true}
-                fincas={fincas?.data.fincas}
-                setSelectedFincas={setSelectedFincas}
-                selectedFincas={selectedFincas}
-                showFincaFilter={true}
+          <TabsContent id="id-tab-content-agricola" value="agricola">
+            <div id="id-resumen-cultivos">
+              <ResumenCultivos
+                data={resumen_cultivos}
+                isLoading={isLoadingCultivos}
+                moneda={moneda}
               />
-              <DescartesMortalidadDashboard
-                descartes_mortalidad={mortalidad}
-                setSelectedMonth={setSelectedMonthMortalidad}
-                selectedMonth={selectedMonthMortalidad}
-                cargando={cargando_mortalidad}
-                sub_title="mortalidad"
-                title="mortalidad"
-                isDescarte={false}
-                fincas={fincas?.data.fincas}
-                setSelectedFincas={setSelectedFincasMortalidad}
-                selectedFincas={selectedFincasMortalidad}
-                showFincaFilter={true}
-              />
+            </div>
+            <div
+              id="id-cultivos-detalle"
+              className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-2 md:mt-5"
+            >
+              <div id="id-cultivos-por-tipo">
+                <CultivosPorTipo
+                  data={cultivos_tipo}
+                  isLoading={isLoadingCultivosTipo}
+                />
+              </div>
+              <div id="id-area-cultivos-finca">
+                <AreaCultivoByFinca
+                  data={area_finca_cultivos}
+                  isLoading={isLoadingAreaFinca}
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent id="id-tab-content-produccion" value="produccion">
+            <div id="id-produccion-detalle">
+              <div id="id-descartes">
+                <DescartesMortalidadDashboard
+                  descartes_mortalidad={descartes}
+                  setSelectedMonth={setSelectedMonth}
+                  selectedMonth={selectedMonth}
+                  cargando={cargando_descartes}
+                  sub_title="descartes"
+                  title="descartados"
+                  isDescarte={true}
+                  fincas={fincas?.data.fincas}
+                  setSelectedFincas={setSelectedFincas}
+                  selectedFincas={selectedFincas}
+                  showFincaFilter={true}
+                />
+              </div>
+              <div id="id-mortalidad">
+                <DescartesMortalidadDashboard
+                  descartes_mortalidad={mortalidad}
+                  setSelectedMonth={setSelectedMonthMortalidad}
+                  selectedMonth={selectedMonthMortalidad}
+                  cargando={cargando_mortalidad}
+                  sub_title="mortalidad"
+                  title="mortalidad"
+                  isDescarte={false}
+                  fincas={fincas?.data.fincas}
+                  setSelectedFincas={setSelectedFincasMortalidad}
+                  selectedFincas={selectedFincasMortalidad}
+                  showFincaFilter={true}
+                />
+              </div>
             </div>
           </TabsContent>
         </Tabs>

@@ -706,6 +706,7 @@ const TableTrabajadores = ({
                 </TableCell>
                 <TableCell className="text-center">
                   <Button
+                    id="id-ver-finca-trabajador"
                     onClick={() => handleOpenFincasTrabajador(trabajador.id)}
                     variant="ghost"
                     size="sm"
@@ -716,6 +717,7 @@ const TableTrabajadores = ({
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-1">
                     <Button
+                      id="id-edit-trabajador"
                       onClick={() => handleEditTrabajador(trabajador)}
                       variant="ghost"
                       size="icon"
@@ -724,7 +726,7 @@ const TableTrabajadores = ({
                       <Pencil className="h-4 w-4" />
                     </Button>
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
+                      <DropdownMenuTrigger id="id-options-trabajador" asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
                           <MoreVertical className="h-4 w-4" />
                         </Button>

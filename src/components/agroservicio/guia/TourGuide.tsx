@@ -13,7 +13,8 @@ interface TourGuideProps {
   steps: TourStep[];
   open: boolean;
   onClose: () => void;
-  onStepComplete?: (stepIndex: number) => void;
+  onFinish?: () => void;
+  onEmpty?: () => void;
 }
 
 interface ElementRect {
@@ -23,23 +24,63 @@ interface ElementRect {
   height: number;
 }
 
+const getVisibleSteps = (steps: TourStep[]): TourStep[] =>
+  steps.filter((step) => !!document.getElementById(step.target));
+
 const TourGuide = ({
   steps,
   open,
   onClose,
-  onStepComplete,
+  onFinish,
+  onEmpty,
 }: TourGuideProps) => {
+  const [visibleSteps, setVisibleSteps] = useState<TourStep[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [elementRect, setElementRect] = useState<ElementRect | null>(null);
-  const [tooltipPosition, setTooltipPosition] = useState({
-    top: 0,
-    left: 0,
-  });
+  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
 
-  const step = steps[currentStep];
+  const step = visibleSteps[currentStep];
+
   useEffect(() => {
-    setCurrentStep(0);
-  }, [steps]);
+    if (!open) {
+      setVisibleSteps([]);
+      setCurrentStep(0);
+      setElementRect(null);
+      return;
+    }
+
+    let cancelled = false;
+    let attempts = 0;
+    const maxAttempts = 15;
+    const intervalMs = 200;
+
+    const tryFilter = () => {
+      if (cancelled) return;
+
+      const filtered = getVisibleSteps(steps);
+
+      if (filtered.length > 0) {
+        setCurrentStep(0);
+        setVisibleSteps(filtered);
+        return;
+      }
+
+      attempts += 1;
+      if (attempts >= maxAttempts) {
+        onEmpty?.();
+        onClose();
+        return;
+      }
+
+      setTimeout(tryFilter, intervalMs);
+    };
+
+    tryFilter();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [open, steps]);
 
   const updatePosition = useCallback(
     (scroll = false) => {
@@ -80,23 +121,14 @@ const TourGuide = ({
         if (left + tooltipWidth > window.innerWidth - 16) {
           left = window.innerWidth - tooltipWidth - 16;
         }
-
-        if (left < 16) {
-          left = 16;
-        }
+        if (left < 16) left = 16;
 
         if (top + tooltipHeight > window.innerHeight - 16) {
           top = rect.top - tooltipHeight - spacing;
         }
+        if (top < 16) top = 16;
 
-        if (top < 16) {
-          top = 16;
-        }
-
-        setTooltipPosition({
-          top,
-          left,
-        });
+        setTooltipPosition({ top, left });
       });
     },
     [step],
@@ -120,48 +152,36 @@ const TourGuide = ({
 
     animationFrame = requestAnimationFrame(trackPosition);
 
-    window.addEventListener("resize", () => updatePosition(false));
-    window.addEventListener("scroll", () => updatePosition(false));
+    const onResize = () => updatePosition(false);
+    const onScroll = () => updatePosition(false);
+    window.addEventListener("resize", onResize);
+    window.addEventListener("scroll", onScroll);
 
     return () => {
       clearTimeout(timeout);
       cancelAnimationFrame(animationFrame);
-      window.removeEventListener("resize", () => updatePosition(false));
-      window.removeEventListener("scroll", () => updatePosition(false));
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("scroll", onScroll);
     };
   }, [open, currentStep, updatePosition]);
-
-  useEffect(() => {
-    if (!open) {
-      setCurrentStep(0);
-      setElementRect(null);
-    }
-  }, [open]);
 
   if (!open || !step) {
     return null;
   }
 
   const isFirst = currentStep === 0;
-  const isLast = currentStep === steps.length - 1;
+  const isLast = currentStep === visibleSteps.length - 1;
 
   const handleNext = () => {
     if (isLast) {
-      if (onStepComplete) {
-        onStepComplete(currentStep);
-      } else {
-        onClose();
-      }
+      onFinish ? onFinish() : onClose();
       return;
     }
-
     setCurrentStep((prev) => prev + 1);
   };
 
   const handlePrevious = () => {
-    if (!isFirst) {
-      setCurrentStep((prev) => prev - 1);
-    }
+    if (!isFirst) setCurrentStep((prev) => prev - 1);
   };
 
   return (
@@ -188,10 +208,7 @@ const TourGuide = ({
           "rounded-lg border bg-white p-4 shadow-2xl",
           "animate-in fade-in zoom-in-95 duration-200",
         )}
-        style={{
-          top: tooltipPosition.top,
-          left: tooltipPosition.left,
-        }}
+        style={{ top: tooltipPosition.top, left: tooltipPosition.left }}
       >
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -200,7 +217,6 @@ const TourGuide = ({
               {step.description}
             </p>
           </div>
-
           <Button
             variant="ghost"
             size="icon"
@@ -213,7 +229,7 @@ const TourGuide = ({
 
         <div className="mt-4 flex items-center justify-between">
           <span className="text-xs text-gray-500">
-            Paso {currentStep + 1} de {steps.length}
+            Paso {currentStep + 1} de {visibleSteps.length}
           </span>
 
           <div className="flex gap-2">

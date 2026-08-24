@@ -7,6 +7,7 @@ interface BuscadorProps {
   searchTerm: string;
   className?: string;
   onFocus?: () => void;
+  id?: string;
 }
 
 export const Buscador = ({
@@ -15,9 +16,10 @@ export const Buscador = ({
   searchTerm,
   className,
   onFocus,
+  id,
 }: BuscadorProps) => {
   return (
-    <div className={`relative ${className}`}>
+    <div id={id} className={`relative ${className}`}>
       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
       <Input
         placeholder={title}

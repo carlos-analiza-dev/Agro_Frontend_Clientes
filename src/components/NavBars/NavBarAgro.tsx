@@ -244,42 +244,31 @@ const NavBarAgro = ({
     }
   };
 
-  const handleTourStepComplete = (stepIndex: number) => {
-    const currentSteps = allTourSteps[pathname];
+  const handleTourFinish = () => {
+    const availablePages = Object.keys(allTourSteps);
 
-    if (stepIndex === currentSteps.length - 1) {
-      const availablePages = Object.keys(allTourSteps);
+    const orderedPages = isPropietario
+      ? TOUR_PAGES_ORDER.filter((page) => availablePages.includes(page))
+      : TOUR_PAGES_EMPLOYES_ORDER.filter((page) =>
+          availablePages.includes(page),
+        );
 
-      const orderedPages = isPropietario
-        ? TOUR_PAGES_ORDER.filter((page) => availablePages.includes(page))
-        : TOUR_PAGES_EMPLOYES_ORDER.filter((page) =>
-            availablePages.includes(page),
-          );
+    const currentPageIndex = orderedPages.indexOf(pathname);
 
-      const currentPageIndex = orderedPages.indexOf(pathname);
+    if (currentPageIndex !== -1 && currentPageIndex < orderedPages.length - 1) {
+      const nextPage = orderedPages[currentPageIndex + 1];
 
-      if (
-        currentPageIndex !== -1 &&
-        currentPageIndex < orderedPages.length - 1
-      ) {
-        const nextPage = orderedPages[currentPageIndex + 1];
-
-        if (allTourSteps[nextPage] && allTourSteps[nextPage].length > 0) {
-          router.push(nextPage);
-
-          setTourOpen(false);
-
-          setTimeout(() => {
-            setTourOpen(true);
-          }, 500);
-        } else {
-          setTourOpen(false);
-          toast.info("Has completado todas las guías disponibles");
-        }
+      if (allTourSteps[nextPage] && allTourSteps[nextPage].length > 0) {
+        router.push(nextPage);
+        setTourOpen(false);
+        setTimeout(() => setTourOpen(true), 500);
       } else {
         setTourOpen(false);
-        toast.success("¡Has completado el tour completo!");
+        toast.info("Has completado todas las guías disponibles");
       }
+    } else {
+      setTourOpen(false);
+      toast.success("¡Has completado el tour completo!");
     }
   };
 
@@ -437,15 +426,17 @@ const NavBarAgro = ({
             {userInfo.rol}
           </Badge>
         )}
-        <Button
-          variant="ghost"
-          onClick={() => setTourOpen(true)}
-          className="relative"
-          disabled={currentTourSteps.length === 0}
-          title="Abrir guía del sistema"
-        >
-          <Cog className="h-5 w-5" />
-        </Button>
+        <div className="hidden md:block">
+          <Button
+            variant="ghost"
+            onClick={() => setTourOpen(true)}
+            className="relative"
+            disabled={currentTourSteps.length === 0}
+            title="Abrir guía del sistema"
+          >
+            <Cog className="h-5 w-5" />
+          </Button>
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -620,7 +611,10 @@ const NavBarAgro = ({
         steps={currentTourSteps}
         open={tourOpen}
         onClose={() => setTourOpen(false)}
-        onStepComplete={handleTourStepComplete}
+        onFinish={handleTourFinish}
+        onEmpty={() =>
+          toast.info("No hay elementos visibles para la guía en esta página")
+        }
       />
     </header>
   );
