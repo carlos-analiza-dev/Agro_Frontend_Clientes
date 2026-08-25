@@ -1,16 +1,16 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText } from "lucide-react";
-import React from "react";
 
 interface Props {
   total: number;
   titulo: string;
   colorIcon?: string;
+  id?: string;
 }
 
-const CardHistorial = ({ titulo, total, colorIcon }: Props) => {
+const CardHistorial = ({ titulo, total, colorIcon, id }: Props) => {
   return (
-    <Card>
+    <Card id={id}>
       <CardContent className="pt-6">
         <div className="flex items-center justify-between">
           <div>

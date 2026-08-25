@@ -104,6 +104,7 @@ const CardTratamientos = ({ estado, tratamiento, IconoEstado }: Props) => {
             <div className="flex flex-wrap gap-2">
               {tratamiento.documentos.map((doc) => (
                 <Button
+                  id="btn-download-doc-tratamiento"
                   key={doc.id}
                   variant="outline"
                   size="sm"

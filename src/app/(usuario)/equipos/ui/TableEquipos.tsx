@@ -207,7 +207,11 @@ const TableEquipos = ({
                 </Badge>
               </TableCell>
               <TableCell>
-                <Button onClick={() => handleEditEquipo(eq)} variant={"ghost"}>
+                <Button
+                  id="edit-equipo-btn"
+                  onClick={() => handleEditEquipo(eq)}
+                  variant={"ghost"}
+                >
                   <Edit />
                 </Button>
               </TableCell>

@@ -111,7 +111,9 @@ export function CardGastosMobile({
           </CardContent>
           <div className="flex justify-end mt-3 mb-3">
             <Link href={`/gastos/${gasto.id}`}>
-              <Button variant={"ghost"}>Editar</Button>
+              <Button id="btn-edit-gasto" variant={"ghost"}>
+                Editar
+              </Button>
             </Link>
           </div>
         </Card>

@@ -4,11 +4,13 @@ import { Download } from "lucide-react";
 interface Props {
   handleExportToExcel: () => void;
   isMobile?: true;
+  id?: string;
 }
 
-const ExportButton = ({ handleExportToExcel, isMobile }: Props) => {
+const ExportButton = ({ handleExportToExcel, isMobile, id }: Props) => {
   return (
     <Button
+      id={id}
       onClick={handleExportToExcel}
       className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800"
       size={isMobile ? "default" : "sm"}

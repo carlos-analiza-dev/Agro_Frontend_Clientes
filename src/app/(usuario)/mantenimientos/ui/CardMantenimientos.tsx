@@ -40,6 +40,7 @@ const CardMantenimientos = ({
               {mantenimiento.tipo.toLowerCase()}
             </Badge>
             <Button
+              id="id-edit-mantenimiento"
               onClick={() => handleEditMantenimiento(mantenimiento)}
               variant={"ghost"}
             >

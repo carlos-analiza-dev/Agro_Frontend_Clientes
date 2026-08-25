@@ -192,7 +192,7 @@ const HistorialMedicoAnimalPage = () => {
         </div>
       </div>
 
-      <Card>
+      <Card id="id-filters-historial-clinico">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <Filter className="h-5 w-5" />
@@ -344,7 +344,10 @@ const HistorialMedicoAnimalPage = () => {
         </CardContent>
       </Card>
 
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-gray-50 rounded-lg">
+      <div
+        id="id-paginacion-historial-clinico"
+        className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-gray-50 rounded-lg"
+      >
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">Mostrar:</span>
@@ -421,12 +424,16 @@ const HistorialMedicoAnimalPage = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div
+        id="id-resumen-historial-clinico"
+        className="grid grid-cols-1 md:grid-cols-3 gap-4"
+      >
         <CardHistorial
           titulo="Total Historiales"
           total={totalHistoriales}
           colorIcon="text-blue-500"
         />
+
         <CardHistorial
           titulo="Fincas Atendidas"
           total={
@@ -434,6 +441,7 @@ const HistorialMedicoAnimalPage = () => {
           }
           colorIcon="text-green-500"
         />
+
         <CardHistorial
           titulo="Animales Atendidos"
           total={new Set(historiales.map((h) => h.animal?.identificador)).size}
@@ -441,7 +449,7 @@ const HistorialMedicoAnimalPage = () => {
         />
       </div>
 
-      <Card>
+      <Card id="id-listado-historial-clinico">
         <CardHeader>
           <CardTitle>Historiales Clínicos</CardTitle>
         </CardHeader>
@@ -465,7 +473,10 @@ const HistorialMedicoAnimalPage = () => {
       </Card>
 
       {historiales.length > 0 && (
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-gray-50 rounded-lg">
+        <div
+          id="id-paginacion-historial-clinico-inferior"
+          className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-gray-50 rounded-lg"
+        >
           <span className="text-sm text-gray-600">
             Mostrando {inicioItem}-{finItem} de {totalHistoriales} historiales
           </span>

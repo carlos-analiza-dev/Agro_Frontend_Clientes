@@ -110,6 +110,7 @@ export function TablaGastos({
 
               <TableCell className="text-sm text-gray-600">
                 <Button
+                  id="btn-edit-gasto"
                   onClick={() => handleEditGasto(gasto)}
                   variant={"ghost"}
                 >

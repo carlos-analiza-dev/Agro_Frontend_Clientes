@@ -119,18 +119,27 @@ const GastosPage = () => {
     <div className="container mx-auto p-4 md:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+          <h1
+            id="gastos-page-title"
+            className="text-2xl md:text-3xl font-bold tracking-tight"
+          >
             Control de Gastos {fincaSelected ? fincaSelected?.nombre_finca : ""}
           </h1>
+
           <p className="text-sm md:text-base text-muted-foreground">
             Registra y monitorea todos los gastos de tus fincas
           </p>
         </div>
+
         <div className="flex w-full sm:w-auto gap-2">
           {isMobile ? (
             <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
               <SheetTrigger asChild>
-                <Button variant="outline" className="flex-1 sm:flex-none">
+                <Button
+                  id="gastos-filters-btn"
+                  variant="outline"
+                  className="flex-1 sm:flex-none"
+                >
                   <Filter className="h-4 w-4 mr-2" />
                   Filtros
                   {contarFiltrosActivos() > 0 && (
@@ -140,11 +149,16 @@ const GastosPage = () => {
                   )}
                 </Button>
               </SheetTrigger>
+
               <SheetContent side="bottom" className="h-[85vh] rounded-t-xl">
                 <SheetHeader>
                   <SheetTitle>Filtros de búsqueda</SheetTitle>
                 </SheetHeader>
-                <div className="mt-4 overflow-y-auto h-full pb-20">
+
+                <div
+                  id="gastos-filters-panel"
+                  className="mt-4 overflow-y-auto h-full pb-20"
+                >
                   <FiltrosGastosIngresos
                     filtros={filtros}
                     setFiltros={setFiltros}
@@ -158,6 +172,7 @@ const GastosPage = () => {
             </Sheet>
           ) : (
             <Button
+              id="gastos-filters-btn"
               variant="outline"
               onClick={() => setIsFilterOpen(!isFilterOpen)}
               className="flex-1 sm:flex-none"
@@ -171,7 +186,9 @@ const GastosPage = () => {
               )}
             </Button>
           )}
+
           <ButtonAdd
+            id="add-gasto-btn"
             Icon={Plus}
             title="Nuevo Gasto"
             action={handleNewGasto}
@@ -181,7 +198,10 @@ const GastosPage = () => {
       </div>
 
       {isFilterOpen && !isMobile && (
-        <div className="bg-white rounded-xl border p-6 shadow-sm">
+        <div
+          id="gastos-filters-panel"
+          className="bg-white rounded-xl border p-6 shadow-sm"
+        >
           <FiltrosGastosIngresos
             filtros={filtros}
             setFiltros={setFiltros}
@@ -193,22 +213,26 @@ const GastosPage = () => {
       )}
 
       {isMobile ? (
-        <CardGastosMobile
-          gastos={gastosData?.data || []}
-          isLoading={isLoading}
-          moneda={moneda}
-        />
+        <div id="gastos-mobile-list">
+          <CardGastosMobile
+            gastos={gastosData?.data || []}
+            isLoading={isLoading}
+            moneda={moneda}
+          />
+        </div>
       ) : (
-        <TablaGastos
-          gastos={gastosData?.data || []}
-          isLoading={isLoading}
-          moneda={moneda}
-          handleEditGasto={handleEditGasto}
-        />
+        <div id="gastos-table">
+          <TablaGastos
+            gastos={gastosData?.data || []}
+            isLoading={isLoading}
+            moneda={moneda}
+            handleEditGasto={handleEditGasto}
+          />
+        </div>
       )}
 
       {totalPages > 1 && (
-        <div className="flex justify-center mt-6">
+        <div id="gastos-pagination" className="flex justify-center mt-6">
           <Paginacion
             currentPage={currentPage}
             totalPages={totalPages}
@@ -218,18 +242,26 @@ const GastosPage = () => {
       )}
 
       {gastosData?.data && gastosData.data.length > 0 && (
-        <div className="bg-gray-50 rounded-lg p-4 flex flex-wrap justify-between items-center gap-4">
+        <div
+          id="gastos-summary"
+          className="bg-gray-50 rounded-lg p-4 flex flex-wrap justify-between items-center gap-4"
+        >
           <div>
             <span className="text-sm text-gray-600">Total de gastos:</span>
+
             <span className="ml-2 text-xl font-bold text-red-600">
               {moneda}{" "}
               {gastosData.data
                 .reduce((sum, g) => sum + g.monto, 0)
-                .toLocaleString("es-HN", { minimumFractionDigits: 2 })}
+                .toLocaleString("es-HN", {
+                  minimumFractionDigits: 2,
+                })}
             </span>
           </div>
+
           <div>
             <span className="text-sm text-gray-600">Mostrando:</span>
+
             <span className="ml-2 text-sm">
               {gastosData.data.length} de {gastosData.total} registros
             </span>

@@ -106,6 +106,7 @@ export function TableIngresos({
 
               <TableCell className="text-sm text-gray-600">
                 <Button
+                  id="edit-ingreso-btn"
                   onClick={() => handleEditIngreso(ingreso)}
                   variant={"ghost"}
                 >

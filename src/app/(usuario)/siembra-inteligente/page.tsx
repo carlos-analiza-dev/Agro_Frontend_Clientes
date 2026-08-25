@@ -51,7 +51,10 @@ const SiembraInteligentePage = () => {
       </Alert>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="shadow-lg border-t-4 border-t-green-600">
+        <Card
+          id="id-form-siembra-inteligente"
+          className="shadow-lg border-t-4 border-t-green-600"
+        >
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <LandPlot className="h-5 w-5" />
@@ -82,15 +85,17 @@ const SiembraInteligentePage = () => {
           </CardFooter>
         </Card>
 
-        <CardResultsSiembra
-          consultaResultado={consultaResultado}
-          isPending={isPending}
-          cultivoValue={cultivoValue}
-          tipoTerrenoValue={tipoTerrenoValue}
-          climaValue={climaValue}
-          areaValue={areaValue}
-          unidadValue={unidadValue}
-        />
+        <div id="id-resultados-siembra-inteligente">
+          <CardResultsSiembra
+            consultaResultado={consultaResultado}
+            isPending={isPending}
+            cultivoValue={cultivoValue}
+            tipoTerrenoValue={tipoTerrenoValue}
+            climaValue={climaValue}
+            areaValue={areaValue}
+            unidadValue={unidadValue}
+          />
+        </div>
       </div>
     </div>
   );

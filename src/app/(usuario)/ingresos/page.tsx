@@ -118,7 +118,10 @@ const IngresosPage = () => {
     <div className="container mx-auto p-4 md:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+          <h1
+            id="ingresos-page-title"
+            className="text-2xl md:text-3xl font-bold tracking-tight"
+          >
             Control de Ingresos{" "}
             {fincaSelected ? fincaSelected?.nombre_finca : ""}
           </h1>
@@ -130,7 +133,11 @@ const IngresosPage = () => {
           {isMobile ? (
             <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
               <SheetTrigger asChild>
-                <Button variant="outline" className="flex-1 sm:flex-none">
+                <Button
+                  id="ingresos-filters-btn"
+                  variant="outline"
+                  className="flex-1 sm:flex-none"
+                >
                   <Filter className="h-4 w-4 mr-2" />
                   Filtros
                   {contarFiltrosActivos() > 0 && (
@@ -158,6 +165,7 @@ const IngresosPage = () => {
             </Sheet>
           ) : (
             <Button
+              id="ingresos-filters-btn"
               variant="outline"
               onClick={() => setIsFilterOpen(!isFilterOpen)}
               className="flex-1 sm:flex-none"
@@ -172,6 +180,7 @@ const IngresosPage = () => {
             </Button>
           )}
           <ButtonAdd
+            id="add-ingreso-btn"
             Icon={Plus}
             title="Nuevo Ingreso"
             action={handleNewIngreso}
@@ -181,7 +190,10 @@ const IngresosPage = () => {
       </div>
 
       {isFilterOpen && !isMobile && (
-        <div className="bg-white rounded-xl border p-6 shadow-sm">
+        <div
+          id="ingresos-filters-panel"
+          className="bg-white rounded-xl border p-6 shadow-sm"
+        >
           <FiltrosGastosIngresos
             filtros={filtros}
             setFiltros={setFiltros}
@@ -193,22 +205,26 @@ const IngresosPage = () => {
       )}
 
       {isMobile ? (
-        <CardIngresoMobile
-          ingresos={ingresosData?.data || []}
-          isLoading={isLoading}
-          moneda={moneda}
-        />
+        <div id="ingresos-mobile-list">
+          <CardIngresoMobile
+            ingresos={ingresosData?.data || []}
+            isLoading={isLoading}
+            moneda={moneda}
+          />
+        </div>
       ) : (
-        <TableIngresos
-          ingresos={ingresosData?.data || []}
-          isLoading={isLoading}
-          moneda={moneda}
-          handleEditIngreso={handleEditIngreso}
-        />
+        <div id="ingresos-table">
+          <TableIngresos
+            ingresos={ingresosData?.data || []}
+            isLoading={isLoading}
+            moneda={moneda}
+            handleEditIngreso={handleEditIngreso}
+          />
+        </div>
       )}
 
       {totalPages > 1 && (
-        <div className="flex justify-center mt-6">
+        <div id="ingresos-pagination" className="flex justify-center mt-6">
           <Paginacion
             currentPage={currentPage}
             totalPages={totalPages}
@@ -218,7 +234,10 @@ const IngresosPage = () => {
       )}
 
       {ingresosData?.data && ingresosData.data.length > 0 && (
-        <div className="bg-gray-50 rounded-lg p-4 flex flex-wrap justify-between items-center gap-4">
+        <div
+          id="ingresos-summary"
+          className="bg-gray-50 rounded-lg p-4 flex flex-wrap justify-between items-center gap-4"
+        >
           <div>
             <span className="text-sm text-gray-600">Total de ingresos:</span>
             <span className="ml-2 text-xl font-bold text-green-600">

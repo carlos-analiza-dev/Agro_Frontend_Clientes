@@ -126,27 +126,33 @@ const UsoDeEquiposPage = () => {
             Registro de uso de equipos por operadores y actividades
           </p>
         </div>
-        <ButtonAdd
-          Icon={WrenchIcon}
-          title="Registrar Uso"
-          action={() => handleAddUso()}
-          className="bg-green-600 hover:bg-green-700"
+
+        <div id="id-add-uso-equipos">
+          <ButtonAdd
+            Icon={WrenchIcon}
+            title="Registrar Uso"
+            action={() => handleAddUso()}
+            className="bg-green-600 hover:bg-green-700"
+          />
+        </div>
+      </div>
+
+      <div id="id-filters-uso-equipos">
+        <FiltersUsoEquipos
+          filters={filters}
+          handleFilterChange={handleFilterChange}
+          equiposActivos={equiposActivos}
+          trabajadores={trabajadores}
+          clearFilters={clearFilters}
+          hasActiveFilters={hasActiveFilters}
         />
       </div>
 
-      <FiltersUsoEquipos
-        filters={filters}
-        handleFilterChange={handleFilterChange}
-        equiposActivos={equiposActivos}
-        trabajadores={trabajadores}
-        clearFilters={clearFilters}
-        hasActiveFilters={hasActiveFilters}
-      />
-
-      <Card>
+      <Card id="id-container-uso-equipos">
         <CardHeader>
           <CardTitle>Registros de Uso</CardTitle>
-          <CardDescription>
+
+          <CardDescription id="id-resumen-uso-equipos">
             {!isLoading && (
               <>
                 Mostrando {usosEquipo.length} de {data_uso?.total || 0}{" "}
@@ -155,6 +161,7 @@ const UsoDeEquiposPage = () => {
             )}
           </CardDescription>
         </CardHeader>
+
         <CardContent>
           {isLoading ? (
             <div className="space-y-3">
@@ -163,11 +170,13 @@ const UsoDeEquiposPage = () => {
               ))}
             </div>
           ) : usosEquipo.length === 0 ? (
-            <div className="text-center py-12">
+            <div id="id-empty-uso-equipos" className="text-center py-12">
               <WrenchIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+
               <p className="text-lg font-medium text-muted-foreground">
                 No hay registros de uso
               </p>
+
               <p className="text-sm text-muted-foreground mt-1">
                 {hasActiveFilters
                   ? "No se encontraron registros con los filtros seleccionados"
@@ -175,7 +184,7 @@ const UsoDeEquiposPage = () => {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <div id="id-table-uso-equipos" className="overflow-x-auto">
               <TableUsoEquipos
                 usosEquipo={usosEquipo}
                 handleEdit={handleEdit}
@@ -185,7 +194,10 @@ const UsoDeEquiposPage = () => {
           )}
 
           {totalPages > 1 && usosEquipo.length > 0 && (
-            <div className="flex justify-center pt-4">
+            <div
+              id="id-paginacion-uso-equipos"
+              className="flex justify-center pt-4"
+            >
               <Paginacion
                 currentPage={currentPage}
                 totalPages={totalPages}

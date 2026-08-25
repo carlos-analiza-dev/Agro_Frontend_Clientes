@@ -10,7 +10,6 @@ import {
   Copy,
   Building2,
   AlertTriangle,
-  Cog,
 } from "lucide-react";
 
 import {
@@ -57,6 +56,7 @@ import {
   getEmpleadoTourSteps,
   getPropietarioTourSteps,
 } from "@/helpers/data/guia/agroTourSteps";
+import ButtonGuiaSystem from "../generics/ButtonGuiaSystem";
 
 interface Props {
   setMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -427,15 +427,10 @@ const NavBarAgro = ({
           </Badge>
         )}
         <div className="hidden md:block">
-          <Button
-            variant="ghost"
-            onClick={() => setTourOpen(true)}
-            className="relative"
-            disabled={currentTourSteps.length === 0}
-            title="Abrir guía del sistema"
-          >
-            <Cog className="h-5 w-5" />
-          </Button>
+          <ButtonGuiaSystem
+            setTourOpen={setTourOpen}
+            currentTourSteps={currentTourSteps}
+          />
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

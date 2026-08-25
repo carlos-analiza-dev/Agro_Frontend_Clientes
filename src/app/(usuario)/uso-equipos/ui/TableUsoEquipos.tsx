@@ -175,6 +175,7 @@ const TableUsoEquipos = ({ usosEquipo, handleEdit, isMobile }: Props) => {
               <TableCell className="text-right">
                 <div className="flex justify-end gap-2">
                   <Button
+                    id="id-edit-uso-equipos"
                     variant="ghost"
                     size="icon"
                     onClick={() => handleEdit(uso)}

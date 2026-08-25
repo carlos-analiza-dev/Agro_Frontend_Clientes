@@ -71,23 +71,31 @@ const RentabilidadPage = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="space-y-4">
           <div>
-            <h1 className="text-xl md:text-3xl font-bold text-gray-900">
+            <h1
+              id="rentabilidad-page-title"
+              className="text-xl md:text-3xl font-bold text-gray-900"
+            >
               Dashboard de Rentabilidad
             </h1>
             <p className="text-gray-600 mt-1">
               Análisis financiero de tu negocio ganadero
             </p>
           </div>
-          <FiltrosRentabilidadComponent
-            filtros={filtros}
-            setFiltros={setFiltros}
-            fincas={finca?.data?.fincas}
-            especies={especies?.data}
-          />
+          <div id="rentabilidad-filters">
+            <FiltrosRentabilidadComponent
+              filtros={filtros}
+              setFiltros={setFiltros}
+              fincas={finca?.data?.fincas}
+              especies={especies?.data}
+            />
+          </div>
         </div>
 
         {rentabilidadGeneral && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div
+            id="rentabilidad-metrics"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+          >
             <MetricCard
               title="Total Ingresos"
               value={rentabilidadGeneral.totalIngresos}
@@ -182,17 +190,35 @@ const RentabilidadPage = () => {
           </div>
         )}
 
-        <Tabs defaultValue="evolucion" className="space-y-4">
+        <Tabs
+          id="rentabilidad-tabs"
+          defaultValue="evolucion"
+          className="space-y-4"
+        >
           <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
-            <TabsTrigger value="evolucion" className="flex items-center gap-2">
+            <TabsTrigger
+              id="rentabilidad-tab-evolucion"
+              value="evolucion"
+              className="flex items-center gap-2"
+            >
               <BarChart3 className="h-4 w-4" />
               Evolución
             </TabsTrigger>
-            <TabsTrigger value="categorias" className="flex items-center gap-2">
+
+            <TabsTrigger
+              id="rentabilidad-tab-categorias"
+              value="categorias"
+              className="flex items-center gap-2"
+            >
               <TrendingUp className="h-4 w-4" />
               Categorías
             </TabsTrigger>
-            <TabsTrigger value="fincas" className="flex items-center gap-2">
+
+            <TabsTrigger
+              id="rentabilidad-tab-fincas"
+              value="fincas"
+              className="flex items-center gap-2"
+            >
               <Building2 className="h-4 w-4" />
               Fincas
             </TabsTrigger>

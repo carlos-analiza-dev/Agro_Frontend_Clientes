@@ -294,6 +294,7 @@ const TableConfigTrabajadores = ({
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-1">
                     <Button
+                      id="detalles-config-trabajador-btn"
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
@@ -302,6 +303,7 @@ const TableConfigTrabajadores = ({
                       <Eye className="h-4 w-4" />
                     </Button>
                     <Button
+                      id="edit-config-trabajador-btn"
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
@@ -444,19 +446,21 @@ const TableConfigTrabajadores = ({
                 </Badge>
               </TableCell>
               <TableCell className="text-right">
-                <div className="flex justify-end gap-2">
+                <div className="flex justify-end gap-1">
                   <Button
+                    id="detalles-config-trabajador-btn"
                     variant="ghost"
-                    size="sm"
+                    size="icon"
+                    className="h-8 w-8"
                     onClick={() => setSelectedTrabajador(config)}
-                    className="hover:bg-blue-100 dark:hover:bg-blue-900/30"
                   >
                     <Eye className="h-4 w-4" />
                   </Button>
                   <Button
+                    id="edit-config-trabajador-btn"
                     variant="ghost"
-                    size="sm"
-                    className="hover:bg-yellow-100 dark:hover:bg-yellow-900/30"
+                    size="icon"
+                    className="h-8 w-8"
                     onClick={() => handleEditConfig(config)}
                   >
                     <Edit className="h-4 w-4" />

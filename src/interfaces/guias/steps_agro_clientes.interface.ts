@@ -359,7 +359,7 @@ export const agroClientesSteps: Record<string, TourStep[]> = {
         "Utiliza esta opción para cargar más animales cuando existen registros adicionales.",
     },
     {
-      target: "id-add-animal",
+      target: "add-animal-btn",
       title: "Agregar Animal",
       description: "Presiona este botón para registrar un nuevo animal.",
     },
@@ -536,6 +536,981 @@ export const agroClientesSteps: Record<string, TourStep[]> = {
       target: "id-citas-fab",
       title: "Agregar Cita",
       description: "Botón flotante para agendar una nueva cita rápidamente.",
+    },
+  ],
+  "/pedidos": [
+    {
+      target: "id-container-pedidos",
+      title: "Gestión de Pedidos",
+      description:
+        "Aquí puedes visualizar y consultar todos tus pedidos realizados.",
+    },
+    {
+      target: "id-cards-pedidos",
+      title: "Lista de Pedidos",
+      description: "Aquí se muestran tus pedidos en formato de tarjetas.",
+    },
+
+    {
+      target: "id-pedidos-empty-container",
+      title: "Sin Pedidos",
+      description:
+        "Esta sección se muestra cuando no existen pedidos disponibles para consultar.",
+    },
+    {
+      target: "id-nuevo-pedido",
+      title: "Crear Nuevo Pedido",
+      description:
+        "Esta sección se muestra para que puedas crear un nuevo pedido.",
+    },
+    {
+      target: "id-cancel-pedido",
+      title: "Cancelar Pedido",
+      description: "Al dar click en el boton cancelaras el pedido realizado.",
+    },
+    {
+      target: "btn-impuestos-pedidos",
+      title: "Impuestos del Pedido",
+      description:
+        "Al dar click en el boton podras ver u ocultar los impuestos asociados al pedido.",
+    },
+  ],
+  "/pedidos-procesados": [
+    {
+      target: "id-container-pedidos",
+      title: "Gestión de Pedidos",
+      description:
+        "Aquí puedes visualizar y consultar todos tus pedidos realizados.",
+    },
+    {
+      target: "id-cards-pedidos",
+      title: "Lista de Pedidos",
+      description: "Aquí se muestran tus pedidos en formato de tarjetas.",
+    },
+
+    {
+      target: "id-pedidos-empty-container",
+      title: "Sin Pedidos",
+      description:
+        "Esta sección se muestra cuando no existen pedidos disponibles para consultar.",
+    },
+    {
+      target: "id-nuevo-pedido",
+      title: "Crear Nuevo Pedido",
+      description:
+        "Esta sección se muestra para que puedas crear un nuevo pedido.",
+    },
+    {
+      target: "id-cancel-pedido",
+      title: "Cancelar Pedido",
+      description: "Al dar click en el boton cancelaras el pedido realizado.",
+    },
+    {
+      target: "btn-impuestos-pedidos",
+      title: "Impuestos del Pedido",
+      description:
+        "Al dar click en el boton podras ver u ocultar los impuestos asociados al pedido.",
+    },
+  ],
+  "/pedidos-facturados": [
+    {
+      target: "id-container-pedidos",
+      title: "Gestión de Pedidos",
+      description:
+        "Aquí puedes visualizar y consultar todos tus pedidos realizados.",
+    },
+    {
+      target: "id-cards-pedidos",
+      title: "Lista de Pedidos",
+      description: "Aquí se muestran tus pedidos en formato de tarjetas.",
+    },
+
+    {
+      target: "id-pedidos-empty-container",
+      title: "Sin Pedidos",
+      description:
+        "Esta sección se muestra cuando no existen pedidos disponibles para consultar.",
+    },
+    {
+      target: "id-nuevo-pedido",
+      title: "Crear Nuevo Pedido",
+      description:
+        "Esta sección se muestra para que puedas crear un nuevo pedido.",
+    },
+    {
+      target: "id-cancel-pedido",
+      title: "Cancelar Pedido",
+      description: "Al dar click en el boton cancelaras el pedido realizado.",
+    },
+    {
+      target: "btn-impuestos-pedidos",
+      title: "Impuestos del Pedido",
+      description:
+        "Al dar click en el boton podras ver u ocultar los impuestos asociados al pedido.",
+    },
+  ],
+  "/pedidos-cancelados": [
+    {
+      target: "id-container-pedidos",
+      title: "Gestión de Pedidos",
+      description:
+        "Aquí puedes visualizar y consultar todos tus pedidos realizados.",
+    },
+    {
+      target: "id-cards-pedidos",
+      title: "Lista de Pedidos",
+      description: "Aquí se muestran tus pedidos en formato de tarjetas.",
+    },
+
+    {
+      target: "id-pedidos-empty-container",
+      title: "Sin Pedidos",
+      description:
+        "Esta sección se muestra cuando no existen pedidos disponibles para consultar.",
+    },
+    {
+      target: "id-nuevo-pedido",
+      title: "Crear Nuevo Pedido",
+      description:
+        "Esta sección se muestra para que puedas crear un nuevo pedido.",
+    },
+    {
+      target: "id-cancel-pedido",
+      title: "Cancelar Pedido",
+      description: "Al dar click en el boton cancelaras el pedido realizado.",
+    },
+    {
+      target: "btn-impuestos-pedidos",
+      title: "Impuestos del Pedido",
+      description:
+        "Al dar click en el boton podras ver u ocultar los impuestos asociados al pedido.",
+    },
+  ],
+  "/gastos": [
+    {
+      target: "gastos-page-title",
+      title: "Control de Gastos",
+      description:
+        "Desde esta sección puedes registrar, consultar y monitorear los gastos de tus fincas.",
+    },
+    {
+      target: "gastos-filters-btn",
+      title: "Filtros",
+      description:
+        "Utiliza los filtros para buscar gastos por finca, especie, categoría, método de pago o rango de fechas.",
+    },
+    {
+      target: "add-gasto-btn",
+      title: "Nuevo Gasto",
+      description:
+        "Haz clic aquí para registrar un nuevo gasto. En dispositivos móviles se abrirá la pantalla correspondiente.",
+    },
+    {
+      target: "gastos-table",
+      title: "Listado de Gastos",
+      description:
+        "Aquí puedes consultar los gastos registrados y acceder a las opciones disponibles para cada uno.",
+    },
+    {
+      target: "btn-edit-gasto",
+      title: "Editar Gasto",
+      description:
+        "Haz clic aquí para editar un gasto. En dispositivos móviles se abrirá la pantalla correspondiente.",
+    },
+    {
+      target: "gastos-pagination",
+      title: "Paginación",
+      description:
+        "Utiliza estos controles para navegar entre las diferentes páginas de gastos.",
+    },
+    {
+      target: "gastos-summary",
+      title: "Resumen de Gastos",
+      description:
+        "Aquí puedes consultar el total de gastos y la cantidad de registros que se están mostrando.",
+    },
+  ],
+  "/ingresos": [
+    {
+      target: "ingresos-page-title",
+      title: "Control de Ingresos",
+      description:
+        "Desde esta sección puedes registrar, consultar y monitorear los ingresos de tus fincas.",
+    },
+    {
+      target: "ingresos-filters-btn",
+      title: "Filtros",
+      description:
+        "Utiliza los filtros para buscar ingresos por finca, especie, categoría, método de pago o rango de fechas.",
+    },
+    {
+      target: "add-ingreso-btn",
+      title: "Nuevo Ingreso",
+      description: "Haz clic aquí para registrar un nuevo ingreso.",
+    },
+    {
+      target: "ingresos-table",
+      title: "Listado de Ingresos",
+      description:
+        "Aquí puedes consultar los ingresos registrados y acceder a las acciones disponibles.",
+    },
+    {
+      target: "edit-ingreso-btn",
+      title: "Editar Ingreso",
+      description: "Haz clic aquí para editar un ingreso.",
+    },
+    {
+      target: "ingresos-pagination",
+      title: "Paginación",
+      description:
+        "Utiliza estos controles para navegar entre las diferentes páginas de ingresos.",
+    },
+    {
+      target: "ingresos-summary",
+      title: "Resumen de Ingresos",
+      description:
+        "Aquí puedes consultar el total de ingresos y la cantidad de registros que se están mostrando.",
+    },
+  ],
+  "/rentabilidad": [
+    {
+      target: "rentabilidad-page-title",
+      title: "Dashboard de Rentabilidad",
+      description:
+        "Desde este dashboard puedes analizar la rentabilidad y el comportamiento financiero de tu negocio ganadero.",
+    },
+    {
+      target: "rentabilidad-filters",
+      title: "Filtros",
+      description:
+        "Utiliza los filtros para consultar la rentabilidad según finca, especie y el período que deseas analizar.",
+    },
+    {
+      target: "rentabilidad-metrics",
+      title: "Indicadores principales",
+      description:
+        "Aquí puedes consultar los principales indicadores financieros: ingresos, gastos, rentabilidad neta y margen de rentabilidad.",
+    },
+    {
+      target: "rentabilidad-indicators",
+      title: "ROI y Beneficio/Costo",
+      description:
+        "Estos indicadores te permiten conocer el retorno de inversión y cuánto ingreso generas por cada unidad monetaria gastada.",
+    },
+    {
+      target: "rentabilidad-tabs",
+      title: "Análisis de rentabilidad",
+      description:
+        "Utiliza estas pestañas para analizar la evolución, las categorías y el rendimiento de tus fincas.",
+    },
+    {
+      target: "rentabilidad-evolucion",
+      title: "Evolución",
+      description:
+        "Consulta cómo ha evolucionado la rentabilidad a través del tiempo y compara los mejores y peores períodos.",
+    },
+    {
+      target: "rentabilidad-categorias",
+      title: "Categorías",
+      description:
+        "Analiza cómo se distribuyen tus ingresos y gastos según las diferentes categorías.",
+    },
+    {
+      target: "rentabilidad-fincas",
+      title: "Fincas",
+      description:
+        "Compara la rentabilidad de tus diferentes fincas para identificar cuáles tienen mejor desempeño.",
+    },
+  ],
+  "/configuracion-trabajador": [
+    {
+      target: "config-trabajadores-page-title",
+      title: "Configuración de Trabajadores",
+      description:
+        "Desde esta sección puedes gestionar los salarios, cargos y configuraciones de tus trabajadores.",
+    },
+    {
+      target: "add-config-trabajador-btn",
+      title: "Nuevo Trabajador",
+      description:
+        "Haz clic aquí para agregar la configuración de un nuevo trabajador.",
+    },
+    {
+      target: "config-trabajadores-stats",
+      title: "Resumen de Trabajadores",
+      description:
+        "Aquí puedes consultar el total de trabajadores, el salario promedio diario y la cantidad de trabajadores activos.",
+    },
+    {
+      target: "config-trabajadores-filters",
+      title: "Búsqueda y filtros",
+      description:
+        "Utiliza estas opciones para encontrar rápidamente trabajadores y filtrar la lista según su estado.",
+    },
+    {
+      target: "config-trabajadores-table",
+      title: "Listado de Trabajadores",
+      description:
+        "Aquí puedes consultar las configuraciones de tus trabajadores y acceder a las acciones disponibles.",
+    },
+    {
+      target: "detalles-config-trabajador-btn",
+      title: "Detalles del Trabajador",
+      description:
+        "Haz clic aquí para ver los detalles de la configuracion del trabajador.",
+    },
+    {
+      target: "edit-config-trabajador-btn",
+      title: "Editar Trabajador",
+      description: "Haz clic aquí para editar la configuración del trabajador.",
+    },
+    {
+      target: "config-trabajadores-pagination",
+      title: "Paginación",
+      description:
+        "Utiliza estos controles para navegar entre las diferentes páginas de trabajadores.",
+    },
+  ],
+  "/jornadas": [
+    {
+      target: "jornadas-trabajadores-page-title",
+      title: "Jornadas de Trabajadores",
+      description:
+        "Desde esta sección puedes registrar y consultar las jornadas laborales y horas extras de tus trabajadores.",
+    },
+    {
+      target: "add-jornada-trabajador-btn",
+      title: "Registrar Jornada",
+      description:
+        "Haz clic aquí para registrar la jornada diaria de un trabajador.",
+    },
+    {
+      target: "jornadas-trabajadores-stats",
+      title: "Resumen de Jornadas",
+      description:
+        "Aquí puedes consultar el total de registros, los días trabajados y las horas extras acumuladas.",
+    },
+    {
+      target: "jornadas-trabajadores-filters",
+      title: "Filtros de búsqueda",
+      description:
+        "Utiliza estos filtros para buscar jornadas por trabajador, rango de fechas, mes o estado de trabajo.",
+    },
+    {
+      target: "jornadas-trabajadores-table",
+      title: "Listado de Jornadas",
+      description:
+        "Aquí puedes consultar las jornadas registradas y acceder a las opciones disponibles para editarlas.",
+    },
+    {
+      target: "id-export-excel-jornada",
+      title: "Exportar Excel de las Jornadas",
+      description:
+        "Aquí puedes generar un excel el cual mostrara un resumen de las jornadas por trabajador.",
+    },
+    {
+      target: "detalles-jornada-trabajador-btn",
+      title: "Detalles de la Jornada",
+      description:
+        "Haz clic aquí para ver los detalles de la jornada del trabajador.",
+    },
+    {
+      target: "edit-jornada-trabajador-btn",
+      title: "Editar Jornada",
+      description: "Haz clic aquí para editar la jornada del trabajador.",
+    },
+    {
+      target: "jornadas-trabajadores-pagination",
+      title: "Paginación",
+      description:
+        "Utiliza estos controles para navegar entre las diferentes páginas de jornadas.",
+    },
+  ],
+  "/planillas": [
+    {
+      target: "id-planillas-header",
+      title: "Planillas de trabajadores",
+      description:
+        "Desde esta sección puedes gestionar las nóminas y pagos de tus trabajadores.",
+    },
+    {
+      target: "add-planilla-btn",
+      title: "Nueva planilla",
+      description:
+        "Utiliza este botón para crear una nueva planilla de trabajadores.",
+    },
+    {
+      target: "id-resumen-planillas",
+      title: "Resumen de planillas",
+      description:
+        "Aquí puedes consultar rápidamente el total de planillas, las pagadas, el total neto y las que están en proceso.",
+    },
+    {
+      target: "id-filters-planillas",
+      title: "Filtros",
+      description:
+        "Utiliza los filtros para consultar las planillas por rango de fechas, mes o estado.",
+    },
+    {
+      target: "id-table-planillas",
+      title: "Listado de planillas",
+      description:
+        "Aquí encontrarás el listado de planillas y podrás consultar o editar cada registro.",
+    },
+    {
+      target: "id-acciones-planilla",
+      title: "Acciones de Planilla",
+      description:
+        "Aquí podras observar las diferentes acciones que se pueden ejecutar sobre una planilla.",
+    },
+    {
+      target: "id-detalle-planilla",
+      title: "Detalles de Planilla",
+      description:
+        "Aquí podras observar los detalles relacionados a la planilla y edicion de la misma.",
+    },
+  ],
+  "/reportes-planillas": [
+    {
+      target: "id-filtros-reportes-planillas",
+      title: "Filtros de reportes",
+      description:
+        "Utiliza estos filtros para consultar los pagos de trabajadores por período y método de pago.",
+    },
+    {
+      target: "id-total-pagado-planillas",
+      title: "Total pagado",
+      description:
+        "Aquí puedes consultar el total pagado a los trabajadores según los filtros seleccionados.",
+    },
+    {
+      target: "id-resumen-estados-planillas",
+      title: "Estados de las planillas",
+      description:
+        "Consulta un resumen de las planillas agrupadas según su estado.",
+    },
+    {
+      target: "id-resumen-horas-extras-planillas",
+      title: "Horas extras",
+      description:
+        "Visualiza el resumen de horas extras generadas por los trabajadores.",
+    },
+    {
+      target: "id-resumen-metodos-pago-planillas",
+      title: "Métodos de pago",
+      description:
+        "Consulta cómo se distribuyen los pagos realizados según el método utilizado.",
+    },
+  ],
+  "/actividades": [
+    {
+      target: "id-title-actividades",
+      title: "Actividades diarias",
+      description:
+        "Desde esta sección puedes gestionar y dar seguimiento a las actividades realizadas por tus trabajadores.",
+    },
+    {
+      target: "add-actividad-btn",
+      title: "Agregar actividad",
+      description:
+        "Utiliza este botón para registrar una nueva actividad de un trabajador.",
+    },
+    {
+      target: "id-filtros-actividades",
+      title: "Filtros de búsqueda",
+      description:
+        "Puedes utilizar los filtros para encontrar actividades específicas por trabajador, finca, fechas u otros criterios.",
+    },
+    {
+      target: "id-estados-actividades",
+      title: "Filtrar por estado",
+      description:
+        "Utiliza estas pestañas para consultar rápidamente las actividades según su estado.",
+    },
+    {
+      target: "id-grid-actividades",
+      title: "Actividades registradas",
+      description:
+        "Aquí se muestran las actividades registradas y su información correspondiente.",
+    },
+    {
+      target: "id-options-actividades",
+      title: "Acciones de actividades",
+      description:
+        "Aquí se muestran las acciones que se pueden realizar sobre una actividad como ser: 'Ver detalles', 'Cancelar', 'Eliminar'",
+    },
+    {
+      target: "id-paginacion-actividades",
+      title: "Paginación",
+      description:
+        "Utiliza la paginación para navegar entre las diferentes páginas de actividades.",
+    },
+  ],
+  "/equipos": [
+    {
+      target: "id-title-equipos",
+      title: "Equipos y maquinaria",
+      description:
+        "En esta sección puedes consultar, registrar y monitorear los equipos y maquinaria utilizados en tus fincas.",
+    },
+    {
+      target: "add-equipo-btn",
+      title: "Agregar equipo",
+      description:
+        "Utiliza este botón para registrar un nuevo equipo o maquinaria y asignarlo a una finca.",
+    },
+    {
+      target: "id-resumen-equipos",
+      title: "Resumen de equipos",
+      description:
+        "Aquí puedes consultar rápidamente la cantidad de equipos registrados, activos, en mantenimiento e inactivos.",
+    },
+    {
+      target: "id-filters-equipos",
+      title: "Filtros de equipos",
+      description:
+        "Utiliza los filtros para buscar equipos por finca, estado u otros criterios disponibles.",
+    },
+    {
+      target: "id-table-equipos",
+      title: "Listado de equipos",
+      description:
+        "Aquí se muestra el listado de equipos y maquinaria registrados en el sistema.",
+    },
+    {
+      target: "id-list-equipos",
+      title: "Equipos registrados",
+      description:
+        "Desde este listado puedes consultar la información de cada equipo y acceder a sus acciones disponibles.",
+    },
+    {
+      target: "edit-equipo-btn",
+      title: "Editar equipo",
+      description:
+        "Utiliza este botón para editar el equipo o maquinaria y asignarlo a una finca.",
+    },
+    {
+      target: "id-pagination-equipos",
+      title: "Paginación",
+      description:
+        "Utiliza la paginación para navegar entre las diferentes páginas de equipos registrados.",
+    },
+  ],
+  "/mantenimientos": [
+    {
+      target: "id-add-mantenimiento",
+      title: "Ingresar mantenimiento",
+      description:
+        "Utiliza este botón para registrar un nuevo mantenimiento de tus equipos o maquinaria.",
+    },
+    {
+      target: "id-filters-mantenimientos",
+      title: "Filtros de mantenimientos",
+      description:
+        "Utiliza estos filtros para buscar mantenimientos por tipo, fechas o finca.",
+    },
+    {
+      target: "id-resumen-mantenimientos",
+      title: "Resumen de mantenimientos",
+      description:
+        "Aquí puedes ver la cantidad de mantenimientos mostrados y el total de mantenimientos registrados.",
+    },
+    {
+      target: "id-container-mantenimientos",
+      title: "Mantenimientos registrados",
+      description:
+        "En esta sección se muestran los mantenimientos registrados de tus equipos y maquinaria.",
+    },
+    {
+      target: "id-edit-mantenimiento",
+      title: "Editar mantenimiento",
+      description:
+        "Utiliza este botón para editar el mantenimiento de tus equipos o maquinaria.",
+    },
+    {
+      target: "id-paginacion-mantenimientos",
+      title: "Paginación",
+      description:
+        "Utiliza la paginación para navegar entre las diferentes páginas de mantenimientos.",
+    },
+  ],
+  "/uso-equipos": [
+    {
+      target: "id-add-uso-equipos",
+      title: "Registrar uso de equipo",
+      description:
+        "Utiliza este botón para registrar un nuevo uso de un equipo o maquinaria por parte de un operador.",
+    },
+    {
+      target: "id-filters-uso-equipos",
+      title: "Filtros de búsqueda",
+      description:
+        "Utiliza estos filtros para buscar registros de uso por equipo u operador.",
+    },
+    {
+      target: "id-resumen-uso-equipos",
+      title: "Resumen de registros",
+      description:
+        "Aquí puedes visualizar la cantidad de registros mostrados y el total de registros de uso disponibles.",
+    },
+    {
+      target: "id-table-uso-equipos",
+      title: "Registros de uso",
+      description:
+        "En esta sección se muestran los registros de uso de equipos, incluyendo la información del equipo y del operador.",
+    },
+    {
+      target: "id-edit-uso-equipos",
+      title: "Editar uso de equipo",
+      description:
+        "Utiliza este botón para editar el uso de un equipo o maquinaria por parte de un operador.",
+    },
+    {
+      target: "id-paginacion-uso-equipos",
+      title: "Paginación",
+      description:
+        "Utiliza la paginación para navegar entre las diferentes páginas de registros de uso.",
+    },
+  ],
+  "/diagnostico": [
+    {
+      target: "id-header-diagnostico",
+      title: "Diagnóstico Veterinario",
+      description:
+        "Desde esta sección puedes obtener un diagnóstico veterinario preliminar a partir de los datos y síntomas de un animal.",
+    },
+    {
+      target: "id-form-diagnostico",
+      title: "Datos del paciente",
+      description:
+        "Ingresa los datos del animal, como especie, raza, edad y síntomas, para realizar el diagnóstico.",
+    },
+    {
+      target: "btn-obtener-diagnostico",
+      title: "Obtener Diagnostico Preliminar",
+      description:
+        "Al dar click en el botón generaras un diagnostico preliminar.",
+    },
+    {
+      target: "id-resultados-diagnostico",
+      title: "Resultados del diagnóstico",
+      description:
+        "Aquí se mostrará el resultado del diagnóstico preliminar generado a partir de los datos ingresados.",
+    },
+  ],
+  "/agricultura-inteligente": [
+    {
+      target: "id-header-consulta-agricola",
+      title: "Consulta agricola",
+      description:
+        "Aqui podras generar consultas preliminares sobre agricultura.",
+    },
+    {
+      target: "id-form-consulta-agricola",
+      title: "Datos del cultivo",
+      description:
+        "Aquí puedes ingresar la información del cultivo, tipo de suelo, clima y problemas observados para obtener recomendaciones agrícolas.",
+    },
+    {
+      target: "id-btn-agricola",
+      title: "Obtener Diagnóstico Agricola",
+      description:
+        "Al darle click al boton podras generar de forma preliminar un diagnostico agricola según los datos ingresados en el formulario.",
+    },
+    {
+      target: "id-resultados-consulta-agricola",
+      title: "Resultados de la consulta",
+      description:
+        "En esta sección se muestran el análisis y las recomendaciones generadas a partir de los datos ingresados.",
+    },
+  ],
+  "/siembra-inteligente": [
+    {
+      target: "id-form-siembra-inteligente",
+      title: "Datos del terreno",
+      description:
+        "Aquí puedes ingresar la información del cultivo, tipo de terreno, clima y área para calcular la densidad de siembra recomendada.",
+    },
+    {
+      target: "id-btn-siembra-inteligente",
+      title: "Calcular Densidad",
+      description:
+        "Al darle click al boton se obtendra una recomendación optima de la densidad de la siembra que ingreses en el formulario.",
+    },
+    {
+      target: "id-resultados-siembra-inteligente",
+      title: "Resultados de la siembra",
+      description:
+        "En esta sección se muestra la recomendación de densidad de siembra calculada a partir de los datos ingresados.",
+    },
+  ],
+  "/historial-medico": [
+    {
+      target: "id-filters-historial-clinico",
+      title: "Filtros de búsqueda",
+      description:
+        "Utiliza estos filtros para buscar historiales clínicos por finca, animal y rango de fechas.",
+    },
+    {
+      target: "id-paginacion-historial-clinico",
+      title: "Control de paginación",
+      description:
+        "Aquí puedes seleccionar cuántos historiales mostrar por página y navegar entre las diferentes páginas.",
+    },
+    {
+      target: "id-resumen-historial-clinico",
+      title: "Resumen de historiales",
+      description:
+        "Consulta rápidamente el total de historiales, las fincas atendidas y los animales que han recibido atención.",
+    },
+    {
+      target: "id-listado-historial-clinico",
+      title: "Historiales clínicos",
+      description:
+        "Aquí se muestran los historiales clínicos de tus animales con la información registrada en cada atención.",
+    },
+    {
+      target: "btn-download-historial",
+      title: "Descargar Historial clínico",
+      description:
+        "Al darle click al botón podras descargar el documento del historial clinico adjuntado.",
+    },
+    {
+      target: "id-paginacion-historial-clinico-inferior",
+      title: "Navegación entre historiales",
+      description:
+        "Utiliza estos controles para avanzar, retroceder o ir directamente a una página específica de historiales.",
+    },
+  ],
+  "/tratamientos": [
+    {
+      target: "tratamientos-header",
+      title: "Tratamientos Animales",
+      description:
+        "Desde aquí puedes consultar y gestionar los tratamientos aplicados a tus animales.",
+    },
+    {
+      target: "tratamientos-filtros",
+      title: "Filtros de búsqueda",
+      description:
+        "Utiliza estos filtros para buscar tratamientos por finca, animal o rango de fechas.",
+    },
+    {
+      target: "tratamientos-total",
+      title: "Total de tratamientos",
+      description:
+        "Aquí puedes consultar la cantidad total de tratamientos registrados.",
+    },
+    {
+      target: "tratamientos-documentos",
+      title: "Tratamientos con documentos",
+      description: "Consulta cuántos tratamientos tienen documentos asociados.",
+    },
+    {
+      target: "tratamientos-servicios",
+      title: "Servicios diferentes",
+      description:
+        "Muestra la cantidad de servicios veterinarios diferentes registrados.",
+    },
+    {
+      target: "tratamientos-recientes",
+      title: "Tratamientos recientes",
+      description:
+        "Aquí puedes identificar los tratamientos registrados durante los últimos 7 días.",
+    },
+    {
+      target: "tratamientos-lista",
+      title: "Tratamientos aplicados",
+      description:
+        "En esta sección se muestran los tratamientos registrados y sus detalles.",
+    },
+    {
+      target: "btn-download-doc-tratamiento",
+      title: "Descargar documento del tratamiento adjuntado",
+      description:
+        "Al darle click al boton podras descargar el documento del tratamiento.",
+    },
+    {
+      target: "tratamientos-paginacion-inferior",
+      title: "Paginación",
+      description:
+        "Utiliza estos controles para navegar entre las páginas de tratamientos.",
+    },
+  ],
+  "/celos": [
+    {
+      target: "celos-header",
+      title: "Control de Celos",
+      description:
+        "Desde aquí puedes registrar y monitorear los períodos de celo de tus animales.",
+    },
+    {
+      target: "celos-nuevo-btn",
+      title: "Nuevo Celo",
+      description:
+        "Utiliza este botón para registrar un nuevo período de celo para uno de tus animales.",
+    },
+    {
+      target: "celos-filtros",
+      title: "Filtros de búsqueda",
+      description:
+        "Utiliza los filtros para buscar registros por finca, animal, especie, intensidad o rango de fechas.",
+    },
+    {
+      target: "celos-tabla",
+      title: "Registros de celo",
+      description:
+        "Aquí puedes consultar los registros de celo y acceder al detalle de cada registro.",
+    },
+    {
+      target: "celos-detalle-btn",
+      title: "Detalles del Celo",
+      description:
+        "Utiliza este botón para observar los detalles del período de celo para uno de tus animales.",
+    },
+    {
+      target: "celos-edit-btn",
+      title: "Editar Celo",
+      description:
+        "Utiliza este botón para editar el período de celo para uno de tus animales.",
+    },
+    {
+      target: "celos-delete-btn",
+      title: "Eliminar Celo",
+      description:
+        "Utiliza este botón para eliminar el período de celo para uno de tus animales.",
+    },
+    {
+      target: "celos-paginacion",
+      title: "Paginación",
+      description:
+        "Utiliza estos controles para navegar entre las diferentes páginas de registros.",
+    },
+  ],
+  "/servicios-reproductivos": [
+    {
+      target: "servicios-reproductivos-header",
+      title: "Servicios Reproductivos",
+      description:
+        "Desde aquí puedes registrar, consultar y monitorear los servicios reproductivos de tus animales.",
+    },
+    {
+      target: "servicios-reproductivos-nuevo",
+      title: "Nuevo Servicio",
+      description:
+        "Utiliza este botón para registrar un nuevo servicio reproductivo.",
+    },
+    {
+      target: "servicios-reproductivos-filtros",
+      title: "Filtros de búsqueda",
+      description:
+        "Utiliza los filtros para consultar servicios por finca y animal.",
+    },
+    {
+      target: "servicios-reproductivos-resumen",
+      title: "Resumen",
+      description:
+        "Aquí puedes consultar las estadísticas principales de los servicios reproductivos.",
+    },
+    {
+      target: "servicios-reproductivos-lista",
+      title: "Servicios registrados",
+      description:
+        "En esta sección puedes consultar los servicios reproductivos registrados y realizar acciones sobre ellos.",
+    },
+    {
+      target: "btn-estados-servicios",
+      title: "Estado de servicios registrados",
+      description:
+        "Al dar click al botón podras observar los estados del servicio seleccionado.",
+    },
+    {
+      target: "btn-edit-servicio",
+      title: "Editar Servicio",
+      description:
+        "Al dar click al botón podras editar el servicio seleccionado.",
+    },
+    {
+      target: "servicios-reproductivos-paginacion",
+      title: "Paginación",
+      description:
+        "Utiliza estos controles para navegar entre las diferentes páginas de servicios.",
+    },
+  ],
+  "/partos-animales": [
+    {
+      target: "partos-header",
+      title: "Control de Partos",
+      description:
+        "Desde aquí puedes consultar y monitorear los partos registrados de tus animales.",
+    },
+    {
+      target: "partos-nuevo-btn",
+      title: "Nuevo Parto",
+      description:
+        "Utiliza este botón para registrar un nuevo parto de uno de tus animales.",
+    },
+    {
+      target: "partos-filtros",
+      title: "Filtros",
+      description:
+        "Utiliza los filtros para consultar partos por finca, hembra, estado, tipo de parto o fechas.",
+    },
+    {
+      target: "partos-lista",
+      title: "Historial de Partos",
+      description:
+        "Aquí se muestran los partos registrados y puedes consultar o editar su información.",
+    },
+    {
+      target: "partos-edit-btn",
+      title: "Editar Parto",
+      description:
+        "Utiliza este botón para editar el parto de uno de tus animales.",
+    },
+    {
+      target: "partos-paginacion",
+      title: "Paginación",
+      description:
+        "Utiliza estos controles para navegar entre las diferentes páginas de partos.",
+    },
+    {
+      target: "partos-detalles",
+      title: "Resumen de Partos",
+      description:
+        "Aquí puedes consultar información adicional y detalles de los partos registrados.",
+    },
+  ],
+  "/perfil": [
+    {
+      target: "perfil-header",
+      title: "Tu perfil",
+      description:
+        "Desde aquí puedes consultar y administrar la información de tu perfil.",
+    },
+    {
+      target: "perfil-foto",
+      title: "Foto de perfil",
+      description:
+        "Aquí puedes visualizar tu foto de perfil y acceder a tu galería de imágenes.",
+    },
+    {
+      target: "perfil-cambiar-foto",
+      title: "Cambiar foto",
+      description:
+        "Utiliza este botón para seleccionar y actualizar tu foto de perfil.",
+    },
+    {
+      target: "perfil-datos-principales",
+      title: "Información principal",
+      description:
+        "Aquí puedes consultar tu nombre y correo electrónico asociado a tu cuenta.",
+    },
+    {
+      target: "perfil-datos-contacto",
+      title: "Información de contacto",
+      description:
+        "En esta sección puedes consultar tu ubicación, teléfono y fecha de registro.",
     },
   ],
 };

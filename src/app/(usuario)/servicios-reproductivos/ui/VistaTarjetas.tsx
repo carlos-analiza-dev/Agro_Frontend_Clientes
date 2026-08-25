@@ -110,10 +110,18 @@ const VistaTarjetas = ({ servicios, handleOpenModal }: Props) => {
             )}
           </CardContent>
           <CardFooter className="p-4 pt-2 flex justify-end gap-2">
-            <Button onClick={() => handleOpenModal(servicio)} size="sm">
+            <Button
+              id="btn-estados-servicios"
+              onClick={() => handleOpenModal(servicio)}
+              size="sm"
+            >
               Estados
             </Button>
-            <Button onClick={() => handleClickEdit(servicio.id)} size="sm">
+            <Button
+              id="btn-edit-servicio"
+              onClick={() => handleClickEdit(servicio.id)}
+              size="sm"
+            >
               Editar
             </Button>
           </CardFooter>

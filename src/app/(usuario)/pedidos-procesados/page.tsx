@@ -29,11 +29,11 @@ const PedidosProcesadosPage = () => {
   }
 
   if (!pedidosData?.pedidos?.length || error) {
-    return <EmptyPedidos url="/productos" />;
+    return <EmptyPedidos id="id-pedidos-empty-container" url="/productos" />;
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div id="id-container-pedidos" className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Mis Pedidos</h1>
         <p className="text-gray-600">
@@ -43,7 +43,7 @@ const PedidosProcesadosPage = () => {
         </p>
       </div>
 
-      <div className="space-y-6 mb-8">
+      <div id="id-cards-pedidos" className="space-y-6 mb-8">
         {pedidosData.pedidos.map((pedido) => (
           <PedidoCard key={pedido.id} pedido={pedido} cliente={cliente} />
         ))}

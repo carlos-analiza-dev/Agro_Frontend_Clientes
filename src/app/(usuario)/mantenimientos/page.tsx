@@ -148,28 +148,37 @@ const MantenimientosPage = () => {
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
             Mantenimientos
           </h1>
+
           <p className="text-sm md:text-base text-muted-foreground">
             Gestiona y visualiza los mantenimientos de tus equipos
           </p>
         </div>
-        <ButtonAdd
-          Icon={Plus}
-          title="Ingresar Mantenimiento"
-          action={() => handeAddMantenimiento()}
-          className="bg-green-600 hover:bg-green-700"
+
+        <div id="id-add-mantenimiento">
+          <ButtonAdd
+            Icon={Plus}
+            title="Ingresar Mantenimiento"
+            action={() => handeAddMantenimiento()}
+            className="bg-green-600 hover:bg-green-700"
+          />
+        </div>
+      </div>
+
+      <div id="id-filters-mantenimientos">
+        <CardFilters
+          filters={filters}
+          handleFilterChange={handleFilterChange}
+          isLoadingFincas={isLoadingFincas}
+          clearFilters={clearFilters}
+          hasActiveFilters={hasActiveFilters}
+          fincas={fincas?.data.fincas}
         />
       </div>
 
-      <CardFilters
-        filters={filters}
-        handleFilterChange={handleFilterChange}
-        isLoadingFincas={isLoadingFincas}
-        clearFilters={clearFilters}
-        hasActiveFilters={hasActiveFilters}
-        fincas={fincas?.data.fincas}
-      />
-
-      <div className="flex items-center justify-between">
+      <div
+        id="id-resumen-mantenimientos"
+        className="flex items-center justify-between"
+      >
         <p className="text-sm text-muted-foreground">
           {!isLoading && (
             <>
@@ -180,17 +189,22 @@ const MantenimientosPage = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div
+        id="id-container-mantenimientos"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      >
         {isLoading ? (
           Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
         ) : mantenimientos.length === 0 ? (
-          <div className="col-span-full">
+          <div className="col-span-full" id="id-empty-mantenimientos">
             <Card className="border-dashed">
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <WrenchIcon className="h-12 w-12 text-muted-foreground mb-4" />
+
                 <p className="text-lg font-medium text-muted-foreground">
                   No hay mantenimientos
                 </p>
+
                 <p className="text-sm text-muted-foreground mt-1">
                   {hasActiveFilters
                     ? "No se encontraron mantenimientos con los filtros seleccionados"
@@ -212,7 +226,10 @@ const MantenimientosPage = () => {
       </div>
 
       {totalPages > 1 && mantenimientos.length > 0 && (
-        <div className="flex justify-center pt-4">
+        <div
+          id="id-paginacion-mantenimientos"
+          className="flex justify-center pt-4"
+        >
           <Paginacion
             currentPage={currentPage}
             totalPages={totalPages}
@@ -220,11 +237,20 @@ const MantenimientosPage = () => {
           />
         </div>
       )}
+
       <Modal
         open={openModal}
         onOpenChange={setOpenModal}
-        title="Ingresar Nuevo Mantenimiento"
-        description="Aqui podras ingresar los equipos y maquinas que se encuentran en mantenimiento"
+        title={
+          selectedMantenimiento
+            ? "Editar Mantenimiento"
+            : "Ingresar Nuevo Mantenimiento"
+        }
+        description={
+          selectedMantenimiento
+            ? "Aqui podras editar los equipos y maquinas que se encuentran en mantenimiento"
+            : "Aqui podras ingresar los equipos y maquinas que se encuentran en mantenimiento"
+        }
         size="2xl"
         height="auto"
         showCloseButton={false}

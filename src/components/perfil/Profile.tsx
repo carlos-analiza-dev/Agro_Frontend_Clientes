@@ -106,13 +106,14 @@ const Profile = ({ user, height, onUpdateProfileImage }: Props) => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div id="perfil-container" className="min-h-screen bg-background">
       <div
+        id="perfil-header"
         className="w-full bg-black relative"
         style={{ height: `${height * 0.2}px` }}
       >
         <div className="absolute left-5 -bottom-12">
-          <div className="relative group">
+          <div id="perfil-foto" className="relative group">
             <Avatar
               className="w-24 h-24 border-4 border-white bg-white shadow-lg cursor-pointer"
               onClick={openGallery}
@@ -122,12 +123,14 @@ const Profile = ({ user, height, onUpdateProfileImage }: Props) => {
                 alt={user?.nombre}
                 className="object-cover"
               />
+
               <AvatarFallback className="bg-muted text-2xl font-bold">
                 {user?.nombre ? getInitials(user.nombre) : "U"}
               </AvatarFallback>
             </Avatar>
 
             <Button
+              id="perfil-cambiar-foto"
               size="icon"
               className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80"
               onClick={handleImagePick}
@@ -139,6 +142,7 @@ const Profile = ({ user, height, onUpdateProfileImage }: Props) => {
       </div>
 
       <input
+        id="perfil-input-imagen"
         type="file"
         ref={fileInputRef}
         onChange={handleFileChange}
@@ -146,35 +150,43 @@ const Profile = ({ user, height, onUpdateProfileImage }: Props) => {
         className="hidden"
       />
 
-      <div className="px-4 mt-16">
+      <div id="perfil-informacion" className="px-4 mt-16">
         <Card>
           <CardContent className="p-6">
-            <div className="mb-6">
+            <div id="perfil-datos-principales" className="mb-6">
               <div className="flex items-center gap-2 mb-2">
                 <h1 className="text-2xl font-black">{user?.nombre}</h1>
+
                 <CheckCircle2 className="w-6 h-6 text-primary" />
               </div>
+
               <p className="text-muted-foreground">{user?.email}</p>
             </div>
 
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
+            <div id="perfil-datos-contacto" className="space-y-4">
+              <div id="perfil-ubicacion" className="flex items-center gap-3">
                 <MapPin className="w-5 h-5 text-primary" />
+
                 <span className="text-sm text-muted-foreground">
                   {user?.municipio.nombre}, {user?.departamento.nombre},{" "}
                   {user?.pais.nombre}.
                 </span>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div id="perfil-telefono" className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-primary" />
+
                 <span className="text-sm text-muted-foreground">
                   {user?.telefono}
                 </span>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div
+                id="perfil-fecha-registro"
+                className="flex items-center gap-3"
+              >
                 <Calendar className="w-5 h-5 text-primary" />
+
                 <span className="text-sm text-muted-foreground">
                   Se unió en{" "}
                   {new Date(user?.createdAt || "").toLocaleDateString()}
@@ -185,25 +197,30 @@ const Profile = ({ user, height, onUpdateProfileImage }: Props) => {
         </Card>
       </div>
 
-      <AlertDialog open={galleryVisible} onOpenChange={setGalleryVisible}>
-        <AlertDialogContent>
-          <div className="flex justify-end">
-            <AlertDialogCancel>X</AlertDialogCancel>
-          </div>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Galería de Imágenes</AlertDialogTitle>
-            <AlertDialogDescription></AlertDialogDescription>
-          </AlertDialogHeader>
-          <div>
-            <ImageGallery
-              images={imagenes_user?.data || []}
-              onClose={() => setGalleryVisible(false)}
-              onDelete={handleDeleteImage}
-              visible={galleryVisible}
-            />
-          </div>
-        </AlertDialogContent>
-      </AlertDialog>
+      <div id="perfil-galeria">
+        <AlertDialog open={galleryVisible} onOpenChange={setGalleryVisible}>
+          <AlertDialogContent>
+            <div className="flex justify-end">
+              <AlertDialogCancel>X</AlertDialogCancel>
+            </div>
+
+            <AlertDialogHeader>
+              <AlertDialogTitle>Galería de Imágenes</AlertDialogTitle>
+
+              <AlertDialogDescription />
+            </AlertDialogHeader>
+
+            <div>
+              <ImageGallery
+                images={imagenes_user?.data || []}
+                onClose={() => setGalleryVisible(false)}
+                onDelete={handleDeleteImage}
+                visible={galleryVisible}
+              />
+            </div>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
     </div>
   );
 };

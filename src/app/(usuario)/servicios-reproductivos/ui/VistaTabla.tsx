@@ -95,6 +95,7 @@ const VistaTabla = ({
               </TableCell>
               <TableCell className="flex justify-end gap-4">
                 <Button
+                  id="btn-edit-servicio"
                   variant="ghost"
                   title="Editar"
                   size="sm"
@@ -103,6 +104,7 @@ const VistaTabla = ({
                   <PencilIcon className="h-4 w-4" />
                 </Button>
                 <Button
+                  id="btn-estados-servicios"
                   variant="ghost"
                   title="Detalles"
                   size="sm"

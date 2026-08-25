@@ -273,7 +273,10 @@ const ServiciosReproductivosPage = () => {
 
   return (
     <TooltipProvider>
-      <div className="container mx-auto p-4 md:p-6 space-y-4 md:space-y-6">
+      <div
+        id="servicios-reproductivos-header"
+        className="container mx-auto p-4 md:p-6 space-y-4 md:space-y-6"
+      >
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-xl md:text-3xl font-bold tracking-tight">
@@ -292,6 +295,7 @@ const ServiciosReproductivosPage = () => {
           <div className="flex w-full sm:w-auto gap-2">
             {isMobile && (
               <Button
+                id="servicios-reproductivos-filtros-btn"
                 variant="outline"
                 onClick={() => setFiltrosVisibles(true)}
                 className="flex-1 sm:flex-none"
@@ -302,17 +306,20 @@ const ServiciosReproductivosPage = () => {
             )}
 
             {(isTablet || isDesktop) && (
-              <Tabs
-                value={vista}
-                onValueChange={(v) => setVista(v as "tabla")}
-                className="mr-2"
-              >
-                <TabsList>
-                  <TabsTrigger value="tabla">Tabla</TabsTrigger>
-                </TabsList>
-              </Tabs>
+              <div id="servicios-reproductivos-vista">
+                <Tabs
+                  value={vista}
+                  onValueChange={(v) => setVista(v as "tabla")}
+                  className="mr-2"
+                >
+                  <TabsList>
+                    <TabsTrigger value="tabla">Tabla</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
             )}
             <ButtonAdd
+              id="servicios-reproductivos-nuevo"
               Icon={Plus}
               title="Nuevo Servicio"
               action={() => handleClickAdd()}
@@ -321,37 +328,39 @@ const ServiciosReproductivosPage = () => {
           </div>
         </div>
 
-        {!isMobile && (
-          <CardFilters
-            fincaSeleccionada={fincaSeleccionada}
-            filtros={filtros}
-            fincas={fincas}
-            hembras={hembras}
-            handleFilterChange={handleFilterChange}
-            fincasLoading={fincasLoading}
-            animalesLoading={animalesLoading}
-            limpiarFiltros={limpiarFiltros}
-            refetch={refetch}
-            isFetching={isFetching}
-          />
-        )}
+        <div id="servicios-reproductivos-filtros">
+          {!isMobile && (
+            <CardFilters
+              fincaSeleccionada={fincaSeleccionada}
+              filtros={filtros}
+              fincas={fincas}
+              hembras={hembras}
+              handleFilterChange={handleFilterChange}
+              fincasLoading={fincasLoading}
+              animalesLoading={animalesLoading}
+              limpiarFiltros={limpiarFiltros}
+              refetch={refetch}
+              isFetching={isFetching}
+            />
+          )}
 
-        {isMobile && (
-          <MobileFilters
-            filtrosVisibles={filtrosVisibles}
-            setFiltrosVisibles={setFiltrosVisibles}
-            filtros={filtros}
-            fincas={fincas}
-            hembras={hembras}
-            handleFilterChange={handleFilterChange}
-            fincasLoading={fincasLoading}
-            animalesLoading={animalesLoading}
-            limpiarFiltros={limpiarFiltros}
-            refetch={refetch}
-          />
-        )}
+          {isMobile && (
+            <MobileFilters
+              filtrosVisibles={filtrosVisibles}
+              setFiltrosVisibles={setFiltrosVisibles}
+              filtros={filtros}
+              fincas={fincas}
+              hembras={hembras}
+              handleFilterChange={handleFilterChange}
+              fincasLoading={fincasLoading}
+              animalesLoading={animalesLoading}
+              limpiarFiltros={limpiarFiltros}
+              refetch={refetch}
+            />
+          )}
+        </div>
 
-        <Card>
+        <Card id="servicios-reproductivos-lista">
           <CardContent className="p-0">
             {error ? (
               <div className="text-center py-12">
@@ -392,7 +401,10 @@ const ServiciosReproductivosPage = () => {
         </Card>
 
         {servicios.length > 0 && !isMobile && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div
+            id="servicios-reproductivos-resumen"
+            className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          >
             <SummaryCard
               title="Total Servicios"
               numero={data?.total?.toString() ?? "0"}

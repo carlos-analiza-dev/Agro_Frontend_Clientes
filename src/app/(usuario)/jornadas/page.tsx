@@ -163,7 +163,10 @@ const JornadasTrabajadoresPage = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent">
+            <h1
+              id="jornadas-trabajadores-page-title"
+              className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent"
+            >
               Jornadas de Trabajadores
             </h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
@@ -171,6 +174,7 @@ const JornadasTrabajadoresPage = () => {
             </p>
           </div>
           <ButtonAdd
+            id="add-jornada-trabajador-btn"
             Icon={Calendar}
             title="Registrar Jornada"
             action={() => handleAddJornada()}
@@ -178,7 +182,10 @@ const JornadasTrabajadoresPage = () => {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div
+          id="jornadas-trabajadores-stats"
+          className="grid grid-cols-1 md:grid-cols-3 gap-4"
+        >
           <StatCard
             title="Total Registros"
             value={total}
@@ -215,7 +222,7 @@ const JornadasTrabajadoresPage = () => {
           />
         </div>
 
-        <Card className="shadow-md">
+        <Card id="jornadas-trabajadores-filters" className="shadow-md">
           <CardContent className="p-4">
             <div className="flex flex-col gap-4">
               <div className="flex gap-2">
@@ -393,7 +400,7 @@ const JornadasTrabajadoresPage = () => {
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card id="jornadas-trabajadores-table" className="shadow-lg">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <TableJornadaTrabajadores
@@ -413,7 +420,10 @@ const JornadasTrabajadoresPage = () => {
             )}
 
             {totalPages > 1 && (
-              <div className="border-t p-4">
+              <div
+                id="jornadas-trabajadores-pagination"
+                className="border-t p-4"
+              >
                 <Paginacion
                   currentPage={currentPage}
                   totalPages={totalPages}

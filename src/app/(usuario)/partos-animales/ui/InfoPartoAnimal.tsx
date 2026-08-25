@@ -369,6 +369,7 @@ const InfoPartoAnimal = ({
                 </TableCell>
                 <TableCell>
                   <Button
+                    id="partos-edit-btn"
                     onClick={() => handleEdit(parto)}
                     variant={"ghost"}
                     className="flex items-center gap-1"

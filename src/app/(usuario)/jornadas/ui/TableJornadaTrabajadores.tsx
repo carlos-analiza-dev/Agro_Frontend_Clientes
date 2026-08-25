@@ -223,7 +223,10 @@ const TableJornadaTrabajadores = ({
     return (
       <div className="overflow-x-auto">
         <div className="flex justify-end mb-4 p-2">
-          <ExportButton handleExportToExcel={handleExportToExcel} />
+          <ExportButton
+            id="id-export-excel-jornada"
+            handleExportToExcel={handleExportToExcel}
+          />
         </div>
 
         <Table>
@@ -299,6 +302,7 @@ const TableJornadaTrabajadores = ({
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
                       <Button
+                        id="detalles-jornada-trabajador-btn"
                         onClick={() => handleViewDetails(jornada)}
                         variant="ghost"
                         size="icon"
@@ -307,6 +311,7 @@ const TableJornadaTrabajadores = ({
                         <Eye className="h-4 w-4" />
                       </Button>
                       <Button
+                        id="edit-jornada-trabajador-btn"
                         onClick={() => handleEditJornada(jornada)}
                         variant="ghost"
                         size="icon"
@@ -333,7 +338,10 @@ const TableJornadaTrabajadores = ({
   return (
     <div className="overflow-x-auto">
       <div className="flex justify-end mb-4 p-2">
-        <ExportButton handleExportToExcel={handleExportToExcel} />
+        <ExportButton
+          id="id-export-excel-jornada"
+          handleExportToExcel={handleExportToExcel}
+        />
       </div>
 
       <Table>
@@ -442,6 +450,7 @@ const TableJornadaTrabajadores = ({
               <TableCell className="text-right">
                 <div className="flex justify-end gap-2">
                   <Button
+                    id="detalles-jornada-trabajador-btn"
                     variant="ghost"
                     size="sm"
                     className="hover:bg-blue-100 dark:hover:bg-blue-900/30"
@@ -450,6 +459,7 @@ const TableJornadaTrabajadores = ({
                     <Eye className="h-4 w-4" />
                   </Button>
                   <Button
+                    id="edit-jornada-trabajador-btn"
                     onClick={() => handleEditJornada(jornada)}
                     variant="ghost"
                     size="icon"

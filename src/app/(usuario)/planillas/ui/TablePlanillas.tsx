@@ -310,7 +310,10 @@ const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
                     </TableCell>
 
                     <TableCell className="text-center">
-                      <div className="flex justify-center gap-2">
+                      <div
+                        id="id-acciones-planilla"
+                        className="flex justify-center gap-2"
+                      >
                         {estado === EstadoPlanilla.BORRADOR && (
                           <Button
                             onClick={() => generatePlanilla(planilla.id)}
@@ -402,7 +405,7 @@ const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
 
                     <TableCell className="text-right">
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
+                        <DropdownMenuTrigger id="id-detalle-planilla" asChild>
                           <Button
                             variant="ghost"
                             size="sm"

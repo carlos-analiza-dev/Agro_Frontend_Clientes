@@ -212,7 +212,10 @@ const TratamientosPage = () => {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div
+        id="tratamientos-header"
+        className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+      >
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
             Tratamientos Animales
@@ -222,18 +225,22 @@ const TratamientosPage = () => {
           </p>
         </div>
       </div>
+      <div id="tratamientos-filtros">
+        <FiltrosBusqueda
+          filtros={filtros}
+          fincasFiltradas={fincasFiltradas}
+          animalesFiltrados={animalesFiltrados}
+          handleFiltroChange={handleFiltroChange}
+          handleSeleccionarFinca={handleSeleccionarFinca}
+          handleSeleccionarAnimal={handleSeleccionarAnimal}
+          limpiarFiltros={limpiarFiltros}
+        />
+      </div>
 
-      <FiltrosBusqueda
-        filtros={filtros}
-        fincasFiltradas={fincasFiltradas}
-        animalesFiltrados={animalesFiltrados}
-        handleFiltroChange={handleFiltroChange}
-        handleSeleccionarFinca={handleSeleccionarFinca}
-        handleSeleccionarAnimal={handleSeleccionarAnimal}
-        limpiarFiltros={limpiarFiltros}
-      />
-
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-gray-50 rounded-lg">
+      <div
+        id="tratamientos-paginacion-superior"
+        className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-gray-50 rounded-lg"
+      >
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">Mostrar:</span>
@@ -310,13 +317,18 @@ const TratamientosPage = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div
+        id="tratamientos-resumen"
+        className="grid grid-cols-1 md:grid-cols-4 gap-4"
+      >
         <CardHistorial
+          id="tratamientos-total"
           titulo="Total Tratamientos"
           total={totalTratamientos}
           colorIcon="text-blue-500"
         />
         <CardHistorial
+          id="tratamientos-documentos"
           titulo="Con Documentos"
           total={
             tratamientos.filter((t) => t.documentos && t.documentos.length > 0)
@@ -325,12 +337,14 @@ const TratamientosPage = () => {
           colorIcon="text-green-500"
         />
         <CardHistorial
+          id="tratamientos-servicios"
           titulo=" Servicios Diferentes"
           total={new Set(tratamientos.map((t) => t.subServicio?.nombre)).size}
           colorIcon="text-purple-500"
         />
 
         <CardHistorial
+          id="tratamientos-recientes"
           titulo="    Tratamientos Recientes"
           total={
             tratamientos.filter((t) => {
@@ -346,7 +360,7 @@ const TratamientosPage = () => {
         />
       </div>
 
-      <Card>
+      <Card id="tratamientos-lista">
         <CardHeader>
           <CardTitle>Tratamientos Aplicados</CardTitle>
         </CardHeader>
@@ -379,7 +393,10 @@ const TratamientosPage = () => {
       </Card>
 
       {tratamientos.length > 0 && (
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-gray-50 rounded-lg">
+        <div
+          id="tratamientos-paginacion-inferior"
+          className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-gray-50 rounded-lg"
+        >
           <span className="text-sm text-gray-600">
             Mostrando {inicioItem}-{finItem} de {totalTratamientos} tratamientos
           </span>

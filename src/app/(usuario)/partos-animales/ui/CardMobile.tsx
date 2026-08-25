@@ -174,7 +174,9 @@ const CardMobile = ({ partosFiltrados, isLoading, handleRefresh }: Props) => {
               )}
               <div className="mt-3 flex justify-end">
                 <Link href={`/partos-animales/${parto.id}`}>
-                  <Button variant={"ghost"}>Editar</Button>
+                  <Button id="partos-edit-btn" variant={"ghost"}>
+                    Editar
+                  </Button>
                 </Link>
               </div>
             </CardContent>

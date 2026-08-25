@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { formatDate } from "@/helpers/funciones/formatDate";
 import { Clock, Download } from "lucide-react";
-import React from "react";
 
 interface Props {
   historial: Historial;
@@ -108,6 +107,7 @@ const CardHistorialClinico = ({ historial }: Props) => {
                   <div className="flex flex-wrap gap-2">
                     {detalle.documentos.map((doc) => (
                       <Button
+                        id="btn-download-historial"
                         key={doc.id}
                         variant="outline"
                         size="sm"

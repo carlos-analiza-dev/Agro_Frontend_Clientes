@@ -52,16 +52,10 @@ interface Props {
   actividad: Actividade;
   isPropietario: boolean;
   trabajadorId: string;
-  handleEditActividad: (actividad: Actividade) => void;
   cliente: Cliente | undefined;
 }
 
-const TarjetaActividad = ({
-  actividad,
-  isPropietario,
-  handleEditActividad,
-  cliente,
-}: Props) => {
+const TarjetaActividad = ({ actividad, isPropietario, cliente }: Props) => {
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
@@ -321,7 +315,7 @@ const TarjetaActividad = ({
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm">
+              <Button id="id-options-actividades" variant="ghost" size="sm">
                 <MoreVertical className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>

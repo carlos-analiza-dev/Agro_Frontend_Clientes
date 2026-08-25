@@ -254,6 +254,7 @@ const TableCelos = ({
               </TableCell>
               <TableCell className="text-right">
                 <Button
+                  id="celos-detalle-btn"
                   variant="ghost"
                   size="sm"
                   onClick={() => {
@@ -264,6 +265,7 @@ const TableCelos = ({
                   <Eye className="h-4 w-4" />
                 </Button>
                 <Button
+                  id="celos-edit-btn"
                   variant="ghost"
                   size="sm"
                   className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
@@ -272,6 +274,7 @@ const TableCelos = ({
                   <Pencil className="h-4 w-4" />
                 </Button>
                 <Button
+                  id="celos-delete-btn"
                   variant="ghost"
                   size="sm"
                   className="text-red-500 hover:text-red-700 hover:bg-red-50"
@@ -336,6 +339,7 @@ const TableCelos = ({
               </TableCell>
               <TableCell className="text-right">
                 <Button
+                  id="celos-detalle-btn"
                   variant="ghost"
                   size="sm"
                   onClick={() => {
@@ -346,6 +350,7 @@ const TableCelos = ({
                   <Eye className="h-4 w-4" />
                 </Button>
                 <Button
+                  id="celos-edit-btn"
                   variant="ghost"
                   size="sm"
                   className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
@@ -354,6 +359,7 @@ const TableCelos = ({
                   <Pencil className="h-4 w-4" />
                 </Button>
                 <Button
+                  id="celos-delete-btn"
                   variant="ghost"
                   size="sm"
                   className="text-red-500 hover:text-red-700 hover:bg-red-50"

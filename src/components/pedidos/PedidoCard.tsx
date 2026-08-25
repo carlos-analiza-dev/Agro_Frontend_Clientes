@@ -149,6 +149,7 @@ const PedidoCard = ({ pedido, cliente }: Props) => {
                 {formatCurrency(pedido.total, simbolo)}
               </div>
               <Button
+                id="btn-impuestos-pedidos"
                 variant="ghost"
                 size="sm"
                 onClick={() => setMostrarImpuestos(!mostrarImpuestos)}
@@ -397,6 +398,7 @@ const PedidoCard = ({ pedido, cliente }: Props) => {
           <div className="flex flex-wrap justify-end gap-3 mt-6 pt-6 border-t border-gray-200">
             {pedido.estado === "pendiente" && (
               <Button
+                id="id-cancel-pedido"
                 onClick={() => setIsOpen(true)}
                 variant="destructive"
                 size="sm"

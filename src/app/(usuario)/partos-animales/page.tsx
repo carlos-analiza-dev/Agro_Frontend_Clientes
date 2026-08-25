@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Filter, X, Baby, Plus } from "lucide-react";
+import { Filter, Plus } from "lucide-react";
 import { startOfDay, endOfDay } from "date-fns";
 import useGetPartosAnimales from "@/hooks/reproduccion/useGetPartosAnimales";
 import { useAuthStore } from "@/providers/store/useAuthStore";
@@ -172,73 +172,97 @@ const PartosAnimalesPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-3 sm:p-4 md:p-6 space-y-4 md:space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+    <div
+      id="partos-container"
+      className="container mx-auto p-3 sm:p-4 md:p-6 space-y-4 md:space-y-6"
+    >
+      <div
+        id="partos-header"
+        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4"
+      >
         <div className="w-full sm:w-auto">
           <h1 className="text-lg sm:text-xl md:text-3xl font-bold tracking-tight break-words">
             Control de Partos - {finca?.nombre_finca}
           </h1>
+
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground mt-1">
             Monitorea los partos registrados en tus animales.
             {totalPartos > 0 && ` Total: ${totalPartos} partos`}
           </p>
         </div>
+
         <ButtonAdd
+          id="partos-nuevo-btn"
           Icon={Plus}
           title="Nuevo Parto"
           action={handleClickNewRegister}
           className="bg-green-600 hover:bg-green-700"
         />
       </div>
-      {!isMobile ? (
-        <FiltersParto
-          filtros={filtros}
-          setFiltros={setFiltros}
-          fincas={fincas}
-          hembras={hembras}
-          clearFilters={clearFilters}
-        />
-      ) : (
-        <>
-          <Button
-            variant="outline"
-            onClick={() => setShowFilters(true)}
-            className="w-full justify-between"
-          >
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4" />
-              <span>Filtros</span>
-            </div>
-            {contarFiltrosActivos() > 0 && (
-              <Badge variant="secondary">
-                {contarFiltrosActivos()} activos
-              </Badge>
-            )}
-          </Button>
 
-          <Sheet open={showFilters} onOpenChange={setShowFilters}>
-            <SheetContent side="bottom" className="h-[90vh] rounded-t-xl">
-              <SheetHeader className="mb-4">
-                <SheetTitle className="text-left">Filtros</SheetTitle>
-              </SheetHeader>
-              <div className="overflow-y-auto h-full pb-20">
-                <FiltersParto
-                  filtros={filtros}
-                  setFiltros={setFiltros}
-                  fincas={fincas}
-                  hembras={hembras}
-                  clearFilters={clearFilters}
-                  isMobile={true}
-                  onApplyMobile={() => setShowFilters(false)}
-                />
+      <div id="partos-filtros">
+        {!isMobile ? (
+          <FiltersParto
+            filtros={filtros}
+            setFiltros={setFiltros}
+            fincas={fincas}
+            hembras={hembras}
+            clearFilters={clearFilters}
+          />
+        ) : (
+          <>
+            <Button
+              id="partos-filtros-mobile-btn"
+              variant="outline"
+              onClick={() => setShowFilters(true)}
+              className="w-full justify-between"
+            >
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4" />
+                <span>Filtros</span>
               </div>
-            </SheetContent>
-          </Sheet>
-        </>
-      )}
-      <Card>
-        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3">
+
+              {contarFiltrosActivos() > 0 && (
+                <Badge variant="secondary">
+                  {contarFiltrosActivos()} activos
+                </Badge>
+              )}
+            </Button>
+
+            <Sheet open={showFilters} onOpenChange={setShowFilters}>
+              <SheetContent
+                id="partos-filtros-mobile"
+                side="bottom"
+                className="h-[90vh] rounded-t-xl"
+              >
+                <SheetHeader className="mb-4">
+                  <SheetTitle className="text-left">Filtros</SheetTitle>
+                </SheetHeader>
+
+                <div className="overflow-y-auto h-full pb-20">
+                  <FiltersParto
+                    filtros={filtros}
+                    setFiltros={setFiltros}
+                    fincas={fincas}
+                    hembras={hembras}
+                    clearFilters={clearFilters}
+                    isMobile={true}
+                    onApplyMobile={() => setShowFilters(false)}
+                  />
+                </div>
+              </SheetContent>
+            </Sheet>
+          </>
+        )}
+      </div>
+
+      <Card id="partos-historial">
+        <CardHeader
+          id="partos-historial-header"
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3"
+        >
           <CardTitle>Historial de Partos</CardTitle>
+
           {totalPartos > 0 && (
             <span className="text-xs sm:text-sm text-muted-foreground">
               Mostrando {startIndex + 1} - {Math.min(endIndex, totalPartos)} de{" "}
@@ -246,7 +270,8 @@ const PartosAnimalesPage = () => {
             </span>
           )}
         </CardHeader>
-        <CardContent className="p-3 sm:p-4 md:p-6">
+
+        <CardContent id="partos-lista" className="p-3 sm:p-4 md:p-6">
           <div className="overflow-x-auto -mx-3 sm:mx-0">
             {isMobile ? (
               <CardMobile
@@ -266,7 +291,7 @@ const PartosAnimalesPage = () => {
           </div>
 
           {totalPages > 1 && (
-            <div className="mt-6">
+            <div id="partos-paginacion" className="mt-6">
               <Paginacion
                 currentPage={filtros.page}
                 totalPages={totalPages}
@@ -277,12 +302,13 @@ const PartosAnimalesPage = () => {
           )}
 
           {partosFiltrados && partosFiltrados.length > 0 && (
-            <div className="mt-6">
+            <div id="partos-detalles" className="mt-6">
               <DetailsParto partosFiltrados={partosFiltrados} />
             </div>
           )}
         </CardContent>
       </Card>
+
       <Modal
         open={openModal}
         onOpenChange={(open) => {

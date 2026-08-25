@@ -297,6 +297,7 @@ const FormSiembraInteligente = ({
       </div>
 
       <Button
+        id="id-btn-siembra-inteligente"
         type="submit"
         className="w-full bg-green-600 hover:bg-green-700"
         disabled={mutation.isPending}

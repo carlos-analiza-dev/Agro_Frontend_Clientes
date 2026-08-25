@@ -128,11 +128,15 @@ const CelosAnimalPage = () => {
 
   return (
     <div className="container mx-auto p-4 md:p-6 space-y-4 md:space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div
+        id="celos-header"
+        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+      >
         <div>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
             Control de Celos
           </h1>
+
           <h2 className="text-sm md:text-base max-w-3xl text-muted-foreground">
             Registra y monitorea los celos de tus animales. Cada registro será
             evaluado automáticamente para validar que el animal cumpla con la
@@ -140,8 +144,10 @@ const CelosAnimalPage = () => {
             procesos como monta o inseminación.
           </h2>
         </div>
+
         <div className="flex w-full sm:w-auto gap-2">
           <Button
+            id="celos-filtros-btn"
             variant="outline"
             onClick={() => setFiltrosVisibles(true)}
             className="flex-1 sm:flex-none md:hidden"
@@ -149,49 +155,54 @@ const CelosAnimalPage = () => {
             <Filter className="h-4 w-4 mr-2" />
             Filtros
           </Button>
-          <ButtonAdd
-            Icon={Plus}
-            title="Nuevo Celo"
-            action={handleCreateRegistro}
-            className="bg-green-600 hover:bg-green-700"
-          />
+
+          <div id="celos-nuevo-btn">
+            <ButtonAdd
+              Icon={Plus}
+              title="Nuevo Celo"
+              action={handleCreateRegistro}
+              className="bg-green-600 hover:bg-green-700"
+            />
+          </div>
         </div>
       </div>
 
-      {isMobile ? (
-        <MobileFilters
-          filtrosVisibles={filtrosVisibles}
-          setFiltrosVisibles={setFiltrosVisibles}
-          tempFiltros={tempFiltros}
-          fincasLoading={fincasLoading}
-          handleFilterChange={handleFilterChange}
-          fincas={fincas?.data}
-          hembras={hembras}
-          especies={especies?.data}
-          animalesLoading={animalesLoading}
-          especiesLoading={especiesLoading}
-          aplicarFiltros={aplicarFiltros}
-          limpiarFiltros={limpiarFiltros}
-        />
-      ) : (
-        <DesktopFilters
-          setFiltrosAbiertos={setFiltrosAbiertos}
-          filtrosAbiertos={filtrosAbiertos}
-          tempFiltros={tempFiltros}
-          fincasLoading={fincasLoading}
-          handleFilterChange={handleFilterChange}
-          fincas={fincas?.data}
-          hembras={hembras}
-          especies={especies?.data}
-          animalesLoading={animalesLoading}
-          especiesLoading={especiesLoading}
-          aplicarFiltros={aplicarFiltros}
-          limpiarFiltros={limpiarFiltros}
-          isTablet={isTablet}
-        />
-      )}
+      <div id="celos-filtros">
+        {isMobile ? (
+          <MobileFilters
+            filtrosVisibles={filtrosVisibles}
+            setFiltrosVisibles={setFiltrosVisibles}
+            tempFiltros={tempFiltros}
+            fincasLoading={fincasLoading}
+            handleFilterChange={handleFilterChange}
+            fincas={fincas?.data}
+            hembras={hembras}
+            especies={especies?.data}
+            animalesLoading={animalesLoading}
+            especiesLoading={especiesLoading}
+            aplicarFiltros={aplicarFiltros}
+            limpiarFiltros={limpiarFiltros}
+          />
+        ) : (
+          <DesktopFilters
+            setFiltrosAbiertos={setFiltrosAbiertos}
+            filtrosAbiertos={filtrosAbiertos}
+            tempFiltros={tempFiltros}
+            fincasLoading={fincasLoading}
+            handleFilterChange={handleFilterChange}
+            fincas={fincas?.data}
+            hembras={hembras}
+            especies={especies?.data}
+            animalesLoading={animalesLoading}
+            especiesLoading={especiesLoading}
+            aplicarFiltros={aplicarFiltros}
+            limpiarFiltros={limpiarFiltros}
+            isTablet={isTablet}
+          />
+        )}
+      </div>
 
-      <Card className="overflow-hidden">
+      <Card id="celos-tabla" className="overflow-hidden">
         <CardContent className="p-0">
           {isLoading ? (
             <div className="flex justify-center items-center py-12 md:py-20">
@@ -227,7 +238,10 @@ const CelosAnimalPage = () => {
       </Card>
 
       {data && data.totalPages > 0 && (
-        <div className="flex justify-center sm:justify-end">
+        <div
+          id="celos-paginacion"
+          className="flex justify-center sm:justify-end"
+        >
           <Paginacion
             currentPage={data.offset}
             totalPages={data.totalPages}

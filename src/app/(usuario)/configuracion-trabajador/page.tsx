@@ -99,7 +99,10 @@ const ConfiguracionTrabajadoresPage = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent">
+            <h1
+              id="config-trabajadores-page-title"
+              className="text-xl md:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent"
+            >
               Configuración de Trabajadores
             </h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
@@ -107,6 +110,7 @@ const ConfiguracionTrabajadoresPage = () => {
             </p>
           </div>
           <ButtonAdd
+            id="add-config-trabajador-btn"
             Icon={Plus}
             title="Nuevo Trabajador"
             action={() => handleAddConfig()}
@@ -114,7 +118,10 @@ const ConfiguracionTrabajadoresPage = () => {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div
+          id="config-trabajadores-stats"
+          className="grid grid-cols-1 md:grid-cols-3 gap-4"
+        >
           <StatCard
             title="Total Trabajadores"
             value={total}
@@ -150,12 +157,13 @@ const ConfiguracionTrabajadoresPage = () => {
           />
         </div>
 
-        <Card className="shadow-md">
+        <Card id="config-trabajadores-filters" className="shadow-md">
           <CardContent className="p-4">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
+                  id="config-trabajadores-search"
                   placeholder="Buscar por nombre, identificación o cargo..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -164,7 +172,11 @@ const ConfiguracionTrabajadoresPage = () => {
               </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="gap-2">
+                  <Button
+                    id="config-trabajadores-status-filter"
+                    variant="outline"
+                    className="gap-2"
+                  >
                     <Filter className="h-4 w-4" />
                     {filterActivo === null
                       ? "Todos"
@@ -190,7 +202,7 @@ const ConfiguracionTrabajadoresPage = () => {
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card id="config-trabajadores-table" className="shadow-lg">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <TableConfigTrabajadores
@@ -209,7 +221,7 @@ const ConfiguracionTrabajadoresPage = () => {
             )}
 
             {totalPages > 1 && (
-              <div className="border-t p-4">
+              <div id="config-trabajadores-pagination" className="border-t p-4">
                 <Paginacion
                   currentPage={currentPage}
                   totalPages={totalPages}
