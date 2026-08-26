@@ -65,6 +65,22 @@ export const authLogin = async (email: string, password: string) => {
   }
 };
 
+export const authRefreshLogin = async () => {
+  try {
+    const { data } = await veterinariaAPI.post<AuthResponse>(
+      "/auth-clientes/login-fresh",
+    );
+
+    if (!data) {
+      return null;
+    }
+
+    return returnUserToken(data);
+  } catch (error: any) {
+    return null;
+  }
+};
+
 export const authCheckStatus = async () => {
   try {
     const { data } = await veterinariaAPI.get<AuthResponse>(

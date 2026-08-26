@@ -7,7 +7,7 @@ const RUTAS_SIEMPRE_DISPONIBLES = [
   "/panel",
   "/mi-plan",
   "/comprar-plan",
-  "/perfil",
+  "/codigo-cliente",
 ];
 
 export const ordenarPermisosClientes = (

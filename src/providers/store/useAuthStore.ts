@@ -1,4 +1,8 @@
-import { authCheckStatus, authLogin } from "@/api/cliente/accions/auth-accions";
+import {
+  authCheckStatus,
+  authLogin,
+  authRefreshLogin,
+} from "@/api/cliente/accions/auth-accions";
 import { Cliente } from "@/interfaces/auth/cliente";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
@@ -19,6 +23,7 @@ export interface AuthState {
   checkStatus: () => Promise<AuthResponse | null>;
   logout: () => Promise<void>;
   changeStatus: (token?: string, cliente?: Cliente) => Promise<boolean>;
+  refreshSession: () => Promise<AuthResponse | null>;
   hasHydrated: boolean;
 }
 
@@ -41,6 +46,20 @@ export const useAuthStore = create<AuthState>()(
         }
         set({ status: "authenticated", token, cliente });
         return true;
+      },
+
+      refreshSession: async () => {
+        try {
+          const resp = await authRefreshLogin();
+          if (!resp?.token || !resp.cliente) {
+            await get().changeStatus();
+            return null;
+          }
+          await get().changeStatus(resp.token, resp.cliente);
+          return resp;
+        } catch (error) {
+          return null;
+        }
       },
 
       login: async (email: string, password: string) => {

@@ -3,7 +3,7 @@ export const publicRoutes = [
   "/mi-plan",
   "/comprar-plan",
   "/historial-paquetes",
-  "/perfil",
+  "/codigo-cliente",
   "/not-found",
   "/unauthorized",
 ];

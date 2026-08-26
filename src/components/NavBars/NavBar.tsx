@@ -14,6 +14,7 @@ import {
   AlertCircle,
   Sprout,
   Sparkles,
+  Cog,
 } from "lucide-react";
 
 import {
@@ -217,7 +218,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
     "/agro-propietario/agro-servicios",
 
     ...(esPropietario
-      ? ["/mi-plan", "/comprar-plan", "/historial-paquetes"]
+      ? ["/mi-plan", "/comprar-plan", "/historial-paquetes", "/codigo-cliente"]
       : []),
   ];
 
@@ -244,6 +245,10 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
 
   const handleNavigateToPlanes = () => {
     router.push("/comprar-plan");
+  };
+
+  const handleNavigateToCodigo = () => {
+    router.push("/codigo-cliente");
   };
 
   const handleNavigateToMiPlan = () => {
@@ -326,10 +331,16 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
         {esPropietario && tienePlanActivo && ecommer && <EcommerceButton />}
 
         {esPropietario && !tienePlanActivo && (
-          <PlanButton onClick={handleNavigateToPlanes} variant="default">
-            <Sparkles className="mr-1.5 h-3.5 w-3.5" />
-            Ver Planes
-          </PlanButton>
+          <div className="flex gap-3">
+            <PlanButton onClick={handleNavigateToCodigo} variant="outline">
+              <Cog className="mr-1.5 h-3.5 w-3.5" />
+              Codigo Cliente
+            </PlanButton>
+            <PlanButton onClick={handleNavigateToPlanes} variant="default">
+              <Sparkles className="mr-1.5 h-3.5 w-3.5" />
+              Ver Planes
+            </PlanButton>
+          </div>
         )}
 
         {esPropietario && tienePlanActivo && estaPorVencer && !estaVencido && (

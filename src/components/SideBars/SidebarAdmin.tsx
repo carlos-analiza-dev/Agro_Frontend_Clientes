@@ -3,7 +3,7 @@
 import { navItems } from "@/helpers/data/sidebar/sidebarData";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, Sparkles, Menu, Cog, CircleHelp } from "lucide-react";
+import { LogOut, Sparkles, Menu } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -20,7 +20,6 @@ import { useMemo, useState } from "react";
 import { getClientesTourSteps } from "@/helpers/data/guia/sidebarOrder";
 import { TOUR_PAGES_CLIENTES_ORDER } from "@/helpers/data/guia/tourGuide";
 import { toast } from "react-toastify";
-import { Button } from "../ui/button";
 import TourGuide from "../agroservicio/guia/TourGuide";
 import ButtonGuiaSystem from "../generics/ButtonGuiaSystem";
 
