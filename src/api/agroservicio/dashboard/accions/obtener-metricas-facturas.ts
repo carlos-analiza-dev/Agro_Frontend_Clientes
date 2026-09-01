@@ -3,9 +3,10 @@ import { PaginationInterface } from "@/interfaces/filtros/paginacion/paginacion.
 import { MetricaResumenInterface } from "../interface/response-facturas-agro.interface";
 
 export const obtenerMetricasResFacturas = async (
+  propietarioId: string,
   filters?: PaginationInterface,
 ) => {
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/dashboards/metricas-agro/resumen`;
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/dashboards/metricas-agro/resumen/${propietarioId}`;
 
   const response = await veterinariaAPI.get<MetricaResumenInterface>(url, {
     params: filters,

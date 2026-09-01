@@ -55,23 +55,25 @@ export default function FincasPageGanaderos() {
 
   if (!fincas || fincas.data.fincas.length === 0 || isError) {
     return (
-      <div id="fincas-empty" className="min-h-screen p-4 bg-background">
-        <div id="buscador-empty" className="p-4 pb-2">
+      <div id="fincas-container" className="min-h-screen p-4 bg-background">
+        <div id="buscador-principal" className="p-4 pb-2">
           <Buscador
             title="Buscar finca por nombre..."
             setSearchTerm={setSearchTerm}
             searchTerm={searchTerm}
           />
         </div>
+
         <MessageError
           id="message-error-empty"
           titulo="Sin fincas"
           descripcion="No se encontraron fincas disponibles en este momento"
           onPress={onRefresh}
         />
+
         {isPropietario && (
           <FAB
-            id="fab-crear-finca-empty"
+            id="fab-crear-finca"
             titulo="Crear Finca"
             onPress={() => router.push("/fincas/crear-fincas")}
           />

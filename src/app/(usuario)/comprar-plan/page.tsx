@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import useGetPaquetesByPais from "@/hooks/paquetes/useGetPaquetesByPais";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,8 +18,6 @@ import {
   getPlanIcon,
 } from "@/helpers/funciones/paquetes/get-infos";
 import { ComprarPaquete } from "@/api/paquetes/accions/comprar-paquete";
-import { useFavoritos } from "@/hooks/favoritos/useFavoritos";
-import { useCartStore } from "@/providers/store/useCartStore";
 import { isAxiosError } from "axios";
 import {
   PreciosPorPai,
@@ -28,8 +25,6 @@ import {
 } from "@/api/paquetes/interface/response-paquetes.interface";
 import { useQueryClient } from "@tanstack/react-query";
 import ModalConfirmCompra from "./ui/ModalConfirmCompra";
-import ModalCompraSucces from "./ui/ModalCompraSucces";
-import { CompraExitosa } from "@/api/paquetes/interface/comprar-paquete.interface";
 
 const calcularDiasRestantes = (fechaFin: string): number => {
   const hoy = new Date();
@@ -51,21 +46,14 @@ const sumarDiasAFecha = (fechaInicio: Date, dias: number): Date => {
 };
 
 const ComprarPlanPage = () => {
-  const { cliente, logout } = useAuthStore();
-  const { limpiarFavoritos } = useFavoritos();
-  const { clearCart } = useCartStore();
-  const { data: paquetes, isLoading, refetch } = useGetPaquetesByPais();
-  const router = useRouter();
+  const { cliente, refreshSession } = useAuthStore();
+  const { data: paquetes, isLoading } = useGetPaquetesByPais();
   const [selectedPaquete, setSelectedPaquete] =
     useState<ResponsePaquetesInterface | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [tipoPago, setTipoPago] = useState<TipoPrecio>(TipoPrecio.MENSUAL);
   const [activeTab, setActiveTab] = useState<"mensual" | "anual">("mensual");
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [compraExitosa, setCompraExitosa] = useState<CompraExitosa | null>(
-    null,
-  );
   const queryClient = useQueryClient();
 
   const tienePlanActivo = cliente?.tienePlanActivo;
@@ -235,24 +223,17 @@ const ComprarPlanPage = () => {
 
       await ComprarPaquete(data);
 
-      setCompraExitosa({
-        nombre: selectedPaquete.nombre,
-        tipo: selectedPaquete.tipo,
-        fechaFin: data.fechaFin,
-        diasAgregados:
-          puedeRenovarAntes &&
-          diasRestantes > 0 &&
-          planActivo?.paquete?.tipo !== TipoPaquete.FREE
-            ? diasRestantes
-            : 0,
-        duracionComprada: getDuracionDias(tipoPago),
-      });
-
       setShowConfirmDialog(false);
-      setShowSuccessModal(true);
 
       queryClient.invalidateQueries({ queryKey: ["paquetes-pais"] });
-      await refetch();
+      await refreshSession();
+      window.location.reload();
+      queryClient.invalidateQueries({
+        queryKey: ["permisos-cliente-paquete"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["permisos-clienteId", cliente?.id],
+      });
     } catch (error) {
       if (isAxiosError(error)) {
         const errorMessage =
@@ -264,25 +245,6 @@ const ComprarPlanPage = () => {
     } finally {
       setIsProcessing(false);
     }
-  };
-
-  const handleReiniciarSesion = async () => {
-    setShowSuccessModal(false);
-
-    toast.info("Cerrando sesión...");
-
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    await logout();
-    limpiarFavoritos();
-    clearCart();
-
-    router.push("/");
-  };
-
-  const handleContinuar = () => {
-    setShowSuccessModal(false);
-    window.location.reload();
   };
 
   const esPaqueteFree = selectedPaquete?.tipo === TipoPaquete.FREE;
@@ -460,14 +422,6 @@ const ComprarPlanPage = () => {
         isProcessing={isProcessing}
         handleConfirmarCompra={handleConfirmarCompra}
         planActualEsFree={planActivo?.paquete?.tipo === TipoPaquete.FREE}
-      />
-
-      <ModalCompraSucces
-        showSuccessModal={showSuccessModal}
-        setShowSuccessModal={setShowSuccessModal}
-        compraExitosa={compraExitosa}
-        handleReiniciarSesion={handleReiniciarSesion}
-        handleContinuar={handleContinuar}
       />
     </div>
   );

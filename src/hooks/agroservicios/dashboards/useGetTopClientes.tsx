@@ -2,10 +2,14 @@ import { obtenerMetricasClientesMasCompras } from "@/api/agroservicio/dashboard/
 import { PaginationInterface } from "@/interfaces/filtros/paginacion/paginacion.interface";
 import { useQuery } from "@tanstack/react-query";
 
-const useGetTopClientes = (filters?: PaginationInterface) => {
+const useGetTopClientes = (
+  propietarioId: string,
+  filters?: PaginationInterface,
+) => {
   return useQuery({
-    queryKey: ["metricas-clientes", filters],
-    queryFn: () => obtenerMetricasClientesMasCompras(filters),
+    queryKey: ["metricas-clientes", propietarioId, filters],
+    queryFn: () => obtenerMetricasClientesMasCompras(propietarioId, filters),
+    enabled: !!propietarioId,
     retry: 0,
     staleTime: 60 * 5 * 1000,
   });

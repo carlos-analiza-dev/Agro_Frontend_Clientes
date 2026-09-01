@@ -64,6 +64,7 @@ import { StatCard } from "@/components/generics/StatCard";
 
 const AgroservicioDashboard = () => {
   const { cliente } = useAuthStore();
+  const propietarioId = cliente?.id ?? "";
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const [fechaInicio, setFechaInicio] = useState<Date | undefined>(undefined);
   const [fechaFin, setFechaFin] = useState<Date | undefined>(undefined);
@@ -98,19 +99,19 @@ const AgroservicioDashboard = () => {
     data: metricas_facturas,
     isLoading,
     refetch,
-  } = useGetMetricasFacturas(getQueryParams());
+  } = useGetMetricasFacturas(propietarioId, getQueryParams());
 
   const { data: metricas_productos, isLoading: cargando_products } =
-    useGetTopProductos(getQueryParams());
+    useGetTopProductos(propietarioId, getQueryParams());
 
   const { data: top_clientes, isLoading: cargando_clientes } =
-    useGetTopClientes(getQueryParams());
+    useGetTopClientes(propietarioId, getQueryParams());
 
   const { data: top_sucursales, isLoading: cargando_sucursales } =
-    useGetTopSucursales(getQueryParams());
+    useGetTopSucursales(propietarioId, getQueryParams());
 
   const { data: estados_facturas, isLoading: cargando_estados } =
-    useGetEstadosFacturas(getQueryParams());
+    useGetEstadosFacturas(propietarioId, getQueryParams());
 
   useEffect(() => {
     refetch();

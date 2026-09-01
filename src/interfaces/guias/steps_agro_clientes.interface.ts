@@ -74,6 +74,12 @@ export const agroClientesSteps: Record<string, TourStep[]> = {
         "Desplázate verticalmente para ver todas tus fincas registradas.",
     },
     {
+      target: "message-error-empty",
+      title: "Sin Fincas",
+      description:
+        "Aquí se mostrará un mensaje cuando no tengas fincas registradas o no se encuentren resultados.",
+    },
+    {
       target: "fab-crear-finca",
       title: "Crear Nueva Finca",
       description:

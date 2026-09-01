@@ -3,9 +3,10 @@ import { PaginationInterface } from "@/interfaces/filtros/paginacion/paginacion.
 import { ResponseClientesComprasInterface } from "../interface/response-clientes-compras.interface";
 
 export const obtenerMetricasClientesMasCompras = async (
+  propietarioId: string,
   filters?: PaginationInterface,
 ) => {
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/dashboards/metricas-agro/clientes`;
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/dashboards/metricas-agro/clientes/${propietarioId}`;
 
   const response = await veterinariaAPI.get<ResponseClientesComprasInterface[]>(
     url,

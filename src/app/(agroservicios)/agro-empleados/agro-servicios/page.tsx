@@ -55,6 +55,7 @@ import useGetSucursalByEmpleado from "@/hooks/agroservicios/sucursales/useGetSuc
 
 const AgroservicioDashboard = () => {
   const { empleado } = useAuthEmpleadoStore();
+  const propietarioId = empleado?.agroservicio.propietario.id ?? "";
   const moneda = empleado?.pais.simbolo_moneda ?? "$";
   const [fechaInicio, setFechaInicio] = useState<Date | undefined>(undefined);
   const [fechaFin, setFechaFin] = useState<Date | undefined>(undefined);
@@ -87,16 +88,16 @@ const AgroservicioDashboard = () => {
     data: metricas_facturas,
     isLoading,
     refetch,
-  } = useGetMetricasFacturas(getQueryParams());
+  } = useGetMetricasFacturas(propietarioId, getQueryParams());
 
   const { data: metricas_productos, isLoading: cargando_products } =
-    useGetTopProductos(getQueryParams());
+    useGetTopProductos(propietarioId, getQueryParams());
 
   const { data: top_clientes, isLoading: cargando_clientes } =
-    useGetTopClientes(getQueryParams());
+    useGetTopClientes(propietarioId, getQueryParams());
 
   const { data: estados_facturas, isLoading: cargando_estados } =
-    useGetEstadosFacturas(getQueryParams());
+    useGetEstadosFacturas(propietarioId, getQueryParams());
 
   useEffect(() => {
     refetch();
