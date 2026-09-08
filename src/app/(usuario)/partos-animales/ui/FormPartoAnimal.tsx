@@ -415,7 +415,7 @@ const FormPartoAnimal = ({
 
         {!isEditing ? (
           <div className="md:col-span-2">
-            <Label htmlFor="servicio_id">Servicio Asociado</Label>
+            <Label htmlFor="servicio_id">Servicio Asociado (opcional)</Label>
             <Select
               value={selectedServicio}
               onValueChange={(value) => {
@@ -452,7 +452,7 @@ const FormPartoAnimal = ({
           </div>
         ) : (
           <div>
-            <Label>Servicio Asociado</Label>
+            <Label>Servicio Asociado </Label>
             <div className="p-2 border rounded-md bg-gray-50">
               {parto?.servicio_asociado ? (
                 <>

@@ -380,29 +380,34 @@ const ComprarPlanPage = () => {
 
           <TabsContent value="anual" className="mt-0">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {paquetesDisponibles?.map((paquete: any, index: number) => {
-                const precio = getPrecio(paquete);
-                const esPlanActual = planActivo?.paquete?.id === paquete.id;
-                const esFree = paquete.tipo === TipoPaquete.FREE;
-                const ahorro = calcularAhorro(precio.mensual, precio.anual);
+              {paquetesDisponibles
+                ?.filter(
+                  (paquete: ResponsePaquetesInterface) =>
+                    paquete.tipo !== TipoPaquete.FREE,
+                )
+                .map((paquete: ResponsePaquetesInterface, index: number) => {
+                  const precio = getPrecio(paquete);
+                  const esPlanActual = planActivo?.paquete?.id === paquete.id;
+                  const esFree = paquete.tipo === TipoPaquete.FREE;
+                  const ahorro = calcularAhorro(precio.mensual, precio.anual);
 
-                return (
-                  <PricingCard
-                    key={paquete.id}
-                    paquete={paquete}
-                    precio={precio}
-                    tipoPago="anual"
-                    icon={getPlanIcon(paquete.tipo)}
-                    badgeColor={getBadgeColor(paquete.tipo)}
-                    cardColor={getPlanColor(paquete.tipo)}
-                    index={index}
-                    esPlanActual={esPlanActual}
-                    esFree={esFree}
-                    ahorro={ahorro}
-                    onComprar={() => handleComprar(paquete)}
-                  />
-                );
-              })}
+                  return (
+                    <PricingCard
+                      key={paquete.id}
+                      paquete={paquete}
+                      precio={precio}
+                      tipoPago="anual"
+                      icon={getPlanIcon(paquete.tipo)}
+                      badgeColor={getBadgeColor(paquete.tipo)}
+                      cardColor={getPlanColor(paquete.tipo)}
+                      index={index}
+                      esPlanActual={esPlanActual}
+                      esFree={esFree}
+                      ahorro={ahorro}
+                      onComprar={() => handleComprar(paquete)}
+                    />
+                  );
+                })}
             </div>
           </TabsContent>
         </Tabs>

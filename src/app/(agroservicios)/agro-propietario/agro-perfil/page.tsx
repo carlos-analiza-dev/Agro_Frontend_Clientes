@@ -266,7 +266,6 @@ const AgroPerfilPage = () => {
 
   return (
     <div className="container mx-auto p-4 pb-20">
-      {/* ID para el encabezado de la página */}
       <div
         id="id-agro-perfil-header"
         className="flex items-center justify-between mb-6"
@@ -317,7 +316,6 @@ const AgroPerfilPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* ID para la sección del logo */}
             <div id="id-agro-perfil-logo-section" className="space-y-4">
               <Label>Logo del Agroservicio</Label>
               <div className="flex items-center gap-6">
@@ -342,21 +340,24 @@ const AgroPerfilPage = () => {
                   {info_agro?.id ? (
                     <div className="space-y-2">
                       <div className="flex flex-wrap gap-2">
-                        <Label
-                          htmlFor="logo-upload"
-                          className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 rounded-md transition-colors"
-                        >
-                          <Upload className="h-4 w-4" />
-                          <span>Seleccionar Imagen</span>
-                          <Input
-                            id="logo-upload"
-                            type="file"
-                            accept="image/png"
-                            className="hidden"
-                            onChange={handleLogoChange}
-                            disabled={isUploadingLogo}
-                          />
-                        </Label>
+                        {!isEditing && (
+                          <Label
+                            htmlFor="logo-upload"
+                            className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 rounded-md transition-colors"
+                          >
+                            <Upload className="h-4 w-4" />
+                            <span>Seleccionar Imagen</span>
+                            <Input
+                              id="logo-upload"
+                              type="file"
+                              accept="image/png"
+                              className="hidden"
+                              onChange={handleLogoChange}
+                              disabled={isUploadingLogo}
+                            />
+                          </Label>
+                        )}
+
                         {logoFile && (
                           <Button
                             type="button"
@@ -397,8 +398,9 @@ const AgroPerfilPage = () => {
                             <span>
                               <strong>Logo requerido:</strong> Para acceder a
                               los demás módulos del sistema, es necesario que
-                              subas un logo para tu agroservicio. Selecciona una
-                              imagen y haz clic en "Subir Logo".
+                              subas imagen tu logo sin fondo para tu
+                              agroservicio. Selecciona una imagen y haz clic en
+                              "Subir Logo".
                             </span>
                           </p>
                         </div>
@@ -416,7 +418,6 @@ const AgroPerfilPage = () => {
               </div>
             </div>
 
-            {/* ID para el contenedor de campos del formulario */}
             <div
               id="id-agro-perfil-fields"
               className="grid grid-cols-1 md:grid-cols-2 gap-6"
@@ -537,7 +538,6 @@ const AgroPerfilPage = () => {
               </div>
             </div>
 
-            {/* ID para el campo de dirección */}
             <div id="id-agro-perfil-field-direccion" className="space-y-2">
               <Label htmlFor="direccion">Dirección</Label>
               {isEditing ? (
@@ -568,7 +568,6 @@ const AgroPerfilPage = () => {
               )}
             </div>
 
-            {/* ID para la sección de fechas */}
             {!isEditing && info_agro && info_agro.id && (
               <div
                 id="id-agro-perfil-dates"
@@ -593,7 +592,6 @@ const AgroPerfilPage = () => {
               </div>
             )}
 
-            {/* ID para la sección del propietario */}
             {!isEditing && info_agro && info_agro.propietario && (
               <div
                 id="id-agro-perfil-propietario"

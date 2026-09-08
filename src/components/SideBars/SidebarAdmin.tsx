@@ -1,6 +1,4 @@
 "use client";
-
-import { navItems } from "@/helpers/data/sidebar/sidebarData";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LogOut, Sparkles, Menu } from "lucide-react";
@@ -22,6 +20,8 @@ import { TOUR_PAGES_CLIENTES_ORDER } from "@/helpers/data/guia/tourGuide";
 import { toast } from "react-toastify";
 import TourGuide from "../agroservicio/guia/TourGuide";
 import ButtonGuiaSystem from "../generics/ButtonGuiaSystem";
+import Image from "next/image";
+import { useNavItemsWithEspecies } from "@/hooks/fincas/useNavItemsWithEspecies";
 
 interface Props {
   handleLogout: () => Promise<void>;
@@ -122,12 +122,14 @@ const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
   const esPropietario = cliente?.rol === TipoCliente.PROPIETARIO;
 
   const { data: permisosPaquete } = useGetPermisosByClientePaquete(paqueteId);
-
   const {
     data: permisosCliente,
-    isLoading,
-    isError,
+    isLoading: isLoadingPermisos,
+    isError: isErrorPermisos,
   } = useGetPermisosByCliente(clienteId);
+
+  const { navItems, isLoading: isLoadingEspecies } = useNavItemsWithEspecies();
+
   const permisos = esPropietario ? permisosPaquete : permisosCliente;
 
   const permisosVer =
@@ -135,28 +137,30 @@ const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
       ?.filter((permiso) => permiso.ver === true)
       ?.map((permiso) => permiso.permiso.url) || [];
 
-  const filteredNavItems = navItems
-    .map((section) => {
-      const filteredItems = section.items.filter((item) => {
-        if (item.href === "/panel") return true;
+  const filteredNavItems = useMemo(() => {
+    return navItems
+      .map((section) => {
+        const filteredItems = section.items.filter((item) => {
+          if (item.href === "/panel") return true;
 
-        if (item.href.startsWith("/animales/especies")) {
-          return permisosVer.includes("/animales");
-        }
+          if (item.href.startsWith("/animales/especies")) {
+            return permisosVer.includes("/animales");
+          }
 
-        if (item.href.startsWith("/sanidad-animal/especies")) {
-          return permisosVer.includes("/sanidad-animal");
-        }
+          if (item.href.startsWith("/sanidad-animal/especies")) {
+            return permisosVer.includes("/sanidad-animal");
+          }
 
-        return permisosVer.includes(item.href);
-      });
+          return permisosVer.includes(item.href);
+        });
 
-      return {
-        ...section,
-        items: filteredItems,
-      };
-    })
-    .filter((section) => section.items.length > 0);
+        return {
+          ...section,
+          items: filteredItems,
+        };
+      })
+      .filter((section) => section.items.length > 0);
+  }, [navItems, permisosVer]);
 
   const isItemActive = (href: string) => pathname === href;
 
@@ -198,7 +202,7 @@ const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
     toast.success("¡Has completado el tour completo!");
   };
 
-  if (isLoading || isError) {
+  if (isLoadingPermisos || isErrorPermisos || isLoadingEspecies) {
     return <SidebarSkeleton />;
   }
 
@@ -247,13 +251,24 @@ const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
           )}
 
           <div className="mt-auto pt-4 border-t border-gray-100/50">
-            <div className="space-y-2 rounded-xl border border-gray-100/50 bg-white/40 p-2 backdrop-blur-sm">
+            <div className="space-y-4 rounded-xl border border-gray-100/50 bg-white/40 p-2 backdrop-blur-sm">
               <ButtonGuiaSystem
                 setTourOpen={setTourOpen}
                 currentTourSteps={currentTourSteps}
               />
 
               <LogoutButton onClick={handleLogout} />
+            </div>
+
+            <div className="flex justify-center mb-4">
+              <Image
+                unoptimized
+                src="/images/interactive_logo.png"
+                alt="Logo"
+                width={120}
+                height={40}
+                className="object-contain"
+              />
             </div>
           </div>
         </div>

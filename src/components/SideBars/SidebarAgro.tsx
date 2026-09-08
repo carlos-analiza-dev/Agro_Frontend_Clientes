@@ -25,6 +25,7 @@ import { useAuthEmpleadoStore } from "@/providers/store/useAuthEmpleados";
 import useGetPermisosByRol from "@/hooks/permisos/useGetPermisosByRol";
 import { FullScreenLoader } from "../generics/FullScreenLoader";
 import useGetLogoAgro from "@/hooks/agroservicios/logo/useGetLogoAgro";
+import Image from "next/image";
 
 interface SidebarAgroProps {
   handleLogout: () => Promise<void>;
@@ -265,15 +266,27 @@ const SidebarAgro = ({ handleLogout, isPropietario }: SidebarAgroProps) => {
                 <Button
                   onClick={handleLogout}
                   variant="ghost"
-                  className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+                  className="w-full justify-center text-red-600 hover:text-red-700 hover:bg-red-50"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
                   Cerrar sesión
                 </Button>
               </TooltipTrigger>
+
               <TooltipContent side="right">Cerrar sesión</TooltipContent>
             </Tooltip>
           </TooltipProvider>
+
+          <div className="flex justify-center mb-4">
+            <Image
+              unoptimized
+              src="/images/interactive_logo.png"
+              alt="Logo"
+              width={120}
+              height={40}
+              className="object-contain"
+            />
+          </div>
         </div>
       </div>
     </aside>

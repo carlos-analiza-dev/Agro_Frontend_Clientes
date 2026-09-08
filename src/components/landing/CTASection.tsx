@@ -52,7 +52,7 @@ export default function CTASection() {
             </div>
             <div className="flex items-center justify-center gap-2">
               <Mail className="w-5 h-5" />
-              <span>info@elsembrador.com</span>
+              <span>elsembrador@interactivecore.app</span>
             </div>
           </div>
         </motion.div>

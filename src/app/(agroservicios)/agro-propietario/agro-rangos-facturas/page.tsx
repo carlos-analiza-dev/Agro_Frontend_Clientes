@@ -206,14 +206,6 @@ const AgroRangosFacturaPage = () => {
                   ? "Intenta con otros términos de búsqueda"
                   : "Comienza agregando tu primer rango de facturación."}
               </p>
-              {!searchTerm && (
-                <ButtonAdd
-                  title="Agregar Rango"
-                  Icon={FileText}
-                  action={() => {}}
-                  className="mt-4 bg-green-600 hover:bg-green-700"
-                />
-              )}
             </div>
           )}
         </CardContent>

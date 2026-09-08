@@ -183,7 +183,12 @@ const TableResumenSanidad = ({
 
                       <div>
                         <p className="text-muted-foreground">Próxima</p>
-                        <p>{formatDate(item.proxima_fecha_evento)}</p>
+                        <p>
+                          {" "}
+                          {item.proxima_fecha_evento
+                            ? formatDate(item.proxima_fecha_evento)
+                            : "N/D"}
+                        </p>
                       </div>
 
                       <div>
@@ -276,7 +281,9 @@ const TableResumenSanidad = ({
                       <TableCell>{formatDate(item.fecha_evento)}</TableCell>
 
                       <TableCell>
-                        {formatDate(item.proxima_fecha_evento)}
+                        {item.proxima_fecha_evento
+                          ? formatDate(item.proxima_fecha_evento)
+                          : "N/D"}
                       </TableCell>
 
                       <TableCell>{item.responsable || "N/A"}</TableCell>

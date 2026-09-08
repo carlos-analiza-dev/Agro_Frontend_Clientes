@@ -1,7 +1,9 @@
+import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
+
 export interface ResponsePaquetesInterface {
   id: string;
   nombre: string;
-  tipo: string;
+  tipo: TipoPaquete;
   maxFincas: number;
   maxAnimales: number;
   maxTrabajadores: number;

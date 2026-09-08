@@ -374,8 +374,8 @@ const SanidadByEspeciePage = () => {
     if (eventosConProxima.length > 0) {
       const proximo = eventosConProxima.sort(
         (a, b) =>
-          new Date(a.proxima_fecha_evento).getTime() -
-          new Date(b.proxima_fecha_evento).getTime(),
+          new Date(a.proxima_fecha_evento!).getTime() -
+          new Date(b.proxima_fecha_evento!).getTime(),
       )[0];
 
       proximoEvento = proximo.tipo_servicio || "Sin programar";

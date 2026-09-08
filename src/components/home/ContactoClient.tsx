@@ -130,8 +130,8 @@ export default function ContactoClient() {
     {
       icon: Mail,
       title: "Email",
-      details: "info@elsembrador.com",
-      link: "mailto:info@elsembrador.com",
+      details: "elsembrador@interactivecore.app",
+      link: "mailto:elsembrador@interactivecore.app",
       color: "text-purple-600",
       bgColor: "bg-purple-100",
     },

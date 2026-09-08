@@ -16,7 +16,7 @@ export interface Sanidad {
   tipo_servicio: string;
   responsable: string;
   fecha_evento: string;
-  proxima_fecha_evento: string;
+  proxima_fecha_evento?: string | null;
   observaciones: string;
   costo_base: string;
   precio_referencia: string;

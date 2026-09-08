@@ -159,6 +159,7 @@ export default function FincaDetailsPage() {
         router.push("/animales/crear-animal");
         reset();
         queryClient.invalidateQueries({ queryKey: ["fincas-propietario"] });
+        queryClient.invalidateQueries({ queryKey: ["especies-fincas"] });
         queryClient.invalidateQueries({ queryKey: ["finca", fincaId] });
       }
     } catch (error) {

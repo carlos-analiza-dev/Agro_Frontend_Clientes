@@ -33,6 +33,7 @@ import useGetCategorias from "@/hooks/categorias/useGetCategorias";
 import { Skeleton } from "../ui/skeleton";
 import useGetSearchMarket from "@/hooks/market-animales/useGetSearchMarket";
 import SearchMarket from "../marketplace/SearchMarket";
+import Image from "next/image";
 
 interface Props {
   handleLogout: () => Promise<void>;
@@ -284,42 +285,29 @@ const SidebarMarket = ({ handleLogout }: Props) => {
           {cliente && (
             <>
               <Separator className="my-4" />
+
               <Button
                 variant="ghost"
                 onClick={handleLogout}
-                className="w-full justify-start px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700"
+                className="w-full justify-center px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700"
               >
                 <LogOut className="mr-3 h-4 w-4" />
                 Cerrar Sesión
               </Button>
+
+              <div className="flex justify-center mb-4">
+                <Image
+                  unoptimized
+                  src="/images/interactive_logo.png"
+                  alt="Logo"
+                  width={120}
+                  height={40}
+                  className="object-contain"
+                />
+              </div>
             </>
           )}
         </ScrollArea>
-
-        <div className="border-t border-gray-200 p-4">
-          <div className="space-y-2">
-            <p className="text-xs text-gray-500 text-center">
-              © 2024 AgroMarket
-            </p>
-            <div className="flex justify-center gap-2">
-              {/*    <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Facebook className="h-4 w-4" />
-              </Button> */}
-              <Link
-                href={
-                  "https://www.instagram.com/elsembrador.app?igsh=MW9zdW1mbzloN2piNg=="
-                }
-                target="_blank"
-                className="h-8 w-8"
-              >
-                <Instagram className="h-4 w-4" />
-              </Link>
-              {/*   <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Twitter className="h-4 w-4" />
-              </Button> */}
-            </div>
-          </div>
-        </div>
       </div>
     </aside>
   );

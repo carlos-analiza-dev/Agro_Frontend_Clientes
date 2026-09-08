@@ -36,7 +36,7 @@ export default function CoverageSection() {
             Presentes en toda Centroamérica
           </h2>
           <p className="text-xl text-gray-600">
-            Llevamos tecnología agropecuaria a productores de los 7 países
+            Llevamos tecnología agropecuaria a productores de los 4 países
             centroamericanos
           </p>
         </motion.div>

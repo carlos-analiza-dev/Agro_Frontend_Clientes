@@ -4,12 +4,9 @@ import {
   Package,
   Users,
   Truck,
-  BriefcaseMedical,
   Warehouse,
-  DollarSign,
   FileText,
   UserCog,
-  Bell,
   Building2,
   House,
   ShoppingCart,
@@ -158,46 +155,6 @@ export const agroNavItems = [
       },
     ],
   },
-  {
-    category: "Ventas",
-    items: [
-      {
-        name: "Pedidos",
-        href: "/agro-pedidos",
-        icon: Package,
-      },
-    ],
-  },
-  {
-    category: "Servicios",
-    items: [
-      {
-        name: "Servicios Veterinarios",
-        href: "/agro-servicios-veterinarios",
-        icon: BriefcaseMedical,
-      },
-    ],
-  },
-  {
-    category: "Finanzas",
-    items: [
-      {
-        name: "Ingresos",
-        href: "/agro-ingresos",
-        icon: DollarSign,
-      },
-    ],
-  },
-  {
-    category: "Sistema",
-    items: [
-      {
-        name: "Notificaciones",
-        href: "/agro-notificaciones",
-        icon: Bell,
-      },
-    ],
-  },
 ];
 
 export const agroEmpleadoNavItems = [
@@ -309,51 +266,6 @@ export const agroEmpleadoNavItems = [
         name: "Descuentos",
         href: "/agro-empleados/agro-descuentos",
         icon: BadgePercent,
-      },
-    ],
-  },
-  {
-    category: "Ventas",
-    items: [
-      {
-        name: "Pedidos",
-        href: "/agro-pedidos",
-        icon: Package,
-      },
-      {
-        name: "Clientes",
-        href: "/agro-clientes",
-        icon: Users,
-      },
-    ],
-  },
-  {
-    category: "Servicios",
-    items: [
-      {
-        name: "Servicios Veterinarios",
-        href: "/agro-servicios-veterinarios",
-        icon: BriefcaseMedical,
-      },
-    ],
-  },
-  {
-    category: "Finanzas",
-    items: [
-      {
-        name: "Ingresos",
-        href: "/agro-ingresos",
-        icon: DollarSign,
-      },
-    ],
-  },
-  {
-    category: "Sistema",
-    items: [
-      {
-        name: "Notificaciones",
-        href: "/agro-notificaciones",
-        icon: Bell,
       },
     ],
   },

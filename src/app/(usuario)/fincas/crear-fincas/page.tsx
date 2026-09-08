@@ -150,6 +150,7 @@ export default function CrearFincaPage() {
 
       const response = await CreateFinca(fincaData);
       queryClient.invalidateQueries({ queryKey: ["fincas-propietario"] });
+      queryClient.invalidateQueries({ queryKey: ["especies-fincas"] });
 
       if (response.status === 201) {
         toast.success("Finca creada correctamente");
