@@ -10,9 +10,7 @@ import {
   Menu,
   X,
   UserPlus,
-  Search,
   LogIn,
-  Sparkles,
   Leaf,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
@@ -25,6 +23,7 @@ import { Pais } from "@/interfaces/auth/cliente";
 import { toast } from "react-toastify";
 import SheetContentClientOut from "../generics/SheetContentClientOut";
 import { cn } from "@/lib/utils";
+import { navItemsPublic } from "@/helpers/data/navbars/publicItemsNavBars";
 
 const BadgeCounter = ({ count }: { count: number }) => {
   if (count === 0) return null;
@@ -484,11 +483,6 @@ const PublicNavBar = () => {
     setIsCountryModalOpen(false);
   };
 
-  const navItems = [
-    { label: "Productos", path: "/productos-agroservicios", icon: Search },
-    { label: "Servicios", path: "/servicios-sembrador", icon: Sparkles },
-  ];
-
   return (
     <>
       <header
@@ -534,7 +528,7 @@ const PublicNavBar = () => {
             </div>
 
             <nav className="hidden lg:flex items-center gap-1 bg-white/40 backdrop-blur-sm rounded-full px-2 py-1 border border-white/40 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-              {navItems.map(({ label, path, icon: Icon }) => {
+              {navItemsPublic.map(({ label, path, icon: Icon }) => {
                 const isActive = pathname === path;
                 return (
                   <button

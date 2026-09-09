@@ -1,13 +1,10 @@
 "use client";
-
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Grid3x3, RefreshCw, ShoppingCart, Sparkles } from "lucide-react";
 import { useAuthStore } from "@/providers/store/useAuthStore";
-import { MessageError } from "@/components/generics/MessageError";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
-import SkeletonCard from "@/components/generics/SkeletonCard";
 import ProductCard from "@/components/products/ProductCard";
 import useGetProductosPublicosDisponibles from "@/hooks/productos/useGetProductosPublicosDisponibles";
 import useGetCategorias from "@/hooks/categorias/useGetCategorias";
@@ -47,9 +44,7 @@ const ProductosClient = () => {
     isFetchingNextPage,
   } = useGetProductosPublicosDisponibles(10, categoriaId, paisId);
 
-  const { data: categorias, isLoading: isLoadingCategorias } = useGetCategorias(
-    { is_market: false },
-  );
+  const { data: categorias } = useGetCategorias({ is_market: false });
 
   const todosLosProductos = useMemo(() => {
     return productosData?.pages.flatMap((page) => page.productos) || [];

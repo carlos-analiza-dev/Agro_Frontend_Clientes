@@ -27,6 +27,9 @@ export interface PaginationInterface {
   proveedor?: string;
   producto?: string;
   tipo_categoria?: string;
+  raza?: string;
+  priceMax?: number;
+  priceMin?: number;
 
   estado?: EstadoPedido;
 

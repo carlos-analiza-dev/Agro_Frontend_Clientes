@@ -4,6 +4,9 @@ import SkeletonCard from "@/components/generics/SkeletonCard";
 import CardMarketAnimal from "@/components/marketplace/CardMarketAnimal";
 import EmptyStateMarketplace from "@/components/marketplace/EmptyStateMarketplace";
 import { RadioFilter } from "@/components/marketplace/RadioFilter";
+import { PriceRangeFilter } from "@/components/marketplace/PriceRangeFilter";
+import EspeciesFilter from "@/components/marketplace/EspeciesFilter";
+import RazasFilter from "@/components/marketplace/RazasFilter";
 import useUserLocation from "@/hooks/location/useUserLocation";
 import useGetAnimalesMarket from "@/hooks/market-animales/useGetAnimalesMarket";
 import { TipoPublicacion } from "@/interfaces/enums/market/tipo_publicacion.enum";
@@ -13,6 +16,12 @@ import { useCallback, useRef } from "react";
 const AnimalesPage = () => {
   const { location } = useUserLocation();
   const [radio, setRadio] = useState<number>(100);
+  const [priceMin, setPriceMin] = useState<number | undefined>(undefined);
+  const [priceMax, setPriceMax] = useState<number | undefined>(undefined);
+  const [especieNombre, setEspecieNombre] = useState<string | undefined>(
+    undefined,
+  );
+  const [razaId, setRazaId] = useState<string | undefined>(undefined);
 
   const {
     data: animales_market,
@@ -30,6 +39,10 @@ const AnimalesPage = () => {
           longitud: location.longitud,
           radio: radio,
           tipo_publicacion: TipoPublicacion.ANIMALES,
+          priceMax,
+          priceMin,
+          especie: especieNombre,
+          raza: razaId,
         }
       : undefined,
   );
@@ -41,6 +54,23 @@ const AnimalesPage = () => {
 
   const handleRadiusChange = (newRadius: number) => {
     setRadio(newRadius);
+  };
+
+  const handlePriceChange = (
+    min: number | undefined,
+    max: number | undefined,
+  ) => {
+    setPriceMin(min);
+    setPriceMax(max);
+  };
+
+  const handleEspecieChange = (especieNombre: string | undefined) => {
+    setEspecieNombre(especieNombre);
+    setRazaId(undefined);
+  };
+
+  const handleRazaChange = (razaId: string | undefined) => {
+    setRazaId(razaId);
   };
 
   const animales =
@@ -80,10 +110,26 @@ const AnimalesPage = () => {
             Animales destacados
           </h1>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <RadioFilter
               onRadiusChange={handleRadiusChange}
               currentRadius={radio}
+            />
+            <EspeciesFilter
+              onEspecieChange={handleEspecieChange}
+              initialEspecieNombre={especieNombre}
+            />
+            <RazasFilter
+              especieNombre={especieNombre}
+              onRazaChange={handleRazaChange}
+              initialRazaId={razaId}
+            />
+            <PriceRangeFilter
+              onPriceChange={handlePriceChange}
+              minPrice={0}
+              maxPrice={5000000}
+              initialMin={priceMin}
+              initialMax={priceMax}
             />
             <div className="flex items-center gap-2 text-gray-600">
               <MapPin size={18} className="shrink-0" />
@@ -110,10 +156,26 @@ const AnimalesPage = () => {
           Animales destacados
         </h1>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <RadioFilter
             onRadiusChange={handleRadiusChange}
             currentRadius={radio}
+          />
+          <EspeciesFilter
+            onEspecieChange={handleEspecieChange}
+            initialEspecieNombre={especieNombre}
+          />
+          <RazasFilter
+            especieNombre={especieNombre}
+            onRazaChange={handleRazaChange}
+            initialRazaId={razaId}
+          />
+          <PriceRangeFilter
+            onPriceChange={handlePriceChange}
+            minPrice={0}
+            maxPrice={5000000}
+            initialMin={priceMin}
+            initialMax={priceMax}
           />
           <div className="flex items-center gap-2 text-gray-600">
             <MapPin size={18} className="shrink-0" />

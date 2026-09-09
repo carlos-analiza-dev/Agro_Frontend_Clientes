@@ -5,6 +5,7 @@ import SkeletonCard from "@/components/generics/SkeletonCard";
 import CardMarketAnimal from "@/components/marketplace/CardMarketAnimal";
 import EmptyStateMarketplace from "@/components/marketplace/EmptyStateMarketplace";
 import { RadioFilter } from "@/components/marketplace/RadioFilter";
+import { PriceRangeFilter } from "@/components/marketplace/PriceRangeFilter";
 import useUserLocation from "@/hooks/location/useUserLocation";
 import useGetAnimalesMarket from "@/hooks/market-animales/useGetAnimalesMarket";
 import { MapPin } from "lucide-react";
@@ -13,6 +14,8 @@ import { useCallback, useRef } from "react";
 const MarketPlacePage = () => {
   const { location } = useUserLocation();
   const [radio, setRadio] = useState<number>(100);
+  const [priceMin, setPriceMin] = useState<number | undefined>(undefined);
+  const [priceMax, setPriceMax] = useState<number | undefined>(undefined);
 
   const {
     data: animales_market,
@@ -29,6 +32,8 @@ const MarketPlacePage = () => {
           latitud: location.latitud,
           longitud: location.longitud,
           radio: radio,
+          priceMax,
+          priceMin,
         }
       : undefined,
   );
@@ -40,6 +45,14 @@ const MarketPlacePage = () => {
 
   const handleRadiusChange = (newRadius: number) => {
     setRadio(newRadius);
+  };
+
+  const handlePriceChange = (
+    min: number | undefined,
+    max: number | undefined,
+  ) => {
+    setPriceMin(min);
+    setPriceMax(max);
   };
 
   const animales =
@@ -79,10 +92,17 @@ const MarketPlacePage = () => {
             Destacados de hoy
           </h1>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <RadioFilter
               onRadiusChange={handleRadiusChange}
               currentRadius={radio}
+            />
+            <PriceRangeFilter
+              onPriceChange={handlePriceChange}
+              minPrice={0}
+              maxPrice={5000000}
+              initialMin={priceMin}
+              initialMax={priceMax}
             />
             <div className="flex items-center gap-2 text-gray-600">
               <MapPin size={18} className="shrink-0" />
@@ -109,10 +129,17 @@ const MarketPlacePage = () => {
           Destacados de hoy
         </h1>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <RadioFilter
             onRadiusChange={handleRadiusChange}
             currentRadius={radio}
+          />
+          <PriceRangeFilter
+            onPriceChange={handlePriceChange}
+            minPrice={0}
+            maxPrice={5000000}
+            initialMin={priceMin}
+            initialMax={priceMax}
           />
           <div className="flex items-center gap-2 text-gray-600">
             <MapPin size={18} className="shrink-0" />
