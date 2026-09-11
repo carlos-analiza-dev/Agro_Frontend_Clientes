@@ -270,7 +270,7 @@ const ProductosClient = () => {
               <div className="text-center mt-8">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 backdrop-blur-sm border border-gray-200/50">
                   <span className="text-sm text-gray-400">
-                    🎉 Has visto todos los productos disponibles
+                    Has visto todos los productos disponibles
                   </span>
                 </div>
               </div>

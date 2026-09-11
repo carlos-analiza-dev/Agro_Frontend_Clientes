@@ -58,7 +58,7 @@ const MiPlanPage = () => {
                 los beneficios.
               </CardDescription>
             </CardHeader>
-            <CardFooter className="flex justify-center">
+            {/*  <CardFooter className="flex justify-center">
               <Button
                 onClick={() => router.push("/comprar-plan")}
                 className="bg-gradient-to-r from-blue-600 to-purple-600"
@@ -66,7 +66,7 @@ const MiPlanPage = () => {
                 <Gift className="mr-2 h-4 w-4" />
                 Ver Planes Disponibles
               </Button>
-            </CardFooter>
+            </CardFooter> */}
           </Card>
         </div>
       </div>
@@ -129,13 +129,13 @@ const MiPlanPage = () => {
             <AlertDescription>
               Tu plan ha vencido. Renueva para seguir usando el sistema y no
               perder beneficios.
-              <Button
+              {/* <Button
                 variant="link"
                 className="text-red-700 font-semibold px-0 ml-2"
                 onClick={() => router.push("/comprar-plan")}
               >
                 Renovar ahora
-              </Button>
+              </Button> */}
             </AlertDescription>
           </Alert>
         )}
@@ -147,13 +147,13 @@ const MiPlanPage = () => {
             <AlertDescription className="text-yellow-700">
               Tu plan vencerá en {diasRestantes} días. Renueva pronto para no
               perder acceso a las funcionalidades.
-              <Button
+              {/*  <Button
                 variant="link"
                 className="text-yellow-700 font-semibold px-0 ml-2"
                 onClick={() => router.push("/comprar-plan")}
               >
                 Renovar ahora
-              </Button>
+              </Button> */}
             </AlertDescription>
           </Alert>
         )}
@@ -254,7 +254,7 @@ const MiPlanPage = () => {
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="flex gap-3">
+              {/* <CardFooter className="flex gap-3">
                 {!estaVencido && plan.tipo !== "FREE" && (
                   <Button
                     variant="outline"
@@ -283,7 +283,7 @@ const MiPlanPage = () => {
                     Mejorar Plan
                   </Button>
                 )}
-              </CardFooter>
+              </CardFooter> */}
             </Card>
           </div>
 

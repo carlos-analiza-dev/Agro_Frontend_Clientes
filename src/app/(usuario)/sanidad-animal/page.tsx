@@ -493,21 +493,34 @@ const SanidadAnimalPage = () => {
   );
 
   return (
-    <div className="container mx-auto px-3 sm:px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
-        <div className="w-full sm:w-auto">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2 capitalize">
+    <div
+      id="id-sanidad-container"
+      className="container mx-auto px-3 sm:px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6"
+    >
+      <div
+        id="id-sanidad-header"
+        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4"
+      >
+        <div id="id-sanidad-header-info" className="w-full sm:w-auto">
+          <h1
+            id="id-sanidad-title"
+            className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2 capitalize"
+          >
             <ShieldPlus className="h-6 w-6 sm:h-7 sm:w-7 text-green-600 flex-shrink-0" />
             <span className="truncate">
               Sanidad {especieSeleccionada ? `- ${especieSeleccionada}` : ""}
             </span>
           </h1>
-          <p className="text-xs sm:text-sm md:text-base text-muted-foreground mt-0.5 sm:mt-1">
+          <p
+            id="id-sanidad-subtitle"
+            className="text-xs sm:text-sm md:text-base text-muted-foreground mt-0.5 sm:mt-1"
+          >
             Registra y monitorea la sanidad de tus animales por especie
           </p>
         </div>
         {eliminados && eliminados.total > 0 && (
           <Button
+            id="id-sanidad-btn-ver-eventos"
             onClick={() => setOpenViewsEliminados(true)}
             variant="outline"
             size={isMobile ? "sm" : "default"}
@@ -519,9 +532,15 @@ const SanidadAnimalPage = () => {
         )}
       </div>
 
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-gray-50 rounded-lg">
-          <label className="text-xs sm:text-sm font-medium">
+      <div id="id-sanidad-filtros-container" className="flex flex-col gap-3">
+        <div
+          id="id-sanidad-filtro-especie"
+          className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-gray-50 rounded-lg"
+        >
+          <label
+            id="id-sanidad-filtro-especie-label"
+            className="text-xs sm:text-sm font-medium"
+          >
             Filtrar por especie:
           </label>
           <Select
@@ -531,7 +550,10 @@ const SanidadAnimalPage = () => {
               setCurrentPage(1);
             }}
           >
-            <SelectTrigger className="w-full sm:w-[200px]">
+            <SelectTrigger
+              id="id-sanidad-filtro-especie-select"
+              className="w-full sm:w-[200px]"
+            >
               <SelectValue placeholder="Seleccionar especie" />
             </SelectTrigger>
             <SelectContent>
@@ -548,55 +570,70 @@ const SanidadAnimalPage = () => {
           </span>
         </div>
 
-        <SearchAnimales
-          animalDropdownRef={animalDropdownRef}
-          selectedAnimal={selectedAnimal}
-          clearAnimalSelection={clearAnimalSelection}
-          animalSearchTerm={animalSearchTerm}
-          setAnimalSearchTerm={setAnimalSearchTerm}
-          setIsAnimalDropdownOpen={setIsAnimalDropdownOpen}
-          isAnimalDropdownOpen={isAnimalDropdownOpen}
-          animalesFiltrados={animalesFiltrados}
-          cargando_animales={cargando_animales}
-          handleSelectAnimal={handleSelectAnimal}
-        />
-      </div>
-
-      <div className="mt-3 sm:mt-5">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-          <CardSanidad
-            title="Estado sanitario"
-            description={estadisticas.estadoSanitario}
-            parrafo={estadisticas.parrafoEstado}
-            Icon={getEstadoIcon()}
-          />
-          <CardSanidad
-            title="Último evento"
-            description={estadisticas.ultimoEvento}
-            parrafo={estadisticas.parrafoUltimo}
-            Icon={
-              estadisticas.ultimoEvento === "Vacunacion"
-                ? Syringe
-                : estadisticas.ultimoEvento === "Desparasitacion"
-                  ? Pill
-                  : FileText
-            }
-          />
-          <CardSanidad
-            title="Próximo evento"
-            description={estadisticas.proximoEvento}
-            parrafo={estadisticas.parrafoProximo}
-            Icon={Calendar}
-          />
-          <CardSanidad
-            title="Costo sanitario mes"
-            description={estadisticas.costoSanitarioStr}
-            parrafo={`Promedio: ${moneda}${estadisticas.promedioPorEvento.toFixed(2)} por evento`}
-            Icon={DollarSign}
+        <div id="id-sanidad-buscador-animales">
+          <SearchAnimales
+            animalDropdownRef={animalDropdownRef}
+            selectedAnimal={selectedAnimal}
+            clearAnimalSelection={clearAnimalSelection}
+            animalSearchTerm={animalSearchTerm}
+            setAnimalSearchTerm={setAnimalSearchTerm}
+            setIsAnimalDropdownOpen={setIsAnimalDropdownOpen}
+            isAnimalDropdownOpen={isAnimalDropdownOpen}
+            animalesFiltrados={animalesFiltrados}
+            cargando_animales={cargando_animales}
+            handleSelectAnimal={handleSelectAnimal}
           />
         </div>
+      </div>
 
-        <ProximosEventosAlerta eventos={sanidadData} />
+      <div id="id-sanidad-estadisticas-container" className="mt-3 sm:mt-5">
+        <div
+          id="id-sanidad-cards-grid"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3"
+        >
+          <div id="id-sanidad-card-estado-sanitario">
+            <CardSanidad
+              title="Estado sanitario"
+              description={estadisticas.estadoSanitario}
+              parrafo={estadisticas.parrafoEstado}
+              Icon={getEstadoIcon()}
+            />
+          </div>
+          <div id="id-sanidad-card-ultimo-evento">
+            <CardSanidad
+              title="Último evento"
+              description={estadisticas.ultimoEvento}
+              parrafo={estadisticas.parrafoUltimo}
+              Icon={
+                estadisticas.ultimoEvento === "Vacunacion"
+                  ? Syringe
+                  : estadisticas.ultimoEvento === "Desparasitacion"
+                    ? Pill
+                    : FileText
+              }
+            />
+          </div>
+          <div id="id-sanidad-card-proximo-evento">
+            <CardSanidad
+              title="Próximo evento"
+              description={estadisticas.proximoEvento}
+              parrafo={estadisticas.parrafoProximo}
+              Icon={Calendar}
+            />
+          </div>
+          <div id="id-sanidad-card-costo-mes">
+            <CardSanidad
+              title="Costo sanitario mes"
+              description={estadisticas.costoSanitarioStr}
+              parrafo={`Promedio: ${moneda}${estadisticas.promedioPorEvento.toFixed(2)} por evento`}
+              Icon={DollarSign}
+            />
+          </div>
+        </div>
+
+        <div>
+          <ProximosEventosAlerta eventos={sanidadData} />
+        </div>
 
         <div className="mt-2 text-xs sm:text-sm text-muted-foreground">
           {sanidadData.length > 0 ? (
@@ -609,20 +646,41 @@ const SanidadAnimalPage = () => {
         </div>
       </div>
 
-      <div className="mt-4 sm:mt-5 grid grid-col-1 lg:grid-col-3 gap-2">
-        <Tabs defaultValue="resumen" className="w-full">
-          <TabsList className="w-full grid grid-cols-2">
-            <TabsTrigger className="text-xs sm:text-sm" value="resumen">
+      <div
+        id="id-sanidad-tabs-container"
+        className="mt-4 sm:mt-5 grid grid-col-1 lg:grid-col-3 gap-2"
+      >
+        <Tabs defaultValue="resumen" className="w-full" id="id-sanidad-tabs">
+          <TabsList
+            id="id-sanidad-tabs-list"
+            className="w-full grid grid-cols-2"
+          >
+            <TabsTrigger
+              id="id-sanidad-tab-resumen"
+              className="text-xs sm:text-sm"
+              value="resumen"
+            >
               Resumen
             </TabsTrigger>
-            <TabsTrigger className="text-xs sm:text-sm" value="costos">
+            <TabsTrigger
+              id="id-sanidad-tab-costos"
+              className="text-xs sm:text-sm"
+              value="costos"
+            >
               Costos Mensuales
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="resumen" className="mt-3 sm:mt-4">
-            <Card>
-              <CardHeader className="p-3 sm:p-6">
+          <TabsContent
+            id="id-sanidad-tab-content-resumen"
+            value="resumen"
+            className="mt-3 sm:mt-4"
+          >
+            <Card id="id-sanidad-card-resumen">
+              <CardHeader
+                id="id-sanidad-card-resumen-header"
+                className="p-3 sm:p-6"
+              >
                 <CardTitle className="text-base sm:text-lg">
                   Resumen de Sanidad
                 </CardTitle>
@@ -630,12 +688,19 @@ const SanidadAnimalPage = () => {
                   Lista completa de eventos sanitarios registrados
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
-                <div className="flex flex-col gap-3 mb-4">
+              <CardContent
+                id="id-sanidad-card-resumen-content"
+                className="p-3 sm:p-6 pt-0 sm:pt-0"
+              >
+                <div
+                  id="id-sanidad-resumen-buscador-container"
+                  className="flex flex-col gap-3 mb-4"
+                >
                   <div className="flex flex-col sm:flex-row gap-3">
                     <div className="relative flex-1">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
+                        id="id-sanidad-resumen-buscador"
                         placeholder={
                           isMobile
                             ? "Buscar..."
@@ -650,15 +715,24 @@ const SanidadAnimalPage = () => {
                 </div>
 
                 {isLoading ? (
-                  <div className="flex justify-center py-8">
+                  <div
+                    id="id-sanidad-resumen-loader"
+                    className="flex justify-center py-8"
+                  >
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                   </div>
                 ) : paginatedData.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
+                  <div
+                    id="id-sanidad-resumen-empty"
+                    className="text-center py-8 text-muted-foreground"
+                  >
                     No se encontraron registros con los filtros aplicados
                   </div>
                 ) : (
-                  <div className="rounded-md border overflow-x-auto">
+                  <div
+                    id="id-sanidad-resumen-tabla-container"
+                    className="rounded-md border overflow-x-auto"
+                  >
                     <TableResumenSanidad
                       paginatedData={paginatedData}
                       moneda={moneda}
@@ -676,11 +750,13 @@ const SanidadAnimalPage = () => {
                       {Math.min(currentPage * pageSize, filteredData.length)} de{" "}
                       {filteredData.length} registros
                     </p>
-                    <Paginacion
-                      currentPage={currentPage}
-                      totalPages={totalPages}
-                      onPageChange={setCurrentPage}
-                    />
+                    <div>
+                      <Paginacion
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                      />
+                    </div>
                   </div>
                 )}
               </CardContent>
@@ -689,7 +765,10 @@ const SanidadAnimalPage = () => {
 
           <TabsContent value="costos" className="mt-3 sm:mt-4">
             <Card>
-              <CardHeader className="p-3 sm:p-6">
+              <CardHeader
+                id="id-sanidad-card-costos-header"
+                className="p-3 sm:p-6"
+              >
                 <div>
                   <CardTitle className="text-base sm:text-lg">
                     Costos Mensuales por Servicio
@@ -702,11 +781,17 @@ const SanidadAnimalPage = () => {
               </CardHeader>
               <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
                 {cargando_costos ? (
-                  <div className="flex justify-center py-12">
+                  <div
+                    id="id-sanidad-costos-loader"
+                    className="flex justify-center py-12"
+                  >
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                   </div>
                 ) : datosCostosProcesados.totalGeneral === 0 ? (
-                  <div className="text-center py-12 text-muted-foreground">
+                  <div
+                    id="id-sanidad-costos-empty"
+                    className="text-center py-12 text-muted-foreground"
+                  >
                     <DollarSign className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
                     <p>No hay datos de costos disponibles</p>
                     <p className="text-sm mt-1">
@@ -716,55 +801,66 @@ const SanidadAnimalPage = () => {
                   </div>
                 ) : (
                   <div className="space-y-6 sm:space-y-8">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
-                      <StatCard
-                        title="Total gastado"
-                        value={formatCurrency(
-                          datosCostosProcesados.totalGeneral,
-                          moneda,
-                        )}
-                        icon={DollarSign}
-                        gradientFrom="from-green-50"
-                        gradientTo="to-green-100"
-                        iconColor="text-green-600"
-                        textColor="text-green-800"
-                      />
+                    <div
+                      id="id-sanidad-costos-stats-grid"
+                      className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4"
+                    >
+                      <div>
+                        <StatCard
+                          title="Total gastado"
+                          value={formatCurrency(
+                            datosCostosProcesados.totalGeneral,
+                            moneda,
+                          )}
+                          icon={DollarSign}
+                          gradientFrom="from-green-50"
+                          gradientTo="to-green-100"
+                          iconColor="text-green-600"
+                          textColor="text-green-800"
+                        />
+                      </div>
 
-                      <StatCard
-                        title="Promedio mensual"
-                        value={formatCurrency(
-                          datosCostosProcesados.promedioMensual,
-                          moneda,
-                        )}
-                        icon={Calendar}
-                        gradientFrom="from-blue-50"
-                        gradientTo="to-blue-100"
-                        iconColor="text-blue-600"
-                        textColor="text-blue-800"
-                      />
+                      <div>
+                        <StatCard
+                          title="Promedio mensual"
+                          value={formatCurrency(
+                            datosCostosProcesados.promedioMensual,
+                            moneda,
+                          )}
+                          icon={Calendar}
+                          gradientFrom="from-blue-50"
+                          gradientTo="to-blue-100"
+                          iconColor="text-blue-600"
+                          textColor="text-blue-800"
+                        />
+                      </div>
 
-                      <StatCard
-                        title="Servicios registrados"
-                        value={datosCostosProcesados.serviciosUnicos.length}
-                        icon={Layers}
-                        gradientFrom="from-purple-50"
-                        gradientTo="to-purple-100"
-                        iconColor="text-purple-600"
-                        textColor="text-purple-800"
-                      />
+                      <div>
+                        <StatCard
+                          title="Servicios registrados"
+                          value={datosCostosProcesados.serviciosUnicos.length}
+                          icon={Layers}
+                          gradientFrom="from-purple-50"
+                          gradientTo="to-purple-100"
+                          iconColor="text-purple-600"
+                          textColor="text-purple-800"
+                        />
+                      </div>
 
-                      <StatCard
-                        title="Mayor gasto"
-                        value={
-                          datosCostosProcesados.servicioConMayorCosto?.nombre ||
-                          "N/A"
-                        }
-                        icon={TrendingUp}
-                        gradientFrom="from-orange-50"
-                        gradientTo="to-orange-100"
-                        iconColor="text-orange-600"
-                        textColor="text-orange-800"
-                      />
+                      <div>
+                        <StatCard
+                          title="Mayor gasto"
+                          value={
+                            datosCostosProcesados.servicioConMayorCosto
+                              ?.nombre || "N/A"
+                          }
+                          icon={TrendingUp}
+                          gradientFrom="from-orange-50"
+                          gradientTo="to-orange-100"
+                          iconColor="text-orange-600"
+                          textColor="text-orange-800"
+                        />
+                      </div>
                     </div>
 
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
@@ -802,48 +898,56 @@ const SanidadAnimalPage = () => {
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                      <DistribucionServicio
-                        datosCostosProcesados={
-                          datosCostosProcesados.datosPorServicio
-                        }
-                        moneda={moneda}
-                      />
+                      <div>
+                        <DistribucionServicio
+                          datosCostosProcesados={
+                            datosCostosProcesados.datosPorServicio
+                          }
+                          moneda={moneda}
+                        />
+                      </div>
 
-                      <ResumenPorServicio
-                        datosPorServicio={
-                          datosCostosProcesados.datosPorServicio
-                        }
-                        moneda={moneda}
-                      />
+                      <div>
+                        <ResumenPorServicio
+                          datosPorServicio={
+                            datosCostosProcesados.datosPorServicio
+                          }
+                          moneda={moneda}
+                        />
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       {datosCostosProcesados.mesConMayorCosto && (
-                        <CardSanidad
-                          title="Mes de mayor gasto"
-                          description={
-                            datosCostosProcesados.mesConMayorCosto.nombreMes
-                          }
-                          parrafo={`${formatCurrency(
-                            datosCostosProcesados.mesConMayorCosto.total,
-                            moneda,
-                          )} (${datosCostosProcesados.mesConMayorCosto.cantidad} eventos)`}
-                          Icon={TrendingUp}
-                        />
+                        <div>
+                          <CardSanidad
+                            title="Mes de mayor gasto"
+                            description={
+                              datosCostosProcesados.mesConMayorCosto.nombreMes
+                            }
+                            parrafo={`${formatCurrency(
+                              datosCostosProcesados.mesConMayorCosto.total,
+                              moneda,
+                            )} (${datosCostosProcesados.mesConMayorCosto.cantidad} eventos)`}
+                            Icon={TrendingUp}
+                          />
+                        </div>
                       )}
 
                       {datosCostosProcesados.mesConMenorCosto && (
-                        <CardSanidad
-                          title="Mes de menor gasto"
-                          description={
-                            datosCostosProcesados.mesConMenorCosto.nombreMes
-                          }
-                          parrafo={`${formatCurrency(
-                            datosCostosProcesados.mesConMenorCosto.total,
-                            moneda,
-                          )} (${datosCostosProcesados.mesConMenorCosto.cantidad} eventos)`}
-                          Icon={TrendingDown}
-                        />
+                        <div>
+                          <CardSanidad
+                            title="Mes de menor gasto"
+                            description={
+                              datosCostosProcesados.mesConMenorCosto.nombreMes
+                            }
+                            parrafo={`${formatCurrency(
+                              datosCostosProcesados.mesConMenorCosto.total,
+                              moneda,
+                            )} (${datosCostosProcesados.mesConMenorCosto.cantidad} eventos)`}
+                            Icon={TrendingDown}
+                          />
+                        </div>
                       )}
                     </div>
                   </div>
@@ -862,35 +966,62 @@ const SanidadAnimalPage = () => {
         height="auto"
         size={isMobile ? "full" : "6xl"}
       >
-        <Tabs defaultValue="eliminados" className="w-full">
-          <TabsList className="w-full">
-            <TabsTrigger className="w-full" value="eliminados">
+        <Tabs
+          defaultValue="eliminados"
+          className="w-full"
+          id="id-sanidad-modal-tabs"
+        >
+          <TabsList id="id-sanidad-modal-tabs-list" className="w-full">
+            <TabsTrigger
+              id="id-sanidad-modal-tab-eliminados"
+              className="w-full"
+              value="eliminados"
+            >
               Eliminados ({eliminadosData.length})
             </TabsTrigger>
-            <TabsTrigger className="w-full" value="historial">
+            <TabsTrigger
+              id="id-sanidad-modal-tab-historial"
+              className="w-full"
+              value="historial"
+            >
               Historial de Cambios ({historialData.length})
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="eliminados" className="mt-4">
-            <div className="space-y-4">
+          <TabsContent
+            id="id-sanidad-modal-tab-content-eliminados"
+            value="eliminados"
+            className="mt-4"
+          >
+            <div id="id-sanidad-modal-eliminados-wrapper" className="space-y-4">
               {paginatedEliminados.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
+                <div
+                  id="id-sanidad-modal-eliminados-empty"
+                  className="text-center py-8 text-muted-foreground"
+                >
                   No hay eventos eliminados
                 </div>
               ) : (
                 <>
-                  <TableResumenSanidad
-                    paginatedData={paginatedEliminados}
-                    moneda={moneda}
-                    handleEditSanidad={handleEditSanidad}
-                    acciones={false}
-                    isMobile={isMobile}
-                  />
+                  <div id="id-sanidad-modal-eliminados-tabla-container">
+                    <TableResumenSanidad
+                      paginatedData={paginatedEliminados}
+                      moneda={moneda}
+                      handleEditSanidad={handleEditSanidad}
+                      acciones={false}
+                      isMobile={isMobile}
+                    />
+                  </div>
 
                   {eliminadosData.length > pageSizeModal && (
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
-                      <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
+                    <div
+                      id="id-sanidad-modal-eliminados-paginacion-container"
+                      className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4"
+                    >
+                      <p
+                        id="id-sanidad-modal-eliminados-paginacion-info"
+                        className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left"
+                      >
                         Mostrando{" "}
                         {(currentPageEliminados - 1) * pageSizeModal + 1} -{" "}
                         {Math.min(
@@ -899,11 +1030,13 @@ const SanidadAnimalPage = () => {
                         )}{" "}
                         de {eliminadosData.length} registros
                       </p>
-                      <Paginacion
-                        currentPage={currentPageEliminados}
-                        totalPages={totalPagesEliminados}
-                        onPageChange={setCurrentPageEliminados}
-                      />
+                      <div id="id-sanidad-modal-eliminados-paginacion">
+                        <Paginacion
+                          currentPage={currentPageEliminados}
+                          totalPages={totalPagesEliminados}
+                          onPageChange={setCurrentPageEliminados}
+                        />
+                      </div>
                     </div>
                   )}
                 </>
@@ -911,18 +1044,27 @@ const SanidadAnimalPage = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="historial" className="mt-4">
-            <div className="space-y-4">
+          <TabsContent
+            id="id-sanidad-modal-tab-content-historial"
+            value="historial"
+            className="mt-4"
+          >
+            <div id="id-sanidad-modal-historial-wrapper" className="space-y-4">
               {paginatedHistorial.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
+                <div
+                  id="id-sanidad-modal-historial-empty"
+                  className="text-center py-8 text-muted-foreground"
+                >
                   No hay cambios registrados en el historial
                 </div>
               ) : (
                 <>
-                  <TableHistorialCambios
-                    historial={paginatedHistorial}
-                    isMobile={isMobile}
-                  />
+                  <div id="id-sanidad-modal-historial-tabla-container">
+                    <TableHistorialCambios
+                      historial={paginatedHistorial}
+                      isMobile={isMobile}
+                    />
+                  </div>
 
                   {historialData.length > pageSizeModal && (
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
@@ -935,11 +1077,13 @@ const SanidadAnimalPage = () => {
                         )}{" "}
                         de {historialData.length} registros
                       </p>
-                      <Paginacion
-                        currentPage={currentPageHistorial}
-                        totalPages={totalPagesHistorial}
-                        onPageChange={setCurrentPageHistorial}
-                      />
+                      <div>
+                        <Paginacion
+                          currentPage={currentPageHistorial}
+                          totalPages={totalPagesHistorial}
+                          onPageChange={setCurrentPageHistorial}
+                        />
+                      </div>
                     </div>
                   )}
                 </>

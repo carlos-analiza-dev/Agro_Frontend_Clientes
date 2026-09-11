@@ -218,7 +218,12 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
     "/agro-propietario/agro-servicios",
 
     ...(esPropietario
-      ? ["/mi-plan", "/comprar-plan", "/historial-paquetes", "/codigo-cliente"]
+      ? [
+          "/mi-plan" /* "/comprar-plan" */,
+          ,
+          "/historial-paquetes",
+          "/codigo-cliente",
+        ]
       : []),
   ];
 
@@ -243,9 +248,9 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
     }
   };
 
-  const handleNavigateToPlanes = () => {
+  /* const handleNavigateToPlanes = () => {
     router.push("/comprar-plan");
-  };
+  }; */
 
   const handleNavigateToCodigo = () => {
     router.push("/codigo-cliente");
@@ -336,19 +341,19 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
               <Cog className="mr-1.5 h-3.5 w-3.5" />
               Codigo Cliente
             </PlanButton>
-            <PlanButton onClick={handleNavigateToPlanes} variant="default">
+            {/* <PlanButton onClick={handleNavigateToPlanes} variant="default">
               <Sparkles className="mr-1.5 h-3.5 w-3.5" />
               Ver Planes
-            </PlanButton>
+            </PlanButton> */}
           </div>
         )}
 
-        {esPropietario && tienePlanActivo && estaPorVencer && !estaVencido && (
+        {/* {esPropietario && tienePlanActivo && estaPorVencer && !estaVencido && (
           <PlanButton onClick={handleNavigateToPlanes} variant="warning">
             <Gift className="mr-1.5 h-3.5 w-3.5" />
             Renovar Plan
           </PlanButton>
-        )}
+        )} */}
 
         {tienePermisoFavoritos && (
           <ActionButton
@@ -527,13 +532,13 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
                   Mi Plan Actual
                 </DropdownItem>
 
-                <DropdownItem
+                {/*  <DropdownItem
                   onClick={handleNavigateToPlanes}
                   icon={Gift}
                   color="text-blue-600"
                 >
                   {tienePlanActivo ? "Cambiar / Renovar Plan" : "Comprar Plan"}
-                </DropdownItem>
+                </DropdownItem> */}
 
                 <DropdownItem
                   onClick={handleNavigateToHistorial}

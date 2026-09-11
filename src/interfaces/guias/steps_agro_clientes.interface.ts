@@ -370,6 +370,337 @@ export const agroClientesSteps: Record<string, TourStep[]> = {
       description: "Presiona este botón para registrar un nuevo animal.",
     },
   ],
+  "/sanidad-animal": [
+    {
+      target: "id-sanidad-container",
+      title: "Gestión de Sanidad",
+      description:
+        "Aquí puedes administrar y monitorear todos los eventos sanitarios registrados para tus animales.",
+    },
+    {
+      target: "id-sanidad-header",
+      title: "Sanidad Animal",
+      description:
+        "En esta sección puedes consultar y administrar la sanidad de tus animales por especie.",
+    },
+    {
+      target: "id-sanidad-header-info",
+      title: "Información de Sanidad",
+      description:
+        "Aquí se muestra el título y la descripción general de la sección de sanidad.",
+    },
+    {
+      target: "id-sanidad-btn-ver-eventos",
+      title: "Ver Eventos",
+      description:
+        "Presiona este botón para visualizar los eventos eliminados y el historial de cambios.",
+    },
+    {
+      target: "id-sanidad-filtros-container",
+      title: "Filtros de Sanidad",
+      description:
+        "Utiliza estas opciones para encontrar rápidamente los eventos sanitarios que necesitas consultar.",
+    },
+    {
+      target: "id-sanidad-filtro-especie",
+      title: "Filtrar por Especie",
+      description:
+        "Selecciona una especie para mostrar únicamente los eventos sanitarios asociados a ella.",
+    },
+    {
+      target: "id-sanidad-filtro-especie-select",
+      title: "Selector de Especie",
+      description:
+        "Desde este selector puedes elegir la especie por la cual deseas filtrar los registros.",
+    },
+    {
+      target: "id-sanidad-filtro-especie-mostrando",
+      title: "Especie Seleccionada",
+      description:
+        "Aquí puedes visualizar la especie que está aplicada actualmente como filtro.",
+    },
+    {
+      target: "id-sanidad-buscador-animales",
+      title: "Buscar Animal",
+      description:
+        "Busca un animal específico para consultar sus eventos sanitarios registrados.",
+    },
+    {
+      target: "id-sanidad-estadisticas-container",
+      title: "Estadísticas de Sanidad",
+      description:
+        "Aquí se muestra un resumen general del estado sanitario de tus animales.",
+    },
+    {
+      target: "id-sanidad-cards-grid",
+      title: "Resumen Sanitario",
+      description:
+        "Consulta los indicadores principales como estado sanitario, último evento, próximo evento y costo mensual.",
+    },
+    {
+      target: "id-sanidad-card-estado-sanitario",
+      title: "Estado Sanitario",
+      description:
+        "Aquí puedes ver el estado sanitario general de los animales registrados.",
+    },
+    {
+      target: "id-sanidad-card-ultimo-evento",
+      title: "Último Evento",
+      description:
+        "Aquí se muestra el último evento sanitario registrado para los animales.",
+    },
+    {
+      target: "id-sanidad-card-proximo-evento",
+      title: "Próximo Evento",
+      description:
+        "Aquí puedes consultar el próximo evento sanitario programado para tus animales.",
+    },
+    {
+      target: "id-sanidad-card-costo-mes",
+      title: "Costo Sanitario del Mes",
+      description:
+        "Aquí se muestra el costo sanitario acumulado durante el mes actual.",
+    },
+    {
+      target: "id-sanidad-proximos-eventos-alerta",
+      title: "Próximos Eventos",
+      description:
+        "Aquí se muestran alertas sobre eventos sanitarios próximos a realizarse.",
+    },
+    {
+      target: "id-sanidad-total-registros",
+      title: "Total de Registros",
+      description:
+        "Aquí puedes visualizar la cantidad total de registros sanitarios encontrados.",
+    },
+    {
+      target: "id-sanidad-tabs-container",
+      title: "Secciones de Sanidad",
+      description:
+        "Utiliza estas pestañas para alternar entre el resumen de eventos y el análisis de costos.",
+    },
+    {
+      target: "id-sanidad-tabs",
+      title: "Pestañas de Sanidad",
+      description:
+        "Aquí puedes navegar entre el resumen general y los costos mensuales.",
+    },
+    {
+      target: "id-sanidad-tabs-list",
+      title: "Lista de Pestañas",
+      description:
+        "Selecciona la pestaña que deseas consultar: Resumen o Costos Mensuales.",
+    },
+    {
+      target: "id-sanidad-tab-resumen",
+      title: "Pestaña Resumen",
+      description:
+        "Presiona esta pestaña para visualizar la lista completa de eventos sanitarios registrados.",
+    },
+    {
+      target: "id-sanidad-tab-costos",
+      title: "Pestaña Costos Mensuales",
+      description:
+        "Presiona esta pestaña para visualizar el análisis de costos sanitarios mensuales.",
+    },
+    {
+      target: "id-sanidad-tab-content-resumen",
+      title: "Contenido del Resumen",
+      description:
+        "Aquí se muestra la tabla con todos los eventos sanitarios registrados.",
+    },
+    {
+      target: "id-sanidad-card-resumen",
+      title: "Card de Resumen",
+      description:
+        "Esta tarjeta contiene la lista completa de eventos sanitarios registrados.",
+    },
+    {
+      target: "id-sanidad-card-resumen-header",
+      title: "Encabezado del Resumen",
+      description:
+        "Aquí se muestra el título y la descripción de la sección de resumen.",
+    },
+    {
+      target: "id-sanidad-card-resumen-content",
+      title: "Contenido del Resumen",
+      description:
+        "Aquí se encuentra el buscador, la tabla de eventos y la paginación.",
+    },
+    {
+      target: "id-sanidad-resumen-buscador-container",
+      title: "Buscador de Eventos",
+      description:
+        "Utiliza este buscador para encontrar eventos sanitarios específicos.",
+    },
+    {
+      target: "id-sanidad-resumen-buscador",
+      title: "Buscar Evento",
+      description:
+        "Escribe el nombre del servicio, responsable o animal para filtrar los eventos.",
+    },
+    {
+      target: "id-sanidad-resumen-loader",
+      title: "Cargando Eventos",
+      description:
+        "Aquí se muestra un indicador mientras se cargan los eventos sanitarios.",
+    },
+    {
+      target: "id-sanidad-resumen-empty",
+      title: "Sin Resultados",
+      description:
+        "Aquí se muestra un mensaje cuando no se encuentran registros con los filtros aplicados.",
+    },
+    {
+      target: "id-sanidad-resumen-tabla-container",
+      title: "Tabla de Eventos",
+      description:
+        "Aquí se listan todos los eventos sanitarios registrados con sus detalles.",
+    },
+    {
+      target: "id-sanidad-resumen-paginacion-container",
+      title: "Paginación de Eventos",
+      description:
+        "Utiliza estos controles para navegar entre las páginas de eventos registrados.",
+    },
+    {
+      target: "id-sanidad-resumen-paginacion-info",
+      title: "Información de Paginación",
+      description:
+        "Aquí se muestra el rango de registros que estás visualizando actualmente.",
+    },
+    {
+      target: "id-sanidad-resumen-paginacion",
+      title: "Controles de Paginación",
+      description:
+        "Utiliza estos botones para avanzar o retroceder entre las páginas de eventos.",
+    },
+    {
+      target: "id-sanidad-tab-content-costos",
+      title: "Contenido de Costos",
+      description:
+        "Aquí se muestra el análisis de costos sanitarios mensuales desglosados por servicio.",
+    },
+    {
+      target: "id-sanidad-card-costos",
+      title: "Card de Costos",
+      description:
+        "Esta tarjeta contiene el análisis detallado de los costos sanitarios mensuales.",
+    },
+    {
+      target: "id-sanidad-card-costos-header",
+      title: "Encabezado de Costos",
+      description:
+        "Aquí se muestra el título y la descripción de la sección de costos mensuales.",
+    },
+    {
+      target: "id-sanidad-card-costos-content",
+      title: "Contenido de Costos",
+      description:
+        "Aquí se encuentran las estadísticas, gráficos y resúmenes de costos sanitarios.",
+    },
+    {
+      target: "id-sanidad-costos-loader",
+      title: "Cargando Costos",
+      description:
+        "Aquí se muestra un indicador mientras se cargan los datos de costos.",
+    },
+    {
+      target: "id-sanidad-costos-empty",
+      title: "Sin Datos de Costos",
+      description:
+        "Aquí se muestra un mensaje cuando no hay datos de costos disponibles.",
+    },
+    {
+      target: "id-sanidad-costos-content-wrapper",
+      title: "Análisis de Costos",
+      description:
+        "Aquí se presentan todos los indicadores y gráficos relacionados con los costos sanitarios.",
+    },
+    {
+      target: "id-sanidad-costos-stats-grid",
+      title: "Estadísticas de Costos",
+      description:
+        "Aquí se muestran los indicadores principales de costos: total, promedio, servicios y mayor gasto.",
+    },
+    {
+      target: "id-sanidad-costos-stat-total-gastado",
+      title: "Total Gastado",
+      description:
+        "Aquí se muestra el monto total gastado en servicios sanitarios.",
+    },
+    {
+      target: "id-sanidad-costos-stat-promedio-mensual",
+      title: "Promedio Mensual",
+      description: "Aquí se muestra el promedio de gasto sanitario por mes.",
+    },
+    {
+      target: "id-sanidad-costos-stat-servicios-registrados",
+      title: "Servicios Registrados",
+      description:
+        "Aquí se muestra la cantidad de servicios sanitarios únicos registrados.",
+    },
+    {
+      target: "id-sanidad-costos-stat-mayor-gasto",
+      title: "Mayor Gasto",
+      description:
+        "Aquí se muestra el servicio sanitario con el mayor costo registrado.",
+    },
+    {
+      target: "id-sanidad-costos-filtro-servicio",
+      title: "Filtrar por Servicio",
+      description:
+        "Selecciona un servicio para filtrar los datos de costos mostrados.",
+    },
+    {
+      target: "id-sanidad-costos-filtro-servicio-select",
+      title: "Selector de Servicio",
+      description:
+        "Desde este selector puedes elegir el servicio por el cual deseas filtrar los costos.",
+    },
+    {
+      target: "id-sanidad-costos-evolucion-mensual",
+      title: "Evolución Mensual",
+      description:
+        "Aquí se muestra un gráfico con la evolución de los costos sanitarios mes a mes.",
+    },
+    {
+      target: "id-sanidad-costos-distribucion-resumen-grid",
+      title: "Distribución y Resumen",
+      description:
+        "Aquí se muestra la distribución de costos por servicio y el resumen detallado.",
+    },
+    {
+      target: "id-sanidad-costos-distribucion-servicio",
+      title: "Distribución por Servicio",
+      description:
+        "Aquí se muestra un gráfico con la distribución de los costos por tipo de servicio.",
+    },
+    {
+      target: "id-sanidad-costos-resumen-por-servicio",
+      title: "Resumen por Servicio",
+      description:
+        "Aquí se muestra un resumen detallado de los costos agrupados por servicio.",
+    },
+    {
+      target: "id-sanidad-costos-mes-extremos-grid",
+      title: "Meses Extremos",
+      description:
+        "Aquí se muestran los meses con mayor y menor gasto sanitario registrado.",
+    },
+    {
+      target: "id-sanidad-costos-card-mes-mayor-gasto",
+      title: "Mes de Mayor Gasto",
+      description:
+        "Aquí se muestra el mes en el que se registró el mayor gasto sanitario.",
+    },
+    {
+      target: "id-sanidad-costos-card-mes-menor-gasto",
+      title: "Mes de Menor Gasto",
+      description:
+        "Aquí se muestra el mes en el que se registró el menor gasto sanitario.",
+    },
+  ],
   "/servicios": [
     {
       target: "id-servicios-container",

@@ -22,7 +22,6 @@ import {
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import DetailsSkeleton from "./ui/DetailsSkeleton";
 import useGetAnimalesMarketSugerencias from "@/hooks/market-animales/useGetAnimalesMarketSugerencias";
 import CardMarketAnimal from "@/components/marketplace/CardMarketAnimal";
 import SkeletonCard from "@/components/generics/SkeletonCard";
@@ -34,6 +33,7 @@ import PublicacionNoEncontrada from "@/components/marketplace/PublicacionNoEncon
 import { ChatModal } from "@/components/chat/ChatModal";
 import { TipoPublicacion } from "@/interfaces/enums/market/tipo_publicacion.enum";
 import { formatCurrency } from "@/helpers/funciones/formatCurrency";
+import DetailsSkeleton from "@/components/marketplace/DetailsSkeleton";
 
 const DetailsAnimalesPage = () => {
   const { cliente } = useAuthStore();
@@ -444,7 +444,12 @@ const DetailsAnimalesPage = () => {
           ) : filtersAnimales.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
               {filtersAnimales.slice(0, 4).map((animalItem) => (
-                <CardMarketAnimal key={animalItem.id} animal={animalItem} />
+                <CardMarketAnimal
+                  key={animalItem.id}
+                  animal={animalItem}
+                  link_page={`/marketplace/animales/${animal.id}`}
+                  isAuthenticated={true}
+                />
               ))}
             </div>
           ) : (

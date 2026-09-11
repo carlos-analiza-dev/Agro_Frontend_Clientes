@@ -19,9 +19,11 @@ import { formatCurrency } from "@/helpers/funciones/formatCurrency";
 
 interface Props {
   animal: ProductoAnimal;
+  link_page: string;
+  isAuthenticated: boolean;
 }
 
-const CardMarketAnimal = ({ animal }: Props) => {
+const CardMarketAnimal = ({ animal, link_page, isAuthenticated }: Props) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const image = animal.imagenes?.[0]?.url || "/images/agricultura.jpg";
@@ -29,9 +31,11 @@ const CardMarketAnimal = ({ animal }: Props) => {
   const esAlquiler = animal.tipo_publicacion === TipoPublicacion.ALQUILERES;
 
   const linkCardAnimal = async (animal: ProductoAnimal) => {
-    router.push(`/marketplace/animales/${animal.id}`);
-    await newViewPublicacion(animal.id);
-    queryClient.invalidateQueries({ queryKey: ["views"] });
+    router.push(link_page);
+    if (isAuthenticated) {
+      await newViewPublicacion(animal.id);
+      queryClient.invalidateQueries({ queryKey: ["views"] });
+    }
   };
 
   const obtenerPrecioMasBajo = () => {

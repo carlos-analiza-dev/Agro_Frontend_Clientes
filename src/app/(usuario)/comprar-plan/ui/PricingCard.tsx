@@ -108,6 +108,12 @@ export const PricingCard = ({
                   {paquete.maxTrabajadores !== 1 ? "es" : ""}
                 </span>
               </div>
+              {paquete && paquete.ecommerce && (
+                <div className="flex items-center gap-2 text-sm">
+                  <Check className="w-4 h-4 text-green-500" />
+                  <span>Acceso a Agro Market</span>
+                </div>
+              )}
             </div>
           </div>
         </CardContent>

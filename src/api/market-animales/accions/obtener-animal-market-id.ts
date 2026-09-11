@@ -8,3 +8,11 @@ export const obtenerAnimalMarketById = async (id: string) => {
 
   return response.data;
 };
+
+export const obtenerAnimalMarketByIdPublic = async (id: string) => {
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/marketplace-animales/public/${id}`;
+
+  const response = await veterinariaAPI.get<ProductoAnimal>(url);
+
+  return response.data;
+};

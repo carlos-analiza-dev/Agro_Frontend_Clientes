@@ -131,7 +131,7 @@ export default function AdminLayout({
     if (hasPermission === null) return;
 
     if (!hasPermission) {
-      router.push("/not-found");
+      router.push("/unauthorized");
     }
   }, [
     cliente,

@@ -153,7 +153,7 @@ const NavBarAgro = ({
     "/unauthorized",
     "/agro-propietario/agro-servicios",
     ...(esPropietario
-      ? ["/mi-plan", "/comprar-plan", "/historial-paquetes"]
+      ? ["/mi-plan" /* "/comprar-plan" */, , "/historial-paquetes"]
       : []),
   ];
 
@@ -389,15 +389,13 @@ const NavBarAgro = ({
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className="hidden md:block">
-                  <Link href={"/comprar-plan"}>
-                    <Badge
-                      className={`${planInfo.color} cursor-help hover:cursor-pointer ${estaPorVencer ? "animate-pulse" : ""}`}
-                    >
-                      <Crown className="mr-1 h-3 w-3" />
-                      {planInfo.label}
-                      {estaVencido && <AlertCircle className="ml-1 h-3 w-3" />}
-                    </Badge>
-                  </Link>
+                  <Badge
+                    className={`${planInfo.color} cursor-help hover:cursor-pointer ${estaPorVencer ? "animate-pulse" : ""}`}
+                  >
+                    <Crown className="mr-1 h-3 w-3" />
+                    {planInfo.label}
+                    {estaVencido && <AlertCircle className="ml-1 h-3 w-3" />}
+                  </Badge>
                 </div>
               </TooltipTrigger>
               <TooltipContent>

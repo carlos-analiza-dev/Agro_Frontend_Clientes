@@ -77,10 +77,6 @@ export const TOUR_PAGES_CLIENTES_ORDER = [
   "/tratamientos",
   "/celos",
   "/servicios-reproductivos",
-  "/gestaciones",
   "/partos-animales",
-  "/genetica",
-  "/mi-plan",
-  "/comprar-plan",
   "/perfil",
 ];

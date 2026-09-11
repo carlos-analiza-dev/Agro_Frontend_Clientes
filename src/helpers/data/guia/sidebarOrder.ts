@@ -6,7 +6,7 @@ import { TOUR_PAGES_CLIENTES_ORDER } from "./tourGuide";
 const RUTAS_SIEMPRE_DISPONIBLES = [
   "/panel",
   "/mi-plan",
-  "/comprar-plan",
+  /*  "/comprar-plan", */
   "/codigo-cliente",
 ];
 

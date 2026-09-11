@@ -1,7 +1,7 @@
 export const publicRoutes = [
   "/panel",
   "/mi-plan",
-  "/comprar-plan",
+  /*  "/comprar-plan", */
   "/historial-paquetes",
   "/codigo-cliente",
   "/not-found",

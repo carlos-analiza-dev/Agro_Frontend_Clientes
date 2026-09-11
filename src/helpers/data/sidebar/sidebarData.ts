@@ -218,7 +218,7 @@ export const generateNavItems = (especies: { nombre: string }[] = []) => {
       category: "Paquetes",
       items: [
         { name: "Mi Plan", href: "/mi-plan", icon: PawPrint },
-        { name: "Comprar", href: "/comprar-plan", icon: Layers3 },
+        /* { name: "Comprar", href: "/comprar-plan", icon: Layers3 }, */
       ],
     },
     {

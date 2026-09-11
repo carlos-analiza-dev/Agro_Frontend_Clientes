@@ -191,11 +191,22 @@ const AnimalesPage = () => {
           if (index === animales.length - 1) {
             return (
               <div ref={lastAnimalRef} key={animal.id}>
-                <CardMarketAnimal animal={animal} />
+                <CardMarketAnimal
+                  animal={animal}
+                  link_page={`/marketplace/animales/${animal.id}`}
+                  isAuthenticated={true}
+                />
               </div>
             );
           }
-          return <CardMarketAnimal key={animal.id} animal={animal} />;
+          return (
+            <CardMarketAnimal
+              key={animal.id}
+              animal={animal}
+              link_page={`/marketplace/animales/${animal.id}`}
+              isAuthenticated={true}
+            />
+          );
         })}
       </div>
 
