@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { CalendarIcon, Filter, Plus } from "lucide-react";
+import { CalendarIcon, Contact, Filter, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
@@ -32,6 +32,7 @@ import { estadosActividad } from "@/helpers/data/actividades/actividadesdData";
 
 import { useRouter } from "next/navigation";
 import ButtonAdd from "@/components/generics/ButtonAdd";
+import TitlePage from "@/components/generics/TitlePage";
 
 const ActividadesPage = () => {
   const { cliente } = useAuthStore();
@@ -191,15 +192,12 @@ const ActividadesPage = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         <div id="id-header-actividades" className="mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div id="id-title-actividades">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
-                Actividades Diarias
-              </h1>
-
-              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1 sm:mt-2">
-                Gestiona y da seguimiento a las actividades de tus trabajadores
-              </p>
-            </div>
+            <TitlePage
+              id_title="id-title-actividades"
+              title={`Actividades Diarias`}
+              description="Gestiona y da seguimiento a las actividades de tus trabajadores"
+              Icon={Contact}
+            />
 
             {(cliente?.rol === TipoCliente.PROPIETARIO ||
               cliente?.rol === TipoCliente.SUPERVISOR) && (

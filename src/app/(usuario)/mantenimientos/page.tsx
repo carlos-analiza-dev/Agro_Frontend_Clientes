@@ -7,7 +7,7 @@ import { useAuthStore } from "@/providers/store/useAuthStore";
 import Paginacion from "@/components/generics/Paginacion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { WrenchIcon, AlertCircleIcon, Plus } from "lucide-react";
+import { WrenchIcon, AlertCircleIcon, Plus, Cog } from "lucide-react";
 import { Mantenimiento } from "@/api/mantenimientos/interface/response-mantenimientos.interface";
 import SkeletonCard from "@/components/generics/SkeletonCard";
 import CardMantenimientos from "./ui/CardMantenimientos";
@@ -17,6 +17,7 @@ import FormMantenimiento from "./ui/FormMantenimiento";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { useRouter } from "next/navigation";
 import ButtonAdd from "@/components/generics/ButtonAdd";
+import TitlePage from "@/components/generics/TitlePage";
 
 const MantenimientosPage = () => {
   const { cliente } = useAuthStore();
@@ -144,15 +145,11 @@ const MantenimientosPage = () => {
   return (
     <div className="container mx-auto p-4 md:p-6 space-y-6">
       <div className="md:flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-            Mantenimientos
-          </h1>
-
-          <p className="text-sm md:text-base text-muted-foreground">
-            Gestiona y visualiza los mantenimientos de tus equipos
-          </p>
-        </div>
+        <TitlePage
+          title={`Mantenimientos`}
+          description="Gestiona y visualiza los mantenimientos de tus equipos"
+          Icon={Cog}
+        />
 
         <div id="id-add-mantenimiento">
           <ButtonAdd

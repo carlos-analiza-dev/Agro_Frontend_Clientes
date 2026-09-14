@@ -47,7 +47,7 @@ const ButtonAdd = ({
       size={size}
       className={cn(
         "transition-all duration-300 gap-2",
-        fullWidth ? "w-full" : "w-full mt-4 md:w-auto md:mt-0",
+        fullWidth ? "w-full" : "w-full md:w-auto md:mt-0",
         capitalize && "capitalize",
         className,
       )}

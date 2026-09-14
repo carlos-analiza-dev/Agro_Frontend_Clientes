@@ -17,11 +17,13 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  FolderClock,
 } from "lucide-react";
 import useGetAnimalesPropietario from "@/hooks/animales/useGetAnimalesPropietario";
 
 import CardHistorialClinico from "./ui/CardHistorialClinico";
 import CardHistorial from "@/components/generics/CardHistorial";
+import TitlePage from "@/components/generics/TitlePage";
 
 const HistorialMedicoAnimalPage = () => {
   const { cliente } = useAuthStore();
@@ -182,14 +184,11 @@ const HistorialMedicoAnimalPage = () => {
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Historial Médico Animal
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Gestiona y consulta el historial clínico de tus animales
-          </p>
-        </div>
+        <TitlePage
+          title={`Historial Médico Animal`}
+          description="Gestiona y consulta el historial clínico de tus animales"
+          Icon={FolderClock}
+        />
       </div>
 
       <Card id="id-filters-historial-clinico">

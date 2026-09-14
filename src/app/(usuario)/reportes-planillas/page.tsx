@@ -2,7 +2,7 @@
 
 import useGetObtenerTotalPagado from "@/hooks/dashboard/planilla/useGetObtenerTotalPagado";
 import { MetodoPago } from "@/interfaces/enums/planillas.enums";
-import { Calendar, FilterX } from "lucide-react";
+import { Calendar, ChartNoAxesCombined, FilterX } from "lucide-react";
 import { useState } from "react";
 import TotalPagadoPlanilla from "./ui/TotalPagadoPlanilla";
 import { useAuthStore } from "@/providers/store/useAuthStore";
@@ -24,6 +24,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import TitlePage from "@/components/generics/TitlePage";
 
 const ReportesPlanillasPage = () => {
   const { cliente } = useAuthStore();
@@ -74,15 +75,12 @@ const ReportesPlanillasPage = () => {
           id="id-header-reportes-planillas"
           className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
         >
-          <div id="id-title-reportes-planillas">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent">
-              Reportes Planillas de Trabajadores
-            </h1>
-
-            <p className="text-sm text-muted-foreground mt-1">
-              Visualiza y analiza los pagos realizados a trabajadores
-            </p>
-          </div>
+          <TitlePage
+            id_title="id-title-reportes-planillas"
+            title={`Reportes Planillas de Trabajadores`}
+            description="Visualiza y analiza los pagos realizados a trabajadores"
+            Icon={ChartNoAxesCombined}
+          />
         </div>
 
         <Card id="id-filtros-reportes-planillas" className="shadow-md border-0">

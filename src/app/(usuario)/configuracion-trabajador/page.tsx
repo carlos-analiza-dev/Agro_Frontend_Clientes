@@ -33,6 +33,7 @@ import SkeletonJornadas from "@/components/generics/SkeletonJornadas";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { useRouter } from "next/navigation";
 import ButtonAdd from "@/components/generics/ButtonAdd";
+import TitlePage from "@/components/generics/TitlePage";
 
 const ConfiguracionTrabajadoresPage = () => {
   const { cliente } = useAuthStore();
@@ -98,17 +99,13 @@ const ConfiguracionTrabajadoresPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <h1
-              id="config-trabajadores-page-title"
-              className="text-xl md:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent"
-            >
-              Configuración de Trabajadores
-            </h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">
-              Gestiona los salarios, cargos y configuraciones de tus empleados
-            </p>
-          </div>
+          <TitlePage
+            id_title="config-trabajadores-page-title"
+            title={`Configuración de Trabajadores`}
+            description="Gestiona los salarios, cargos y configuraciones de tus empleados"
+            Icon={Users}
+          />
+
           <ButtonAdd
             id="add-config-trabajador-btn"
             Icon={Plus}

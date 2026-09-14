@@ -14,6 +14,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import CardResultsSiembra from "./ui/CardResultsSiembra";
 import FormSiembraInteligente from "./ui/FormSiembraInteligente";
+import AlertaInteligente from "@/components/consultas-inteligentes/AlertaInteligente";
 
 const SiembraInteligentePage = () => {
   const [consultaResultado, setConsultaResultado] = useState<string | null>(
@@ -36,19 +37,13 @@ const SiembraInteligentePage = () => {
           Calculadora de Densidad de Siembra
         </h1>
       </div>
-
-      <Alert className="bg-amber-50 border-amber-200 dark:bg-amber-950 dark:border-amber-800">
-        <Info className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-        <AlertTitle className="text-amber-800 dark:text-amber-300 font-semibold">
-          Información importante
-        </AlertTitle>
-        <AlertDescription className="text-amber-700 dark:text-amber-300">
-          Esta calculadora proporciona recomendaciones basadas en inteligencia
+      <AlertaInteligente
+        title="Información importante"
+        description="Esta calculadora proporciona recomendaciones basadas en inteligencia
           artificial. Los resultados son orientativos y deben ser validados por
           un profesional del sector agrícola según las condiciones específicas
-          de tu terreno.
-        </AlertDescription>
-      </Alert>
+          de tu terreno."
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card

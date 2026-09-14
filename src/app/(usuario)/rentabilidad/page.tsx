@@ -16,6 +16,7 @@ import {
   Percent,
   Building2,
   BarChart3,
+  ChartNoAxesCombined,
 } from "lucide-react";
 import { MetricCard } from "./ui/MetricCard";
 import { RentabilidadSkeleton } from "./ui/RentabilidadSkeleton";
@@ -29,6 +30,7 @@ import CardDetailsRentFincas from "./ui/CardDetailsRentFincas";
 import { FiltrosRentabilidadComponent } from "./ui/FiltrosRentabilidadComponent";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
+import TitlePage from "@/components/generics/TitlePage";
 
 const RentabilidadPage = () => {
   const { cliente } = useAuthStore();
@@ -70,17 +72,13 @@ const RentabilidadPage = () => {
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="space-y-4">
-          <div>
-            <h1
-              id="rentabilidad-page-title"
-              className="text-xl md:text-3xl font-bold text-gray-900"
-            >
-              Dashboard de Rentabilidad
-            </h1>
-            <p className="text-gray-600 mt-1">
-              Análisis financiero de tu negocio ganadero
-            </p>
-          </div>
+          <TitlePage
+            id_title="rentabilidad-page-title"
+            title={`Dashboard de Rentabilidad`}
+            description="Análisis financiero de tu negocio ganadero"
+            Icon={ChartNoAxesCombined}
+          />
+
           <div id="rentabilidad-filters">
             <FiltrosRentabilidadComponent
               filtros={filtros}

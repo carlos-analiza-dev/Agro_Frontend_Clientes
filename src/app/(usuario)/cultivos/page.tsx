@@ -25,6 +25,7 @@ import FormCultivo from "./ui/FormCultivo";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { useRouter } from "next/navigation";
 import ButtonAdd from "@/components/generics/ButtonAdd";
+import TitlePage from "@/components/generics/TitlePage";
 
 const CultivoPage = () => {
   const { cliente } = useAuthStore();
@@ -86,15 +87,11 @@ const CultivoPage = () => {
         id="id-cultivo-header"
         className="md:flex justify-between items-center"
       >
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2">
-            <Sprout className="h-7 w-7 text-green-600" />
-            Cultivos
-          </h1>
-          <p className="text-sm md:text-base text-muted-foreground mt-1">
-            Registra y monitorea todos los cultivos de tus fincas
-          </p>
-        </div>
+        <TitlePage
+          title={`Cultivos`}
+          description="Registra y monitorea todos los cultivos de tus fincas"
+          Icon={Sprout}
+        />
 
         <ButtonAdd
           title="Agregar Cultivo"

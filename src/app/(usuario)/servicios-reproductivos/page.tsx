@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Filter, Plus, AlertCircle } from "lucide-react";
+import { Filter, Plus, AlertCircle, Dna } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -35,6 +35,7 @@ import { isAxiosError } from "axios";
 import { EstadoServicio } from "@/interfaces/enums/servicios-reproductivos.enum";
 import { SexoAnimal } from "@/interfaces/enums/animales/sexo-animal.enum";
 import ButtonAdd from "@/components/generics/ButtonAdd";
+import TitlePage from "@/components/generics/TitlePage";
 
 const ServiciosReproductivosPage = () => {
   const { cliente } = useAuthStore();
@@ -278,19 +279,16 @@ const ServiciosReproductivosPage = () => {
         className="container mx-auto p-4 md:p-6 space-y-4 md:space-y-6"
       >
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-xl md:text-3xl font-bold tracking-tight">
-              Servicios Reproductivos -{" "}
-              {fincaSeleccionada &&
-                fincaSeleccionada.nombre_finca.toLowerCase()}
-            </h1>
-            <h2 className="text-sm md:text-base max-w-3xl text-muted-foreground">
-              Registra y monitorea los servicios reproductivos de tus animales.
+          <TitlePage
+            title={`Servicios Reproductivos - ${
+              fincaSeleccionada && fincaSeleccionada.nombre_finca.toLowerCase()
+            }`}
+            description="Registra y monitorea los servicios reproductivos de tus animales.
               Cada registro será evaluado automáticamente para validar que el
               animal cumpla con la edad mínima reproductiva de su especie antes
-              de continuar con el proceso.
-            </h2>
-          </div>
+              de continuar con el proceso."
+            Icon={Dna}
+          />
 
           <div className="flex w-full sm:w-auto gap-2">
             {isMobile && (

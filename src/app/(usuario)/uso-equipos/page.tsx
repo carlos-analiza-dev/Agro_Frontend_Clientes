@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { WrenchIcon } from "lucide-react";
+import { Forklift, WrenchIcon } from "lucide-react";
 import useGetUsoEquipos from "@/hooks/uso-equipos/useGetUsoEquipos";
 import useGetEquiposMaquinariaActivos from "@/hooks/equipos-maquinaria/useGetEquiposMaquinariaActivos";
 import useGetAllTrabajadores from "@/hooks/trabajadores/useGetAllTrabajadores";
@@ -24,6 +24,7 @@ import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { useRouter } from "next/navigation";
 import ButtonAdd from "@/components/generics/ButtonAdd";
+import TitlePage from "@/components/generics/TitlePage";
 
 const UsoDeEquiposPage = () => {
   const { cliente } = useAuthStore();
@@ -118,14 +119,11 @@ const UsoDeEquiposPage = () => {
   return (
     <div className="container mx-auto p-4 md:p-6 space-y-6">
       <div className="md:flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-            Uso de Equipos
-          </h1>
-          <p className="text-sm md:text-base text-muted-foreground">
-            Registro de uso de equipos por operadores y actividades
-          </p>
-        </div>
+        <TitlePage
+          title={`Uso de Equipos`}
+          description="Registro de uso de equipos por operadores y actividades"
+          Icon={Forklift}
+        />
 
         <div id="id-add-uso-equipos">
           <ButtonAdd

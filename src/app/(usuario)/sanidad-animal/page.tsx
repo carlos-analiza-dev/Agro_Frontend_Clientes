@@ -60,6 +60,7 @@ import SearchAnimales from "./ui/SearchAnimales";
 import ProximosEventosAlerta from "@/components/sanidad-animal/eventos/ProximosEventosAlerta";
 import TableHistorialCambios from "./ui/TableHistorialCambios";
 import useGetSanidadHistorialCambios from "@/hooks/sanidad-animal/useGetSanidadHistorialCambios";
+import TitlePage from "@/components/generics/TitlePage";
 
 const SanidadAnimalPage = () => {
   const { cliente } = useAuthStore();
@@ -501,23 +502,14 @@ const SanidadAnimalPage = () => {
         id="id-sanidad-header"
         className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4"
       >
-        <div id="id-sanidad-header-info" className="w-full sm:w-auto">
-          <h1
-            id="id-sanidad-title"
-            className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2 capitalize"
-          >
-            <ShieldPlus className="h-6 w-6 sm:h-7 sm:w-7 text-green-600 flex-shrink-0" />
-            <span className="truncate">
-              Sanidad {especieSeleccionada ? `- ${especieSeleccionada}` : ""}
-            </span>
-          </h1>
-          <p
-            id="id-sanidad-subtitle"
-            className="text-xs sm:text-sm md:text-base text-muted-foreground mt-0.5 sm:mt-1"
-          >
-            Registra y monitorea la sanidad de tus animales por especie
-          </p>
-        </div>
+        <TitlePage
+          title={`Sanidad ${especieSeleccionada ? `- ${especieSeleccionada}` : ""}`}
+          description="Registra y monitorea la sanidad de tus animales por especie"
+          Icon={ShieldPlus}
+          id_title="id-sanidad-header-info"
+          id_description="id-sanidad-subtitle"
+        />
+
         {eliminados && eliminados.total > 0 && (
           <Button
             id="id-sanidad-btn-ver-eventos"

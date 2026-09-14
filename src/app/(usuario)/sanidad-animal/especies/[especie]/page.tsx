@@ -60,6 +60,7 @@ import useGetAnimalesPropietario from "@/hooks/animales/useGetAnimalesPropietari
 import SearchAnimales from "../../ui/SearchAnimales";
 import { ESPECIE_COLORS } from "@/helpers/data/colors/colors-espcies";
 import ProximosEventosAlerta from "@/components/sanidad-animal/eventos/ProximosEventosAlerta";
+import TitlePage from "@/components/generics/TitlePage";
 
 const SanidadByEspeciePage = () => {
   const { cliente } = useAuthStore();
@@ -471,19 +472,12 @@ const SanidadByEspeciePage = () => {
     <div className="container mx-auto px-3 sm:px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6">
       <div className={`pl-4 ${colors.border}`}>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
-          <div className="w-full sm:w-auto">
-            <h1
-              className={`text-xl sm:text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2 capitalize ${colors.title}`}
-            >
-              <ShieldPlus
-                className={`h-6 w-6 sm:h-7 sm:w-7 ${colors.icon} flex-shrink-0`}
-              />
-              <span className="truncate">Sanidad - {especie_animal}</span>
-            </h1>
-            <p className="text-xs sm:text-sm md:text-base text-muted-foreground mt-0.5 sm:mt-1">
-              Registra y monitorea la sanidad de tus animales por especie
-            </p>
-          </div>
+          <TitlePage
+            title={`Sanidad - ${especie_animal}`}
+            description="Registra y monitorea la sanidad de tus animales por especie"
+            Icon={ShieldPlus}
+          />
+
           <ButtonAdd
             title={`Ingresar sanidad ${especie_animal}`}
             Icon={ShieldPlus}

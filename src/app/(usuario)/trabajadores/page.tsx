@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import ButtonAdd from "@/components/generics/ButtonAdd";
 import { StatCard } from "@/components/generics/StatCard";
+import TitlePage from "@/components/generics/TitlePage";
 
 const TrabajadoresPage = () => {
   const { cliente } = useAuthStore();
@@ -104,20 +105,15 @@ const TrabajadoresPage = () => {
     <div id="id-trabajadores-container" className="min-h-screen bg-background">
       <div className="container mx-auto p-3 sm:p-4 md:p-6 space-y-4 md:space-y-6">
         <div className="flex flex-col space-y-3 sm:space-y-4">
-          {/* HEADER */}
           <div
             id="id-trabajadores-header"
             className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3"
           >
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-                Trabajadores
-              </h1>
-
-              <p className="text-sm text-muted-foreground mt-1">
-                Gestión de trabajadores asignados a fincas
-              </p>
-            </div>
+            <TitlePage
+              title={`Trabajadores`}
+              description="Gestión de trabajadores asignados a fincas"
+              Icon={Users}
+            />
 
             <div className="flex flex-col sm:flex-row gap-2">
               <Button

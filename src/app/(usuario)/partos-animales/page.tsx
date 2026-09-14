@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Filter, Plus } from "lucide-react";
+import { Filter, PawPrint, Plus } from "lucide-react";
 import { startOfDay, endOfDay } from "date-fns";
 import useGetPartosAnimales from "@/hooks/reproduccion/useGetPartosAnimales";
 import { useAuthStore } from "@/providers/store/useAuthStore";
@@ -28,6 +28,7 @@ import { Parto } from "@/api/reproduccion/interfaces/response-partos.interface";
 import FiltersParto from "./ui/FiltersParto";
 import { SexoAnimal } from "@/interfaces/enums/animales/sexo-animal.enum";
 import ButtonAdd from "@/components/generics/ButtonAdd";
+import TitlePage from "@/components/generics/TitlePage";
 
 const PartosAnimalesPage = () => {
   const { cliente } = useAuthStore();
@@ -180,16 +181,11 @@ const PartosAnimalesPage = () => {
         id="partos-header"
         className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4"
       >
-        <div className="w-full sm:w-auto">
-          <h1 className="text-lg sm:text-xl md:text-3xl font-bold tracking-tight break-words">
-            Control de Partos - {finca?.nombre_finca}
-          </h1>
-
-          <p className="text-xs sm:text-sm md:text-base text-muted-foreground mt-1">
-            Monitorea los partos registrados en tus animales.
-            {totalPartos > 0 && ` Total: ${totalPartos} partos`}
-          </p>
-        </div>
+        <TitlePage
+          title={`Control de Partos - ${finca?.nombre_finca}`}
+          description="Monitorea los partos registrados en tus animales."
+          Icon={PawPrint}
+        />
 
         <ButtonAdd
           id="partos-nuevo-btn"

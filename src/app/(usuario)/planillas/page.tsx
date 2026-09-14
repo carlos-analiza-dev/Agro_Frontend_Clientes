@@ -16,6 +16,7 @@ import {
   X,
   Plus,
   Filter,
+  BookOpenText,
 } from "lucide-react";
 
 import {
@@ -42,6 +43,7 @@ import Modal from "@/components/generics/Modal";
 import FormPlanilla from "./ui/FormPlanilla";
 import { useRouter } from "next/navigation";
 import ButtonAdd from "@/components/generics/ButtonAdd";
+import TitlePage from "@/components/generics/TitlePage";
 
 const PlanillaTrabajadoresPage = () => {
   const { cliente } = useAuthStore();
@@ -165,15 +167,11 @@ const PlanillaTrabajadoresPage = () => {
           id="id-planillas-header"
           className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
         >
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent">
-              Planillas de Trabajadores
-            </h1>
-
-            <p className="text-gray-500 dark:text-gray-400 mt-1">
-              Gestión de nóminas y pagos de trabajadores
-            </p>
-          </div>
+          <TitlePage
+            title={`Planillas de Trabajadores`}
+            description="Gestión de nóminas y pagos de trabajadores"
+            Icon={BookOpenText}
+          />
 
           <ButtonAdd
             id="add-planilla-btn"

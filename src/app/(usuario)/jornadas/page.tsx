@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   X,
   RefreshCw,
+  NotebookPen,
 } from "lucide-react";
 import {
   Select,
@@ -32,6 +33,7 @@ import FormJornadaTrabajador from "./ui/FormJornadaTrabajador";
 import { generarOpcionesMeses } from "@/helpers/funciones/generarOpcionesMeses";
 import { useRouter } from "next/navigation";
 import ButtonAdd from "@/components/generics/ButtonAdd";
+import TitlePage from "@/components/generics/TitlePage";
 
 const JornadasTrabajadoresPage = () => {
   const router = useRouter();
@@ -162,17 +164,13 @@ const JornadasTrabajadoresPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <h1
-              id="jornadas-trabajadores-page-title"
-              className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent"
-            >
-              Jornadas de Trabajadores
-            </h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">
-              Registro diario de asistencia y horas extras
-            </p>
-          </div>
+          <TitlePage
+            id_title="jornadas-trabajadores-page-title"
+            title={`Jornadas de Trabajadores`}
+            description="Registro diario de asistencia y horas extras"
+            Icon={NotebookPen}
+          />
+
           <ButtonAdd
             id="add-jornada-trabajador-btn"
             Icon={Calendar}

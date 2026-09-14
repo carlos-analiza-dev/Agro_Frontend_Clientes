@@ -25,6 +25,7 @@ import {
 import CardHistorial from "@/components/generics/CardHistorial";
 import CardTratamientos from "./ui/CardTratamientos";
 import { FiltrosBusqueda } from "@/components/generics/FiltrosBusqueda";
+import TitlePage from "@/components/generics/TitlePage";
 
 const TratamientosPage = () => {
   const { cliente } = useAuthStore();
@@ -216,14 +217,11 @@ const TratamientosPage = () => {
         id="tratamientos-header"
         className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
       >
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Tratamientos Animales
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Gestiona y consulta los tratamientos aplicados a tus animales
-          </p>
-        </div>
+        <TitlePage
+          title={`Tratamientos Animales`}
+          description="Gestiona y consulta los tratamientos aplicados a tus animales"
+          Icon={Pill}
+        />
       </div>
       <div id="tratamientos-filtros">
         <FiltrosBusqueda

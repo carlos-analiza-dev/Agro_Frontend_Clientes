@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Filter, Plus } from "lucide-react";
+import { BanknoteArrowDown, Filter, Plus } from "lucide-react";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import useGetObtenerGastos from "@/hooks/finanzas/gastos/useGetObtenerGastos";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
@@ -26,6 +26,7 @@ import FormGastos from "./ui/FormGastos";
 import { Gastos } from "@/api/finanzas/gastos/interface/gastos-response.interface";
 import { FiltrosGastosIngresos } from "@/components/generics/FiltrosGastosIngresos";
 import ButtonAdd from "@/components/generics/ButtonAdd";
+import TitlePage from "@/components/generics/TitlePage";
 
 const GastosPage = () => {
   const { cliente } = useAuthStore();
@@ -118,18 +119,12 @@ const GastosPage = () => {
   return (
     <div className="container mx-auto p-4 md:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1
-            id="gastos-page-title"
-            className="text-2xl md:text-3xl font-bold tracking-tight"
-          >
-            Control de Gastos {fincaSelected ? fincaSelected?.nombre_finca : ""}
-          </h1>
-
-          <p className="text-sm md:text-base text-muted-foreground">
-            Registra y monitorea todos los gastos de tus fincas
-          </p>
-        </div>
+        <TitlePage
+          id_title="gastos-page-title"
+          title={`Control de Gastos ${fincaSelected ? fincaSelected?.nombre_finca : ""}`}
+          description="Registra y monitorea todos los gastos de tus fincas"
+          Icon={BanknoteArrowDown}
+        />
 
         <div className="flex w-full sm:w-auto gap-2">
           {isMobile ? (

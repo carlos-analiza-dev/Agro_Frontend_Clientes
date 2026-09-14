@@ -15,6 +15,7 @@ import {
 
 import FormConsultaAgricola from "./ui/FormConsultaAgricola";
 import CardResults from "./ui/CardResults";
+import AlertaInteligente from "@/components/consultas-inteligentes/AlertaInteligente";
 
 const AgriculturaInteligentePage = () => {
   const [consultaResultado, setConsultaResultado] = useState<string | null>(
@@ -40,6 +41,14 @@ const AgriculturaInteligentePage = () => {
           Consultor Agrícola Inteligente
         </h1>
       </div>
+
+      <AlertaInteligente
+        title="Información importante"
+        description="Esta calculadora proporciona recomendaciones basadas en inteligencia
+          artificial. Los resultados son orientativos y deben ser validados por
+          un profesional del sector agrícola según las condiciones específicas
+          de tu terreno."
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card

@@ -25,7 +25,8 @@ import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { useRouter } from "next/navigation";
 
 import ButtonAdd from "@/components/generics/ButtonAdd";
-import { Plus } from "lucide-react";
+import { Plus, Tractor } from "lucide-react";
+import TitlePage from "@/components/generics/TitlePage";
 
 const EquiposPage = () => {
   const { cliente } = useAuthStore();
@@ -111,15 +112,12 @@ const EquiposPage = () => {
         id="id-header-equipos"
         className="md:flex justify-between items-center"
       >
-        <div id="id-title-equipos">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-            Equipos y Maquinaria
-          </h1>
-
-          <p className="text-sm md:text-base text-muted-foreground">
-            Registra y monitorea tus equipos y maquinaria
-          </p>
-        </div>
+        <TitlePage
+          id_title="id-title-equipos"
+          title={`Equipos y Maquinaria`}
+          description="Registra y monitorea tus equipos y maquinaria"
+          Icon={Tractor}
+        />
 
         <ButtonAdd
           id="add-equipo-btn"

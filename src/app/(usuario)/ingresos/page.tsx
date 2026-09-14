@@ -17,7 +17,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Filter, Plus } from "lucide-react";
+import { BanknoteArrowUp, Filter, Plus } from "lucide-react";
 import { FiltrosGastosIngresos } from "@/components/generics/FiltrosGastosIngresos";
 import Paginacion from "@/components/generics/Paginacion";
 import Modal from "@/components/generics/Modal";
@@ -25,6 +25,7 @@ import { CardIngresoMobile } from "./ui/CardIngresoMobile";
 import { TableIngresos } from "./ui/TableIngresos";
 import FormIngresos from "./ui/FormIngresos";
 import ButtonAdd from "@/components/generics/ButtonAdd";
+import TitlePage from "@/components/generics/TitlePage";
 
 const IngresosPage = () => {
   const { cliente } = useAuthStore();
@@ -117,18 +118,13 @@ const IngresosPage = () => {
   return (
     <div className="container mx-auto p-4 md:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1
-            id="ingresos-page-title"
-            className="text-2xl md:text-3xl font-bold tracking-tight"
-          >
-            Control de Ingresos{" "}
-            {fincaSelected ? fincaSelected?.nombre_finca : ""}
-          </h1>
-          <p className="text-sm md:text-base text-muted-foreground">
-            Registra y monitorea todos los ingresos de tus fincas
-          </p>
-        </div>
+        <TitlePage
+          id_title="ingresos-page-title"
+          title={`Control de Ingresos ${fincaSelected ? fincaSelected?.nombre_finca : ""}`}
+          description="Registra y monitorea todos los ingresos de tus fincas"
+          Icon={BanknoteArrowUp}
+        />
+
         <div className="flex w-full sm:w-auto gap-2">
           {isMobile ? (
             <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>

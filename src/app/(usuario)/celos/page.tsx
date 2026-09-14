@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Filter, Loader2, Plus } from "lucide-react";
+import { Cog, Filter, Loader2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import useGetCelosAnimal from "@/hooks/reproduccion/useGetCelosAnimal";
@@ -21,6 +21,7 @@ import MobileFilters from "./ui/MobileFilters";
 import DesktopFilters from "./ui/DesktopFilters";
 import { SexoAnimal } from "@/interfaces/enums/animales/sexo-animal.enum";
 import ButtonAdd from "@/components/generics/ButtonAdd";
+import TitlePage from "@/components/generics/TitlePage";
 
 const CelosAnimalPage = () => {
   const { cliente } = useAuthStore();
@@ -132,18 +133,14 @@ const CelosAnimalPage = () => {
         id="celos-header"
         className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
       >
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-            Control de Celos
-          </h1>
-
-          <h2 className="text-sm md:text-base max-w-3xl text-muted-foreground">
-            Registra y monitorea los celos de tus animales. Cada registro será
+        <TitlePage
+          title={`Control de Celos`}
+          description="Registra y monitorea los celos de tus animales. Cada registro será
             evaluado automáticamente para validar que el animal cumpla con la
             edad mínima reproductiva de su especie antes de continuar con
-            procesos como monta o inseminación.
-          </h2>
-        </div>
+            procesos como monta o inseminación."
+          Icon={Cog}
+        />
 
         <div className="flex w-full sm:w-auto gap-2">
           <Button
