@@ -7,6 +7,7 @@ const useGetFincasByTrabajador = (trabajadorId: string) => {
     queryFn: () => obtenerFincasAsignadas(trabajadorId),
     staleTime: 60 * 5 * 1000,
     retry: 0,
+    enabled: !!trabajadorId,
   });
 };
 
