@@ -36,9 +36,6 @@ const TableSucursalesAgro = ({
           <TableHead className="font-semibold hidden md:table-cell">
             Ubicación
           </TableHead>
-          <TableHead className="font-semibold hidden lg:table-cell">
-            Dirección
-          </TableHead>
           <TableHead className="font-semibold hidden sm:table-cell">
             Gerente
           </TableHead>
@@ -100,11 +97,7 @@ const TableSucursalesAgro = ({
                   </Badge>
                 </div>
               </TableCell>
-              <TableCell className="hidden lg:table-cell max-w-[200px] truncate">
-                <span className="text-sm text-gray-600">
-                  {sucursal.direccion_complemento || "Sin dirección"}
-                </span>
-              </TableCell>
+
               <TableCell className="hidden sm:table-cell">
                 {sucursal.gerente ? (
                   <div className="flex items-center gap-1">

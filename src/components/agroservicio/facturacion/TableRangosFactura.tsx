@@ -20,7 +20,6 @@ import {
   calcularUso,
   estaProximoVencer,
   estaVencido,
-  getUsoColor,
 } from "@/helpers/funciones/agroservicio/facturacion/rangos_factura";
 import {
   AlertCircle,
@@ -55,7 +54,6 @@ const TableRangosFactura = ({
             <TableHead>Prefijo</TableHead>
             <TableHead>Rango</TableHead>
             <TableHead>Correlativo</TableHead>
-            <TableHead>Uso</TableHead>
             <TableHead>Fechas</TableHead>
             <TableHead>Estado</TableHead>
             <TableHead className="text-right">Acciones</TableHead>
@@ -66,7 +64,6 @@ const TableRangosFactura = ({
             const uso = calcularUso(rango);
             const proximoVencer = estaProximoVencer(rango.fecha_limite_emision);
             const vencido = estaVencido(rango.fecha_limite_emision);
-            const usoColor = getUsoColor(uso);
 
             return (
               <TableRow key={rango.id}>
@@ -92,17 +89,7 @@ const TableRangosFactura = ({
                     </span>
                   </div>
                 </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <div className="w-16 bg-gray-200 rounded-full h-2">
-                      <div
-                        className={`h-2 rounded-full ${usoColor}`}
-                        style={{ width: `${Math.min(uso, 100)}%` }}
-                      />
-                    </div>
-                    <span className="text-xs font-medium">{uso}%</span>
-                  </div>
-                </TableCell>
+
                 <TableCell>
                   <div className="space-y-1">
                     <div className="flex items-center gap-1 text-xs">

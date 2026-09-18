@@ -7,10 +7,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatDate } from "@/helpers/funciones/formatDate";
 import { ArrowRight } from "lucide-react";
 import { getTipoBadge } from "./getTipoBadge";
 import { Movimiento } from "@/api/agroservicio/movimientos-inventario/interface/obtener-movimientos-inventario.interface";
+import { formatDateLocal } from "@/helpers/funciones/formatDateOnly";
 
 interface Props {
   filteredMovimientos: Movimiento[];
@@ -74,7 +74,7 @@ const TableTraslados = ({ filteredMovimientos, moneda }: Props) => {
               {moneda} {Number(mov.lote?.costo_por_unidad || 0).toFixed(2)}
             </TableCell>
             <TableCell className="text-center text-sm">
-              {formatDate(mov.created_at)}
+              {formatDateLocal(mov.created_at)}
             </TableCell>
             <TableCell className="text-center">
               {getTipoBadge(mov.tipo)}

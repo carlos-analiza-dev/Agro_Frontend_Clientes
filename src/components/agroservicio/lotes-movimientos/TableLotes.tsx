@@ -27,7 +27,7 @@ const TableLotes = ({ filteredLotes, moneda, handleTransferir }: Props) => {
           <TableHead className="text-center">Sucursal</TableHead>
           <TableHead className="text-center">Cantidad</TableHead>
           <TableHead className="text-center">Costo Unitario</TableHead>
-          <TableHead className="text-center">Costo Total</TableHead>
+          <TableHead className="text-center">Costo Origen</TableHead>
           <TableHead className="text-center">Estado</TableHead>
           <TableHead className="text-center">Acciones</TableHead>
         </TableRow>

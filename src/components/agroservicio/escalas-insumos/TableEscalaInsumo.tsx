@@ -403,7 +403,7 @@ const TableEscalaInsumo = ({
           </div>
           <div>
             <label className="text-sm font-medium mb-1 block">
-              Costo {moneda}
+              Costo Unidad {moneda}
             </label>
             <Input
               type="number"
