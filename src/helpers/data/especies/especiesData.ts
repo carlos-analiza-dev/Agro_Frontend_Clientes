@@ -7,3 +7,5 @@ export const especiesData = [
   { nombre: "Ovino" },
   { nombre: "Peces" },
 ];
+
+export const ESPECIES_EXCLUIDAS = ["Avicola", "Avícola", "Peces"];

@@ -54,6 +54,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { cn } from "@/lib/utils";
+import { ESPECIES_EXCLUIDAS } from "@/helpers/data/especies/especiesData";
 
 interface Props {
   tipo_publicacion: TipoPublicacion;
@@ -107,22 +108,21 @@ const FormPublicacion = ({
   const [searchAnimalTerm, setSearchAnimalTerm] = useState("");
 
   const filteredAnimales = useMemo(() => {
+    const animalesPermitidos = (animales || []).filter((animal: Animal) => {
+      const especieNombre = animal.especie?.nombre?.trim() || "";
+      return !ESPECIES_EXCLUIDAS.includes(especieNombre);
+    });
+
     if (!searchAnimalTerm.trim()) {
-      return animales || [];
+      return animalesPermitidos;
     }
 
     const term = searchAnimalTerm.toLowerCase().trim();
-    const filtered = (animales || []).filter((animal: Animal) => {
+    return animalesPermitidos.filter((animal: Animal) => {
       const identificador = (animal.identificador || "").toLowerCase();
       const nombre = (animal.nombre_animal || "").toLowerCase();
-
-      const matches = identificador.includes(term) || nombre.includes(term);
-      if (matches) {
-      }
-      return matches;
+      return identificador.includes(term) || nombre.includes(term);
     });
-
-    return filtered;
   }, [animales, searchAnimalTerm]);
 
   const {

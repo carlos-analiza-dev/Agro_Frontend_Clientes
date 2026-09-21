@@ -19,7 +19,6 @@ const AgroMarketPublicPage = () => {
   const {
     data: publicaciones,
     isLoading,
-    isError,
     error,
     refetch,
     fetchNextPage,
@@ -82,7 +81,7 @@ const AgroMarketPublicPage = () => {
     return <SkeletonCard />;
   }
 
-  if (isError || publicaciones_publicas.length === 0) {
+  if (publicaciones_publicas.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50/50 via-white to-green-50/30 p-4">
         <div className="max-w-7xl mx-auto">
@@ -107,7 +106,7 @@ const AgroMarketPublicPage = () => {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
+          <div className="relative z-10 flex flex-wrap items-center justify-center gap-3 mb-6">
             <div className="rounded-full bg-white/70 backdrop-blur-sm border border-gray-200/50 shadow-[0_4px_16px_rgba(0,0,0,0.04)] px-2 py-1">
               <RadioFilter
                 onRadiusChange={handleRadiusChange}
@@ -131,14 +130,16 @@ const AgroMarketPublicPage = () => {
             </div>
           </div>
 
-          <EmptyStateMarketplace
-            variant="error"
-            onRefresh={handleRefresh}
-            isLoading={isLoading}
-            description={
-              error?.message || "No se pudieron cargar los productos"
-            }
-          />
+          <div className="relative z-0">
+            <EmptyStateMarketplace
+              variant="error"
+              onRefresh={handleRefresh}
+              isLoading={isLoading}
+              description={
+                error?.message || "No se pudieron cargar los productos"
+              }
+            />
+          </div>
         </div>
       </div>
     );

@@ -2,90 +2,24 @@
 
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  PawPrint,
-  Sprout,
-  Syringe,
-  BarChart3,
-  Truck,
-  Users,
-  Sparkles,
-  ArrowRight,
-} from "lucide-react";
+import { Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-
-const services = [
-  {
-    icon: PawPrint,
-    title: "Gestión de Ganado",
-    description:
-      "Control de peso, salud, reproducción y trazabilidad de tu ganado.",
-    color: "from-blue-500 to-blue-600",
-    bgColor: "bg-blue-50/80",
-    iconColor: "text-blue-600",
-    hoverBg: "hover:border-blue-200/50",
-  },
-  {
-    icon: Sprout,
-    title: "Gestión Agrícola",
-    description: "Monitoreo de cultivos, riego, fertilización y rendimiento.",
-    color: "from-green-500 to-green-600",
-    bgColor: "bg-green-50/80",
-    iconColor: "text-green-600",
-    hoverBg: "hover:border-green-200/50",
-  },
-  {
-    icon: Syringe,
-    title: "Productos Veterinarios",
-    description: "Catálogo completo de medicamentos, vacunas y suplementos.",
-    color: "from-purple-500 to-purple-600",
-    bgColor: "bg-purple-50/80",
-    iconColor: "text-purple-600",
-    hoverBg: "hover:border-purple-200/50",
-  },
-  {
-    icon: BarChart3,
-    title: "Análisis Predictivo",
-    description: "IA para predecir rendimientos y optimizar recursos.",
-    color: "from-orange-500 to-orange-600",
-    bgColor: "bg-orange-50/80",
-    iconColor: "text-orange-600",
-    hoverBg: "hover:border-orange-200/50",
-  },
-  {
-    icon: Truck,
-    title: "Logística y Distribución",
-    description: "Gestión de inventarios y cadena de suministro.",
-    color: "from-cyan-500 to-cyan-600",
-    bgColor: "bg-cyan-50/80",
-    iconColor: "text-cyan-600",
-    hoverBg: "hover:border-cyan-200/50",
-  },
-  {
-    icon: Users,
-    title: "Asesoría Especializada",
-    description: "Soporte técnico y asesoramiento profesional continuo.",
-    color: "from-amber-500 to-amber-600",
-    bgColor: "bg-amber-50/80",
-    iconColor: "text-amber-600",
-    hoverBg: "hover:border-amber-200/50",
-  },
-];
+import { services_principal } from "@/helpers/data/publics/services";
 
 const ServiceCard = ({
   service,
   index,
 }: {
-  service: (typeof services)[0];
+  service: (typeof services_principal)[number];
   index: number;
 }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.08 }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
       viewport={{ once: true }}
       className="group h-full"
     >
@@ -113,9 +47,9 @@ const ServiceCard = ({
           <div className="flex items-start justify-between">
             <div
               className={cn(
-                "w-16 h-16 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_4px_16px_rgba(34,197,94,0.12)]",
+                "w-16 h-16 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110",
                 service.bgColor,
-                "backdrop-blur-sm border border-white/40",
+                "backdrop-blur-sm border border-white/40 shadow-sm",
               )}
             >
               <service.icon
@@ -126,12 +60,15 @@ const ServiceCard = ({
               />
             </div>
 
-            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white/60 backdrop-blur-sm border border-white/40 text-[10px] font-medium text-gray-400">
-                <Sparkles className="h-3 w-3 text-green-400" />
-                Premium
-              </span>
-            </div>
+            <span
+              className={cn(
+                "inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r text-white text-[11px] font-semibold shadow-sm",
+                service.color,
+              )}
+            >
+              <Sparkles className="h-3 w-3" />
+              {service.badge}
+            </span>
           </div>
 
           <CardTitle className="text-xl font-bold mt-4 group-hover:text-green-600 transition-colors duration-300">
@@ -140,15 +77,39 @@ const ServiceCard = ({
         </CardHeader>
 
         <CardContent className="relative">
-          <p className="text-gray-400 leading-relaxed">{service.description}</p>
+          <p className="text-gray-500 leading-relaxed text-sm">
+            {service.description}
+          </p>
 
-          <div className="mt-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-x-0 -translate-x-2">
+          <ul className="mt-5 space-y-2">
+            {service.features.map((f, i) => (
+              <li
+                key={i}
+                className="flex items-center gap-2 text-sm text-gray-600"
+              >
+                <span
+                  className={cn(
+                    "w-6 h-6 rounded-md flex items-center justify-center shrink-0",
+                    service.bgColor,
+                  )}
+                >
+                  <f.icon className={cn("w-3.5 h-3.5", service.iconColor)} />
+                </span>
+                <span>{f.label}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-6">
             <Link
-              href={"/login"}
-              className="p-0 h-auto text-green-600 hover:text-green-700 hover:bg-transparent group/link flex items-center"
+              href={service.href}
+              className={cn(
+                "inline-flex items-center gap-1.5 text-sm font-semibold transition-colors duration-300 group/link",
+                service.iconColor,
+              )}
             >
-              <span className="text-sm font-medium">Conocer más</span>
-              <ArrowRight className="ml-1 h-4 w-4 transition-transform duration-300 group-hover/link:translate-x-1" />
+              <span>Explorar sistema</span>
+              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover/link:translate-x-1" />
             </Link>
           </div>
         </CardContent>
@@ -188,8 +149,8 @@ export default function ServicesSection() {
       <div className="absolute inset-0 bg-grid-green-900/[0.02] bg-[size:50px_50px]" />
 
       <div className="absolute top-0 right-0 w-80 h-80 bg-green-200/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-200/10 rounded-full blur-3xl" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-green-100/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-200/10 rounded-full blur-3xl" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-100/5 rounded-full blur-3xl" />
 
       <DecorativeParticle className="top-20 left-10 w-24 h-24" delay={0} />
       <DecorativeParticle
@@ -209,21 +170,21 @@ export default function ServicesSection() {
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/60 backdrop-blur-sm border border-white/40 mb-4">
             <Sparkles className="h-4 w-4 text-green-500" />
             <span className="text-xs font-medium text-green-600 uppercase tracking-wider">
-              Nuestros Servicios
+              Nuestro Ecosistema
             </span>
           </div>
           <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-700 via-green-600 to-green-700 bg-clip-text text-transparent">
-            Soluciones integrales para el agro centroamericano
+            Tres sistemas, una sola plataforma
           </h2>
-          <p className="text-gray-400 mt-3 text-lg">
-            Todo lo que necesitas para gestionar tu producción agrícola y
-            ganadera en un solo lugar
+          <p className="text-gray-500 mt-3 text-lg">
+            Todo lo que necesitas para producir, gestionar tu agroservicio y
+            vender en el mercado agro centroamericano
           </p>
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {services.map((service, index) => (
-            <ServiceCard key={index} service={service} index={index} />
+          {services_principal.map((service, index) => (
+            <ServiceCard key={service.id} service={service} index={index} />
           ))}
         </div>
 
@@ -234,7 +195,7 @@ export default function ServicesSection() {
           viewport={{ once: true }}
           className="text-center mt-14"
         >
-          <div className="inline-flex items-center gap-4 px-6 py-3 rounded-full bg-white/60 backdrop-blur-sm border border-white/40 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+          <div className="inline-flex flex-wrap items-center justify-center gap-4 px-6 py-3 rounded-full bg-white/60 backdrop-blur-sm border border-white/40 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
             <span className="text-sm text-gray-500">
               ¿Listo para transformar tu producción?
             </span>
