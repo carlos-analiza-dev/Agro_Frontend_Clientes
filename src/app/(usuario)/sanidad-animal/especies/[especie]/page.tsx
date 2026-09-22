@@ -18,7 +18,7 @@ import {
   Layers,
   X,
 } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState, useMemo, useEffect, useRef } from "react";
 import FormSanidad from "../../ui/FormSanidad";
 import useGetSanidadAnimal from "@/hooks/sanidad-animal/useGetSanidadAnimal";
@@ -67,6 +67,7 @@ const SanidadByEspeciePage = () => {
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const isMobile = useMediaQuery("(max-width: 768px)");
   const { especie } = useParams();
+  const router = useRouter();
   const especie_animal = especie as string;
   const colors = ESPECIE_COLORS[especie_animal] || ESPECIE_COLORS.bovino;
   const [openModal, setOpenModal] = useState(false);
@@ -468,6 +469,13 @@ const SanidadByEspeciePage = () => {
     },
   );
 
+  const handleAddSanidad = () => {
+    if (isMobile) {
+      router.push(`/sanidad-animal/crear-sanidad?especie=${especie_animal}`);
+    } else {
+      setOpenModal(true);
+    }
+  };
   return (
     <div className="container mx-auto px-3 sm:px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6">
       <div className={`pl-4 ${colors.border}`}>
@@ -481,7 +489,7 @@ const SanidadByEspeciePage = () => {
           <ButtonAdd
             title={`Ingresar sanidad ${especie_animal}`}
             Icon={ShieldPlus}
-            action={() => setOpenModal(true)}
+            action={handleAddSanidad}
             className={`${colors.button} text-white shadow-sm hover:shadow-md transition-all duration-300`}
           />
         </div>

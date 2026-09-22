@@ -9,11 +9,9 @@ import {
   ShoppingCart,
   User,
   Crown,
-  Gift,
   History,
   AlertCircle,
   Sprout,
-  Sparkles,
   Cog,
 } from "lucide-react";
 

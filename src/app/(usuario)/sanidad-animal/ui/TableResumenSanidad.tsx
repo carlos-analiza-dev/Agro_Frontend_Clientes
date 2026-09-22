@@ -27,6 +27,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { ChevronDown, Edit, Trash2, AlertCircle, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -47,6 +48,7 @@ const TableResumenSanidad = ({
   acciones,
   isMobile,
 }: Props) => {
+  const rounter = useRouter();
   const queryClient = useQueryClient();
   const [openDelete, setOpenDelete] = useState(false);
   const [selectedSanidad, setSelectedSanidad] = useState<Sanidad | null>(null);
@@ -95,6 +97,10 @@ const TableResumenSanidad = ({
     setSelectedSanidad(null);
   };
 
+  const handleEditSanidadMobil = (id: string) => {
+    rounter.push(`/sanidad-animal/${id}`);
+  };
+
   return (
     <>
       {isMobile ? (
@@ -134,7 +140,7 @@ const TableResumenSanidad = ({
 
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem
-                            onClick={() => handleEditSanidad(item)}
+                            onClick={() => handleEditSanidadMobil(item.id)}
                           >
                             <Edit className="mr-2 h-4 w-4" />
                             Editar

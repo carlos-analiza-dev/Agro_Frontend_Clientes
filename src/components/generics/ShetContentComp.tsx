@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Sheet, SheetContent } from "../ui/sheet";
 import Link from "next/link";
 import { LogOut, Sparkles, Menu } from "lucide-react";
@@ -18,6 +18,7 @@ import useGetPermisosByClientePaquete from "@/hooks/permisos/useGetPermisosByCli
 import useGetPermisosByCliente from "@/hooks/permisos/useGetPermisosByCliente";
 import SidebarSkeleton from "../SideBars/SidebarSkeleton";
 import { cn } from "@/lib/utils";
+import { useNavItemsWithEspecies } from "@/hooks/fincas/useNavItemsWithEspecies";
 
 interface Props {
   setMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -133,6 +134,8 @@ const SheetContentComp = ({
     isError,
   } = useGetPermisosByCliente(clienteId);
 
+  const { navItems, isLoading: isLoadingEspecies } = useNavItemsWithEspecies();
+
   const permisos = esPropietario ? permisosPaquete : permisosCliente;
 
   const permisosVer =
@@ -140,30 +143,34 @@ const SheetContentComp = ({
       ?.filter((permiso) => permiso.ver === true)
       ?.map((permiso) => permiso.permiso.url) || [];
 
-  const filteredNavItems = navItems
-    .map((section) => {
-      const filteredItems = section.items.filter((item) => {
-        if (item.href === "/panel") {
-          return true;
-        }
+  const filteredNavItems = useMemo(() => {
+    return navItems
+      .map((section) => {
+        const filteredItems = section.items.filter((item) => {
+          if (item.href === "/panel") return true;
 
-        if (item.href.startsWith("/animales/especies")) {
-          return permisosVer.includes("/animales");
-        }
+          if (item.href.startsWith("/animales/especies")) {
+            return permisosVer.includes("/animales");
+          }
 
-        return permisosVer.includes(item.href);
-      });
+          if (item.href.startsWith("/sanidad-animal/especies")) {
+            return permisosVer.includes("/sanidad-animal");
+          }
 
-      return {
-        ...section,
-        items: filteredItems,
-      };
-    })
-    .filter((section) => section.items.length > 0);
+          return permisosVer.includes(item.href);
+        });
+
+        return {
+          ...section,
+          items: filteredItems,
+        };
+      })
+      .filter((section) => section.items.length > 0);
+  }, [navItems, permisosVer]);
 
   const isItemActive = (href: string) => pathname === href;
 
-  if (isLoading || isError) {
+  if (isLoading || isError || isLoadingEspecies) {
     return (
       <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
         <SheetContent

@@ -111,7 +111,7 @@ export default function AdminLayout({
       }
 
       if (!permisos || permisos.length === 0) {
-        return null;
+        return false;
       }
 
       const hasPermission = permisos.some((permiso) => {

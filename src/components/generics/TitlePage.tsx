@@ -19,7 +19,7 @@ const TitlePage = ({
     <div>
       <h1
         id={id_title}
-        className="text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2"
+        className="text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2 capitalize"
       >
         <Icon className="h-7 w-7 text-green-600" />
         {title}
