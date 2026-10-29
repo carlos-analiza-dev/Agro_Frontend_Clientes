@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import React from "react";
+import React, { useMemo } from "react";
 import CardProduccionFinca from "./CardProduccionFinca";
 import CardEspeciesByFinca from "./CardEspeciesByFinca";
 import CardTipoExplotacion from "./CardTipoExplotacion";
@@ -35,6 +35,18 @@ const ProduccionGanadera = () => {
   const { data: tipo_explotacion } = useGetFincasTipoExplotacion();
   const { data: especies_fincas } = useGetEspeciesByFincas();
   const { data: produccion_finca } = useGetProduccionGanaderaFinca();
+
+  const tieneBovinos = useMemo(() => {
+    if (!especies_fincas) return false;
+
+    return especies_fincas.some((finca: ResponseEspeciesByFinca) =>
+      finca.especies.some(
+        (e: Especie) =>
+          e.especie.toLowerCase().includes("bovino") ||
+          e.especie.toLowerCase().includes("bovinos"),
+      ),
+    );
+  }, [especies_fincas]);
 
   const especiesUnicas = Array.from(
     new Set(
@@ -118,16 +130,18 @@ const ProduccionGanadera = () => {
     totalOrigen > 0 ? (totalComprados / totalOrigen) * 100 : 0;
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl">
-            Producción Ganadera - Bovinos
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <CardProduccionFinca produccionData={produccion_finca || null} />
-        </CardContent>
-      </Card>
+      {tieneBovinos && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-xl">
+              Producción Ganadera - Bovinos
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardProduccionFinca produccionData={produccion_finca || null} />
+          </CardContent>
+        </Card>
+      )}
 
       <CardEspeciesByFinca
         barChartData={barChartData}

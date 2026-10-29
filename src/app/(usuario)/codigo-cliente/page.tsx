@@ -93,9 +93,9 @@ const CodigoClientePage = () => {
       return;
     }
 
-    if (!/^[A-Z0-9]{2,20}$/.test(codigoTrimmed)) {
+    if (!/^[A-Z0-9_-]{2,20}$/.test(codigoTrimmed)) {
       setError(
-        "El código debe contener solo letras y números (2-20 caracteres)",
+        "El código debe contener solo letras, números, guiones y guiones bajos (2-20 caracteres)",
       );
       return;
     }
