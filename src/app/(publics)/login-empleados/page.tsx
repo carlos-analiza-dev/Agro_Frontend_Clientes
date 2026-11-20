@@ -1,4 +1,5 @@
 "use client";
+
 import { FullScreenLoader } from "@/components/generics/FullScreenLoader";
 import LoginEmpleadosForm from "@/components/Login/LoginEmpleadosForm";
 import {
@@ -9,10 +10,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuthRedirect } from "@/helpers/funciones/useAuthRedirect";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 
-export default function LoginPage() {
+export default function LoginPageEmpleados() {
   const { isChecking } = useAuthRedirect();
+  const t = useTranslations("loginEmpleados");
 
   if (isChecking) {
     return <FullScreenLoader />;
@@ -24,9 +27,8 @@ export default function LoginPage() {
         <Image
           src="/images/Ganaderia.png"
           alt="Campo agrícola"
-          layout="fill"
-          objectFit="cover"
-          className="opacity-20"
+          fill
+          className="object-cover opacity-20"
           priority
           unoptimized
         />
@@ -36,11 +38,9 @@ export default function LoginPage() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold text-green-700">
-              El Sembrador FDN
+              {t("title")}
             </CardTitle>
-            <CardDescription>
-              Accede a tu cuenta para gestionar el agroservicio
-            </CardDescription>
+            <CardDescription>{t("description")}</CardDescription>
           </CardHeader>
 
           <CardContent>

@@ -38,34 +38,42 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
 import { getInitials } from "@/helpers/funciones/getInitials";
+import { useTranslations } from "next-intl";
 
 interface Props {
   fincas: ResposeFincasAsignadasTrabajador[] | undefined;
 }
 
 const TableFincasTrabajador = ({ fincas }: Props) => {
+  const t = useTranslations("tableFincasTrabajador");
   const queryClient = useQueryClient();
 
   const onEliminarAsignacion = async (asignacionId: string) => {
     try {
       await eliminarFincaTrabajador(asignacionId);
+
       queryClient.invalidateQueries({
         queryKey: ["fincas-trabajador"],
       });
-      queryClient.invalidateQueries({ queryKey: ["trabajadores"] });
-      toast.success("Finca Desasignada del Trabajador");
+
+      queryClient.invalidateQueries({
+        queryKey: ["trabajadores"],
+      });
+
+      toast.success(t("messages.farmUnassigned"));
     } catch (error) {
       if (isAxiosError(error)) {
         const messages = error.response?.data?.message;
+
         const errorMessage = Array.isArray(messages)
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al desasignar la finca";
+            : t("errors.unassignFarm");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("errors.unexpected"));
       }
     }
   };
@@ -76,11 +84,9 @@ const TableFincasTrabajador = ({ fincas }: Props) => {
         <CardContent className="py-8">
           <div className="flex flex-col items-center justify-center text-center">
             <Building2 className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">
-              No hay fincas asignadas
-            </h3>
+            <h3 className="text-lg font-semibold mb-2">{t("empty.title")}</h3>
             <p className="text-sm text-muted-foreground">
-              Este trabajador aún no tiene fincas asignadas.
+              {t("empty.description")}
             </p>
           </div>
         </CardContent>
@@ -90,6 +96,7 @@ const TableFincasTrabajador = ({ fincas }: Props) => {
 
   return (
     <div className="space-y-4">
+      {/* Vista móvil */}
       <div className="grid gap-4 md:hidden">
         {fincas.map((asignacion) => (
           <Card key={asignacion.id} className="overflow-hidden">
@@ -98,15 +105,18 @@ const TableFincasTrabajador = ({ fincas }: Props) => {
                 <CardTitle className="text-lg">
                   {asignacion.finca.nombre_finca}
                 </CardTitle>
+
                 <Badge variant="outline" className="text-xs">
                   {asignacion.finca.abreviatura}
                 </Badge>
               </div>
+
               <CardDescription className="flex items-center gap-1 mt-1">
                 <MapPin className="h-3 w-3" />
                 {asignacion.finca.ubicacion}
               </CardDescription>
             </CardHeader>
+
             <CardContent className="space-y-3">
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="flex items-center gap-2">
@@ -116,15 +126,20 @@ const TableFincasTrabajador = ({ fincas }: Props) => {
                     {asignacion.finca.medida_finca}
                   </span>
                 </div>
+
                 <div className="flex items-center gap-2">
                   <PiggyBank className="h-4 w-4 text-muted-foreground" />
-                  <span>{asignacion.finca.cantidad_animales} animales</span>
+                  <span>
+                    {asignacion.finca.cantidad_animales} {t("labels.animals")}
+                  </span>
                 </div>
               </div>
 
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <User className="h-3 w-3" />
-                <span>Por: {asignacion.asignadoPor.nombre}</span>
+                <span>
+                  {t("labels.assignedBy")}: {asignacion.asignadoPor.nombre}
+                </span>
               </div>
 
               <Button
@@ -132,28 +147,34 @@ const TableFincasTrabajador = ({ fincas }: Props) => {
                 size="sm"
                 className="w-full mt-2 text-red-600 hover:text-red-700 hover:bg-red-50"
                 onClick={() => onEliminarAsignacion(asignacion.id)}
+                aria-label={t("actions.unassignFarm", {
+                  name: asignacion.finca.nombre_finca,
+                })}
               >
                 <XCircle className="h-4 w-4 mr-2" />
-                Desasignar
+                {t("actions.unassign")}
               </Button>
             </CardContent>
           </Card>
         ))}
       </div>
 
+      {/* Vista escritorio */}
       <div className="hidden md:block border rounded-lg">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Finca</TableHead>
-              <TableHead>Ubicación</TableHead>
-              <TableHead>Características</TableHead>
-              <TableHead>Tipo Explotación</TableHead>
-
-              <TableHead>Asignado Por</TableHead>
-              <TableHead className="text-right">Acciones</TableHead>
+              <TableHead>{t("columns.farm")}</TableHead>
+              <TableHead>{t("columns.location")}</TableHead>
+              <TableHead>{t("columns.features")}</TableHead>
+              <TableHead>{t("columns.exploitationType")}</TableHead>
+              <TableHead>{t("columns.assignedBy")}</TableHead>
+              <TableHead className="text-right">
+                {t("columns.actions")}
+              </TableHead>
             </TableRow>
           </TableHeader>
+
           <TableBody>
             {fincas.map((asignacion) => (
               <TableRow key={asignacion.id}>
@@ -162,11 +183,13 @@ const TableFincasTrabajador = ({ fincas }: Props) => {
                     <div className="font-medium">
                       {asignacion.finca.nombre_finca}
                     </div>
+
                     <Badge variant="outline" className="text-xs">
                       {asignacion.finca.abreviatura}
                     </Badge>
                   </div>
                 </TableCell>
+
                 <TableCell>
                   <TooltipProvider>
                     <Tooltip>
@@ -178,15 +201,18 @@ const TableFincasTrabajador = ({ fincas }: Props) => {
                           </span>
                         </div>
                       </TooltipTrigger>
+
                       <TooltipContent>
                         <p>
-                          Coordenadas: {asignacion.finca.latitud?.toFixed(4)},{" "}
+                          {t("labels.coordinates")}:{" "}
+                          {asignacion.finca.latitud?.toFixed(4)},{" "}
                           {asignacion.finca.longitud?.toFixed(4)}
                         </p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </TableCell>
+
                 <TableCell>
                   <div className="space-y-1">
                     <div className="flex items-center gap-2 text-sm">
@@ -196,21 +222,28 @@ const TableFincasTrabajador = ({ fincas }: Props) => {
                         {asignacion.finca.medida_finca}
                       </span>
                     </div>
+
                     <div className="flex items-center gap-2 text-sm">
                       <PiggyBank className="h-3 w-3" />
-                      <span>{asignacion.finca.cantidad_animales} animales</span>
+                      <span>
+                        {asignacion.finca.cantidad_animales}{" "}
+                        {t("labels.animals")}
+                      </span>
                     </div>
+
                     {asignacion.finca.area_ganaderia && (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Tractor className="h-3 w-3" />
                         <span>
-                          Área ganadería: {asignacion.finca.area_ganaderia}{" "}
+                          {t("labels.livestockArea")}:{" "}
+                          {asignacion.finca.area_ganaderia}{" "}
                           {asignacion.finca.medida_finca}
                         </span>
                       </div>
                     )}
                   </div>
                 </TableCell>
+
                 <TableCell>
                   {asignacion.finca.especies_maneja &&
                     asignacion.finca.especies_maneja.length > 0 && (
@@ -234,16 +267,19 @@ const TableFincasTrabajador = ({ fincas }: Props) => {
                         {getInitials(asignacion.asignadoPor.nombre)}
                       </AvatarFallback>
                     </Avatar>
+
                     <div>
                       <div className="text-sm font-medium">
                         {asignacion.asignadoPor.nombre}
                       </div>
+
                       <div className="text-xs text-muted-foreground">
                         {asignacion.asignadoPor.rol}
                       </div>
                     </div>
                   </div>
                 </TableCell>
+
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
                     <TooltipProvider>
@@ -259,12 +295,16 @@ const TableFincasTrabajador = ({ fincas }: Props) => {
                                 "_blank",
                               )
                             }
+                            aria-label={t("actions.viewFarmDetails", {
+                              name: asignacion.finca.nombre_finca,
+                            })}
                           >
                             <ExternalLink className="h-4 w-4" />
                           </Button>
                         </TooltipTrigger>
+
                         <TooltipContent>
-                          Ver detalles de la finca
+                          {t("actions.viewFarmDetailsTooltip")}
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -277,11 +317,17 @@ const TableFincasTrabajador = ({ fincas }: Props) => {
                             size="icon"
                             className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
                             onClick={() => onEliminarAsignacion(asignacion.id)}
+                            aria-label={t("actions.unassignFarm", {
+                              name: asignacion.finca.nombre_finca,
+                            })}
                           >
                             <XCircle className="h-4 w-4" />
                           </Button>
                         </TooltipTrigger>
-                        <TooltipContent>Desasignar finca</TooltipContent>
+
+                        <TooltipContent>
+                          {t("actions.unassignFarmTooltip")}
+                        </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   </div>
@@ -292,24 +338,24 @@ const TableFincasTrabajador = ({ fincas }: Props) => {
         </Table>
       </div>
 
+      {/* Resumen de fincas */}
       {fincas.length > 0 && (
         <Card className="mt-4">
           <CardHeader>
-            <CardTitle className="text-lg">
-              Resumen de Fincas Asignadas
-            </CardTitle>
-            <CardDescription>
-              Estadísticas generales de las fincas asignadas al trabajador
-            </CardDescription>
+            <CardTitle className="text-lg">{t("summary.title")}</CardTitle>
+
+            <CardDescription>{t("summary.description")}</CardDescription>
           </CardHeader>
+
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               <div className="text-center">
                 <div className="text-2xl font-bold">{fincas.length}</div>
                 <div className="text-sm text-muted-foreground">
-                  Total Fincas
+                  {t("summary.totalFarms")}
                 </div>
               </div>
+
               <div className="text-center">
                 <div className="text-2xl font-bold">
                   {fincas.reduce(
@@ -318,9 +364,10 @@ const TableFincasTrabajador = ({ fincas }: Props) => {
                   )}
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  Total Animales
+                  {t("summary.totalAnimals")}
                 </div>
               </div>
+
               <div className="text-center">
                 <div className="text-2xl font-bold">
                   {fincas.reduce(
@@ -329,7 +376,9 @@ const TableFincasTrabajador = ({ fincas }: Props) => {
                   )}
                   {fincas[0]?.finca.medida_finca}
                 </div>
-                <div className="text-sm text-muted-foreground">Total Área</div>
+                <div className="text-sm text-muted-foreground">
+                  {t("summary.totalArea")}
+                </div>
               </div>
             </div>
           </CardContent>

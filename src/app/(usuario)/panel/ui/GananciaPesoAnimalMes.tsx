@@ -26,8 +26,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { getNombreMes } from "@/helpers/data/meses";
 import { Buscador } from "@/components/generics/Buscador";
+import { useTranslations, useLocale } from "next-intl";
 
 const GananciaPesoAnimalMes = () => {
+  const t = useTranslations("gananciaPesoAnimalMes");
+  const locale = useLocale();
+
   const { data: animales } = useGetAnimalesPropietario();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -63,6 +67,7 @@ const GananciaPesoAnimalMes = () => {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -80,7 +85,7 @@ const GananciaPesoAnimalMes = () => {
       pesoInicial: item.pesoInicial,
       pesoFinal: item.pesoFinal,
     }));
-  }, [data]);
+  }, [data, locale]);
 
   const handleSearchChange = (term: string) => {
     setSearchTerm(term);
@@ -96,7 +101,6 @@ const GananciaPesoAnimalMes = () => {
   const getChartMargin = () => {
     if (typeof window !== "undefined") {
       if (window.innerWidth < 640) {
-        // Móvil
         return { top: 10, right: 10, left: 0, bottom: 20 };
       } else if (window.innerWidth < 768) {
         return { top: 15, right: 15, left: 10, bottom: 25 };
@@ -104,6 +108,7 @@ const GananciaPesoAnimalMes = () => {
         return { top: 20, right: 30, left: 20, bottom: 30 };
       }
     }
+
     return { top: 20, right: 30, left: 20, bottom: 30 };
   };
 
@@ -111,10 +116,11 @@ const GananciaPesoAnimalMes = () => {
     <Card className="w-full max-w-full overflow-hidden">
       <CardHeader className="px-4 sm:px-6">
         <CardTitle className="text-lg sm:text-xl md:text-2xl">
-          Ganancia de peso mensual
+          {t("title")}
         </CardTitle>
+
         <CardDescription className="text-xs sm:text-sm">
-          Busca un animal por identificador y selecciona un año
+          {t("description")}
         </CardDescription>
       </CardHeader>
 
@@ -122,7 +128,7 @@ const GananciaPesoAnimalMes = () => {
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div className="relative w-full sm:flex-1" ref={dropdownRef}>
             <Buscador
-              title="Buscar por identificador..."
+              title={t("searchPlaceholder")}
               setSearchTerm={handleSearchChange}
               searchTerm={searchTerm}
               className="w-full"
@@ -137,20 +143,24 @@ const GananciaPesoAnimalMes = () => {
                     className="p-2 sm:p-3 hover:bg-gray-100 cursor-pointer border-b last:border-b-0 text-sm sm:text-base"
                     onClick={() => {
                       setSelectedAnimalId(animal.id);
+
                       setSelectedAnimalNombre(
                         animal.identificador ||
                           animal.nombre ||
-                          "Sin identificar",
+                          t("unidentified"),
                       );
+
                       setSearchTerm(
                         animal.identificador || animal.nombre || "",
                       );
+
                       setShowDropdown(false);
                     }}
                   >
                     <div className="font-medium truncate">
-                      {animal.identificador || "Sin identificador"}
+                      {animal.identificador || t("noIdentifier")}
                     </div>
+
                     {animal.nombre && (
                       <div className="text-xs sm:text-sm text-gray-600 truncate">
                         {animal.nombre}
@@ -163,7 +173,7 @@ const GananciaPesoAnimalMes = () => {
 
             {showDropdown && searchTerm && filteredAnimales.length === 0 && (
               <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg p-3 sm:p-4 text-center text-gray-500 text-sm">
-                No se encontraron animales
+                {t("noAnimalsFound")}
               </div>
             )}
           </div>
@@ -174,7 +184,7 @@ const GananciaPesoAnimalMes = () => {
             onChange={(e) => setYear(Number(e.target.value))}
             min={2000}
             max={2030}
-            placeholder="Año"
+            placeholder={t("yearPlaceholder")}
             className="w-full sm:w-32 md:w-40"
           />
         </div>
@@ -182,9 +192,10 @@ const GananciaPesoAnimalMes = () => {
         {selectedAnimalNombre && (
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 bg-blue-50 rounded-lg">
             <p className="text-xs sm:text-sm text-blue-800 break-words max-w-full">
-              <span className="font-semibold">Animal seleccionado:</span>{" "}
+              <span className="font-semibold">{t("selectedAnimal")}:</span>{" "}
               <span className="break-all">{selectedAnimalNombre}</span>
             </p>
+
             <Button
               variant="ghost"
               size="sm"
@@ -195,7 +206,7 @@ const GananciaPesoAnimalMes = () => {
               }}
               className="text-blue-800 hover:text-blue-900 text-xs sm:text-sm w-full sm:w-auto"
             >
-              Limpiar
+              {t("clear")}
             </Button>
           </div>
         )}
@@ -236,15 +247,21 @@ const GananciaPesoAnimalMes = () => {
                       borderRadius: "6px",
                     }}
                     formatter={(value: number, name: string) => {
-                      if (name === "ganancia")
-                        return [`${value} kg`, "Ganancia"];
-                      if (name === "pesoInicial")
-                        return [`${value} kg`, "Peso Inicial"];
-                      if (name === "pesoFinal")
-                        return [`${value} kg`, "Peso Final"];
+                      if (name === "ganancia") {
+                        return [`${value} kg`, t("chart.gain")];
+                      }
+
+                      if (name === "pesoInicial") {
+                        return [`${value} kg`, t("chart.initialWeight")];
+                      }
+
+                      if (name === "pesoFinal") {
+                        return [`${value} kg`, t("chart.finalWeight")];
+                      }
+
                       return [value, name];
                     }}
-                    labelFormatter={(label) => `Mes: ${label}`}
+                    labelFormatter={(label) => `${t("chart.month")}: ${label}`}
                   />
 
                   <Line
@@ -252,7 +269,7 @@ const GananciaPesoAnimalMes = () => {
                     dataKey="ganancia"
                     stroke="#16a34a"
                     strokeWidth={2}
-                    name="Ganancia"
+                    name={t("chart.gain")}
                   >
                     <LabelList
                       dataKey="ganancia"
@@ -276,31 +293,38 @@ const GananciaPesoAnimalMes = () => {
                   <thead>
                     <tr className="border-b">
                       <th className="text-left py-2 pr-4 whitespace-nowrap">
-                        Mes
+                        {t("table.month")}
                       </th>
+
                       <th className="text-right py-2 px-2 sm:px-4 whitespace-nowrap">
-                        Peso Inicial
+                        {t("table.initialWeight")}
                       </th>
+
                       <th className="text-right py-2 px-2 sm:px-4 whitespace-nowrap">
-                        Peso Final
+                        {t("table.finalWeight")}
                       </th>
+
                       <th className="text-right py-2 pl-2 sm:pl-4 whitespace-nowrap">
-                        Ganancia
+                        {t("table.gain")}
                       </th>
                     </tr>
                   </thead>
+
                   <tbody>
                     {chartData.map((item, index) => (
                       <tr key={index} className="border-b hover:bg-gray-50">
                         <td className="py-2 pr-4 font-medium whitespace-nowrap">
                           {item.mes}
                         </td>
+
                         <td className="text-right py-2 px-2 sm:px-4 whitespace-nowrap">
                           {item.pesoInicial} kg
                         </td>
+
                         <td className="text-right py-2 px-2 sm:px-4 whitespace-nowrap">
                           {item.pesoFinal} kg
                         </td>
+
                         <td className="text-right py-2 pl-2 sm:pl-4 whitespace-nowrap">
                           <span
                             className={
@@ -322,9 +346,7 @@ const GananciaPesoAnimalMes = () => {
           </div>
         ) : (
           <div className="flex justify-center items-center h-32 sm:h-48 md:h-64 text-gray-500 text-sm sm:text-base">
-            {selectedAnimalId
-              ? "No hay datos para este animal en el año seleccionado"
-              : "Busca y selecciona un animal para ver los datos"}
+            {selectedAnimalId ? t("noData") : t("selectAnimal")}
           </div>
         )}
       </CardContent>

@@ -4,13 +4,13 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Users, Tractor, Building2, PawPrint, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 const stats = [
   {
     icon: Users,
     value: "5000+",
-    label: "Productores activos",
-    description: "en Centroamérica",
+    key: "producers",
     color: "from-blue-500 to-blue-600",
     bgColor: "bg-blue-50/80",
     iconColor: "text-blue-600",
@@ -18,8 +18,7 @@ const stats = [
   {
     icon: Tractor,
     value: "50K+",
-    label: "Hectáreas gestionadas",
-    description: "de tierra cultivable",
+    key: "hectares",
     color: "from-green-500 to-green-600",
     bgColor: "bg-green-50/80",
     iconColor: "text-green-600",
@@ -27,8 +26,7 @@ const stats = [
   {
     icon: PawPrint,
     value: "100K+",
-    label: "Cabezas de ganado",
-    description: "registradas",
+    key: "livestock",
     color: "from-amber-500 to-amber-600",
     bgColor: "bg-amber-50/80",
     iconColor: "text-amber-600",
@@ -36,13 +34,12 @@ const stats = [
   {
     icon: Building2,
     value: "4",
-    label: "Países",
-    description: "en Centroamérica",
+    key: "countries",
     color: "from-purple-500 to-purple-600",
     bgColor: "bg-purple-50/80",
     iconColor: "text-purple-600",
   },
-];
+] as const;
 
 const StatCard = ({
   icon: Icon,
@@ -137,8 +134,13 @@ const Particle = ({
 );
 
 export default function StatsSection() {
+  const t = useTranslations("stats");
+
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, {
+    once: true,
+    margin: "-100px",
+  });
 
   return (
     <section
@@ -164,27 +166,29 @@ export default function StatsSection() {
         >
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/60 backdrop-blur-sm border border-white/40 mb-4">
             <Sparkles className="h-4 w-4 text-green-500" />
+
             <span className="text-xs font-medium text-green-600 uppercase tracking-wider">
-              Nuestro impacto
+              {t("badge")}
             </span>
           </div>
+
           <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-700 via-green-600 to-green-700 bg-clip-text text-transparent">
-            Transformando el agro centroamericano
+            {t("title")}
           </h2>
+
           <p className="text-gray-400 mt-2 max-w-2xl mx-auto">
-            Miles de productores confían en nuestra plataforma para gestionar
-            sus operaciones
+            {t("description")}
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => (
             <StatCard
-              key={index}
+              key={stat.key}
               icon={stat.icon}
               value={stat.value}
-              label={stat.label}
-              description={stat.description}
+              label={t(`items.${stat.key}.label`)}
+              description={t(`items.${stat.key}.description`)}
               color={stat.color}
               bgColor={stat.bgColor}
               iconColor={stat.iconColor}
@@ -196,6 +200,7 @@ export default function StatsSection() {
 
         <div className="relative mt-16">
           <div className="absolute left-1/2 -translate-x-1/2 w-24 h-0.5 bg-gradient-to-r from-transparent via-green-200 to-transparent" />
+
           <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-green-200/50 blur-sm" />
         </div>
       </div>

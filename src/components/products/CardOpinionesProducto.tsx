@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { EditarOpinion } from "@/api/opiniones/accions/editar-opinio";
+import { useLocale, useTranslations } from "next-intl";
 
 interface Props {
   opinion: Opinione;
@@ -40,11 +41,15 @@ const CardOpinionesProducto = ({ opinion, cliente, productoId }: Props) => {
   const [editedComentario, setEditedComentario] = useState(opinion.comentario);
   const [error, setError] = useState<string | null>(null);
 
+  const t = useTranslations("productDetails.opinionCard");
+  const locale = useLocale();
+
   const tituloRef = useRef<HTMLInputElement>(null);
   const comentarioRef = useRef<HTMLTextAreaElement>(null);
   const queryClient = useQueryClient();
 
   const esPropietario = cliente?.id === opinion.cliente.id;
+
   const fueEditada =
     opinion.updatedAt &&
     new Date(opinion.updatedAt) > new Date(opinion.createdAt);
@@ -72,18 +77,18 @@ const CardOpinionesProducto = ({ opinion, cliente, productoId }: Props) => {
     setError(null);
 
     if (editedRating === 0) {
-      setError("Por favor selecciona una calificación");
+      setError(t("validation.rating"));
       return;
     }
 
     if (!editedTitulo.trim()) {
-      setError("Por favor ingresa un título");
+      setError(t("validation.title"));
       tituloRef.current?.focus();
       return;
     }
 
     if (!editedComentario.trim()) {
-      setError("Por favor ingresa un comentario");
+      setError(t("validation.comment"));
       comentarioRef.current?.focus();
       return;
     }
@@ -109,7 +114,7 @@ const CardOpinionesProducto = ({ opinion, cliente, productoId }: Props) => {
 
       await EditarOpinion(opinion.id, data);
 
-      toast.success("Tu opinión ha sido actualizada exitosamente.");
+      toast.success(t("success"));
 
       queryClient.invalidateQueries({ queryKey: ["opiniones"] });
       queryClient.invalidateQueries({ queryKey: ["rating"] });
@@ -118,8 +123,8 @@ const CardOpinionesProducto = ({ opinion, cliente, productoId }: Props) => {
 
       setIsEditing(false);
     } catch (error: any) {
-      const message =
-        error.response?.data?.message || "Error al actualizar la opinión";
+      const message = error.response?.data?.message || t("errors.update");
+
       setError(message);
       toast.error(message);
     } finally {
@@ -135,7 +140,7 @@ const CardOpinionesProducto = ({ opinion, cliente, productoId }: Props) => {
         onClick={() => editable && setEditedRating(i + 1)}
         className={cn(
           "transition-transform",
-          editable && "hover:scale-110 active:scale-95"
+          editable && "hover:scale-110 active:scale-95",
         )}
         disabled={!editable || isSaving}
       >
@@ -145,7 +150,7 @@ const CardOpinionesProducto = ({ opinion, cliente, productoId }: Props) => {
             i < rating
               ? "fill-yellow-400 text-yellow-400"
               : "fill-gray-200 text-gray-200",
-            editable && "cursor-pointer"
+            editable && "cursor-pointer",
           )}
         />
       </button>
@@ -162,11 +167,14 @@ const CardOpinionesProducto = ({ opinion, cliente, productoId }: Props) => {
   };
 
   const getFechaFormateada = (fecha: string) => {
-    return new Date(fecha).toLocaleDateString("es-ES", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
+    return new Date(fecha).toLocaleDateString(
+      locale === "en" ? "en-US" : "es-ES",
+      {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      },
+    );
   };
 
   return (
@@ -187,7 +195,7 @@ const CardOpinionesProducto = ({ opinion, cliente, productoId }: Props) => {
 
         {esPropietario && !isEditing && (
           <div className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs px-1.5 py-0.5 rounded-full">
-            Tú
+            {t("you")}
           </div>
         )}
       </div>
@@ -200,7 +208,7 @@ const CardOpinionesProducto = ({ opinion, cliente, productoId }: Props) => {
             {opinion.compra_verificada && (
               <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 text-xs px-2 py-0.5 rounded-full">
                 <CheckCircle className="h-3 w-3" />
-                Verificado
+                {t("verified")}
               </span>
             )}
           </div>
@@ -210,7 +218,7 @@ const CardOpinionesProducto = ({ opinion, cliente, productoId }: Props) => {
               <div className="flex gap-1 items-center">
                 {renderStars(editedRating, true)}
                 <span className="text-sm ml-2 text-gray-600">
-                  {editedRating} estrella{editedRating !== 1 ? "s" : ""}
+                  {t("rating", { count: editedRating })}
                 </span>
               </div>
             ) : (
@@ -224,10 +232,11 @@ const CardOpinionesProducto = ({ opinion, cliente, productoId }: Props) => {
                     <MoreVertical className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
+
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={handleEdit}>
                     <Pencil className="h-4 w-4 mr-2" />
-                    Editar opinión
+                    {t("edit")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -238,17 +247,18 @@ const CardOpinionesProducto = ({ opinion, cliente, productoId }: Props) => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  title="Cancelar"
+                  title={t("cancel")}
                   onClick={handleCancel}
                   disabled={isSaving}
                   className="h-8 w-8"
                 >
                   <X className="h-4 w-4" />
                 </Button>
+
                 <Button
                   variant="default"
                   size="icon"
-                  title="Guardar"
+                  title={t("save")}
                   onClick={handleSave}
                   disabled={isSaving}
                   className="h-8 w-8 bg-green-600 hover:bg-green-700"
@@ -266,13 +276,17 @@ const CardOpinionesProducto = ({ opinion, cliente, productoId }: Props) => {
               ref={tituloRef}
               value={editedTitulo}
               onChange={(e) => setEditedTitulo(e.target.value)}
-              placeholder="Título de tu opinión"
+              placeholder={t("titlePlaceholder")}
               maxLength={200}
               disabled={isSaving}
               className="text-base font-semibold"
             />
+
             <p className="text-xs text-gray-500 text-right">
-              {editedTitulo.length}/200 caracteres
+              {t("characters", {
+                count: editedTitulo.length,
+                max: 200,
+              })}
             </p>
           </div>
         ) : (
@@ -287,14 +301,18 @@ const CardOpinionesProducto = ({ opinion, cliente, productoId }: Props) => {
               ref={comentarioRef}
               value={editedComentario}
               onChange={(e) => setEditedComentario(e.target.value)}
-              placeholder="Describe tu experiencia con este producto"
+              placeholder={t("commentPlaceholder")}
               rows={3}
               maxLength={2000}
               disabled={isSaving}
               className="resize-none"
             />
+
             <p className="text-xs text-gray-500 text-right">
-              {editedComentario.length}/2000 caracteres
+              {t("characters", {
+                count: editedComentario.length,
+                max: 2000,
+              })}
             </p>
           </div>
         ) : (
@@ -312,12 +330,15 @@ const CardOpinionesProducto = ({ opinion, cliente, productoId }: Props) => {
         <div className="flex items-center justify-between mt-2">
           <p className="text-xs text-gray-400">
             {isEditing ? (
-              <span className="text-blue-600 italic">Editando...</span>
+              <span className="text-blue-600 italic">{t("editing")}</span>
             ) : (
               <>
                 {getFechaFormateada(opinion.createdAt)}
+
                 {fueEditada && (
-                  <span className="text-blue-500 italic ml-2">• Editada</span>
+                  <span className="text-blue-500 italic ml-2">
+                    • {t("edited")}
+                  </span>
                 )}
               </>
             )}
@@ -326,7 +347,7 @@ const CardOpinionesProducto = ({ opinion, cliente, productoId }: Props) => {
           {isSaving && (
             <div className="flex items-center gap-1">
               <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-gray-400"></div>
-              <span className="text-xs text-gray-500">Guardando...</span>
+              <span className="text-xs text-gray-500">{t("saving")}</span>
             </div>
           )}
         </div>

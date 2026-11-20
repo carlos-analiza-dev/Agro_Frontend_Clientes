@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Pencil, Sprout } from "lucide-react";
@@ -22,6 +23,8 @@ export const ProduccionAgricolaCard: React.FC<ProduccionAgricolaProps> = ({
   agricola,
   handleProduccionAgricola,
 }) => {
+  const t = useTranslations("produccionAgricolaCard");
+
   if (!agricola.cultivos || agricola.cultivos.length === 0) {
     return null;
   }
@@ -32,15 +35,17 @@ export const ProduccionAgricolaCard: React.FC<ProduccionAgricolaProps> = ({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => handleProduccionAgricola(agricola)}
+          onClick={() => handleProduccionAgricola(agricola as Agricola)}
         >
-          <Pencil className="h-4 w-4 mr-1" /> Editar Agricola
+          <Pencil className="h-4 w-4 mr-1" />
+          {t("buttons.edit")}
         </Button>
       </div>
+
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-lg">
           <Sprout className="h-5 w-5 text-primary" />
-          Producción Agrícola
+          {t("title")}
         </CardTitle>
       </CardHeader>
 
@@ -59,14 +64,14 @@ export const ProduccionAgricolaCard: React.FC<ProduccionAgricolaProps> = ({
 
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div>
-                <span className="font-medium">Estacionalidad:</span>
+                <span className="font-medium">{t("fields.seasonality")}:</span>
                 <span className="text-muted-foreground ml-1 block">
                   {cultivo.estacionalidad}
                 </span>
               </div>
 
               <div>
-                <span className="font-medium">Duración:</span>
+                <span className="font-medium">{t("fields.duration")}:</span>
                 <span className="text-muted-foreground ml-1 block">
                   {cultivo.tiempo_estimado_cultivo}
                 </span>
@@ -74,7 +79,7 @@ export const ProduccionAgricolaCard: React.FC<ProduccionAgricolaProps> = ({
 
               {cultivo.metodo_cultivo && (
                 <div className="col-span-2">
-                  <span className="font-medium">Método:</span>
+                  <span className="font-medium">{t("fields.method")}:</span>
                   <span className="text-muted-foreground ml-1">
                     {cultivo.metodo_cultivo}
                   </span>
@@ -85,7 +90,9 @@ export const ProduccionAgricolaCard: React.FC<ProduccionAgricolaProps> = ({
             {cultivo.meses_produccion &&
               cultivo.meses_produccion.length > 0 && (
                 <div className="mt-3">
-                  <span className="font-medium text-sm block mb-2">Meses:</span>
+                  <span className="font-medium text-sm block mb-2">
+                    {t("fields.months")}:
+                  </span>
                   <div className="flex flex-wrap gap-1">
                     {cultivo.meses_produccion.map((mes, i) => (
                       <Badge key={i} variant="secondary" className="text-xs">

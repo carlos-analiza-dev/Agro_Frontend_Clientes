@@ -1,8 +1,11 @@
+"use client";
+
 import React, { Dispatch, SetStateAction } from "react";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { CircleHelp } from "lucide-react";
 import { TourStep } from "../agroservicio/guia/TourGuide";
+import { useTranslations } from "next-intl";
 
 interface Props {
   setTourOpen: Dispatch<SetStateAction<boolean>>;
@@ -10,6 +13,8 @@ interface Props {
 }
 
 const ButtonGuiaSystem = ({ currentTourSteps, setTourOpen }: Props) => {
+  const t = useTranslations("buttonGuiaSystem");
+
   return (
     <Button
       variant="ghost"
@@ -23,7 +28,7 @@ const ButtonGuiaSystem = ({ currentTourSteps, setTourOpen }: Props) => {
           ? "text-green-700 hover:bg-green-50 hover:text-green-700"
           : "text-gray-400",
       )}
-      title="Abrir guía del sistema"
+      title={t("title")}
     >
       <span
         className={cn(
@@ -38,12 +43,10 @@ const ButtonGuiaSystem = ({ currentTourSteps, setTourOpen }: Props) => {
       </span>
 
       <span className="flex flex-col items-start">
-        <span className="font-semibold">Guía del sistema</span>
+        <span className="font-semibold">{t("label")}</span>
 
         <span className="text-[11px] font-normal text-gray-400">
-          {currentTourSteps.length > 0
-            ? "Aprende a utilizar el sistema"
-            : "No disponible en esta página"}
+          {currentTourSteps.length > 0 ? t("description") : t("unavailable")}
         </span>
       </span>
 

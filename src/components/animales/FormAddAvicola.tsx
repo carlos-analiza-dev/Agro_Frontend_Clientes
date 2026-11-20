@@ -40,12 +40,15 @@ import {
 import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import { CreateAnimalAvicolas } from "@/api/animales/accions/crear-animal";
+import { useTranslations } from "next-intl";
 
 interface Props {
   selectedEspecieId: string;
 }
 
 const FormAddAvicola = ({ selectedEspecieId }: Props) => {
+  const t = useTranslations("FormAddAvicola");
+
   const router = useRouter();
   const queryClient = useQueryClient();
   const { cliente } = useAuthStore();
@@ -59,6 +62,7 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
       label: finca.nombre_finca,
       value: finca.id,
     })) || [];
+
   const {
     register,
     handleSubmit,
@@ -85,7 +89,6 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
       huevosDiarios >= 0
     ) {
       const porcentaje = (huevosDiarios / cantidadLote) * 100;
-
       const porcentajeCalculado = Math.min(100, Number(porcentaje.toFixed(2)));
       setValue("porcentaje_postura", String(porcentajeCalculado));
     } else {
@@ -93,11 +96,16 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
     }
   }, [watch("cantidad_lote"), watch("huevos_diarios")]);
 
+  const cantidadLote = watch("cantidad_lote");
+  const huevosDiarios = watch("huevos_diarios");
+  const porcentajePostura = watch("porcentaje_postura");
+  const razaIdsSeleccionadas = watch("razaIds") || [];
+
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
 
     if (files.length + selectedImages.length > 5) {
-      toast.error("Máximo 5 imágenes permitidas");
+      toast.error(t("messages.maxImagenes"));
       return;
     }
 
@@ -106,11 +114,11 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
       const isValidSize = file.size <= 1024 * 1024;
 
       if (!isValidType) {
-        toast.error(`El archivo ${file.name} no es una imagen válida`);
+        toast.error(t("messages.imagenInvalida", { name: file.name }));
         return false;
       }
       if (!isValidSize) {
-        toast.error(`La imagen ${file.name} excede el límite de 1MB`);
+        toast.error(t("messages.imagenExcede", { name: file.name }));
         return false;
       }
       return true;
@@ -137,7 +145,7 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
   const mutation = useMutation({
     mutationFn: (data: FormData) => CreateAnimalAvicolas(data),
     onSuccess: () => {
-      toast.success("Animal avícola creado correctamente");
+      toast.success(t("messages.avicolaCreado"));
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
       reset();
       router.push("/animales");
@@ -149,11 +157,11 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear el animal avícola";
+            : t("messages.errorCrear");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("messages.errorInesperado"));
       }
     },
   });
@@ -161,7 +169,7 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
   const onSubmit = (data: AvicolaData) => {
     if (!cliente?.id) return;
     if (!selectedEspecieId) {
-      toast.error("No se ha seleccionado una especie válida");
+      toast.error(t("validation.especieInvalida"));
       return;
     }
     const formData = new FormData();
@@ -213,23 +221,27 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <Card className="max-w-4xl mx-auto">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Datos del Lote</CardTitle>
+          <CardTitle className="text-2xl font-bold">
+            {t("header.title")}
+          </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Completa la información del lote avícola. Los campos con{" "}
-            <span className="text-red-500">*</span> son obligatorios.
+            {t.rich("header.subtitle", {
+              red: (chunks) => <span className="text-red-500">{chunks}</span>,
+            })}
           </p>
         </CardHeader>
 
         <CardContent className="space-y-6">
+          {/* Identificación */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Identificación
+              {t("sections.identificacion")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Tipo de Ave <span className="text-red-500">*</span>
+                  {t("fields.tipoAve")} <span className="text-red-500">*</span>
                 </Label>
                 <Select
                   value={watch("tipo_ave") || ""}
@@ -238,7 +250,7 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona el tipo de ave" />
+                    <SelectValue placeholder={t("fields.tipoAvePlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
                     {tipoAveOptions.map((tipo) => (
@@ -256,7 +268,7 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
               </div>
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Identificador Lote/Galpon{" "}
+                  {t("fields.identificador")}{" "}
                   <span className="text-red-500">*</span>
                 </Label>
                 <div className="flex items-center gap-2">
@@ -268,13 +280,13 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                         e.target.value = value;
                         setValue("identificador", value);
                       }}
-                      placeholder="Ej: 123ABC, A1B2C3, etc."
+                      placeholder={t("fields.identificadorPlaceholder")}
                       maxLength={6}
                       className="w-full font-mono text-lg tracking-wider uppercase"
                     />
                     <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
                       <span className="text-xs text-muted-foreground">
-                        6 caracteres
+                        {t("fields.chars6")}
                       </span>
                     </div>
                   </div>
@@ -295,8 +307,7 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                       </TooltipTrigger>
                       <TooltipContent side="right" className="max-w-xs">
                         <p className="text-xs">
-                          Código de identificación del lote (máximo 6
-                          caracteres)
+                          {t("fields.identificadorHelp")}
                         </p>
                       </TooltipContent>
                     </Tooltip>
@@ -311,14 +322,15 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
             </div>
           </div>
 
+          {/* Razas del Lote */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Razas del Lote <span className="text-red-500">*</span>
+              {t("sections.razas")} <span className="text-red-500">*</span>
             </h3>
 
             <div className="space-y-2">
               <Label className="text-sm font-medium">
-                Selecciona las razas que componen el lote
+                {t("fields.razasInfo")}
               </Label>
               <div className="border rounded-lg p-4 space-y-2 max-h-48 overflow-y-auto bg-gray-50">
                 {razas?.data && razas.data.length > 0 ? (
@@ -349,36 +361,40 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                   ))
                 ) : (
                   <p className="text-sm text-muted-foreground text-center py-4">
-                    No hay razas disponibles para esta especie
+                    {t("fields.noRazas")}
                   </p>
                 )}
               </div>
               {errors.razaIds && (
                 <p className="text-sm text-red-500">{errors.razaIds.message}</p>
               )}
-              {watch("razaIds") && watch("razaIds").length > 0 && (
+              {razaIdsSeleccionadas.length > 0 && (
                 <p className="text-xs text-green-600">
-                  ✓ {watch("razaIds").length} raza(s) seleccionada(s)
+                  {t("fields.razasSeleccionadas", {
+                    count: razaIdsSeleccionadas.length,
+                  })}
                 </p>
               )}
             </div>
           </div>
 
+          {/* Información del Lote */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Información del Lote
+              {t("sections.infoLote")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Cantidad en Lote <span className="text-red-500">*</span>
+                  {t("fields.cantidadLote")}{" "}
+                  <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   type="number"
                   min={1}
                   {...register("cantidad_lote", { valueAsNumber: true })}
-                  placeholder="Ej: 100"
+                  placeholder={t("fields.cantidadLotePlaceholder")}
                 />
                 {errors.cantidad_lote && (
                   <p className="text-sm text-red-500">
@@ -388,42 +404,51 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Galpón</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.galpon")}
+                </Label>
                 <Input
                   {...register("galpon")}
-                  placeholder="Ej: Galpón A, Galpón 1, etc."
+                  placeholder={t("fields.galponPlaceholder")}
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Proveedor de Aves</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.proveedorAves")}
+                </Label>
                 <Input
                   {...register("proveedor_aves")}
-                  placeholder="Nombre del proveedor"
+                  placeholder={t("fields.proveedorAvesPlaceholder")}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Mortalidad Diaria</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.mortalidadDiaria")}
+                </Label>
                 <Input
                   type="number"
                   min={0}
                   {...register("mortalidad_diaria", { valueAsNumber: true })}
-                  placeholder="Ej: 5"
+                  placeholder={t("fields.mortalidadDiariaPlaceholder")}
                 />
               </div>
             </div>
           </div>
+
+          {/* Etapa del Lote */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Etapa del Lote
+              {t("sections.etapa")}
             </h3>
 
             <div className="space-y-2">
               <Label className="text-sm font-medium">
-                Etapa Actual <span className="text-red-500">*</span>
+                {t("fields.etapaActual")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={watch("etapa_avicola") || ""}
@@ -432,7 +457,9 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecciona la etapa actual del lote" />
+                  <SelectValue
+                    placeholder={t("fields.etapaActualPlaceholder")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {etapaAvicolaOptions.map((etapa) => (
@@ -450,37 +477,51 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
 
               <div className="mt-2 p-3 bg-blue-50 rounded-md border border-blue-100">
                 <p className="text-xs text-blue-700">
-                  <span className="font-semibold">📌 Etapas:</span>
+                  <span className="font-semibold">
+                    {t("fields.etapasInfoTitle")}
+                  </span>
                 </p>
                 <ul className="text-xs text-blue-600 mt-1 space-y-1 list-disc list-inside">
                   <li>
-                    <span className="font-medium">Recepción:</span> Primeros
-                    días después de la llegada de las aves
+                    <span className="font-medium">
+                      {t("fields.etapaRecepcionTitle")}
+                    </span>{" "}
+                    {t("fields.etapaRecepcionDesc")}
                   </li>
                   <li>
-                    <span className="font-medium">Cría:</span> Etapa inicial de
-                    desarrollo
+                    <span className="font-medium">
+                      {t("fields.etapaCriaTitle")}
+                    </span>{" "}
+                    {t("fields.etapaCriaDesc")}
                   </li>
                   <li>
-                    <span className="font-medium">Crecimiento:</span> Desarrollo
-                    y aumento de peso
+                    <span className="font-medium">
+                      {t("fields.etapaCrecimientoTitle")}
+                    </span>{" "}
+                    {t("fields.etapaCrecimientoDesc")}
                   </li>
                   <li>
-                    <span className="font-medium">Engorde:</span> Etapa final
-                    antes de la producción
+                    <span className="font-medium">
+                      {t("fields.etapaEngordeTitle")}
+                    </span>{" "}
+                    {t("fields.etapaEngordeDesc")}
                   </li>
                   <li>
-                    <span className="font-medium">Ayuno:</span> Período de
-                    descanso o preparación
+                    <span className="font-medium">
+                      {t("fields.etapaAyunoTitle")}
+                    </span>{" "}
+                    {t("fields.etapaAyunoDesc")}
                   </li>
                 </ul>
               </div>
             </div>
           </div>
+
+          {/* Alimentación */}
           <div className="space-y-4">
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Alimentación
+                {t("sections.alimentacion")}
               </h3>
 
               <div className="border rounded-lg p-4 space-y-4 bg-gray-50">
@@ -561,10 +602,10 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                                   className="text-sm"
                                 >
                                   {origen === "comprado"
-                                    ? "Comprado"
+                                    ? t("alimentacion.origenComprado")
                                     : origen === "producido"
-                                      ? "Producido"
-                                      : "Comprado y producido"}
+                                      ? t("alimentacion.origenProducido")
+                                      : t("alimentacion.origenAmbos")}
                                 </Label>
                               </div>
                             ))}
@@ -574,7 +615,9 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                             "comprado y producido" && (
                             <div className="grid grid-cols-2 gap-3">
                               <div className="space-y-1">
-                                <Label className="text-xs">% Comprado</Label>
+                                <Label className="text-xs">
+                                  {t("alimentacion.porcentajeComprado")}
+                                </Label>
                                 <Input
                                   type="number"
                                   min="0"
@@ -599,11 +642,18 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                                     );
                                     setValue("tipo_alimentacion", updated);
                                   }}
-                                  placeholder="Ej: 60"
+                                  placeholder={t(
+                                    "alimentacion.porcentajeEjemplo",
+                                    {
+                                      value: 60,
+                                    },
+                                  )}
                                 />
                               </div>
                               <div className="space-y-1">
-                                <Label className="text-xs">% Producido</Label>
+                                <Label className="text-xs">
+                                  {t("alimentacion.porcentajeProducido")}
+                                </Label>
                                 <Input
                                   type="number"
                                   min="0"
@@ -628,7 +678,12 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                                     );
                                     setValue("tipo_alimentacion", updated);
                                   }}
-                                  placeholder="Ej: 40"
+                                  placeholder={t(
+                                    "alimentacion.porcentajeEjemplo",
+                                    {
+                                      value: 40,
+                                    },
+                                  )}
                                 />
                               </div>
                               {alimentoSeleccionado.porcentaje_comprado !==
@@ -639,7 +694,7 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                                   alimentoSeleccionado.porcentaje_producido !==
                                   100 && (
                                   <p className="text-xs text-red-500 col-span-2">
-                                    ⚠️ La suma de porcentajes debe ser 100%
+                                    {t("alimentacion.porcentajeSumaError")}
                                   </p>
                                 )}
                             </div>
@@ -654,57 +709,65 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
 
             <div className="space-y-2">
               <Label className="text-sm font-medium">
-                Consumo de Alimento (kg/día)
+                {t("fields.consumoAlimento")}
               </Label>
               <Input
                 {...register("consumo_alimento")}
-                placeholder="Ej: 150kg"
+                placeholder={t("fields.consumoAlimentoPlaceholder")}
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Tipo de Concentrado
+                  {t("fields.tipoConcentrado")}
                 </Label>
                 <Input
                   {...register("tipo_concentrado")}
-                  placeholder="Ej: Iniciador, Crecimiento, Postura"
+                  placeholder={t("fields.tipoConcentradoPlaceholder")}
                 />
               </div>
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Consumo de Agua (L/día)
+                  {t("fields.consumoAgua")}
                 </Label>
-                <Input {...register("consumo_agua")} placeholder="Ej: 200L" />
+                <Input
+                  {...register("consumo_agua")}
+                  placeholder={t("fields.consumoAguaPlaceholder")}
+                />
               </div>
             </div>
           </div>
 
+          {/* Producción de Huevos */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Producción de Huevos
+              {t("sections.produccionHuevos")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Huevos Diarios</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.huevosDiarios")}
+                </Label>
                 <Input
                   type="number"
                   min={0}
                   {...register("huevos_diarios", { valueAsNumber: true })}
-                  placeholder="Ej: 80"
+                  placeholder={t("fields.huevosDiariosPlaceholder")}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Huevos Rotos</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.huevosRotos")}
+                </Label>
                 <Input
                   type="number"
                   min={0}
                   {...register("huevos_rotos", { valueAsNumber: true })}
-                  placeholder="Ej: 5"
+                  placeholder={t("fields.huevosRotosPlaceholder")}
                 />
               </div>
             </div>
@@ -712,7 +775,7 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Calificación de Huevos
+                  {t("fields.calificacionHuevos")}
                 </Label>
                 <Select
                   value={watch("calificacion_huevos") || ""}
@@ -721,7 +784,9 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona la calificación" />
+                    <SelectValue
+                      placeholder={t("fields.calificacionHuevosPlaceholder")}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {calificacionHuevosOptions.map((opcion) => (
@@ -735,9 +800,9 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Porcentaje de Postura
+                  {t("fields.porcentajePostura")}
                   <span className="text-xs text-muted-foreground ml-2">
-                    (Calculado automáticamente)
+                    {t("fields.porcentajePosturaDesc")}
                   </span>
                 </Label>
                 <Input
@@ -748,98 +813,125 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                   {...register("porcentaje_postura")}
                   readOnly
                   className="bg-gray-50 cursor-not-allowed"
-                  placeholder="Se calcula automáticamente"
+                  placeholder={t("fields.porcentajePosturaPlaceholder")}
                 />
-                {watch("cantidad_lote") && watch("huevos_diarios") && (
+                {cantidadLote && huevosDiarios && (
                   <p className="text-xs text-green-600">
-                    ✓ Calculado: {watch("porcentaje_postura")}% (Basado en{" "}
-                    {watch("huevos_diarios")} huevos / {watch("cantidad_lote")}{" "}
-                    aves)
+                    {t("fields.porcentajeCalculado", {
+                      porcentaje: porcentajePostura ?? "",
+                      huevos: huevosDiarios,
+                      aves: cantidadLote,
+                    })}
                   </p>
                 )}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Fecha de Postura</Label>
+              <Label className="text-sm font-medium">
+                {t("fields.fechaPostura")}
+              </Label>
               <Input type="date" {...register("fecha_postura")} />
             </div>
           </div>
 
+          {/* Sanidad */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Sanidad
+              {t("sections.sanidad")}
             </h3>
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Vacunas del Lote</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.vacunasLote")}
+                </Label>
                 <Textarea
                   {...register("vacunas_lote")}
-                  placeholder="Ej: Newcastle, Gumboro, Viruela, etc."
+                  placeholder={t("fields.vacunasLotePlaceholder")}
                   className="min-h-[80px]"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Tratamientos</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.tratamientos")}
+                </Label>
                 <Textarea
                   {...register("tratamientos")}
-                  placeholder="Ej: Antibióticos, Vitaminas, Desparasitantes, etc."
+                  placeholder={t("fields.tratamientosPlaceholder")}
                   className="min-h-[80px]"
                 />
               </div>
             </div>
           </div>
 
+          {/* Desempeño */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Desempeño
+              {t("sections.desempeno")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Peso Promedio (kg)
+                  {t("fields.pesoPromedio")}
                 </Label>
-                <Input {...register("peso_promedio")} placeholder="Ej: 2.5" />
+                <Input
+                  {...register("peso_promedio")}
+                  placeholder={t("fields.pesoPromedioPlaceholder")}
+                />
               </div>
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Tipo de Producción
+                  {t("fields.tipoProduccion")}
                 </Label>
                 <Select
                   value={watch("tipo_produccion") || ""}
                   onValueChange={(value) => setValue("tipo_produccion", value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona el tipo de producción" />
+                    <SelectValue
+                      placeholder={t("fields.tipoProduccionPlaceholder")}
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="huevos">Huevos</SelectItem>
-                    <SelectItem value="carne">Carne</SelectItem>
-                    <SelectItem value="mixta">Mixta</SelectItem>
-                    <SelectItem value="reproduccion">Reproducción</SelectItem>
+                    <SelectItem value="huevos">
+                      {t("fields.tipoProduccionHuevos")}
+                    </SelectItem>
+                    <SelectItem value="carne">
+                      {t("fields.tipoProduccionCarne")}
+                    </SelectItem>
+                    <SelectItem value="mixta">
+                      {t("fields.tipoProduccionMixta")}
+                    </SelectItem>
+                    <SelectItem value="reproduccion">
+                      {t("fields.tipoProduccionReproduccion")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
           </div>
+
+          {/* Ubicación y Origen */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Ubicación y Origen
+              {t("sections.ubicacion")}
             </h3>
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Finca</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.finca")}
+                </Label>
                 <Select
                   value={watch("fincaId") || ""}
                   onValueChange={(value) => setValue("fincaId", value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona una finca" />
+                    <SelectValue placeholder={t("fields.fincaPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
                     {fincasItems.map((finca) => (
@@ -857,9 +949,11 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
               </div>
             </div>
           </div>
+
+          {/* Estado del Lote */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Estado del Lote
+              {t("sections.estado")}
             </h3>
 
             <div className="flex items-center space-x-2">
@@ -871,13 +965,15 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                 id="lote_activo"
               />
               <Label htmlFor="lote_activo" className="text-sm font-medium">
-                Lote Activo
+                {t("fields.loteActivo")}
               </Label>
             </div>
           </div>
+
+          {/* Imágenes del Lote */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Imágenes del Lote
+              {t("sections.imagenes")}
             </h3>
 
             <div className="space-y-4">
@@ -899,7 +995,7 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                     </svg>
                   </div>
                   <p className="text-sm text-gray-600 mb-2">
-                    Arrastra y suelta imágenes o haz clic para seleccionar
+                    {t("imagenes.dropzone")}
                   </p>
                   <Input
                     type="file"
@@ -910,11 +1006,10 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                     className="w-full max-w-xs cursor-pointer text-sm file:mr-2 file:py-2 file:px-3 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 file:border-none file:rounded-md hover:file:bg-blue-100 disabled:opacity-50"
                   />
                   <p className="text-xs text-gray-500 mt-3">
-                    <span className="font-medium">Máximo 5 imágenes</span> ·
-                    Formatos: JPG, PNG, GIF · Máximo 1MB cada una
+                    {t("imagenes.maxInfo")}
                     <br />
                     <span className="text-blue-600">
-                      {selectedImages.length}/5 imágenes seleccionadas
+                      {t("imagenes.contador", { count: selectedImages.length })}
                     </span>
                   </p>
                 </div>
@@ -926,20 +1021,20 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                     <div key={index} className="relative group aspect-square">
                       <img
                         src={preview}
-                        alt={`Preview ${index + 1}`}
+                        alt={t("imagenes.alt", { index: index + 1 })}
                         className="w-full h-full object-cover rounded-lg border shadow-sm hover:shadow-md transition-shadow"
                       />
                       <button
                         type="button"
                         onClick={() => removeImage(index)}
                         className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-all shadow-md active:scale-95 opacity-0 group-hover:opacity-100"
-                        aria-label="Eliminar imagen"
+                        aria-label={t("imagenes.eliminar")}
                       >
                         ×
                       </button>
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <span className="text-white text-xs">
-                          Imagen {index + 1}
+                          {t("imagenes.imagen", { index: index + 1 })}
                         </span>
                       </div>
                     </div>
@@ -949,13 +1044,14 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
             </div>
           </div>
 
+          {/* Botones */}
           <div className="pt-4 border-t flex justify-end gap-3">
             <Button
               type="button"
               variant="outline"
               onClick={() => router.push("/animales")}
             >
-              Cancelar
+              {t("buttons.cancelar")}
             </Button>
             <Button
               type="submit"
@@ -984,10 +1080,10 @@ const FormAddAvicola = ({ selectedEspecieId }: Props) => {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Creando...
+                  {t("buttons.creando")}
                 </>
               ) : (
-                "Ingresar Lote"
+                t("buttons.ingresarLote")
               )}
             </Button>
           </div>

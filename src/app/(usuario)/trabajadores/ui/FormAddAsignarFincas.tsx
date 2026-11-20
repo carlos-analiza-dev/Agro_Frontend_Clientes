@@ -1,3 +1,5 @@
+"use client";
+
 import { AsignarFincaData } from "@/api/fincas-trabajador/interface/asignar-finca.interface";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import { useAuthStore } from "@/providers/store/useAuthStore";
@@ -20,6 +22,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircleIcon, Building2, User, CheckCircle2 } from "lucide-react";
 import { asignarFincaTrabajador } from "@/api/fincas-trabajador/accions/asignar-finca-trabajador";
+import { useTranslations } from "next-intl";
 
 interface Props {
   trabajadorId: string;
@@ -36,6 +39,8 @@ const FormAddAsignarFincas = ({
   nombre,
   onSuccess,
 }: Props) => {
+  const t = useTranslations("formAddAsignarFincas");
+
   const [errorMessage, setIsErrorMessage] = useState<string>("");
   const [selectedFinca, setSelectedFinca] = useState<string>("");
 
@@ -50,14 +55,13 @@ const FormAddAsignarFincas = ({
   } = useFincasPropietarios(propietarioId);
 
   const {
-    register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
     setValue,
   } = useForm<AsignarFincaData>({
     defaultValues: {
-      trabajadorId: trabajadorId,
+      trabajadorId,
       fincaId: "",
     },
   });
@@ -70,19 +74,22 @@ const FormAddAsignarFincas = ({
 
   const onSubmit = async (data: AsignarFincaData) => {
     if (!data.fincaId) {
-      setIsErrorMessage("Debe seleccionar una finca para asignar");
+      setIsErrorMessage(t("validation.farmRequired"));
       return;
     }
 
     try {
       await asignarFincaTrabajador(data);
 
-      toast.success("Finca asignada correctamente al trabajador");
+      toast.success(t("messages.assignSuccess"));
 
       queryClient.invalidateQueries({
         queryKey: ["fincas-trabajador", trabajadorId],
       });
-      queryClient.invalidateQueries({ queryKey: ["trabajadores"] });
+
+      queryClient.invalidateQueries({
+        queryKey: ["trabajadores"],
+      });
 
       reset();
       setSelectedFinca("");
@@ -98,25 +105,31 @@ const FormAddAsignarFincas = ({
     } catch (error) {
       if (isAxiosError(error)) {
         const messages = error.response?.data?.message;
+
         const errorMessage = Array.isArray(messages)
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al asignar la finca";
+            : t("errors.assignFarm");
+
         setIsErrorMessage(errorMessage);
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("errors.unexpected"));
       }
     }
   };
+
+  const fincaSeleccionada = fincas?.data.fincas.find(
+    (f) => f.id === selectedFinca,
+  );
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {errorMessage && (
         <Alert variant="destructive" className="mb-4">
           <AlertCircleIcon className="h-4 w-4" />
-          <AlertTitle>Error al asignar la finca</AlertTitle>
+          <AlertTitle>{t("errors.title")}</AlertTitle>
           <AlertDescription className="whitespace-pre-line">
             {errorMessage}
           </AlertDescription>
@@ -126,12 +139,15 @@ const FormAddAsignarFincas = ({
       <div className="bg-muted p-4 rounded-lg">
         <div className="flex items-center gap-3 mb-3">
           <User className="h-5 w-5 text-muted-foreground" />
-          <h3 className="font-semibold">Información del Trabajador</h3>
+          <h3 className="font-semibold">{t("workerInformation.title")}</h3>
         </div>
+
         <div className="space-y-2">
           {nombre && (
             <div>
-              <Label className="text-sm text-muted-foreground">Nombre</Label>
+              <Label className="text-sm text-muted-foreground">
+                {t("workerInformation.name")}
+              </Label>
               <p className="font-medium">{nombre}</p>
             </div>
           )}
@@ -142,7 +158,7 @@ const FormAddAsignarFincas = ({
         <div className="flex items-center gap-3">
           <Building2 className="h-5 w-5 text-muted-foreground" />
           <Label htmlFor="fincaId" className="font-semibold">
-            Seleccionar Finca <span className="text-red-500">*</span>
+            {t("fields.selectFarm")} <span className="text-red-500">*</span>
           </Label>
         </div>
 
@@ -150,40 +166,45 @@ const FormAddAsignarFincas = ({
           onValueChange={(value) => {
             setValue("fincaId", value);
             setSelectedFinca(value);
+            setIsErrorMessage("");
           }}
           disabled={isSubmitting || isLoadingFincas}
           value={selectedFinca}
         >
           <SelectTrigger className={errors.fincaId ? "border-red-500" : ""}>
-            <SelectValue placeholder="Selecciona una finca" />
+            <SelectValue placeholder={t("placeholders.selectFarm")} />
           </SelectTrigger>
+
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Fincas disponibles</SelectLabel>
+              <SelectLabel>{t("fields.availableFarms")}</SelectLabel>
+
               {isLoadingFincas ? (
                 <SelectItem value="loading" disabled>
-                  Cargando fincas...
+                  {t("loading.farms")}
                 </SelectItem>
               ) : fincas && fincas.data.fincas.length > 0 ? (
                 fincas.data.fincas.map((finca) => (
                   <SelectItem
                     key={finca.id}
                     value={finca.id}
-                    className="h-[55px]  flex items-center"
+                    className="h-[55px] flex items-center"
                   >
                     <div className="flex flex-col justify-center h-full overflow-hidden">
                       <span className="font-medium truncate">
                         {finca.nombre_finca}
                       </span>
+
                       <span className="text-xs text-muted-foreground truncate">
-                        {finca.ubicacion} - {finca.cantidad_animales} animales
+                        {finca.ubicacion} - {finca.cantidad_animales}{" "}
+                        {t("labels.animals")}
                       </span>
                     </div>
                   </SelectItem>
                 ))
               ) : (
                 <SelectItem value="no-fincas" disabled>
-                  No hay fincas disponibles
+                  {t("empty.noFarms")}
                 </SelectItem>
               )}
             </SelectGroup>
@@ -195,49 +216,45 @@ const FormAddAsignarFincas = ({
         )}
 
         {fincasError && (
-          <p className="text-sm text-red-500 mt-1">
-            Error al cargar las fincas. Por favor, recarga la página.
-          </p>
+          <p className="text-sm text-red-500 mt-1">{t("errors.loadFarms")}</p>
         )}
       </div>
 
-      {selectedFinca && fincas && (
+      {selectedFinca && fincaSeleccionada && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="flex items-center gap-2 mb-3">
             <CheckCircle2 className="h-4 w-4 text-blue-600" />
-            <h4 className="font-semibold text-blue-800">Finca seleccionada</h4>
+            <h4 className="font-semibold text-blue-800">
+              {t("selectedFarm.title")}
+            </h4>
           </div>
-          {fincas.data.fincas.find((f) => f.id === selectedFinca) && (
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-blue-700">Nombre:</span>
-                <span className="font-medium text-blue-900">
-                  {
-                    fincas.data.fincas.find((f) => f.id === selectedFinca)
-                      ?.nombre_finca
-                  }
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-blue-700">Ubicación:</span>
-                <span className="text-blue-900">
-                  {
-                    fincas.data.fincas.find((f) => f.id === selectedFinca)
-                      ?.ubicacion
-                  }
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-blue-700">Animales:</span>
-                <span className="text-blue-900">
-                  {
-                    fincas.data.fincas.find((f) => f.id === selectedFinca)
-                      ?.cantidad_animales
-                  }
-                </span>
-              </div>
+
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-blue-700">{t("selectedFarm.name")}:</span>
+              <span className="font-medium text-blue-900">
+                {fincaSeleccionada.nombre_finca}
+              </span>
             </div>
-          )}
+
+            <div className="flex justify-between">
+              <span className="text-blue-700">
+                {t("selectedFarm.location")}:
+              </span>
+              <span className="text-blue-900">
+                {fincaSeleccionada.ubicacion}
+              </span>
+            </div>
+
+            <div className="flex justify-between">
+              <span className="text-blue-700">
+                {t("selectedFarm.animals")}:
+              </span>
+              <span className="text-blue-900">
+                {fincaSeleccionada.cantidad_animales}
+              </span>
+            </div>
+          </div>
         </div>
       )}
 
@@ -246,12 +263,14 @@ const FormAddAsignarFincas = ({
           type="button"
           variant="outline"
           onClick={() => {
-            (onSuccess(), setClienteId(""));
+            onSuccess();
+            setClienteId("");
           }}
           disabled={isSubmitting}
         >
-          Cancelar
+          {t("buttons.cancel")}
         </Button>
+
         <Button
           type="submit"
           disabled={isSubmitting || !selectedFinca || isLoadingFincas}
@@ -260,10 +279,10 @@ const FormAddAsignarFincas = ({
           {isSubmitting ? (
             <span className="flex items-center gap-2">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              Asignando...
+              {t("buttons.assigning")}
             </span>
           ) : (
-            "Asignar Finca"
+            t("buttons.assignFarm")
           )}
         </Button>
       </div>

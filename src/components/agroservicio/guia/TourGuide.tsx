@@ -1,4 +1,7 @@
+"use client";
+
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -34,6 +37,8 @@ const TourGuide = ({
   onFinish,
   onEmpty,
 }: TourGuideProps) => {
+  const t = useTranslations("tourGuide");
+
   const [visibleSteps, setVisibleSteps] = useState<TourStep[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [elementRect, setElementRect] = useState<ElementRect | null>(null);
@@ -66,6 +71,7 @@ const TourGuide = ({
       }
 
       attempts += 1;
+
       if (attempts >= maxAttempts) {
         onEmpty?.();
         onClose();
@@ -121,11 +127,13 @@ const TourGuide = ({
         if (left + tooltipWidth > window.innerWidth - 16) {
           left = window.innerWidth - tooltipWidth - 16;
         }
+
         if (left < 16) left = 16;
 
         if (top + tooltipHeight > window.innerHeight - 16) {
           top = rect.top - tooltipHeight - spacing;
         }
+
         if (top < 16) top = 16;
 
         setTooltipPosition({ top, left });
@@ -139,6 +147,7 @@ const TourGuide = ({
 
     setElementRect(null);
     updatePosition(true);
+
     let animationFrame: number;
 
     const trackPosition = () => {
@@ -154,6 +163,7 @@ const TourGuide = ({
 
     const onResize = () => updatePosition(false);
     const onScroll = () => updatePosition(false);
+
     window.addEventListener("resize", onResize);
     window.addEventListener("scroll", onScroll);
 
@@ -177,6 +187,7 @@ const TourGuide = ({
       onFinish ? onFinish() : onClose();
       return;
     }
+
     setCurrentStep((prev) => prev + 1);
   };
 
@@ -213,15 +224,19 @@ const TourGuide = ({
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-sm font-semibold text-gray-900">{step.title}</p>
+
             <p className="mt-2 text-sm leading-relaxed text-gray-600">
               {step.description}
             </p>
           </div>
+
           <Button
             variant="ghost"
             size="icon"
             className="h-7 w-7 shrink-0"
             onClick={onClose}
+            aria-label={t("close")}
+            title={t("close")}
           >
             <X className="h-4 w-4" />
           </Button>
@@ -229,7 +244,10 @@ const TourGuide = ({
 
         <div className="mt-4 flex items-center justify-between">
           <span className="text-xs text-gray-500">
-            Paso {currentStep + 1} de {visibleSteps.length}
+            {t("stepCounter", {
+              current: currentStep + 1,
+              total: visibleSteps.length,
+            })}
           </span>
 
           <div className="flex gap-2">
@@ -240,18 +258,18 @@ const TourGuide = ({
               onClick={handlePrevious}
             >
               <ChevronLeft className="mr-1 h-4 w-4" />
-              Anterior
+              {t("previous")}
             </Button>
 
             <Button size="sm" onClick={handleNext}>
               {isLast ? (
                 <>
-                  Siguiente página
+                  {t("nextPage")}
                   <ChevronRight className="ml-1 h-4 w-4" />
                 </>
               ) : (
                 <>
-                  Siguiente
+                  {t("next")}
                   <ChevronRight className="ml-1 h-4 w-4" />
                 </>
               )}

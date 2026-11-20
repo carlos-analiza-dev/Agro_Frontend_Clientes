@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import React, { useMemo } from "react";
 import CardProduccionFinca from "./CardProduccionFinca";
@@ -27,8 +29,11 @@ import {
 } from "@/helpers/data/colorDashboard";
 import GananciaPesoAnimalMes from "./GananciaPesoAnimalMes";
 import GananciasPesoByFinca from "./GananciasPesoByFinca";
+import { useTranslations } from "next-intl";
 
 const ProduccionGanadera = () => {
+  const t = useTranslations("produccionGanadera");
+
   const { data: animales_sexo } = useGetTotalAnimalesSexo();
   const { data: animales_muerte } = useGetTotalAnimalesMuerte();
   const { data: comprados_nacidos } = useGetTotalAnimalesCompradosNacidos();
@@ -79,12 +84,12 @@ const ProduccionGanadera = () => {
   const mortalidadData = animales_muerte
     ? [
         {
-          name: "Vivos",
+          name: t("chartValues.alive"),
           value: parseInt(animales_muerte.vivos),
           color: MORTALIDAD_COLORS[0],
         },
         {
-          name: "Muertos",
+          name: t("chartValues.dead"),
           value: parseInt(animales_muerte.muertos),
           color: MORTALIDAD_COLORS[1],
         },
@@ -94,12 +99,12 @@ const ProduccionGanadera = () => {
   const origenData = comprados_nacidos
     ? [
         {
-          name: "Nacidos",
+          name: t("chartValues.born"),
           value: parseInt(comprados_nacidos.nacidos),
           color: ORIGEN_COLORS[1],
         },
         {
-          name: "Comprados",
+          name: t("chartValues.purchased"),
           value: parseInt(comprados_nacidos.comprados),
           color: ORIGEN_COLORS[0],
         },
@@ -116,25 +121,30 @@ const ProduccionGanadera = () => {
   const totalVivos = parseInt(animales_muerte?.vivos || "0");
   const totalMuertos = parseInt(animales_muerte?.muertos || "0");
   const totalGeneral = totalVivos + totalMuertos;
+
   const porcentajeVivos =
     totalGeneral > 0 ? (totalVivos / totalGeneral) * 100 : 0;
+
   const porcentajeMuertos =
     totalGeneral > 0 ? (totalMuertos / totalGeneral) * 100 : 0;
 
   const totalNacidos = parseInt(comprados_nacidos?.nacidos || "0");
   const totalComprados = parseInt(comprados_nacidos?.comprados || "0");
   const totalOrigen = totalNacidos + totalComprados;
+
   const porcentajeNacidos =
     totalOrigen > 0 ? (totalNacidos / totalOrigen) * 100 : 0;
+
   const porcentajeComprados =
     totalOrigen > 0 ? (totalComprados / totalOrigen) * 100 : 0;
+
   return (
     <div className="space-y-6">
       {tieneBovinos && (
         <Card>
           <CardHeader>
             <CardTitle className="text-xl">
-              Producción Ganadera - Bovinos
+              {t("titles.livestockProduction")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -183,7 +193,7 @@ const ProduccionGanadera = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <CardDetalles
-          titulo="Animales Vivos"
+          titulo={t("details.alive")}
           total={totalVivos}
           porcentaje={porcentajeVivos}
           colorText="text-green-800"
@@ -192,7 +202,7 @@ const ProduccionGanadera = () => {
         />
 
         <CardDetalles
-          titulo="Animales Muertos"
+          titulo={t("details.dead")}
           total={totalMuertos}
           porcentaje={porcentajeMuertos}
           colorText="text-red-800"
@@ -201,7 +211,7 @@ const ProduccionGanadera = () => {
         />
 
         <CardDetalles
-          titulo="Comprados"
+          titulo={t("details.purchased")}
           total={totalComprados}
           porcentaje={porcentajeComprados}
           colorText="text-purple-800"
@@ -210,7 +220,7 @@ const ProduccionGanadera = () => {
         />
 
         <CardDetalles
-          titulo="Nacidos"
+          titulo={t("details.born")}
           total={totalNacidos}
           porcentaje={porcentajeNacidos}
           colorText="text-amber-800"

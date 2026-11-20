@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   MapPin,
   Phone,
@@ -19,6 +20,8 @@ import { CrearContactoNotificacion } from "@/api/notificaciones/accions/crear-co
 import { NotificationType } from "@/interfaces/enums/notificaciones.enum";
 
 export default function ContactoClient() {
+  const t = useTranslations("contact");
+
   const [formData, setFormData] = useState({
     nombre: "",
     email: "",
@@ -26,6 +29,7 @@ export default function ContactoClient() {
     asunto: "",
     mensaje: "",
   });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -36,6 +40,7 @@ export default function ContactoClient() {
     >,
   ) => {
     const { name, value } = e.target;
+
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     if (errors[name]) {
@@ -47,81 +52,95 @@ export default function ContactoClient() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.nombre.trim()) {
-      newErrors.nombre = "El nombre es requerido";
+      newErrors.nombre = t("validation.nameRequired");
     }
+
     if (!formData.email.trim()) {
-      newErrors.email = "El email es requerido";
+      newErrors.email = t("validation.emailRequired");
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email inválido";
+      newErrors.email = t("validation.emailInvalid");
     }
+
     if (!formData.mensaje.trim()) {
-      newErrors.mensaje = "El mensaje es requerido";
+      newErrors.mensaje = t("validation.messageRequired");
     }
 
     setErrors(newErrors);
+
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!validateForm()) return;
 
     setIsSubmitting(true);
 
     const buildTitle = () => {
       const partes = [
-        `${formData.nombre} quiere contactarse contigo`,
-        `Correo: ${formData.email}`,
+        `${formData.nombre} ${t("notification.contactPrefix")}`,
+        `${t("notification.email")}: ${formData.email}`,
       ];
 
-      if (formData.telefono?.trim()) {
-        partes.push(`Tel: ${formData.telefono}`);
+      if (formData.telefono.trim()) {
+        partes.push(`${t("notification.phone")}: ${formData.telefono}`);
       }
 
       return partes.join(" | ");
     };
 
     const buildMessage = () => {
-      const partes = [];
+      const partes: string[] = [];
 
-      if (formData.asunto?.trim()) {
-        partes.push(`Asunto: ${formData.asunto}`);
+      if (formData.asunto.trim()) {
+        partes.push(`${t("notification.subject")}: ${formData.asunto}`);
       }
 
-      partes.push(`Mensaje: ${formData.mensaje}`);
+      partes.push(`${t("notification.message")}: ${formData.mensaje}`);
 
       return partes.join("\n");
     };
 
-    await CrearContactoNotificacion({
-      type: NotificationType.NEW_CONTAC,
-      title: buildTitle(),
-      message: buildMessage(),
-    });
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    setFormData({
-      nombre: "",
-      email: "",
-      telefono: "",
-      asunto: "",
-      mensaje: "",
-    });
-    setTimeout(() => setIsSubmitted(false), 5000);
+    try {
+      await CrearContactoNotificacion({
+        type: NotificationType.NEW_CONTAC,
+        title: buildTitle(),
+        message: buildMessage(),
+      });
+
+      setIsSubmitted(true);
+
+      setFormData({
+        nombre: "",
+        email: "",
+        telefono: "",
+        asunto: "",
+        mensaje: "",
+      });
+
+      setErrors({});
+
+      setTimeout(() => setIsSubmitted(false), 5000);
+    } catch (error) {
+      console.error("Error al enviar el mensaje de contacto:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactInfo = [
     {
       icon: MapPin,
-      title: "Dirección",
-      details: "Comayagua, Comayagua, Honduras",
+      title: t("info.address"),
+      details: t("info.addressDetails"),
       link: "https://www.google.com/maps/place/Colonia+1+de+Mayo,+Comayagua/@14.4453749,-87.6338726,17z/data=!3m1!4b1!4m6!3m5!1s0x8f6585ec2f0544b9:0x2d679854cc31e7e1!8m2!3d14.4452373!4d-87.6340619!16s%2Fg%2F1tg87qc3?entry=ttu&g_ep=EgoyMDI2MDMyMi4wIKXMDSoASAFQAw%3D%3D",
       color: "text-green-600",
       bgColor: "bg-green-100",
     },
     {
       icon: Phone,
-      title: "Teléfono",
+      title: t("info.phone"),
       details: "+57 300 123 4567",
       link: "tel:+573001234567",
       color: "text-blue-600",
@@ -129,7 +148,7 @@ export default function ContactoClient() {
     },
     {
       icon: Mail,
-      title: "Email",
+      title: t("info.email"),
       details: "elsembrador@interactivecore.app",
       link: "mailto:elsembrador@interactivecore.app",
       color: "text-purple-600",
@@ -137,8 +156,8 @@ export default function ContactoClient() {
     },
     {
       icon: Clock,
-      title: "Horario de Atención",
-      details: "Lun-Vie: 8:00 - 18:00 | Sáb: 8:00 - 13:00",
+      title: t("info.schedule"),
+      details: t("info.scheduleDetails"),
       link: "#",
       color: "text-orange-600",
       bgColor: "bg-orange-100",
@@ -177,22 +196,22 @@ export default function ContactoClient() {
   ];
 
   const asuntos = [
-    "",
-    "Consulta sobre productos",
-    "Asesoría técnica",
-    "Problemas con mi pedido",
-    "Sugerencias",
-    "Otros",
+    { value: "", label: t("form.subjectPlaceholder") },
+    { value: "products", label: t("form.subjects.products") },
+    { value: "technical", label: t("form.subjects.technical") },
+    { value: "orders", label: t("form.subjects.orders") },
+    { value: "suggestions", label: t("form.subjects.suggestions") },
+    { value: "other", label: t("form.subjects.other") },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-gradient-to-r from-green-700 to-green-600 text-white py-16">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Contáctanos</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">{t("title")}</h1>
+
           <p className="text-lg md:text-xl text-green-100 max-w-2xl mx-auto">
-            Estamos aquí para ayudarte. Cuéntanos tu consulta y te responderemos
-            lo antes posible.
+            {t("description")}
           </p>
         </div>
       </div>
@@ -218,10 +237,12 @@ export default function ContactoClient() {
                   >
                     <info.icon className={`h-6 w-6 ${info.color}`} />
                   </div>
+
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">
                       {info.title}
                     </h3>
+
                     <p className="text-sm text-gray-600">{info.details}</p>
                   </div>
                 </div>
@@ -233,22 +254,22 @@ export default function ContactoClient() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
               <div className="mb-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  Envíanos un mensaje
+                  {t("form.title")}
                 </h2>
-                <p className="text-gray-600">
-                  Completa el formulario y te contactaremos a la brevedad.
-                </p>
+
+                <p className="text-gray-600">{t("form.description")}</p>
               </div>
 
               {isSubmitted ? (
                 <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
                   <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
+
                   <h3 className="text-lg font-semibold text-green-800 mb-2">
-                    ¡Mensaje enviado con éxito!
+                    {t("form.successTitle")}
                   </h3>
+
                   <p className="text-green-700">
-                    Gracias por contactarnos. Te responderemos en las próximas
-                    24 horas.
+                    {t("form.successDescription")}
                   </p>
                 </div>
               ) : (
@@ -256,10 +277,12 @@ export default function ContactoClient() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Nombre completo *
+                        {t("form.name")} *
                       </label>
+
                       <div className="relative">
                         <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+
                         <input
                           type="text"
                           name="nombre"
@@ -270,36 +293,41 @@ export default function ContactoClient() {
                               ? "border-red-500 focus:ring-red-500"
                               : "border-gray-300"
                           }`}
-                          placeholder="Tu nombre"
+                          placeholder={t("form.namePlaceholder")}
                         />
                       </div>
+
                       {errors.nombre && (
                         <p className="text-red-500 text-xs mt-1">
                           {errors.nombre}
                         </p>
                       )}
                     </div>
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Teléfono
+                        {t("form.phone")}
                       </label>
+
                       <input
                         type="tel"
                         name="telefono"
                         value={formData.telefono}
                         onChange={handleChange}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="Tu teléfono"
+                        placeholder={t("form.phonePlaceholder")}
                       />
                     </div>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email *
+                      {t("form.email")} *
                     </label>
+
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+
                       <input
                         type="email"
                         name="email"
@@ -310,9 +338,10 @@ export default function ContactoClient() {
                             ? "border-red-500 focus:ring-red-500"
                             : "border-gray-300"
                         }`}
-                        placeholder="tu@email.com"
+                        placeholder={t("form.emailPlaceholder")}
                       />
                     </div>
+
                     {errors.email && (
                       <p className="text-red-500 text-xs mt-1">
                         {errors.email}
@@ -322,10 +351,12 @@ export default function ContactoClient() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Asunto
+                      {t("form.subject")}
                     </label>
+
                     <div className="relative">
                       <HelpCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+
                       <select
                         name="asunto"
                         value={formData.asunto}
@@ -333,8 +364,8 @@ export default function ContactoClient() {
                         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 appearance-none bg-white"
                       >
                         {asuntos.map((opcion) => (
-                          <option key={opcion} value={opcion}>
-                            {opcion || "Selecciona un asunto"}
+                          <option key={opcion.value} value={opcion.value}>
+                            {opcion.label}
                           </option>
                         ))}
                       </select>
@@ -343,8 +374,9 @@ export default function ContactoClient() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Mensaje *
+                      {t("form.message")} *
                     </label>
+
                     <textarea
                       name="mensaje"
                       value={formData.mensaje}
@@ -355,8 +387,9 @@ export default function ContactoClient() {
                           ? "border-red-500 focus:ring-red-500"
                           : "border-gray-300"
                       }`}
-                      placeholder="Escribe tu mensaje aquí..."
+                      placeholder={t("form.messagePlaceholder")}
                     />
+
                     {errors.mensaje && (
                       <p className="text-red-500 text-xs mt-1">
                         {errors.mensaje}
@@ -371,13 +404,13 @@ export default function ContactoClient() {
                   >
                     {isSubmitting ? (
                       <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                        Enviando...
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                        {t("form.submitting")}
                       </>
                     ) : (
                       <>
                         <Send className="h-5 w-5" />
-                        Enviar mensaje
+                        {t("form.submit")}
                       </>
                     )}
                   </button>
@@ -396,19 +429,20 @@ export default function ContactoClient() {
                     allowFullScreen
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
-                    title="El Sembrador - Colonia 1 de Mayo, Comayagua"
-                  ></iframe>
+                    title={t("mapTitle")}
+                  />
                 </div>
               </div>
 
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Síguenos en redes sociales
+                  {t("social.title")}
                 </h3>
+
                 <p className="text-gray-600 text-sm mb-4">
-                  Mantente conectado con nosotros para recibir promociones,
-                  novedades y consejos para el campo.
+                  {t("social.description")}
                 </p>
+
                 <div className="flex gap-3">
                   {socialLinks.map((social) => (
                     <a

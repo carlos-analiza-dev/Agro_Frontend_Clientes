@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useTranslations } from "next-intl";
 
 interface RadioFilterProps {
   onRadiusChange: (radius: number) => void;
@@ -34,6 +35,8 @@ export const RadioFilter = ({
   onRadiusChange,
   currentRadius,
 }: RadioFilterProps) => {
+  const t = useTranslations("radioFilter");
+
   const [isOpen, setIsOpen] = useState(false);
   const [selectedRadius, setSelectedRadius] = useState(currentRadius);
 
@@ -53,7 +56,7 @@ export const RadioFilter = ({
       <PopoverTrigger asChild>
         <Button variant="outline" className="flex items-center gap-2">
           <SlidersHorizontal className="h-4 w-4" />
-          <span>Distancia</span>
+          <span>{t("distance")}</span>
           {currentRadius > 0 && (
             <span className="ml-1 rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">
               {currentRadius} km
@@ -61,10 +64,11 @@ export const RadioFilter = ({
           )}
         </Button>
       </PopoverTrigger>
+
       <PopoverContent className="w-80 p-4" align="end">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold">Distancia</h3>
+            <h3 className="font-semibold">{t("distance")}</h3>
             <Button
               variant="ghost"
               size="sm"
@@ -72,7 +76,7 @@ export const RadioFilter = ({
               className="text-xs text-muted-foreground"
             >
               <X className="h-3 w-3 mr-1" />
-              Limpiar
+              {t("clear")}
             </Button>
           </div>
 
@@ -103,10 +107,10 @@ export const RadioFilter = ({
               className="flex-1"
               onClick={() => setIsOpen(false)}
             >
-              Cancelar
+              {t("cancel")}
             </Button>
             <Button className="flex-1" onClick={handleApply}>
-              Aplicar
+              {t("apply")}
             </Button>
           </div>
         </div>

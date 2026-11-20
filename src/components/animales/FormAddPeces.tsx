@@ -33,12 +33,15 @@ import {
 } from "@/api/animales/interfaces/crear-peces.interface";
 import { CreateAnimalPeces } from "@/api/animales/accions/crear-animal";
 import { etapaOptions } from "@/helpers/data/animales/animales-data";
+import { useTranslations } from "next-intl";
 
 interface Props {
   selectedEspecieId: string;
 }
 
 const FormAddPeces = ({ selectedEspecieId }: Props) => {
+  const t = useTranslations("FormAddPeces");
+
   const router = useRouter();
   const queryClient = useQueryClient();
   const { cliente } = useAuthStore();
@@ -92,11 +95,13 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
     name: "calidad_agua.historial_recambios",
   });
 
+  const razaIdsSeleccionadas = watch("razaIds") || [];
+
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
 
     if (files.length + selectedImages.length > 5) {
-      toast.error("Máximo 5 imágenes permitidas");
+      toast.error(t("messages.maxImagenes"));
       return;
     }
 
@@ -105,11 +110,11 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
       const isValidSize = file.size <= 1024 * 1024;
 
       if (!isValidType) {
-        toast.error(`El archivo ${file.name} no es una imagen válida`);
+        toast.error(t("messages.imagenInvalida", { name: file.name }));
         return false;
       }
       if (!isValidSize) {
-        toast.error(`La imagen ${file.name} excede el límite de 1MB`);
+        toast.error(t("messages.imagenExcede", { name: file.name }));
         return false;
       }
       return true;
@@ -136,7 +141,7 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
   const mutation = useMutation({
     mutationFn: (data: FormData) => CreateAnimalPeces(data),
     onSuccess: () => {
-      toast.success("Lote de peces creado correctamente");
+      toast.success(t("messages.pecesCreado"));
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
       reset();
       router.push("/animales");
@@ -148,11 +153,11 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear el lote de peces";
+            : t("messages.errorCrear");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("messages.errorInesperado"));
       }
     },
   });
@@ -160,7 +165,7 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
   const onSubmit = (data: PecesData) => {
     if (!cliente?.id) return;
     if (!selectedEspecieId) {
-      toast.error("No se ha seleccionado una especie válida");
+      toast.error(t("validation.especieInvalida"));
       return;
     }
 
@@ -281,29 +286,31 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
       <Card className="max-w-4xl mx-auto">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">
-            Datos del Lote de Peces
+            {t("header.title")}
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Completa la información del lote piscícola. Los campos con{" "}
-            <span className="text-red-500">*</span> son obligatorios.
+            {t.rich("header.subtitle", {
+              red: (chunks) => <span className="text-red-500">{chunks}</span>,
+            })}
           </p>
         </CardHeader>
 
         <CardContent className="space-y-6">
+          {/* Identificación */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Identificación
+              {t("sections.identificacion")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Estanque / Tanque / Jaula{" "}
+                  {t("fields.estanqueTanqueJaula")}{" "}
                   <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   {...register("estanque_tanque_jaula")}
-                  placeholder="Ej: Estanque 1, Tanque A, Jaula 3"
+                  placeholder={t("fields.estanqueTanqueJaulaPlaceholder")}
                 />
                 {errors.estanque_tanque_jaula && (
                   <p className="text-sm text-red-500">
@@ -316,7 +323,8 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Identificador del Lote <span className="text-red-500">*</span>
+                  {t("fields.identificador")}{" "}
+                  <span className="text-red-500">*</span>
                 </Label>
                 <div className="flex items-center gap-2">
                   <div className="relative flex-1">
@@ -327,13 +335,13 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
                         e.target.value = value;
                         setValue("identificador", value);
                       }}
-                      placeholder="Ej: 123ABC"
+                      placeholder={t("fields.identificadorPlaceholder")}
                       maxLength={6}
                       className="w-full font-mono text-lg tracking-wider uppercase"
                     />
                     <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
                       <span className="text-xs text-muted-foreground">
-                        6 caracteres
+                        {t("fields.chars6")}
                       </span>
                     </div>
                   </div>
@@ -354,8 +362,7 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
                       </TooltipTrigger>
                       <TooltipContent side="right" className="max-w-xs">
                         <p className="text-xs">
-                          Código de identificación del lote (máximo 6
-                          caracteres)
+                          {t("fields.identificadorHelp")}
                         </p>
                       </TooltipContent>
                     </Tooltip>
@@ -370,24 +377,25 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Proveedor de Alevines
+                  {t("fields.proveedorAlevines")}
                 </Label>
                 <Input
                   {...register("proveedor_alevines")}
-                  placeholder="Nombre del proveedor"
+                  placeholder={t("fields.proveedorAlevinesPlaceholder")}
                 />
               </div>
             </div>
           </div>
 
+          {/* Razas del Lote */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Razas del Lote <span className="text-red-500">*</span>
+              {t("sections.razas")} <span className="text-red-500">*</span>
             </h3>
 
             <div className="space-y-2">
               <Label className="text-sm font-medium">
-                Selecciona las razas que componen el lote
+                {t("fields.razasInfo")}
               </Label>
               <div className="border rounded-lg p-4 space-y-2 max-h-48 overflow-y-auto bg-gray-50">
                 {razas?.data && razas.data.length > 0 ? (
@@ -418,30 +426,34 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
                   ))
                 ) : (
                   <p className="text-sm text-muted-foreground text-center py-4">
-                    No hay razas disponibles para esta especie
+                    {t("fields.noRazas")}
                   </p>
                 )}
               </div>
               {errors.razaIds && (
                 <p className="text-sm text-red-500">{errors.razaIds.message}</p>
               )}
-              {watch("razaIds") && watch("razaIds").length > 0 && (
+              {razaIdsSeleccionadas.length > 0 && (
                 <p className="text-xs text-green-600">
-                  ✓ {watch("razaIds").length} raza(s) seleccionada(s)
+                  {t("fields.razasSeleccionadas", {
+                    count: razaIdsSeleccionadas.length,
+                  })}
                 </p>
               )}
             </div>
           </div>
 
+          {/* Siembra */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Siembra
+              {t("sections.siembra")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Fecha de Siembra <span className="text-red-500">*</span>
+                  {t("fields.fechaSiembra")}{" "}
+                  <span className="text-red-500">*</span>
                 </Label>
                 <Input type="date" {...register("fecha_siembra")} />
                 {errors.fecha_siembra && (
@@ -453,13 +465,14 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Cantidad Inicial <span className="text-red-500">*</span>
+                  {t("fields.cantidadInicial")}{" "}
+                  <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   type="number"
                   min={1}
                   {...register("cantidad_inicial", { valueAsNumber: true })}
-                  placeholder="Ej: 1000"
+                  placeholder={t("fields.cantidadInicialPlaceholder")}
                 />
                 {errors.cantidad_inicial && (
                   <p className="text-sm text-red-500">
@@ -472,46 +485,51 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Talla / Peso Inicial
+                  {t("fields.tallaPesoInicial")}
                 </Label>
                 <Input
                   {...register("talla_peso_inicial")}
-                  placeholder="Ej: 5cm / 2g"
+                  placeholder={t("fields.tallaPesoInicialPlaceholder")}
                 />
               </div>
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Densidad (por m³ / m²)
+                  {t("fields.densidad")}
                 </Label>
                 <Input
                   type="number"
                   step="0.01"
                   {...register("densidad_por_m3_m2", { valueAsNumber: true })}
-                  placeholder="Ej: 50"
+                  placeholder={t("fields.densidadPlaceholder")}
                 />
               </div>
             </div>
           </div>
 
+          {/* Población */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Población
+              {t("sections.poblacion")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Cantidad Actual</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.cantidadActual")}
+                </Label>
                 <Input
                   type="number"
                   min={0}
                   {...register("cantidad_actual", { valueAsNumber: true })}
-                  placeholder="Ej: 950"
+                  placeholder={t("fields.cantidadActualPlaceholder")}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Etapa</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.etapa")}
+                </Label>
                 <Select
                   value={watch("etapa") || ""}
                   onValueChange={(value) =>
@@ -519,7 +537,7 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona la etapa" />
+                    <SelectValue placeholder={t("fields.etapaPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
                     {etapaOptions.map((etapa) => (
@@ -534,18 +552,19 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
 
             <div className="space-y-2">
               <Label className="text-sm font-medium">
-                Mortalidad Diaria / Acumulada
+                {t("fields.mortalidadDiariaAcum")}
               </Label>
               <Input
                 {...register("mortalidad_diaria_acum")}
-                placeholder="Ej: 5/día o 50 acumuladas"
+                placeholder={t("fields.mortalidadDiariaAcumPlaceholder")}
               />
             </div>
           </div>
 
+          {/* Muestreos */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Muestreos
+              {t("sections.muestreos")}
             </h3>
 
             {muestreoFields.map((field, index) => (
@@ -554,7 +573,9 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
                 className="border rounded-lg p-4 space-y-3 bg-gray-50"
               >
                 <div className="flex justify-between items-center">
-                  <Label className="font-medium">Muestreo #{index + 1}</Label>
+                  <Label className="font-medium">
+                    {t("fields.muestreo", { index: index + 1 })}
+                  </Label>
                   <Button
                     type="button"
                     variant="destructive"
@@ -567,32 +588,32 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div className="space-y-1">
-                    <Label className="text-xs">Fecha</Label>
+                    <Label className="text-xs">{t("fields.fecha")}</Label>
                     <Input
                       type="date"
                       {...register(`muestreos.${index}.fecha_muestreo`)}
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs">Peso (g)</Label>
+                    <Label className="text-xs">{t("fields.pesoGramos")}</Label>
                     <Input
                       type="number"
                       step="0.01"
                       {...register(`muestreos.${index}.peso`, {
                         valueAsNumber: true,
                       })}
-                      placeholder="Ej: 150"
+                      placeholder={t("fields.pesoGramosPlaceholder")}
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs">Talla (cm)</Label>
+                    <Label className="text-xs">{t("fields.tallaCm")}</Label>
                     <Input
                       type="number"
                       step="0.1"
                       {...register(`muestreos.${index}.talla`, {
                         valueAsNumber: true,
                       })}
-                      placeholder="Ej: 15"
+                      placeholder={t("fields.tallaCmPlaceholder")}
                     />
                   </div>
                 </div>
@@ -608,81 +629,91 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
               }
             >
               <Plus className="h-4 w-4 mr-2" />
-              Agregar Muestreo
+              {t("fields.agregarMuestreo")}
             </Button>
           </div>
 
+          {/* Crecimiento */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Crecimiento
+              {t("sections.crecimiento")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Peso Promedio (g)</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.pesoPromedio")}
+                </Label>
                 <Input
                   type="number"
                   step="0.01"
                   {...register("peso_promedio", { valueAsNumber: true })}
-                  placeholder="Ej: 250"
+                  placeholder={t("fields.pesoPromedioPlaceholder")}
                 />
               </div>
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Biomasa Estimada (kg)
+                  {t("fields.biomasaEstimada")}
                 </Label>
                 <Input
                   type="number"
                   step="0.01"
                   {...register("biomasa_estimada", { valueAsNumber: true })}
-                  placeholder="Ej: 237.5"
+                  placeholder={t("fields.biomasaEstimadaPlaceholder")}
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Talla (cm)</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.talla")}
+                </Label>
                 <Input
                   type="number"
                   step="0.1"
                   {...register("talla", { valueAsNumber: true })}
-                  placeholder="Ej: 20"
+                  placeholder={t("fields.tallaPlaceholder")}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Fecha de Muestreo</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.fechaMuestreo")}
+                </Label>
                 <Input type="date" {...register("fecha_muestreo")} />
               </div>
             </div>
           </div>
 
+          {/* Calidad de Agua */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Calidad de Agua
+              {t("sections.calidadAgua")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Temperatura (°C)</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.temperatura")}
+                </Label>
                 <Input
                   type="number"
                   step="0.1"
                   {...register("calidad_agua.temperatura", {
                     valueAsNumber: true,
                   })}
-                  placeholder="Ej: 28"
+                  placeholder={t("fields.temperaturaPlaceholder")}
                 />
                 <p className="text-xs text-muted-foreground">
-                  ⟦Tilapia ideal 26–30 °C⟧
+                  {t("fields.temperaturaInfo")}
                 </p>
               </div>
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Oxígeno Disuelto (mg/L)
+                  {t("fields.oxigenoDisuelto")}
                 </Label>
                 <Input
                   type="number"
@@ -690,59 +721,68 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
                   {...register("calidad_agua.oxigeno_disuelto", {
                     valueAsNumber: true,
                   })}
-                  placeholder="Ej: 5.5"
+                  placeholder={t("fields.oxigenoDisueltoPlaceholder")}
                 />
                 <p className="text-xs text-muted-foreground">
-                  ⟦Mantener {">"} 4 mg/L⟧
+                  {t("fields.oxigenoDisueltoInfo")}
                 </p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">pH</Label>
+                <Label className="text-sm font-medium">{t("fields.ph")}</Label>
                 <Input
                   type="number"
                   step="0.1"
                   {...register("calidad_agua.ph", { valueAsNumber: true })}
-                  placeholder="Ej: 7.5"
+                  placeholder={t("fields.phPlaceholder")}
                 />
-                <p className="text-xs text-muted-foreground">⟦Rango 6.5 – 9⟧</p>
+                <p className="text-xs text-muted-foreground">
+                  {t("fields.phInfo")}
+                </p>
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Amonio (NH₃)</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.amonio")}
+                </Label>
                 <Input
                   type="number"
                   step="0.01"
                   {...register("calidad_agua.amonio", { valueAsNumber: true })}
-                  placeholder="Ej: 0.5"
+                  placeholder={t("fields.amonioPlaceholder")}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Nitrito (NO₂)</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.nitrito")}
+                </Label>
                 <Input
                   type="number"
                   step="0.01"
                   {...register("calidad_agua.nitrito", { valueAsNumber: true })}
-                  placeholder="Ej: 0.05"
+                  placeholder={t("fields.nitritoPlaceholder")}
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Turbidez</Label>
+              <Label className="text-sm font-medium">
+                {t("fields.turbidez")}
+              </Label>
               <Input
                 {...register("calidad_agua.turbidez")}
                 type="number"
-                placeholder="Ej: 1, 2,3"
+                placeholder={t("fields.turbidezPlaceholder")}
               />
             </div>
 
+            {/* Historial de Recambios */}
             <div className="space-y-3">
               <Label className="text-sm font-medium">
-                Historial de Recambios de Agua
+                {t("sections.recambios")}
               </Label>
 
               {recambioFields.map((field, index) => (
@@ -751,7 +791,9 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
                   className="border rounded-lg p-4 space-y-3 bg-gray-50"
                 >
                   <div className="flex justify-between items-center">
-                    <Label className="font-medium">Recambio #{index + 1}</Label>
+                    <Label className="font-medium">
+                      {t("fields.recambio", { index: index + 1 })}
+                    </Label>
                     <Button
                       type="button"
                       variant="destructive"
@@ -764,7 +806,7 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <Label className="text-xs">Fecha</Label>
+                      <Label className="text-xs">{t("fields.fecha")}</Label>
                       <Input
                         type="date"
                         {...register(
@@ -773,7 +815,9 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">% de Agua Recambiada</Label>
+                      <Label className="text-xs">
+                        {t("fields.porcentajeRecambio")}
+                      </Label>
                       <Input
                         type="number"
                         step="0.1"
@@ -781,14 +825,14 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
                           `calidad_agua.historial_recambios.${index}.porcentaje_recambio`,
                           { valueAsNumber: true },
                         )}
-                        placeholder="Ej: 20"
+                        placeholder={t("fields.porcentajeRecambioPlaceholder")}
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <Label className="text-xs">Volumen (m³)</Label>
+                      <Label className="text-xs">{t("fields.volumenM3")}</Label>
                       <Input
                         type="number"
                         step="0.1"
@@ -796,27 +840,27 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
                           `calidad_agua.historial_recambios.${index}.volumen_m3`,
                           { valueAsNumber: true },
                         )}
-                        placeholder="Ej: 10"
+                        placeholder={t("fields.volumenM3Placeholder")}
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Motivo</Label>
+                      <Label className="text-xs">{t("fields.motivo")}</Label>
                       <Input
                         {...register(
                           `calidad_agua.historial_recambios.${index}.motivo`,
                         )}
-                        placeholder="Calidad / Rutina / Floración algas"
+                        placeholder={t("fields.motivoPlaceholder")}
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1">
-                    <Label className="text-xs">Responsable</Label>
+                    <Label className="text-xs">{t("fields.responsable")}</Label>
                     <Input
                       {...register(
                         `calidad_agua.historial_recambios.${index}.responsable`,
                       )}
-                      placeholder="Nombre del responsable"
+                      placeholder={t("fields.responsablePlaceholder")}
                     />
                   </div>
                 </div>
@@ -837,74 +881,92 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
                 }
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Agregar Recambio
+                {t("fields.agregarRecambio")}
               </Button>
             </div>
           </div>
 
+          {/* Alimentación */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Alimentación
+              {t("sections.alimentacion")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Tipo de Concentrado
+                  {t("fields.tipoConcentrado")}
                 </Label>
                 <Input
                   {...register("tipo_concentrado")}
-                  placeholder="Ej: Iniciador, Crecimiento, Engorde"
+                  placeholder={t("fields.tipoConcentradoPlaceholder")}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Proteína %</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.proteinaPorcentaje")}
+                </Label>
                 <Input
                   type="number"
                   step="0.1"
                   {...register("proteina_porcentaje", { valueAsNumber: true })}
-                  placeholder="Ej: 28"
+                  placeholder={t("fields.proteinaPorcentajePlaceholder")}
                 />
                 <p className="text-xs text-muted-foreground">
-                  ⟦24 – 32 % según etapa⟧
+                  {t("fields.proteinaPorcentajeInfo")}
                 </p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Ración Diaria</Label>
-                <Input {...register("racion_diaria")} placeholder="Ej: 15 kg" />
+                <Label className="text-sm font-medium">
+                  {t("fields.racionDiaria")}
+                </Label>
+                <Input
+                  {...register("racion_diaria")}
+                  placeholder={t("fields.racionDiariaPlaceholder")}
+                />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Consumo</Label>
-                <Input {...register("consumo")} placeholder="Ej: 12.5 kg/día" />
+                <Label className="text-sm font-medium">
+                  {t("fields.consumo")}
+                </Label>
+                <Input
+                  {...register("consumo")}
+                  placeholder={t("fields.consumoPlaceholder")}
+                />
               </div>
             </div>
           </div>
 
+          {/* Sanidad */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Sanidad
+              {t("sections.sanidad")}
             </h3>
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Signos Clínicos</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.signosClinicos")}
+                </Label>
                 <Textarea
                   {...register("sanidad.signos_clinicos")}
-                  placeholder="Ej: Manchas, heridas, comportamiento anormal"
+                  placeholder={t("fields.signosClinicosPlaceholder")}
                   className="min-h-[80px]"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Tratamientos</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.tratamientos")}
+                </Label>
                 <Textarea
                   {...register("sanidad.tratamientos")}
-                  placeholder="Ej: Antibióticos, antiparasitarios"
+                  placeholder={t("fields.tratamientosPlaceholder")}
                   className="min-h-[80px]"
                 />
               </div>
@@ -912,28 +974,31 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Baños / Salinidad
+                    {t("fields.banosSalinidad")}
                   </Label>
                   <Input
                     {...register("sanidad.banos_salinidad")}
-                    placeholder="Ej: Baño de sal al 3%"
+                    placeholder={t("fields.banosSalinidadPlaceholder")}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Laboratorio</Label>
+                  <Label className="text-sm font-medium">
+                    {t("fields.laboratorio")}
+                  </Label>
                   <Input
                     {...register("sanidad.laboratorio")}
-                    placeholder="Nombre del laboratorio"
+                    placeholder={t("fields.laboratorioPlaceholder")}
                   />
                 </div>
               </div>
             </div>
           </div>
 
+          {/* Estado del Lote */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Estado del Lote
+              {t("sections.estado")}
             </h3>
 
             <div className="flex items-center space-x-2">
@@ -945,26 +1010,27 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
                 id="lote_activo"
               />
               <Label htmlFor="lote_activo" className="text-sm font-medium">
-                Lote Activo
+                {t("fields.loteActivo")}
               </Label>
             </div>
           </div>
 
+          {/* Ubicación */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Ubicación
+              {t("sections.ubicacion")}
             </h3>
 
             <div className="space-y-2">
               <Label className="text-sm font-medium">
-                Finca <span className="text-red-500">*</span>
+                {t("fields.finca")} <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={watch("fincaId") || ""}
                 onValueChange={(value) => setValue("fincaId", value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecciona una finca" />
+                  <SelectValue placeholder={t("fields.fincaPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {fincasItems.map((finca) => (
@@ -980,9 +1046,10 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
             </div>
           </div>
 
+          {/* Imágenes del Lote */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Imágenes del Lote
+              {t("sections.imagenes")}
             </h3>
 
             <div className="space-y-4">
@@ -1004,7 +1071,7 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
                     </svg>
                   </div>
                   <p className="text-sm text-gray-600 mb-2">
-                    Arrastra y suelta imágenes o haz clic para seleccionar
+                    {t("imagenes.dropzone")}
                   </p>
                   <Input
                     type="file"
@@ -1015,11 +1082,10 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
                     className="w-full max-w-xs cursor-pointer text-sm file:mr-2 file:py-2 file:px-3 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 file:border-none file:rounded-md hover:file:bg-blue-100 disabled:opacity-50"
                   />
                   <p className="text-xs text-gray-500 mt-3">
-                    <span className="font-medium">Máximo 5 imágenes</span> ·
-                    Formatos: JPG, PNG, GIF · Máximo 1MB cada una
+                    {t("imagenes.maxInfo")}
                     <br />
                     <span className="text-blue-600">
-                      {selectedImages.length}/5 imágenes seleccionadas
+                      {t("imagenes.contador", { count: selectedImages.length })}
                     </span>
                   </p>
                 </div>
@@ -1031,20 +1097,20 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
                     <div key={index} className="relative group aspect-square">
                       <img
                         src={preview}
-                        alt={`Preview ${index + 1}`}
+                        alt={t("imagenes.alt", { index: index + 1 })}
                         className="w-full h-full object-cover rounded-lg border shadow-sm hover:shadow-md transition-shadow"
                       />
                       <button
                         type="button"
                         onClick={() => removeImage(index)}
                         className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-all shadow-md active:scale-95 opacity-0 group-hover:opacity-100"
-                        aria-label="Eliminar imagen"
+                        aria-label={t("imagenes.eliminar")}
                       >
                         ×
                       </button>
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <span className="text-white text-xs">
-                          Imagen {index + 1}
+                          {t("imagenes.imagen", { index: index + 1 })}
                         </span>
                       </div>
                     </div>
@@ -1054,13 +1120,14 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
             </div>
           </div>
 
+          {/* Botones */}
           <div className="pt-4 border-t flex justify-end gap-3">
             <Button
               type="button"
               variant="outline"
               onClick={() => router.push("/animales")}
             >
-              Cancelar
+              {t("buttons.cancelar")}
             </Button>
             <Button
               type="submit"
@@ -1089,10 +1156,10 @@ const FormAddPeces = ({ selectedEspecieId }: Props) => {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Creando...
+                  {t("buttons.creando")}
                 </>
               ) : (
-                "Ingresar Lote de Peces"
+                t("buttons.ingresarLotePeces")
               )}
             </Button>
           </div>

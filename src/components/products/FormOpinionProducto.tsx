@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -23,6 +24,8 @@ export default function FormOpinionProducto({
   onSuccess,
   onCancel,
 }: FormOpinionProductoProps) {
+  const t = useTranslations("productDetails.reviewForm");
+
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [titulo, setTitulo] = useState("");
@@ -36,17 +39,17 @@ export default function FormOpinionProducto({
     setError(null);
 
     if (rating === 0) {
-      setError("Por favor selecciona una calificación");
+      setError(t("validation.rating"));
       return;
     }
 
     if (!titulo.trim()) {
-      setError("Por favor ingresa un título");
+      setError(t("validation.title"));
       return;
     }
 
     if (!comentario.trim()) {
-      setError("Por favor ingresa un comentario");
+      setError(t("validation.comment"));
       return;
     }
 
@@ -62,11 +65,12 @@ export default function FormOpinionProducto({
 
       await CrearOpinion(data);
 
-      toast.success("Tu opinión ha sido publicada exitosamente.");
+      toast.success(t("success"));
       queryClient.invalidateQueries({ queryKey: ["opiniones"] });
       queryClient.invalidateQueries({ queryKey: ["rating"] });
       queryClient.invalidateQueries({ queryKey: ["producto-opinado"] });
       queryClient.invalidateQueries({ queryKey: ["producto-comprado"] });
+
       setRating(0);
       setTitulo("");
       setComentario("");
@@ -75,8 +79,7 @@ export default function FormOpinionProducto({
         onSuccess();
       }
     } catch (error: any) {
-      const message =
-        error.response?.data?.message || "Error al enviar la opinión";
+      const message = error.response?.data?.message || t("errors.submit");
       setError(message);
       toast.error(message);
     } finally {
@@ -89,12 +92,13 @@ export default function FormOpinionProducto({
       <div className="flex items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
         <div className="flex-1 min-w-0">
           <h3 className="text-base sm:text-lg md:text-xl font-semibold truncate">
-            Escribe tu opinión
+            {t("title")}
           </h3>
           <p className="text-xs sm:text-sm text-muted-foreground truncate">
-            Sobre: {productoNombre}
+            {t("about")}: {productoNombre}
           </p>
         </div>
+
         {onCancel && (
           <Button
             variant="ghost"
@@ -110,7 +114,7 @@ export default function FormOpinionProducto({
       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         <div className="space-y-2 sm:space-y-3">
           <label className="text-xs sm:text-sm font-medium block">
-            Calificación general <span className="text-red-500">*</span>
+            {t("rating")} <span className="text-red-500">*</span>
           </label>
 
           <div className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-3">
@@ -123,7 +127,7 @@ export default function FormOpinionProducto({
                   onMouseEnter={() => setHoverRating(star)}
                   onMouseLeave={() => setHoverRating(0)}
                   className="p-0.5 sm:p-1 touch-manipulation"
-                  aria-label={`Calificar con ${star} estrella${star !== 1 ? "s" : ""}`}
+                  aria-label={t("ratingAriaLabel", { count: star })}
                 >
                   <Star
                     className={cn(
@@ -141,12 +145,12 @@ export default function FormOpinionProducto({
               {rating > 0 ? (
                 <>
                   <span className="hidden xs:inline">
-                    {rating} estrella{rating !== 1 ? "s" : ""}
+                    {t("selectedRating", { count: rating })}
                   </span>
                   <span className="xs:hidden">{rating}/5</span>
                 </>
               ) : (
-                "Selecciona"
+                t("selectRating")
               )}
             </span>
           </div>
@@ -157,17 +161,19 @@ export default function FormOpinionProducto({
             htmlFor="titulo"
             className="text-xs sm:text-sm font-medium block"
           >
-            Título de la opinión <span className="text-red-500">*</span>
+            {t("reviewTitle")} <span className="text-red-500">*</span>
           </label>
+
           <Input
             id="titulo"
             value={titulo}
             onChange={(e) => setTitulo(e.target.value)}
-            placeholder="Ej: Excelente producto, muy buena calidad"
+            placeholder={t("titlePlaceholder")}
             maxLength={200}
             disabled={isSubmitting}
             className="h-9 sm:h-10 text-sm"
           />
+
           <p className="text-xs text-muted-foreground text-right">
             {titulo.length}/200
           </p>
@@ -178,18 +184,20 @@ export default function FormOpinionProducto({
             htmlFor="comentario"
             className="text-xs sm:text-sm font-medium block"
           >
-            Tu experiencia <span className="text-red-500">*</span>
+            {t("experience")} <span className="text-red-500">*</span>
           </label>
+
           <Textarea
             id="comentario"
             value={comentario}
             onChange={(e) => setComentario(e.target.value)}
-            placeholder="Comparte tu experiencia con este producto. ¿Qué te gustó o no te gustó? ¿Cumple con lo esperado?"
+            placeholder={t("commentPlaceholder")}
             rows={4}
             maxLength={2000}
             disabled={isSubmitting}
             className="text-sm min-h-[100px] sm:min-h-[120px]"
           />
+
           <p className="text-xs text-muted-foreground text-right">
             {comentario.length}/2000
           </p>
@@ -212,9 +220,10 @@ export default function FormOpinionProducto({
               disabled={isSubmitting}
               className="w-full xs:flex-1 h-9 sm:h-10 text-sm"
             >
-              Cancelar
+              {t("cancel")}
             </Button>
           )}
+
           <Button
             type="submit"
             disabled={isSubmitting || rating === 0}
@@ -226,19 +235,19 @@ export default function FormOpinionProducto({
             {isSubmitting ? (
               <span className="flex items-center justify-center gap-2">
                 <span className="inline-block h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span className="hidden xs:inline">Enviando...</span>
-                <span className="xs:hidden">Enviando</span>
+                <span className="hidden xs:inline">{t("submitting")}</span>
+                <span className="xs:hidden">{t("sending")}</span>
               </span>
             ) : (
-              "Publicar opinión"
+              t("publish")
             )}
           </Button>
         </div>
 
         <p className="text-xs text-muted-foreground text-center px-2">
-          Tu opinión aparecerá como{" "}
-          <span className="font-medium">"Compra verificada"</span> ya que has
-          adquirido este producto.
+          {t("verifiedPurchase")}{" "}
+          <span className="font-medium">"{t("verifiedBadge")}"</span>{" "}
+          {t("purchaseConfirmation")}
         </p>
       </form>
     </div>

@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Card,
   CardContent,
@@ -22,6 +23,7 @@ import {
   UNIDADES_CONFIG,
   UnidadMedida,
 } from "@/helpers/funciones/cultivos/unidades-config";
+import { useTranslations } from "next-intl";
 
 interface Props {
   data: ResponseAreaCultivoFinca[] | undefined;
@@ -46,6 +48,8 @@ const formatearArea = (area: number, unidad: UnidadMedida): string => {
 };
 
 const AreaCultivoByFinca = ({ data, isLoading }: Props) => {
+  const t = useTranslations("areaCultivoByFinca");
+
   if (isLoading) {
     return <SkeletonCard />;
   }
@@ -55,11 +59,11 @@ const AreaCultivoByFinca = ({ data, isLoading }: Props) => {
       <Card className="w-full">
         <CardContent className="flex flex-col items-center justify-center py-12">
           <MapPin className="h-16 w-16 text-gray-300 mb-4" />
-          <p className="text-gray-500 text-center">
-            No hay fincas con cultivos registrados
-          </p>
+
+          <p className="text-gray-500 text-center">{t("empty.title")}</p>
+
           <p className="text-sm text-gray-400 text-center mt-2">
-            Los cultivos registrados aparecerán aquí
+            {t("empty.description")}
           </p>
         </CardContent>
       </Card>
@@ -69,6 +73,7 @@ const AreaCultivoByFinca = ({ data, isLoading }: Props) => {
   const unidadesUnicas = Array.from(
     new Set(data.map((item) => item.unidad_medida)),
   );
+
   const tieneMultiplesUnidades = unidadesUnicas.length > 1;
 
   const chartData = data.map((item) => ({
@@ -85,15 +90,18 @@ const AreaCultivoByFinca = ({ data, isLoading }: Props) => {
   }));
 
   const areaTotalHa = chartData.reduce((sum, item) => sum + item.areaHa, 0);
-  const fincaPrincipal = chartData.sort((a, b) => b.areaHa - a.areaHa)[0];
+
+  const fincaPrincipal = [...chartData].sort((a, b) => b.areaHa - a.areaHa)[0];
 
   const unidadPrincipal = unidadesUnicas[0] as UnidadMedida;
   const unidadPrincipalNombre = getUnidadNombre(unidadPrincipal);
 
   const mostrarUnidad = tieneMultiplesUnidades ? "ha" : unidadPrincipal;
+
   const mostrarUnidadNombre = tieneMultiplesUnidades
-    ? "hectáreas"
+    ? t("units.hectares")
     : unidadPrincipalNombre;
+
   const mostrarSimbolo = tieneMultiplesUnidades
     ? "ha"
     : getUnidadSimbolo(unidadPrincipal);
@@ -103,26 +111,30 @@ const AreaCultivoByFinca = ({ data, isLoading }: Props) => {
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
           <Ruler className="h-5 w-5 text-blue-600" />
-          Área Cultivada por Finca - En Progreso
+          {t("title")}
         </CardTitle>
+
         <CardDescription>
-          Distribución de {areaTotalHa.toFixed(2)} {mostrarUnidadNombre}{" "}
-          cultivadas en {chartData.length} finca
-          {chartData.length !== 1 ? "s" : ""}
+          {t("description", {
+            area: areaTotalHa.toFixed(2),
+            unit: mostrarUnidadNombre,
+            count: chartData.length,
+          })}
+
           {tieneMultiplesUnidades && (
             <span className="block text-xs text-amber-600 mt-1">
-              ⚠️ Se detectaron diferentes unidades de medida
+              ⚠️ {t("multipleUnitsDetected")}
             </span>
           )}
         </CardDescription>
       </CardHeader>
+
       <CardContent>
         <div className="space-y-6">
           {tieneMultiplesUnidades && (
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-700">
-              <p className="font-medium mb-1">
-                📐 Múltiples unidades detectadas:
-              </p>
+              <p className="font-medium mb-1">📐 {t("multipleUnits.title")}</p>
+
               <div className="flex flex-wrap gap-2">
                 {unidadesUnicas.map((unidad) => (
                   <span
@@ -133,9 +145,8 @@ const AreaCultivoByFinca = ({ data, isLoading }: Props) => {
                   </span>
                 ))}
               </div>
-              <p className="mt-2">
-                Los valores se muestran en hectáreas para comparación
-              </p>
+
+              <p className="mt-2">{t("multipleUnits.description")}</p>
             </div>
           )}
 
@@ -151,6 +162,7 @@ const AreaCultivoByFinca = ({ data, isLoading }: Props) => {
                     const areaMostrar = tieneMultiplesUnidades
                       ? `${entry.areaHa.toFixed(1)} ha`
                       : `${entry.area.toFixed(1)} ${entry.unidadSimbolo}`;
+
                     return `${entry.name}: ${areaMostrar}`;
                   }}
                   outerRadius={100}
@@ -164,27 +176,33 @@ const AreaCultivoByFinca = ({ data, isLoading }: Props) => {
                     />
                   ))}
                 </Pie>
+
                 <Tooltip
-                  formatter={(value: number, name: string, props: any) => {
+                  formatter={(value: number, _name: string, props: any) => {
                     const item = props.payload;
+
                     if (tieneMultiplesUnidades) {
                       return [
                         `${item.areaHa.toFixed(2)} ha (${item.areaFormateada})`,
-                        "Área",
+                        t("chart.area"),
                       ];
                     }
+
                     return [
                       `${item.area.toFixed(2)} ${item.unidadSimbolo}`,
-                      "Área",
+                      t("chart.area"),
                     ];
                   }}
                 />
+
                 <Legend
-                  formatter={(value, entry, index) => {
+                  formatter={(value, _entry, index) => {
                     const item = chartData[index];
+
                     const areaMostrar = tieneMultiplesUnidades
                       ? `${item.areaHa.toFixed(1)} ha`
                       : `${item.area.toFixed(1)} ${item.unidadSimbolo}`;
+
                     return `${value} (${areaMostrar})`;
                   }}
                 />
@@ -196,15 +214,19 @@ const AreaCultivoByFinca = ({ data, isLoading }: Props) => {
             <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Award className="h-5 w-5 text-blue-600" />
+
                 <h4 className="font-semibold text-sm text-gray-700">
-                  Finca con Mayor Área
+                  {t("highlights.largestFarm")}
                 </h4>
               </div>
+
               <p className="text-lg font-bold text-gray-900">
                 {fincaPrincipal?.name}
               </p>
+
               <p className="text-sm text-gray-600">
                 {fincaPrincipal?.areaFormateada}
+
                 {tieneMultiplesUnidades &&
                   fincaPrincipal?.areaHa !== fincaPrincipal?.area && (
                     <span className="text-xs text-gray-500 ml-1">
@@ -217,23 +239,29 @@ const AreaCultivoByFinca = ({ data, isLoading }: Props) => {
             <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingUp className="h-5 w-5 text-green-600" />
+
                 <h4 className="font-semibold text-sm text-gray-700">
-                  Promedio por Finca
+                  {t("highlights.averagePerFarm")}
                 </h4>
               </div>
+
               <p className="text-lg font-bold text-gray-900">
                 {(areaTotalHa / chartData.length).toFixed(2)}
               </p>
+
               <p className="text-sm text-gray-600">
-                {mostrarUnidadNombre} por finca
+                {t("highlights.perFarm", {
+                  unit: mostrarUnidadNombre,
+                })}
               </p>
             </div>
           </div>
 
           <div className="md:hidden">
             <h4 className="font-semibold text-sm text-gray-700 mb-3">
-              Detalle por Finca
+              {t("details.title")}
             </h4>
+
             <div className="space-y-2">
               {chartData.map((item, index) => (
                 <div
@@ -248,29 +276,46 @@ const AreaCultivoByFinca = ({ data, isLoading }: Props) => {
                           backgroundColor: COLORS[index % COLORS.length],
                         }}
                       />
+
                       <span className="text-sm font-medium">{item.name}</span>
                     </div>
+
                     <span className="text-sm font-bold text-gray-900">
                       {item.areaFormateada}
                     </span>
                   </div>
+
                   {tieneMultiplesUnidades && item.areaHa !== item.area && (
                     <div className="text-xs text-gray-500 pl-5">
-                      Equivalente: {item.areaHa.toFixed(2)} ha
+                      {t("details.equivalent", {
+                        area: item.areaHa.toFixed(2),
+                      })}
+
                       <span className="ml-2">
-                        ({((item.areaHa / areaTotalHa) * 100).toFixed(1)}% del
-                        total)
+                        (
+                        {t("details.percentageOfTotal", {
+                          percentage: (
+                            (item.areaHa / areaTotalHa) *
+                            100
+                          ).toFixed(1),
+                        })}
+                        )
                       </span>
                     </div>
                   )}
+
                   {!tieneMultiplesUnidades && (
                     <div className="text-xs text-gray-500 pl-5">
-                      {(
-                        (item.area /
-                          chartData.reduce((s, i) => s + i.area, 0)) *
-                        100
-                      ).toFixed(1)}
-                      % del total
+                      {t("details.percentageOfTotal", {
+                        percentage: (
+                          (item.area /
+                            chartData.reduce(
+                              (sum, current) => sum + current.area,
+                              0,
+                            )) *
+                          100
+                        ).toFixed(1),
+                      })}
                     </div>
                   )}
                 </div>
@@ -280,11 +325,16 @@ const AreaCultivoByFinca = ({ data, isLoading }: Props) => {
 
           <div className="space-y-2">
             <p className="text-sm font-medium text-gray-700">
-              Distribución del Área (en {mostrarUnidadNombre})
+              {t("distribution.title", {
+                unit: mostrarUnidadNombre,
+              })}
             </p>
+
             <div className="flex h-4 rounded-full overflow-hidden">
               {chartData.map((item, index) => {
-                const porcentaje = (item.areaHa / areaTotalHa) * 100;
+                const porcentaje =
+                  areaTotalHa > 0 ? (item.areaHa / areaTotalHa) * 100 : 0;
+
                 return (
                   <div
                     key={index}
@@ -298,16 +348,23 @@ const AreaCultivoByFinca = ({ data, isLoading }: Props) => {
                 );
               })}
             </div>
+
             <div className="flex flex-wrap gap-3 text-xs">
               {chartData.map((item, index) => {
-                const porcentaje = (item.areaHa / areaTotalHa) * 100;
+                const porcentaje =
+                  areaTotalHa > 0 ? (item.areaHa / areaTotalHa) * 100 : 0;
+
                 return (
                   <div key={index} className="flex items-center gap-1">
                     <div
                       className="w-2 h-2 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                      style={{
+                        backgroundColor: COLORS[index % COLORS.length],
+                      }}
                     />
+
                     <span className="truncate max-w-[80px]">{item.name}</span>
+
                     <span className="font-medium whitespace-nowrap">
                       ({porcentaje.toFixed(1)}%)
                     </span>
@@ -319,15 +376,23 @@ const AreaCultivoByFinca = ({ data, isLoading }: Props) => {
 
           {tieneMultiplesUnidades && (
             <div className="text-xs text-gray-400 text-center pt-2 border-t">
-              <p>Conversión de unidades: 1 ha = </p>
+              <p>{t("conversions.title")}</p>
+
               <div className="flex flex-wrap justify-center gap-2 mt-1">
-                <span className="bg-gray-100 px-2 py-1 rounded">1.4286 mz</span>
+                <span className="bg-gray-100 px-2 py-1 rounded">
+                  1 ha = 1.4286 mz
+                </span>
+
                 <span className="bg-gray-100 px-2 py-1 rounded">10,000 m²</span>
+
                 <span className="bg-gray-100 px-2 py-1 rounded">0.01 km²</span>
+
                 <span className="bg-gray-100 px-2 py-1 rounded">2.4711 ac</span>
+
                 <span className="bg-gray-100 px-2 py-1 rounded">
                   107,639 ft²
                 </span>
+
                 <span className="bg-gray-100 px-2 py-1 rounded">
                   11,959.9 yd²
                 </span>

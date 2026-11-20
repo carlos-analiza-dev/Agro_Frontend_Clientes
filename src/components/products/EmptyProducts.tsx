@@ -1,8 +1,11 @@
+import { useTranslations } from "next-intl";
+
 interface Props {
   onRefresh: () => Promise<void>;
 }
 
 export const EmptyProducts = ({ onRefresh }: Props) => {
+  const t = useTranslations("emptyProducts");
   return (
     <div className="flex flex-col items-center justify-center py-12 md:py-16 px-4">
       <div className="w-24 h-24 md:w-32 md:h-32 mb-6 text-muted-foreground">
@@ -29,12 +32,11 @@ export const EmptyProducts = ({ onRefresh }: Props) => {
       </div>
 
       <h3 className="text-lg md:text-xl font-semibold text-foreground mb-2">
-        No hay productos disponibles
+        {t("title")}
       </h3>
 
       <p className="text-sm md:text-base text-muted-foreground text-center max-w-md mb-6">
-        En este momento no tenemos productos para mostrar. Por favor, intenta
-        nuevamente más tarde.
+        {t("description")}
       </p>
 
       {onRefresh && (
@@ -55,7 +57,7 @@ export const EmptyProducts = ({ onRefresh }: Props) => {
               d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
             />
           </svg>
-          Reintentar
+          {t("retry")}
         </button>
       )}
     </div>

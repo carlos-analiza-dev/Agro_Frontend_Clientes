@@ -1,5 +1,7 @@
 "use client";
+
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Users, Beef, Pencil } from "lucide-react";
@@ -8,7 +10,6 @@ import {
   ObtenerProduccionByUserInterface,
 } from "@/api/produccion/interface/obter-producciones-userId.interface";
 import { Button } from "@/components/ui/button";
-import { ProduccionGanadera } from "@/api/produccion/interface/crear-produccion-finca.interface";
 
 interface ProduccionGanaderaCardProps {
   ganadera: ObtenerProduccionByUserInterface["ganadera"];
@@ -21,6 +22,8 @@ const ProduccionGanaderaCard: React.FC<ProduccionGanaderaCardProps> = ({
   finca,
   handleProduccionGanadera,
 }) => {
+  const t = useTranslations("produccionGanaderaCard");
+
   if (!ganadera) return null;
 
   return (
@@ -31,14 +34,17 @@ const ProduccionGanaderaCard: React.FC<ProduccionGanaderaCardProps> = ({
           size="sm"
           onClick={() => handleProduccionGanadera(ganadera)}
         >
-          <Pencil className="h-4 w-4 mr-1" /> Editar Ganaderia
+          <Pencil className="h-4 w-4 mr-1" />
+          {t("buttons.edit")}
         </Button>
       </div>
+
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-lg">
           <Beef className="h-5 w-5 text-primary" />
-          Producción Ganadera
+          {t("title")}
         </CardTitle>
+
         <div className="flex flex-wrap gap-1">
           {ganadera.tiposProduccion.map((tipo, index) => (
             <Badge key={index} variant="outline" className="text-xs">
@@ -54,25 +60,36 @@ const ProduccionGanaderaCard: React.FC<ProduccionGanaderaCardProps> = ({
             <div className="text-2xl font-bold text-primary">
               {ganadera.vacasOrdeño}
             </div>
-            <div className="text-xs text-muted-foreground">Vacas ordeño</div>
+            <div className="text-xs text-muted-foreground">
+              {t("statistics.milkingCows")}
+            </div>
           </div>
+
           <div className="space-y-1">
             <div className="text-2xl font-bold text-primary">
               {ganadera.vacasSecas}
             </div>
-            <div className="text-xs text-muted-foreground">Vacas secas</div>
+            <div className="text-xs text-muted-foreground">
+              {t("statistics.dryCows")}
+            </div>
           </div>
+
           <div className="space-y-1">
             <div className="text-2xl font-bold text-primary">
               {ganadera.terneros}
             </div>
-            <div className="text-xs text-muted-foreground">Terneros</div>
+            <div className="text-xs text-muted-foreground">
+              {t("statistics.calves")}
+            </div>
           </div>
+
           <div className="space-y-1">
             <div className="text-2xl font-bold text-primary">
               {finca.cantidad_animales}
             </div>
-            <div className="text-xs text-muted-foreground">Total animales</div>
+            <div className="text-xs text-muted-foreground">
+              {t("statistics.totalAnimals")}
+            </div>
           </div>
         </div>
 
@@ -80,7 +97,7 @@ const ProduccionGanaderaCard: React.FC<ProduccionGanaderaCardProps> = ({
           {ganadera.produccionLecheCantidad && (
             <div className="border rounded-lg p-3 bg-blue-50">
               <div className="font-semibold text-blue-800">
-                Producción Lechera
+                {t("production.milk")}
               </div>
               <div className="text-lg font-bold">
                 {ganadera.produccionLecheCantidad}{" "}
@@ -91,9 +108,11 @@ const ProduccionGanaderaCard: React.FC<ProduccionGanaderaCardProps> = ({
 
           {ganadera.cabezasEngordeBovino && (
             <div className="border rounded-lg p-3 bg-red-50">
-              <div className="font-semibold text-red-800">Carne en Engorde</div>
+              <div className="font-semibold text-red-800">
+                {t("production.fattening")}
+              </div>
               <div className="text-lg font-bold">
-                {ganadera.cabezasEngordeBovino} cabezas
+                {ganadera.cabezasEngordeBovino} {t("production.heads")}
               </div>
             </div>
           )}
@@ -102,17 +121,25 @@ const ProduccionGanaderaCard: React.FC<ProduccionGanaderaCardProps> = ({
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4 text-muted-foreground" />
-            <span>Área: {finca.area_ganaderia_hectarea} ha</span>
+            <span>
+              {t("fields.area")}: {finca.area_ganaderia_hectarea} ha
+            </span>
           </div>
+
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-muted-foreground" />
-            <span>{finca.cantidad_animales} animales</span>
+            <span>
+              {finca.cantidad_animales} {t("statistics.animals")}
+            </span>
           </div>
         </div>
 
         {finca.especies_maneja && finca.especies_maneja.length > 0 && (
           <div>
-            <div className="font-medium text-sm mb-2">Especies:</div>
+            <div className="font-medium text-sm mb-2">
+              {t("fields.species")}
+            </div>
+
             <div className="flex flex-wrap gap-1">
               {finca.especies_maneja.map((especie, index) => (
                 <Badge key={index} variant="secondary" className="text-xs">

@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { useTranslations } from "next-intl";
 
 interface UbicacionPedido {
   tipo: "finca" | "sucursal" | "otra";
@@ -66,7 +67,7 @@ const ResumenPedido = ({
 }: Props) => {
   const { calcularImpuestos } = useCartStore();
   const impuestos = calcularImpuestos();
-
+  const t = useTranslations("resumenPedido");
   const { data: sucursales, isLoading } = useGetSucursalesCercanas(
     ubicacionSeleccionada?.latitud,
     ubicacionSeleccionada?.longitud,
@@ -89,15 +90,17 @@ const ResumenPedido = ({
   const precioTotal = impuestos.total_general + costoDelivery;
 
   const obtenerTextoUbicacion = () => {
-    if (!ubicacionSeleccionada) return "No seleccionada";
+    if (!ubicacionSeleccionada) return t("location.notSelected");
 
     switch (ubicacionSeleccionada.tipo) {
       case "finca":
-        return `Finca: ${ubicacionSeleccionada.nombre_finca || "Seleccionada"}`;
+        return t("location.farm", {
+          name: ubicacionSeleccionada.nombre_finca || t("location.selected"),
+        });
       case "sucursal":
-        return "Recoger en sucursal";
+        return t("location.pickup");
       default:
-        return "Ubicación personalizada";
+        return t("location.custom");
     }
   };
 
@@ -105,14 +108,14 @@ const ResumenPedido = ({
     if (!ubicacionSeleccionada) return "";
 
     return ubicacionSeleccionada.tipoEntrega === "delivery"
-      ? "Delivery a domicilio"
-      : "Recoger en sucursal";
+      ? t("location.homeDelivery")
+      : t("location.pickup");
   };
 
   return (
     <Card className="sticky top-4">
       <CardHeader>
-        <CardTitle className="text-xl">Resumen del Pedido</CardTitle>
+        <CardTitle className="text-xl">{t("title")}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {sonDiferentesSucursales && (
@@ -121,10 +124,11 @@ const ResumenPedido = ({
               <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
                 <p className="text-xs text-amber-800 font-medium">
-                  Productos de diferentes sucursales
+                  {t("differentBranches.title")}
                 </p>
                 <p className="text-xs text-amber-700 mt-0.5">
-                  Tiempo de entrega: <strong>3 a 5 días hábiles</strong>
+                  {t("differentBranches.deliveryTime")}{" "}
+                  <strong>{t("differentBranches.businessDays")}</strong>
                 </p>
               </div>
             </div>
@@ -133,14 +137,18 @@ const ResumenPedido = ({
 
         <div className="space-y-3 p-3 border rounded-lg bg-gray-50">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Ubicación:</span>
+            <span className="text-sm font-medium">{t("location.label")}</span>
             <Button
               variant="ghost"
               size="sm"
               onClick={onSeleccionarUbicacion}
               className="h-auto p-1"
             >
-              {ubicacionSeleccionada ? "Cambiar" : "Seleccionar"}
+              {ubicacionSeleccionada ? (
+                <>{t("location.change")}</>
+              ) : (
+                <>{t("location.select")}</>
+              )}
             </Button>
           </div>
 
@@ -166,15 +174,13 @@ const ResumenPedido = ({
               {ubicacionSeleccionada.costoDelivery &&
                 ubicacionSeleccionada.costoDelivery > 0 && (
                   <div className="text-sm text-orange-600 font-medium">
-                    Delivery: +{moneda || "$"}
+                    {t("location.delivery")} +{moneda || "$"}
                     {ubicacionSeleccionada.costoDelivery.toFixed(2)}
                   </div>
                 )}
             </div>
           ) : (
-            <p className="text-sm text-red-600">
-              Debes seleccionar una ubicación para continuar
-            </p>
+            <p className="text-sm text-red-600">{t("location.mustSelect")}</p>
           )}
         </div>
 
@@ -185,10 +191,10 @@ const ResumenPedido = ({
               <Store className="h-4 w-4 text-blue-600" />
 
               <div>
-                <p className="text-sm font-medium">Selecciona una sucursal</p>
+                <p className="text-sm font-medium">{t("branches.select")}</p>
 
                 <p className="text-xs text-muted-foreground">
-                  Escoge la sucursal desde donde se procesará tu pedido
+                  {t("branches.description")}
                 </p>
               </div>
             </div>
@@ -196,7 +202,7 @@ const ResumenPedido = ({
             {isLoading ? (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Buscando sucursales cercanas...
+                {t("branches.searching")}
               </div>
             ) : (
               <Select
@@ -204,7 +210,7 @@ const ResumenPedido = ({
                 onValueChange={setSucursalCercana}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Seleccionar sucursal" />
+                  <SelectValue placeholder={t("branches.placeholder")} />
                 </SelectTrigger>
 
                 <SelectContent>
@@ -216,7 +222,7 @@ const ResumenPedido = ({
 
                           {index === 0 && (
                             <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                              Más cercana
+                              {t("branches.nearest")}
                             </span>
                           )}
                         </div>
@@ -235,7 +241,7 @@ const ResumenPedido = ({
               <div className="rounded-md border bg-white p-3 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">
-                    Sucursal seleccionada
+                    {t("branches.selected")}
                   </span>
 
                   <span className="text-sm font-semibold text-blue-600">
@@ -245,7 +251,7 @@ const ResumenPedido = ({
 
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">
-                    Distancia
+                    {t("branches.distance")}
                   </span>
 
                   <span className="text-sm">
@@ -266,7 +272,7 @@ const ResumenPedido = ({
 
         <div className="space-y-3">
           <div className="flex justify-between">
-            <span className="text-gray-600">Subtotal:</span>
+            <span className="text-gray-600">{t("totals.subtotal")}</span>
             <span className="font-semibold">
               {moneda || "$"}
               {impuestos.sub_total.toFixed(2)}
@@ -275,7 +281,7 @@ const ResumenPedido = ({
 
           {impuestos.importe_exento > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Exento:</span>
+              <span className="text-gray-600">{t("totals.exempt")}</span>
               <span className="text-green-600">
                 -{moneda || "$"}
                 {impuestos.importe_exento.toFixed(2)}
@@ -285,7 +291,7 @@ const ResumenPedido = ({
 
           {impuestos.importe_exonerado > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Exonerado:</span>
+              <span className="text-gray-600">{t("totals.exonerated")}</span>
               <span className="text-green-600">
                 -{moneda || "$"}
                 {impuestos.importe_exonerado.toFixed(2)}
@@ -295,7 +301,7 @@ const ResumenPedido = ({
 
           {impuestos.importe_gravado_15 > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Base 15%:</span>
+              <span className="text-gray-600">{t("totals.taxableBase15")}</span>
               <span>
                 {moneda || "$"}
                 {impuestos.importe_gravado_15.toFixed(2)}
@@ -305,7 +311,7 @@ const ResumenPedido = ({
 
           {impuestos.isv_15 > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">ISV 15%:</span>
+              <span className="text-gray-600">{t("totals.isv15")}</span>
               <span className="text-red-600">
                 +{moneda || "$"}
                 {impuestos.isv_15.toFixed(2)}
@@ -315,7 +321,7 @@ const ResumenPedido = ({
 
           {impuestos.importe_gravado_18 > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Base 18%:</span>
+              <span className="text-gray-600">{t("totals.taxableBase18")}</span>
               <span>
                 {moneda || "$"}
                 {impuestos.importe_gravado_18.toFixed(2)}
@@ -325,7 +331,7 @@ const ResumenPedido = ({
 
           {impuestos.isv_18 > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">ISV 18%:</span>
+              <span className="text-gray-600">{t("totals.isv18")}</span>
               <span className="text-red-600">
                 +{moneda || "$"}
                 {impuestos.isv_18.toFixed(2)}
@@ -335,7 +341,7 @@ const ResumenPedido = ({
 
           {impuestos.total_impuestos > 0 && (
             <div className="flex justify-between text-sm font-medium pt-1 border-t">
-              <span className="text-gray-700">Total Impuestos:</span>
+              <span className="text-gray-700">{t("totals.totalTaxes")}</span>
               <span className="text-red-600">
                 +{moneda || "$"}
                 {impuestos.total_impuestos.toFixed(2)}
@@ -345,7 +351,7 @@ const ResumenPedido = ({
 
           {costoDelivery > 0 && (
             <div className="flex justify-between">
-              <span className="text-gray-600">Costo de delivery:</span>
+              <span className="text-gray-600">{t("totals.deliveryCost")}</span>
               <span className="font-semibold text-orange-600">
                 +{moneda || "$"}
                 {costoDelivery.toFixed(2)}
@@ -356,7 +362,7 @@ const ResumenPedido = ({
           <Separator />
 
           <div className="flex justify-between text-lg font-bold">
-            <span>Total:</span>
+            <span>{t("totals.total")}</span>
             <span className="text-green-600">
               {moneda || "$"}
               {precioTotal.toFixed(2)}
@@ -366,7 +372,7 @@ const ResumenPedido = ({
           {impuestos.total_impuestos > 0 && (
             <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
               <Info className="h-3 w-3" />
-              <span>Impuestos incluidos en el total</span>
+              <span>{t("totals.taxesIncluded")}</span>
             </div>
           )}
         </div>
@@ -382,10 +388,10 @@ const ResumenPedido = ({
           {isProcessing ? (
             <>
               <Loader2 className="h-5 w-5 animate-spin mr-2" />
-              Procesando...
+              {t("buttons.processing")}
             </>
           ) : (
-            "Realizar Pedido"
+            <>{t("buttons.checkout")}</>
           )}
         </Button>
 
@@ -401,7 +407,7 @@ const ResumenPedido = ({
                   </div>
 
                   <h3 className="text-base sm:text-sm font-semibold text-red-800 mb-2">
-                    Error de autenticación
+                    {t("authentication.title")}
                   </h3>
                   <p className="text-sm text-red-700 mb-4">
                     {typeof isErrorAuth === "string"
@@ -416,14 +422,14 @@ const ResumenPedido = ({
                     className="flex items-center justify-center gap-2 w-full rounded-md bg-red-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-red-700 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                   >
                     <LogIn className="h-4 w-4 flex-shrink-0" />
-                    <span>Iniciar Sesión</span>
+                    <span>{t("buttons.login")}</span>
                   </Link>
                   <Link
                     href="/register"
                     className="flex items-center justify-center gap-2 w-full rounded-md border border-red-300 bg-white px-4 py-2.5 text-sm font-medium text-red-700 shadow-sm transition-all hover:bg-red-50 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                   >
                     <UserPlus className="h-4 w-4 flex-shrink-0" />
-                    <span>Registrarse</span>
+                    <span>{t("buttons.register")}</span>
                   </Link>
                 </div>
               </div>
@@ -437,7 +443,7 @@ const ResumenPedido = ({
           className="w-full"
           disabled={isProcessing}
         >
-          Seguir comprando
+          {t("buttons.continueShopping")}
         </Button>
       </CardContent>
     </Card>

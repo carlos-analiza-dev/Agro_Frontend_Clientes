@@ -93,7 +93,9 @@ export const getEstadoCultivo = (
   fechaSiembra: string,
   tipoCultivo: TipoCultivoEnum,
 ) => {
-  if (!fechaSiembra) return { label: "Sin información", variant: "secondary" };
+  if (!fechaSiembra) {
+    return { labelKey: "states.noInformation", variant: "secondary" };
+  }
 
   const hoy = new Date();
   const siembra = new Date(fechaSiembra);
@@ -105,22 +107,28 @@ export const getEstadoCultivo = (
   const ciclo = ciclosCultivo[tipoCultivo];
 
   if (!ciclo) {
-    return { label: "Sin configuración", variant: "secondary" };
+    return { labelKey: "states.noConfiguration", variant: "secondary" };
   }
 
-  if (dias < 0) return { label: "📅 Programado", variant: "secondary" };
+  if (dias < 0) {
+    return { labelKey: "states.scheduled", variant: "secondary" };
+  }
 
-  if (dias < ciclo.crecimiento)
-    return { label: "🌱 Crecimiento inicial", variant: "default" };
+  if (dias < ciclo.crecimiento) {
+    return { labelKey: "states.initialGrowth", variant: "default" };
+  }
 
-  if (dias < ciclo.desarrollo)
-    return { label: "🌿 Desarrollo vegetativo", variant: "default" };
+  if (dias < ciclo.desarrollo) {
+    return { labelKey: "states.vegetativeDevelopment", variant: "default" };
+  }
 
-  if (dias < ciclo.floracion)
-    return { label: "🌻 Floración", variant: "success" };
+  if (dias < ciclo.floracion) {
+    return { labelKey: "states.flowering", variant: "success" };
+  }
 
-  if (dias < ciclo.maduracion)
-    return { label: "🌾 Maduración", variant: "warning" };
+  if (dias < ciclo.maduracion) {
+    return { labelKey: "states.ripening", variant: "warning" };
+  }
 
-  return { label: "✅ Cosecha lista", variant: "success" };
+  return { labelKey: "states.readyForHarvest", variant: "success" };
 };

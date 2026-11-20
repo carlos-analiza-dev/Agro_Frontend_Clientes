@@ -24,6 +24,7 @@ import usePaisesById from "@/hooks/paises/usePaisesById";
 import { useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { Eye, EyeOff } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -31,6 +32,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 const FormRegister = () => {
+  const t = useTranslations("registerForm");
   const [prefijoNumber, setPrefijoNumber] = useState("");
   const router = useRouter();
   const [codigoPais, setCodigoPais] = useState("");
@@ -77,9 +79,8 @@ const FormRegister = () => {
   const mutation = useMutation({
     mutationFn: CreateCliente,
     onSuccess: () => {
-      toast.success(
-        "Usuario creado correctamente, revisa tu correo electronico para confirmar tu usuario",
-      );
+      toast.success(t("success"));
+
       reset({
         email: "",
         password: "",
@@ -92,38 +93,38 @@ const FormRegister = () => {
         municipio: "",
         sexo: "",
       });
+
       setPaisId("");
       setDepartamentoId("");
       setCodigoPais("");
       setPrefijoNumber("");
+
       setTimeout(() => {
         router.push("/login");
       }, 3000);
     },
+
     onError: (error) => {
       if (isAxiosError(error)) {
         const messages = error.response?.data?.message;
+
         const errorMessage = Array.isArray(messages)
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear el usuario";
+            : t("errors.create");
 
         toast.error(errorMessage);
       } else {
-        toast.error(
-          "Hubo un error al momento de crear el usuario. Inténtalo de nuevo.",
-        );
+        toast.error(t("errors.general"));
       }
     },
   });
 
   const validatePassword = (password: string) => {
     const re = /^(?=\w*\d)(?=\w*[A-Z])(?=\w*[a-z])\S{8,16}$/;
-    return (
-      re.test(password) ||
-      "La contraseña debe tener entre 8 y 16 caracteres, al menos un dígito, una minúscula y una mayúscula"
-    );
+
+    return re.test(password) || t("validation.passwordInvalid");
   };
 
   const onSubmit = (data: CrearCliente) => {
@@ -141,13 +142,13 @@ const FormRegister = () => {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="email">Correo Electrónico*</Label>
+          <Label htmlFor="email">{t("email")}*</Label>
           <Input
             id="email"
             type="email"
-            placeholder="tu@correo.com"
+            placeholder={t("emailPlaceholder")}
             {...register("email", {
-              required: "El correo es requerido",
+              required: t("validation.emailRequired"),
               validate: validateEmail,
             })}
           />
@@ -159,14 +160,14 @@ const FormRegister = () => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="password">Contraseña*</Label>
+          <Label htmlFor="password">{t("password")}s*</Label>
           <div className="relative">
             <Input
               id="password"
               type={showPassword ? "password" : "text"}
               placeholder="••••••••"
               {...register("password", {
-                required: "La contraseña es requerida",
+                required: t("validation.passwordRequired"),
                 validate: validatePassword,
               })}
             />
@@ -187,15 +188,15 @@ const FormRegister = () => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="nombre">Nombre Completo*</Label>
+          <Label htmlFor="nombre">{t("name")}*</Label>
           <Input
             id="nombre"
             placeholder="Juan Pérez"
             {...register("nombre", {
-              required: "El nombre es requerido",
+              required: t("validation.nameRequired"),
               minLength: {
                 value: 3,
-                message: "El nombre debe tener al menos 3 caracteres",
+                message: t("validation.nameMinLength"),
               },
             })}
           />
@@ -207,7 +208,7 @@ const FormRegister = () => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="pais">País*</Label>
+          <Label htmlFor="pais">{t("country")}*</Label>
           <Select
             onValueChange={(value) => {
               setValue("pais", value);
@@ -215,7 +216,7 @@ const FormRegister = () => {
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Selecciona un país" />
+              <SelectValue placeholder={t("countryPlaceholder")} />
             </SelectTrigger>
             <SelectContent>
               {paises?.data.map((pais) => (
@@ -233,7 +234,7 @@ const FormRegister = () => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="departamento">Departamento*</Label>
+          <Label htmlFor="departamento">{t("department")}*</Label>
           <Select
             onValueChange={(value) => {
               setValue("departamento", value);
@@ -241,7 +242,7 @@ const FormRegister = () => {
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Selecciona un departamento" />
+              <SelectValue placeholder={t("departmentPlaceholder")} />
             </SelectTrigger>
             <SelectContent>
               {departamentos && departamentos.data.length > 0 ? (
@@ -251,7 +252,7 @@ const FormRegister = () => {
                   </SelectItem>
                 ))
               ) : (
-                <p>No se encontraron departamentos</p>
+                <p>{t("noDepartments")}</p>
               )}
             </SelectContent>
           </Select>
@@ -263,14 +264,14 @@ const FormRegister = () => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="municipio">Municipio*</Label>
+          <Label htmlFor="municipio">{t("municipality")}*</Label>
           <Select
             onValueChange={(value) => {
               setValue("municipio", value);
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Selecciona un municipio" />
+              <SelectValue placeholder={t("municipalityPlaceholder")} />
             </SelectTrigger>
             <SelectContent>
               {municipios && municipios.data.length > 0 ? (
@@ -280,7 +281,7 @@ const FormRegister = () => {
                   </SelectItem>
                 ))
               ) : (
-                <p>No se encontraron municipios</p>
+                <p>{t("noMunicipalities")}</p>
               )}
             </SelectContent>
           </Select>
@@ -292,12 +293,12 @@ const FormRegister = () => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="identificacion">Identificación*</Label>
+          <Label htmlFor="identificacion">{t("identification")}*</Label>
           <Input
             id="identificacion"
             placeholder="Número de documento"
             {...register("identificacion", {
-              required: "La identificación es requerida",
+              required: t("validation.identificationRequired"),
               validate: (value) => validateIdentification(value, codigoPais),
             })}
           />
@@ -315,15 +316,15 @@ const FormRegister = () => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="direccion">Dirección*</Label>
+          <Label htmlFor="direccion">{t("address")}*</Label>
           <Input
             id="direccion"
             placeholder="Calle 123 # 45-67"
             {...register("direccion", {
-              required: "La dirección es requerida",
+              required: t("validation.addressRequired"),
               minLength: {
                 value: 10,
-                message: "La dirección debe tener al menos 10 caracteres",
+                message: t("validation.addressMinLength"),
               },
             })}
           />
@@ -335,15 +336,15 @@ const FormRegister = () => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="telefono">Teléfono*</Label>
+          <Label htmlFor="telefono">{t("phone")}*</Label>
           <Input
             id="telefono"
             placeholder="0000-0000"
             {...register("telefono", {
-              required: "El teléfono es requerido",
+              required: t("validation.phoneRequired"),
               pattern: {
                 value: /^\d{4}-\d{4}$/,
-                message: "El formato debe ser xxxx-xxxx",
+                message: t("validation.phoneFormat"),
               },
             })}
           />
@@ -356,14 +357,14 @@ const FormRegister = () => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="sexo">Sexo*</Label>
+          <Label htmlFor="sexo">{t("sex")}*</Label>
           <Select
             onValueChange={(value) => {
               setValue("sexo", value);
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Selecciona una opción" />
+              <SelectValue placeholder={t("sexPlaceholder")} />
             </SelectTrigger>
             <SelectContent>
               {sexos.map((sexo) => (
@@ -386,7 +387,7 @@ const FormRegister = () => {
           type="submit"
           className="w-full bg-green-600 hover:bg-green-700"
         >
-          Registrarse
+          {t("submit")}
         </Button>
       </div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between text-sm">
@@ -394,16 +395,16 @@ const FormRegister = () => {
           href="/reset-password"
           className="text-green-600 hover:underline text-center sm:text-left"
         >
-          ¿Olvidaste tu contraseña?
+          {t("forgotPassword")}
         </Link>
 
         <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-center sm:text-left">
-          <p className="text-gray-600">¿Ya tienes una cuenta?</p>
+          <p className="text-gray-600">{t("hasAccount")}</p>
           <Link
             href="/login"
             className="text-green-600 hover:underline font-medium"
           >
-            Iniciar sesión
+            {t("login")}
           </Link>
         </div>
       </div>

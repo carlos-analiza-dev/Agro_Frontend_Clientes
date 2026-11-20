@@ -1,5 +1,8 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import React from "react";
+import { useTranslations } from "next-intl";
 import {
   Cell,
   Legend,
@@ -15,11 +18,23 @@ interface Props {
 }
 
 const CardSexo = ({ COLORS, sexoData }: Props) => {
+  const t = useTranslations("cardSexo");
+
+  const traducirSexo = (name: string) => {
+    const sexo = name.toLowerCase();
+
+    if (sexo === "macho") return t("male");
+    if (sexo === "hembra") return t("female");
+
+    return name;
+  };
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Distribución por Sexo</CardTitle>
+        <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
+
       <CardContent>
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
@@ -30,7 +45,7 @@ const CardSexo = ({ COLORS, sexoData }: Props) => {
                 cy="50%"
                 labelLine={false}
                 label={({ name, percent }) =>
-                  `${name} (${(percent * 100).toFixed(0)}%)`
+                  `${traducirSexo(name)} (${((percent ?? 0) * 100).toFixed(0)}%)`
                 }
                 outerRadius={80}
                 fill="#8884d8"
@@ -43,10 +58,15 @@ const CardSexo = ({ COLORS, sexoData }: Props) => {
                   />
                 ))}
               </Pie>
+
               <Tooltip
-                formatter={(value) => [`${value} animales`, "Cantidad"]}
+                formatter={(value) => [
+                  `${value} ${t("animals")}`,
+                  t("quantity"),
+                ]}
               />
-              <Legend />
+
+              <Legend formatter={(value) => traducirSexo(String(value))} />
             </PieChart>
           </ResponsiveContainer>
         </div>

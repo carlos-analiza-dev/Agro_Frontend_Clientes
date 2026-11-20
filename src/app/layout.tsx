@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Raleway } from "next/font/google";
 import TanStackProvider from "@/providers/TanStackProvider";
 import { AuthProvider } from "@/providers/AuthProvider";
+import { IntlProvider } from "@/components/i18n/IntlProvider";
 
 const poppins = Raleway({
   subsets: ["latin"],
@@ -40,12 +41,14 @@ export default function RootLayout({
   return (
     <html lang="es" className={poppins.className}>
       <body>
-        <TanStackProvider>
-          <AuthProvider>
-            {children}
-            <ToastContainer position="top-right" autoClose={3000} />
-          </AuthProvider>
-        </TanStackProvider>
+        <IntlProvider>
+          <TanStackProvider>
+            <AuthProvider>
+              {children}
+              <ToastContainer position="top-right" autoClose={3000} />
+            </AuthProvider>
+          </TanStackProvider>
+        </IntlProvider>
       </body>
     </html>
   );

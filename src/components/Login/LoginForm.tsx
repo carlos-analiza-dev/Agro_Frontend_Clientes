@@ -12,8 +12,10 @@ import { LoginInterface } from "@/interfaces/auth/login.interface";
 import { isAxiosError } from "axios";
 import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
 import { TipoCliente } from "@/interfaces/enums/clientes.enums";
+import { useTranslations } from "next-intl";
 
 const LoginForm = () => {
+  const t = useTranslations("loginForm");
   const router = useRouter();
   const { login } = useAuthStore();
   const [isPosting, setIsPosting] = useState(false);
@@ -26,11 +28,11 @@ const LoginForm = () => {
 
   const validateEmail = (value: string) => {
     if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
-      return "Correo electrónico inválido";
+      return t("validation.emailInvalid");
     }
+
     return true;
   };
-
   const onSubmit = async (data: LoginInterface) => {
     try {
       setIsPosting(true);
@@ -39,9 +41,7 @@ const LoginForm = () => {
       const authResponse = await login(email, password);
 
       if (!authResponse) {
-        toast.error(
-          "Usuario o contraseña incorrectos. Contacte al administrador.",
-        );
+        toast.error(t("errors.invalidCredentialsAdmin"));
         return;
       }
 
@@ -52,17 +52,17 @@ const LoginForm = () => {
         cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_LIGHT;
 
       if (!cliente || !cliente.id) {
-        toast.error("Credenciales inválidas");
+        toast.error(t("errors.invalidCredentials"));
         return;
       }
 
       if (!cliente.isActive) {
-        toast.error("Su cuenta está desactivada. Contacte al administrador.");
+        toast.error(t("errors.inactiveAccount"));
         return;
       }
 
       if (!token) {
-        toast.error("Error de autenticación: token no recibido");
+        toast.error(t("errors.tokenMissing"));
         return;
       }
 
@@ -72,20 +72,22 @@ const LoginForm = () => {
         router.replace("/panel");
       }
 
-      toast.success("¡Inicio de sesión exitoso!");
+      toast.success(t("success"));
     } catch (error) {
       if (isAxiosError(error)) {
         if (error.response?.status === 401) {
-          toast.error("Credenciales incorrectas");
+          toast.error(t("errors.invalidCredentials"));
         } else if (error.response?.status === 403) {
-          toast.error("Usuario no autorizado");
+          toast.error(t("errors.unauthorized"));
         } else if (error.response?.status === 404) {
-          toast.error("Usuario no encontrado");
+          toast.error(t("errors.userNotFound"));
         } else if (error.code === "NETWORK_ERROR") {
-          toast.error("Error de conexión. Verifique su internet");
+          toast.error(t("errors.network"));
         } else {
-          toast.error("Ocurrió un error durante el inicio de sesión");
+          toast.error(t("errors.general"));
         }
+      } else {
+        toast.error(t("errors.general"));
       }
     } finally {
       setIsPosting(false);
@@ -96,13 +98,14 @@ const LoginForm = () => {
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="email">Correo Electrónico</Label>
+          <Label htmlFor="email">{t("email")}</Label>
+
           <Input
             id="email"
             type="email"
-            placeholder="example@correo.com"
+            placeholder={t("emailPlaceholder")}
             {...register("email", {
-              required: "El correo es requerido",
+              required: t("validation.emailRequired"),
               validate: validateEmail,
             })}
             disabled={isPosting}
@@ -115,20 +118,23 @@ const LoginForm = () => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="password">Contraseña</Label>
+          <Label htmlFor="password">{t("password")}</Label>
+
           <div className="relative">
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
-              placeholder="••••••••"
+              placeholder={t("passwordPlaceholder")}
               {...register("password", {
-                required: "La contraseña es requerida",
+                required: t("validation.passwordRequired"),
                 minLength: {
                   value: 6,
-                  message: "La contraseña debe tener al menos 6 caracteres",
+                  message: t("validation.passwordMinLength"),
                 },
               })}
+              disabled={isPosting}
             />
+
             <button
               type="button"
               className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
@@ -143,13 +149,12 @@ const LoginForm = () => {
             </p>
           )}
         </div>
-
         <Button
           type="submit"
           className="w-full bg-green-600 hover:bg-green-700"
           disabled={isPosting}
         >
-          {isPosting ? <FullScreenLoader /> : "Iniciar Sesión"}
+          {isPosting ? t("submitting") : t("submit")}
         </Button>
       </form>
     </>

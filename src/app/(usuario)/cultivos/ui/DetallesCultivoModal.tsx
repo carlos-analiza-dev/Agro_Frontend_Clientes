@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Calendar,
   CalendarDays,
@@ -15,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { formatDate } from "@/helpers/funciones/formatDate";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import { useTranslations } from "next-intl";
 
 interface Props {
   cultivo: Cultivo;
@@ -22,6 +25,8 @@ interface Props {
 }
 
 const DetallesCultivoModal = ({ cultivo, moneda }: Props) => {
+  const t = useTranslations("detallesCultivoModal");
+
   const costosTotales = [
     parseFloat(cultivo.costo_semilla || "0"),
     parseFloat(cultivo.costo_fertilizantes || "0"),
@@ -41,44 +46,52 @@ const DetallesCultivoModal = ({ cultivo, moneda }: Props) => {
             <h2 className="text-xl sm:text-2xl font-bold break-words">
               {cultivo.nombre_cultivo}
             </h2>
+
             {cultivo.variedad && (
               <Badge variant="secondary" className="text-xs sm:text-sm">
                 {cultivo.variedad}
               </Badge>
             )}
           </div>
+
           <Badge
             variant={cultivo.isActive ? "default" : "destructive"}
             className="text-xs sm:text-sm self-start sm:self-auto w-fit"
           >
-            {cultivo.isActive ? "En Progreso" : "Finalizado"}
+            {cultivo.isActive ? t("status.inProgress") : t("status.finished")}
           </Badge>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <div className="flex items-start sm:items-center gap-2 text-xs sm:text-sm">
             <MapPin className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-            <span className="font-medium">Finca:</span>
+            <span className="font-medium">{t("fields.farm")}:</span>
             <span className="break-words">{cultivo.finca?.nombre_finca}</span>
           </div>
+
           <div className="flex items-start sm:items-center gap-2 text-xs sm:text-sm">
             <Ruler className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-            <span className="font-medium">Área Sembrada:</span>
+            <span className="font-medium">{t("fields.plantedArea")}:</span>
             <span className="break-words">
-              {cultivo.area_sembrada} {cultivo.unidad_medida || "hectáreas"}
+              {cultivo.area_sembrada}{" "}
+              {cultivo.unidad_medida || t("units.hectares")}
             </span>
           </div>
+
           <div className="flex items-start sm:items-center gap-2 text-xs sm:text-sm">
             <Calendar className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-            <span className="font-medium">Fecha de Siembra:</span>
+            <span className="font-medium">{t("fields.plantingDate")}:</span>
             <span className="break-words">
               {formatDate(cultivo.fecha_siembra)}
             </span>
           </div>
+
           {cultivo.fecha_cosecha_estimada && (
             <div className="flex items-start sm:items-center gap-2 text-xs sm:text-sm">
               <CalendarDays className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-              <span className="font-medium">Cosecha Estimada:</span>
+              <span className="font-medium">
+                {t("fields.estimatedHarvest")}:
+              </span>
               <span className="break-words">
                 {formatDate(cultivo.fecha_cosecha_estimada)}
               </span>
@@ -93,34 +106,37 @@ const DetallesCultivoModal = ({ cultivo, moneda }: Props) => {
         <CardHeader className="pb-3 sm:pb-4">
           <CardTitle className="text-base sm:text-lg flex items-center gap-2">
             <Sprout className="h-5 w-5 flex-shrink-0" />
-            <span>Información del Cultivo</span>
+            <span>{t("sections.cropInformation")}</span>
           </CardTitle>
         </CardHeader>
+
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-3">
               <div className="flex flex-col xs:flex-row xs:items-center justify-between border-b pb-2 gap-2">
                 <span className="text-xs sm:text-sm font-medium text-muted-foreground">
-                  Tipo de Cultivo
+                  {t("fields.cropType")}
                 </span>
                 <Badge variant="outline" className="text-xs w-fit">
                   {cultivo.tipo_cultivo}
                 </Badge>
               </div>
+
               {cultivo.temporada && (
                 <div className="flex flex-col xs:flex-row xs:items-center justify-between border-b pb-2 gap-2">
                   <span className="text-xs sm:text-sm font-medium text-muted-foreground">
-                    Temporada
+                    {t("fields.season")}
                   </span>
                   <span className="text-sm break-words">
                     {cultivo.temporada}
                   </span>
                 </div>
               )}
+
               {cultivo.produccion_estimada && (
                 <div className="flex flex-col xs:flex-row xs:items-center justify-between border-b pb-2 gap-2">
                   <span className="text-xs sm:text-sm font-medium text-muted-foreground">
-                    Producción Estimada
+                    {t("fields.estimatedProduction")}
                   </span>
                   <span className="text-sm font-medium">
                     {cultivo.produccion_estimada}{" "}
@@ -137,40 +153,44 @@ const DetallesCultivoModal = ({ cultivo, moneda }: Props) => {
         <CardHeader className="pb-3 sm:pb-4">
           <CardTitle className="text-base sm:text-lg flex items-center gap-2">
             <Leaf className="h-5 w-5 flex-shrink-0" />
-            <span>Suelo y Método de Siembra</span>
+            <span>{t("sections.soilAndPlantingMethod")}</span>
           </CardTitle>
         </CardHeader>
+
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="space-y-1">
               <p className="text-xs sm:text-sm font-medium text-muted-foreground">
-                Tipo de Suelo
+                {t("fields.soilType")}
               </p>
               <p className="text-sm sm:text-base font-medium break-words">
                 {cultivo.tipo_suelo}
               </p>
             </div>
+
             {cultivo.ph_suelo && (
               <div className="space-y-1">
                 <p className="text-xs sm:text-sm font-medium text-muted-foreground">
-                  pH del Suelo
+                  {t("fields.soilPh")}
                 </p>
                 <p className="text-sm sm:text-base font-medium">
                   {cultivo.ph_suelo}
                 </p>
               </div>
             )}
+
             <div className="space-y-1">
               <p className="text-xs sm:text-sm font-medium text-muted-foreground">
-                Método de Siembra
+                {t("fields.plantingMethod")}
               </p>
               <p className="text-sm sm:text-base font-medium break-words">
                 {cultivo.metodo_siembra}
               </p>
             </div>
+
             <div className="space-y-1 sm:col-span-2 lg:col-span-3">
               <p className="text-xs sm:text-sm font-medium text-muted-foreground">
-                Sistema de Riego
+                {t("fields.irrigationSystem")}
               </p>
               <p className="text-sm sm:text-base font-medium break-words">
                 {cultivo.sistema_riego}
@@ -185,22 +205,24 @@ const DetallesCultivoModal = ({ cultivo, moneda }: Props) => {
           <CardHeader className="pb-3 sm:pb-4">
             <CardTitle className="text-base sm:text-lg flex items-center gap-2">
               <DollarSign className="h-5 w-5 flex-shrink-0" />
-              <span>Información Económica</span>
+              <span>{t("sections.economicInformation")}</span>
             </CardTitle>
           </CardHeader>
+
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-3">
                 <h4 className="font-semibold text-xs sm:text-sm text-muted-foreground">
-                  Costos de Producción
+                  {t("economic.productionCosts")}
                 </h4>
+
                 <div className="overflow-x-auto -mx-2 px-2">
                   <Table>
                     <TableBody>
                       {cultivo.costo_semilla && (
                         <TableRow className="border-b">
                           <TableCell className="p-2 pl-0 font-medium text-sm">
-                            Semilla
+                            {t("economic.seed")}
                           </TableCell>
                           <TableCell className="p-2 pr-0 text-right text-sm">
                             {moneda}
@@ -208,10 +230,11 @@ const DetallesCultivoModal = ({ cultivo, moneda }: Props) => {
                           </TableCell>
                         </TableRow>
                       )}
+
                       {cultivo.costo_fertilizantes && (
                         <TableRow className="border-b">
                           <TableCell className="p-2 pl-0 font-medium text-sm">
-                            Fertilizantes
+                            {t("economic.fertilizers")}
                           </TableCell>
                           <TableCell className="p-2 pr-0 text-right text-sm">
                             {moneda}
@@ -221,10 +244,11 @@ const DetallesCultivoModal = ({ cultivo, moneda }: Props) => {
                           </TableCell>
                         </TableRow>
                       )}
+
                       {cultivo.costo_mano_obra && (
                         <TableRow className="border-b">
                           <TableCell className="p-2 pl-0 font-medium text-sm">
-                            Mano de Obra
+                            {t("economic.labor")}
                           </TableCell>
                           <TableCell className="p-2 pr-0 text-right text-sm">
                             {moneda}
@@ -234,10 +258,11 @@ const DetallesCultivoModal = ({ cultivo, moneda }: Props) => {
                           </TableCell>
                         </TableRow>
                       )}
+
                       {cultivo.otros_costos && (
                         <TableRow className="border-b">
                           <TableCell className="p-2 pl-0 font-medium text-sm">
-                            Otros Costos
+                            {t("economic.otherCosts")}
                           </TableCell>
                           <TableCell className="p-2 pr-0 text-right text-sm">
                             {moneda}
@@ -245,9 +270,10 @@ const DetallesCultivoModal = ({ cultivo, moneda }: Props) => {
                           </TableCell>
                         </TableRow>
                       )}
+
                       <TableRow className="bg-muted/50">
                         <TableCell className="p-2 pl-0 font-bold text-sm">
-                          Total Costos
+                          {t("economic.totalCosts")}
                         </TableCell>
                         <TableCell className="p-2 pr-0 text-right font-bold text-sm">
                           {moneda}
@@ -261,15 +287,16 @@ const DetallesCultivoModal = ({ cultivo, moneda }: Props) => {
 
               <div className="space-y-3">
                 <h4 className="font-semibold text-xs sm:text-sm text-muted-foreground">
-                  Ingresos y Ganancias
+                  {t("economic.incomeAndProfit")}
                 </h4>
+
                 <div className="overflow-x-auto -mx-2 px-2">
                   <Table>
                     <TableBody>
                       {cultivo.ingreso_estimado && (
                         <TableRow className="border-b">
                           <TableCell className="p-2 pl-0 font-medium text-sm">
-                            Ingreso Estimado
+                            {t("economic.estimatedIncome")}
                           </TableCell>
                           <TableCell className="p-2 pr-0 text-right text-green-600 font-medium text-sm">
                             {moneda}
@@ -277,10 +304,11 @@ const DetallesCultivoModal = ({ cultivo, moneda }: Props) => {
                           </TableCell>
                         </TableRow>
                       )}
+
                       {cultivo.ganancia_estimada && (
                         <TableRow className="border-b">
                           <TableCell className="p-2 pl-0 font-medium text-sm">
-                            Ganancia Estimada
+                            {t("economic.estimatedProfit")}
                           </TableCell>
                           <TableCell
                             className={`p-2 pr-0 text-right font-bold text-sm ${
@@ -301,14 +329,15 @@ const DetallesCultivoModal = ({ cultivo, moneda }: Props) => {
                           </TableCell>
                         </TableRow>
                       )}
+
                       <TableRow className="bg-muted/50">
                         <TableCell className="p-2 pl-0 font-bold text-sm">
-                          Rentabilidad
+                          {t("economic.profitability")}
                         </TableCell>
                         <TableCell className="p-2 pr-0 text-right font-bold text-sm">
                           {costosTotales > 0
                             ? `${((gananciaEstimada / costosTotales) * 100).toFixed(1)}%`
-                            : "N/A"}
+                            : t("economic.notAvailable")}
                         </TableCell>
                       </TableRow>
                     </TableBody>
@@ -320,7 +349,7 @@ const DetallesCultivoModal = ({ cultivo, moneda }: Props) => {
             {costosTotales > 0 && (
               <div className="mt-4">
                 <div className="flex flex-col xs:flex-row xs:justify-between text-xs sm:text-sm mb-1 gap-1">
-                  <span>Retorno de Inversión (ROI)</span>
+                  <span>{t("economic.returnOnInvestment")}</span>
                   <span
                     className={`font-semibold ${
                       gananciaEstimada >= 0 ? "text-green-600" : "text-red-600"
@@ -329,6 +358,7 @@ const DetallesCultivoModal = ({ cultivo, moneda }: Props) => {
                     {((gananciaEstimada / costosTotales) * 100).toFixed(1)}%
                   </span>
                 </div>
+
                 <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
                   <div
                     className={`h-2 rounded-full transition-all ${
@@ -356,19 +386,21 @@ const DetallesCultivoModal = ({ cultivo, moneda }: Props) => {
                 {cultivo.area_sembrada}
               </p>
               <p className="text-xs text-muted-foreground">
-                {cultivo.unidad_medida || "hectáreas"}
+                {cultivo.unidad_medida || t("units.hectares")}
               </p>
             </div>
+
             {cultivo.produccion_estimada && (
               <div className="space-y-1">
                 <p className="text-xl sm:text-2xl font-bold text-green-700 dark:text-green-400 break-words">
                   {cultivo.produccion_estimada}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {cultivo.unidad_produccion || "kg"} estimados
+                  {cultivo.unidad_produccion || "kg"} {t("units.estimated")}
                 </p>
               </div>
             )}
+
             {tieneDatosEconomicos && (
               <div className="space-y-1">
                 <p
@@ -382,7 +414,7 @@ const DetallesCultivoModal = ({ cultivo, moneda }: Props) => {
                   {gananciaEstimada.toLocaleString()}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Ganancia estimada
+                  {t("economic.estimatedProfit")}
                 </p>
               </div>
             )}

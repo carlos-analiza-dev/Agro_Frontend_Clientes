@@ -2,8 +2,14 @@
 
 import { Calendar, FileText, Scale, Shield, AlertCircle } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export default function TerminosClient() {
+  const t = useTranslations("terms");
+
+  const siteUsageItems = t.raw("sections.siteUsage.items") as string[];
+  const productsItems = t.raw("sections.products.items") as string[];
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-12">
@@ -12,12 +18,12 @@ export default function TerminosClient() {
             <div className="inline-flex items-center justify-center p-3 bg-green-100 rounded-full mb-4">
               <FileText className="h-8 w-8 text-green-600" />
             </div>
+
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Términos y Condiciones
+              {t("title")}
             </h1>
-            <p className="text-lg text-gray-600">
-              Última actualización: 1 de enero de 2024
-            </p>
+
+            <p className="text-lg text-gray-600">{t("lastUpdated")}</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -25,128 +31,114 @@ export default function TerminosClient() {
               <section>
                 <div className="flex items-center gap-3 mb-4">
                   <Scale className="h-6 w-6 text-green-600" />
+
                   <h2 className="text-2xl font-semibold text-gray-900">
-                    Aceptación de los Términos
+                    {t("sections.acceptance.title")}
                   </h2>
                 </div>
+
                 <p className="text-gray-700 leading-relaxed">
-                  Al acceder y utilizar el sitio web de El Sembrador, usted
-                  acepta cumplir con estos términos y condiciones. Si no está de
-                  acuerdo con alguna parte de estos términos, no debe utilizar
-                  nuestros servicios.
+                  {t("sections.acceptance.description")}
                 </p>
               </section>
 
               <section>
                 <div className="flex items-center gap-3 mb-4">
                   <Shield className="h-6 w-6 text-green-600" />
+
                   <h2 className="text-2xl font-semibold text-gray-900">
-                    Uso del Sitio
+                    {t("sections.siteUsage.title")}
                   </h2>
                 </div>
+
                 <p className="text-gray-700 leading-relaxed mb-4">
-                  El Sembrador proporciona información sobre productos
-                  agropecuarios, servicios veterinarios y herramientas
-                  agrícolas. Usted se compromete a:
+                  {t("sections.siteUsage.description")}
                 </p>
+
                 <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
-                  <li>No utilizar el sitio para fines ilegales</li>
-                  <li>No interferir con la seguridad del sitio</li>
-                  <li>
-                    No intentar acceder a áreas restringidas sin autorización
-                  </li>
-                  <li>
-                    Proporcionar información veraz y actualizada cuando sea
-                    requerida
-                  </li>
+                  {siteUsageItems.map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
                 </ul>
               </section>
 
               <section>
                 <div className="flex items-center gap-3 mb-4">
                   <AlertCircle className="h-6 w-6 text-green-600" />
+
                   <h2 className="text-2xl font-semibold text-gray-900">
-                    Productos y Servicios
+                    {t("sections.products.title")}
                   </h2>
                 </div>
+
                 <p className="text-gray-700 leading-relaxed mb-4">
-                  Nuestros productos y servicios están sujetos a disponibilidad.
-                  Nos reservamos el derecho de:
+                  {t("sections.products.description")}
                 </p>
+
                 <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
-                  <li>Modificar precios sin previo aviso</li>
-                  <li>Limitar cantidades de productos</li>
-                  <li>Descontinuar productos en cualquier momento</li>
-                  <li>Rechazar pedidos a nuestra discreción</li>
+                  {productsItems.map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
                 </ul>
               </section>
 
               <section>
                 <div className="flex items-center gap-3 mb-4">
                   <Calendar className="h-6 w-6 text-green-600" />
+
                   <h2 className="text-2xl font-semibold text-gray-900">
-                    Envíos y Entregas
+                    {t("sections.shipping.title")}
                   </h2>
                 </div>
+
                 <p className="text-gray-700 leading-relaxed">
-                  Los tiempos de entrega son estimados y pueden variar según la
-                  ubicación. El Sembrador no se hace responsable por retrasos
-                  causados por terceros o casos de fuerza mayor. Los costos de
-                  envío se calculan automáticamente al momento de realizar el
-                  pedido.
+                  {t("sections.shipping.description")}
                 </p>
               </section>
 
               <section>
                 <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-                  Propiedad Intelectual
+                  {t("sections.intellectualProperty.title")}
                 </h2>
+
                 <p className="text-gray-700 leading-relaxed">
-                  Todo el contenido del sitio, incluyendo textos, imágenes,
-                  logotipos y gráficos, es propiedad de El Sembrador y está
-                  protegido por las leyes de propiedad intelectual. No está
-                  permitida la reproducción, distribución o modificación sin
-                  autorización expresa.
+                  {t("sections.intellectualProperty.description")}
                 </p>
               </section>
 
               <section>
                 <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-                  Limitación de Responsabilidad
+                  {t("sections.liability.title")}
                 </h2>
+
                 <p className="text-gray-700 leading-relaxed">
-                  El Sembrador no será responsable por daños indirectos,
-                  incidentales o consecuentes derivados del uso o la incapacidad
-                  de usar nuestros productos o servicios. Nuestra
-                  responsabilidad máxima se limita al monto pagado por los
-                  productos adquiridos.
+                  {t("sections.liability.description")}
                 </p>
               </section>
 
               <section>
                 <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-                  Modificaciones
+                  {t("sections.modifications.title")}
                 </h2>
+
                 <p className="text-gray-700 leading-relaxed">
-                  Nos reservamos el derecho de modificar estos términos en
-                  cualquier momento. Los cambios entrarán en vigor
-                  inmediatamente después de su publicación en el sitio. Se
-                  recomienda revisar periódicamente los términos actualizados.
+                  {t("sections.modifications.description")}
                 </p>
               </section>
 
               <div className="bg-gray-50 rounded-lg p-6 mt-8">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  ¿Tienes preguntas?
+                  {t("support.title")}
                 </h3>
-                <p className="text-gray-600 mb-4">
-                  Si tienes alguna pregunta sobre estos términos, contáctanos:
-                </p>
+
+                <p className="text-gray-600 mb-4">{t("support.description")}</p>
+
                 <Link
                   href="/contacto"
                   className="inline-flex items-center text-green-600 hover:text-green-700 font-medium"
                 >
-                  Contactar a soporte
+                  {t("support.contact")}
+
                   <svg
                     className="ml-2 h-4 w-4"
                     fill="none"

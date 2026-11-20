@@ -1,4 +1,5 @@
 "use client";
+
 import useGetInventarioProductos from "@/hooks/inventario-productos/useGetInventarioProductos";
 import { useState } from "react";
 import {
@@ -27,8 +28,11 @@ import SkeletonTable from "@/components/generics/SkeletonTable";
 import Paginacion from "@/components/generics/Paginacion";
 import Modal from "@/components/generics/Modal";
 import FormProductosGanaderia from "./ui/FormProductosGanaderia";
+import { useTranslations } from "next-intl";
 
 const InventarioProductos = () => {
+  const t = useTranslations("inventarioProductos");
+
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id ?? "";
   const [limit, setLimit] = useState(10);
@@ -61,11 +65,9 @@ const InventarioProductos = () => {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-2">
             <Package className="h-8 w-8 text-green-600" />
-            Mi Inventario
+            {t("title")}
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Gestiona el inventario de tus productos ganaderos
-          </p>
+          <p className="text-sm text-gray-500 mt-1">{t("description")}</p>
         </div>
       </div>
 
@@ -81,12 +83,12 @@ const InventarioProductos = () => {
                 }}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecciona una finca" />
+                  <SelectValue placeholder={t("farmPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Fincas</SelectLabel>
-                    <SelectItem value="todas">Todas las fincas</SelectItem>
+                    <SelectLabel>{t("farms")}</SelectLabel>
+                    <SelectItem value="todas">{t("allFarms")}</SelectItem>
                     {fincas?.data.fincas.map((finca) => (
                       <SelectItem value={finca.id} key={finca.id}>
                         {finca.nombre_finca}
@@ -96,9 +98,10 @@ const InventarioProductos = () => {
                 </SelectContent>
               </Select>
             </div>
+
             <div>
               <Button className="w-full" onClick={() => setOnOpenModal(true)}>
-                Agregar +
+                {t("buttons.add")}
               </Button>
             </div>
           </div>
@@ -107,12 +110,16 @@ const InventarioProductos = () => {
 
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Productos en inventario</CardTitle>
+          <CardTitle className="text-lg">{t("inventory.title")}</CardTitle>
           <CardDescription>
-            Total de {inventario.length} productos (mostrando{" "}
-            {Math.min(limit, inventario.length)} de {total})
+            {t("inventory.description", {
+              count: inventario.length,
+              showing: Math.min(limit, inventario.length),
+              total,
+            })}
           </CardDescription>
         </CardHeader>
+
         <CardContent>
           {isLoading ? (
             <SkeletonTable />
@@ -124,13 +131,11 @@ const InventarioProductos = () => {
             <div className="text-center py-12">
               <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                No hay productos en inventario
+                {t("empty.title")}
               </h3>
-              <p className="text-gray-500 mb-4">
-                Comienza agregando productos a tu inventario
-              </p>
+              <p className="text-gray-500 mb-4">{t("empty.description")}</p>
               <Button onClick={() => setOnOpenModal(true)}>
-                Agregar producto
+                {t("buttons.addProduct")}
               </Button>
             </div>
           )}
@@ -139,8 +144,11 @@ const InventarioProductos = () => {
         {totalPages > 1 && (
           <CardFooter className="flex flex-col sm:flex-row justify-between items-center gap-4 border-t pt-6">
             <div className="text-sm text-gray-500">
-              Mostrando {offset + 1} - {Math.min(offset + limit, total)} de{" "}
-              {total} productos
+              {t("pagination.description", {
+                start: offset + 1,
+                end: Math.min(offset + limit, total),
+                total,
+              })}
             </div>
 
             <Paginacion
@@ -151,11 +159,12 @@ const InventarioProductos = () => {
           </CardFooter>
         )}
       </Card>
+
       <Modal
         open={onOpenModal}
         onOpenChange={setOnOpenModal}
-        title="Agregar Producto al Inventario"
-        description="Aqui podras agregar productos a tu inventario"
+        title={t("modal.title")}
+        description={t("modal.description")}
         size="lg"
       >
         <FormProductosGanaderia onSuccess={() => setOnOpenModal(false)} />

@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
 
 import { z } from "zod";
 import { isAxiosError } from "axios";
 import { useQueryClient } from "@tanstack/react-query";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import {
   Home,
   MapPin,
@@ -40,53 +43,64 @@ import { CreateFinca } from "@/api/fincas/accions/crear-finca";
 import EspecieCantidadPicker from "./ui/EspecieCantidadPicker";
 import MapaSeleccionDireccion from "@/components/maps/MapaSeleccionDireccion";
 
-const fincaSchema = z
-  .object({
-    nombre_finca: z.string().min(1, "El nombre de la finca es requerido"),
-    ubicacion: z.string().min(1, "La ubicación es requerida"),
-    abreviatura: z.string().optional(),
-    pais_id: z.string().min(1, "Debe seleccionar un país"),
-    departamentoId: z.string().min(1, "Debe seleccionar un departamento"),
-    municipioId: z.string().min(1, "Debe seleccionar un municipio"),
-    tamaño_total: z.string().min(1, "El tamaño total es requerido"),
-    area_ganaderia: z.string().optional(),
-    area_agricola: z.string().optional(),
-    tipo_explotacion: z.array(
-      z.object({
-        tipo_explotacion: z.string(),
-      }),
-    ),
-    especies_maneja: z
-      .array(
+// Esquema de validación con mensajes traducibles
+const createFincaSchema = (t: (key: any) => string) =>
+  z
+    .object({
+      nombre_finca: z.string().min(1, t("validation.farmNameRequired")),
+      ubicacion: z.string().min(1, t("validation.locationRequired")),
+      abreviatura: z.string().optional(),
+      pais_id: z.string().min(1, t("validation.countryRequired")),
+      departamentoId: z.string().min(1, t("validation.departmentRequired")),
+      municipioId: z.string().min(1, t("validation.municipalityRequired")),
+      tamaño_total: z.string().min(1, t("validation.totalSizeRequired")),
+      area_ganaderia: z.string().optional(),
+      area_agricola: z.string().optional(),
+      tipo_explotacion: z.array(
         z.object({
-          especie: z.string(),
-          cantidad: z.number().min(1, "La cantidad debe ser mayor a 0"),
+          tipo_explotacion: z.string(),
         }),
-      )
-      .min(1, "Debe agregar al menos una especie"),
-    latitud: z.number().optional(),
-    longitud: z.number().optional(),
-  })
-  .refine(
-    (data) => !!data.area_ganaderia?.trim() || !!data.area_agricola?.trim(),
-    {
-      message: "Debe ingresar al menos un área: ganadería o agrícola",
-      path: ["area_ganaderia"],
-    },
-  );
+      ),
+      especies_maneja: z
+        .array(
+          z.object({
+            especie: z.string(),
+            cantidad: z
+              .number()
+              .min(1, t("validation.quantityGreaterThanZero")),
+          }),
+        )
+        .min(1, t("validation.minimumOneSpecies")),
+      latitud: z.number().optional(),
+      longitud: z.number().optional(),
+    })
+    .refine(
+      (data) => !!data.area_ganaderia?.trim() || !!data.area_agricola?.trim(),
+      {
+        message: t("validation.minimumOneArea"),
+        path: ["area_ganaderia"],
+      },
+    );
 
-type FincaFormData = z.infer<typeof fincaSchema>;
+type FincaFormData = z.infer<ReturnType<typeof createFincaSchema>>;
 
 export default function CrearFincaPage() {
+  const t = useTranslations("crearFinca");
+
+  const fincaSchema = createFincaSchema(t);
+
   const { cliente } = useAuthStore();
 
   const paisId = cliente?.pais.id || "";
   const router = useRouter();
   const queryClient = useQueryClient();
+
   const [modalVisible, setModalVisible] = useState(false);
+
   const [unidadMedida, setUnidadMedida] = useState<
     "ha" | "mz" | "m2" | "km2" | "ac" | "ft2" | "yd2"
   >("ha");
+
   const [explotacionSeleccionada, setExplotacionSeleccionada] = useState<
     string[]
   >([]);
@@ -136,7 +150,7 @@ export default function CrearFincaPage() {
       );
 
       if (totalAnimales === 0) {
-        toast.error("Debe agregar al menos un animal en las especies");
+        toast.error(t("messages.minimumOneAnimal"));
         return;
       }
 
@@ -149,11 +163,12 @@ export default function CrearFincaPage() {
       };
 
       const response = await CreateFinca(fincaData);
+
       queryClient.invalidateQueries({ queryKey: ["fincas-propietario"] });
       queryClient.invalidateQueries({ queryKey: ["especies-fincas"] });
 
       if (response.status === 201) {
-        toast.success("Finca creada correctamente");
+        toast.success(t("messages.createSuccess"));
         setExplotacionSeleccionada([]);
         reset();
         router.push("/animales/crear-animal");
@@ -161,15 +176,16 @@ export default function CrearFincaPage() {
     } catch (error) {
       if (isAxiosError(error)) {
         const messages = error.response?.data?.message;
+
         const errorMessage = Array.isArray(messages)
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear la finca";
+            : t("messages.createError");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("messages.unexpectedError"));
       }
     }
   };
@@ -180,6 +196,7 @@ export default function CrearFincaPage() {
       : [...explotacionSeleccionada, alimento];
 
     setExplotacionSeleccionada(nuevasExplotacion);
+
     setValue(
       "tipo_explotacion",
       nuevasExplotacion.map((a) => ({ tipo_explotacion: a })),
@@ -192,7 +209,7 @@ export default function CrearFincaPage() {
         <CardHeader>
           <CardTitle className="text-2xl font-bold flex items-center gap-2">
             <Home className="h-6 w-6" />
-            Crear Nueva Finca
+            {t("title")}
           </CardTitle>
         </CardHeader>
 
@@ -201,16 +218,18 @@ export default function CrearFincaPage() {
             <ScrollArea className="h-[calc(100vh-200px)] pr-4">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="nombre_finca">Nombre de la finca</Label>
+                  <Label htmlFor="nombre_finca">{t("fields.farmName")}</Label>
+
                   <div className="relative">
                     <Home className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="nombre_finca"
-                      placeholder="Nombre de la finca"
+                      placeholder={t("placeholders.farmName")}
                       className="pl-10"
                       {...register("nombre_finca")}
                     />
                   </div>
+
                   {errors.nombre_finca && (
                     <p className="text-sm text-destructive">
                       {errors.nombre_finca.message}
@@ -219,27 +238,31 @@ export default function CrearFincaPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="ubicacion">Ubicación</Label>
+                  <Label htmlFor="ubicacion">{t("fields.location")}</Label>
+
                   <div className="relative">
                     <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="ubicacion"
-                      placeholder="Ubicación"
+                      placeholder={t("placeholders.location")}
                       className="pl-10 cursor-pointer"
                       readOnly
                       value={watch("ubicacion") || ""}
                       onClick={() => setModalVisible(true)}
                     />
+
                     <Button
                       type="button"
                       variant="outline"
                       size="icon"
                       className="absolute right-1 top-1 h-8 w-8"
                       onClick={() => setModalVisible(true)}
+                      aria-label={t("buttons.selectLocation")}
                     >
                       <Navigation className="h-4 w-4" />
                     </Button>
                   </div>
+
                   {errors.ubicacion && (
                     <p className="text-sm text-destructive">
                       {errors.ubicacion.message}
@@ -250,13 +273,14 @@ export default function CrearFincaPage() {
                 <div className="grid grid-cols-1 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="abreviatura">
-                      Abreviatura de finca (opcional)
+                      {t("fields.abbreviation")}
                     </Label>
+
                     <div className="relative">
                       <Type className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="abreviatura"
-                        placeholder="Abreviatura de finca"
+                        placeholder={t("placeholders.abbreviation")}
                         className="pl-10"
                         {...register("abreviatura")}
                       />
@@ -267,7 +291,10 @@ export default function CrearFincaPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {paisId && (
                     <div className="space-y-2">
-                      <Label htmlFor="departamentoId">Departamento</Label>
+                      <Label htmlFor="departamentoId">
+                        {t("fields.department")}
+                      </Label>
+
                       <Select
                         onValueChange={(value) =>
                           setValue("departamentoId", value)
@@ -275,8 +302,11 @@ export default function CrearFincaPage() {
                       >
                         <SelectTrigger>
                           <Map className="h-4 w-4 mr-2" />
-                          <SelectValue placeholder="Departamento" />
+                          <SelectValue
+                            placeholder={t("placeholders.department")}
+                          />
                         </SelectTrigger>
+
                         <SelectContent>
                           {departmentItems.map((depto) => (
                             <SelectItem key={depto.value} value={depto.value}>
@@ -285,6 +315,7 @@ export default function CrearFincaPage() {
                           ))}
                         </SelectContent>
                       </Select>
+
                       {errors.departamentoId && (
                         <p className="text-sm text-destructive">
                           {errors.departamentoId.message}
@@ -294,26 +325,35 @@ export default function CrearFincaPage() {
                   )}
 
                   <div className="space-y-2">
-                    <Label htmlFor="municipioId">Municipio</Label>
+                    <Label htmlFor="municipioId">
+                      {t("fields.municipality")}
+                    </Label>
+
                     <Select
                       onValueChange={(value) => setValue("municipioId", value)}
                     >
                       <SelectTrigger>
                         <MapPin className="h-4 w-4 mr-2" />
-                        <SelectValue placeholder="Municipio" />
+                        <SelectValue
+                          placeholder={t("placeholders.municipality")}
+                        />
                       </SelectTrigger>
+
                       <SelectContent>
-                        {municipiosItems && municipiosItems.length > 0 ? (
+                        {municipiosItems.length > 0 ? (
                           municipiosItems.map((mun) => (
                             <SelectItem key={mun.value} value={mun.value}>
                               {mun.label}
                             </SelectItem>
                           ))
                         ) : (
-                          <p>No se encontraron municipios</p>
+                          <p className="p-2 text-sm text-muted-foreground">
+                            {t("messages.noMunicipalities")}
+                          </p>
                         )}
                       </SelectContent>
                     </Select>
+
                     {errors.municipioId && (
                       <p className="text-sm text-destructive">
                         {errors.municipioId.message}
@@ -323,17 +363,30 @@ export default function CrearFincaPage() {
                 </div>
 
                 <div className="space-y-4">
-                  <Label>¿Con qué medidas conoces tu finca?</Label>
+                  <Label>{t("fields.farmMeasurement")}</Label>
+
                   <p className="text-sm font-medium">
-                    Medida seleccionada: {unidadMedida}
+                    {t("fields.selectedMeasure")}: {unidadMedida}
                   </p>
 
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     {[
-                      { value: "ha", label: "Hectárea (ha)" },
-                      { value: "mz", label: "Manzana (mz)" },
-                      { value: "m2", label: "Metros cuadrados (m²)" },
-                      { value: "ac", label: "Acres (ac)" },
+                      {
+                        value: "ha",
+                        label: t("units.hectare"),
+                      },
+                      {
+                        value: "mz",
+                        label: t("units.manzana"),
+                      },
+                      {
+                        value: "m2",
+                        label: t("units.squareMeters"),
+                      },
+                      {
+                        value: "ac",
+                        label: t("units.acres"),
+                      },
                     ].map((medida) => (
                       <div
                         key={medida.value}
@@ -346,6 +399,7 @@ export default function CrearFincaPage() {
                             setUnidadMedida(medida.value as any)
                           }
                         />
+
                         <label
                           htmlFor={medida.value}
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
@@ -360,20 +414,24 @@ export default function CrearFincaPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="tamaño_total">
-                      Tamaño total ({unidadMedida})
+                      {t("fields.totalSize", { unit: unidadMedida })}
                     </Label>
+
                     <div className="relative">
                       <Map className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="tamaño_total"
                         type="number"
-                        placeholder={`Tamaño total en ${unidadMedida}`}
+                        placeholder={t("placeholders.totalSize", {
+                          unit: unidadMedida,
+                        })}
                         className="pl-10"
                         min={0}
                         step={0.5}
                         {...register("tamaño_total")}
                       />
                     </div>
+
                     {errors.tamaño_total && (
                       <p className="text-sm text-destructive">
                         {errors.tamaño_total.message}
@@ -383,19 +441,23 @@ export default function CrearFincaPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="area_ganaderia">
-                      Área de ganadería ({unidadMedida})
+                      {t("fields.livestockArea", { unit: unidadMedida })}
                     </Label>
+
                     <div className="relative">
                       <Layers className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="area_ganaderia"
                         type="number"
-                        placeholder={`Área de ganadería en ${unidadMedida}`}
+                        placeholder={t("placeholders.livestockArea", {
+                          unit: unidadMedida,
+                        })}
                         className="pl-10"
                         min={0}
                         {...register("area_ganaderia")}
                       />
                     </div>
+
                     {errors.area_ganaderia && (
                       <p className="text-sm text-destructive">
                         {errors.area_ganaderia.message}
@@ -405,29 +467,28 @@ export default function CrearFincaPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="area_agricola">
-                      Área agricola ({unidadMedida})
+                      {t("fields.agriculturalArea", { unit: unidadMedida })}
                     </Label>
+
                     <div className="relative">
                       <Layers className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="area_agricola"
                         type="number"
-                        placeholder={`Área agricola en ${unidadMedida}`}
+                        placeholder={t("placeholders.agriculturalArea", {
+                          unit: unidadMedida,
+                        })}
                         className="pl-10"
                         min={0}
                         {...register("area_agricola")}
                       />
                     </div>
-                    {errors.area_ganaderia && (
-                      <p className="text-sm text-destructive">
-                        {errors.area_ganaderia.message}
-                      </p>
-                    )}
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <Label>Tipo de explotación</Label>
+                  <Label>{t("fields.exploitationType")}</Label>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     {TipoExplotacion.map((explotacion) => (
                       <div
@@ -443,11 +504,12 @@ export default function CrearFincaPage() {
                             handleAlimentoChange(explotacion.explotacion)
                           }
                         />
+
                         <label
                           htmlFor={explotacion.explotacion}
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                         >
-                          {explotacion.explotacion}
+                          {t(`tipoExplotacion.${explotacion.id}`)}
                         </label>
                       </div>
                     ))}
@@ -455,12 +517,14 @@ export default function CrearFincaPage() {
                 </div>
 
                 <div className="space-y-4">
-                  <Label>Especies y cantidades</Label>
+                  <Label>{t("fields.speciesAndQuantities")}</Label>
+
                   <EspecieCantidadPicker
                     value={watch("especies_maneja") || []}
                     onChange={(val) => setValue("especies_maneja", val)}
                     cantidadTotal={cantidadAnimalesTotal}
                   />
+
                   {errors.especies_maneja && (
                     <p className="text-sm text-destructive">
                       {errors.especies_maneja.message}
@@ -473,7 +537,7 @@ export default function CrearFincaPage() {
             <div className="flex justify-end pt-4">
               <Button type="submit" disabled={isSubmitting} className="gap-2">
                 <Save className="h-4 w-4" />
-                {isSubmitting ? "Creando..." : "Guardar Finca"}
+                {isSubmitting ? t("buttons.creating") : t("buttons.saveFarm")}
               </Button>
             </div>
           </form>

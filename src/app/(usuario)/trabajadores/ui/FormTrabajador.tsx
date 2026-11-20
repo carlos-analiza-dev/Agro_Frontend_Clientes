@@ -1,4 +1,5 @@
 "use client";
+
 import { CrearCliente } from "@/api/cliente/interfaces/crear-cliente.interface";
 import { crearTrabajador } from "@/api/trabajadores/accions/crear-tranajador";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,7 @@ import {
   validateIdentification,
 } from "@/helpers/funciones/validaciones-form/valid";
 import { ID_REGEX } from "@/helpers/data/formularios/identificacion";
+import { useTranslations } from "next-intl";
 
 interface Props {
   onSuccess: () => void;
@@ -44,14 +46,19 @@ interface Props {
 }
 
 const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
+  const t = useTranslations("formTrabajador");
+
   const { cliente } = useAuthStore();
   const paisId = cliente?.pais?.id ?? "";
   const paisNombre = cliente?.pais?.nombre ?? "";
   const isEditing = !!trabajador;
+
   const { data: fincas, isLoading: isLoadingFincas } = useFincasPropietarios(
     cliente?.id ?? "",
   );
+
   const queryClient = useQueryClient();
+
   const [prefijoNumber, setPrefijoNumber] = useState("");
   const [codigoPais, setCodigoPais] = useState("");
   const [departamentoId, setDepartamentoId] = useState("");
@@ -91,6 +98,16 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
   const { data: departamentos } = useGetDeptosActivesByPais(paisId);
   const { data: municipios } = useGetMunicipiosActivosByDepto(departamentoId);
   const { data: pais } = usePaisesById(paisId);
+
+  // Traduce catálogos únicamente para mostrarlos; conserva sus valores originales.
+  const getCatalogLabel = (
+    group: "roles" | "sexes",
+    value: string,
+    fallback: string,
+  ) => {
+    const key = `${group}.${value}`;
+    return t.has(key) ? t(key) : fallback;
+  };
 
   useEffect(() => {
     if (trabajador) {
@@ -139,6 +156,7 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
         sexo: "",
         rol: TipoCliente.TRABAJADOR,
       });
+
       setSelectedFincas([]);
       setDepartamentoId("");
       setCargandoDatos(false);
@@ -150,39 +168,9 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
       setCodigoPais(pais.data.code);
       setPrefijoNumber(pais.data.code_phone);
     }
+
     setValue("pais", paisId);
   }, [pais, paisId, setValue]);
-
-  const createMutation = useMutation({
-    mutationFn: crearTrabajador,
-    onSuccess: () => {
-      toast.success("Trabajador Creado Exitosamente");
-      resetForm();
-      queryClient.invalidateQueries({ queryKey: ["trabajadores"] });
-      onSuccess();
-    },
-    onError: (error) => {
-      handleMutationError(error, "crear");
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: ({
-      id,
-      data,
-    }: {
-      id: string;
-      data: Partial<CrearCliente & { rol?: TipoCliente }>;
-    }) => actualizarTrabajador(id, data),
-    onSuccess: () => {
-      toast.success("Trabajador Actualizado Exitosamente");
-      queryClient.invalidateQueries({ queryKey: ["trabajadores"] });
-      onSuccess();
-    },
-    onError: (error) => {
-      handleMutationError(error, "actualizar");
-    },
-  });
 
   const resetForm = () => {
     reset({
@@ -198,34 +186,64 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
       sexo: "",
       rol: TipoCliente.TRABAJADOR,
     });
+
     setSelectedFincas([]);
     setDepartamentoId("");
   };
 
-  const handleMutationError = (error: unknown, action: string) => {
+  const handleMutationError = (error: unknown, action: "create" | "update") => {
     if (isAxiosError(error)) {
       const messages = error.response?.data?.message;
+
       const errorMessage = Array.isArray(messages)
         ? messages[0]
         : typeof messages === "string"
           ? messages
-          : `Hubo un error al ${action} el trabajador`;
+          : t(`errors.${action}`);
+
       toast.error(errorMessage);
     } else {
-      toast.error(
-        `Hubo un error al ${action} el trabajador. Inténtalo de nuevo.`,
-      );
+      toast.error(t(`errors.${action}Unexpected`));
     }
   };
+
+  const createMutation = useMutation({
+    mutationFn: crearTrabajador,
+    onSuccess: () => {
+      toast.success(t("messages.createSuccess"));
+      resetForm();
+      queryClient.invalidateQueries({ queryKey: ["trabajadores"] });
+      onSuccess();
+    },
+    onError: (error) => {
+      handleMutationError(error, "create");
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Partial<CrearCliente & { rol?: TipoCliente }>;
+    }) => actualizarTrabajador(id, data),
+    onSuccess: () => {
+      toast.success(t("messages.updateSuccess"));
+      queryClient.invalidateQueries({ queryKey: ["trabajadores"] });
+      onSuccess();
+    },
+    onError: (error) => {
+      handleMutationError(error, "update");
+    },
+  });
 
   const validatePassword = (password: string) => {
     if (isEditing && !password) return true;
 
     const re = /^(?=\w*\d)(?=\w*[A-Z])(?=\w*[a-z])\S{8,16}$/;
-    return (
-      re.test(password) ||
-      "La contraseña debe tener entre 8 y 16 caracteres, al menos un dígito, una minúscula y una mayúscula"
-    );
+
+    return re.test(password) || t("validation.password");
   };
 
   const handleFincaToggle = (fincaId: string) => {
@@ -238,9 +256,10 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
 
   const validateFincas = () => {
     if (selectedFincas.length === 0) {
-      toast.warning("Por favor, selecciona al menos una finca");
+      toast.warning(t("validation.selectAtLeastOneFarm"));
       return false;
     }
+
     return true;
   };
 
@@ -301,14 +320,14 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="email">Correo Electrónico*</Label>
+          <Label htmlFor="email">{t("fields.email")}*</Label>
           <Input
             id="email"
             type="email"
-            placeholder="tu@correo.com"
+            placeholder={t("placeholders.email")}
             disabled={isEditing}
             {...register("email", {
-              required: "El correo es requerido",
+              required: t("validation.emailRequired"),
               validate: validateEmail,
             })}
           />
@@ -319,36 +338,44 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
           )}
           {isEditing && (
             <p className="text-xs text-muted-foreground">
-              El correo electrónico no se puede modificar
+              {t("hints.emailCannotChange")}
             </p>
           )}
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="password">
-            Contraseña {!isEditing && "*"}
-            {isEditing && " (dejar en blanco para mantener)"}
+            {t("fields.password")} {!isEditing && "*"}
+            {isEditing && ` (${t("hints.leaveBlankToKeep")})`}
           </Label>
+
           <div className="relative">
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder={
-                isEditing ? "Nueva contraseña (opcional)" : "••••••••"
+                isEditing ? t("placeholders.newPassword") : "••••••••"
               }
               {...register("password", {
-                required: !isEditing ? "La contraseña es requerida" : false,
+                required: !isEditing ? t("validation.passwordRequired") : false,
                 validate: validatePassword,
               })}
             />
+
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              aria-label={
+                showPassword
+                  ? t("actions.hidePassword")
+                  : t("actions.showPassword")
+              }
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
+
           {errors.password && (
             <p className="text-sm font-medium text-red-500">
               {errors.password.message as string}
@@ -357,15 +384,15 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="nombre">Nombre Completo*</Label>
+          <Label htmlFor="nombre">{t("fields.fullName")}*</Label>
           <Input
             id="nombre"
-            placeholder="Juan Pérez"
+            placeholder={t("placeholders.fullName")}
             {...register("nombre", {
-              required: "El nombre es requerido",
+              required: t("validation.nameRequired"),
               minLength: {
                 value: 3,
-                message: "El nombre debe tener al menos 3 caracteres",
+                message: t("validation.nameMinLength"),
               },
             })}
           />
@@ -377,7 +404,7 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="rol">Rol*</Label>
+          <Label htmlFor="rol">{t("fields.role")}*</Label>
           <Select
             value={currentRol || ""}
             onValueChange={(value) => {
@@ -385,22 +412,24 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Selecciona un rol" />
+              <SelectValue placeholder={t("placeholders.role")} />
             </SelectTrigger>
+
             <SelectContent>
               {dataRoles && dataRoles.length > 0 ? (
                 dataRoles.map((rol) => (
                   <SelectItem key={rol.id} value={rol.value}>
-                    {rol.label}
+                    {getCatalogLabel("roles", rol.value, rol.label)}
                   </SelectItem>
                 ))
               ) : (
                 <SelectItem value="no-roles" disabled>
-                  No se encontraron roles
+                  {t("empty.roles")}
                 </SelectItem>
               )}
             </SelectContent>
           </Select>
+
           {errors.rol && (
             <p className="text-sm font-medium text-red-500">
               {errors.rol.message as string}
@@ -409,22 +438,24 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="pais">País*</Label>
+          <Label htmlFor="pais">{t("fields.country")}*</Label>
           <div className="relative">
             <div className="flex items-center gap-2 p-2 border rounded-md bg-gray-50">
               <MapPin className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium">{paisNombre}</span>
               <CheckCircle2 className="h-4 w-4 text-green-500 ml-auto" />
             </div>
+
             <input type="hidden" {...register("pais")} value={paisId} />
           </div>
+
           <p className="text-xs text-muted-foreground">
-            El país se asigna automáticamente según tu ubicación
+            {t("hints.countryAutomatic")}
           </p>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="departamento">Departamento*</Label>
+          <Label htmlFor="departamento">{t("fields.department")}*</Label>
           <Select
             value={currentDepartamento || ""}
             onValueChange={(value) => {
@@ -434,8 +465,9 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Selecciona un departamento" />
+              <SelectValue placeholder={t("placeholders.department")} />
             </SelectTrigger>
+
             <SelectContent>
               {departamentos && departamentos.data.length > 0 ? (
                 departamentos.data.map((depto) => (
@@ -445,11 +477,12 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
                 ))
               ) : (
                 <SelectItem value="no-deptos" disabled>
-                  No se encontraron departamentos
+                  {t("empty.departments")}
                 </SelectItem>
               )}
             </SelectContent>
           </Select>
+
           {errors.departamento && (
             <p className="text-sm font-medium text-red-500">
               {errors.departamento.message as string}
@@ -458,7 +491,7 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="municipio">Municipio*</Label>
+          <Label htmlFor="municipio">{t("fields.municipality")}*</Label>
           <Select
             value={currentMunicipio || ""}
             onValueChange={(value) => {
@@ -467,8 +500,9 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
             disabled={!departamentoId}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Selecciona un municipio" />
+              <SelectValue placeholder={t("placeholders.municipality")} />
             </SelectTrigger>
+
             <SelectContent>
               {municipios && municipios.data.length > 0 ? (
                 municipios.data.map((mun) => (
@@ -479,12 +513,13 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
               ) : (
                 <SelectItem value="no-municipios" disabled>
                   {departamentoId
-                    ? "No se encontraron municipios"
-                    : "Selecciona un departamento primero"}
+                    ? t("empty.municipalities")
+                    : t("hints.selectDepartmentFirst")}
                 </SelectItem>
               )}
             </SelectContent>
           </Select>
+
           {errors.municipio && (
             <p className="text-sm font-medium text-red-500">
               {errors.municipio.message as string}
@@ -493,47 +528,53 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="identificacion">Identificación*</Label>
+          <Label htmlFor="identificacion">{t("fields.identification")}*</Label>
+
           <Input
             id="identificacion"
-            placeholder="Número de documento"
+            placeholder={t("placeholders.identification")}
             disabled={isEditing}
             {...register("identificacion", {
-              required: "La identificación es requerida",
+              required: t("validation.identificationRequired"),
               validate: (value) => validateIdentification(value, codigoPais),
             })}
           />
+
           {errors.identificacion && (
             <p className="text-sm font-medium text-red-500">
               {errors.identificacion.message as string}
+
               {codigoPais &&
                 ID_REGEX[codigoPais as keyof typeof ID_REGEX]?.example && (
                   <span className="block text-xs text-gray-500 mt-1">
+                    {t("hints.example")}:{" "}
                     {ID_REGEX[codigoPais as keyof typeof ID_REGEX]?.example}
                   </span>
                 )}
             </p>
           )}
+
           {isEditing && (
             <p className="text-xs text-muted-foreground">
-              La identificación no se puede modificar
+              {t("hints.identificationCannotChange")}
             </p>
           )}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="direccion">Dirección*</Label>
+          <Label htmlFor="direccion">{t("fields.address")}*</Label>
           <Input
             id="direccion"
-            placeholder="Calle 123 # 45-67"
+            placeholder={t("placeholders.address")}
             {...register("direccion", {
-              required: "La dirección es requerida",
+              required: t("validation.addressRequired"),
               minLength: {
                 value: 10,
-                message: "La dirección debe tener al menos 10 caracteres",
+                message: t("validation.addressMinLength"),
               },
             })}
           />
+
           {errors.direccion && (
             <p className="text-sm font-medium text-red-500">
               {errors.direccion.message as string}
@@ -542,18 +583,19 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="telefono">Teléfono*</Label>
+          <Label htmlFor="telefono">{t("fields.phone")}*</Label>
           <Input
             id="telefono"
             placeholder="0000-0000"
             {...register("telefono", {
-              required: "El teléfono es requerido",
+              required: t("validation.phoneRequired"),
               pattern: {
                 value: /^\d{4}-\d{4}$/,
-                message: "El formato debe ser xxxx-xxxx",
+                message: t("validation.phoneFormat"),
               },
             })}
           />
+
           {errors.telefono && (
             <p className="text-sm font-medium text-red-500">
               {errors.telefono.message as string}
@@ -562,7 +604,7 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="sexo">Sexo*</Label>
+          <Label htmlFor="sexo">{t("fields.sex")}*</Label>
           <Select
             value={currentSexo || ""}
             onValueChange={(value) => {
@@ -570,16 +612,18 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Selecciona una opción" />
+              <SelectValue placeholder={t("placeholders.sex")} />
             </SelectTrigger>
+
             <SelectContent>
               {sexos.map((sexo) => (
                 <SelectItem key={sexo.id} value={sexo.value}>
-                  {sexo.sexo}
+                  {getCatalogLabel("sexes", sexo.value, sexo.sexo)}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
+
           {errors.sexo && (
             <p className="text-sm font-medium text-red-500">
               {errors.sexo.message as string}
@@ -588,14 +632,15 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
         </div>
       </div>
 
+      {/* Asignación de fincas */}
       <div className="space-y-2">
-        <Label>Fincas Asignadas *</Label>
+        <Label>{t("fields.assignedFarms")} *</Label>
 
         {isLoadingFincas ? (
           <div className="flex items-center justify-center p-4 border rounded-md bg-gray-50">
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
             <span className="ml-2 text-sm text-muted-foreground">
-              Cargando fincas...
+              {t("loading.farms")}
             </span>
           </div>
         ) : (
@@ -604,13 +649,17 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
               type="button"
               onClick={() => setIsFincasOpen(!isFincasOpen)}
               className="w-full p-2 text-left border rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary"
+              aria-expanded={isFincasOpen}
             >
               <div className="flex justify-between items-center">
                 <span className="text-sm">
                   {selectedFincas.length > 0
-                    ? `${selectedFincas.length} finca${selectedFincas.length > 1 ? "s" : ""} seleccionada${selectedFincas.length > 1 ? "s" : ""}`
-                    : "Seleccionar fincas..."}
+                    ? t("farms.selected", {
+                        count: selectedFincas.length,
+                      })
+                    : t("placeholders.selectFarms")}
                 </span>
+
                 <span className="text-gray-400">
                   {isFincasOpen ? "▲" : "▼"}
                 </span>
@@ -631,8 +680,10 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
                         onChange={() => handleFincaToggle(finca.id)}
                         className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                       />
+
                       <div className="flex flex-col">
                         <span className="text-sm">{finca.nombre_finca}</span>
+
                         {finca.ubicacion && (
                           <span className="text-xs text-muted-foreground">
                             {finca.ubicacion}
@@ -643,7 +694,7 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
                   ))
                 ) : (
                   <p className="text-sm text-muted-foreground p-2">
-                    No tienes fincas disponibles para asignar.
+                    {t("empty.availableFarms")}
                   </p>
                 )}
               </div>
@@ -658,10 +709,14 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
                     className="flex items-center gap-1"
                   >
                     {finca.nombre_finca}
+
                     <button
                       type="button"
                       onClick={() => handleFincaToggle(finca.id)}
                       className="ml-1 hover:text-destructive"
+                      aria-label={t("actions.removeFarm", {
+                        name: finca.nombre_finca,
+                      })}
                     >
                       <X size={14} />
                     </button>
@@ -672,12 +727,11 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
           </>
         )}
 
-        <p className="text-xs text-muted-foreground">
-          Selecciona las fincas a las que tendrá acceso el trabajador
-        </p>
+        <p className="text-xs text-muted-foreground">{t("hints.farmAccess")}</p>
+
         {selectedFincas.length === 0 && (
           <p className="text-xs text-amber-600">
-            ⚠️ Debes seleccionar al menos una finca
+            ⚠️ {t("validation.selectAtLeastOneFarm")}
           </p>
         )}
       </div>
@@ -686,11 +740,11 @@ const FormTrabajador = ({ onSuccess, trabajador }: Props) => {
         <Button type="submit" className="w-full" disabled={isPending}>
           {isPending
             ? isEditing
-              ? "Actualizando trabajador..."
-              : "Creando trabajador..."
+              ? t("buttons.updating")
+              : t("buttons.creating")
             : isEditing
-              ? "Actualizar Trabajador"
-              : "Agregar Trabajador"}
+              ? t("buttons.update")
+              : t("buttons.create")}
         </Button>
       </div>
     </form>

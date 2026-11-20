@@ -1,5 +1,8 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +17,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, BarrelIcon } from "lucide-react";
+
 import { ForrajesInsumo } from "@/api/produccion/interface/obter-producciones-userId.interface";
 import { InsumoTipo } from "@/api/produccion/interface/crear-produccion-finca.interface";
 import {
@@ -39,6 +43,8 @@ interface Props {
 }
 
 const ForrajesInsumosForm = ({ forrajesInsumos, onDataChange }: Props) => {
+  const t = useTranslations("forrajesInsumosForm");
+
   const [insumos, setInsumos] = useState<InsumoItem[]>([]);
 
   useEffect(() => {
@@ -53,55 +59,17 @@ const ForrajesInsumosForm = ({ forrajesInsumos, onDataChange }: Props) => {
         tiempo_estimado_cultivo: insumo.tiempo_estimado_cultivo || "",
         descripcion_otro: insumo.descripcion_otro || "",
       }));
+
       setInsumos(formattedInsumos);
     }
   }, [forrajesInsumos]);
 
-  const addNewInsumo = () => {
-    const newInsumo: InsumoItem = {
-      id: `insumo-${Date.now()}`,
-      tipo: "Heno" as InsumoTipo,
-    };
-    const newInsumos = [...insumos, newInsumo];
-    setInsumos(newInsumos);
-    notifyDataChange(newInsumos);
-  };
-
-  const removeInsumo = (index: number) => {
-    const newInsumos = insumos.filter((_, i) => i !== index);
-    setInsumos(newInsumos);
-    notifyDataChange(newInsumos);
-  };
-
-  const updateInsumo = (index: number, field: keyof InsumoItem, value: any) => {
-    const newInsumos = [...insumos];
-    newInsumos[index] = {
-      ...newInsumos[index],
-      [field]: value,
-    };
-    setInsumos(newInsumos);
-    notifyDataChange(newInsumos);
-  };
-
-  const updateMesesProduccion = (
-    index: number,
-    mes: string,
-    checked: boolean
-  ) => {
-    const currentMeses = insumos[index]?.meses_produccion_heno || [];
-    const newMeses = checked
-      ? [...currentMeses, mes]
-      : currentMeses.filter((m) => m !== mes);
-
-    updateInsumo(index, "meses_produccion_heno", newMeses);
-  };
-
   const notifyDataChange = (currentInsumos: InsumoItem[]) => {
     if (onDataChange) {
       const forrajesData: ForrajesInsumo = {
-        id: forrajesInsumos?.id || "", // Incluye el id existente o uno vacío
+        id: forrajesInsumos?.id || "",
         insumos: currentInsumos.map((insumo) => ({
-          id: insumo.id, // Incluye el id de cada insumo
+          id: insumo.id,
           tipo: insumo.tipo,
           tipo_heno: insumo.tipo_heno,
           estacionalidad_heno: insumo.estacionalidad_heno,
@@ -111,8 +79,54 @@ const ForrajesInsumosForm = ({ forrajesInsumos, onDataChange }: Props) => {
           descripcion_otro: insumo.descripcion_otro,
         })),
       };
+
       onDataChange(forrajesData);
     }
+  };
+
+  const addNewInsumo = () => {
+    const newInsumo: InsumoItem = {
+      id: `insumo-${Date.now()}`,
+      tipo: "Heno" as InsumoTipo,
+    };
+
+    const newInsumos = [...insumos, newInsumo];
+
+    setInsumos(newInsumos);
+    notifyDataChange(newInsumos);
+  };
+
+  const removeInsumo = (index: number) => {
+    const newInsumos = insumos.filter((_, i) => i !== index);
+
+    setInsumos(newInsumos);
+    notifyDataChange(newInsumos);
+  };
+
+  const updateInsumo = (index: number, field: keyof InsumoItem, value: any) => {
+    const newInsumos = [...insumos];
+
+    newInsumos[index] = {
+      ...newInsumos[index],
+      [field]: value,
+    };
+
+    setInsumos(newInsumos);
+    notifyDataChange(newInsumos);
+  };
+
+  const updateMesesProduccion = (
+    index: number,
+    mes: string,
+    checked: boolean,
+  ) => {
+    const currentMeses = insumos[index]?.meses_produccion_heno || [];
+
+    const newMeses = checked
+      ? [...currentMeses, mes]
+      : currentMeses.filter((m) => m !== mes);
+
+    updateInsumo(index, "meses_produccion_heno", newMeses);
   };
 
   return (
@@ -120,14 +134,15 @@ const ForrajesInsumosForm = ({ forrajesInsumos, onDataChange }: Props) => {
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
           <BarrelIcon className="h-5 w-5" />
-          Forrajes e Insumos
+          {t("title")}
           <Badge variant="secondary" className="ml-2">
-            {insumos.length} insumo{insumos.length !== 1 ? "s" : ""}
+            {t("summary.supplies", { count: insumos.length })}
           </Badge>
         </CardTitle>
+
         <Button onClick={addNewInsumo} size="sm">
           <Plus className="h-4 w-4 mr-1" />
-          Agregar
+          {t("buttons.add")}
         </Button>
       </CardHeader>
 
@@ -141,15 +156,20 @@ const ForrajesInsumosForm = ({ forrajesInsumos, onDataChange }: Props) => {
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <h4 className="font-semibold">Insumo {index + 1}</h4>
+                    <h4 className="font-semibold">
+                      {t("fields.supplyNumber", { number: index + 1 })}
+                    </h4>
                     <Badge variant="outline">{insumo.tipo}</Badge>
                   </div>
+
                   {insumos.length > 1 && (
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => removeInsumo(index)}
                       className="h-8 w-8 p-0 text-destructive"
+                      aria-label={t("buttons.remove")}
+                      title={t("buttons.remove")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -158,7 +178,7 @@ const ForrajesInsumosForm = ({ forrajesInsumos, onDataChange }: Props) => {
 
                 <div className="grid grid-cols-1 gap-4">
                   <div className="space-y-2">
-                    <Label>Tipo de insumo</Label>
+                    <Label>{t("fields.supplyType")}</Label>
                     <Select
                       value={insumo.tipo}
                       onValueChange={(value: InsumoTipo) =>
@@ -166,8 +186,11 @@ const ForrajesInsumosForm = ({ forrajesInsumos, onDataChange }: Props) => {
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleccione tipo" />
+                        <SelectValue
+                          placeholder={t("placeholders.selectType")}
+                        />
                       </SelectTrigger>
+
                       <SelectContent>
                         {tiposInsumo.map((tipo) => (
                           <SelectItem key={tipo} value={tipo}>
@@ -181,7 +204,7 @@ const ForrajesInsumosForm = ({ forrajesInsumos, onDataChange }: Props) => {
                   {isHeno ? (
                     <>
                       <div className="space-y-2">
-                        <Label>Tipo de heno</Label>
+                        <Label>{t("fields.hayType")}</Label>
                         <Select
                           value={insumo.tipo_heno || ""}
                           onValueChange={(value) =>
@@ -189,8 +212,11 @@ const ForrajesInsumosForm = ({ forrajesInsumos, onDataChange }: Props) => {
                           }
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Seleccione tipo de heno" />
+                            <SelectValue
+                              placeholder={t("placeholders.selectHayType")}
+                            />
                           </SelectTrigger>
+
                           <SelectContent>
                             {tiposHeno.map((tipo) => (
                               <SelectItem key={tipo} value={tipo}>
@@ -202,22 +228,22 @@ const ForrajesInsumosForm = ({ forrajesInsumos, onDataChange }: Props) => {
                       </div>
 
                       <div className="space-y-2">
-                        <Label>Estacionalidad</Label>
+                        <Label>{t("fields.seasonality")}</Label>
                         <Input
-                          placeholder="Estacionalidad de cosecha"
+                          placeholder={t("placeholders.harvestSeasonality")}
                           value={insumo.estacionalidad_heno || ""}
                           onChange={(e) =>
                             updateInsumo(
                               index,
                               "estacionalidad_heno",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label>Meses de producción</Label>
+                        <Label>{t("fields.productionMonths")}</Label>
                         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                           {meses.map((mes) => (
                             <div
@@ -233,10 +259,11 @@ const ForrajesInsumosForm = ({ forrajesInsumos, onDataChange }: Props) => {
                                   updateMesesProduccion(
                                     index,
                                     mes,
-                                    checked as boolean
+                                    checked as boolean,
                                   )
                                 }
                               />
+
                               <Label
                                 htmlFor={`mes-${index}-${mes}`}
                                 className="text-sm cursor-pointer"
@@ -253,31 +280,31 @@ const ForrajesInsumosForm = ({ forrajesInsumos, onDataChange }: Props) => {
                       {!isOtros && (
                         <>
                           <div className="space-y-2">
-                            <Label>Producción por hectárea</Label>
+                            <Label>{t("fields.productionPerHectare")}</Label>
                             <Input
                               type="number"
-                              placeholder="Ej: 15 toneladas"
+                              placeholder={t("placeholders.productionExample")}
                               value={insumo.produccion_manzana || ""}
                               onChange={(e) =>
                                 updateInsumo(
                                   index,
                                   "produccion_manzana",
-                                  e.target.value
+                                  e.target.value,
                                 )
                               }
                             />
                           </div>
 
                           <div className="space-y-2">
-                            <Label>Tiempo estimado</Label>
+                            <Label>{t("fields.estimatedTime")}</Label>
                             <Input
-                              placeholder="Ej: 3 meses"
+                              placeholder={t("placeholders.timeExample")}
                               value={insumo.tiempo_estimado_cultivo || ""}
                               onChange={(e) =>
                                 updateInsumo(
                                   index,
                                   "tiempo_estimado_cultivo",
-                                  e.target.value
+                                  e.target.value,
                                 )
                               }
                             />
@@ -287,15 +314,15 @@ const ForrajesInsumosForm = ({ forrajesInsumos, onDataChange }: Props) => {
 
                       {isOtros && (
                         <div className="space-y-2">
-                          <Label>Descripción</Label>
+                          <Label>{t("fields.description")}</Label>
                           <Input
-                            placeholder="Describa el tipo de insumo"
+                            placeholder={t("placeholders.describeSupply")}
                             value={insumo.descripcion_otro || ""}
                             onChange={(e) =>
                               updateInsumo(
                                 index,
                                 "descripcion_otro",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                           />
@@ -312,10 +339,11 @@ const ForrajesInsumosForm = ({ forrajesInsumos, onDataChange }: Props) => {
         {insumos.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
             <BarrelIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>No hay insumos agregados</p>
+            <p>{t("empty.message")}</p>
+
             <Button onClick={addNewInsumo} variant="outline" className="mt-2">
               <Plus className="h-4 w-4 mr-1" />
-              Agregar primer insumo
+              {t("buttons.addFirst")}
             </Button>
           </div>
         )}

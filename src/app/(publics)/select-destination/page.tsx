@@ -14,8 +14,11 @@ import {
 } from "@/components/ui/card";
 import { FullScreenLoader } from "@/components/generics/FullScreenLoader";
 import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
+import { useTranslations } from "next-intl";
 
 const SelectDestinationPage = () => {
+  const t = useTranslations("selectDestination");
+
   const router = useRouter();
   const { cliente, token, hasHydrated } = useAuthStore();
 
@@ -56,10 +59,14 @@ const SelectDestinationPage = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">
-            Bienvenido, {cliente.nombre || "Usuario"}
+            {t("welcome", {
+              name: cliente.nombre || t("defaultUser"),
+            })}
           </CardTitle>
-          <CardDescription>¿A qué sistema deseas acceder?</CardDescription>
+
+          <CardDescription>{t("description")}</CardDescription>
         </CardHeader>
+
         <CardContent className="space-y-4">
           <Button
             onClick={() => handleSelect("agro")}
@@ -67,10 +74,12 @@ const SelectDestinationPage = () => {
             variant="outline"
           >
             <Building2 size={32} className="text-green-600 flex-shrink-0" />
+
             <div className="flex-1">
-              <div className="font-semibold text-base">Agro Servicios</div>
+              <div className="font-semibold text-base">{t("agro.title")}</div>
+
               <div className="text-sm text-gray-500">
-                Sistema de servicios agrícolas
+                {t("agro.description")}
               </div>
             </div>
           </Button>
@@ -84,10 +93,12 @@ const SelectDestinationPage = () => {
               size={32}
               className="text-blue-600 flex-shrink-0"
             />
+
             <div className="flex-1">
-              <div className="font-semibold text-base">Panel Principal</div>
+              <div className="font-semibold text-base">{t("panel.title")}</div>
+
               <div className="text-sm text-gray-500">
-                Panel de administración
+                {t("panel.description")}
               </div>
             </div>
           </Button>

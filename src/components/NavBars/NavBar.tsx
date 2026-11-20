@@ -44,6 +44,8 @@ import { EcommerceButton } from "../generics/EcommerceButton";
 import { FullScreenLoader } from "../generics/FullScreenLoader";
 import { getPlanInfo } from "@/helpers/funciones/paquetes/get-infos";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
+import LanguageSwitcher from "../i18n/LanguageSwitcher";
 
 interface Props {
   setMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -168,6 +170,7 @@ const DropdownItem = ({
 );
 
 const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
+  const t = useTranslations("dashboardNavbar");
   const { cliente } = useAuthStore();
   const { cantidadFavoritos } = useFavoritos();
   const { totalItems } = useCartStore();
@@ -234,8 +237,19 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
     }),
   );
 
+  const activePageItem = navItemsConPermisos.find(
+    (item) => item.href === firstPath,
+  );
+
+  const activePageKey = activePageItem?.href
+    .replace(/^\/+/, "")
+    .replaceAll("/", "_")
+    .replaceAll("-", "_");
+
   const activePage =
-    navItemsConPermisos.find((item) => item.href === firstPath)?.name || "";
+    activePageKey && t.has(`navigation.items.${activePageKey}`)
+      ? t(`navigation.items.${activePageKey}`)
+      : activePageItem?.name || "";
 
   const tienePermisoFavoritos = permisosVer.includes("/favoritos");
   const tienePermisoCarrito = permisosVer.includes("/cart");
@@ -297,6 +311,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
       </div>
 
       <div className="flex items-center space-x-1 md:space-x-3">
+        <LanguageSwitcher />
         {esPropietario && tienePlanActivo && planActivo && (
           <TooltipProvider>
             <Tooltip>
@@ -313,16 +328,14 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
               <TooltipContent className="bg-white/95 backdrop-blur-sm border border-white/40 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
                 <div className="text-xs p-1">
                   {estaVencido ? (
-                    <p className="text-red-600">
-                      Plan vencido. Renueva para seguir usando el sistema.
-                    </p>
+                    <p className="text-red-600">{t("plan.expired")}</p>
                   ) : estaPorVencer ? (
                     <p className="text-yellow-600">
-                      Quedan {planInfo.daysLeft} días para que venza tu plan
+                      {t("plan.daysToExpire", { days: planInfo.daysLeft })}
                     </p>
                   ) : (
                     <p className="text-green-600">
-                      Plan activo. Quedan {planInfo.daysLeft} días
+                      {t("plan.active", { days: planInfo.daysLeft })}
                     </p>
                   )}
                 </div>
@@ -337,7 +350,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
           <div className="flex gap-3">
             <PlanButton onClick={handleNavigateToCodigo} variant="outline">
               <Cog className="mr-1.5 h-3.5 w-3.5" />
-              Codigo Cliente
+              {t("buttons.clientCode")}
             </PlanButton>
             {/* <PlanButton onClick={handleNavigateToPlanes} variant="default">
               <Sparkles className="mr-1.5 h-3.5 w-3.5" />
@@ -358,7 +371,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
             icon={Heart}
             count={cantidadFavoritos}
             onClick={() => router.replace("/favoritos")}
-            title="Favoritos"
+            title={t("buttons.favorites")}
             color="text-gray-300"
             activeColor="text-red-500"
           />
@@ -369,7 +382,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
             icon={ShoppingCart}
             count={cantidadCarrito}
             onClick={() => router.replace("/cart")}
-            title="Carrito"
+            title={t("buttons.cart")}
             color="text-gray-300"
             activeColor="text-green-600"
           />
@@ -388,7 +401,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
                       ? cliente?.profileImages[0].url
                       : "/images/ProfileImage.png"
                   }
-                  alt="Usuario"
+                  alt={t("avatarAlt")}
                 />
                 <AvatarFallback className="bg-green-50/80 text-green-600">
                   <User className="h-4 w-4" />
@@ -405,7 +418,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
             <DropdownMenuLabel className="font-normal p-3">
               <div className="flex flex-col space-y-2">
                 <p className="text-sm font-semibold text-gray-900">
-                  {cliente?.nombre || "Usuario"}
+                  {cliente?.nombre || t("user")}
                 </p>
                 <p className="text-xs text-gray-400">{cliente?.email}</p>
 
@@ -413,7 +426,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
                   <div className="mt-3 pt-3 border-t border-gray-100/50">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs text-gray-400 font-medium">
-                        Plan actual:
+                        {t("plan.current")}
                       </span>
                       <Badge
                         className={cn(
@@ -422,7 +435,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
                         )}
                       >
                         <Crown className="mr-1 h-3 w-3" />
-                        {planInfo.label || "Sin plan"}
+                        {planInfo.label || t("plan.withoutPlan")}
                       </Badge>
                     </div>
 
@@ -430,7 +443,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
                       <>
                         {planActivo.fechaFin && (
                           <p className="text-xs text-gray-400 mb-2">
-                            Vence:{" "}
+                            {t("plan.expires")}{" "}
                             {planActivo.fechaFinFormateada ||
                               new Date(
                                 planActivo.fechaFin,
@@ -442,7 +455,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
                           <div className="space-y-1">
                             <div className="flex justify-between text-xs">
                               <span className="text-gray-400">
-                                Días restantes:
+                                {t("plan.daysRemaining")}
                               </span>
                               <span
                                 className={cn(
@@ -475,8 +488,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
                         {estaVencido && (
                           <div className="bg-red-50/80 backdrop-blur-sm border border-red-200/50 rounded-xl p-3 mt-2">
                             <p className="text-xs text-red-600 font-medium">
-                              Tu plan ha vencido. Renueva para seguir usando el
-                              sistema.
+                              {t("plan.expiredNotice")}
                             </p>
                           </div>
                         )}
@@ -484,8 +496,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
                         {estaPorVencer && !estaVencido && (
                           <div className="bg-yellow-50/80 backdrop-blur-sm border border-yellow-200/50 rounded-xl p-3 mt-2">
                             <p className="text-xs text-yellow-600 font-medium">
-                              ¡Tu plan está por vencer! Renueva pronto para no
-                              perder beneficios.
+                              {t("plan.expiringNotice")}
                             </p>
                           </div>
                         )}
@@ -495,8 +506,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
                     {!planActivo && (
                       <div className="bg-blue-50/80 backdrop-blur-sm border border-blue-200/50 rounded-xl p-3 mt-2">
                         <p className="text-xs text-blue-600 font-medium">
-                          No tienes un plan activo. Adquiere uno para acceder a
-                          todos los beneficios.
+                          {t("plan.noActivePlan")}
                         </p>
                       </div>
                     )}
@@ -514,7 +524,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
                   icon={Sprout}
                   color="text-green-600"
                 >
-                  Agro Servicios
+                  {t("dropdown.agroServices")}
                 </DropdownItem>
                 <DropdownMenuSeparator className="bg-gray-100/50" />
               </>
@@ -527,7 +537,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
                   icon={Crown}
                   color="text-yellow-600"
                 >
-                  Mi Plan Actual
+                  {t("dropdown.myCurrentPlan")}
                 </DropdownItem>
 
                 {/*  <DropdownItem
@@ -543,7 +553,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
                   icon={History}
                   color="text-gray-600"
                 >
-                  Historial de Compras
+                  {t("dropdown.purchaseHistory")}
                 </DropdownItem>
 
                 <DropdownMenuSeparator className="bg-gray-100/50" />
@@ -555,7 +565,7 @@ const NavBar = ({ handleLogout, setMobileSidebarOpen }: Props) => {
               icon={LogOut}
               color="text-red-600"
             >
-              Cerrar sesión
+              {t("dropdown.logout")}
             </DropdownItem>
           </DropdownMenuContent>
         </DropdownMenu>

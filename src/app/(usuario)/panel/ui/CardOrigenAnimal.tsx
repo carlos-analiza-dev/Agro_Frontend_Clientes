@@ -1,5 +1,8 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import React from "react";
+import { useTranslations } from "next-intl";
 import {
   Cell,
   Legend,
@@ -26,11 +29,23 @@ const CardOrigenAnimal = ({
   totalComprados,
   totalNacidos,
 }: Props) => {
+  const t = useTranslations("cardOrigenAnimal");
+
+  const traducirOrigen = (name: string) => {
+    const origen = name.toLowerCase();
+
+    if (origen === "comprados") return t("purchased");
+    if (origen === "nacidos") return t("born");
+
+    return name;
+  };
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Origen de los Animales</CardTitle>
+        <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
+
       <CardContent>
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
@@ -41,7 +56,7 @@ const CardOrigenAnimal = ({
                 cy="50%"
                 labelLine={false}
                 label={({ name, percent }) =>
-                  `${name} (${(percent * 100).toFixed(0)}%)`
+                  `${traducirOrigen(name)} (${((percent ?? 0) * 100).toFixed(0)}%)`
                 }
                 outerRadius={80}
                 fill="#8884d8"
@@ -54,10 +69,15 @@ const CardOrigenAnimal = ({
                   />
                 ))}
               </Pie>
+
               <Tooltip
-                formatter={(value) => [`${value} animales`, "Cantidad"]}
+                formatter={(value) => [
+                  `${value} ${t("animals")}`,
+                  t("quantity"),
+                ]}
               />
-              <Legend />
+
+              <Legend formatter={(value) => traducirOrigen(String(value))} />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -66,11 +86,15 @@ const CardOrigenAnimal = ({
           <div className="text-center p-3 bg-purple-50 rounded-lg border border-purple-200">
             <div className="flex items-center justify-center mb-2">
               <div className="w-3 h-3 bg-purple-500 rounded-full mr-2"></div>
-              <span className="font-semibold text-purple-800">Comprados</span>
+              <span className="font-semibold text-purple-800">
+                {t("purchased")}
+              </span>
             </div>
+
             <div className="text-2xl font-bold text-purple-600">
               {totalComprados}
             </div>
+
             <div className="text-sm text-purple-600">
               {porcentajeComprados.toFixed(1)}%
             </div>
@@ -79,11 +103,13 @@ const CardOrigenAnimal = ({
           <div className="text-center p-3 bg-amber-50 rounded-lg border border-amber-200">
             <div className="flex items-center justify-center mb-2">
               <div className="w-3 h-3 bg-amber-500 rounded-full mr-2"></div>
-              <span className="font-semibold text-amber-800">Nacidos</span>
+              <span className="font-semibold text-amber-800">{t("born")}</span>
             </div>
+
             <div className="text-2xl font-bold text-amber-600">
               {totalNacidos}
             </div>
+
             <div className="text-sm text-amber-600">
               {porcentajeNacidos.toFixed(1)}%
             </div>

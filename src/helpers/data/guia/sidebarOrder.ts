@@ -1,14 +1,12 @@
 import { ResponsePermisosInterface } from "@/api/permisos/interface/response-permisos.interface";
 import { TourStep } from "@/components/agroservicio/guia/TourGuide";
 import { agroClientesSteps } from "@/interfaces/guias/steps_agro_clientes.interface";
+import { agroClientesStepsEnglish } from "@/interfaces/guias/spteps_agro_clientes_ingles";
 import { TOUR_PAGES_CLIENTES_ORDER } from "./tourGuide";
 
-const RUTAS_SIEMPRE_DISPONIBLES = [
-  "/panel",
-  "/mi-plan",
-  /*  "/comprar-plan", */
-  "/codigo-cliente",
-];
+type Locale = "es" | "en";
+
+const RUTAS_SIEMPRE_DISPONIBLES = ["/panel", "/mi-plan", "/codigo-cliente"];
 
 export const ordenarPermisosClientes = (
   permisos: ResponsePermisosInterface[] = [],
@@ -29,14 +27,18 @@ export const ordenarPermisosClientes = (
 
 export const getClientesTourSteps = (
   permisos: ResponsePermisosInterface[] = [],
+  locale: Locale = "es",
 ): Record<string, TourStep[]> => {
   const rutasPermitidas = ordenarPermisosClientes(permisos);
+
+  const stepsPorIdioma =
+    locale === "en" ? agroClientesStepsEnglish : agroClientesSteps;
 
   const steps: Record<string, TourStep[]> = {};
 
   rutasPermitidas.forEach((ruta) => {
-    if (agroClientesSteps[ruta]) {
-      steps[ruta] = agroClientesSteps[ruta];
+    if (stepsPorIdioma[ruta]) {
+      steps[ruta] = stepsPorIdioma[ruta];
     }
   });
 
@@ -48,7 +50,6 @@ export const getNextClienteTourRoute = (
   permisos: ResponsePermisosInterface[] = [],
 ): string | null => {
   const rutas = ordenarPermisosClientes(permisos);
-
   const currentIndex = rutas.indexOf(pathname);
 
   if (currentIndex === -1 || currentIndex >= rutas.length - 1) {
@@ -63,7 +64,6 @@ export const getPreviousClienteTourRoute = (
   permisos: ResponsePermisosInterface[] = [],
 ): string | null => {
   const rutas = ordenarPermisosClientes(permisos);
-
   const currentIndex = rutas.indexOf(pathname);
 
   if (currentIndex <= 0) {

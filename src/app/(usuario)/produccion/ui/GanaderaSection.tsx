@@ -30,6 +30,7 @@ import {
 } from "@/api/produccion/interface/crear-produccion-finca.interface";
 import { tiposProduccion } from "@/helpers/data/dataProduccionFinca copy";
 import { unidadLeche } from "@/helpers/data/dataProduccionFinca";
+import { useTranslations } from "next-intl";
 
 interface Props {
   control: Control<CreateProduccionFinca>;
@@ -37,6 +38,7 @@ interface Props {
 }
 
 const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
+  const t = useTranslations("ganaderaSection");
   const itemsHuevos =
     calidadHuevosData.map((calidad) => ({
       label: calidad.label,
@@ -54,15 +56,30 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
     [TipoProduccionGanadera.OTRO]: Beef,
   };
 
-  const sectionTitles = {
-    [TipoProduccionGanadera.LECHE]: "Producción de Leche",
-    [TipoProduccionGanadera.CARNE_BOVINA]: "Producción de Carne Bovina",
-    [TipoProduccionGanadera.CARNE_PORCINA]: "Producción de Carne Porcina",
-    [TipoProduccionGanadera.CARNE_AVE]: "Producción Carne de Ave",
-    [TipoProduccionGanadera.HUEVO]: "Producción de Huevo",
-    [TipoProduccionGanadera.CARNE_CAPRINO]: "Producción de Carne Caprino",
-    [TipoProduccionGanadera.GANADO_PIE]: "Ganado en Pie",
-    [TipoProduccionGanadera.OTRO]: "Otro tipo de producción",
+  const sectionTitles: Record<TipoProduccionGanadera, string> = {
+    [TipoProduccionGanadera.LECHE]: t("sections.milk"),
+    [TipoProduccionGanadera.CARNE_BOVINA]: t("sections.beef"),
+    [TipoProduccionGanadera.CARNE_PORCINA]: t("sections.pork"),
+    [TipoProduccionGanadera.CARNE_AVE]: t("sections.poultry"),
+    [TipoProduccionGanadera.HUEVO]: t("sections.eggs"),
+    [TipoProduccionGanadera.CARNE_CAPRINO]: t("sections.goat"),
+    [TipoProduccionGanadera.GANADO_PIE]: t("sections.liveCattle"),
+    [TipoProduccionGanadera.OTRO]: t("sections.other"),
+  };
+
+  const getTipoProduccionLabel = (tipo: string) => {
+    const translations: Record<string, string> = {
+      [TipoProduccionGanadera.LECHE]: t("productionTypes.milk"),
+      [TipoProduccionGanadera.CARNE_BOVINA]: t("productionTypes.beef"),
+      [TipoProduccionGanadera.CARNE_PORCINA]: t("productionTypes.pork"),
+      [TipoProduccionGanadera.CARNE_AVE]: t("productionTypes.poultry"),
+      [TipoProduccionGanadera.HUEVO]: t("productionTypes.eggs"),
+      [TipoProduccionGanadera.CARNE_CAPRINO]: t("productionTypes.goat"),
+      [TipoProduccionGanadera.GANADO_PIE]: t("productionTypes.liveCattle"),
+      [TipoProduccionGanadera.OTRO]: t("productionTypes.other"),
+    };
+
+    return translations[tipo] ?? tipo;
   };
 
   return (
@@ -71,13 +88,13 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
         <CardHeader className="px-4 py-3 md:px-6 md:py-4">
           <CardTitle className="flex items-center gap-2 text-base md:text-xl">
             <Beef className="h-4 w-4 md:h-5 md:w-5" />
-            Producción Ganadera
+            {t("title")}
           </CardTitle>
         </CardHeader>
         <CardContent className="px-4 py-3 md:px-6 md:py-4 space-y-4 md:space-y-6">
           <div className="space-y-3">
             <Label className="text-sm md:text-base font-semibold">
-              Tipos de Producción:
+              {t("fields.productionTypes")}
             </Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3">
               {tiposProduccion.map((tipo) => {
@@ -107,7 +124,9 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                           {IconComponent && (
                             <IconComponent className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
                           )}
-                          <span className="line-clamp-2">{tipo}</span>
+                          <span className="line-clamp-2">
+                            {getTipoProduccionLabel(tipo)}
+                          </span>
                         </Label>
                       </div>
                     )}
@@ -137,7 +156,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                         htmlFor="produccionLecheCantidad"
                         className="text-xs md:text-sm"
                       >
-                        Cantidad de producción
+                        {t("fields.productionQuantity")}
                       </Label>
                       <Controller
                         control={control}
@@ -146,7 +165,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                           <Input
                             id="produccionLecheCantidad"
                             type="number"
-                            placeholder="Cantidad"
+                            placeholder={t("placeholders.quantity")}
                             className="h-9 md:h-10 text-sm"
                             value={field.value?.toString() || ""}
                             onChange={(e) =>
@@ -162,7 +181,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                         htmlFor="produccionLecheUnidad"
                         className="text-xs md:text-sm"
                       >
-                        Unidad de medida
+                        {t("fields.measurementUnit")}
                       </Label>
                       <Controller
                         control={control}
@@ -173,7 +192,9 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                             onValueChange={field.onChange}
                           >
                             <SelectTrigger className="h-9 md:h-10 text-sm">
-                              <SelectValue placeholder="Seleccionar unidad" />
+                              <SelectValue
+                                placeholder={t("placeholders.selectUnit")}
+                              />
                             </SelectTrigger>
                             <SelectContent>
                               {unidadLeche.map((unidad) => (
@@ -198,7 +219,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                         htmlFor="vacasOrdeño"
                         className="text-xs md:text-sm"
                       >
-                        Vacas en ordeño
+                        {t("fields.milkingCows")}
                       </Label>
                       <Controller
                         control={control}
@@ -223,7 +244,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                         htmlFor="vacasSecas"
                         className="text-xs md:text-sm"
                       >
-                        Vacas secas
+                        {t("fields.dryCows")}
                       </Label>
                       <Controller
                         control={control}
@@ -245,7 +266,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
 
                     <div className="space-y-1.5">
                       <Label htmlFor="terneros" className="text-xs md:text-sm">
-                        Terneros
+                        {t("fields.calves")}
                       </Label>
                       <Controller
                         control={control}
@@ -268,7 +289,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
 
                   <div className="space-y-1.5">
                     <Label className="text-xs md:text-sm">
-                      Fecha promedio de secado
+                      {t("fields.averageDryingDate")}
                     </Label>
                     <Controller
                       control={control}
@@ -304,7 +325,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                         htmlFor="cabezasEngordeBovino"
                         className="text-xs md:text-sm"
                       >
-                        Cabezas en engorde
+                        {t("fields.fatteningHeads")}
                       </Label>
                       <Controller
                         control={control}
@@ -329,7 +350,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                         htmlFor="kilosSacrificioBovino"
                         className="text-xs md:text-sm"
                       >
-                        Kilos de sacrificio
+                        {t("fields.slaughterWeight")}
                       </Label>
                       <Controller
                         control={control}
@@ -338,7 +359,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                           <Input
                             id="kilosSacrificioBovino"
                             type="number"
-                            placeholder="Kilos"
+                            placeholder={t("placeholders.kilos")}
                             className="h-9 md:h-10 text-sm"
                             value={field.value?.toString() || ""}
                             onChange={(e) =>
@@ -395,7 +416,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                         htmlFor="pesoPromedioCerdo"
                         className="text-xs md:text-sm"
                       >
-                        Peso promedio (Kg)
+                        {t("fields.averageWeightKg")}
                       </Label>
                       <Controller
                         control={control}
@@ -404,7 +425,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                           <Input
                             id="pesoPromedioCerdo"
                             type="number"
-                            placeholder="Peso"
+                            placeholder={t("placeholders.weight")}
                             className="h-9 md:h-10 text-sm"
                             value={field.value?.toString() || ""}
                             onChange={(e) =>
@@ -420,7 +441,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                         htmlFor="edadSacrificioProcino"
                         className="text-xs md:text-sm"
                       >
-                        Edad sacrificio
+                        {t("fields.slaughterAge")}
                       </Label>
                       <Controller
                         control={control}
@@ -429,7 +450,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                           <Input
                             id="edadSacrificioProcino"
                             type="number"
-                            placeholder="Edad"
+                            placeholder={t("placeholders.age")}
                             className="h-9 md:h-10 text-sm"
                             value={field.value?.toString() || ""}
                             onChange={(e) =>
@@ -460,7 +481,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                       htmlFor="mortalidadLoteAves"
                       className="text-xs md:text-sm"
                     >
-                      Mortalidad del lote (%)
+                      {t("fields.flockMortality")}
                     </Label>
                     <Controller
                       control={control}
@@ -469,7 +490,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                         <Input
                           id="mortalidadLoteAves"
                           type="number"
-                          placeholder="Porcentaje"
+                          placeholder={t("placeholders.percentage")}
                           className="h-9 md:h-10 text-sm"
                           value={field.value?.toString() || ""}
                           onChange={(e) =>
@@ -500,7 +521,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                         htmlFor="huevosPorDia"
                         className="text-xs md:text-sm"
                       >
-                        Huevos por día
+                        {t("fields.eggsPerDay")}
                       </Label>
                       <Controller
                         control={control}
@@ -525,7 +546,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                         htmlFor="gallinasPonedoras"
                         className="text-xs md:text-sm"
                       >
-                        Gallinas ponedoras
+                        {t("fields.layingHens")}
                       </Label>
                       <Controller
                         control={control}
@@ -550,7 +571,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                         htmlFor="calidadHuevo"
                         className="text-xs md:text-sm"
                       >
-                        Calidad del huevo
+                        {t("fields.eggQuality")}
                       </Label>
                       <Controller
                         control={control}
@@ -561,7 +582,9 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                             onValueChange={field.onChange}
                           >
                             <SelectTrigger className="h-9 md:h-10 text-sm">
-                              <SelectValue placeholder="Seleccionar calidad" />
+                              <SelectValue
+                                placeholder={t("placeholders.selectQuality")}
+                              />
                             </SelectTrigger>
                             <SelectContent>
                               {itemsHuevos.map((item) => (
@@ -600,7 +623,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                         htmlFor="animalesEngordeCaprino"
                         className="text-xs md:text-sm"
                       >
-                        Animales en engorde
+                        {t("fields.fatteningAnimals")}
                       </Label>
                       <Controller
                         control={control}
@@ -691,7 +714,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                         htmlFor="animalesDisponibles"
                         className="text-xs md:text-sm"
                       >
-                        Animales disponibles
+                        {t("fields.availableAnimals")}
                       </Label>
                       <Controller
                         control={control}
@@ -716,7 +739,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                         htmlFor="pesoPromedioCabeza"
                         className="text-xs md:text-sm"
                       >
-                        Peso promedio por cabeza (kg)
+                        {t("fields.averageWeightPerHead")}
                       </Label>
                       <Controller
                         control={control}
@@ -757,7 +780,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                         htmlFor="otroProductoNombre"
                         className="text-xs md:text-sm"
                       >
-                        Nombre del producto
+                        {t("fields.productName")}
                       </Label>
                       <Controller
                         control={control}
@@ -765,7 +788,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                         render={({ field }) => (
                           <Input
                             id="otroProductoNombre"
-                            placeholder="Nombre del producto"
+                            placeholder={t("placeholders.productName")}
                             className="h-9 md:h-10 text-sm"
                             value={field.value || ""}
                             onChange={field.onChange}
@@ -779,7 +802,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                         htmlFor="otroProductoUnidadMedida"
                         className="text-xs md:text-sm"
                       >
-                        Unidad de medida
+                        {t("fields.measurementUnit")}
                       </Label>
                       <Controller
                         control={control}
@@ -787,7 +810,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                         render={({ field }) => (
                           <Input
                             id="otroProductoUnidadMedida"
-                            placeholder="Unidad de medida"
+                            placeholder={t("placeholders.measurementUnit")}
                             className="h-9 md:h-10 text-sm"
                             value={field.value || ""}
                             onChange={field.onChange}
@@ -802,7 +825,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                       htmlFor="otroProductoProduccionMensual"
                       className="text-xs md:text-sm"
                     >
-                      Producción mensual
+                      {t("fields.monthlyProduction")}
                     </Label>
                     <Controller
                       control={control}
@@ -811,7 +834,7 @@ const GanaderaSection: React.FC<Props> = ({ control, watch }) => {
                         <Input
                           id="otroProductoProduccionMensual"
                           type="number"
-                          placeholder="Producción mensual"
+                          placeholder={t("placeholders.monthlyProduction")}
                           className="h-9 md:h-10 text-sm"
                           value={field.value?.toString() || ""}
                           onChange={(e) =>

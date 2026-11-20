@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Activity, DollarSign, Pencil } from "lucide-react";
@@ -16,13 +17,15 @@ const ProduccionAlternativaCard: React.FC<ProduccionAlternativaCardProps> = ({
   alternativa,
   handleProduccionAlternativa,
 }) => {
+  const t = useTranslations("produccionAlternativaCard");
+
   if (!alternativa.actividades || alternativa.actividades.length === 0) {
     return null;
   }
 
   const totalIngresos = alternativa.actividades.reduce(
     (sum, actividad) => sum + (actividad.ingresos_anuales || 0),
-    0
+    0,
   );
 
   return (
@@ -33,35 +36,50 @@ const ProduccionAlternativaCard: React.FC<ProduccionAlternativaCardProps> = ({
           size="sm"
           onClick={() => handleProduccionAlternativa(alternativa)}
         >
-          <Pencil className="h-4 w-4 mr-1" /> Editar Alternativa
+          <Pencil className="h-4 w-4 mr-1" />
+          {t("buttons.edit")}
         </Button>
       </div>
+
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Activity className="h-5 w-5 text-primary" />
             <div>
-              <h3 className="font-semibold">Actividades Alternativas</h3>
+              <h3 className="font-semibold">{t("title")}</h3>
+
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>{alternativa.actividades.length} actividades</span>
+                <span>
+                  {t("summary.activities", {
+                    count: alternativa.actividades.length,
+                  })}
+                </span>
+
                 {totalIngresos > 0 && (
                   <>
                     <span>•</span>
                     <span className="flex items-center gap-1">
-                      <DollarSign className="h-3 w-3" />L{" "}
-                      {totalIngresos.toLocaleString()}
+                      <DollarSign className="h-3 w-3" />
+                      {t("summary.totalIncome", {
+                        currency: "L",
+                        amount: totalIngresos.toLocaleString(),
+                      })}
                     </span>
                   </>
                 )}
               </div>
             </div>
           </div>
+
           <div className="text-right">
             <Badge variant="outline" className="mb-1">
-              Diversificado
+              {t("badges.diversified")}
             </Badge>
+
             <div className="text-xs text-muted-foreground">
-              {alternativa.actividades.length} tipos
+              {t("summary.types", {
+                count: alternativa.actividades.length,
+              })}
             </div>
           </div>
         </div>
@@ -72,9 +90,12 @@ const ProduccionAlternativaCard: React.FC<ProduccionAlternativaCardProps> = ({
               {actividad.tipo}
             </Badge>
           ))}
+
           {alternativa.actividades.length > 3 && (
             <Badge variant="outline" className="text-xs">
-              +{alternativa.actividades.length - 3} más
+              {t("summary.more", {
+                count: alternativa.actividades.length - 3,
+              })}
             </Badge>
           )}
         </div>

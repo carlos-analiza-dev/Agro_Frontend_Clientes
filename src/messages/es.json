@@ -1,0 +1,4447 @@
+{
+  "hero": {
+    "badge": "Disponible en toda Centroamérica",
+    "title": "Transforma tu producción agropecuaria con",
+    "description": "Sistema integral de gestión para ganado, cultivos y productos veterinarios. Optimiza tu producción agrícola y ganadera con tecnología de punta.",
+    "cta": "Comenzar ahora",
+    "producers": "productores confían en nosotros",
+    "farms": "Fincas activas",
+    "satisfaction": "Satisfacción",
+    "users": "Usuarios",
+    "imageAlt": "Agricultura moderna en Centroamérica",
+    "techTitle": "Tecnología agrícola",
+    "techSubtitle": "Gestión inteligente",
+    "hectares": "hectáreas gestionadas",
+    "plan": "Plan AgroGestión"
+  },
+  "stats": {
+    "badge": "Nuestro impacto",
+    "title": "Transformando el agro centroamericano",
+    "description": "Miles de productores confían en nuestra plataforma para gestionar sus operaciones",
+    "items": {
+      "producers": {
+        "label": "Productores activos",
+        "description": "en Centroamérica"
+      },
+      "hectares": {
+        "label": "Hectáreas gestionadas",
+        "description": "de tierra cultivable"
+      },
+      "livestock": {
+        "label": "Cabezas de ganado",
+        "description": "registradas"
+      },
+      "countries": {
+        "label": "Países",
+        "description": "en Centroamérica"
+      }
+    }
+  },
+  
+"services": {
+  "badge": "Nuestro ecosistema",
+  "title": "Tres sistemas, una sola plataforma",
+  "description": "Todo lo que necesitas para producir, gestionar tu agroservicio y vender en el mercado agro centroamericano",
+  "explore": "Explorar sistema",
+  "cta": "¿Listo para transformar tu producción?",
+  "ctaButton": "Comenzar ahora",
+  "items": {
+    "gestion-agro": {
+      "badge": "Producción",
+      "title": "Gestión Agrícola y Ganadera",
+      "description": "Administra tus cultivos, hatos, reproducción, sanidad animal, actividades diarias y todo el ciclo productivo de tu finca en un solo lugar.",
+      "features": [
+        "Cultivos y cosechas",
+        "Hatos y reproducción",
+        "Actividades diarias"
+      ]
+    },
+    "agroservicios": {
+      "badge": "Comercial",
+      "title": "Sistema de Agroservicios",
+      "description": "Gestiona tu agroservicio: clientes, empleados, inventario de productos e insumos, facturación, compras y ventas con control total.",
+      "features": [
+        "Clientes y empleados",
+        "Inventario y compras",
+        "Facturación"
+      ]
+    },
+    "agromarket": {
+      "badge": "Marketplace",
+      "title": "AgroMarket",
+      "description": "Compra y vende artículos agrícolas, ganaderos y más. Publica tus productos como en un marketplace y conecta con compradores de toda la región.",
+      "features": [
+        "Publica tus productos",
+        "Compra y vende",
+        "Contacta vendedores"
+      ]
+    }
+  }
+},
+"features": {
+  "title": "¿Por qué elegir",
+  "brand": "El Sembrador",
+  "description": "Somos la plataforma líder en gestión agropecuaria para Centroamérica, diseñada específicamente para las necesidades de la región.",
+  "items": [
+    {
+      "title": "Rendimiento óptimo",
+      "description": "Procesamiento rápido de datos y análisis en tiempo real."
+    },
+    {
+      "title": "Seguridad garantizada",
+      "description": "Tus datos están protegidos con los más altos estándares."
+    },
+    {
+      "title": "Acceso en la nube",
+      "description": "Disponible desde cualquier lugar, en cualquier momento."
+    },
+    {
+      "title": "App móvil",
+      "description": "Gestiona tu finca desde tu teléfono móvil."
+    },
+    {
+      "title": "Reportes avanzados",
+      "description": "Análisis predictivos para optimizar tu producción."
+    }
+  ],
+  "stats": {
+    "productivity": "+40% productividad",
+    "costs": "-30% costos operativos",
+    "availability": "24/7 disponible",
+    "cloud": "100% en la nube"
+  }
+},
+"coverage": {
+  "badge": "Cobertura Regional",
+  "title": "Presentes en toda Centroamérica",
+  "description": "Llevamos tecnología agropecuaria a productores de los 4 países centroamericanos",
+  "farms": "Fincas activas:",
+  "message": "🌎 Expandiendo nuestra presencia para servir mejor al productor centroamericano",
+  "countries": {
+    "guatemala": {
+      "name": "Guatemala",
+      "capital": "Ciudad de Guatemala"
+    },
+    "elSalvador": {
+      "name": "El Salvador",
+      "capital": "San Salvador"
+    },
+    "honduras": {
+      "name": "Honduras",
+      "capital": "Tegucigalpa"
+    },
+    "costaRica": {
+      "name": "Costa Rica",
+      "capital": "San José"
+    }
+  }
+},
+"testimonials": {
+  "title": "Lo que dicen nuestros usuarios",
+  "description": "Más de 5000 productores en Centroamérica confían en nuestra plataforma",
+  "items": [
+    {
+      "content": "Desde que implementamos El Sembrador, la productividad de nuestra finca aumentó en un 40%. El control de peso del ganado y la gestión de vacunas nos ha permitido tomar mejores decisiones."
+    },
+    {
+      "content": "La plataforma es increíblemente intuitiva. Mis clientes pueden monitorear sus cultivos en tiempo real y recibir alertas tempranas sobre plagas. Una herramienta indispensable."
+    },
+    {
+      "content": "El soporte técnico es excepcional. Siempre están disponibles para ayudarnos y las actualizaciones constantes mejoran la experiencia. Recomiendo El Sembrador a todos los productores."
+    }
+  ]
+},
+"blog": {
+  "title": "Recursos y conocimientos",
+  "description": "Artículos, guías y consejos para mejorar tu producción",
+  "viewAll": "Ver todos los artículos",
+  "items": [
+    {
+      "title": "5 tecnologías que están transformando la ganadería en Centroamérica",
+      "excerpt": "Descubre cómo la tecnología está revolucionando la producción ganadera en la región.",
+      "date": "15 Mar 2026",
+      "author": "Dr. Juan Carlos Pérez",
+      "category": "Ganadería"
+    },
+    {
+      "title": "Manejo integrado de plagas en cultivos tropicales",
+      "excerpt": "Estrategias efectivas para controlar plagas de manera sostenible.",
+      "date": "10 Mar 2026",
+      "author": "Ing. María Rodríguez",
+      "category": "Agricultura"
+    },
+    {
+      "title": "Beneficios del análisis de datos en la producción agropecuaria",
+      "excerpt": "Cómo la inteligencia artificial puede optimizar tus resultados.",
+      "date": "5 Mar 2026",
+      "author": "Lic. Carlos Méndez",
+      "category": "Tecnología"
+    }
+  ]
+},
+"cta": {
+  "title": "¿Listo para transformar tu producción?",
+  "description": "Únete a más de 5000 productores en Centroamérica que ya confían en El Sembrador",
+  "start": "Comenzar ahora",
+  "contact": "Contáctanos",
+  "phone": "+503 1234 5678",
+  "email": "elsembrador@interactivecore.app"
+},
+"footer": {
+  "benefits": [
+    {
+      "title": "Envíos a todo el país",
+      "description": "Entrega rápida y segura"
+    },
+    {
+      "title": "Productos de calidad",
+      "description": "Garantía en todos nuestros productos"
+    },
+    {
+      "title": "Pagos seguros",
+      "description": "Múltiples métodos de pago"
+    },
+    {
+      "title": "Atención personalizada",
+      "description": "Asesoramiento experto"
+    }
+  ],
+  "description": "Agroservicios y Veterinaria comprometidos con el campo centroamericano. Ofrecemos productos y servicios de alta calidad para el cuidado de tu ganado y cultivos.",
+  "quickLinksTitle": "Enlaces rápidos",
+  "quickLinks": {
+    "products": "Productos",
+    "services": "Servicios"
+  },
+  "contactTitle": "Contacto",
+  "schedule": {
+    "weekdays": "Lunes a Viernes: 8:00 AM - 6:00 PM",
+    "saturday": "Sábados: 8:00 AM - 1:00 PM"
+  },
+  "legalLinks": {
+    "terms": "Términos y Condiciones",
+    "privacy": "Política de Privacidad",
+    "faq": "Preguntas Frecuentes",
+    "contact": "Contacto"
+  },
+  "copyright": "Todos los derechos reservados.",
+  "securePayments": "Pagos seguros con:"
+},
+"navbar": {
+  "selectCountry": "Seleccionar país",
+  "country": "País",
+  "yourCountry": "Tu país",
+  "selectYourCountry": "Selecciona tu país",
+  "viewPrices": "Ver precios en tu moneda",
+  "localPrices": "Precios en moneda local",
+  "login": "Iniciar sesión",
+  "register": "Registrarse",
+  "favorites": "Favoritos",
+  "cart": "Carrito",
+  "openMenu": "Abrir menú",
+  "selectCountryRequired": "🌍 Para ver los productos disponibles, primero debes seleccionar tu país",
+  "countryChanged": "🔄 Mostrando productos para {country}",
+  "benefits": {
+    "secureShopping": "Compra segura"
+  },
+  "public": {
+    "products": "Productos",
+    "services": "Servicios",
+    "market": "Market"
+  }
+},
+"login": {
+  "title": "El Sembrador FDN",
+  "description": "Accede a tu cuenta para gestionar tus servicios agrícolas",
+  "forgotPassword": "¿Olvidaste tu contraseña?",
+  "noAccount": "¿No tienes una cuenta?",
+  "register": "Regístrate aquí"
+},
+"loginForm": {
+  "email": "Correo electrónico",
+  "emailPlaceholder": "example@correo.com",
+  "password": "Contraseña",
+  "passwordPlaceholder": "••••••••",
+  "submit": "Iniciar sesión",
+  "submitting": "Iniciando sesión...",
+  "validation": {
+    "emailRequired": "El correo es requerido",
+    "emailInvalid": "Correo electrónico inválido",
+    "passwordRequired": "La contraseña es requerida",
+    "passwordMinLength": "La contraseña debe tener al menos 6 caracteres"
+  },
+  "errors": {
+    "invalidCredentialsAdmin": "Usuario o contraseña incorrectos. Contacte al administrador.",
+    "invalidCredentials": "Credenciales inválidas",
+    "inactiveAccount": "Su cuenta está desactivada. Contacte al administrador.",
+    "tokenMissing": "Error de autenticación: token no recibido",
+    "unauthorized": "Usuario no autorizado",
+    "userNotFound": "Usuario no encontrado",
+    "network": "Error de conexión. Verifique su internet",
+    "general": "Ocurrió un error durante el inicio de sesión"
+  },
+  "success": "¡Inicio de sesión exitoso!"
+},
+"register": {
+  "title": "Registro en El Sembrador FDN",
+  "description": "Completa el formulario para crear tu cuenta"
+},
+"registerForm": {
+  "email": "Correo electrónico",
+  "emailPlaceholder": "tu@correo.com",
+  "password": "Contraseña",
+  "passwordPlaceholder": "••••••••",
+  "name": "Nombre completo",
+  "namePlaceholder": "Juan Pérez",
+  "country": "País",
+  "countryPlaceholder": "Selecciona un país",
+  "department": "Departamento",
+  "departmentPlaceholder": "Selecciona un departamento",
+  "municipality": "Municipio",
+  "municipalityPlaceholder": "Selecciona un municipio",
+  "noDepartments": "No se encontraron departamentos",
+  "noMunicipalities": "No se encontraron municipios",
+  "identification": "Identificación",
+  "identificationPlaceholder": "Número de documento",
+  "address": "Dirección",
+  "addressPlaceholder": "Calle 123 # 45-67",
+  "phone": "Teléfono",
+  "phonePlaceholder": "0000-0000",
+  "sex": "Sexo",
+  "sexPlaceholder": "Selecciona una opción",
+  "submit": "Registrarse",
+  "forgotPassword": "¿Olvidaste tu contraseña?",
+  "hasAccount": "¿Ya tienes una cuenta?",
+  "login": "Iniciar sesión",
+  "success": "Usuario creado correctamente. Revisa tu correo electrónico para confirmar tu cuenta.",
+  "errors": {
+    "create": "Hubo un error al crear el usuario",
+    "general": "Hubo un error al momento de crear el usuario. Inténtalo de nuevo."
+  },
+  "validation": {
+    "emailRequired": "El correo es requerido",
+    "emailInvalid": "Correo electrónico inválido",
+    "passwordRequired": "La contraseña es requerida",
+    "passwordInvalid": "La contraseña debe tener entre 8 y 16 caracteres, al menos un dígito, una minúscula y una mayúscula",
+    "nameRequired": "El nombre es requerido",
+    "nameMinLength": "El nombre debe tener al menos 3 caracteres",
+    "countryRequired": "El país es requerido",
+    "departmentRequired": "El departamento es requerido",
+    "municipalityRequired": "El municipio es requerido",
+    "identificationRequired": "La identificación es requerida",
+    "addressRequired": "La dirección es requerida",
+    "addressMinLength": "La dirección debe tener al menos 10 caracteres",
+    "phoneRequired": "El teléfono es requerido",
+    "phoneFormat": "El formato debe ser xxxx-xxxx",
+    "sexRequired": "El sexo es requerido"
+  }
+},
+"loginEmpleados": {
+  "title": "El Sembrador FDN",
+  "description": "Accede a tu cuenta para gestionar el agroservicio"
+},
+"loginEmpleadosForm": {
+  "email": "Correo electrónico",
+  "emailPlaceholder": "example@correo.com",
+  "password": "Contraseña",
+  "passwordPlaceholder": "••••••••",
+  "submit": "Iniciar sesión",
+  "submitting": "Iniciando sesión...",
+  "validation": {
+    "emailRequired": "El correo es requerido",
+    "emailInvalid": "Correo electrónico inválido",
+    "passwordRequired": "La contraseña es requerida",
+    "passwordMinLength": "La contraseña debe tener al menos 6 caracteres"
+  },
+  "errors": {
+    "invalidCredentialsAdmin": "Usuario o contraseña incorrectos. Contacte al administrador.",
+    "invalidCredentials": "Credenciales inválidas",
+    "inactiveAccount": "Su cuenta está desactivada. Contacte al administrador.",
+    "tokenMissing": "Error de autenticación: token no recibido",
+    "unauthorized": "Usuario no autorizado",
+    "userNotFound": "Usuario no encontrado",
+    "network": "Error de conexión. Verifique su internet",
+    "general": "Ocurrió un error durante el inicio de sesión"
+  },
+  "success": "¡Inicio de sesión exitoso!"
+},
+"notSelectedCountry": {
+  "verificationError": "Ocurrió un error al verificar el país",
+  "checkingCountry": "Verificando tu ubicación...",
+  "title": "¡Selecciona tu país!",
+  "description": "Para acceder a esta página y ver los productos disponibles, necesitamos saber desde dónde nos visitas.",
+  "benefits": {
+    "localPrices": {
+      "title": "Precios locales",
+      "description": "Verás los precios en tu moneda local y productos disponibles en tu región."
+    },
+    "availability": {
+      "title": "Disponibilidad real",
+      "description": "Te mostraremos solo productos que se pueden enviar a tu ubicación."
+    }
+  },
+  "selecting": "Seleccionando...",
+  "selectCountry": "Seleccionar país",
+  "goHome": "Ir al inicio",
+  "supportQuestion": "¿Problemas para seleccionar tu país?",
+  "contactSupport": "Contacta con soporte",
+  "errors": {
+    "checkingSelection": "Error verificando país"
+  }
+},
+"favorites": {
+  "title": "Mis Favoritos",
+  "savedProducts": "{count, plural, =0 {No tienes productos guardados} one {# producto guardado} other {# productos guardados}}",
+  "clear": "Limpiar",
+  "emptyTitle": "No tienes productos favoritos",
+  "emptyDescription": "Cuando agregues productos a favoritos aparecerán aquí.",
+  "exploreProducts": "Explorar productos",
+  "productsInFavorites": "{count, plural, one {# producto en favoritos} other {# productos en favoritos}}"
+},
+"faq": {
+  "metadata": {
+    "title": "Preguntas Frecuentes | El Sembrador",
+    "description": "Encuentra respuestas a las preguntas más comunes sobre pedidos, envíos, pagos, productos y cuenta en El Sembrador. Todo lo que necesitas saber para tu experiencia de compra."
+  },
+  "title": "Preguntas Frecuentes",
+  "description": "Encuentra respuestas a las preguntas más comunes",
+  "categories": {
+    "all": "Todos",
+    "orders": "Pedidos",
+    "shipping": "Envíos",
+    "payments": "Pagos",
+    "products": "Productos",
+    "account": "Cuenta"
+  },
+  "items": [
+    {
+      "category": "Pedidos",
+      "question": "¿Cómo puedo realizar un pedido?",
+      "answer": "Para realizar un pedido, simplemente navega por nuestro catálogo de productos, agrega los productos que deseas al carrito de compras y sigue el proceso de checkout. Necesitarás crear una cuenta o iniciar sesión si ya tienes una."
+    },
+    {
+      "category": "Pedidos",
+      "question": "¿Puedo modificar o cancelar mi pedido después de realizarlo?",
+      "answer": "Puedes modificar o cancelar tu pedido dentro de las 2 horas posteriores a la realización. Para ello, contacta a nuestro servicio al cliente lo antes posible con el número de tu pedido."
+    },
+    {
+      "category": "Envíos",
+      "question": "¿Cuánto tiempo tarda la entrega?",
+      "answer": "Los tiempos de entrega varían según tu ubicación. En general, las entregas en áreas urbanas tardan de 2 a 5 días hábiles, mientras que en áreas rurales pueden tardar de 5 a 10 días hábiles. Recibirás un número de seguimiento cuando tu pedido sea enviado."
+    },
+    {
+      "category": "Envíos",
+      "question": "¿Realizan envíos a todo el país?",
+      "answer": "Sí, realizamos envíos a todo el territorio nacional. Los costos de envío se calculan automáticamente al momento de realizar tu pedido según tu ubicación."
+    },
+    {
+      "category": "Envíos",
+      "question": "¿Puedo recoger mi pedido en sucursal?",
+      "answer": "Sí, ofrecemos la opción de recoger tu pedido en nuestras sucursales sin costo adicional. Durante el proceso de checkout, selecciona la opción 'Recoger en sucursal' y elige la sucursal más conveniente para ti."
+    },
+    {
+      "category": "Pagos",
+      "question": "¿Qué métodos de pago aceptan?",
+      "answer": "Aceptamos pagos con tarjetas de crédito (Visa, Mastercard), transferencias bancarias y pagos en efectivo a través de nuestro sistema de pago seguro."
+    },
+    {
+      "category": "Pagos",
+      "question": "¿Es seguro pagar en línea?",
+      "answer": "Sí, utilizamos tecnología de encriptación SSL para proteger toda la información de pago. Además, trabajamos con proveedores de pago certificados que cumplen con los más altos estándares de seguridad."
+    },
+    {
+      "category": "Productos",
+      "question": "¿Qué garantía tienen los productos?",
+      "answer": "Todos nuestros productos cuentan con garantía contra defectos de fabricación. El período de garantía varía según el producto y se especifica en la descripción del mismo. Para productos veterinarios, consulta las condiciones específicas."
+    },
+    {
+      "category": "Productos",
+      "question": "¿Puedo devolver un producto?",
+      "answer": "Sí, aceptamos devoluciones dentro de los 7 días posteriores a la recepción del producto, siempre que esté en su empaque original y sin uso. Los productos veterinarios y perecederos tienen condiciones especiales."
+    },
+    {
+      "category": "Cuenta",
+      "question": "¿Cómo puedo cambiar mi contraseña?",
+      "answer": "Para cambiar tu contraseña, inicia sesión en tu cuenta, ve a 'Login' y selecciona la opción '¿Olvidaste tu contraseña?'. Recibirás un correo de confirmación cuando el cambio sea exitoso."
+    },
+    {
+      "category": "Cuenta",
+      "question": "¿Cómo puedo eliminar mi cuenta?",
+      "answer": "Si deseas eliminar tu cuenta, por favor contacta a nuestro servicio al cliente. Ten en cuenta que al eliminar tu cuenta perderás el acceso a tu historial de compras y puntos acumulados."
+    }
+  ],
+  "support": {
+    "title": "¿No encuentras lo que buscas?",
+    "description": "Estamos aquí para ayudarte. Contáctanos y te responderemos lo antes posible.",
+    "contact": "Contactar soporte",
+    "home": "Volver al inicio"
+  }
+},
+"contact": {
+  "title": "Contáctanos",
+  "description": "Estamos aquí para ayudarte. Cuéntanos tu consulta y te responderemos lo antes posible.",
+  "info": {
+    "address": "Dirección",
+    "addressDetails": "Comayagua, Comayagua, Honduras",
+    "phone": "Teléfono",
+    "email": "Email",
+    "schedule": "Horario de Atención",
+    "scheduleDetails": "Lun-Vie: 8:00 - 18:00 | Sáb: 8:00 - 13:00"
+  },
+  "form": {
+    "title": "Envíanos un mensaje",
+    "description": "Completa el formulario y te contactaremos a la brevedad.",
+    "name": "Nombre completo",
+    "namePlaceholder": "Tu nombre",
+    "phone": "Teléfono",
+    "phonePlaceholder": "Tu teléfono",
+    "email": "Email",
+    "emailPlaceholder": "tu@email.com",
+    "subject": "Asunto",
+    "subjectPlaceholder": "Selecciona un asunto",
+    "subjects": {
+      "products": "Consulta sobre productos",
+      "technical": "Asesoría técnica",
+      "orders": "Problemas con mi pedido",
+      "suggestions": "Sugerencias",
+      "other": "Otros"
+    },
+    "message": "Mensaje",
+    "messagePlaceholder": "Escribe tu mensaje aquí...",
+    "submit": "Enviar mensaje",
+    "submitting": "Enviando...",
+    "successTitle": "¡Mensaje enviado con éxito!",
+    "successDescription": "Gracias por contactarnos. Te responderemos en las próximas 24 horas."
+  },
+  "validation": {
+    "nameRequired": "El nombre es requerido",
+    "emailRequired": "El email es requerido",
+    "emailInvalid": "Email inválido",
+    "messageRequired": "El mensaje es requerido"
+  },
+  "social": {
+    "title": "Síguenos en redes sociales",
+    "description": "Mantente conectado con nosotros para recibir promociones, novedades y consejos para el campo."
+  },
+  "mapTitle": "El Sembrador - Colonia 1 de Mayo, Comayagua"
+},
+"privacy": {
+  "title": "Política de Privacidad",
+  "lastUpdated": "Última actualización: 1 de enero de 2024",
+  "introduction": "En El Sembrador, valoramos tu privacidad y nos comprometemos a proteger tus datos personales. Esta política explica cómo recopilamos, usamos y protegemos tu información.",
+  "sections": {
+    "collected": {
+      "title": "Información que Recopilamos",
+      "description": "Podemos recopilar la siguiente información:",
+      "items": [
+        "Nombre completo y datos de contacto",
+        "Dirección de envío y facturación",
+        "Información de pago (procesada de forma segura)",
+        "Historial de compras y preferencias",
+        "Ubicación geográfica (con tu consentimiento)",
+        "Datos de navegación y uso del sitio"
+      ]
+    },
+    "usage": {
+      "title": "Uso de la Información",
+      "description": "Utilizamos tu información para:",
+      "items": [
+        "Procesar tus pedidos y entregas",
+        "Mejorar nuestros productos y servicios",
+        "Enviar actualizaciones y promociones (con tu consentimiento)",
+        "Personalizar tu experiencia de compra",
+        "Prevenir fraudes y garantizar la seguridad"
+      ]
+    },
+    "security": {
+      "title": "Seguridad de los Datos",
+      "description": "Implementamos medidas de seguridad técnicas y organizativas para proteger tu información contra accesos no autorizados, alteración, divulgación o destrucción. Utilizamos cifrado SSL para proteger las transacciones en línea."
+    },
+    "communications": {
+      "title": "Comunicaciones",
+      "description": "Podemos enviarte correos electrónicos relacionados con tus pedidos, actualizaciones de servicio y, con tu consentimiento, promociones y novedades. Puedes darte de baja de las comunicaciones de marketing en cualquier momento."
+    },
+    "sharing": {
+      "title": "Compartir Información",
+      "description": "No vendemos, alquilamos ni compartimos tu información personal con terceros para sus propios fines de marketing. Podemos compartir información con:",
+      "items": [
+        "Proveedores de servicios (envíos, pagos, etc.)",
+        "Autoridades cuando sea requerido por ley",
+        "Con tu consentimiento explícito"
+      ]
+    },
+    "rights": {
+      "title": "Tus Derechos",
+      "description": "Tienes derecho a:",
+      "items": [
+        "Acceder a tus datos personales",
+        "Rectificar información incorrecta",
+        "Solicitar la eliminación de tus datos",
+        "Oponerte al procesamiento de datos",
+        "Retirar tu consentimiento en cualquier momento"
+      ]
+    }
+  },
+  "exerciseRights": {
+    "title": "Ejercer tus derechos",
+    "description": "Para ejercer cualquiera de tus derechos o para preguntas sobre privacidad, contáctanos:",
+    "emailLabel": "Email:",
+    "phoneLabel": "Teléfono:"
+  },
+  "contact": {
+    "email": "privacidad@elsembrador.com",
+    "phone": "+57 300 123 4567"
+  }
+},
+"resetPassword": {
+  "title": "El Sembrador FDN",
+  "description": "¿No recuerdas tu contraseña?",
+  "email": "Correo electrónico",
+  "emailPlaceholder": "example@correo.com",
+  "newPassword": "Nueva contraseña",
+  "confirmPassword": "Confirmar contraseña",
+  "passwordPlaceholder": "••••••••",
+  "submit": "Restablecer",
+  "processing": "Procesando...",
+  "register": "Regístrate",
+  "login": "Iniciar sesión",
+  "success": "Contraseña cambiada exitosamente",
+  "errors": {
+    "emailRequired": "El correo es requerido",
+    "emailInvalid": "Por favor ingresa un correo válido",
+    "passwordRequired": "La contraseña es requerida",
+    "passwordMinLength": "La contraseña debe tener al menos 6 caracteres",
+    "confirmPasswordRequired": "Por favor confirma tu contraseña",
+    "passwordMismatch": "Las contraseñas no coinciden",
+    "changePassword": "Error al cambiar la contraseña"
+  }
+},
+"selectDestination": {
+  "welcome": "Bienvenido, {name}",
+  "defaultUser": "Usuario",
+  "description": "¿A qué sistema deseas acceder?",
+  "agro": {
+    "title": "Agro Servicios",
+    "description": "Sistema de servicios agrícolas"
+  },
+  "panel": {
+    "title": "Panel Principal",
+    "description": "Panel de administración"
+  }
+},
+"terms": {
+  "title": "Términos y Condiciones",
+  "lastUpdated": "Última actualización: 1 de enero de 2024",
+  "sections": {
+    "acceptance": {
+      "title": "Aceptación de los Términos",
+      "description": "Al acceder y utilizar el sitio web de El Sembrador, usted acepta cumplir con estos términos y condiciones. Si no está de acuerdo con alguna parte de estos términos, no debe utilizar nuestros servicios."
+    },
+    "siteUsage": {
+      "title": "Uso del Sitio",
+      "description": "El Sembrador proporciona información sobre productos agropecuarios, servicios veterinarios y herramientas agrícolas. Usted se compromete a:",
+      "items": [
+        "No utilizar el sitio para fines ilegales",
+        "No interferir con la seguridad del sitio",
+        "No intentar acceder a áreas restringidas sin autorización",
+        "Proporcionar información veraz y actualizada cuando sea requerida"
+      ]
+    },
+    "products": {
+      "title": "Productos y Servicios",
+      "description": "Nuestros productos y servicios están sujetos a disponibilidad. Nos reservamos el derecho de:",
+      "items": [
+        "Modificar precios sin previo aviso",
+        "Limitar cantidades de productos",
+        "Descontinuar productos en cualquier momento",
+        "Rechazar pedidos a nuestra discreción"
+      ]
+    },
+    "shipping": {
+      "title": "Envíos y Entregas",
+      "description": "Los tiempos de entrega son estimados y pueden variar según la ubicación. El Sembrador no se hace responsable por retrasos causados por terceros o casos de fuerza mayor. Los costos de envío se calculan automáticamente al momento de realizar el pedido."
+    },
+    "intellectualProperty": {
+      "title": "Propiedad Intelectual",
+      "description": "Todo el contenido del sitio, incluyendo textos, imágenes, logotipos y gráficos, es propiedad de El Sembrador y está protegido por las leyes de propiedad intelectual. No está permitida la reproducción, distribución o modificación sin autorización expresa."
+    },
+    "liability": {
+      "title": "Limitación de Responsabilidad",
+      "description": "El Sembrador no será responsable por daños indirectos, incidentales o consecuentes derivados del uso o la incapacidad de usar nuestros productos o servicios. Nuestra responsabilidad máxima se limita al monto pagado por los productos adquiridos."
+    },
+    "modifications": {
+      "title": "Modificaciones",
+      "description": "Nos reservamos el derecho de modificar estos términos en cualquier momento. Los cambios entrarán en vigor inmediatamente después de su publicación en el sitio. Se recomienda revisar periódicamente los términos actualizados."
+    }
+  },
+  "support": {
+    "title": "¿Tienes preguntas?",
+    "description": "Si tienes alguna pregunta sobre estos términos, contáctanos:",
+    "contact": "Contactar a soporte"
+  }
+},
+"cartPage": {
+  "empty": {
+    "title": "Tu carrito está vacío",
+    "description": "Agrega algunos productos para comenzar a comprar"
+  },
+  "title": "Carrito de Compras",
+  "description": "Revisa y gestiona los productos en tu carrito",
+  "branches": {
+    "title": "Productos de diferentes sucursales",
+    "description": "Tu pedido incluye productos de {count} {count, plural, one {sucursal} other {sucursales}} diferentes. El tiempo de entrega estimado es de 3 a 5 días hábiles debido a la consolidación de productos desde múltiples ubicaciones.",
+    "productsByBranch": "Productos por sucursal:",
+    "productCount": "{count} {count, plural, one {producto} other {productos}}",
+    "unknownBranch": "Sucursal sin nombre"
+  },
+  "location": {
+    "title": "Selecciona Ubicación de Entrega",
+    "cancel": "Cancelar",
+    "success": "Ubicación de entrega configurada"
+  },
+  "checkout": {
+    "authRequired": "Debes iniciar sesión o registrarte para realizar un pedido",
+    "authError": "Error de autenticación al procesar el pedido",
+    "emptyCart": "El carrito está vacío",
+    "locationRequired": "Debes seleccionar una ubicación de entrega",
+    "success": "¡Pedido realizado con éxito!",
+    "error": "Error al realizar el pedido"
+  },
+  "processing": {
+    "title": "Procesando Pedido",
+    "description": "Estamos creando tu pedido, por favor espera..."
+  }
+},
+"publicServices": {
+  "title": "Servicios Disponibles",
+  "description": "Descubre nuestra amplia gama de servicios profesionales",
+  "footer": "¿Necesitas más información? Contáctanos para consultar sobre nuestros servicios"
+},
+"serviceDetails": {
+  "status": {
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "available": "Disponible",
+    "unavailable": "No disponible"
+  },
+  "notFound": {
+    "title": "Servicio no encontrado",
+    "description": "No pudimos encontrar el servicio que estás buscando.",
+    "back": "Volver a servicios"
+  },
+  "stats": {
+    "services": "Servicios",
+    "active": "Activos"
+  },
+  "availableServices": {
+    "title": "Servicios Disponibles",
+    "description": "Explora todos los servicios disponibles dentro de {name}",
+    "emptyTitle": "No hay servicios disponibles",
+    "emptyDescription": "Este servicio no tiene servicios asociados actualmente."
+  },
+  "details": {
+    "description": "Descripción",
+    "packagesByCountry": "Paquetes por País",
+    "time": "Tiempo",
+    "hours": "hrs",
+    "quantity": "Cantidad",
+    "animals": "animales",
+    "request": "Solicitar {name}"
+  },
+  "authentication": {
+    "title": "🔐 Autenticación Requerida",
+    "description": "Para solicitar nuestros servicios es necesario que estés autenticado en nuestro sitio",
+    "selectedService": "Servicio seleccionado:",
+    "benefits": {
+      "tracking": {
+        "title": "Seguimiento en tiempo real",
+        "description": "Recibe notificaciones y actualizaciones de tu solicitud"
+      },
+      "support": {
+        "title": "Soporte prioritario",
+        "description": "Atención personalizada para usuarios registrados"
+      },
+      "history": {
+        "title": "Historial de servicios",
+        "description": "Accede a tu historial completo de solicitudes"
+      },
+      "offers": {
+        "title": "Ofertas exclusivas",
+        "description": "Accede a promociones especiales para miembros"
+      }
+    },
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "termsPrefix": "Al autenticarte, aceptas nuestros",
+    "terms": "términos y condiciones",
+    "and": "y",
+    "privacy": "políticas de privacidad"
+  }
+},
+"publicProducts": {
+  "loading": "Cargando productos...",
+  "title": "Productos Disponibles",
+  "description": "Descubre nuestra amplia gama de productos",
+  "allCategories": "Todos",
+  "productCount": "{count} productos disponibles",
+  "loadingMore": "Cargando más productos...",
+  "scrollToLoad": "Desplázate para cargar más",
+  "loadingSimple": "Cargando...",
+  "loadMore": "Cargar más productos",
+  "allViewed": "Has visto todos los productos disponibles",
+  "empty": {
+    "title": "No hay productos disponibles",
+    "description": "Prueba a recargar la página o vuelve más tarde",
+    "reload": "Recargar"
+  }
+},
+"productDetails": {
+  "errors": {
+    "loadingTitle": "Error al cargar la información",
+    "loadingDescription": "Ocurrió un error al cargar los datos del producto o sucursales",
+    "notFoundTitle": "No se encontró el producto seleccionado",
+    "notFoundDescription": "El producto que buscas no está disponible"
+  },
+  "share": {
+    "button": "Compartir",
+    "whatsapp": "WhatsApp",
+    "facebook": "Facebook",
+    "twitter": "Twitter/X",
+    "copyLink": "Copiar enlace"
+  },
+  "reviews": {
+    "title": "Opiniones Destacadas",
+    "cancel": "Cancelar",
+    "add": "Agregar opinión",
+    "alreadyReviewed": "Ya opinaste sobre este producto",
+    "question": "¿Te gustó este producto?",
+    "description": "Comparte tu experiencia con otros clientes",
+    "write": "Escribir mi opinión"
+  },"cardDetailsProducto": {
+  "noImages": "Sin imágenes",
+  "productImageAlt": "{product} - Imagen {number}",
+  "goToImage": "Ir a la imagen {number}",
+  "selectThumbnail": "Seleccionar miniatura {number}",
+  "productThumbnailAlt": "{product} - Miniatura {number}"
+},
+  "detailsProduct": {
+    "selectBranch": "Seleccionar sucursal",
+    "loadingBranches": "Cargando sucursales...",
+    "noBranches": "No hay sucursales disponibles",
+    "selectBranchPlaceholder": "Selecciona una sucursal",
+    "stockError": "Error al cargar existencia",
+    "availableAt": "Disponibles en {branch}",
+    "availableInOtherBranches": "Este producto sí tiene existencia en otras sucursales:",
+    "outOfStock": "Agotado",
+    "quantity": "Cantidad",
+    "productNotes": "Notas para este producto",
+    "notesPlaceholder": "Agregar notas especiales...",
+    "product": "producto",
+    "products": "productos",
+    "removeFavorite": "Remover de favoritos",
+    "addFavorite": "Agregar a favoritos",
+    "inFavorites": "En favoritos",
+    "selectBranchFirst": "Selecciona una sucursal",
+    "addMoreToCart": "Agregar más al carrito",
+    "addToCart": "Agregar al carrito",
+    "productDetails": "Detalles del producto",
+    "unitOfMeasure": "Unidad de medida:",
+    "notSpecified": "No especificada",
+    "selectedBranch": "Sucursal seleccionada:",
+    "notSelected": "No seleccionada",
+    "availableQuantity": "Cantidad disponible:",
+    "loading": "Cargando...",
+    "status": "Estado:",
+    "available": "Disponible",
+    "inFavoritesLabel": "En favoritos:",
+    "inCartLabel": "En carrito:",
+    "yes": "Sí",
+    "no": "No",
+    "unit": "unidades",
+    "quantityUnits": "{count} {unit}",
+    "availableWithQuantity": "{count} {unit} disponibles",
+    "productsCount": "{count, plural, one {# producto} other {# productos}}",
+    "cart": {
+      "addedMore": "{name} ya estaba en el carrito. Se agregaron {count} unidades más.",
+      "added": "{name} fue agregado al carrito."
+    }
+  }
+},
+"reviews": {
+  "noOpinions": {
+    "title": "Aún no hay opiniones sobre este producto",
+    "description": "Sé el primero en compartir tu experiencia con este producto.",
+    "add": "Agregar mi opinión",
+    "purchaseRequired": "Solo los clientes que han comprado este producto pueden agregar opiniones."
+  }
+},
+"opinionCard": {
+  "you": "Tú",
+  "verified": "Verificado",
+  "edit": "Editar opinión",
+  "cancel": "Cancelar",
+  "save": "Guardar",
+  "rating": "{count, plural, =1 {# estrella} other {# estrellas}}",
+  "titlePlaceholder": "Título de tu opinión",
+  "characters": "{count}/{max} caracteres",
+  "commentPlaceholder": "Describe tu experiencia con este producto",
+  "editing": "Editando...",
+  "edited": "Editada",
+  "saving": "Guardando...",
+  "validation": {
+    "rating": "Por favor selecciona una calificación",
+    "title": "Por favor ingresa un título",
+    "comment": "Por favor ingresa un comentario"
+  },
+  "success": "Tu opinión ha sido actualizada exitosamente.",
+  "errors": {
+    "update": "Error al actualizar la opinión"
+  }
+},
+"ratingSummary": {
+  "title": "Opiniones de clientes",
+  "average": "{average} de 5",
+  "totalRatings": "{total} calificaciones",
+  "stars": "{count, plural, one {# estrella} other {# estrellas}}"
+},
+"reviewForm": {
+  "title": "Escribe tu opinión",
+  "about": "Sobre",
+  "rating": "Calificación general",
+  "ratingAriaLabel": "Calificar con {count} {count, plural, one {estrella} other {estrellas}}",
+  "selectedRating": "{count} {count, plural, one {estrella} other {estrellas}}",
+  "selectRating": "Selecciona",
+  "reviewTitle": "Título de la opinión",
+  "titlePlaceholder": "Ej: Excelente producto, muy buena calidad",
+  "experience": "Tu experiencia",
+  "commentPlaceholder": "Comparte tu experiencia con este producto. ¿Qué te gustó o no te gustó? ¿Cumple con lo esperado?",
+  "cancel": "Cancelar",
+  "submitting": "Enviando...",
+  "sending": "Enviando",
+  "publish": "Publicar opinión",
+  "verifiedPurchase": "Tu opinión aparecerá como",
+  "verifiedBadge": "Compra verificada",
+  "purchaseConfirmation": "ya que has adquirido este producto.",
+  "validation": {
+    "rating": "Por favor selecciona una calificación",
+    "title": "Por favor ingresa un título",
+    "comment": "Por favor ingresa un comentario"
+  },
+  "success": "Tu opinión ha sido publicada exitosamente.",
+  "errors": {
+    "submit": "Error al enviar la opinión"
+  }
+},
+ "seleccionUbicacion": {
+    "title": "Ubicación de Entrega",
+    "differentBranches": {
+      "title": "Productos de diferentes sucursales",
+      "description": "Tus productos provienen de diferentes sucursales. El tiempo de entrega será de {days} días hábiles. No está disponible la opción de recoger en sucursal."
+    },
+    "locationType": "Tipo de Ubicación",
+    "options": {
+      "farm": "Enviar a una de mis fincas",
+      "pickup": "Recoger en sucursal",
+      "other": "Otra ubicación",
+      "delivery": "+{symbol}{cost} delivery",
+      "free": "Gratis"
+    },
+    "noFarms": {
+      "title": "No tienes fincas registradas",
+      "description": "Puedes agregar una finca en tu perfil para recibir envíos a tus fincas registradas."
+    },
+    "farmSelection": {
+      "title": "Selecciona una finca para delivery",
+      "deliveryIncluded": "Delivery incluido: {symbol}{cost}",
+      "description": "El producto será entregado en la finca seleccionada con sus coordenadas GPS"
+    },
+    "customLocation": {
+      "searchLabel": "Buscar dirección",
+      "addressPlaceholder": "Ingresa una dirección...",
+      "mapLabel": "Selecciona la ubicación en el mapa",
+      "mapInstructions": "Haz clic en el mapa o arrastra el marcador para seleccionar la ubicación exacta",
+      "latitude": "Latitud",
+      "longitude": "Longitud",
+      "latitudePlaceholder": "Latitud",
+      "longitudePlaceholder": "Longitud",
+      "gettingLocation": "Obteniendo ubicación...",
+      "useCurrentLocation": "Usar mi ubicación actual",
+      "deliveryIncluded": "Delivery incluido: {symbol}{cost}",
+      "deliveryDescription": "El producto será entregado en la ubicación especificada en el mapa"
+    },
+    "pickupInfo": {
+      "title": "Recogida en sucursal sin costo adicional",
+      "description": "Podrás recoger tu pedido en la sucursal más cercana"
+    },
+    "summary": {
+      "title": "Resumen de Entrega",
+      "deliveryType": "Tipo de entrega:",
+      "farmDelivery": "Delivery a Finca",
+      "locationDelivery": "Delivery a Ubicación",
+      "branchPickup": "Recoger en Sucursal",
+      "farm": "Finca:",
+      "address": "Dirección:",
+      "customLocation": "Ubicación personalizada",
+      "shippingCost": "Costo de envío:",
+      "free": "Gratis"
+    },
+    "buttons": {
+      "confirm": "Confirmar Ubicación y Entrega"
+    },
+    "validation": {
+      "selectFarm": "Por favor selecciona una finca",
+      "enterAddress": "Por favor ingresa una dirección",
+      "selectMapLocation": "Por favor selecciona una ubicación en el mapa",
+      "differentBranches": "No es posible recoger en sucursal porque los productos son de diferentes sucursales"
+    },
+    "errors": {
+      "generic": "Ocurrió un error",
+      "addressSearch": "Error al buscar dirección",
+      "addressNotFound": "No se pudo encontrar la dirección. Intenta con una descripción más específica.",
+      "geolocationNotSupported": "La geolocalización no es compatible con este navegador",
+      "geolocationError": "Error al obtener la ubicación: {message}"
+    }
+  },
+  "resumenPedido": {
+    "title": "Resumen del Pedido",
+    "differentBranches": {
+      "title": "Productos de diferentes sucursales",
+      "deliveryTime": "Tiempo de entrega:",
+      "businessDays": "3 a 5 días hábiles"
+    },
+    "location": {
+      "label": "Ubicación:",
+      "change": "Cambiar",
+      "select": "Seleccionar",
+      "notSelected": "No seleccionada",
+      "farm": "Finca: {name}",
+      "selected": "Seleccionada",
+      "pickup": "Recoger en sucursal",
+      "custom": "Ubicación personalizada",
+      "homeDelivery": "Delivery a domicilio",
+      "mustSelect": "Debes seleccionar una ubicación para continuar",
+      "delivery": "Delivery:"
+    },
+    "branches": {
+      "select": "Selecciona una sucursal",
+      "description": "Escoge la sucursal desde donde se procesará tu pedido",
+      "searching": "Buscando sucursales cercanas...",
+      "placeholder": "Seleccionar sucursal",
+      "nearest": "Más cercana",
+      "selected": "Sucursal seleccionada",
+      "distance": "Distancia"
+    },
+    "totals": {
+      "subtotal": "Subtotal:",
+      "exempt": "Exento:",
+      "exonerated": "Exonerado:",
+      "taxableBase15": "Base 15%:",
+      "isv15": "ISV 15%:",
+      "taxableBase18": "Base 18%:",
+      "isv18": "ISV 18%:",
+      "totalTaxes": "Total Impuestos:",
+      "deliveryCost": "Costo de delivery:",
+      "total": "Total:",
+      "taxesIncluded": "Impuestos incluidos en el total"
+    },
+    "buttons": {
+      "processing": "Procesando...",
+      "checkout": "Realizar Pedido",
+      "continueShopping": "Seguir comprando",
+      "login": "Iniciar Sesión",
+      "register": "Registrarse"
+    },
+    "authentication": {
+      "title": "Error de autenticación",
+      "description": "Ha ocurrido un error al verificar tu sesión"
+    }
+  },
+  "cardCarrito": {
+    "brand": "Sin marca",
+    "branch": "Sucursal: {name}",
+    "deleteProduct": "Eliminar producto",
+    "decreaseQuantity": "Disminuir cantidad",
+    "increaseQuantity": "Aumentar cantidad",
+    "unit": "unidad",
+    "unitPrice": "Precio unitario",
+    "total": "Total",
+    "notifications": {
+      "productRemoved": "Producto eliminado del carrito",
+      "removeError": "Error al eliminar el producto"
+    }
+  },
+  "emptyProducts": {
+    "title": "No hay productos disponibles",
+    "description": "En este momento no tenemos productos para mostrar. Por favor, intenta nuevamente más tarde.",
+    "retry": "Reintentar"
+  },
+  "productCard": {
+    "favorite": {
+      "remove": "Remover de favoritos",
+      "add": "Agregar a favoritos"
+    },
+    "category": "General",
+    "outOfStock": "Agotado",
+    "viewDetails": "Ver Detalles",
+    "unavailable": "No Disponible"
+  },
+   "cardServicios": {
+    "available": "Disponible",
+    "unavailable": "No disponible",
+    "moreServices": "servicios más"
+  },
+   "agroMarketPublic": {
+    "noResults": "Sin resultados",
+    "todayHighlights": "Destacados de hoy",
+    "adjustFilters": "Ajusta los filtros para encontrar más publicaciones",
+    "availablePublications": "{count} publicaciones disponibles",
+    "discoverAnimals": "Descubre los mejores animales disponibles",
+    "loadingMore": "Cargando más publicaciones...",
+    "allPublicationsViewed": "Has visto todas las publicaciones disponibles",
+    "loadError": "No se pudieron cargar los productos"
+  },
+   "detailsPublicaciones": {
+    "rental": {
+      "available": "Disponible para alquiler",
+      "perHour": "Por hora",
+      "perDay": "Por día",
+      "perWeek": "Por semana",
+      "perMonth": "Por mes",
+      "pricesAvailable": "Precios disponibles",
+      "deposit": "Depósito de garantía",
+      "description": "Alquiler:",
+      "conditions": "Contacta con el vendedor para más detalles sobre las condiciones.",
+      "question": "¿Necesitas información sobre el alquiler?",
+      "checkAvailability": "Consultar disponibilidad"
+    },
+    "sale": {
+      "question": "¿Necesitas más información?",
+      "contactSeller": "Contactar al vendedor"
+    },
+    "publication": {
+      "published": "Publicado",
+      "sold": "Este producto ya fue vendido",
+      "rented": "Este producto ya fue alquilado",
+      "notAvailableFor": "No está disponible para {type}",
+      "purchase": "compra",
+      "rent": "alquiler"
+    },
+    "subscription": {
+      "exclusive": "Información exclusiva para suscriptores",
+      "description": "Para ver la ubicación exacta, contactar al vendedor y obtener más información, necesitas un plan que incluya AgroMarket.",
+      "viewPlans": "Ver planes disponibles",
+      "locationOnly": "Ubicación disponible solo para suscriptores",
+      "unlockLocation": "Desbloquear ubicación",
+      "requiresPlan": "Requiere un plan activo de AgroMarket"
+    },
+    "sections": {
+      "description": "Descripción",
+      "location": "Ubicación",
+      "sellerInformation": "Información del vendedor"
+    },
+    "seller": {
+      "verified": "Vendedor verificado",
+      "notVerified": "Vendedor no verificado",
+      "joined": "Se unió a AgroMarket en"
+    },
+    "notFound": "La publicación que buscas no existe, fue eliminada o no está disponible"
+  },
+   "alertNotLogued": {
+    "title": "Necesitas un plan con AgroMarket",
+    "description": "Desbloquea toda la información de las publicaciones",
+    "benefits": {
+      "contact": "Contacta directamente con vendedores verificados",
+      "location": "Accede a la ubicación exacta de cada publicación",
+      "details": "Más información, imágenes y detalles del producto"
+    },
+    "buttons": {
+      "register": "Regístrate",
+      "later": "Más tarde"
+    }
+  },
+  "publicacionNoEncontrada": {
+    "title": "Publicación no disponible",
+    "message": "No encontramos la publicación que buscas",
+    "back": "Volver",
+    "viewMarketplace": "Ver marketplace"
+  },
+  "radioFilter": {
+    "distance": "Distancia",
+    "clear": "Limpiar",
+    "cancel": "Cancelar",
+    "apply": "Aplicar"
+  },
+   "priceRangeFilter": {
+    "price": "Precio",
+    "rangeTitle": "Rango de precio",
+    "minimum": "Mínimo",
+    "maximum": "Máximo",
+    "minPlaceholder": "Mín",
+    "maxPlaceholder": "Máx",
+    "allPrices": "Todos los precios",
+    "clear": "Limpiar",
+    "apply": "Aplicar",
+    "errors": {
+      "minGreaterThanMax": "El precio mínimo no puede ser mayor al máximo",
+      "maxLessThanMin": "El precio máximo no puede ser menor al mínimo",
+      "invalidRange": "El precio mínimo debe ser menor o igual al máximo"
+    }
+  },
+   "emptyStateMarketplace": {
+    "variants": {
+      "error": {
+        "title": "Error al cargar productos",
+        "description": "No se pudieron cargar los productos. Por favor, intenta nuevamente."
+      },
+      "noLocation": {
+        "title": "Ubicación no disponible",
+        "description": "Necesitamos tu ubicación para mostrarte productos cercanos."
+      },
+      "noNearby": {
+        "title": "No hay productos cercanos",
+        "descriptionWithRadius": "No encontramos productos en un radio de {radius} km de tu ubicación.",
+        "description": "No encontramos productos cerca de tu ubicación."
+      },
+      "noFilters": {
+        "title": "No se encontraron productos",
+        "description": "No hay productos que coincidan con los filtros seleccionados."
+      },
+      "noProducts": {
+        "title": "No hay productos disponibles",
+        "description": "Actualmente no hay productos publicados en el marketplace."
+      }
+    },
+    "location": {
+      "yourLocation": "Tu ubicación: {city}, {country}",
+      "searchRadius": "Radio de búsqueda: {radius} km"
+    },
+    "buttons": {
+      "clearFilters": "Limpiar filtros",
+      "refreshProducts": "Recargar productos",
+      "viewAllProducts": "Ver todos los productos",
+      "retryLocation": "Reintentar ubicación"
+    },
+    "suggestion": "💡 Sugerencia: Puedes aumentar el radio de búsqueda en los filtros para encontrar más productos."
+  },
+  "cardMarketAnimal": {
+    "rental": "Alquiler",
+    "offer": "Oferta",
+    "availableForRent": "Disponible para alquiler",
+    "pricesAvailable": "Precios disponibles",
+    "periods": {
+      "hour": "hora",
+      "day": "día",
+      "week": "semana",
+      "month": "mes"
+    },
+    "additionalOptions": {
+      "one": "opción más",
+      "other": "opciones más"
+    },
+    "deposit": "Depósito"
+  },
+   "userLocation": {
+    "errors": {
+      "safariInteraction": "Para Safari, por favor haz clic en 'Usar mi ubicación' para continuar",
+      "blocked": "La ubicación está bloqueada. Por favor, habilítala en la configuración de tu navegador",
+      "permissionDenied": "Permiso denegado. En Safari: Ve a Configuración > Safari > Ubicación > Permitir",
+      "positionUnavailable": "Ubicación no disponible. Verifica que los servicios de ubicación estén activados en Sistema > Privacidad > Ubicación",
+      "timeout": "Tiempo de espera agotado. Intenta nuevamente o verifica tu conexión",
+      "success": "Ubicación obtenida correctamente",
+      "requestPermission": "Para continuar, permite el acceso a tu ubicación",
+      "generic": "Error: {message}. Intenta nuevamente"
+    },
+    "fallback": {
+      "obtained": "Ubicación obtenida",
+      "coordinates": "Coordenadas obtenidas"
+    }
+  },
+  "verifyAccount": {
+  "invalid": {
+    "title": "Enlace Inválido",
+    "message": "El correo electrónico proporcionado no es válido",
+    "back": "Volver al Inicio"
+  },
+  "loading": {
+    "title": "Verificando Cuenta",
+    "description": "Estamos verificando tu cuenta, por favor espera...",
+    "email": "Correo:",
+    "notice": "Esta verificación es única y solo puede ser usada una vez"
+  },
+  "success": {
+    "title": "¡Verificación Exitosa!",
+    "defaultMessage": "¡Cuenta verificada exitosamente! Ya puedes iniciar sesión.",
+    "verified": "Cuenta verificada:",
+    "redirect": "Serás redirigido automáticamente en 5 segundos...",
+    "login": "Ir a Iniciar Sesión"
+  },
+  "error": {
+    "title": "Error de Verificación",
+    "defaultMessage": "No se pudo verificar la cuenta",
+    "email": "Correo intentado:",
+    "notice": "Este enlace es único y solo puede usarse una vez",
+    "retry": "Reintentar Verificación",
+    "support": "¿Problemas con la verificación? Contacta al soporte técnico."
+  },
+  "back": "Volver al Inicio"
+},
+"dashboardNavbar": {
+  "user": "Usuario",
+  "avatarAlt": "Usuario",
+  "buttons": {
+    "clientCode": "Código Cliente",
+    "viewPlans": "Ver Planes",
+    "renewPlan": "Renovar Plan",
+    "favorites": "Favoritos",
+    "cart": "Carrito"
+  },
+  "plan": {
+    "current": "Plan actual:",
+    "withoutPlan": "Sin plan",
+    "expired": "Plan vencido. Renueva para seguir usando el sistema.",
+    "daysToExpire": "Quedan {days} días para que venza tu plan",
+    "active": "Plan activo. Quedan {days} días",
+    "expires": "Vence:",
+    "daysRemaining": "Días restantes:",
+    "expiredNotice": "Tu plan ha vencido. Renueva para seguir usando el sistema.",
+    "expiringNotice": "¡Tu plan está por vencer! Renueva pronto para no perder beneficios.",
+    "noActivePlan": "No tienes un plan activo. Adquiere uno para acceder a todos los beneficios."
+  },
+  "navigation": {
+    "panel": "Panel",
+    "fincas": "Fincas",
+    "cultivos": "Cultivos",
+    "produccion": "Producción",
+    "trabajadores": "Trabajadores",
+    "animales": "Animales",
+    "sanidadAnimal": "Sanidad Animal",
+    "solicitudes": "Solicitudes El Sembrador",
+    "pedidos": "Pedidos",
+    "finanzas": "Finanzas",
+    "payroll": "Gestión de Nómina",
+    "activities": "Actividades",
+    "operations": "Operaciones",
+    "smartConsultation": "Consulta Inteligente",
+    "animalHealth": "Salud Animal",
+    "reproduction": "Reproducción",
+    "packages": "Paquetes",
+    "account": "Cuenta",
+    "items": {
+      "panel": "Panel",
+      "fincas": "Fincas",
+      "cultivos": "Cultivos",
+      "produccion": "Producción",
+      "trabajadores": "Trabajadores",
+      "servicios": "Servicios",
+      "productos": "Productos",
+      "citas": "Citas",
+      "pedidos": "Pendientes",
+      "pedidos_procesados": "Procesados",
+      "pedidos_facturados": "Facturados",
+      "pedidos_cancelados": "Cancelados",
+      "gastos": "Gastos",
+      "ingresos": "Ingresos",
+      "rentabilidad": "Rentabilidad",
+      "configuracion_trabajador": "Configuración Salarial",
+      "jornadas": "Jornadas Laborales",
+      "planillas": "Planillas",
+      "pagos": "Pagos",
+      "reportes_planillas": "Reportes",
+      "actividades": "Actividades Diarias",
+      "actividades_evidencias": "Evidencias",
+      "equipos": "Equipos y Maquinaria",
+      "mantenimientos": "Mantenimientos",
+      "uso_equipos": "Uso de Equipos",
+      "diagnostico": "Diagnóstico Ganadero",
+      "agricultura_inteligente": "Diagnóstico Agrícola",
+      "siembra_inteligente": "Siembra Inteligente",
+      "historial_medico": "Historial Médico",
+      "tratamientos": "Tratamientos",
+      "celos": "Celos",
+      "servicios_reproductivos": "Servicios",
+      "gestaciones": "Gestaciones",
+      "partos_animales": "Partos",
+      "genetica": "Genética",
+      "mi_plan": "Mi Plan",
+      "perfil": "Perfil"
+    }
+  },
+  "dropdown": {
+    "agroServices": "Agro Servicios",
+    "myCurrentPlan": "Mi Plan Actual",
+    "purchaseHistory": "Historial de Compras",
+    "logout": "Cerrar sesión"
+  }
+},
+"ecommerceButton": {
+  "notConfigured": "La tienda aún no está configurada",
+  "goToMarket": "Ir a AgroMarket",
+  "store": "Tienda"
+},
+"sidebar": {
+  "logo": {
+    "subtitle": "Panel de control"
+  },
+  "logout": "Cerrar sesión",
+  "permissions": {
+    "none": "No tienes permisos asignados",
+    "contactAdmin": "Contacta al administrador"
+  },
+  "tour": {
+    "completed": "¡Has completado el tour completo!",
+    "noVisibleElements": "No hay elementos visibles para la guía en esta página"
+  },
+  "categories": {
+    "panel": "Panel",
+    "farm": "Finca",
+    "animals": "Animales",
+    "animalHealth": "Sanidad Animal",
+    "serviceRequests": "Solicitudes El Sembrador",
+    "orders": "Pedidos",
+    "finances": "Finanzas",
+    "payroll": "Gestión de Nómina",
+    "activities": "Actividades",
+    "operations": "Operaciones",
+    "smartConsultation": "Consulta Inteligente",
+    "animalCare": "Salud Animal",
+    "reproduction": "Reproducción",
+    "packages": "Paquetes",
+    "account": "Cuenta"
+  },
+  "items": {
+    "panel": "Panel",
+    "fincas": "Fincas",
+    "cultivos": "Cultivos",
+    "produccion": "Producción",
+    "trabajadores": "Trabajadores",
+    "animales": "Todos",
+    "sanidad_animal": "Todos",
+    "servicios": "Servicios Veterinarios",
+    "productos": "Productos",
+    "citas": "Citas",
+    "pedidos": "Pendientes",
+    "pedidos_procesados": "Procesados",
+    "pedidos_facturados": "Facturados",
+    "pedidos_cancelados": "Cancelados",
+    "gastos": "Gastos",
+    "ingresos": "Ingresos",
+    "rentabilidad": "Rentabilidad",
+    "configuracion_trabajador": "Configuración Salarial",
+    "jornadas": "Jornadas Laborales",
+    "planillas": "Planillas",
+    "pagos": "Pagos",
+    "reportes_planillas": "Reportes",
+    "actividades": "Actividades Diarias",
+    "actividades_evidencias": "Evidencias",
+    "equipos": "Equipos y Maquinaria",
+    "mantenimientos": "Mantenimientos",
+    "uso_equipos": "Uso de Equipos",
+    "diagnostico": "Diagnóstico Ganadero",
+    "agricultura_inteligente": "Diagnóstico Agrícola",
+    "siembra_inteligente": "Siembra Inteligente",
+    "historial_medico": "Historial Médico",
+    "tratamientos": "Tratamientos",
+    "celos": "Celos",
+    "servicios_reproductivos": "Servicios",
+    "gestaciones": "Gestaciones",
+    "partos_animales": "Partos",
+    "genetica": "Genética",
+    "mi_plan": "Mi Plan",
+    "perfil": "Perfil"
+  }
+},
+"buttonGuiaSystem": {
+  "title": "Abrir guía del sistema",
+  "label": "Guía del sistema",
+  "description": "Aprende a utilizar el sistema",
+  "unavailable": "No disponible en esta página"
+},
+"tourGuide": {
+  "close": "Cerrar guía",
+  "stepCounter": "Paso {current} de {total}",
+  "previous": "Anterior",
+  "next": "Siguiente",
+  "nextPage": "Siguiente página"
+},
+"dashboardGanadero": {
+  "title": "Panel de {section}",
+  "sections": {
+    "livestock": "Ganadero",
+    "agriculture": "Agricultura",
+    "production": "Producción"
+  },
+  "totals": {
+    "animals": {
+      "title": "Total de Animales Registrados",
+      "subtitle": "Animales en total"
+    },
+    "farms": {
+      "title": "Total de Fincas",
+      "subtitle": "Fincas en total"
+    },
+    "appointments": {
+      "title": "Total de Citas Completadas",
+      "subtitle": "Citas en total"
+    }
+  },
+  "tabs": {
+    "livestock": "Ganadería",
+    "agriculture": "Agrícola",
+    "production": "Producción"
+  }
+},
+"produccionGanadera": {
+  "titles": {
+    "livestockProduction": "Producción Ganadera - Bovinos"
+  },
+  "chartValues": {
+    "alive": "Vivos",
+    "dead": "Muertos",
+    "born": "Nacidos",
+    "purchased": "Comprados"
+  },
+  "details": {
+    "alive": "Animales Vivos",
+    "dead": "Animales Muertos",
+    "purchased": "Comprados",
+    "born": "Nacidos"
+  }
+},
+"cardEspeciesByFinca": {
+  "title": "Especies por Finca",
+  "xAxis": "Fincas",
+  "yAxis": "Cantidad de animales"
+},
+"cardProduccionFinca": {
+  "details": {
+    "milkingCows": "Vacas en Ordeño",
+    "dryCows": "Vacas Secas",
+    "calves": "Terneros",
+    "totalCattle": "Total Bovinos"
+  },
+  "categories": {
+    "milkingCows": "Vacas Ordeño",
+    "dryCows": "Vacas Secas",
+    "calves": "Terneros",
+    "totalCattle": "Total Bovinos"
+  },
+  "charts": {
+    "cattleDistribution": "Distribución de Bovinos",
+    "productionByFarm": "Producción por Finca"
+  },
+  "animals": "animales",
+  "quantity": "Cantidad"
+},
+"cardTipoExplotacion": {
+  "title": "Distribución por Tipo de Explotación",
+  "farms": "Fincas",
+  "quantity": "Cantidad"
+},
+"cardPastelEstados": {
+  "title": "Estado de los Animales",
+  "alive": "Vivos",
+  "dead": "Muertos",
+  "animals": "animales",
+  "quantity": "Cantidad"
+},
+"gananciaPesoAnimalMes": {
+  "title": "Ganancia de peso mensual",
+  "description": "Busca un animal por identificador y selecciona un año",
+  "searchPlaceholder": "Buscar por identificador...",
+  "yearPlaceholder": "Año",
+  "selectedAnimal": "Animal seleccionado",
+  "clear": "Limpiar",
+  "unidentified": "Sin identificar",
+  "noIdentifier": "Sin identificador",
+  "noAnimalsFound": "No se encontraron animales",
+  "noData": "No hay datos para este animal en el año seleccionado",
+  "selectAnimal": "Busca y selecciona un animal para ver los datos",
+  "chart": {
+    "gain": "Ganancia",
+    "initialWeight": "Peso Inicial",
+    "finalWeight": "Peso Final",
+    "month": "Mes"
+  },
+  "table": {
+    "month": "Mes",
+    "initialWeight": "Peso Inicial",
+    "finalWeight": "Peso Final",
+    "gain": "Ganancia"
+  }
+},
+"gananciasPesoByFinca": {
+  "title": "Ganancia de peso por finca",
+  "description": "Busca una finca y selecciona un año para ver la ganancia promedio mensual",
+  "searchPlaceholder": "Buscar finca por nombre...",
+  "yearPlaceholder": "Año",
+  "noFarmsFound": "No se encontraron fincas",
+  "selectedFarm": "Finca seleccionada",
+  "clear": "Limpiar",
+  "loading": "Cargando datos...",
+  "noData": "No hay datos para esta finca en el año {year}",
+  "selectFarm": "Busca y selecciona una finca para ver los datos",
+  "chart": {
+    "averageGain": "Ganancia Promedio",
+    "month": "Mes"
+  },
+  "table": {
+    "month": "Mes",
+    "averageGain": "Ganancia Promedio"
+  }
+},
+"cardOrigenAnimal": {
+  "title": "Origen de los Animales",
+  "purchased": "Comprados",
+  "born": "Nacidos",
+  "animals": "animales",
+  "quantity": "Cantidad"
+},
+"cardSexo": {
+  "title": "Distribución por Sexo",
+  "male": "Macho",
+  "female": "Hembra",
+  "animals": "animales",
+  "quantity": "Cantidad"
+},
+"cardTasaReproduccion": {
+  "title": "Tasa de Reproducción",
+  "bornDescription": "{born} de {total} animales son nacidos en la finca",
+  "selfSufficiency": "Autosuficiencia",
+  "highCapacity": "Alta capacidad de reproducción",
+  "lowCapacity": "Baja capacidad de reproducción"
+},
+"resumenCultivos": {
+  "empty": {
+    "title": "No hay cultivos registrados actualmente",
+    "description": "Los cultivos que registres aparecerán aquí"
+  },
+  "indicators": {
+    "totalCrops": "Total Cultivos",
+    "totalPlantedArea": "Área Total Sembrada",
+    "estimatedProduction": "Producción Estimada",
+    "totalProfit": "Ganancia Total",
+    "profitMargin": "Margen de Ganancia",
+    "profitMarginDescription": "Porcentaje de ganancia sobre los ingresos totales",
+    "roi": "Retorno de Inversión (ROI)",
+    "roiDescription": "Ganancia por cada unidad monetaria invertida",
+    "productivityPerHa": "Productividad por ha",
+    "valuePerKg": "Valor por kg"
+  },
+  "categories": {
+    "costs": "Costos",
+    "income": "Ingresos",
+    "investment": "Inversión",
+    "profit": "Ganancia",
+    "profitability": "Rentabilidad"
+  },
+  "charts": {
+    "costsVsIncome": {
+      "title": "Costos vs Ingresos",
+      "description": "Comparativa entre inversión y retorno económico"
+    },
+    "valueDistribution": {
+      "title": "Distribución de Valor",
+      "description": "Proporción entre inversión y ganancia"
+    },
+    "profitability": {
+      "title": "Indicadores de Rentabilidad",
+      "description": "Métricas clave del negocio agrícola"
+    },
+    "efficiency": {
+      "title": "Eficiencia vs Meta",
+      "description": "Comparación de métricas actuales con objetivos"
+    },
+    "amount": "Cantidad",
+    "percentage": "Porcentaje (%)",
+    "currentValue": "Valor Actual",
+    "target": "Meta"
+  },
+  "summary": {
+    "totalCosts": "Total Costos",
+    "totalIncome": "Total Ingresos",
+    "netProfit": "Ganancia Neta"
+  }
+},
+"cultivosPorTipo": {
+  "title": "Cultivos por Tipo - Finalizados",
+  "description": "Distribución de {total, plural, =0 {ningún cultivo registrado} one {# cultivo registrado} other {# cultivos registrados}} por categoría",
+  "empty": {
+    "title": "No hay cultivos registrados",
+    "description": "Los cultivos que registres aparecerán aquí"
+  },
+  "chart": {
+    "numberOfCrops": "Número de Cultivos"
+  },
+  "tooltip": {
+    "crops": "{count, plural, =0 {0 cultivos} one {# cultivo} other {# cultivos}}",
+    "total": "Total"
+  },
+  "summary": {
+    "byType": "Resumen por Tipo",
+    "totalTypes": "Total de Tipos",
+    "mainCrop": "Cultivo Principal"
+  }
+},
+"areaCultivoByFinca": {
+  "title": "Área Cultivada por Finca - En Progreso",
+  "description": "Distribución de {area} {unit} cultivadas en {count, plural, one {# finca} other {# fincas}}",
+  "multipleUnitsDetected": "Se detectaron diferentes unidades de medida",
+  "empty": {
+    "title": "No hay fincas con cultivos registrados",
+    "description": "Los cultivos registrados aparecerán aquí"
+  },
+  "units": {
+    "hectares": "hectáreas"
+  },
+  "multipleUnits": {
+    "title": "Múltiples unidades detectadas:",
+    "description": "Los valores se muestran en hectáreas para comparación"
+  },
+  "chart": {
+    "area": "Área"
+  },
+  "highlights": {
+    "largestFarm": "Finca con Mayor Área",
+    "averagePerFarm": "Promedio por Finca",
+    "perFarm": "{unit} por finca"
+  },
+  "details": {
+    "title": "Detalle por Finca",
+    "equivalent": "Equivalente: {area} ha",
+    "percentageOfTotal": "{percentage}% del total"
+  },
+  "distribution": {
+    "title": "Distribución del Área (en {unit})"
+  },
+  "conversions": {
+    "title": "Conversión de unidades: 1 ha ="
+  }
+},
+  "descartesMortalidadDashboard": {
+    "statistics": {
+      "total": "Total {title}",
+      "inMonth": "En {month}",
+      "affectedSpecies": "Especies Afectadas",
+      "speciesWithRecords": "Especies con {sub_title} registrados",
+      "mainSpecies": "Especie Principal",
+      "highestQuantity": "Mayor cantidad de {sub_title}"
+    },
+    "charts": {
+      "bySpecies": "{sub_title} por Especie",
+      "distribution": "Distribución de animales {title} por especie",
+      "percentageDistribution": "Distribución Porcentual",
+      "percentageBySpecies": "Porcentaje de {sub_title} por especie"
+    },
+    "types": {
+      "discard": "Descarte",
+      "mortality": "Mortalidad",
+      "discards": "Descartes"
+    },
+    "empty": {
+      "noData": "No hay datos de {sub_title}",
+      "period": "Para este período",
+      "unavailable": "No hay datos disponibles"
+    },
+    "farmFilter": {
+      "placeholder": "Todas las fincas",
+      "all": "Todas las fincas"
+    },
+    "monthFilter": {
+      "placeholder": "Seleccionar mes"
+    },
+    "header": {
+      "dashboard": "Dashboard de {sub_title}",
+      "analysis": "Análisis de animales {title} por especie"
+    },
+    "footer": {
+      "updatedAt": "Datos actualizados al {date}",
+      "discardIncludes": "Los {sub_title} incluyen: ventas, traslados, bajas por calidad, entre otros",
+      "mortalityIncludes": "Los {sub_title} incluyen: enfermedades, accidentes, causas naturales, entre otros"
+    }
+  },
+"fincasPageGanaderos": {
+    "searchPlaceholder": "Buscar finca por nombre...",
+    "empty": {
+      "title": "Sin fincas",
+      "description": "No se encontraron fincas disponibles en este momento"
+    },
+    "myFarms": "Mis Fincas",
+    "createFarm": "Crear Finca"
+  },
+  "cardFincas": {
+    "status": {
+      "active": "Activa",
+      "inactive": "Inactiva"
+    },
+    "statistics": {
+      "animals": "Animales",
+      "location": "Ubicación"
+    },
+    "areas": {
+      "total": "Total",
+      "livestock": "Ganadería",
+      "agriculture": "Agricultura"
+    },
+    "sections": {
+      "exploitationTypes": "Tipos de Explotación",
+      "species": "Especies",
+      "registered": "Registrada"
+    },
+    "map": {
+      "locationOf": "Ubicación - {name}"
+    }
+  },
+  "fincaDetails": {
+    "title": "Editar Finca",
+    "error": {
+      "title": "Error",
+      "description": "No se pudo cargar la información de la finca"
+    },
+    "fields": {
+      "farmName": "Nombre de la finca",
+      "location": "Ubicación",
+      "abbreviation": "Abreviatura (opcional)",
+      "measurementUnit": "Unidad de medida",
+      "selectedMeasure": "Medida seleccionada",
+      "totalSize": "Tamaño total ({unit})",
+      "livestockArea": "Área de ganadería ({unit})",
+      "agriculturalArea": "Área agrícola ({unit})",
+      "exploitationType": "Tipo de explotación",
+      "speciesAndQuantities": "Especies y cantidades"
+    },
+    "placeholders": {
+      "farmName": "Nombre de la finca",
+      "location": "Ubicación",
+      "abbreviation": "Abreviatura",
+      "totalSize": "Tamaño total en {unit}",
+      "livestockArea": "Área de ganadería en {unit}",
+      "agriculturalArea": "Área agrícola en {unit}"
+    },
+    "units": {
+      "hectare": "Hectárea (ha)",
+      "manzana": "Manzana (mz)",
+      "squareMeters": "Metros cuadrados (m²)",
+      "acres": "Acres (ac)"
+    },
+    "validation": {
+      "farmNameRequired": "El nombre de la finca es requerido",
+      "locationRequired": "La ubicación es requerida",
+      "totalSizeRequired": "El tamaño total es requerido",
+      "quantityGreaterThanZero": "La cantidad debe ser mayor a 0",
+      "minimumOneSpecies": "Debe agregar al menos una especie",
+      "minimumOneArea": "Debe ingresar al menos un área: ganadería o agrícola"
+    },
+    "messages": {
+      "minimumOneAnimal": "Debe agregar al menos un animal en las especies",
+      "updateSuccess": "Finca actualizada correctamente",
+      "updateError": "No se pudo actualizar la finca",
+      "unexpectedError": "Error inesperado al actualizar la finca"
+    },
+    "buttons": {
+      "backToFarms": "Volver a fincas",
+      "saving": "Guardando...",
+      "saveChanges": "Guardar Cambios"
+    },
+     "tipoExplotacion": {
+    "1": "Leche",
+    "2": "Carne",
+    "3": "Doble propósito",
+    "4": "Turismo o recreación",
+    "5": "Educacional o deportiva"
+  }
+  },
+  "especieCantidadPicker": {
+    "title": "Gestión de Especies",
+    "fields": {
+      "species": "Especie",
+      "quantity": "Cantidad"
+    },
+    "placeholders": {
+      "species": "Seleccionar especie",
+      "quantity": "Cantidad"
+    },
+    "buttons": {
+      "addSpecies": "Agregar Especie",
+      "removeSpecies": "Eliminar especie"
+    },
+    "summary": {
+      "totalAnimals": "Total de animales",
+      "currentSum": "Suma actual",
+      "difference": "Diferencia",
+      "mismatch": "La suma de especies debe coincidir con el total de animales"
+    }
+  },
+  "mapaSeleccionDireccion": {
+    "title": "Seleccionar Ubicación en el Mapa",
+    "loading": "Cargando mapa...",
+    "markerText": "Ubicación seleccionada",
+    "selectedLocation": "Ubicación seleccionada:",
+    "coordinates": "Coordenadas",
+    "instructions": "Haz clic en cualquier lugar del mapa para seleccionar la ubicación de tu finca",
+    "buttons": {
+      "cancel": "Cancelar",
+      "loading": "Cargando...",
+      "useLocation": "Usar esta ubicación"
+    },
+    "messages": {
+      "locationError": "Error obteniendo ubicación",
+      "geolocationUnsupported": "La geolocalización no es compatible con este navegador",
+      "addressFetchError": "Error al obtener la dirección",
+      "addressError": "Error al obtener la dirección",
+      "exactAddressUnavailable": "No se pudo obtener la dirección exacta",
+      "selectLocation": "Por favor selecciona una ubicación en el mapa",
+      "selectedCoordinates": "Ubicación seleccionada ({latitude}, {longitude})"
+    }
+  },
+   "crearFinca": {
+    "title": "Crear Nueva Finca",
+    "fields": {
+      "farmName": "Nombre de la finca",
+      "location": "Ubicación",
+      "abbreviation": "Abreviatura de finca (opcional)",
+      "department": "Departamento",
+      "municipality": "Municipio",
+      "farmMeasurement": "¿Con qué medidas conoces tu finca?",
+      "selectedMeasure": "Medida seleccionada",
+      "totalSize": "Tamaño total ({unit})",
+      "livestockArea": "Área de ganadería ({unit})",
+      "agriculturalArea": "Área agrícola ({unit})",
+      "exploitationType": "Tipo de explotación",
+      "speciesAndQuantities": "Especies y cantidades"
+    },
+    "placeholders": {
+      "farmName": "Nombre de la finca",
+      "location": "Ubicación",
+      "abbreviation": "Abreviatura de finca",
+      "department": "Departamento",
+      "municipality": "Municipio",
+      "totalSize": "Tamaño total en {unit}",
+      "livestockArea": "Área de ganadería en {unit}",
+      "agriculturalArea": "Área agrícola en {unit}"
+    },
+    "units": {
+      "hectare": "Hectárea (ha)",
+      "manzana": "Manzana (mz)",
+      "squareMeters": "Metros cuadrados (m²)",
+      "acres": "Acres (ac)"
+    },
+    "tipoExplotacion": {
+      "1": "Leche",
+      "2": "Carne",
+      "3": "Doble propósito",
+      "4": "Turismo o recreación",
+      "5": "Educacional o deportiva"
+    },
+    "validation": {
+      "farmNameRequired": "El nombre de la finca es requerido",
+      "locationRequired": "La ubicación es requerida",
+      "countryRequired": "Debe seleccionar un país",
+      "departmentRequired": "Debe seleccionar un departamento",
+      "municipalityRequired": "Debe seleccionar un municipio",
+      "totalSizeRequired": "El tamaño total es requerido",
+      "quantityGreaterThanZero": "La cantidad debe ser mayor a 0",
+      "minimumOneSpecies": "Debe agregar al menos una especie",
+      "minimumOneArea": "Debe ingresar al menos un área: ganadería o agrícola"
+    },
+    "messages": {
+      "minimumOneAnimal": "Debe agregar al menos un animal en las especies",
+      "createSuccess": "Finca creada correctamente",
+      "createError": "Hubo un error al crear la finca",
+      "unexpectedError": "Error inesperado. Contacte al administrador",
+      "noMunicipalities": "No se encontraron municipios"
+    },
+    "buttons": {
+      "selectLocation": "Seleccionar ubicación",
+      "creating": "Creando...",
+      "saveFarm": "Guardar Finca"
+    }
+  },
+  "cultivosPage": {
+    "title": "Cultivos",
+    "description": "Registra y monitorea todos los cultivos de tus fincas",
+    "filters": {
+      "allFarms": "Todas las fincas"
+    },
+    "buttons": {
+      "addCrop": "Agregar Cultivo",
+      "clear": "Limpiar"
+    },
+    "empty": {
+      "title": "No hay cultivos registrados",
+      "description": "Comienza registrando tu primer cultivo"
+    },
+    "pagination": {
+      "showing": "Mostrando {current} de {total} cultivos"
+    },
+    "modal": {
+      "editTitle": "Editar Cultivo",
+      "createTitle": "Registrar Nuevo Cultivo",
+      "editDescription": "Aquí podrás editar el cultivo seleccionado",
+      "createDescription": "Aquí podrás ingresar un nuevo cultivo para tu finca"
+    },
+    "states": {
+  "noInformation": "Sin información",
+  "noConfiguration": "Sin configuración",
+  "scheduled": "📅 Programado",
+  "initialGrowth": "🌱 Crecimiento inicial",
+  "vegetativeDevelopment": "🌿 Desarrollo vegetativo",
+  "flowering": "🌻 Floración",
+  "ripening": "🌾 Maduración",
+  "readyForHarvest": "✅ Cosecha lista"
+}
+  },
+   "infoCultivos": {
+    "status": {
+      "active": "Activo",
+      "finished": "Finalizado"
+    },
+    "fields": {
+      "farm": "Finca",
+      "area": "Área",
+      "planting": "Siembra",
+      "estimatedHarvest": "Cosecha estimada",
+      "season": "Temporada"
+    },
+    "buttons": {
+      "edit": "Editar",
+      "details": "Detalles",
+      "finish": "Finalizar",
+      "cancel": "Cancelar",
+      "confirmFinish": "Confirmar Finalización"
+    },
+    "messages": {
+      "finishSuccess": "El cultivo se ha marcado como finalizado",
+      "updateStatusError": "Ocurrió un error al momento de cambiar el estado del cultivo"
+    },
+    "finishModal": {
+      "title": "¿Deseas marcar el cultivo como finalizado?",
+      "description": "Una vez marques el cultivo como finalizado no se podrá cambiar dicha acción"
+    },
+    "detailsModal": {
+      "title": "Detalles de tu cultivo",
+      "description": "Aquí podrás observar detalladamente toda la información de tu cultivo"
+    }
+  },
+   "detallesCultivoModal": {
+    "status": {
+      "inProgress": "En Progreso",
+      "finished": "Finalizado"
+    },
+    "fields": {
+      "farm": "Finca",
+      "plantedArea": "Área Sembrada",
+      "plantingDate": "Fecha de Siembra",
+      "estimatedHarvest": "Cosecha Estimada",
+      "cropType": "Tipo de Cultivo",
+      "season": "Temporada",
+      "estimatedProduction": "Producción Estimada",
+      "soilType": "Tipo de Suelo",
+      "soilPh": "pH del Suelo",
+      "plantingMethod": "Método de Siembra",
+      "irrigationSystem": "Sistema de Riego"
+    },
+    "sections": {
+      "cropInformation": "Información del Cultivo",
+      "soilAndPlantingMethod": "Suelo y Método de Siembra",
+      "economicInformation": "Información Económica"
+    },
+    "economic": {
+      "productionCosts": "Costos de Producción",
+      "seed": "Semilla",
+      "fertilizers": "Fertilizantes",
+      "labor": "Mano de Obra",
+      "otherCosts": "Otros Costos",
+      "totalCosts": "Total Costos",
+      "incomeAndProfit": "Ingresos y Ganancias",
+      "estimatedIncome": "Ingreso Estimado",
+      "estimatedProfit": "Ganancia Estimada",
+      "profitability": "Rentabilidad",
+      "notAvailable": "N/A",
+      "returnOnInvestment": "Retorno de Inversión (ROI)"
+    },
+    "units": {
+      "hectares": "hectáreas",
+      "estimated": "estimados"
+    }
+  },
+  "formCultivo": {
+    "error": {
+      "title": "Error al {action} el cultivo",
+      "actions": {
+        "create": "registrar",
+        "update": "actualizar"
+      }
+    },
+    "cycle": {
+      "title": "Información del ciclo",
+      "suggestion": "Según el ciclo de {crop}, la cosecha estimada sería el {date}",
+      "suggestedDate": "Sugerida: {date}"
+    },
+    "sections": {
+      "basic": "Información Básica",
+      "soilAndPlanting": "Información de Suelo y Siembra",
+      "production": "Información de Producción",
+      "economic": "Información Económica"
+    },
+    "fields": {
+      "cropName": "Nombre del Cultivo",
+      "cropType": "Tipo de Cultivo",
+      "farm": "Finca",
+      "variety": "Variedad",
+      "plantedArea": "Área Sembrada",
+      "season": "Temporada",
+      "plantingDate": "Fecha de Siembra",
+      "estimatedHarvest": "Fecha Estimada de Cosecha",
+      "soilType": "Tipo de Suelo",
+      "soilPh": "pH del Suelo",
+      "plantingMethod": "Método de Siembra",
+      "irrigationSystem": "Sistema de Riego",
+      "estimatedProduction": "Producción Estimada",
+      "measurementUnit": "Unidad de Medida",
+      "seedCost": "Costo de Semilla",
+      "fertilizerCost": "Costo de Fertilizantes",
+      "laborCost": "Costo de Mano de Obra",
+      "otherCosts": "Otros Costos",
+      "estimatedIncome": "Ingreso Estimado",
+      "estimatedProfit": "Ganancia Estimada"
+    },
+    "placeholders": {
+      "cropName": "Ej: Maíz Híbrido Blanco",
+      "cropType": "Seleccionar tipo de cultivo",
+      "farm": "Seleccionar finca",
+      "variety": "Ej: NB-6, Híbrido blanco",
+      "plantedArea": "Ej: 5.5",
+      "season": "Ej: Primera, Segunda, Postrera",
+      "soilType": "Seleccionar tipo de suelo",
+      "soilPh": "Ej: 6.5",
+      "plantingMethod": "Seleccionar método de siembra",
+      "irrigationSystem": "Seleccionar sistema de riego",
+      "estimatedProduction": "Ej: 5000",
+      "measurementUnit": "Seleccionar unidad"
+    },
+    "groups": {
+      "cropTypes": "Tipos de Cultivo",
+      "farms": "Fincas",
+      "soilTypes": "Tipos de Suelo",
+      "plantingMethods": "Métodos de Siembra",
+      "irrigationSystems": "Sistemas de Riego",
+      "units": "Unidad"
+    },
+    "validation": {
+      "cropNameRequired": "El nombre del cultivo es requerido",
+      "cropNameMaxLength": "El nombre no puede exceder los 150 caracteres",
+      "varietyMaxLength": "La variedad no puede exceder los 100 caracteres",
+      "plantedAreaRequired": "El área sembrada es requerida",
+      "plantedAreaMin": "El área debe ser mayor a 0",
+      "seasonMaxLength": "La temporada no puede exceder los 50 caracteres",
+      "plantingDateRequired": "La fecha de siembra es requerida"
+    },
+    "messages": {
+      "createSuccess": "Cultivo registrado correctamente",
+      "updateSuccess": "Cultivo actualizado correctamente",
+      "submitError": "Hubo un error al registrar el cultivo",
+      "unexpectedError": "Error inesperado. Contacte al administrador"
+    },
+    "economics": {
+      "show": "Mostrar",
+      "hide": "Ocultar",
+      "costsAndIncome": "Costos e Ingresos Estimados",
+      "automaticCalculation": "Calculado automáticamente (Ingresos - Costos totales)",
+      "totalCosts": "Costos Totales"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "saving": "Guardando...",
+      "updating": "Actualizando...",
+      "createCrop": "Registrar Cultivo",
+      "updateCrop": "Actualizar Cultivo"
+    },
+    "options": {
+      "cropTypes": {},
+      "soilTypes": {},
+      "plantingMethods": {},
+      "irrigationSystems": {}
+    }
+  },
+  "editarCultivoPage": {
+    "title": "Editar Cultivo",
+    "cardTitle": "Editando el cultivo",
+    "description": "Completa los datos para editar el cultivo"
+  },
+  "crearCultivoPage": {
+    "title": "Ingresar Cultivo",
+    "cardTitle": "Ingresa un nuevo cultivo",
+    "description": "Completa los datos para ingresar el nuevo cultivo"
+  },
+  "produccionGanaderoPage": {
+    "title": "Mis Producciones",
+    "productControl": "Control de Productos",
+    "products": "Productos",
+    "inventory": "Inventario",
+    "empty": {
+      "title": "No hay producciones registradas",
+      "description": "No se encontraron producciones registradas. Puedes crear una nueva producción haciendo clic en el botón +"
+    }
+  },
+   "produccionList": {
+    "messages": {
+      "dataUpdated": "Datos actualizados con éxito",
+      "updateTypesError": "Error al actualizar los tipos de producción",
+      "livestockCreated": "Producción ganadera creada con éxito",
+      "livestockUpdated": "Producción ganadera actualizada con éxito",
+      "fodderCreated": "Forrajes e insumos creados con éxito",
+      "fodderUpdated": "Forrajes e insumos actualizados con éxito",
+      "agriculturalCreated": "Producción agrícola creada con éxito",
+      "agriculturalUpdated": "Producción agrícola actualizada con éxito",
+      "beeCreated": "Producción apícola creada con éxito",
+      "beeUpdated": "Producción apícola actualizada con éxito",
+      "alternativeCreated": "Producción alternativa creada con éxito",
+      "alternativeUpdated": "Producción alternativa actualizada con éxito"
+    },
+    "errors": {
+      "livestockCreate": "Error al crear la producción ganadera",
+      "livestockUpdate": "Error al actualizar la producción ganadera",
+      "fodderCreate": "Error al crear forrajes e insumos",
+      "fodderUpdate": "Error al actualizar forrajes e insumos",
+      "agriculturalCreate": "Error al crear la producción agrícola",
+      "agriculturalUpdate": "Error al actualizar la producción agrícola",
+      "beeCreate": "Error al crear la producción apícola",
+      "beeUpdate": "Error al actualizar la producción apícola",
+      "alternativeCreate": "Error al crear la producción alternativa",
+      "alternativeUpdate": "Error al actualizar la producción alternativa"
+    },
+    "sections": {
+      "livestock": "Producción Ganadera",
+      "fodder": "Forrajes e Insumos",
+      "agricultural": "Producción Agrícola",
+      "bee": "Producción Apícola",
+      "alternative": "Producción Alternativa"
+    },
+    "empty": {
+      "livestock": "No hay datos de producción ganadera registrados",
+      "fodder": "No hay datos de forrajes registrados",
+      "agricultural": "No hay datos de producción agrícola registrados",
+      "bee": "No hay datos de producción apícola registrados",
+      "alternative": "No hay datos de producción alternativa registrados",
+      "all": "No hay datos de producción registrados para esta finca."
+    },
+    "types": {
+      "ownConsumption": "Consumo propio",
+      "forSale": "Producción para venta",
+      "mixed": "Producción mixta",
+      "artisanalTransformation": "Transformación artesanal"
+    },
+    "buttons": {
+      "add": "Agregar",
+      "editProductionType": "Editar tipo de producción",
+      "cancel": "Cancelar",
+      "create": "Crear",
+      "saving": "Guardando...",
+      "saveChanges": "Guardar cambios"
+    },
+    "dialogs": {
+      "editProductionType": "Editar tipo de producción",
+      "createLivestock": "Crear producción ganadera",
+      "editLivestock": "Editar producción ganadera",
+      "editFodder": "Editar forrajes e insumos",
+      "createFodder": "Crear forrajes e insumos",
+      "editAgricultural": "Editar Producción Agrícola",
+      "createAgricultural": "Crear Producción Agrícola",
+      "createBee": "Crear producción apícola",
+      "editBee": "Editar producción apícola",
+      "createAlternative": "Crear producción alternativa",
+      "editAlternative": "Editar producción alternativa"
+    }
+  },
+  "produccionGanaderaCard": {
+    "title": "Producción Ganadera",
+    "buttons": {
+      "edit": "Editar Ganadería"
+    },
+    "statistics": {
+      "milkingCows": "Vacas en ordeño",
+      "dryCows": "Vacas secas",
+      "calves": "Terneros",
+      "totalAnimals": "Total animales",
+      "animals": "animales"
+    },
+    "production": {
+      "milk": "Producción Lechera",
+      "fattening": "Carne en Engorde",
+      "heads": "cabezas"
+    },
+    "fields": {
+      "area": "Área",
+      "species": "Especies"
+    }
+  },
+   "produccionForrajesCard": {
+    "title": "Forrajes e Insumos",
+    "buttons": {
+      "edit": "Editar Forraje"
+    },
+    "summary": {
+      "insumos": "{count, plural, =0 {0 insumos} one {# insumo} other {# insumos}}"
+    },
+    "types": {
+      "hay": "Heno",
+      "silage": "Silo",
+      "grass": "Pasto",
+      "flour": "Harina",
+      "concentratedFeed": "Alimentos Concentrados elaborados"
+    },
+    "fields": {
+      "hayType": "Tipo de heno",
+      "seasonality": "Estacionalidad",
+      "productionMonths": "Meses de producción",
+      "production": "Producción",
+      "estimatedTime": "Tiempo estimado"
+    }
+  },
+   "produccionAgricolaCard": {
+    "title": "Producción Agrícola",
+    "buttons": {
+      "edit": "Editar Agrícola"
+    },
+    "fields": {
+      "seasonality": "Estacionalidad",
+      "duration": "Duración",
+      "method": "Método",
+      "months": "Meses"
+    }
+  },
+   "produccionApiculturaCard": {
+    "title": "Apicultura",
+    "buttons": {
+      "edit": "Editar Apicultura"
+    },
+    "fields": {
+      "hives": "{count, plural, =0 {0 colmenas} one {# colmena} other {# colmenas}}",
+      "harvestQuantity": "{quantity} kg/cosecha"
+    }
+  },
+  "produccionAlternativaCard": {
+    "title": "Actividades Alternativas",
+    "buttons": {
+      "edit": "Editar Alternativa"
+    },
+    "badges": {
+      "diversified": "Diversificado"
+    },
+    "summary": {
+      "activities": "{count, plural, =0 {0 actividades} one {# actividad} other {# actividades}}",
+      "types": "{count, plural, =0 {0 tipos} one {# tipo} other {# tipos}}",
+      "totalIncome": "{currency} {amount}",
+      "more": "+{count} más"
+    }
+  },
+   "produccionGanaderaForm": {
+    "title": "Producción Ganadera",
+    "fields": {
+      "productionTypes": "Tipos de Producción",
+      "productionQuantity": "Cantidad de producción",
+      "measurementUnit": "Unidad de medida",
+      "milkingCows": "Vacas en ordeño",
+      "dryCows": "Vacas secas",
+      "calves": "Terneros",
+      "averageDryingDate": "Fecha promedio de secado",
+      "fatteningHeads": "Cabezas en engorde",
+      "slaughterWeight": "Kilos de sacrificio",
+      "averageWeightKg": "Peso promedio (kg)",
+      "slaughterAge": "Edad al sacrificio (meses)",
+      "flockMortality": "Mortalidad del lote (%)",
+      "eggsPerDay": "Huevos por día",
+      "layingHens": "Gallinas ponedoras",
+      "eggQuality": "Calidad del huevo",
+      "fatteningAnimals": "Animales en engorde",
+      "availableAnimals": "Animales disponibles",
+      "averageWeightPerHead": "Peso promedio por cabeza (kg)",
+      "productName": "Nombre del producto",
+      "monthlyProduction": "Producción mensual"
+    },
+    "placeholders": {
+      "quantity": "Cantidad",
+      "weight": "Peso",
+      "age": "Edad",
+      "kilos": "Kilos",
+      "percentage": "Porcentaje",
+      "selectUnit": "Seleccionar unidad",
+      "selectQuality": "Seleccionar calidad",
+      "productName": "Nombre del producto",
+      "measurementUnit": "Unidad de medida",
+      "monthlyProduction": "Producción mensual"
+    },
+    "productionTypes": {
+      "milk": "Leche",
+      "beef": "Carne bovina",
+      "pork": "Carne porcina",
+      "poultry": "Carne de ave",
+      "eggs": "Huevo",
+      "goat": "Carne caprina",
+      "liveCattle": "Ganado en pie",
+      "other": "Otro tipo de producción"
+    },
+    "sections": {
+      "milk": "Producción de Leche",
+      "beef": "Producción de Carne Bovina",
+      "pork": "Producción de Carne Porcina",
+      "poultry": "Producción de Carne de Ave",
+      "eggs": "Producción de Huevo",
+      "goat": "Producción de Carne Caprina",
+      "liveCattle": "Ganado en Pie",
+      "other": "Otro tipo de producción"
+    }
+  },
+  "forrajesInsumosForm": {
+    "title": "Forrajes e Insumos",
+    "summary": {
+      "supplies": "{count, plural, =0 {0 insumos} one {# insumo} other {# insumos}}"
+    },
+    "buttons": {
+      "add": "Agregar",
+      "remove": "Eliminar insumo",
+      "addFirst": "Agregar primer insumo"
+    },
+    "fields": {
+      "supplyNumber": "Insumo {number}",
+      "supplyType": "Tipo de insumo",
+      "hayType": "Tipo de heno",
+      "seasonality": "Estacionalidad",
+      "productionMonths": "Meses de producción",
+      "productionPerHectare": "Producción por hectárea",
+      "estimatedTime": "Tiempo estimado",
+      "description": "Descripción"
+    },
+    "placeholders": {
+      "selectType": "Seleccione tipo",
+      "selectHayType": "Seleccione tipo de heno",
+      "harvestSeasonality": "Estacionalidad de cosecha",
+      "productionExample": "Ej: 15 toneladas",
+      "timeExample": "Ej: 3 meses",
+      "describeSupply": "Describa el tipo de insumo"
+    },
+    "empty": {
+      "message": "No hay insumos agregados"
+    }
+  },
+   "formProduccionApicultura": {
+    "title": "Producción Apícola",
+    "subtitle": "Gestión de colmenas y miel",
+    "fields": {
+      "hives": "Número de colmenas",
+      "harvestFrequency": "Frecuencia de cosecha",
+      "quantityPerHarvest": "Cantidad por cosecha (kg)",
+      "honeyQuality": "Calidad de la miel"
+    },
+    "placeholders": {
+      "hives": "Ej: 25",
+      "harvestFrequency": "Ej: Cada 2 meses, Trimestral, Anual...",
+      "quantityPerHarvest": "Ej: 150.75",
+      "honeyQuality": "Seleccione la calidad"
+    },
+    "descriptions": {
+      "hives": "Total de colmenas activas en producción",
+      "harvestFrequency": "Periodicidad con la que realiza la cosecha de miel",
+      "quantityPerHarvest": "Peso promedio obtenido por cada cosecha",
+      "honeyQuality": "Clasificación según estándares de calidad"
+    },
+    "information": {
+      "title": "Información sobre producción apícola",
+      "description": "La producción apícola incluye el manejo de colmenas, cosecha de miel y otros productos derivados como polen, propóleos y cera de abejas."
+    }
+  },
+  "formProduccionAlternativa": {
+    "title": "Actividades Alternativas",
+    "activityCount": "{count, plural, =0 {0 actividades} one {# actividad} other {# actividades}}",
+    "activityNumber": "Actividad {number}",
+    "fields": {
+      "activityType": "Tipo de actividad",
+      "quantityProduced": "Cantidad producida",
+      "measurementUnit": "Unidad de medida",
+      "annualIncome": "Ingresos anuales"
+    },
+    "placeholders": {
+      "activityType": "Ej: Abonos orgánicos, Turismo rural, Artesanías, Procesamiento de alimentos...",
+      "quantityProduced": "Ej: 500",
+      "measurementUnit": "Ej: kilogramos, unidades, litros...",
+      "annualIncome": "Ej: 1200"
+    },
+    "buttons": {
+      "addActivity": "Agregar Actividad",
+      "removeActivity": "Eliminar actividad",
+      "addFirstActivity": "Agregar primera actividad"
+    },
+    "empty": {
+      "title": "No hay actividades alternativas agregadas",
+      "description": "Ej: Turismo rural, artesanías, procesamiento de alimentos, abonos orgánicos, energías renovables, etc."
+    }
+  },
+   "formProduccionAgricolaEdit": {
+    "title": "Producción Agrícola",
+    "cropCount": "{count, plural, =0 {0 cultivos} one {# cultivo} other {# cultivos}}",
+    "cropNumber": "Cultivo {number}",
+    "fields": {
+      "cropType": "Tipo de cultivo",
+      "description": "Descripción / Método de cultivo",
+      "seasonality": "Estacionalidad",
+      "duration": "Duración del cultivo",
+      "productionPerHectare": "Producción por hectárea",
+      "productionMonths": "Meses de producción"
+    },
+    "placeholders": {
+      "cropType": "Seleccione tipo",
+      "description": "Ej: Tradicional, Orgánico, etc.",
+      "seasonality": "Ej: Anual, Temporal, etc.",
+      "duration": "Ej: 6 meses",
+      "productionPerHectare": "Ej: 3000 kg"
+    },
+    "buttons": {
+      "add": "Agregar",
+      "remove": "Eliminar cultivo",
+      "addFirst": "Agregar primer cultivo"
+    },
+    "empty": {
+      "title": "No hay cultivos agregados"
+    },
+   "cropTypes": {
+  "0": "Maíz",
+  "1": "Frijol",
+  "2": "Arroz",
+  "3": "Sorgo",
+  "4": "Café",
+  "5": "Papa",
+  "6": "Tomate",
+  "7": "Cebolla",
+  "8": "Ajo",
+  "9": "Yuca",
+  "10": "Hortalizas",
+  "11": "Frutas",
+  "12": "Otros"
+}
+  },
+  "apiculturaSection": {
+    "title": "Producción Apícola",
+    "subtitle": "Gestión de colmenas y miel",
+    "fields": {
+      "hives": "Número de colmenas",
+      "harvestFrequency": "Frecuencia de cosecha",
+      "quantityPerHarvest": "Cantidad por cosecha (kg)",
+      "honeyQuality": "Calidad de la miel"
+    },
+    "placeholders": {
+      "hives": "Ej: 25",
+      "harvestFrequency": "Ej: Cada 2 meses, Trimestral...",
+      "quantityPerHarvest": "Ej: 150.75",
+      "honeyQuality": "Seleccione la calidad"
+    },
+    "descriptions": {
+      "hives": "Total de colmenas activas en producción",
+      "harvestFrequency": "Periodicidad con la que realiza la cosecha de miel",
+      "quantityPerHarvest": "Peso promedio obtenido por cada cosecha",
+      "honeyQuality": "Clasificación según estándares de calidad"
+    },
+    "information": {
+      "title": "Información sobre producción apícola",
+      "description": "La producción apícola incluye el manejo de colmenas, cosecha de miel y otros productos derivados como polen, propóleos y cera de abejas."
+    }
+  },
+   "alternativaSection": {
+    "title": "Actividades Alternativas",
+    "activityCount": "{count, plural, =0 {0 actividades} one {# actividad} other {# actividades}}",
+    "activityNumber": "Actividad {number}",
+    "fields": {
+      "activityType": "Tipo de actividad",
+      "quantityProduced": "Cantidad producida",
+      "measurementUnit": "Unidad de medida",
+      "annualIncome": "Ingresos anuales ($)"
+    },
+    "placeholders": {
+      "activityType": "Ej: Abonos orgánicos, Turismo rural...",
+      "quantityProduced": "Ej: 500 kg",
+      "measurementUnit": "Ej: kilogramos",
+      "annualIncome": "Ej: 1200"
+    },
+    "buttons": {
+      "add": "Agregar Actividad",
+      "remove": "Eliminar actividad",
+      "addFirst": "Agregar primera actividad"
+    },
+    "empty": {
+      "title": "No hay actividades alternativas agregadas",
+      "description": "Ej: Turismo rural, artesanías, procesamiento de alimentos, abonos orgánicos, etc."
+    }
+  },
+  "agricolaSection": {
+    "title": "Producción Agrícola",
+    "cropCount": "{count, plural, =0 {0 cultivos} one {# cultivo} other {# cultivos}}",
+    "cropNumber": "Cultivo {number}",
+    "fields": {
+      "cropType": "Tipo de cultivo",
+      "seasonality": "Estacionalidad",
+      "duration": "Duración del cultivo",
+      "productionPerUnit": "Producción por {unit}",
+      "productionMonths": "Meses de producción"
+    },
+    "placeholders": {
+      "cropType": "Seleccione tipo",
+      "seasonality": "Ej: Primavera/Verano",
+      "duration": "Ej: 6 meses",
+      "production": "Ej: 3000 kg"
+    },
+    "buttons": {
+      "addCrop": "Agregar Cultivo",
+      "removeCrop": "Eliminar cultivo",
+      "addFirstCrop": "Agregar primer cultivo"
+    },
+    "empty": {
+      "title": "No hay cultivos agregados"
+    }
+  },
+  "ganaderaSection": {
+    "title": "Producción Ganadera",
+    "fields": {
+      "productionTypes": "Tipos de Producción:",
+      "productionQuantity": "Cantidad de producción",
+      "measurementUnit": "Unidad de medida",
+      "milkingCows": "Vacas en ordeño",
+      "dryCows": "Vacas secas",
+      "calves": "Terneros",
+      "averageDryingDate": "Fecha promedio de secado",
+      "fatteningHeads": "Cabezas en engorde",
+      "slaughterWeight": "Kilos de sacrificio",
+      "averageWeightKg": "Peso promedio (Kg)",
+      "slaughterAge": "Edad al sacrificio",
+      "flockMortality": "Mortalidad del lote (%)",
+      "eggsPerDay": "Huevos por día",
+      "layingHens": "Gallinas ponedoras",
+      "eggQuality": "Calidad del huevo",
+      "fatteningAnimals": "Animales en engorde",
+      "availableAnimals": "Animales disponibles",
+      "averageWeightPerHead": "Peso promedio por cabeza (kg)",
+      "productName": "Nombre del producto",
+      "monthlyProduction": "Producción mensual"
+    },
+    "placeholders": {
+      "quantity": "Cantidad",
+      "kilos": "Kilos",
+      "weight": "Peso",
+      "age": "Edad",
+      "percentage": "Porcentaje",
+      "selectUnit": "Seleccionar unidad",
+      "selectQuality": "Seleccionar calidad",
+      "productName": "Nombre del producto",
+      "measurementUnit": "Unidad de medida",
+      "monthlyProduction": "Producción mensual"
+    },
+    "productionTypes": {
+      "milk": "Leche",
+      "beef": "Carne bovina",
+      "pork": "Carne porcina",
+      "poultry": "Carne de ave",
+      "eggs": "Huevo",
+      "goat": "Carne caprina",
+      "liveCattle": "Ganado en pie",
+      "other": "Otro tipo de producción"
+    },
+    "sections": {
+      "milk": "Producción de Leche",
+      "beef": "Producción de Carne Bovina",
+      "pork": "Producción de Carne Porcina",
+      "poultry": "Producción de Carne de Ave",
+      "eggs": "Producción de Huevo",
+      "goat": "Producción de Carne Caprina",
+      "liveCattle": "Ganado en Pie",
+      "other": "Otro tipo de producción"
+    }
+  },
+  "forrajesSection": {
+    "title": "Forrajes e Insumos",
+    "insumoCount": "{count, plural, =0 {0 insumos} one {# insumo} other {# insumos}}",
+    "insumoNumber": "Insumo {number}",
+    "fields": {
+      "supplyType": "Tipo de insumo",
+      "hayType": "Tipo de heno",
+      "seasonality": "Estacionalidad",
+      "productionMonths": "Meses de producción",
+      "productionPerUnit": "Producción por {unit}",
+      "estimatedGrowingTime": "Tiempo estimado de cultivo"
+    },
+    "placeholders": {
+      "supplyType": "Seleccione tipo",
+      "hayType": "Seleccione tipo de heno",
+      "seasonality": "Ej: Primavera/Verano",
+      "production": "Ej: 15 toneladas",
+      "growingTime": "Ej: 3 meses"
+    },
+    "buttons": {
+      "add": "Agregar Insumo",
+      "remove": "Eliminar insumo",
+      "addFirst": "Agregar primer insumo"
+    },
+    "empty": {
+      "title": "No hay insumos agregados"
+    },
+    "units": {
+      "hectare": "hectárea"
+    }
+  },
+  "crearProduccionPage": {
+    "title": "Nueva Producción",
+    "cardTitle": "Crear Nueva Producción",
+    "fields": {
+      "farm": "Seleccionar Finca",
+      "mixedProduction": "Producción mixta",
+      "artisanalProcessing": "Transformación artesanal",
+      "ownConsumption": "Consumo propio",
+      "productionForSale": "Producción para venta",
+      "productionSection": "Sección de Producción"
+    },
+    "placeholders": {
+      "farm": "Selecciona una finca"
+    },
+    "sections": {
+      "livestock": "Ganadería",
+      "fodder": "Forrajes",
+      "agriculture": "Agrícola",
+      "beekeeping": "Apicultura",
+      "alternative": "Alternativa"
+    },
+    "empty": {
+      "selectFarm": "Selecciona una finca para habilitar las secciones de producción"
+    },
+    "buttons": {
+      "back": "Volver",
+      "saving": "Guardando...",
+      "save": "Guardar Producción"
+    },
+    "messages": {
+      "createSuccess": "Producción creada con éxito",
+      "createError": "Hubo un error al ingresar la producción",
+      "contactAdministrator": "Contacte al administrador"
+    }
+  },
+
+"preciosProductosPage": {
+  "title": "Productos de Venta",
+  "buttons": {
+    "add": "Agregar Producto +",
+    "edit": "Editar Producto",
+    "close": "Cerrar"
+  },
+  "empty": {
+    "title": "No se encontraron productos",
+    "description": "En este momento no se encontraron productos de venta disponibles, puedes ingresar uno."
+  },
+  "modal": {
+    "editTitle": "Editar Producto",
+    "addTitle": "Agregar Nuevo Producto",
+    "editDescription": "Modifica los datos del producto: {name}",
+    "addDescription": "Completa los campos para agregar un nuevo producto."
+  }
+},
+
+"cardProducto": {
+  "productImage": "Imagen del producto",
+  "salePrices": "Precios de venta",
+  "priceBy": "Precios por",
+  "buttons": {
+    "addPrice": "Agregar Precio +",
+    "editPrice": "Editar precio",
+    "close": "Cerrar"
+  },
+  "empty": {
+    "title": "No hay precios configurados",
+    "description": "Haz clic en \"Agregar Precio +\" para configurar uno"
+  },
+  "modal": {
+    "editTitle": "Editar Precio",
+    "addTitle": "Agregar Nuevo Precio",
+    "editDescription": "Modifica el precio de venta para {name}",
+    "addDescription": "Configura un nuevo precio de venta para {name}"
+  }
+},
+
+"formAddProducto": {
+  "editing": "Editando producto:",
+  "fields": {
+    "productName": "Nombre del Producto",
+    "category": "Categoría",
+    "categories": "Categorías"
+  },
+  "placeholders": {
+    "productName": "Ej.: Leche, Queso, Mantequilla, Carne Molida...",
+    "category": "Selecciona la Categoría"
+  },
+  "validation": {
+    "nameRequired": "El nombre del producto es requerido",
+    "nameMinLength": "El nombre debe tener al menos 3 caracteres",
+    "categoryRequired": "La categoría es requerida"
+  },
+  "buttons": {
+    "updating": "Actualizando...",
+    "creating": "Creando...",
+    "update": "Actualizar Producto",
+    "add": "Agregar Producto"
+  },
+  "messages": {
+    "updateSuccess": "Producto actualizado con éxito",
+    "createSuccess": "Producto creado exitosamente"
+  },
+  "errors": {
+    "update": "Error al actualizar el producto. Por favor, intenta de nuevo.",
+    "create": "Error al crear el producto. Por favor, intenta de nuevo."
+  },
+
+"categories": {
+  "LECHE": "Leche",
+  "CARNE": "Carne",
+  "SUBPRODUCTO": "Sub Producto",
+  "REPRODUCTIVO": "Reproductivo",
+  "FORRAJES": "Forrajes",
+  "CONCENTRADOS": "Concentrado",
+  "NUCELOS": "Núcleos"
+}
+
+},
+
+"formPreciosProducto": {
+  "fields": {
+    "unit": "Unidad de Medida",
+    "price": "Precio ({currency})"
+  },
+  "placeholders": {
+    "unit": "Selecciona la unidad"
+  },
+  "validation": {
+    "unitRequired": "La unidad de medida es requerida",
+    "priceRequired": "El precio es requerido",
+    "priceMin": "El precio debe ser mayor a 0"
+  },
+  "product": "Producto",
+  "category": "Categoría",
+  "editing": "Editando precio existente",
+  "buttons": {
+    "cancel": "Cancelar",
+    "updating": "Actualizando...",
+    "adding": "Agregando...",
+    "update": "Actualizar Precio",
+    "add": "Agregar Precio"
+  },
+  "messages": {
+    "updateSuccess": "Precio actualizado con éxito para: {name}",
+    "createSuccess": "Precio agregado con éxito para: {name}"
+  },
+  "errors": {
+    "update": "Error al actualizar el precio. Por favor, intenta de nuevo.",
+    "create": "Error al agregar el precio. Por favor, intenta de nuevo."
+  }
+},
+
+"inventarioProductos": {
+    "title": "Mi Inventario",
+    "description": "Gestiona el inventario de tus productos ganaderos",
+    "farmPlaceholder": "Selecciona una finca",
+    "farms": "Fincas",
+    "allFarms": "Todas las fincas",
+    "buttons": {
+      "add": "Agregar +",
+      "addProduct": "Agregar producto"
+    },
+    "inventory": {
+      "title": "Productos en inventario",
+      "description": "Total de {count} productos (mostrando {showing} de {total})"
+    },
+    "empty": {
+      "title": "No hay productos en inventario",
+      "description": "Comienza agregando productos a tu inventario"
+    },
+    "pagination": {
+      "description": "Mostrando {start} - {end} de {total} productos"
+    },
+    "modal": {
+      "title": "Agregar Producto al Inventario",
+      "description": "Aquí podrás agregar productos a tu inventario"
+    }
+  },
+  "formProductosGanaderia": {
+    "editing": {
+      "label": "Editando:",
+      "description": "Solo puedes modificar cantidad, unidad y stock mínimo"
+    },
+    "fields": {
+      "product": "Producto",
+      "farm": "Finca",
+      "quantity": "Cantidad",
+      "unit": "Unidad de Medida",
+      "minimumStock": "Stock Mínimo",
+      "minimumStockDescription": "Cantidad mínima para alertas de bajo stock"
+    },
+    "placeholders": {
+      "product": "Selecciona un producto",
+      "farm": "Selecciona una finca",
+      "unit": "Selecciona una unidad"
+    },
+    "selects": {
+      "availableProducts": "Productos disponibles",
+      "myFarms": "Mis fincas",
+      "units": "Unidades de medida"
+    },
+    "empty": {
+      "products": "No hay productos disponibles",
+      "farms": "No hay fincas disponibles"
+    },
+    "validation": {
+      "productRequired": "Debes seleccionar un producto",
+      "farmRequired": "Debes seleccionar una finca",
+      "quantityRequired": "La cantidad es requerida",
+      "quantityMin": "La cantidad debe ser mayor a 0",
+      "unitRequired": "Debes seleccionar una unidad de medida",
+      "stockRequired": "El stock mínimo es requerido",
+      "stockMin": "El stock mínimo no puede ser negativo"
+    },
+    "selectedProduct": {
+      "label": "Producto seleccionado:",
+      "category": "Categoría:"
+    },
+    "buttons": {
+      "updating": "Actualizando...",
+      "adding": "Agregando...",
+      "update": "Actualizar Inventario",
+      "add": "Agregar al Inventario"
+    },
+    "messages": {
+      "updateSuccess": "Inventario actualizado exitosamente",
+      "createSuccess": "Producto agregado al inventario exitosamente"
+    },
+    "errors": {
+      "update": "Error al actualizar el producto al inventario.",
+      "create": "Error al agregar el producto al inventario."
+    },
+    "units": {}
+  },
+  "tableProductsInventario": {
+    "fields": {
+      "quantity": "Cantidad",
+      "minimumStock": "Stock Mínimo"
+    },
+    "columns": {
+      "product": "Producto",
+      "category": "Categoría",
+      "farm": "Finca",
+      "quantity": "Cantidad",
+      "minimumStock": "Stock Mínimo",
+      "unit": "Unidad",
+      "lastUpdate": "Última actualización",
+      "actions": "Acciones"
+    },
+    "alerts": {
+      "lowStock": "Stock por debajo del mínimo",
+      "lowStockBadge": "Bajo stock"
+    },
+    "actions": {
+      "edit": "Editar"
+    },
+    "modal": {
+      "title": "Editar Inventario",
+      "description": "Aquí podrás editar productos de tu inventario"
+    }
+  },
+   "trabajadoresPage": {
+    "title": "Trabajadores",
+    "description": "Gestión de trabajadores asignados a fincas",
+    "buttons": {
+      "newWorker": "Nuevo Trabajador"
+    },
+    "search": {
+      "placeholder": "Buscar por nombre, identificación o teléfono...",
+      "clear": "Limpiar búsqueda"
+    },
+    "filters": {
+      "button": "Filtros",
+      "active": "Activo",
+      "title": "Filtros",
+      "clearAll": "Limpiar todos",
+      "verificationStatus": "Estado de verificación",
+      "all": "Todos",
+      "verified": "Verificados",
+      "unverified": "No verificados"
+    },
+    "statistics": {
+      "totalWorkers": "Total Trabajadores",
+      "verified": "Verificados"
+    },
+    "list": {
+      "title": "Lista de Trabajadores",
+      "registered": "{total} trabajadores registrados en el sistema",
+      "filteredResults": "Mostrando {showing} de {total} trabajadores con filtros aplicados",
+      "noFilteredResults": "No hay resultados con los filtros aplicados",
+      "showingResults": "Mostrando {showing} de {total} trabajadores",
+      "page": "Página {current} de {total}"
+    },
+    "modal": {
+      "editTitle": "Editar Trabajador",
+      "createTitle": "Nuevo Trabajador",
+      "editDescription": "Aquí podrás editar la información del trabajador",
+      "createDescription": "Aquí podrás ingresar un nuevo trabajador"
+    }
+  },
+  "tableTrabajadores": {
+    "columns": {
+      "worker": "Trabajador",
+      "identification": "Identificación",
+      "contact": "Contacto",
+      "location": "Ubicación",
+      "farms": "Fincas",
+      "actions": "Acciones"
+    },
+    "fields": {
+      "identification": "Identificación",
+      "phone": "Teléfono",
+      "email": "Correo electrónico",
+      "location": "Ubicación"
+    },
+    "values": {
+      "notRegistered": "No registrado",
+      "notAvailable": "No disponible"
+    },
+    "actions": {
+      "title": "Acciones",
+      "editWorker": "Editar trabajador",
+      "openMenu": "Abrir menú de acciones",
+      "assignPermissions": "Asignar permisos",
+      "assignFarm": "Asignar a finca",
+      "invalidate": "Invalidar",
+      "verify": "Verificar",
+      "viewAssignedFarms": "Ver fincas asignadas",
+      "viewFarms": "Ver fincas",
+      "remove": "Quitar"
+    },
+    "empty": {
+      "noWorkers": "No se encontraron trabajadores"
+    },
+    "permissions": {
+      "assignedTitle": "Permisos asignados",
+      "add": "Agregar permiso",
+      "emptyAssigned": "No hay permisos asignados para este cliente",
+      "addFirst": "Agregar primer permiso",
+      "selectedCount": "{selected} de {total} seleccionados",
+      "selectAll": "Seleccionar todos",
+      "deselectAll": "Deseleccionar todos",
+      "emptyAvailable": "No hay permisos disponibles para agregar",
+      "selectedTitle": "Permisos seleccionados ({count})",
+      "addSelected": "Agregar {count, plural, =0 {ningún permiso} one {# permiso} other {# permisos}}"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "update": "Actualizar"
+    },
+    "modals": {
+      "workerPermissions": {
+        "title": "Permisos del trabajador",
+        "description": "Aquí puedes observar y gestionar los permisos a los cuales tiene acceso el trabajador"
+      },
+      "addPermissions": {
+        "title": "Agregar permisos al trabajador",
+        "description": "Selecciona uno o múltiples permisos para agregar al trabajador"
+      },
+      "addFarm": {
+        "title": "Agregar finca",
+        "description": "Aquí podrás agregar las fincas que tendrá asignadas este trabajador"
+      },
+      "verification": {
+        "title": "Modificar verificación",
+        "description": "Aquí podrás verificar o invalidar un usuario"
+      },
+      "assignedFarms": {
+        "title": "Fincas asignadas al trabajador",
+        "description": "Aquí se observan las fincas que tiene asignadas este trabajador"
+      }
+    },
+    "messages": {
+      "permissionUpdated": "Permiso actualizado correctamente",
+      "permissionDeleted": "Permiso eliminado correctamente",
+      "permissionsAdded": "{count, plural, =0 {No se agregaron permisos} one {# permiso agregado correctamente} other {# permisos agregados correctamente}}",
+      "workerVerificationUpdated": "Estado del trabajador actualizado exitosamente"
+    },
+    "errors": {
+      "updatePermission": "Error al actualizar el permiso",
+      "deletePermission": "Error al eliminar el permiso",
+      "selectAtLeastOnePermission": "Por favor selecciona al menos un permiso",
+      "addPermissions": "Error al agregar los permisos",
+      "selectWorkerToUpdateVerification": "Debes seleccionar un trabajador para poder actualizar su estado de verificación",
+      "verifyWorker": "Ocurrió un error al verificar el trabajador"
+    }
+  },
+  "tablePermisosCliente": {
+    "columns": {
+      "select": "Seleccionar",
+      "module": "Módulo",
+      "description": "Descripción"
+    },
+    "selectPermission": "Seleccionar permiso: {module}"
+  },
+   "tablePermisosAsignados": {
+    "columns": {
+      "module": "Módulo",
+      "view": "Ver",
+      "actions": "Acciones"
+    },
+    "actions": {
+      "toggleView": "Cambiar permiso de visualización para {module}",
+      "deletePermission": "Eliminar permiso de {module}"
+    }
+  },
+  "tableFincasTrabajador": {
+    "empty": {
+      "title": "No hay fincas asignadas",
+      "description": "Este trabajador aún no tiene fincas asignadas."
+    },
+    "columns": {
+      "farm": "Finca",
+      "location": "Ubicación",
+      "features": "Características",
+      "exploitationType": "Tipo de explotación",
+      "assignedBy": "Asignado por",
+      "actions": "Acciones"
+    },
+    "labels": {
+      "animals": "animales",
+      "assignedBy": "Por",
+      "coordinates": "Coordenadas",
+      "livestockArea": "Área ganadera"
+    },
+    "actions": {
+      "unassign": "Desasignar",
+      "unassignFarm": "Desasignar finca {name}",
+      "viewFarmDetails": "Ver detalles de {name}",
+      "viewFarmDetailsTooltip": "Ver detalles de la finca",
+      "unassignFarmTooltip": "Desasignar finca"
+    },
+    "summary": {
+      "title": "Resumen de fincas asignadas",
+      "description": "Estadísticas generales de las fincas asignadas al trabajador",
+      "totalFarms": "Total de fincas",
+      "totalAnimals": "Total de animales",
+      "totalArea": "Área total"
+    },
+    "messages": {
+      "farmUnassigned": "Finca desasignada del trabajador"
+    },
+    "errors": {
+      "unassignFarm": "Hubo un error al desasignar la finca",
+      "unexpected": "Error inesperado. Contacte al administrador"
+    }
+  },
+   "resumenPermiso": {
+    "title": "Resumen de Permisos",
+    "modules": "Módulos",
+    "view": "Ver",
+    "create": "Crear",
+    "edit": "Editar"
+  },
+ "formTrabajador": {
+    "fields": {
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "fullName": "Nombre completo",
+      "role": "Rol",
+      "country": "País",
+      "department": "Departamento",
+      "municipality": "Municipio",
+      "identification": "Identificación",
+      "address": "Dirección",
+      "phone": "Teléfono",
+      "sex": "Sexo",
+      "assignedFarms": "Fincas asignadas"
+    },
+    "placeholders": {
+      "email": "tu@correo.com",
+      "newPassword": "Nueva contraseña (opcional)",
+      "fullName": "Juan Pérez",
+      "role": "Selecciona un rol",
+      "department": "Selecciona un departamento",
+      "municipality": "Selecciona un municipio",
+      "identification": "Número de documento",
+      "address": "Calle 123 # 45-67",
+      "sex": "Selecciona una opción",
+      "selectFarms": "Seleccionar fincas..."
+    },
+    "hints": {
+      "emailCannotChange": "El correo electrónico no se puede modificar",
+      "leaveBlankToKeep": "dejar en blanco para mantener",
+      "countryAutomatic": "El país se asigna automáticamente según tu ubicación",
+      "selectDepartmentFirst": "Selecciona un departamento primero",
+      "identificationCannotChange": "La identificación no se puede modificar",
+      "example": "Ejemplo",
+      "farmAccess": "Selecciona las fincas a las que tendrá acceso el trabajador"
+    },
+    "validation": {
+      "emailRequired": "El correo es requerido",
+      "passwordRequired": "La contraseña es requerida",
+      "password": "La contraseña debe tener entre 8 y 16 caracteres, al menos un dígito, una minúscula y una mayúscula",
+      "nameRequired": "El nombre es requerido",
+      "nameMinLength": "El nombre debe tener al menos 3 caracteres",
+      "identificationRequired": "La identificación es requerida",
+      "addressRequired": "La dirección es requerida",
+      "addressMinLength": "La dirección debe tener al menos 10 caracteres",
+      "phoneRequired": "El teléfono es requerido",
+      "phoneFormat": "El formato debe ser xxxx-xxxx",
+      "selectAtLeastOneFarm": "Debes seleccionar al menos una finca"
+    },
+    "empty": {
+      "roles": "No se encontraron roles",
+      "departments": "No se encontraron departamentos",
+      "municipalities": "No se encontraron municipios",
+      "availableFarms": "No tienes fincas disponibles para asignar."
+    },
+    "loading": {
+      "farms": "Cargando fincas..."
+    },
+    "farms": {
+      "selected": "{count, plural, =0 {Ninguna finca seleccionada} one {# finca seleccionada} other {# fincas seleccionadas}}"
+    },
+    "actions": {
+      "showPassword": "Mostrar contraseña",
+      "hidePassword": "Ocultar contraseña",
+      "removeFarm": "Quitar finca {name}"
+    },
+    "buttons": {
+      "updating": "Actualizando trabajador...",
+      "creating": "Creando trabajador...",
+      "update": "Actualizar trabajador",
+      "create": "Agregar trabajador"
+    },
+    "messages": {
+      "createSuccess": "Trabajador creado exitosamente",
+      "updateSuccess": "Trabajador actualizado exitosamente"
+    },
+    "errors": {
+      "create": "Hubo un error al crear el trabajador",
+      "update": "Hubo un error al actualizar el trabajador",
+      "createUnexpected": "Hubo un error al crear el trabajador. Inténtalo de nuevo.",
+      "updateUnexpected": "Hubo un error al actualizar el trabajador. Inténtalo de nuevo."
+    },
+    "roles": {},
+    "sexes": {}
+  },
+  "verifiedBadge": {
+    "verified": "Verificado",
+    "notVerified": "No verificado"
+  },
+  "asignarPermisosPage": {
+    "title": "Permisos Asignados",
+    "buttons": {
+      "addPermission": "Agregar Permiso",
+      "selectAll": "Seleccionar Todos",
+      "deselectAll": "Deseleccionar Todos",
+      "remove": "Quitar",
+      "cancel": "Cancelar",
+      "addSelected": "Agregar {count} Permiso(s)"
+    },
+    "card": {
+      "title": "Permisos del Trabajador",
+      "description": "Aquí podrás observar los permisos que tiene asignados el trabajador"
+    },
+    "modal": {
+      "title": "Agregar Permisos al Trabajador",
+      "description": "Selecciona uno o múltiples permisos para agregar al trabajador"
+    },
+    "selection": {
+      "selectedCount": "{selected} de {total} seleccionados",
+      "selectedTitle": "Permisos Seleccionados ({count})"
+    },
+    "empty": {
+      "noPermissions": "No hay permisos disponibles para agregar"
+    },
+    "messages": {
+      "permissionUpdated": "Permiso actualizado correctamente",
+      "permissionDeleted": "Permiso eliminado correctamente",
+      "permissionsAdded": "{count, plural, =1 {# permiso agregado correctamente} other {# permisos agregados correctamente}}"
+    },
+    "errors": {
+      "updatePermission": "Error al actualizar el permiso",
+      "deletePermission": "Error al eliminar el permiso",
+      "selectAtLeastOne": "Por favor selecciona al menos un permiso",
+      "addPermissions": "Error al agregar los permisos"
+    }
+  },
+   "crearTrabajadorPage": {
+    "title": "Nuevo Trabajador",
+    "card": {
+      "title": "Registrar Trabajador",
+      "description": "Completa los datos para registrar el nuevo trabajador"
+    }
+  },
+  "editarTrabajadorPage": {
+    "title": "Editar Trabajador",
+    "card": {
+      "title": "Editar Trabajador",
+      "description": "Completa los datos para editar el trabajador"
+    }
+  },
+  "animalesPageGanadero": {
+    "title": "Mis Animales",
+    "actions": {
+      "bulkUpload": "Carga Masiva",
+      "weightControl": "Control de Peso",
+      "byAnimal": "Por Animal",
+      "byBreed": "Por Raza",
+      "feeding": "Alimentación",
+      "viewFeeding": "Ver Alimentación",
+      "addAnimal": "Agregar Animal"
+    },
+    "filters": {
+      "searchPlaceholder": "Buscar por identificador o nombre...",
+      "farmPlaceholder": "Seleccionar finca",
+      "allFarms": "Todas",
+      "active": "Filtros activos:",
+      "clearAll": "Limpiar todos",
+      "search": "Búsqueda: \"{value}\"",
+      "farm": "Finca: {value}",
+      "species": "Especie: {value}"
+    },
+    "empty": {
+      "title": "No hay animales registrados",
+      "description": "Comienza agregando tu primer animal o lote avícola."
+    },
+    "pagination": {
+      "loading": "Cargando más...",
+      "loadMore": "Cargar más animales"
+    },
+    "messages": {
+      "imageUpdated": "Imagen actualizada correctamente"
+    },
+    "errors": {
+      "updateProfileImage": "Error al actualizar la imagen de perfil"
+    }
+  },
+   "emptyStateAnimales": {
+    "variants": {
+      "error": {
+        "title": "Error al cargar los animales",
+        "description": "Ocurrió un error al cargar los datos. Por favor, intenta nuevamente."
+      },
+      "loading": {
+        "title": "Cargando animales...",
+        "description": "Por favor espera mientras cargamos la información."
+      },
+      "noFilters": {
+        "title": "No se encontraron animales",
+        "description": "No hay animales que coincidan con los filtros seleccionados. Intenta con otros criterios."
+      },
+      "noData": {
+        "title": "No tienes animales registrados",
+        "description": "Comienza agregando tu primer animal a la finca para llevar un control completo."
+      }
+    },
+    "buttons": {
+      "clearFilters": "Limpiar filtros",
+      "addAnimal": "Agregar animal",
+      "refresh": "Recargar"
+    }
+  },
+  "pesoRazaAnimal": {
+    "title": "Pesos Promedio por Raza",
+    "buttons": {
+      "add": "Agregar +",
+      "close": "Cerrar"
+    },
+    "empty": {
+      "title": "No hay registros de pesos por raza",
+      "description": "Los pesos promedio aparecerán aquí cuando tengas registros"
+    },
+    "modal": {
+      "editTitle": "Editar Peso por Raza",
+      "addTitle": "Agregar Peso por Raza",
+      "editDescription": "Modifica el rango de peso promedio diario para esta raza",
+      "addDescription": "En este formulario podrás agregar el peso promedio diario de tus animales por raza"
+    }
+  },
+  "cardRazas": {
+    "minimumGain": "Ganancia mínima:",
+    "maximumGain": "Ganancia máxima:",
+    "gainRange": "Rango de ganancia",
+    "edit": "Editar peso por raza"
+  },
+   "formAddPesoRaza": {
+    "fields": {
+      "species": "Especie",
+      "breed": "Raza del Animal",
+      "minimumGain": "Ganancia Mínima Por Día (Lb)",
+      "maximumGain": "Ganancia Máxima Por Día (Lb)"
+    },
+    "placeholders": {
+      "species": "Seleccionar especie",
+      "selectSpeciesFirst": "Primero selecciona una especie",
+      "breed": "Seleccionar raza",
+      "minimumGain": "Ej: 1.5",
+      "maximumGain": "Ej: 2.5"
+    },
+    "validation": {
+      "minimumRequired": "La ganancia mínima es requerida",
+      "minimumGreaterThanZero": "La ganancia mínima debe ser mayor a 0",
+      "maximumRequired": "La ganancia máxima es requerida",
+      "maximumGreaterThanZero": "La ganancia máxima debe ser mayor a 0"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "updating": "Actualizando...",
+      "registering": "Registrando...",
+      "updateRange": "Actualizar Rango",
+      "registerRange": "Registrar Rango"
+    },
+    "messages": {
+      "updateSuccess": "Rango de peso actualizado correctamente",
+      "createSuccess": "Rango de peso registrado correctamente"
+    },
+    "errors": {
+      "update": "Error al actualizar el rango de peso",
+      "create": "Error al registrar el rango de peso",
+      "unexpected": "Error inesperado. Contacte al administrador"
+    }
+  },
+   "especiesPage": {
+    "loading": "Cargando especies...",
+    "title": "Lista de Especies",
+    "empty": "No hay especies disponibles",
+    "total": "Total de especies: {count}"
+  },
+   "especiesPageDetailsAnimales": {
+    "title": "Mis Animales",
+    "titleWithSpecies": "Mis Animales - {species}",
+    "actions": {
+      "bulkUpload": "Carga Masiva",
+      "weightControl": "Control de Peso",
+      "byAnimal": "Por Animal",
+      "byBreed": "Por Raza",
+      "feeding": "Alimentación",
+      "viewFeeding": "Ver Alimentación",
+      "addAnimal": "Agregar Animal"
+    },
+    "filters": {
+      "searchPlaceholder": "Buscar por identificador o nombre...",
+      "farmPlaceholder": "Seleccionar finca",
+      "allFarms": "Todos",
+      "active": "Filtros activos:",
+      "clearAll": "Limpiar todos",
+      "search": "Búsqueda: \"{value}\"",
+      "farm": "Finca: {value}",
+      "species": "Especie: {value}"
+    },
+    "empty": {
+      "errorTitle": "Error al cargar los animales",
+      "errorDescription": "No se pudieron cargar los animales. Por favor, intenta nuevamente.",
+      "refresh": "Recargar",
+      "noAnimalsTitle": "No hay animales registrados",
+      "noAnimalsDescription": "Comienza agregando tu primer animal o lote avícola."
+    },
+    "pagination": {
+      "loading": "Cargando más...",
+      "loadMore": "Cargar más animales"
+    },
+    "messages": {
+      "imageUpdated": "Imagen actualizada correctamente"
+    },
+    "errors": {
+      "updateProfileImage": "Error al actualizar la imagen de perfil"
+    }
+  },
+   "crearAnimalPage": {
+    "title": "Crear Nuevo Animal",
+    "fields": {
+      "species": "Especie"
+    },
+    "messages": {
+      "selectSpeciesWarning": "Selecciona una especie para continuar"
+    },
+    "empty": {
+      "title": "Selecciona una especie",
+      "description": "Elige la especie del animal que deseas registrar para mostrar el formulario correspondiente."
+    },
+    "tabs": {
+      "animal": "Datos Animal",
+      "father": "Datos Padre",
+      "mother": "Datos Madre"
+    }
+  },
+  
+  "formAddAnimal": {
+    "animal": {
+      "title": "Datos del Animal",
+      "description": "Completa la información del animal. Los campos con * son obligatorios."
+    },
+    "sections": {
+      "identification": "Identificación",
+      "breedsAndPurity": "Razas y Pureza",
+      "reproductionAndProduction": "Reproducción y Producción",
+      "ageAndBirth": "Edad y Nacimiento",
+      "feeding": "Alimentación",
+      "supplementsAndMedication": "Complementos y Medicamentos",
+      "specialFeatures": "Características Especiales",
+      "locationAndOrigin": "Ubicación y Origen",
+      "animalImages": "Imágenes del Animal"
+    },
+    "fields": {
+      "sex": "Sexo",
+      "nameOptional": "Nombre (opcional)",
+      "colorOptional": "Color (opcional)",
+      "tag": "Arete",
+      "breeds": "Razas",
+      "purityOptional": "Nivel de Pureza (opcional)",
+      "reproductionType": "Tipo de Reproducción",
+      "productionType": "Tipo de Producción",
+      "birthDateOptional": "Fecha de Nacimiento (opcional)",
+      "averageAge": "Edad Promedio",
+      "purchasedPercentage": "% Comprado",
+      "producedPercentage": "% Producido",
+      "supplementType": "Tipo de Complemento",
+      "medicationOptional": "Medicamentos (opcional)",
+      "castrated": "Castrado",
+      "sterilized": "Esterilizado",
+      "characteristics": "Características",
+      "farm": "Finca",
+      "animalWasPurchased": "¿El animal fue comprado?",
+      "originBreeder": "Nombre del criador (origen)"
+    },
+    "placeholders": {
+      "age": "Edad en años",
+      "selectFarm": "Selecciona una finca",
+      "searchByIdentifierOrName": "Buscar por identificador o nombre..."
+    },
+    "labels": {
+      "sixDigits": "6 dígitos",
+      "tagHelp": "PRIMEROS SEIS DÍGITOS DE IDENTIFICACIÓN DEL ARETE",
+      "noName": "Sin nombre"
+    },
+    "options": {
+      "purchased": "Comprado",
+      "produced": "Producido",
+      "purchasedAndProduced": "Comprado y producido"
+    },
+    "validation": {
+      "percentagesMustEqual100": "La suma de porcentajes debe ser 100%",
+       "seleccionarMadre": "Debes seleccionar la madre para poder crear el animal",
+      "seleccionarPadre": "Debes seleccionar el padre para poder crear el animal"
+    },
+    "messages": {
+      "automaticAge": "La edad se calcula automáticamente",
+      "tryAnotherSearch": "Intenta con otro término de búsqueda",
+      "animalCreado": "Animal creado correctamente",
+      "errorCrear": "Hubo un error al crear el animal",
+      "errorInesperado": "Error inesperado. Contacte al administrador",
+      "maxImagenes": "Máximo 5 imágenes permitidas",
+      "imagenInvalida": "El archivo {name} no es una imagen válida",
+      "imagenExcede": "La imagen {name} excede el límite de 1MB"
+    },
+    "empty": {
+      "noBreeds": "No hay razas disponibles"
+    },
+    "images": {
+      "uploadInstructions": "Arrastra y suelta imágenes o haz clic para seleccionar",
+      "maximum": "Máximo 5 imágenes",
+      "formats": "Formatos: JPG, PNG, GIF · Máximo 1MB cada una",
+      "selected": "imágenes seleccionadas",
+      "selectedCount": "{count}/5 imágenes seleccionadas",
+      "remove": "Eliminar imagen"
+    },
+    "parent": {
+      "title": "Datos del Padre",
+      "belongsToFarm": "El padre pertenece a esta finca",
+      "farmDescription": "Marca esta opción si el padre está registrado en tu ganadería",
+      "search": "Buscar Padre",
+      "selectRegisteredMale": "Selecciona un macho registrado",
+      "noMalesFound": "No se encontraron machos",
+      "selected": "Padre seleccionado:",
+      "name": "Nombre Padre",
+      "tag": "Arete Padre",
+      "breeds": "Razas del Padre",
+      "purity": "Nivel de Pureza del Padre",
+      "breederName": "Nombre Criador del Padre",
+      "ownerName": "Nombre Propietario del Padre",
+      "originFarm": "Finca de Origen del Padre"
+    },
+    "mother": {
+      "title": "Datos de la Madre",
+      "belongsToFarm": "La madre pertenece a esta finca",
+      "farmDescription": "Marca esta opción si la madre está registrada en tu ganadería",
+      "search": "Buscar Madre",
+      "selectRegisteredFemale": "Selecciona una hembra registrada",
+      "noFemalesFound": "No se encontraron hembras",
+      "selected": "Madre seleccionada:",
+      "birthNumber": "Número de parto",
+      "birthNumberBadge": "Parto #{number}",
+      "lastBirth": "Último parto",
+      "name": "Nombre Madre",
+      "tag": "Arete Madre",
+      "breeds": "Razas de la Madre",
+      "purity": "Nivel de pureza",
+      "breederName": "Nombre Criador",
+      "ownerName": "Nombre Propietario",
+      "originFarm": "Nombre de la finca de origen"
+    },
+    "buttons": {
+      "select": "Seleccionar",
+      "change": "Cambiar",
+      "previous": "Anterior",
+      "createAnimal": "Crear Animal",
+      "creating": "Creando..."
+    }
+  },
+  "FormAddPorcino": {
+     "header": {
+    "title": "Datos del Porcino",
+    "subtitle": "Completa la información del porcino. Los campos con <red>*</red> son obligatorios."
+  },
+    "sections": {
+      "identificacion": "Identificación",
+      "caracteristicas": "Características",
+      "peso": "Peso y Crecimiento",
+      "alimentacion": "Alimentación",
+      "sanidad": "Sanidad",
+      "salida": "Salida del Animal",
+      "observaciones": "Observaciones y Fotos"
+    },
+    "fields": {
+      "sexo": "Sexo",
+      "identificador": "Identificador",
+      "identificadorPlaceholder": "Ej: PORC-001, P001, etc.",
+      "identificadorHelp": "Identificador único del porcino",
+      "nombre": "Nombre (opcional)",
+      "nombrePlaceholder": "Ej: Lucero, Toro, etc.",
+      "color": "Color / capa",
+      "colorPlaceholder": "Ej: Blanco, Negro, Manchado",
+      "finca": "Finca",
+      "fincaPlaceholder": "Selecciona una finca",
+      "raza": "Raza",
+      "tipoRegistro": "Tipo de Registro",
+      "tipoRegistroPlaceholder": "Selecciona el tipo de registro",
+      "etapa": "Etapa",
+      "etapaPlaceholder": "Selecciona la etapa",
+      "corralGalera": "Corral/Galera",
+      "corralGaleraPlaceholder": "Ej: Corral A, Galera 1",
+      "lote": "Lote",
+      "lotePlaceholder": "Ej: Lote 2024-1",
+      "proveedor": "Proveedor",
+      "proveedorPlaceholder": "Nombre del proveedor",
+      "fechaIngreso": "Fecha de Ingreso",
+      "cantidadInicial": "Cantidad Inicial",
+      "cantidadInicialPlaceholder": "Ej: 100",
+      "cantidadActual": "Cantidad Actual",
+      "cantidadActualPlaceholder": "Ej: 95",
+      "pesoInicial": "Peso Inicial (kg)",
+      "pesoInicialPlaceholder": "Ej: 8.5",
+      "pesoPromedio": "Peso Promedio (kg)",
+      "pesoPromedioPlaceholder": "Ej: 45.5",
+      "gananciaPeso": "Ganancia de Peso (kg/día)",
+      "gananciaPesoPlaceholder": "Ej: 0.25",
+      "fechaPesaje": "Fecha de Pesaje",
+      "consumoDiario": "Consumo Diario (kg)",
+      "consumoDiarioPlaceholder": "Ej: 2.5",
+      "desparasitado": "Desparasitado",
+      "enCuarentena": "En Cuarentena",
+      "condicionCorporal": "Condición Corporal",
+      "condicionCorporalPlaceholder": "Selecciona la condición corporal",
+      "vacunas": "Vacunas",
+      "vacunasPlaceholder": "Ej: Parvovirus, Leptospirosis, Erisipela",
+      "tratamientos": "Tratamientos",
+      "tratamientosPlaceholder": "Ej: Antibióticos, Vitaminas, Desparasitantes",
+      "bajasMortalidad": "Bajas / Mortalidad",
+      "bajasMortalidadPlaceholder": "Ej: 5",
+      "fechaSalida": "Fecha de Salida",
+      "pesoSalida": "Peso de Salida (kg)",
+      "pesoSalidaPlaceholder": "Ej: 95.5",
+      "comprador": "Comprador",
+      "compradorPlaceholder": "Nombre del comprador",
+      "precio": "Precio ($)",
+      "precioPlaceholder": "Ej: 5000",
+      "rendimientoCanal": "Rendimiento de Canal (%)",
+      "rendimientoCanalPlaceholder": "Ej: 75.5",
+      "nombreCriadorOrigen": "Nombre del Criador/Origen",
+      "nombreCriadorOrigenPlaceholder": "Nombre del criador o lugar de origen",
+      "observaciones": "Observaciones",
+      "observacionesPlaceholder": "Observaciones adicionales sobre el porcino",
+      "fotos": "Fotos"
+    },
+    "alimentacion": {
+      "origenComprado": "Comprado",
+      "origenProducido": "Producido",
+      "origenAmbos": "Comprado y producido",
+      "porcentajeComprado": "% Comprado",
+      "porcentajeProducido": "% Producido",
+      "porcentajeEjemplo": "Ej: {value}",
+      "porcentajeSumaError": "⚠️ La suma de porcentajes debe ser 100%"
+    },
+    "imagenes": {
+      "maxInfo": "Máximo 5 imágenes · Formatos: JPG, PNG · Máximo 1MB cada una",
+      "alt": "Vista previa {index}"
+    },
+    "buttons": {
+      "crearPorcino": "Crear Porcino",
+      "creando": "Creando..."
+    },
+    "messages": {
+      "porcinoCreado": "Porcino creado correctamente",
+      "errorCrear": "Hubo un error al crear el porcino",
+      "errorInesperado": "Error inesperado. Contacte al administrador",
+      "maxImagenes": "Máximo 5 imágenes permitidas",
+      "imagenInvalida": "El archivo {name} no es una imagen válida",
+      "imagenExcede": "La imagen {name} excede el límite de 1MB"
+    }
+  },
+  "FormAddCaprino": {
+    "header": {
+      "title": "Datos del Caprino",
+      "subtitle": "Completa la información del caprino. Los campos con <red>*</red> son obligatorios."
+    },
+    "sections": {
+      "identificacion": "Identificación",
+      "caracteristicas": "Características",
+      "proposito": "Propósito",
+      "genealogia": "Genealogía",
+      "produccion": "Producción",
+      "sanidad": "Sanidad",
+      "alimentacion": "Alimentación",
+      "datosPadre": "Datos del Padre",
+      "datosMadre": "Datos de la Madre"
+    },
+    "fields": {
+      "sexo": "Sexo",
+      "areteCodigo": "Arete / código",
+      "areteCodigoHelp": "PRIMEROS SEIS DÍGITOS DE IDENTIFICACIÓN DEL ARETE",
+      "digits6": "6 dígitos",
+      "nombre": "Nombre (opcional)",
+      "nombrePlaceholder": "Ej: Lucero, Toro, etc.",
+      "finca": "Finca",
+      "fincaPlaceholder": "Selecciona una finca",
+      "potrero": "Potrero (opcional)",
+      "potreroPlaceholder": "Nombre del potrero",
+      "foto": "Foto",
+      "raza": "Raza",
+      "edad": "Edad",
+      "fechaNacimiento": "Fecha nacimiento",
+      "color": "Color / capa",
+      "colorPlaceholder": "Ej: Blanco, Negro, Café",
+      "peso": "Peso (kg)",
+      "pesoPlaceholder": "Ej: 45.5",
+      "condicionCorporal": "Condición corporal",
+      "criador": "Criador",
+      "criadorPlaceholder": "Nombre del criador",
+      "lineaGenetica": "Línea genética",
+      "lineaGeneticaPlaceholder": "Línea genética del animal",
+      "litrosLecheDia": "Litros leche / día",
+      "litrosLecheDiaPlaceholder": "Ej: 3.5",
+      "pesoDestete": "Peso al destete (kg)",
+      "pesoDestetePlaceholder": "Ej: 15.0",
+      "grasa": "% Grasa",
+      "grasaPlaceholder": "Ej: 3.5",
+      "proteina": "% Proteína",
+      "proteinaPlaceholder": "Ej: 3.2",
+      "celulasSomaticas": "Recuento células somáticas",
+      "celulasSomaticasPlaceholder": "Ej: 200000",
+      "gananciaPeso": "Ganancia de peso (kg/día)",
+      "gananciaPesoPlaceholder": "Ej: 0.15",
+      "desparasitado": "Desparasitado",
+      "vacunas": "Vacunas",
+      "vacunasPlaceholder": "Ej: Enterotoxemia, Pasteurelosis, Brucelosis",
+      "mastitis": "Mastitis",
+      "mastitisPlaceholder": "Observaciones y tratamientos",
+      "pezunas": "Pezuñas (casco)",
+      "pezunasPlaceholder": "Estado y tratamientos",
+      "tratamientos": "Tratamientos",
+      "tratamientosPlaceholder": "Descripción de tratamientos realizados",
+      "observaciones": "Observaciones",
+      "observacionesPlaceholder": "Observaciones adicionales sobre el caprino"
+    },
+    "alimentacion": {
+      "origenComprado": "Comprado",
+      "origenProducido": "Producido",
+      "origenAmbos": "Comprado y producido",
+      "porcentajeComprado": "% Comprado",
+      "porcentajeProducido": "% Producido",
+      "porcentajeEjemplo": "Ej: {value}",
+      "porcentajeSumaError": "⚠️ La suma de porcentajes debe ser 100%"
+    },
+    "imagenes": {
+      "maxInfo": "Máximo 5 imágenes · Formatos: JPG, PNG · Máximo 1MB cada una",
+      "alt": "Vista previa {index}"
+    },
+    "padre": {
+      "esDeFinca": "El padre pertenece a esta finca",
+      "esDeFincaDesc": "Marca esta opción si el padre está registrado en tu ganadería",
+      "buscarPadre": "Buscar Padre",
+      "buscarPadreDesc": "(Selecciona un macho registrado)",
+      "buscarPlaceholder": "Buscar por identificador o nombre...",
+      "resultados": "{count} resultado",
+      "resultados_plural": "{count} resultados",
+      "seleccionar": "Seleccionar",
+      "noMachos": "No se encontraron machos",
+      "noMachosDesc": "Intenta con otro término de búsqueda",
+      "sinNombre": "Sin nombre",
+      "padreSeleccionado": "Padre seleccionado:",
+      "cambiar": "Cambiar",
+      "nombrePadre": "Nombre Padre",
+      "aretePadre": "Arete Padre",
+      "aretePadreDesc": "(6 dígitos - opcional)",
+      "razasPadre": "Razas del Padre",
+      "noRazas": "No hay razas disponibles",
+      "purezaPadre": "Nivel de Pureza del Padre",
+      "purezaPlaceholder": "Selecciona el nivel de pureza",
+      "purezaNoEspecificado": "No especificado",
+      "nombreCriadorPadre": "Nombre Criador del Padre",
+      "nombreCriadorPadrePlaceholder": "Nombre del criador",
+      "nombrePropietarioPadre": "Nombre Propietario del Padre",
+      "nombrePropietarioPadrePlaceholder": "Nombre del propietario",
+      "fincaOrigenPadre": "Finca de Origen del Padre",
+      "fincaOrigenPadrePlaceholder": "Nombre de la finca de origen"
+    },
+    "madre": {
+      "esDeFinca": "La madre pertenece a esta finca",
+      "esDeFincaDesc": "Marca esta opción si la madre está registrada en tu ganadería",
+      "buscarMadre": "Buscar Madre",
+      "buscarMadreDesc": "(Selecciona una hembra registrada)",
+      "noHembras": "No se encontraron hembras",
+      "noHembrasDesc": "Intenta con otro término de búsqueda",
+      "madreSeleccionada": "Madre seleccionada:",
+      "numeroParto": "Número de parto",
+      "numeroPartoDesc": "(Último parto)",
+      "numeroPartoPlaceholder": "Ej: 1, 2, 3...",
+      "parto": "Parto #{numero}",
+      "nombreMadre": "Nombre Madre",
+      "nombreMadrePlaceholder": "Nombre de la madre",
+      "areteMadre": "Arete Madre",
+      "areteMadreDesc": "(6 dígitos - opcional)",
+      "razasMadre": "Razas de la Madre",
+      "purezaMadre": "Nivel de pureza",
+      "nombreCriadorMadre": "Nombre Criador",
+      "nombreCriadorMadrePlaceholder": "Nombre del criador",
+      "nombrePropietarioMadre": "Nombre Propietario",
+      "nombrePropietarioMadrePlaceholder": "Nombre del propietario",
+      "fincaOrigenMadre": "Nombre de la finca de origen",
+      "fincaOrigenMadrePlaceholder": "Nombre de la finca de origen"
+    },
+    "buttons": {
+      "anterior": "Anterior",
+      "siguientePadre": "Datos del Padre",
+      "siguienteMadre": "Datos de la Madre",
+      "crearCaprino": "Crear Caprino",
+      "creando": "Creando..."
+    },
+    "validation": {
+      "seleccionarMadre": "Debes seleccionar la madre para poder crear el caprino",
+      "seleccionarPadre": "Debes seleccionar el padre para poder crear el caprino"
+    },
+    "messages": {
+      "caprinoCreado": "Caprino creado correctamente",
+      "errorCrear": "Hubo un error al crear el caprino",
+      "errorInesperado": "Error inesperado. Contacte al administrador",
+      "maxImagenes": "Máximo 5 imágenes permitidas",
+      "imagenInvalida": "El archivo {name} no es una imagen válida",
+      "imagenExcede": "La imagen {name} excede el límite de 1MB"
+    }
+  },
+  "FormAddEquino": {
+    "header": {
+      "title": "Datos del Animal",
+      "subtitle": "Completa la información del animal. Los campos con <red>*</red> son obligatorios."
+    },
+    "sections": {
+      "identificacion": "Identificación",
+      "imagenes": "Imágenes del Animal",
+      "caracteristicas": "Características",
+      "uso": "Uso",
+      "sanidad": "Sanidad",
+      "reproduccion": "Reproducción y Producción",
+      "alimentacion": "Alimentación",
+      "produccion": "Producción / Desempeño",
+      "ubicacion": "Ubicación y Origen",
+      "datosPadre": "Datos del Padre",
+      "datosMadre": "Datos de la Madre"
+    },
+    "fields": {
+      "areteCodigo": "Arete/Código",
+      "areteCodigoHelp": "Código de identificación del arete (máximo 6 caracteres)",
+      "chars6": "6 caracteres",
+      "areteCodigoPlaceholder": "Ej: 123ABC, A1B2C3, etc.",
+      "nombre": "Nombre (opcional)",
+      "nombrePlaceholder": "Ej: Lucero, Toro, etc.",
+      "registroGenealogico": "Registro Genealógico",
+      "registroGenealogicoPlaceholder": "Ej: ARG-12345-2024, BR-9876, etc.",
+      "registroGenealogicoHelp": "Número de registro genealógico del animal. Puede incluir letras, números y guiones.",
+      "microchip": "Código / Microchip",
+      "microchipPlaceholder": "Ej: 985141001234567, 900123456789012, etc.",
+      "microchipHelp": "Código de identificación del microchip (15 dígitos recomendado)",
+      "sexo": "Sexo",
+      "capaColor": "Capa / Color (opcional)",
+      "capaColorPlaceholder": "Ej: Negro, Blanco, Café",
+      "razas": "Razas",
+      "nivelPureza": "Nivel de Pureza (opcional)",
+      "fechaNacimiento": "Fecha de Nacimiento (opcional)",
+      "edadPromedio": "Edad Promedio",
+      "edadPlaceholder": "Edad en años",
+      "edadAutoCalculada": "La edad se calcula automáticamente",
+      "pesoActual": "Peso actual (kg)",
+      "pesoActualPlaceholder": "Ej: 450.5",
+      "alzada": "Alzada (opcional)",
+      "alzadaPlaceholder": "Ej: 150",
+      "unidadAlzada": "Unidad",
+      "unidadCm": "cm",
+      "unidadManos": "Manos",
+      "alzadaManosInfo": "1 mano = 4 pulgadas (10.16 cm)",
+      "condicionCorporal": "Condición corporal",
+      "condicionCorporalPlaceholder": "Selecciona una condición",
+      "condicionExcelente": "Excelente",
+      "condicionMuyBuena": "Muy Buena",
+      "condicionBuena": "Buena",
+      "condicionRegular": "Regular",
+      "condicionMala": "Mala",
+      "condicionMuyMala": "Muy Mala",
+      "condicionCaquexica": "Caquéxica",
+      "condicionObesa": "Obesa",
+      "usoEquino": "Uso del Equino",
+      "usoEquinoPlaceholder": "Selecciona el uso del equino",
+      "usoEquinoTrabajo": "Trabajo",
+      "usoEquinoDeporte": "Deporte",
+      "usoEquinoReproduccion": "Reproducción",
+      "usoEquinoPaseo": "Paseo",
+      "usoEquinoCarga": "Carga",
+      "usoEquinoGanaderia": "Ganadería",
+      "usoEquinoPolicia": "Policía",
+      "usoEquinoTerapia": "Terapia",
+      "usoEquinoCompania": "Compañía",
+      "usoEquinoOtro": "Otro",
+      "medicamentos": "Medicamentos (opcional)",
+      "medicamentosPlaceholder": "Ej: Ivermectina, Vitaminas, etc.",
+      "vacunas": "Vacunas (opcional)",
+      "vacunasPlaceholder": "Ej: Vitamina A, Vitamina B, etc.",
+      "desparasitado": "Desparasitado",
+      "si": "Sí",
+      "no": "No",
+      "lesiones": "Lesiones (opcional)",
+      "lesionesPlaceholder": "Lesiones del animal",
+      "alergias": "Alergias (opcional)",
+      "alergiasPlaceholder": "Alergias del Animal",
+      "odontologia": "Odontología (opcional)",
+      "odontologiaPlaceholder": "Odontología del animal",
+      "veterinario": "Veterinario (opcional)",
+      "veterinarioPlaceholder": "Nombre de veterinario del animal",
+      "tipoReproduccion": "Tipo de Reproducción",
+      "historialReproductivo": "Historial reproductivo",
+      "historialReproductivoDesc": "(Agrega eventos uno por uno)",
+      "historialReproductivoPlaceholder": "Ej: Servicio con toro X - 15/01/2024, Parto gemelar - 10/06/2024, etc.",
+      "historialReproductivoHint": "Escribe un evento y presiona Enter o haz clic en \"Agregar\"",
+      "historialReproductivoLabel": "Eventos registrados",
+      "historialReproductivoEmpty": "No hay eventos registrados",
+      "nivelEntrenamiento": "Nivel de entrenamiento",
+      "nivelEntrenamientoPlaceholder": "Básico, Intermedio, Avanzado...",
+      "competencias": "Competencias / Resultados",
+      "competenciasDesc": "(Agrega participaciones una por una)",
+      "competenciasPlaceholder": "Ej: Campeonato Nacional - 1er lugar 2023, Feria Regional - Mejor ejemplar 2024, etc.",
+      "competenciasHint": "Escribe una competencia y presiona Enter o haz clic en \"Agregar\"",
+      "competenciasLabel": "Competencias registradas",
+      "competenciasEmpty": "No hay competencias registradas",
+      "precioCompra": "Precio de compra",
+      "precioCompraPlaceholder": "Ej: 150000",
+      "valorEstimado": "Valor estimado",
+      "valorEstimadoPlaceholder": "Ej: 150000",
+      "asegurado": "Asegurado",
+      "finca": "Finca",
+      "fincaPlaceholder": "Selecciona una finca",
+      "animalComprado": "¿El animal fue comprado?",
+      "nombreCriadorOrigen": "Nombre del criador (origen)",
+      "nombreCriadorOrigenPlaceholder": "Nombre del criador o lugar de origen"
+    },
+    "buttons": {
+      "agregar": "Agregar",
+      "limpiar": "Limpiar",
+      "anterior": "Anterior",
+      "siguientePadre": "Datos del Padre",
+      "siguienteMadre": "Datos de la Madre",
+      "crearAnimal": "Crear Animal",
+      "creando": "Creando..."
+    },
+    "alimentacion": {
+      "origenComprado": "Comprado",
+      "origenProducido": "Producido",
+      "origenAmbos": "Comprado y producido",
+      "porcentajeComprado": "% Comprado",
+      "porcentajeProducido": "% Producido",
+      "porcentajeEjemplo": "Ej: {value}",
+      "porcentajeSumaError": "⚠️ La suma de porcentajes debe ser 100%"
+    },
+    "imagenes": {
+      "dropzone": "Arrastra y suelta imágenes o haz clic para seleccionar",
+      "maxInfo": "Máximo 5 imágenes · Formatos: JPG, PNG, GIF · Máximo 1MB cada una",
+      "contador": "{count}/5 imágenes seleccionadas",
+      "imagen": "Imagen {index}",
+      "eliminar": "Eliminar imagen",
+      "alt": "Vista previa {index}"
+    },
+    "padre": {
+      "esDeFinca": "El padre pertenece a esta finca",
+      "esDeFincaDesc": "Marca esta opción si el padre está registrado en tu ganadería",
+      "buscarPadre": "Buscar Padre",
+      "buscarPadreDesc": "(Selecciona un macho registrado)",
+      "buscarPlaceholder": "Buscar por identificador o nombre...",
+      "resultados": "{count} resultado",
+      "resultados_plural": "{count} resultados",
+      "seleccionar": "Seleccionar",
+      "noMachos": "No se encontraron machos",
+      "noMachosDesc": "Intenta con otro término de búsqueda",
+      "sinNombre": "Sin nombre",
+      "padreSeleccionado": "Padre seleccionado:",
+      "cambiar": "Cambiar",
+      "nombrePadre": "Nombre Padre",
+      "nombrePadrePlaceholder": "Nombre del padre",
+      "razasPadre": "Razas del Padre",
+      "noRazas": "No hay razas disponibles",
+      "purezaPadre": "Nivel de Pureza del Padre",
+      "nombreCriadorPadre": "Nombre Criador del Padre",
+      "nombreCriadorPadrePlaceholder": "Nombre del criador",
+      "nombrePropietarioPadre": "Nombre Propietario del Padre",
+      "nombrePropietarioPadrePlaceholder": "Nombre del propietario",
+      "fincaOrigenPadre": "Finca de Origen del Padre",
+      "fincaOrigenPadrePlaceholder": "Nombre de la finca de origen"
+    },
+    "madre": {
+      "esDeFinca": "La madre pertenece a esta finca",
+      "esDeFincaDesc": "Marca esta opción si la madre está registrada en tu ganadería",
+      "buscarMadre": "Buscar Madre",
+      "buscarMadreDesc": "(Selecciona una hembra registrada)",
+      "noHembras": "No se encontraron hembras",
+      "noHembrasDesc": "Intenta con otro término de búsqueda",
+      "madreSeleccionada": "Madre seleccionada:",
+      "numeroParto": "Número de parto",
+      "numeroPartoDesc": "(Último parto)",
+      "numeroPartoPlaceholder": "Ej: 1, 2, 3...",
+      "parto": "Parto #{numero}",
+      "nombreMadre": "Nombre Madre",
+      "nombreMadrePlaceholder": "Nombre de la madre",
+      "razasMadre": "Razas de la Madre",
+      "purezaMadre": "Nivel de pureza",
+      "nombreCriadorMadre": "Nombre Criador",
+      "nombreCriadorMadrePlaceholder": "Nombre del criador",
+      "nombrePropietarioMadre": "Nombre Propietario",
+      "nombrePropietarioMadrePlaceholder": "Nombre del propietario",
+      "fincaOrigenMadre": "Nombre de la finca de origen",
+      "fincaOrigenMadrePlaceholder": "Nombre de la finca de origen"
+    },
+    "validation": {
+      "seleccionarMadre": "Debes seleccionar la madre para poder crear el animal",
+      "seleccionarPadre": "Debes seleccionar el padre para poder crear el animal",
+      "elementoDuplicado": "Este elemento ya fue agregado"
+    },
+    "messages": {
+      "animalCreado": "Animal creado correctamente",
+      "errorCrear": "Hubo un error al crear el animal",
+      "errorInesperado": "Error inesperado. Contacte al administrador",
+      "maxImagenes": "Máximo 5 imágenes permitidas",
+      "imagenInvalida": "El archivo {name} no es una imagen válida",
+      "imagenExcede": "La imagen {name} excede el límite de 1 MB"
+    }
+  },
+   "FormAddOvino": {
+    "header": {
+      "title": "Datos del Ovino",
+      "subtitle": "Completa la información del ovino. Los campos con <red>*</red> son obligatorios."
+    },
+    "sections": {
+      "identificacion": "Identificación",
+      "caracteristicas": "Características",
+      "proposito": "Propósito",
+      "categoriaNacimiento": "Categoría y Nacimiento",
+      "genealogia": "Genealogía",
+      "lana": "Producción de Lana",
+      "sanidad": "Sanidad",
+      "alimentacion": "Alimentación",
+      "famachaParasitos": "Famacha y Parásitos",
+      "datosPadre": "Datos del Padre",
+      "datosMadre": "Datos de la Madre"
+    },
+    "fields": {
+      "sexo": "Sexo",
+      "areteCodigo": "Arete / código",
+      "areteCodigoHelp": "PRIMEROS SEIS DÍGITOS DE IDENTIFICACIÓN DEL ARETE",
+      "digits6": "6 dígitos",
+      "nombre": "Nombre (opcional)",
+      "nombrePlaceholder": "Ej: Lucero, Toro, etc.",
+      "finca": "Finca",
+      "fincaPlaceholder": "Selecciona una finca",
+      "potrero": "Potrero (opcional)",
+      "potreroPlaceholder": "Nombre del potrero",
+      "foto": "Foto",
+      "raza": "Raza",
+      "edad": "Edad",
+      "fechaNacimiento": "Fecha nacimiento",
+      "color": "Color / capa",
+      "colorPlaceholder": "Ej: Blanco, Negro, Café",
+      "peso": "Peso (kg)",
+      "pesoPlaceholder": "Ej: 45.5",
+      "condicionCorporal": "Condición corporal",
+      "categoriaEdad": "Categoría de edad",
+      "categoriaEdadPlaceholder": "Selecciona una categoría",
+      "tipoNacimiento": "Tipo de nacimiento",
+      "tipoNacimientoPlaceholder": "Selecciona tipo de nacimiento",
+      "pesoNacimiento": "Peso al nacimiento (kg)",
+      "pesoNacimientoPlaceholder": "Ej: 3.5",
+      "pesoDestete": "Peso al destete (kg)",
+      "pesoDestetePlaceholder": "Ej: 15.0",
+      "criador": "Criador",
+      "criadorPlaceholder": "Nombre del criador",
+      "fechaEsquila": "Fecha de esquila",
+      "calidadMicras": "Calidad (micras)",
+      "calidadMicrasPlaceholder": "Ej: 22.5",
+      "colorLana": "Color de lana",
+      "colorLanaPlaceholder": "Ej: Blanco, Negro, Marrón",
+      "pesoVellon": "Peso del vellón (kg)",
+      "pesoVellonPlaceholder": "Ej: 3.5",
+      "desparasitado": "Desparasitado",
+      "vacunas": "Vacunas",
+      "vacunasPlaceholder": "Ej: Brucelosis, Clostridiosis, Etc.",
+      "tratamientos": "Tratamientos",
+      "tratamientosPlaceholder": "Descripción de tratamientos realizados",
+      "famacha": "Famacha",
+      "famachaPlaceholder": "Ej: 2",
+      "famachaInfo": "Valor de 1 a 5 (1 = sano, 5 = anémico)",
+      "tratamiento": "Tratamiento",
+      "tratamientoPlaceholder": "Nombre del tratamiento",
+      "fechaTratamiento": "Fecha de tratamiento",
+      "observacionesParasitos": "Observaciones",
+      "observacionesParasitosPlaceholder": "Observaciones sobre parásitos",
+      "observaciones": "Observaciones",
+      "observacionesPlaceholder": "Observaciones adicionales sobre el ovino"
+    },
+    "alimentacion": {
+      "origenComprado": "Comprado",
+      "origenProducido": "Producido",
+      "origenAmbos": "Comprado y producido",
+      "porcentajeComprado": "% Comprado",
+      "porcentajeProducido": "% Producido",
+      "porcentajeEjemplo": "Ej: {value}",
+      "porcentajeSumaError": "⚠️ La suma de porcentajes debe ser 100%"
+    },
+    "imagenes": {
+      "maxInfo": "Máximo 5 imágenes · Formatos: JPG, PNG · Máximo 1MB cada una",
+      "alt": "Vista previa {index}"
+    },
+    "padre": {
+      "esDeFinca": "El padre pertenece a esta finca",
+      "esDeFincaDesc": "Marca esta opción si el padre está registrado en tu ganadería",
+      "buscarPadre": "Buscar Padre",
+      "buscarPadreDesc": "(Selecciona un macho registrado)",
+      "buscarPlaceholder": "Buscar por identificador o nombre...",
+      "resultados": "{count} resultado",
+      "resultados_plural": "{count} resultados",
+      "seleccionar": "Seleccionar",
+      "noMachos": "No se encontraron machos",
+      "noMachosDesc": "Intenta con otro término de búsqueda",
+      "sinNombre": "Sin nombre",
+      "padreSeleccionado": "Padre seleccionado:",
+      "cambiar": "Cambiar",
+      "nombrePadre": "Nombre Padre",
+      "nombrePadrePlaceholder": "Nombre del padre",
+      "aretePadre": "Arete Padre",
+      "aretePadreDesc": "(6 dígitos - opcional)",
+      "razasPadre": "Razas del Padre",
+      "noRazas": "No hay razas disponibles",
+      "purezaPadre": "Nivel de Pureza del Padre",
+      "purezaPlaceholder": "Selecciona el nivel de pureza",
+      "purezaNoEspecificado": "No especificado",
+      "nombreCriadorPadre": "Nombre Criador del Padre",
+      "nombreCriadorPadrePlaceholder": "Nombre del criador",
+      "nombrePropietarioPadre": "Nombre Propietario del Padre",
+      "nombrePropietarioPadrePlaceholder": "Nombre del propietario",
+      "fincaOrigenPadre": "Finca de Origen del Padre",
+      "fincaOrigenPadrePlaceholder": "Nombre de la finca de origen"
+    },
+    "madre": {
+      "esDeFinca": "La madre pertenece a esta finca",
+      "esDeFincaDesc": "Marca esta opción si la madre está registrada en tu ganadería",
+      "buscarMadre": "Buscar Madre",
+      "buscarMadreDesc": "(Selecciona una hembra registrada)",
+      "noHembras": "No se encontraron hembras",
+      "noHembrasDesc": "Intenta con otro término de búsqueda",
+      "madreSeleccionada": "Madre seleccionada:",
+      "numeroParto": "Número de parto",
+      "numeroPartoDesc": "(Último parto)",
+      "numeroPartoPlaceholder": "Ej: 1, 2, 3...",
+      "parto": "Parto #{numero}",
+      "nombreMadre": "Nombre Madre",
+      "nombreMadrePlaceholder": "Nombre de la madre",
+      "areteMadre": "Arete Madre",
+      "areteMadreDesc": "(6 dígitos - opcional)",
+      "razasMadre": "Razas de la Madre",
+      "purezaMadre": "Nivel de pureza",
+      "nombreCriadorMadre": "Nombre Criador",
+      "nombreCriadorMadrePlaceholder": "Nombre del criador",
+      "nombrePropietarioMadre": "Nombre Propietario",
+      "nombrePropietarioMadrePlaceholder": "Nombre del propietario",
+      "fincaOrigenMadre": "Nombre de la finca de origen",
+      "fincaOrigenMadrePlaceholder": "Nombre de la finca de origen"
+    },
+    "buttons": {
+      "anterior": "Anterior",
+      "siguientePadre": "Datos del Padre",
+      "siguienteMadre": "Datos de la Madre",
+      "crearOvino": "Crear Ovino",
+      "creando": "Creando..."
+    },
+    "validation": {
+      "seleccionarMadre": "Debes seleccionar la madre para poder crear el ovino",
+      "seleccionarPadre": "Debes seleccionar el padre para poder crear el ovino"
+    },
+    "messages": {
+      "ovinoCreado": "Ovino creado correctamente",
+      "errorCrear": "Hubo un error al crear el ovino",
+      "errorInesperado": "Error inesperado. Contacte al administrador",
+      "maxImagenes": "Máximo 5 imágenes permitidas",
+      "imagenInvalida": "El archivo {name} no es una imagen válida",
+      "imagenExcede": "La imagen {name} excede el límite de 1MB"
+    }
+  },
+   "FormAddAvicola": {
+    "header": {
+      "title": "Datos del Lote",
+      "subtitle": "Completa la información del lote avícola. Los campos con <red>*</red> son obligatorios."
+    },
+    "sections": {
+      "identificacion": "Identificación",
+      "razas": "Razas del Lote",
+      "infoLote": "Información del Lote",
+      "etapa": "Etapa del Lote",
+      "alimentacion": "Alimentación",
+      "produccionHuevos": "Producción de Huevos",
+      "sanidad": "Sanidad",
+      "desempeno": "Desempeño",
+      "ubicacion": "Ubicación y Origen",
+      "estado": "Estado del Lote",
+      "imagenes": "Imágenes del Lote"
+    },
+    "fields": {
+      "tipoAve": "Tipo de Ave",
+      "tipoAvePlaceholder": "Selecciona el tipo de ave",
+      "identificador": "Identificador Lote/Galpon",
+      "identificadorPlaceholder": "Ej: 123ABC, A1B2C3, etc.",
+      "identificadorHelp": "Código de identificación del lote (máximo 6 caracteres)",
+      "chars6": "6 caracteres",
+      "razasInfo": "Selecciona las razas que componen el lote",
+      "noRazas": "No hay razas disponibles para esta especie",
+      "razasSeleccionadas": "✓ {count} raza(s) seleccionada(s)",
+      "cantidadLote": "Cantidad en Lote",
+      "cantidadLotePlaceholder": "Ej: 100",
+      "galpon": "Galpón",
+      "galponPlaceholder": "Ej: Galpón A, Galpón 1, etc.",
+      "proveedorAves": "Proveedor de Aves",
+      "proveedorAvesPlaceholder": "Nombre del proveedor",
+      "mortalidadDiaria": "Mortalidad Diaria",
+      "mortalidadDiariaPlaceholder": "Ej: 5",
+      "etapaActual": "Etapa Actual",
+      "etapaActualPlaceholder": "Selecciona la etapa actual del lote",
+      "etapasInfoTitle": "📌 Etapas:",
+      "etapaRecepcionTitle": "Recepción:",
+      "etapaRecepcionDesc": "Primeros días después de la llegada de las aves",
+      "etapaCriaTitle": "Cría:",
+      "etapaCriaDesc": "Etapa inicial de desarrollo",
+      "etapaCrecimientoTitle": "Crecimiento:",
+      "etapaCrecimientoDesc": "Desarrollo y aumento de peso",
+      "etapaEngordeTitle": "Engorde:",
+      "etapaEngordeDesc": "Etapa final antes de la producción",
+      "etapaAyunoTitle": "Ayuno:",
+      "etapaAyunoDesc": "Período de descanso o preparación",
+      "consumoAlimento": "Consumo de Alimento (kg/día)",
+      "consumoAlimentoPlaceholder": "Ej: 150kg",
+      "tipoConcentrado": "Tipo de Concentrado",
+      "tipoConcentradoPlaceholder": "Ej: Iniciador, Crecimiento, Postura",
+      "consumoAgua": "Consumo de Agua (L/día)",
+      "consumoAguaPlaceholder": "Ej: 200L",
+      "huevosDiarios": "Huevos Diarios",
+      "huevosDiariosPlaceholder": "Ej: 80",
+      "huevosRotos": "Huevos Rotos",
+      "huevosRotosPlaceholder": "Ej: 5",
+      "calificacionHuevos": "Calificación de Huevos",
+      "calificacionHuevosPlaceholder": "Selecciona la calificación",
+      "porcentajePostura": "Porcentaje de Postura",
+      "porcentajePosturaDesc": "(Calculado automáticamente)",
+      "porcentajePosturaPlaceholder": "Se calcula automáticamente",
+      "porcentajeCalculado": "✓ Calculado: {porcentaje}% (Basado en {huevos} huevos / {aves} aves)",
+      "fechaPostura": "Fecha de Postura",
+      "vacunasLote": "Vacunas del Lote",
+      "vacunasLotePlaceholder": "Ej: Newcastle, Gumboro, Viruela, etc.",
+      "tratamientos": "Tratamientos",
+      "tratamientosPlaceholder": "Ej: Antibióticos, Vitaminas, Desparasitantes, etc.",
+      "pesoPromedio": "Peso Promedio (kg)",
+      "pesoPromedioPlaceholder": "Ej: 2.5",
+      "tipoProduccion": "Tipo de Producción",
+      "tipoProduccionPlaceholder": "Selecciona el tipo de producción",
+      "tipoProduccionHuevos": "Huevos",
+      "tipoProduccionCarne": "Carne",
+      "tipoProduccionMixta": "Mixta",
+      "tipoProduccionReproduccion": "Reproducción",
+      "finca": "Finca",
+      "fincaPlaceholder": "Selecciona una finca",
+      "loteActivo": "Lote Activo"
+    },
+    "alimentacion": {
+      "origenComprado": "Comprado",
+      "origenProducido": "Producido",
+      "origenAmbos": "Comprado y producido",
+      "porcentajeComprado": "% Comprado",
+      "porcentajeProducido": "% Producido",
+      "porcentajeEjemplo": "Ej: {value}",
+      "porcentajeSumaError": "⚠️ La suma de porcentajes debe ser 100%"
+    },
+    "imagenes": {
+      "dropzone": "Arrastra y suelta imágenes o haz clic para seleccionar",
+      "maxInfo": "Máximo 5 imágenes · Formatos: JPG, PNG, GIF · Máximo 1MB cada una",
+      "contador": "{count}/5 imágenes seleccionadas",
+      "imagen": "Imagen {index}",
+      "eliminar": "Eliminar imagen",
+      "alt": "Vista previa {index}"
+    },
+    "buttons": {
+      "cancelar": "Cancelar",
+      "ingresarLote": "Ingresar Lote",
+      "creando": "Creando..."
+    },
+    "validation": {
+      "especieInvalida": "No se ha seleccionado una especie válida"
+    },
+    "messages": {
+      "avicolaCreado": "Animal avícola creado correctamente",
+      "errorCrear": "Hubo un error al crear el animal avícola",
+      "errorInesperado": "Error inesperado. Contacte al administrador",
+      "maxImagenes": "Máximo 5 imágenes permitidas",
+      "imagenInvalida": "El archivo {name} no es una imagen válida",
+      "imagenExcede": "La imagen {name} excede el límite de 1MB"
+    }
+  },
+  "FormAddPeces": {
+    "header": {
+      "title": "Datos del Lote de Peces",
+      "subtitle": "Completa la información del lote piscícola. Los campos con <red>*</red> son obligatorios."
+    },
+    "sections": {
+      "identificacion": "Identificación",
+      "razas": "Razas del Lote",
+      "siembra": "Siembra",
+      "poblacion": "Población",
+      "muestreos": "Muestreos",
+      "crecimiento": "Crecimiento",
+      "calidadAgua": "Calidad de Agua",
+      "recambios": "Historial de Recambios de Agua",
+      "alimentacion": "Alimentación",
+      "sanidad": "Sanidad",
+      "estado": "Estado del Lote",
+      "ubicacion": "Ubicación",
+      "imagenes": "Imágenes del Lote"
+    },
+    "fields": {
+      "estanqueTanqueJaula": "Estanque / Tanque / Jaula",
+      "estanqueTanqueJaulaPlaceholder": "Ej: Estanque 1, Tanque A, Jaula 3",
+      "identificador": "Identificador del Lote",
+      "identificadorPlaceholder": "Ej: 123ABC",
+      "identificadorHelp": "Código de identificación del lote (máximo 6 caracteres)",
+      "chars6": "6 caracteres",
+      "proveedorAlevines": "Proveedor de Alevines",
+      "proveedorAlevinesPlaceholder": "Nombre del proveedor",
+      "razasInfo": "Selecciona las razas que componen el lote",
+      "noRazas": "No hay razas disponibles para esta especie",
+      "razasSeleccionadas": "✓ {count} raza(s) seleccionada(s)",
+      "fechaSiembra": "Fecha de Siembra",
+      "cantidadInicial": "Cantidad Inicial",
+      "cantidadInicialPlaceholder": "Ej: 1000",
+      "tallaPesoInicial": "Talla / Peso Inicial",
+      "tallaPesoInicialPlaceholder": "Ej: 5cm / 2g",
+      "densidad": "Densidad (por m³ / m²)",
+      "densidadPlaceholder": "Ej: 50",
+      "cantidadActual": "Cantidad Actual",
+      "cantidadActualPlaceholder": "Ej: 950",
+      "etapa": "Etapa",
+      "etapaPlaceholder": "Selecciona la etapa",
+      "mortalidadDiariaAcum": "Mortalidad Diaria / Acumulada",
+      "mortalidadDiariaAcumPlaceholder": "Ej: 5/día o 50 acumuladas",
+      "muestreo": "Muestreo #{index}",
+      "fecha": "Fecha",
+      "pesoGramos": "Peso (g)",
+      "pesoGramosPlaceholder": "Ej: 150",
+      "tallaCm": "Talla (cm)",
+      "tallaCmPlaceholder": "Ej: 15",
+      "agregarMuestreo": "Agregar Muestreo",
+      "pesoPromedio": "Peso Promedio (g)",
+      "pesoPromedioPlaceholder": "Ej: 250",
+      "biomasaEstimada": "Biomasa Estimada (kg)",
+      "biomasaEstimadaPlaceholder": "Ej: 237.5",
+      "talla": "Talla (cm)",
+      "tallaPlaceholder": "Ej: 20",
+      "fechaMuestreo": "Fecha de Muestreo",
+      "temperatura": "Temperatura (°C)",
+      "temperaturaPlaceholder": "Ej: 28",
+      "temperaturaInfo": "Tilapia ideal 26–30 °C",
+      "oxigenoDisuelto": "Oxígeno Disuelto (mg/L)",
+      "oxigenoDisueltoPlaceholder": "Ej: 5.5",
+      "oxigenoDisueltoInfo": "Mantener > 4 mg/L",
+      "ph": "pH",
+      "phPlaceholder": "Ej: 7.5",
+      "phInfo": "Rango 6.5 – 9",
+      "amonio": "Amonio (NH₃)",
+      "amonioPlaceholder": "Ej: 0.5",
+      "nitrito": "Nitrito (NO₂)",
+      "nitritoPlaceholder": "Ej: 0.05",
+      "turbidez": "Turbidez",
+      "turbidezPlaceholder": "Ej: 1, 2, 3",
+      "recambio": "Recambio #{index}",
+      "porcentajeRecambio": "% de Agua Recambiada",
+      "porcentajeRecambioPlaceholder": "Ej: 20",
+      "volumenM3": "Volumen (m³)",
+      "volumenM3Placeholder": "Ej: 10",
+      "motivo": "Motivo",
+      "motivoPlaceholder": "Calidad / Rutina / Floración algas",
+      "responsable": "Responsable",
+      "responsablePlaceholder": "Nombre del responsable",
+      "agregarRecambio": "Agregar Recambio",
+      "tipoConcentrado": "Tipo de Concentrado",
+      "tipoConcentradoPlaceholder": "Ej: Iniciador, Crecimiento, Engorde",
+      "proteinaPorcentaje": "Proteína %",
+      "proteinaPorcentajePlaceholder": "Ej: 28",
+      "proteinaPorcentajeInfo": "24 – 32 % según etapa",
+      "racionDiaria": "Ración Diaria",
+      "racionDiariaPlaceholder": "Ej: 15 kg",
+      "consumo": "Consumo",
+      "consumoPlaceholder": "Ej: 12.5 kg/día",
+      "signosClinicos": "Signos Clínicos",
+      "signosClinicosPlaceholder": "Ej: Manchas, heridas, comportamiento anormal",
+      "tratamientos": "Tratamientos",
+      "tratamientosPlaceholder": "Ej: Antibióticos, antiparasitarios",
+      "banosSalinidad": "Baños / Salinidad",
+      "banosSalinidadPlaceholder": "Ej: Baño de sal al 3%",
+      "laboratorio": "Laboratorio",
+      "laboratorioPlaceholder": "Nombre del laboratorio",
+      "loteActivo": "Lote Activo",
+      "finca": "Finca",
+      "fincaPlaceholder": "Selecciona una finca"
+    },
+    "imagenes": {
+      "dropzone": "Arrastra y suelta imágenes o haz clic para seleccionar",
+      "maxInfo": "Máximo 5 imágenes · Formatos: JPG, PNG, GIF · Máximo 1MB cada una",
+      "contador": "{count}/5 imágenes seleccionadas",
+      "imagen": "Imagen {index}",
+      "eliminar": "Eliminar imagen",
+      "alt": "Vista previa {index}"
+    },
+    "buttons": {
+      "cancelar": "Cancelar",
+      "ingresarLotePeces": "Ingresar Lote de Peces",
+      "creando": "Creando..."
+    },
+    "validation": {
+      "especieInvalida": "No se ha seleccionado una especie válida"
+    },
+    "messages": {
+      "pecesCreado": "Lote de peces creado correctamente",
+      "errorCrear": "Hubo un error al crear el lote de peces",
+      "errorInesperado": "Error inesperado. Contacte al administrador",
+      "maxImagenes": "Máximo 5 imágenes permitidas",
+      "imagenInvalida": "El archivo {name} no es una imagen válida",
+      "imagenExcede": "La imagen {name} excede el límite de 1MB"
+    }
+  }
+}
+

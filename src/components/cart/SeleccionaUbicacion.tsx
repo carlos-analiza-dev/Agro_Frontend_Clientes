@@ -17,6 +17,7 @@ import { TipoEntrega } from "@/api/pedidos/interface/crear-pedido.interface";
 import { Cliente } from "@/interfaces/auth/cliente";
 import { toast } from "react-toastify";
 import { GoogleMapsWrapper } from "./GoogleMapsWrapper";
+import { useTranslations } from "next-intl";
 
 declare global {
   interface Window {
@@ -56,7 +57,7 @@ const SeleccionUbicacion = ({
   sonDiferentesSucursales,
 }: SeleccionUbicacionProps) => {
   const hasFincas = fincas && fincas.length > 0;
-
+  const t = useTranslations("seleccionUbicacion");
   const getInitialTipoUbicacion = (): "finca" | "sucursal" | "otra" => {
     if (sonDiferentesSucursales) {
       if (hasFincas) {
@@ -122,7 +123,7 @@ const SeleccionUbicacion = ({
         },
       );
     } catch (error) {
-      toast.error("Ocurrio un error");
+      toast.error(t("errors.generic"));
     }
   };
 
@@ -147,21 +148,19 @@ const SeleccionUbicacion = ({
             setLongitudPersonalizada(lng.toString());
             setDireccionPersonalizada(results[0].formatted_address);
           } else {
-            toast.warning(
-              "No se pudo encontrar la dirección. Intenta con una descripción más específica.",
-            );
+            toast.warning(t("errors.addressNotFound"));
           }
         },
       );
     } catch (error) {
       setBuscandoDireccion(false);
-      toast.error("Error al buscar dirección");
+      toast.error(t("errors.addressSearch"));
     }
   };
 
   const obtenerUbicacionActual = () => {
     if (!navigator.geolocation) {
-      toast.warn("La geolocalización no es compatible con este navegador");
+      toast.warn(t("errors.geolocationNotSupported"));
       return;
     }
 
@@ -178,32 +177,34 @@ const SeleccionUbicacion = ({
       },
       (error) => {
         setCargandoUbicacion(false);
-        toast.warning("Error al obtener la ubicación: " + error.message);
+        toast.warning(
+          t("errors.geolocationError", {
+            message: error.message,
+          }),
+        );
       },
     );
   };
 
   const handleConfirmar = () => {
     if (tipoUbicacion === "finca" && !fincaSeleccionada) {
-      toast.warning("Por favor selecciona una finca");
+      toast.warning(t("validation.selectFarm"));
       return;
     }
 
     if (tipoUbicacion === "otra") {
       if (!direccionPersonalizada.trim()) {
-        toast.warning("Por favor ingresa una dirección");
+        toast.warning(t("validation.enterAddress"));
         return;
       }
       if (!latitudPersonalizada || !longitudPersonalizada) {
-        toast.warning("Por favor selecciona una ubicación en el mapa");
+        toast.warning(t("validation.selectMapLocation"));
         return;
       }
     }
 
     if (sonDiferentesSucursales && tipoUbicacion === "sucursal") {
-      toast.error(
-        "No es posible recoger en sucursal porque los productos son de diferentes sucursales",
-      );
+      toast.error(t("validation.differentBranches"));
       return;
     }
 
@@ -261,9 +262,9 @@ const SeleccionUbicacion = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle>
           <MapPin className="h-5 w-5" />
-          Ubicación de Entrega
+          {t("title")}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -273,12 +274,10 @@ const SeleccionUbicacion = ({
               <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
                 <p className="text-sm font-semibold text-amber-800">
-                  Productos de diferentes sucursales
+                  {t("differentBranches.title")}
                 </p>
                 <p className="text-xs text-amber-700 mt-1">
-                  Tus productos provienen de diferentes sucursales. El tiempo de
-                  entrega será de <strong>3 a 5 días hábiles</strong>. No está
-                  disponible la opción de recoger en sucursal.
+                  {t("differentBranches.description", { days: "3 a 5" })}
                 </p>
               </div>
             </div>
@@ -286,7 +285,7 @@ const SeleccionUbicacion = ({
         )}
 
         <div className="space-y-4">
-          <Label>Tipo de Ubicación</Label>
+          <Label>{t("locationType")}</Label>
           <RadioGroup
             value={tipoUbicacion}
             onValueChange={(value: "finca" | "sucursal" | "otra") =>
@@ -298,10 +297,12 @@ const SeleccionUbicacion = ({
                 <RadioGroupItem value="finca" id="finca" />
                 <Label htmlFor="finca" className="flex items-center gap-2">
                   <Truck className="h-4 w-4" />
-                  Enviar a una de mis fincas
+                  {t("options.farm")}
                   <span className="text-orange-600 text-sm ml-2">
-                    +{simbolo}
-                    {costoDelivery.toFixed(2)} delivery
+                    {t("options.delivery", {
+                      symbol: simbolo,
+                      cost: costoDelivery.toFixed(2),
+                    })}
                   </span>
                 </Label>
               </div>
@@ -312,8 +313,10 @@ const SeleccionUbicacion = ({
                 <RadioGroupItem value="sucursal" id="sucursal" />
                 <Label htmlFor="sucursal" className="flex items-center gap-2">
                   <Store className="h-4 w-4" />
-                  Recoger en sucursal
-                  <span className="text-green-600 text-sm ml-2">Gratis</span>
+                  {t("options.pickup")}
+                  <span className="text-green-600 text-sm ml-2">
+                    {t("options.free")}
+                  </span>
                 </Label>
               </div>
             )}
@@ -322,10 +325,12 @@ const SeleccionUbicacion = ({
               <RadioGroupItem value="otra" id="otra" />
               <Label htmlFor="otra" className="flex items-center gap-2">
                 <MapPin className="h-4 w-4" />
-                Otra ubicación
+                {t("options.other")}
                 <span className="text-orange-600 text-sm ml-2">
-                  +{simbolo}
-                  {costoDelivery.toFixed(2)} delivery
+                  {t("options.delivery", {
+                    symbol: simbolo,
+                    cost: costoDelivery.toFixed(2),
+                  })}
                 </span>
               </Label>
             </div>
@@ -336,20 +341,17 @@ const SeleccionUbicacion = ({
           <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
             <div className="flex items-center gap-2 text-blue-800">
               <MapPin className="h-4 w-4" />
-              <span className="text-sm font-medium">
-                No tienes fincas registradas
-              </span>
+              <span className="text-sm font-medium">{t("noFarms.title")}</span>
             </div>
             <p className="text-blue-600 text-xs mt-1">
-              Puedes agregar una finca en tu perfil para recibir envíos a tus
-              fincas registradas.
+              {t("noFarms.description")}
             </p>
           </div>
         )}
 
         {tipoUbicacion === "finca" && hasFincas && (
           <div className="space-y-3">
-            <Label>Selecciona una finca para delivery</Label>
+            <Label>{t("farmSelection.title")}</Label>
             <RadioGroup
               value={fincaSeleccionada}
               onValueChange={setFincaSeleccionada}
@@ -381,13 +383,14 @@ const SeleccionUbicacion = ({
               <div className="flex items-center gap-2 text-blue-800">
                 <Truck className="h-4 w-4" />
                 <span className="text-sm font-medium">
-                  Delivery incluido: {simbolo}
-                  {costoDelivery.toFixed(2)}
+                  {t("farmSelection.deliveryIncluded", {
+                    symbol: simbolo,
+                    cost: costoDelivery.toFixed(2),
+                  })}
                 </span>
               </div>
               <p className="text-blue-600 text-xs mt-1">
-                El producto será entregado en la finca seleccionada con sus
-                coordenadas GPS
+                {t("farmSelection.description")}
               </p>
             </div>
           </div>
@@ -396,13 +399,15 @@ const SeleccionUbicacion = ({
         {tipoUbicacion === "otra" && (
           <div className="space-y-4">
             <div className="space-y-3">
-              <Label htmlFor="direccion">Buscar dirección</Label>
+              <Label htmlFor="direccion">
+                {t("customLocation.searchLabel")}
+              </Label>
               <div className="flex gap-2">
                 <Input
                   id="direccion"
                   value={direccionPersonalizada}
                   onChange={(e) => setDireccionPersonalizada(e.target.value)}
-                  placeholder="Ingresa una dirección..."
+                  placeholder={t("customLocation.addressPlaceholder")}
                   className="flex-1"
                   onKeyPress={(e) => e.key === "Enter" && buscarDireccion()}
                 />
@@ -421,39 +426,40 @@ const SeleccionUbicacion = ({
             </div>
 
             <div className="space-y-2">
-              <Label>Selecciona la ubicación en el mapa</Label>
+              <Label>{t("customLocation.mapLabel")}</Label>
               <GoogleMapsWrapper
                 onLocationSelect={handleLocationSelect}
                 initialLocation={initialLocation}
               />
               <p className="text-xs text-gray-600">
-                Haz click en el mapa o arrastra el marcador para seleccionar la
-                ubicación exacta
+                {t("customLocation.mapInstructions")}
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="latitud">Latitud</Label>
+                <Label htmlFor="latitud">{t("customLocation.latitude")}</Label>
                 <Input
                   id="latitud"
                   type="number"
                   step="any"
                   value={latitudPersonalizada}
                   onChange={(e) => setLatitudPersonalizada(e.target.value)}
-                  placeholder="Latitud"
+                  placeholder={t("customLocation.latitudePlaceholder")}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="longitud">Longitud</Label>
+                <Label htmlFor="longitud">
+                  {t("customLocation.longitude")}
+                </Label>
                 <Input
                   id="longitud"
                   type="number"
                   step="any"
                   value={longitudPersonalizada}
                   onChange={(e) => setLongitudPersonalizada(e.target.value)}
-                  placeholder="Longitud"
+                  placeholder={t("customLocation.longitudePlaceholder")}
                 />
               </div>
             </div>
@@ -471,21 +477,22 @@ const SeleccionUbicacion = ({
                 <Navigation className="h-4 w-4 mr-2" />
               )}
               {cargandoUbicacion
-                ? "Obteniendo ubicación..."
-                : "Usar mi ubicación actual"}
+                ? t("customLocation.gettingLocation")
+                : t("customLocation.useCurrentLocation")}
             </Button>
 
             <div className="bg-orange-50 p-3 rounded-lg border border-orange-200">
               <div className="flex items-center gap-2 text-orange-800">
                 <Truck className="h-4 w-4" />
                 <span className="text-sm font-medium">
-                  Delivery incluido: {simbolo}
-                  {costoDelivery.toFixed(2)}
+                  {t("customLocation.deliveryIncluded", {
+                    symbol: simbolo,
+                    cost: costoDelivery.toFixed(2),
+                  })}
                 </span>
               </div>
               <p className="text-orange-600 text-xs mt-1">
-                El producto será entregado en la ubicación especificada en el
-                mapa
+                {t("customLocation.deliveryDescription")}
               </p>
             </div>
           </div>
@@ -496,20 +503,20 @@ const SeleccionUbicacion = ({
             <div className="flex items-center gap-2 text-green-800">
               <Store className="h-4 w-4" />
               <span className="text-sm font-medium">
-                Recogida en sucursal sin costo adicional
+                {t("pickupInfo.title")}
               </span>
             </div>
             <p className="text-green-600 text-xs mt-1">
-              Podrás recoger tu pedido en la sucursal más cercana
+              {t("pickupInfo.description")}
             </p>
           </div>
         )}
 
         <div className="space-y-4">
-          <Label className="text-lg font-semibold">Resumen de Entrega</Label>
+          <Label className="text-lg font-semibold">{t("summary.title")}</Label>
           <div className="p-4 border rounded-lg bg-gray-50">
             <div className="flex justify-between items-center">
-              <span className="font-medium">Tipo de entrega:</span>
+              <span className="font-medium">{t("summary.deliveryType")}</span>
               <span
                 className={`font-bold ${
                   tipoUbicacion === "sucursal"
@@ -518,17 +525,17 @@ const SeleccionUbicacion = ({
                 }`}
               >
                 {tipoUbicacion === "finca"
-                  ? "Delivery a Finca"
+                  ? t("summary.farmDelivery")
                   : tipoUbicacion === "otra"
-                    ? "Delivery a Ubicación"
-                    : "Recoger en Sucursal"}
+                    ? t("summary.locationDelivery")
+                    : t("summary.branchPickup")}
               </span>
             </div>
 
             {tipoUbicacion === "finca" && fincaSeleccionada && hasFincas && (
               <>
                 <div className="flex justify-between items-center mt-2">
-                  <span className="font-medium">Finca:</span>
+                  <span className="font-medium">{t("summary.farm")}</span>
                   <span className="text-sm text-right">
                     {
                       fincas.find((f) => f.id === fincaSeleccionada)
@@ -545,9 +552,9 @@ const SeleccionUbicacion = ({
             {tipoUbicacion === "otra" && direccionPersonalizada && (
               <>
                 <div className="flex justify-between items-center mt-2">
-                  <span className="font-medium">Dirección:</span>
+                  <span className="font-medium">{t("summary.address")}</span>
                   <span className="text-sm text-right">
-                    Ubicación personalizada
+                    {t("summary.customLocation")}
                   </span>
                 </div>
                 <div className="mt-1 text-xs text-gray-600">
@@ -557,7 +564,7 @@ const SeleccionUbicacion = ({
             )}
 
             <div className="flex justify-between items-center mt-2">
-              <span className="font-medium">Costo de envío:</span>
+              <span className="font-medium">{t("summary.shippingCost")}</span>
               <span
                 className={`font-bold ${
                   tipoUbicacion === "sucursal"
@@ -566,7 +573,7 @@ const SeleccionUbicacion = ({
                 }`}
               >
                 {tipoUbicacion === "sucursal"
-                  ? "Gratis"
+                  ? t("summary.free")
                   : `+${simbolo}${costoDelivery.toFixed(2)}`}
               </span>
             </div>
@@ -574,7 +581,7 @@ const SeleccionUbicacion = ({
         </div>
 
         <Button onClick={handleConfirmar} className="w-full">
-          Confirmar Ubicación y Entrega
+          {t("buttons.confirm")}
         </Button>
       </CardContent>
     </Card>

@@ -41,12 +41,15 @@ import { UsoEquinoEnum } from "@/interfaces/enums/animales/use-equino.enum";
 import { alimentosEquinosOptions } from "@/helpers/data/alimentos";
 import { tipoReproduccionOptions } from "@/helpers/data/tipoReproduccionOptions";
 import SummaryList from "../generics/SummaryList";
+import { useTranslations } from "next-intl";
 
 interface Props {
   setActiveTab: Dispatch<SetStateAction<string>>;
   selectedEspecieId: string;
 }
 const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
+  const t = useTranslations("FormAddEquino");
+
   const router = useRouter();
   const queryClient = useQueryClient();
   const { cliente } = useAuthStore();
@@ -71,6 +74,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
     string[]
   >([]);
   const [competenciasList, setCompetenciasList] = useState<string[]>([]);
+
   const {
     register,
     handleSubmit,
@@ -110,7 +114,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
     const currentHistorial = watch("historial_reproductivo") || [];
 
     if (currentHistorial.includes(nuevoItem)) {
-      toast.info("Este elemento ya fue agregado");
+      toast.info(t("validation.elementoDuplicado"));
       setHistorialReproductivoInput("");
       return;
     }
@@ -139,7 +143,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
     const currentCompetencias = watch("resultados_competencias") || [];
 
     if (currentCompetencias.includes(nuevoItem)) {
-      toast.info("Este elemento ya fue agregado");
+      toast.info(t("validation.elementoDuplicado"));
       setCompetenciasInput("");
       return;
     }
@@ -254,7 +258,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
     const files = Array.from(e.target.files || []);
 
     if (files.length + selectedImages.length > 5) {
-      toast.error("Máximo 5 imágenes permitidas");
+      toast.error(t("messages.maxImagenes"));
       return;
     }
 
@@ -265,12 +269,12 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
       const isValidSize = file.size <= MAX_SIZE;
 
       if (!isValidType) {
-        toast.error(`El archivo ${file.name} no es una imagen válida`);
+        toast.error(t("messages.imagenInvalida", { name: file.name }));
         return false;
       }
 
       if (!isValidSize) {
-        toast.error(`La imagen ${file.name} excede el límite de 1 MB`);
+        toast.error(t("messages.imagenExcede", { name: file.name }));
         return false;
       }
 
@@ -315,10 +319,13 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
       value: finca.id,
     })) || [];
 
+  // 👇 Extrae el número de parto aquí para evitar el error de tipos en el JSX
+  const numeroPartoMadre = watch("numero_parto_madre");
+
   const mutation = useMutation({
     mutationFn: (data: FormData) => CreateAnimal(data),
     onSuccess: () => {
-      toast.success("Animal creado correctamente");
+      toast.success(t("messages.animalCreado"));
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
       reset();
       router.push("/animales");
@@ -332,11 +339,11 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear el animal";
+            : t("messages.errorCrear");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("messages.errorInesperado"));
       }
     },
   });
@@ -345,12 +352,12 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
     if (!cliente?.id) return;
 
     if (isMadreFinca && !selectedMadreId) {
-      toast.error("Debes seleccionar la madre para poder crear el animal");
+      toast.error(t("validation.seleccionarMadre"));
       return;
     }
 
     if (isPadreFinca && !selectedPadreId) {
-      toast.error("Debes seleccionar el padre para poder crear el animal");
+      toast.error(t("validation.seleccionarPadre"));
       return;
     }
 
@@ -418,6 +425,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
     if (data.razas_madre && data.razas_madre.length > 0) {
       formData.append("razas_madre", JSON.stringify(data.razas_madre));
     }
+
     if (data.historial_reproductivo && data.historial_reproductivo.length > 0) {
       formData.append(
         "historial_reproductivo",
@@ -434,6 +442,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
         JSON.stringify(data.resultados_competencias),
       );
     }
+
     data.tipo_alimentacion.forEach((item, index) => {
       formData.append(`tipo_alimentacion[${index}][alimento]`, item.alimento);
       formData.append(`tipo_alimentacion[${index}][origen]`, item.origen);
@@ -472,30 +481,33 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
     mutation.mutate(formData as any);
   };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <TabsContent value="animal">
         <Card className="max-w-4xl mx-auto">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold">
-              Datos del Animal
+              {t("header.title")}
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              Completa la información del animal. Los campos con{" "}
-              <span className="text-red-500">*</span> son obligatorios.
+              {t.rich("header.subtitle", {
+                red: (chunks) => <span className="text-red-500">{chunks}</span>,
+              })}
             </p>
           </CardHeader>
 
           <CardContent className="space-y-6">
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Identificación
+                {t("sections.identificacion")}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Arete/Código <span className="text-red-500">*</span>
+                    {t("fields.areteCodigo")}{" "}
+                    <span className="text-red-500">*</span>
                   </Label>
                   <div className="flex items-center gap-2">
                     <div className="relative flex-1">
@@ -506,13 +518,13 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                           e.target.value = value;
                           setValue("identificador", value);
                         }}
-                        placeholder="Ej: 123ABC, A1B2C3, etc."
+                        placeholder={t("fields.areteCodigoPlaceholder")}
                         maxLength={6}
                         className="w-full font-mono text-lg tracking-wider uppercase"
                       />
                       <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
                         <span className="text-xs text-muted-foreground">
-                          6 caracteres
+                          {t("fields.chars6")}
                         </span>
                       </div>
                     </div>
@@ -533,8 +545,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                         </TooltipTrigger>
                         <TooltipContent side="right" className="max-w-xs">
                           <p className="text-xs">
-                            Código de identificación del arete (máximo 6
-                            caracteres)
+                            {t("fields.areteCodigoHelp")}
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -549,11 +560,11 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Nombre (opcional)
+                    {t("fields.nombre")}
                   </Label>
                   <Input
                     {...register("nombre_animal")}
-                    placeholder="Ej: Lucero, Toro, etc."
+                    placeholder={t("fields.nombrePlaceholder")}
                     className="w-full"
                   />
                   {errors.nombre_animal && (
@@ -565,13 +576,14 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Registro Genealógico <span className="text-red-500">*</span>
+                    {t("fields.registroGenealogico")}{" "}
+                    <span className="text-red-500">*</span>
                   </Label>
                   <div className="flex items-center gap-2">
                     <div className="relative flex-1">
                       <Input
                         {...register("registro_genealogico")}
-                        placeholder="Ej: ARG-12345-2024, BR-9876, etc."
+                        placeholder={t("fields.registroGenealogicoPlaceholder")}
                         className="w-full font-mono uppercase"
                       />
                     </div>
@@ -589,8 +601,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                         </TooltipTrigger>
                         <TooltipContent side="right" className="max-w-xs">
                           <p className="text-xs">
-                            Número de registro genealógico del animal. Puede
-                            incluir letras, números y guiones.
+                            {t("fields.registroGenealogicoHelp")}
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -605,13 +616,14 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Código / Microchip <span className="text-red-500">*</span>
+                    {t("fields.microchip")}{" "}
+                    <span className="text-red-500">*</span>
                   </Label>
                   <div className="flex items-center gap-2">
                     <div className="relative flex-1">
                       <Input
                         {...register("microchip")}
-                        placeholder="Ej: 985141001234567, 900123456789012, etc."
+                        placeholder={t("fields.microchipPlaceholder")}
                         className="w-full font-mono"
                       />
                     </div>
@@ -628,10 +640,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent side="right" className="max-w-xs">
-                          <p className="text-xs">
-                            Código de identificación del microchip (15 dígitos
-                            recomendado)
-                          </p>
+                          <p className="text-xs">{t("fields.microchipHelp")}</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -646,7 +655,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
               <div className="space-y-4">
                 <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                  Imágenes del Animal
+                  {t("sections.imagenes")}
                 </h3>
 
                 <div className="space-y-4">
@@ -668,7 +677,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                         </svg>
                       </div>
                       <p className="text-sm text-gray-600 mb-2">
-                        Arrastra y suelta imágenes o haz clic para seleccionar
+                        {t("imagenes.dropzone")}
                       </p>
                       <Input
                         type="file"
@@ -679,11 +688,12 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                         className="w-full max-w-xs cursor-pointer text-sm file:mr-2 file:py-2 file:px-3 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 file:border-none file:rounded-md hover:file:bg-blue-100 disabled:opacity-50"
                       />
                       <p className="text-xs text-gray-500 mt-3">
-                        <span className="font-medium">Máximo 5 imágenes</span> ·
-                        Formatos: JPG, PNG, GIF · Máximo 1MB cada una
+                        {t("imagenes.maxInfo")}
                         <br />
                         <span className="text-blue-600">
-                          {selectedImages.length}/5 imágenes seleccionadas
+                          {t("imagenes.contador", {
+                            count: selectedImages.length,
+                          })}
                         </span>
                       </p>
                     </div>
@@ -698,20 +708,20 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                         >
                           <img
                             src={preview}
-                            alt={`Preview ${index + 1}`}
+                            alt={t("imagenes.alt", { index: index + 1 })}
                             className="w-full h-full object-cover rounded-lg border shadow-sm hover:shadow-md transition-shadow"
                           />
                           <button
                             type="button"
                             onClick={() => removeImage(index)}
                             className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-all shadow-md active:scale-95 opacity-0 group-hover:opacity-100"
-                            aria-label="Eliminar imagen"
+                            aria-label={t("imagenes.eliminar")}
                           >
                             ×
                           </button>
                           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
                             <span className="text-white text-xs">
-                              Imagen {index + 1}
+                              {t("imagenes.imagen", { index: index + 1 })}
                             </span>
                           </div>
                         </div>
@@ -724,12 +734,12 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                CARACTERÍSTICAS
+                {t("sections.caracteristicas")}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Sexo <span className="text-red-500">*</span>
+                    {t("fields.sexo")} <span className="text-red-500">*</span>
                   </Label>
                   <RadioGroup
                     value={watch("sexo") || ""}
@@ -763,11 +773,11 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Capa / Color (opcional)
+                    {t("fields.capaColor")}
                   </Label>
                   <Input
                     {...register("color")}
-                    placeholder="Ej: Negro, Blanco, Café"
+                    placeholder={t("fields.capaColorPlaceholder")}
                     className="w-full"
                   />
                   {errors.color && (
@@ -779,7 +789,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Razas <span className="text-red-500">*</span>
+                    {t("fields.razas")} <span className="text-red-500">*</span>
                   </Label>
                   <div className="border rounded-lg p-3 space-y-2 max-h-48 overflow-y-auto">
                     {razas?.data.map((raza) => (
@@ -809,7 +819,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                     ))}
                     {(!razas?.data || razas.data.length === 0) && (
                       <p className="text-sm text-muted-foreground">
-                        No hay razas disponibles
+                        {t("padre.noRazas")}
                       </p>
                     )}
                   </div>
@@ -822,7 +832,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Nivel de Pureza (opcional)
+                    {t("fields.nivelPureza")}
                   </Label>
                   <RadioGroup
                     value={watch("pureza") || ""}
@@ -854,7 +864,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                     htmlFor="fecha_nacimiento"
                     className="text-sm font-medium"
                   >
-                    Fecha de Nacimiento (opcional)
+                    {t("fields.fechaNacimiento")}
                   </Label>
                   <Input
                     id="fecha_nacimiento"
@@ -875,7 +885,8 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Edad Promedio <span className="text-red-500">*</span>
+                    {t("fields.edadPromedio")}{" "}
+                    <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     type="number"
@@ -890,7 +901,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                         shouldValidate: true,
                       });
                     }}
-                    placeholder="Edad en años"
+                    placeholder={t("fields.edadPlaceholder")}
                     className="w-full"
                   />
                   {errors.edad_promedio && (
@@ -900,20 +911,21 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                   )}
                   {fechaNacimiento && (
                     <p className="text-xs text-blue-600 flex items-center gap-1">
-                      <span>ℹ️</span> La edad se calcula automáticamente
+                      <span>ℹ️</span> {t("fields.edadAutoCalculada")}
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Peso actual (kg) <span className="text-red-500">*</span>
+                    {t("fields.pesoActual")}{" "}
+                    <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     type="number"
                     step="0.01"
                     {...register("peso_actual")}
-                    placeholder="Ej: 450.5"
+                    placeholder={t("fields.pesoActualPlaceholder")}
                     className="w-full"
                   />
                   {errors.peso_actual && (
@@ -925,7 +937,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Alzada (opcional)
+                    {t("fields.alzada")}
                   </Label>
                   <div className="flex gap-2">
                     <div className="flex-1">
@@ -933,7 +945,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                         type="number"
                         step="0.01"
                         {...register("alzada")}
-                        placeholder="Ej: 150"
+                        placeholder={t("fields.alzadaPlaceholder")}
                         className="w-full"
                       />
                     </div>
@@ -945,11 +957,15 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                         }
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Unidad" />
+                          <SelectValue placeholder={t("fields.unidadAlzada")} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="cm">cm</SelectItem>
-                          <SelectItem value="manos">Manos</SelectItem>
+                          <SelectItem value="cm">
+                            {t("fields.unidadCm")}
+                          </SelectItem>
+                          <SelectItem value="manos">
+                            {t("fields.unidadManos")}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -961,14 +977,15 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                   )}
                   {watch("unidad_alzada") === "manos" && (
                     <p className="text-xs text-muted-foreground">
-                      1 mano = 4 pulgadas (10.16 cm)
+                      {t("fields.alzadaManosInfo")}
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Condición corporal <span className="text-red-500">*</span>
+                    {t("fields.condicionCorporal")}{" "}
+                    <span className="text-red-500">*</span>
                   </Label>
                   <Select
                     value={watch("condicion_corporal") || ""}
@@ -988,17 +1005,35 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecciona una condición" />
+                      <SelectValue
+                        placeholder={t("fields.condicionCorporalPlaceholder")}
+                      />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="excelente">Excelente</SelectItem>
-                      <SelectItem value="muy_buena">Muy Buena</SelectItem>
-                      <SelectItem value="buena">Buena</SelectItem>
-                      <SelectItem value="regular">Regular</SelectItem>
-                      <SelectItem value="mala">Mala</SelectItem>
-                      <SelectItem value="muy_mala">Muy Mala</SelectItem>
-                      <SelectItem value="caquexica">Caquéxica</SelectItem>
-                      <SelectItem value="obesa">Obesa</SelectItem>
+                      <SelectItem value="excelente">
+                        {t("fields.condicionExcelente")}
+                      </SelectItem>
+                      <SelectItem value="muy_buena">
+                        {t("fields.condicionMuyBuena")}
+                      </SelectItem>
+                      <SelectItem value="buena">
+                        {t("fields.condicionBuena")}
+                      </SelectItem>
+                      <SelectItem value="regular">
+                        {t("fields.condicionRegular")}
+                      </SelectItem>
+                      <SelectItem value="mala">
+                        {t("fields.condicionMala")}
+                      </SelectItem>
+                      <SelectItem value="muy_mala">
+                        {t("fields.condicionMuyMala")}
+                      </SelectItem>
+                      <SelectItem value="caquexica">
+                        {t("fields.condicionCaquexica")}
+                      </SelectItem>
+                      <SelectItem value="obesa">
+                        {t("fields.condicionObesa")}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   {errors.condicion_corporal && (
@@ -1012,10 +1047,10 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                USO
+                {t("sections.uso")}
               </h3>
               <div className="space-y-2">
-                <Label>Uso del Equino</Label>
+                <Label>{t("fields.usoEquino")}</Label>
                 <Select
                   value={watch("uso_equino") || ""}
                   onValueChange={(value) =>
@@ -1023,33 +1058,41 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona el uso del equino" />
+                    <SelectValue
+                      placeholder={t("fields.usoEquinoPlaceholder")}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value={UsoEquinoEnum.TRABAJO}>
-                      Trabajo
+                      {t("fields.usoEquinoTrabajo")}
                     </SelectItem>
                     <SelectItem value={UsoEquinoEnum.DEPORTE}>
-                      Deporte
+                      {t("fields.usoEquinoDeporte")}
                     </SelectItem>
                     <SelectItem value={UsoEquinoEnum.REPRODUCCION}>
-                      Reproducción
+                      {t("fields.usoEquinoReproduccion")}
                     </SelectItem>
-                    <SelectItem value={UsoEquinoEnum.PASEO}>Paseo</SelectItem>
-                    <SelectItem value={UsoEquinoEnum.CARGA}>Carga</SelectItem>
+                    <SelectItem value={UsoEquinoEnum.PASEO}>
+                      {t("fields.usoEquinoPaseo")}
+                    </SelectItem>
+                    <SelectItem value={UsoEquinoEnum.CARGA}>
+                      {t("fields.usoEquinoCarga")}
+                    </SelectItem>
                     <SelectItem value={UsoEquinoEnum.GANADERIA}>
-                      Ganadería
+                      {t("fields.usoEquinoGanaderia")}
                     </SelectItem>
                     <SelectItem value={UsoEquinoEnum.POLICIA}>
-                      Policía
+                      {t("fields.usoEquinoPolicia")}
                     </SelectItem>
                     <SelectItem value={UsoEquinoEnum.TERAPIA}>
-                      Terapia
+                      {t("fields.usoEquinoTerapia")}
                     </SelectItem>
                     <SelectItem value={UsoEquinoEnum.COMPANIA}>
-                      Compañía
+                      {t("fields.usoEquinoCompania")}
                     </SelectItem>
-                    <SelectItem value={UsoEquinoEnum.OTRO}>Otro</SelectItem>
+                    <SelectItem value={UsoEquinoEnum.OTRO}>
+                      {t("fields.usoEquinoOtro")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -1057,17 +1100,17 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                SANIDAD
+                {t("sections.sanidad")}
               </h3>
 
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Medicamentos (opcional)
+                    {t("fields.medicamentos")}
                   </Label>
                   <Input
                     {...register("medicamento")}
-                    placeholder="Ej: Ivermectina, Vitaminas, etc."
+                    placeholder={t("fields.medicamentosPlaceholder")}
                     className="w-full"
                   />
                   {errors.medicamento && (
@@ -1081,11 +1124,11 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Vacunas (opcional)
+                    {t("fields.vacunas")}
                   </Label>
                   <Input
                     {...register("vacunas")}
-                    placeholder="Ej:  Vitamina A, Vitamina B, etc."
+                    placeholder={t("fields.vacunasPlaceholder")}
                     className="w-full"
                   />
                   {errors.vacunas && (
@@ -1097,8 +1140,9 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Desparasitado</Label>
-
+                <Label className="text-sm font-medium">
+                  {t("fields.desparasitado")}
+                </Label>
                 <div className="flex items-center gap-3">
                   <Switch
                     checked={watch("desparasitado")}
@@ -1107,19 +1151,19 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                     }
                   />
                   <span className="text-sm text-muted-foreground">
-                    {watch("desparasitado") ? "Sí" : "No"}
+                    {watch("desparasitado") ? t("fields.si") : t("fields.no")}
                   </span>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Lesiones (opcional)
+                  {t("fields.lesiones")}
                 </Label>
                 <Input
                   {...register("lesiones")}
-                  placeholder="Lesiones del animal"
-                  className=" w-full"
+                  placeholder={t("fields.lesionesPlaceholder")}
+                  className="w-full"
                 />
                 {errors.lesiones && (
                   <p className="text-sm text-red-500">
@@ -1130,12 +1174,12 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Alergias (opcional)
+                  {t("fields.alergias")}
                 </Label>
                 <Input
                   {...register("alergias")}
-                  placeholder="Alergias del Animal"
-                  className=" w-full"
+                  placeholder={t("fields.alergiasPlaceholder")}
+                  className="w-full"
                 />
                 {errors.alergias && (
                   <p className="text-sm text-red-500">
@@ -1146,12 +1190,12 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Odontologia (opcional)
+                  {t("fields.odontologia")}
                 </Label>
                 <Input
                   {...register("odontologia")}
-                  placeholder="Odontologia del animal"
-                  className=" w-full"
+                  placeholder={t("fields.odontologiaPlaceholder")}
+                  className="w-full"
                 />
                 {errors.odontologia && (
                   <p className="text-sm text-red-500">
@@ -1162,12 +1206,12 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Veterinario (opcional)
+                  {t("fields.veterinario")}
                 </Label>
                 <Input
                   {...register("veterinario")}
-                  placeholder="Nombre de veterinario del animal"
-                  className=" w-full"
+                  placeholder={t("fields.veterinarioPlaceholder")}
+                  className="w-full"
                 />
                 {errors.veterinario && (
                   <p className="text-sm text-red-500">
@@ -1179,13 +1223,14 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Reproducción y Producción
+                {t("sections.reproduccion")}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Tipo de Reproducción <span className="text-red-500">*</span>
+                    {t("fields.tipoReproduccion")}{" "}
+                    <span className="text-red-500">*</span>
                   </Label>
                   <RadioGroup
                     value={watch("tipo_reproduccion") || ""}
@@ -1219,18 +1264,19 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                   )}
                 </div>
               </div>
+
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
-                  Historial reproductivo
+                  {t("fields.historialReproductivo")}
                   <span className="text-xs text-muted-foreground font-normal">
-                    (Agrega eventos uno por uno)
+                    {t("fields.historialReproductivoDesc")}
                   </span>
                 </Label>
 
                 <div className="flex flex-col sm:flex-row gap-2">
                   <Textarea
-                    placeholder="Ej: Servicio con toro X - 15/01/2024, Parto gemelar - 10/06/2024, etc."
-                    className={`min-h-[80px] w-full sm:flex-1`}
+                    placeholder={t("fields.historialReproductivoPlaceholder")}
+                    className="min-h-[80px] w-full sm:flex-1"
                     value={historialReproductivoInput}
                     onChange={(e) =>
                       setHistorialReproductivoInput(e.target.value)
@@ -1246,7 +1292,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                       className="flex-1 sm:flex-none h-10"
                     >
                       <Plus className="h-4 w-4 mr-1" />
-                      Agregar
+                      {t("buttons.agregar")}
                     </Button>
 
                     {historialReproductivoList.length > 0 && (
@@ -1256,14 +1302,14 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                         onClick={limpiarHistorialReproductivo}
                         className="flex-1 sm:flex-none h-10 text-red-500 hover:text-red-600"
                       >
-                        Limpiar
+                        {t("buttons.limpiar")}
                       </Button>
                     )}
                   </div>
                 </div>
 
                 <p className="text-xs text-muted-foreground">
-                  Escribe un evento y presiona Enter o haz clic en "Agregar"
+                  {t("fields.historialReproductivoHint")}
                 </p>
 
                 {errors.historial_reproductivo && (
@@ -1276,8 +1322,8 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                   <SummaryList
                     items={historialReproductivoList}
                     onRemoveItem={eliminarHistorialReproductivo}
-                    label="Eventos registrados"
-                    emptyMessage="No hay eventos registrados"
+                    label={t("fields.historialReproductivoLabel")}
+                    emptyMessage={t("fields.historialReproductivoEmpty")}
                   />
                 )}
               </div>
@@ -1285,7 +1331,8 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Alimentación <span className="text-red-500">*</span>
+                {t("sections.alimentacion")}{" "}
+                <span className="text-red-500">*</span>
               </h3>
 
               <div className="border rounded-lg p-4 space-y-4 bg-gray-50">
@@ -1366,10 +1413,10 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                                   className="text-sm"
                                 >
                                   {origen === "comprado"
-                                    ? "Comprado"
+                                    ? t("alimentacion.origenComprado")
                                     : origen === "producido"
-                                      ? "Producido"
-                                      : "Comprado y producido"}
+                                      ? t("alimentacion.origenProducido")
+                                      : t("alimentacion.origenAmbos")}
                                 </Label>
                               </div>
                             ))}
@@ -1379,7 +1426,9 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                             "comprado y producido" && (
                             <div className="grid grid-cols-2 gap-3">
                               <div className="space-y-1">
-                                <Label className="text-xs">% Comprado</Label>
+                                <Label className="text-xs">
+                                  {t("alimentacion.porcentajeComprado")}
+                                </Label>
                                 <Input
                                   type="number"
                                   min="0"
@@ -1404,12 +1453,19 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                                     );
                                     setValue("tipo_alimentacion", updated);
                                   }}
-                                  placeholder="Ej: 60"
+                                  placeholder={t(
+                                    "alimentacion.porcentajeEjemplo",
+                                    {
+                                      value: 60,
+                                    },
+                                  )}
                                   className="w-full"
                                 />
                               </div>
                               <div className="space-y-1">
-                                <Label className="text-xs">% Producido</Label>
+                                <Label className="text-xs">
+                                  {t("alimentacion.porcentajeProducido")}
+                                </Label>
                                 <Input
                                   type="number"
                                   min="0"
@@ -1434,7 +1490,12 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                                     );
                                     setValue("tipo_alimentacion", updated);
                                   }}
-                                  placeholder="Ej: 40"
+                                  placeholder={t(
+                                    "alimentacion.porcentajeEjemplo",
+                                    {
+                                      value: 40,
+                                    },
+                                  )}
                                   className="w-full"
                                 />
                               </div>
@@ -1446,7 +1507,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                                   alimentoSeleccionado.porcentaje_producido !==
                                   100 && (
                                   <p className="text-xs text-red-500 col-span-2">
-                                    ⚠️ La suma de porcentajes debe ser 100%
+                                    {t("alimentacion.porcentajeSumaError")}
                                   </p>
                                 )}
                             </div>
@@ -1461,29 +1522,29 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                PRODUCCION / DESEMPEÑO
+                {t("sections.produccion")}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
               <div className="space-y-2">
-                <Label>Nivel de entrenamiento</Label>
+                <Label>{t("fields.nivelEntrenamiento")}</Label>
                 <Input
                   {...register("nivel_entrenamiento")}
-                  placeholder="Básico, Intermedio, Avanzado..."
+                  placeholder={t("fields.nivelEntrenamientoPlaceholder")}
                 />
               </div>
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
-                  Competencias / Resultados
+                  {t("fields.competencias")}
                   <span className="text-xs text-muted-foreground font-normal">
-                    (Agrega participaciones una por una)
+                    {t("fields.competenciasDesc")}
                   </span>
                 </Label>
 
                 <div className="flex flex-col sm:flex-row gap-2">
                   <Textarea
-                    placeholder="Ej: Campeonato Nacional - 1er lugar 2023, Feria Regional - Mejor ejemplar 2024, etc."
-                    className={`min-h-[80px] w-full sm:flex-1`}
+                    placeholder={t("fields.competenciasPlaceholder")}
+                    className="min-h-[80px] w-full sm:flex-1"
                     value={competenciasInput}
                     onChange={(e) => setCompetenciasInput(e.target.value)}
                     onKeyDown={handleCompetenciaKeyDown}
@@ -1497,7 +1558,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                       className="flex-1 sm:flex-none h-10"
                     >
                       <Plus className="h-4 w-4 mr-1" />
-                      Agregar
+                      {t("buttons.agregar")}
                     </Button>
 
                     {competenciasList.length > 0 && (
@@ -1507,15 +1568,14 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                         onClick={limpiarCompetencias}
                         className="flex-1 sm:flex-none h-10 text-red-500 hover:text-red-600"
                       >
-                        Limpiar
+                        {t("buttons.limpiar")}
                       </Button>
                     )}
                   </div>
                 </div>
 
                 <p className="text-xs text-muted-foreground">
-                  Escribe una competencia y presiona Enter o haz clic en
-                  "Agregar"
+                  {t("fields.competenciasHint")}
                 </p>
 
                 {errors.resultados_competencias && (
@@ -1528,34 +1588,34 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                   <SummaryList
                     items={competenciasList}
                     onRemoveItem={eliminarCompetencia}
-                    label="Competencias registradas"
-                    emptyMessage="No hay competencias registradas"
+                    label={t("fields.competenciasLabel")}
+                    emptyMessage={t("fields.competenciasEmpty")}
                   />
                 )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Precio de compra</Label>
+                  <Label>{t("fields.precioCompra")}</Label>
                   <Input
                     type="number"
                     step="0.01"
                     {...register("precio_compra")}
-                    placeholder="Ej: 150000"
+                    placeholder={t("fields.precioCompraPlaceholder")}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Valor estimado</Label>
+                  <Label>{t("fields.valorEstimado")}</Label>
                   <Input
                     type="number"
                     step="0.01"
                     {...register("valor_estimado")}
-                    placeholder="Ej: 150000"
+                    placeholder={t("fields.valorEstimadoPlaceholder")}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Asegurado</Label>
+                  <Label>{t("fields.asegurado")}</Label>
 
                   <div className="flex items-center gap-3">
                     <Switch
@@ -1564,7 +1624,9 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                         setValue("asegurado", checked)
                       }
                     />
-                    <span>{watch("asegurado") ? "Sí" : "No"}</span>
+                    <span>
+                      {watch("asegurado") ? t("fields.si") : t("fields.no")}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -1572,18 +1634,20 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Ubicación y Origen
+                {t("sections.ubicacion")}
               </h3>
 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Finca</Label>
+                  <Label className="text-sm font-medium">
+                    {t("fields.finca")}
+                  </Label>
                   <Select
                     value={watch("fincaId") || ""}
                     onValueChange={(value) => setValue("fincaId", value)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecciona una finca" />
+                      <SelectValue placeholder={t("fields.fincaPlaceholder")} />
                     </SelectTrigger>
                     <SelectContent>
                       {fincasItems.map((finca) => (
@@ -1608,18 +1672,18 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                     }
                   />
                   <Label className="font-medium">
-                    ¿El animal fue comprado?
+                    {t("fields.animalComprado")}
                   </Label>
                 </div>
 
                 {watch("compra_animal") && (
                   <div className="space-y-2 pl-6 border-l-2 border-green-200">
                     <Label className="text-sm font-medium">
-                      Nombre del criador (origen)
+                      {t("fields.nombreCriadorOrigen")}
                     </Label>
                     <Input
                       {...register("nombre_criador_origen_animal")}
-                      placeholder="Nombre del criador o lugar de origen"
+                      placeholder={t("fields.nombreCriadorOrigenPlaceholder")}
                       className="w-full"
                     />
                     {errors.nombre_criador_origen_animal && (
@@ -1638,7 +1702,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                 onClick={() => setActiveTab("padre")}
                 className="group"
               >
-                <span>Datos del Padre</span>
+                <span>{t("buttons.siguientePadre")}</span>
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
@@ -1666,7 +1730,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                   />
                 </svg>
               </span>
-              Datos del Padre
+              {t("sections.datosPadre")}
             </CardTitle>
           </CardHeader>
 
@@ -1677,9 +1741,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                 checked={isPadreFinca}
                 onCheckedChange={(checked) => {
                   setIsPadreFinca(checked === true);
-                  if (checked === false) {
-                    setSelectedPadreId("");
-                  }
+                  if (checked === false) setSelectedPadreId("");
                 }}
                 className="mt-0.5"
               />
@@ -1688,10 +1750,10 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                   htmlFor="padreFinca"
                   className="font-medium text-blue-900"
                 >
-                  El padre pertenece a esta finca
+                  {t("padre.esDeFinca")}
                 </Label>
                 <p className="text-xs text-blue-700/70 mt-0.5">
-                  Marca esta opción si el padre está registrado en tu ganadería
+                  {t("padre.esDeFincaDesc")}
                 </p>
               </div>
             </div>
@@ -1700,25 +1762,24 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
-                    Buscar Padre <span className="text-red-500">*</span>
+                    {t("padre.buscarPadre")}{" "}
+                    <span className="text-red-500">*</span>
                     <span className="text-xs text-muted-foreground font-normal">
-                      (Selecciona un macho registrado)
+                      {t("padre.buscarPadreDesc")}
                     </span>
                   </Label>
 
                   <div className="relative">
                     <div className="relative">
                       <Input
-                        placeholder="Buscar por identificador o nombre..."
+                        placeholder={t("padre.buscarPlaceholder")}
                         value={searchPadreTerm}
                         onChange={(e) => {
                           setSearchPadreTerm(e.target.value);
                           setIsPadreDropdownOpen(true);
                         }}
                         onFocus={() => {
-                          if (searchPadreTerm) {
-                            setIsPadreDropdownOpen(true);
-                          }
+                          if (searchPadreTerm) setIsPadreDropdownOpen(true);
                         }}
                         className="w-full pr-10"
                       />
@@ -1759,8 +1820,9 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                           {filteredMachos.length > 0 ? (
                             <div className="py-1">
                               <div className="px-3 py-1.5 text-xs text-muted-foreground bg-gray-50 border-b">
-                                {filteredMachos.length} resultado
-                                {filteredMachos.length > 1 ? "s" : ""}
+                                {t("padre.resultados", {
+                                  count: filteredMachos.length,
+                                })}
                               </div>
                               {filteredMachos.map((macho) => (
                                 <div
@@ -1769,7 +1831,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                                   onClick={() => {
                                     setSelectedPadreId(macho.id);
                                     setSearchPadreTerm(
-                                      `${macho.identificador} - ${macho.nombre_animal || "Sin nombre"}`,
+                                      `${macho.identificador} - ${macho.nombre_animal || t("padre.sinNombre")}`,
                                     );
                                     setIsPadreDropdownOpen(false);
                                   }}
@@ -1779,11 +1841,12 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                                       {macho.identificador}
                                     </span>
                                     <span className="text-sm text-gray-500">
-                                      {macho.nombre_animal || "Sin nombre"}
+                                      {macho.nombre_animal ||
+                                        t("padre.sinNombre")}
                                     </span>
                                   </div>
                                   <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                                    Seleccionar
+                                    {t("padre.seleccionar")}
                                   </span>
                                 </div>
                               ))}
@@ -1803,9 +1866,9 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                                   d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                                 />
                               </svg>
-                              <p>No se encontraron machos</p>
+                              <p>{t("padre.noMachos")}</p>
                               <p className="text-xs text-gray-400 mt-1">
-                                Intenta con otro término de búsqueda
+                                {t("padre.noMachosDesc")}
                               </p>
                             </div>
                           )}
@@ -1821,7 +1884,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                           <p className="text-sm text-green-700 flex items-center gap-2">
                             <span className="text-green-500">✓</span>
                             <span className="font-medium">
-                              Padre seleccionado:
+                              {t("padre.padreSeleccionado")}
                             </span>
                           </p>
                           <p className="text-sm font-semibold text-green-800 mt-1">
@@ -1851,7 +1914,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                               d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                             />
                           </svg>
-                          Cambiar
+                          {t("padre.cambiar")}
                         </Button>
                       </div>
                     </div>
@@ -1863,14 +1926,14 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nombre Padre
+                      {t("padre.nombrePadre")}
                       <span className="text-xs text-muted-foreground font-normal">
                         (opcional)
                       </span>
                     </Label>
                     <Input
                       {...register("nombre_padre")}
-                      placeholder="Nombre del padre"
+                      placeholder={t("padre.nombrePadrePlaceholder")}
                       className="focus:ring-2 focus:ring-blue-500/20"
                     />
                     {errors.nombre_padre && (
@@ -1884,7 +1947,8 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
-                    Razas del Padre <span className="text-red-500">*</span>
+                    {t("padre.razasPadre")}{" "}
+                    <span className="text-red-500">*</span>
                   </Label>
                   <div className="border rounded-lg p-3 space-y-2 max-h-48 overflow-y-auto bg-gray-50">
                     {razas?.data.map((raza) => (
@@ -1922,7 +1986,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                     ))}
                     {(!razas?.data || razas.data.length === 0) && (
                       <p className="text-sm text-muted-foreground">
-                        No hay razas disponibles
+                        {t("padre.noRazas")}
                       </p>
                     )}
                   </div>
@@ -1937,7 +2001,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nivel de Pureza del Padre
+                      {t("padre.purezaPadre")}
                       <span className="text-xs text-muted-foreground font-normal">
                         (opcional)
                       </span>
@@ -1974,12 +2038,12 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nombre Criador del Padre{" "}
+                      {t("padre.nombreCriadorPadre")}{" "}
                       <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       {...register("nombre_criador_padre")}
-                      placeholder="Nombre del criador"
+                      placeholder={t("padre.nombreCriadorPadrePlaceholder")}
                       className="focus:ring-2 focus:ring-blue-500/20"
                     />
                     {errors.nombre_criador_padre && (
@@ -1992,12 +2056,12 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nombre Propietario del Padre{" "}
+                      {t("padre.nombrePropietarioPadre")}{" "}
                       <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       {...register("nombre_propietario_padre")}
-                      placeholder="Nombre del propietario"
+                      placeholder={t("padre.nombrePropietarioPadrePlaceholder")}
                       className="focus:ring-2 focus:ring-blue-500/20"
                     />
                     {errors.nombre_propietario_padre && (
@@ -2010,12 +2074,12 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Finca de Origen del Padre{" "}
+                      {t("padre.fincaOrigenPadre")}{" "}
                       <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       {...register("nombre_finca_origen_padre")}
-                      placeholder="Nombre de la finca de origen"
+                      placeholder={t("padre.fincaOrigenPadrePlaceholder")}
                       className="focus:ring-2 focus:ring-blue-500/20"
                     />
                     {errors.nombre_finca_origen_padre && (
@@ -2049,14 +2113,14 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                     d="M10 19l-7-7m0 0l7-7m-7 7h18"
                   />
                 </svg>
-                Anterior
+                {t("buttons.anterior")}
               </Button>
               <Button
                 type="button"
                 onClick={() => setActiveTab("madre")}
                 className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white"
               >
-                Datos de la Madre
+                {t("buttons.siguienteMadre")}
                 <svg
                   className="w-4 h-4 ml-2"
                   fill="none"
@@ -2096,12 +2160,15 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                   />
                 </svg>
               </span>
-              Datos de la Madre
-              {watch("numero_parto_madre") && (
-                <span className="ml-auto text-xs font-normal bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                  Parto #{watch("numero_parto_madre")}
-                </span>
-              )}
+              {t("sections.datosMadre")}
+              {(() => {
+                const numeroPartoMadre = watch("numero_parto_madre");
+                return numeroPartoMadre ? (
+                  <span className="ml-auto text-xs font-normal bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                    {t("madre.parto", { numero: numeroPartoMadre })}
+                  </span>
+                ) : null;
+              })()}
             </CardTitle>
           </CardHeader>
 
@@ -2112,9 +2179,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                 checked={isMadreFinca}
                 onCheckedChange={(checked) => {
                   setIsMadreFinca(checked === true);
-                  if (checked === false) {
-                    setSelectedMadreId("");
-                  }
+                  if (checked === false) setSelectedMadreId("");
                 }}
                 className="mt-0.5"
               />
@@ -2123,10 +2188,10 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                   htmlFor="madreFinca"
                   className="font-medium text-pink-900"
                 >
-                  La madre pertenece a esta finca
+                  {t("madre.esDeFinca")}
                 </Label>
                 <p className="text-xs text-pink-700/70 mt-0.5">
-                  Marca esta opción si la madre está registrada en tu ganadería
+                  {t("madre.esDeFincaDesc")}
                 </p>
               </div>
             </div>
@@ -2135,25 +2200,24 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
-                    Buscar Madre <span className="text-red-500">*</span>
+                    {t("madre.buscarMadre")}{" "}
+                    <span className="text-red-500">*</span>
                     <span className="text-xs text-muted-foreground font-normal">
-                      (Selecciona una hembra registrada)
+                      {t("madre.buscarMadreDesc")}
                     </span>
                   </Label>
 
                   <div className="relative">
                     <div className="relative">
                       <Input
-                        placeholder="Buscar por identificador o nombre..."
+                        placeholder={t("padre.buscarPlaceholder")}
                         value={searchMadreTerm}
                         onChange={(e) => {
                           setSearchMadreTerm(e.target.value);
                           setIsMadreDropdownOpen(true);
                         }}
                         onFocus={() => {
-                          if (searchMadreTerm) {
-                            setIsMadreDropdownOpen(true);
-                          }
+                          if (searchMadreTerm) setIsMadreDropdownOpen(true);
                         }}
                         className="w-full pr-10"
                       />
@@ -2194,8 +2258,9 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                           {filteredHembras.length > 0 ? (
                             <div className="py-1">
                               <div className="px-3 py-1.5 text-xs text-muted-foreground bg-gray-50 border-b">
-                                {filteredHembras.length} resultado
-                                {filteredHembras.length > 1 ? "s" : ""}
+                                {t("padre.resultados", {
+                                  count: filteredHembras.length,
+                                })}
                               </div>
                               {filteredHembras.map((hembra) => (
                                 <div
@@ -2204,7 +2269,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                                   onClick={() => {
                                     setSelectedMadreId(hembra.id);
                                     setSearchMadreTerm(
-                                      `${hembra.identificador} - ${hembra.nombre_animal || "Sin nombre"}`,
+                                      `${hembra.identificador} - ${hembra.nombre_animal || t("padre.sinNombre")}`,
                                     );
                                     setIsMadreDropdownOpen(false);
                                   }}
@@ -2214,11 +2279,12 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                                       {hembra.identificador}
                                     </span>
                                     <span className="text-sm text-gray-500">
-                                      {hembra.nombre_animal || "Sin nombre"}
+                                      {hembra.nombre_animal ||
+                                        t("padre.sinNombre")}
                                     </span>
                                   </div>
                                   <span className="text-xs bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full">
-                                    Seleccionar
+                                    {t("padre.seleccionar")}
                                   </span>
                                 </div>
                               ))}
@@ -2238,9 +2304,9 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                                   d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                                 />
                               </svg>
-                              <p>No se encontraron hembras</p>
+                              <p>{t("madre.noHembras")}</p>
                               <p className="text-xs text-gray-400 mt-1">
-                                Intenta con otro término de búsqueda
+                                {t("madre.noHembrasDesc")}
                               </p>
                             </div>
                           )}
@@ -2256,7 +2322,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                           <p className="text-sm text-green-700 flex items-center gap-2">
                             <span className="text-green-500">✓</span>
                             <span className="font-medium">
-                              Madre seleccionada:
+                              {t("madre.madreSeleccionada")}
                             </span>
                           </p>
                           <p className="text-sm font-semibold text-green-800 mt-1">
@@ -2286,19 +2352,19 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                               d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                             />
                           </svg>
-                          Cambiar
+                          {t("padre.cambiar")}
                         </Button>
                       </div>
                     </div>
                   )}
                 </div>
 
-                {/* Campo de número de parto cuando la madre está en la finca */}
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
-                    Número de parto <span className="text-red-500">*</span>
+                    {t("madre.numeroParto")}{" "}
+                    <span className="text-red-500">*</span>
                     <span className="text-xs text-muted-foreground font-normal">
-                      (Último parto)
+                      {t("madre.numeroPartoDesc")}
                     </span>
                   </Label>
                   <div className="relative">
@@ -2306,7 +2372,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                       min={1}
                       {...register("numero_parto_madre")}
                       required
-                      placeholder="Ej: 1, 2, 3..."
+                      placeholder={t("madre.numeroPartoPlaceholder")}
                       maxLength={2}
                       className="flex-1 font-medium focus:ring-2 focus:ring-pink-500/20"
                       type="number"
@@ -2328,7 +2394,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nombre Madre
+                      {t("madre.nombreMadre")}
                       <span className="text-xs text-muted-foreground font-normal">
                         (opcional)
                       </span>
@@ -2336,7 +2402,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                     <Input
                       value={watch("nombre_madre") || ""}
                       onChange={(e) => setValue("nombre_madre", e.target.value)}
-                      placeholder="Nombre de la madre"
+                      placeholder={t("madre.nombreMadrePlaceholder")}
                       className="focus:ring-2 focus:ring-pink-500/20"
                     />
                     {errors.nombre_madre && (
@@ -2350,7 +2416,8 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
-                    Razas de la Madre <span className="text-red-500">*</span>
+                    {t("madre.razasMadre")}{" "}
+                    <span className="text-red-500">*</span>
                   </Label>
                   <div className="border rounded-lg p-3 space-y-2 max-h-48 overflow-y-auto bg-gray-50">
                     {razas?.data.map((raza) => (
@@ -2388,7 +2455,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                     ))}
                     {(!razas?.data || razas.data.length === 0) && (
                       <p className="text-sm text-muted-foreground">
-                        No hay razas disponibles
+                        {t("padre.noRazas")}
                       </p>
                     )}
                   </div>
@@ -2403,7 +2470,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nivel de pureza
+                      {t("madre.purezaMadre")}
                       <span className="text-xs text-muted-foreground font-normal">
                         (opcional)
                       </span>
@@ -2440,9 +2507,10 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Número de parto <span className="text-red-500">*</span>
+                      {t("madre.numeroParto")}{" "}
+                      <span className="text-red-500">*</span>
                       <span className="text-xs text-muted-foreground font-normal">
-                        (Último parto)
+                        {t("madre.numeroPartoDesc")}
                       </span>
                     </Label>
                     <div className="relative">
@@ -2450,7 +2518,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                         min={1}
                         {...register("numero_parto_madre")}
                         required
-                        placeholder="Ej: 1, 2, 3..."
+                        placeholder={t("madre.numeroPartoPlaceholder")}
                         maxLength={2}
                         className="flex-1 font-medium focus:ring-2 focus:ring-pink-500/20"
                         type="number"
@@ -2469,14 +2537,15 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nombre Criador <span className="text-red-500">*</span>
+                      {t("madre.nombreCriadorMadre")}{" "}
+                      <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       value={watch("nombre_criador_madre") || ""}
                       onChange={(e) =>
                         setValue("nombre_criador_madre", e.target.value)
                       }
-                      placeholder="Nombre del criador"
+                      placeholder={t("madre.nombreCriadorMadrePlaceholder")}
                       className="focus:ring-2 focus:ring-pink-500/20"
                     />
                     {errors.nombre_criador_madre && (
@@ -2489,14 +2558,15 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nombre Propietario <span className="text-red-500">*</span>
+                      {t("madre.nombrePropietarioMadre")}{" "}
+                      <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       value={watch("nombre_propietario_madre") || ""}
                       onChange={(e) =>
                         setValue("nombre_propietario_madre", e.target.value)
                       }
-                      placeholder="Nombre del propietario"
+                      placeholder={t("madre.nombrePropietarioMadrePlaceholder")}
                       className="focus:ring-2 focus:ring-pink-500/20"
                     />
                     {errors.nombre_propietario_madre && (
@@ -2509,7 +2579,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
 
                   <div className="space-y-2 md:col-span-2">
                     <Label className="flex items-center gap-2">
-                      Nombre de la finca de origen{" "}
+                      {t("madre.fincaOrigenMadre")}{" "}
                       <span className="text-red-500">*</span>
                     </Label>
                     <Input
@@ -2517,7 +2587,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                       onChange={(e) =>
                         setValue("nombre_finca_origen_madre", e.target.value)
                       }
-                      placeholder="Nombre de la finca de origen"
+                      placeholder={t("madre.fincaOrigenMadrePlaceholder")}
                       className="focus:ring-2 focus:ring-pink-500/20"
                     />
                     {errors.nombre_finca_origen_madre && (
@@ -2551,7 +2621,7 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                     d="M10 19l-7-7m0 0l7-7m-7 7h18"
                   />
                 </svg>
-                Anterior
+                {t("buttons.anterior")}
               </Button>
               <Button
                 type="submit"
@@ -2580,11 +2650,11 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       ></path>
                     </svg>
-                    Creando...
+                    {t("buttons.creando")}
                   </>
                 ) : (
                   <>
-                    Crear Animal
+                    {t("buttons.crearAnimal")}
                     <svg
                       className="w-4 h-4 ml-2"
                       fill="none"

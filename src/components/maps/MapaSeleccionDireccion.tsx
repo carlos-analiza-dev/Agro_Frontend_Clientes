@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +16,7 @@ import { toast } from "react-toastify";
 
 const Map = dynamic(() => import("@/components/generics/Map"), {
   ssr: false,
-  loading: () => <div>Cargando mapa...</div>,
+  loading: () => <div>{/* Se muestra mediante el estado de carga */}</div>,
 });
 
 interface MapaSeleccionDireccionProps {
@@ -34,10 +35,13 @@ export default function MapaSeleccionDireccion({
   onLocationSelect,
   initialCoords,
 }: MapaSeleccionDireccionProps) {
+  const t = useTranslations("mapaSeleccionDireccion");
+
   const [marker, setMarker] = useState<{
     latitude: number;
     longitude: number;
   } | null>(null);
+
   const [direccion, setDireccion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -60,18 +64,20 @@ export default function MapaSeleccionDireccion({
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
       setIsLoading(true);
+
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const coords = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           };
+
           setMarker(coords);
           updateDireccion(coords.latitude, coords.longitude);
           setIsLoading(false);
         },
-        (error) => {
-          toast.error("Error obteniendo ubicación");
+        () => {
+          toast.error(t("messages.locationError"));
 
           setMarker(defaultCoords);
           updateDireccion(defaultCoords.latitude, defaultCoords.longitude);
@@ -80,7 +86,8 @@ export default function MapaSeleccionDireccion({
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
       );
     } else {
-      toast.error("Geolocalización no es soportada por este navegador");
+      toast.error(t("messages.geolocationUnsupported"));
+
       setMarker(defaultCoords);
       updateDireccion(defaultCoords.latitude, defaultCoords.longitude);
     }
@@ -89,12 +96,13 @@ export default function MapaSeleccionDireccion({
   const updateDireccion = async (latitude: number, longitude: number) => {
     try {
       setIsLoading(true);
+
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
       );
 
       if (!response.ok) {
-        throw new Error("Error al obtener la dirección");
+        throw new Error(t("messages.addressFetchError"));
       }
 
       const data = await response.json();
@@ -103,16 +111,23 @@ export default function MapaSeleccionDireccion({
         setDireccion(data.display_name);
       } else {
         setDireccion(
-          `Ubicación seleccionada (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`,
+          t("messages.selectedCoordinates", {
+            latitude: latitude.toFixed(4),
+            longitude: longitude.toFixed(4),
+          }),
         );
       }
-    } catch (error) {
-      toast.error("Error al obtener la dirección");
+    } catch {
+      toast.error(t("messages.addressError"));
 
       setDireccion(
-        `Ubicación seleccionada (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`,
+        t("messages.selectedCoordinates", {
+          latitude: latitude.toFixed(4),
+          longitude: longitude.toFixed(4),
+        }),
       );
-      toast.error("No se pudo obtener la dirección exacta");
+
+      toast.error(t("messages.exactAddressUnavailable"));
     } finally {
       setIsLoading(false);
     }
@@ -128,7 +143,7 @@ export default function MapaSeleccionDireccion({
       onLocationSelect(direccion, marker);
       onClose();
     } else {
-      toast.error("Por favor selecciona una ubicación en el mapa");
+      toast.error(t("messages.selectLocation"));
     }
   };
 
@@ -138,7 +153,7 @@ export default function MapaSeleccionDireccion({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5" />
-            Seleccionar Ubicación en el Mapa
+            {t("title")}
           </DialogTitle>
         </DialogHeader>
 
@@ -146,7 +161,12 @@ export default function MapaSeleccionDireccion({
           <div className="h-64 w-full rounded-md overflow-hidden border relative">
             {isLoading && (
               <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <div className="flex flex-col items-center gap-2">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                  <span className="text-sm text-muted-foreground">
+                    {t("loading")}
+                  </span>
+                </div>
               </div>
             )}
 
@@ -158,7 +178,7 @@ export default function MapaSeleccionDireccion({
               }
               zoom={15}
               marker={marker ? [marker.latitude, marker.longitude] : undefined}
-              markerText="Ubicación seleccionada"
+              markerText={t("markerText")}
               onMapClick={handleMapClick}
               className="h-full w-full cursor-pointer"
             />
@@ -169,17 +189,19 @@ export default function MapaSeleccionDireccion({
               <CardContent className="p-4 space-y-3">
                 <div className="flex items-start gap-2">
                   <MapPin className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+
                   <div className="flex-1">
                     <p className="text-sm font-medium">
-                      Ubicación seleccionada:
+                      {t("selectedLocation")}
                     </p>
+
                     <p className="text-sm text-muted-foreground">{direccion}</p>
                   </div>
                 </div>
 
                 {marker && (
                   <p className="text-xs text-muted-foreground">
-                    Coordenadas: {marker.latitude.toFixed(6)},{" "}
+                    {t("coordinates")}: {marker.latitude.toFixed(6)},{" "}
                     {marker.longitude.toFixed(6)}
                   </p>
                 )}
@@ -189,22 +211,22 @@ export default function MapaSeleccionDireccion({
 
           <div className="bg-muted/50 p-3 rounded-md">
             <p className="text-sm text-muted-foreground">
-              💡 Haz clic en cualquier lugar del mapa para seleccionar la
-              ubicación de tu finca
+              💡 {t("instructions")}
             </p>
           </div>
 
           <div className="flex gap-2 justify-end">
             <Button variant="outline" onClick={onClose}>
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
+
             <Button
               onClick={confirmarUbicacion}
               disabled={!marker || isLoading}
               className="gap-2"
             >
               <MapPin className="h-4 w-4" />
-              {isLoading ? "Cargando..." : "Usar esta ubicación"}
+              {isLoading ? t("buttons.loading") : t("buttons.useLocation")}
             </Button>
           </div>
         </div>

@@ -1,13 +1,12 @@
 "use client";
-import {
-  Agricola,
-  Cultivo,
-} from "@/api/produccion/interface/obter-producciones-userId.interface";
+
+import { Agricola } from "@/api/produccion/interface/obter-producciones-userId.interface";
 import {
   Cultivo as CultivoCreate,
   CultivoTipo,
 } from "@/api/produccion/interface/crear-produccion-finca.interface";
 import React, { useState, useEffect } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +32,9 @@ const FormProduccionAgricolaEdit = ({
   produccionAgricola,
   onDataChange,
 }: Props) => {
+  const t = useTranslations("formProduccionAgricolaEdit");
+  const locale = useLocale();
+
   const [cultivos, setCultivos] = useState<CultivoCreate[]>([]);
 
   useEffect(() => {
@@ -45,22 +47,27 @@ const FormProduccionAgricolaEdit = ({
           tiempo_estimado_cultivo: cultivo.tiempo_estimado_cultivo,
           meses_produccion: cultivo.meses_produccion || [],
           cantidad_producida_hectareas: cultivo.cantidad_producida_hectareas,
-        })
+        }),
       );
+
       setCultivos(cultivosMapeados);
+    } else {
+      setCultivos([]);
     }
   }, [produccionAgricola]);
 
   const handleCultivoChange = (
     index: number,
     field: keyof CultivoCreate,
-    value: any
+    value: any,
   ) => {
     const updatedCultivos = [...cultivos];
+
     updatedCultivos[index] = {
       ...updatedCultivos[index],
       [field]: value,
     };
+
     setCultivos(updatedCultivos);
     notifyDataChange(updatedCultivos);
   };
@@ -73,7 +80,7 @@ const FormProduccionAgricolaEdit = ({
       updatedCultivos[index].meses_produccion = [...currentMeses, mes];
     } else {
       updatedCultivos[index].meses_produccion = currentMeses.filter(
-        (m) => m !== mes
+        (m) => m !== mes,
       );
     }
 
@@ -111,19 +118,38 @@ const FormProduccionAgricolaEdit = ({
     }
   };
 
+  const getMonthLabel = (mes: string) => {
+    const monthIndex = meses.findIndex(
+      (item) => item.toLowerCase() === mes.toLowerCase(),
+    );
+
+    if (monthIndex === -1) return mes;
+
+    return new Intl.DateTimeFormat(locale, {
+      month: "long",
+    }).format(new Date(2024, monthIndex, 1));
+  };
+
+  const getCropLabel = (tipo: string) => {
+    const index = tiposCultivo.findIndex((item) => item === tipo);
+
+    return index !== -1 ? t(`cropTypes.${index}`) : tipo;
+  };
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
           <Sprout className="h-5 w-5" />
-          Producción Agrícola
+          {t("title")}
           <Badge variant="secondary" className="ml-2">
-            {cultivos.length} cultivo{cultivos.length !== 1 ? "s" : ""}
+            {t("cropCount", { count: cultivos.length })}
           </Badge>
         </CardTitle>
-        <Button onClick={addNewCultivo} size="sm">
+
+        <Button onClick={addNewCultivo} size="sm" type="button">
           <Plus className="h-4 w-4 mr-1" />
-          Agregar
+          {t("buttons.add")}
         </Button>
       </CardHeader>
 
@@ -132,13 +158,18 @@ const FormProduccionAgricolaEdit = ({
           <Card key={index} className="bg-muted/50">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-4">
-                <h4 className="font-semibold">Cultivo {index + 1}</h4>
+                <h4 className="font-semibold">
+                  {t("cropNumber", { number: index + 1 })}
+                </h4>
+
                 {cultivos.length > 1 && (
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => removeCultivo(index)}
                     className="h-8 w-8 p-0 text-destructive"
+                    type="button"
+                    aria-label={t("buttons.remove")}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -147,7 +178,8 @@ const FormProduccionAgricolaEdit = ({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Tipo de cultivo *</Label>
+                  <Label>{t("fields.cropType")} *</Label>
+
                   <Select
                     value={cultivo.tipo}
                     onValueChange={(value) =>
@@ -155,12 +187,13 @@ const FormProduccionAgricolaEdit = ({
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Seleccione tipo" />
+                      <SelectValue placeholder={t("placeholders.cropType")} />
                     </SelectTrigger>
+
                     <SelectContent>
-                      {tiposCultivo.map((tipo) => (
+                      {tiposCultivo.map((tipo, tipoIndex) => (
                         <SelectItem key={tipo} value={tipo}>
-                          {tipo}
+                          {getCropLabel(tipo)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -168,9 +201,9 @@ const FormProduccionAgricolaEdit = ({
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Descripción / Método de cultivo</Label>
+                  <Label>{t("fields.description")}</Label>
                   <Input
-                    placeholder="Ej: Tradicional, Orgánico, etc."
+                    placeholder={t("placeholders.description")}
                     value={cultivo.descripcion || ""}
                     onChange={(e) =>
                       handleCultivoChange(index, "descripcion", e.target.value)
@@ -179,45 +212,45 @@ const FormProduccionAgricolaEdit = ({
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Estacionalidad *</Label>
+                  <Label>{t("fields.seasonality")} *</Label>
                   <Input
-                    placeholder="Ej: Anual, Temporal, etc."
+                    placeholder={t("placeholders.seasonality")}
                     value={cultivo.estacionalidad || ""}
                     onChange={(e) =>
                       handleCultivoChange(
                         index,
                         "estacionalidad",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Duración del cultivo *</Label>
+                  <Label>{t("fields.duration")} *</Label>
                   <Input
-                    placeholder="Ej: 6 meses"
+                    placeholder={t("placeholders.duration")}
                     value={cultivo.tiempo_estimado_cultivo || ""}
                     onChange={(e) =>
                       handleCultivoChange(
                         index,
                         "tiempo_estimado_cultivo",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Producción por hectárea *</Label>
+                  <Label>{t("fields.productionPerHectare")} *</Label>
                   <Input
-                    placeholder="Ej: 3000 kg"
+                    placeholder={t("placeholders.productionPerHectare")}
                     value={cultivo.cantidad_producida_hectareas || ""}
                     onChange={(e) =>
                       handleCultivoChange(
                         index,
                         "cantidad_producida_hectareas",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -225,7 +258,8 @@ const FormProduccionAgricolaEdit = ({
               </div>
 
               <div className="mt-4 space-y-2">
-                <Label>Meses de producción *</Label>
+                <Label>{t("fields.productionMonths")} *</Label>
+
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                   {meses.map((mes) => (
                     <div key={mes} className="flex items-center space-x-2">
@@ -238,11 +272,12 @@ const FormProduccionAgricolaEdit = ({
                           handleMesesChange(index, mes, checked as boolean)
                         }
                       />
+
                       <Label
                         htmlFor={`mes-${index}-${mes}`}
                         className="text-sm cursor-pointer"
                       >
-                        {mes}
+                        {getMonthLabel(mes)}
                       </Label>
                     </div>
                   ))}
@@ -255,10 +290,11 @@ const FormProduccionAgricolaEdit = ({
         {cultivos.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
             <Sprout className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>No hay cultivos agregados</p>
-            <Button onClick={addNewCultivo} className="mt-2">
+            <p>{t("empty.title")}</p>
+
+            <Button onClick={addNewCultivo} className="mt-2" type="button">
               <Plus className="h-4 w-4 mr-1" />
-              Agregar primer cultivo
+              {t("buttons.addFirst")}
             </Button>
           </div>
         )}

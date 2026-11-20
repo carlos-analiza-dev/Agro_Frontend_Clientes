@@ -21,6 +21,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import DetallesCultivoModal from "./DetallesCultivoModal";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface Props {
   cultivo: Cultivo;
@@ -142,6 +143,8 @@ const InfoCultivos = ({
   handleEditCultivo,
   moneda,
 }: Props) => {
+  const t = useTranslations("infoCultivos");
+
   const queryClient = useQueryClient();
   const [openModalStatus, setOpenModalStatus] = useState(false);
   const [selectedCultivo, setSelectedCultivo] = useState<Cultivo | null>(null);
@@ -150,13 +153,13 @@ const InfoCultivos = ({
   const handleUpdateStatus = async (estado: boolean) => {
     try {
       await editarCultivo(cultivo.id, { isActive: estado });
-      toast.success("El cultivo se ha marcado como finalizado");
+
+      toast.success(t("messages.finishSuccess"));
+
       queryClient.invalidateQueries({ queryKey: ["cultivos"] });
       setOpenModalStatus(false);
     } catch (error) {
-      toast.error(
-        "Ocurrió un error al momento de cambiar el estado del cultivo",
-      );
+      toast.error(t("messages.updateStatusError"));
     }
   };
 
@@ -190,12 +193,12 @@ const InfoCultivos = ({
             {cultivo.isActive ? (
               <>
                 <CheckCircle2 className="h-3 w-3 mr-1" />
-                Activo
+                {t("status.active")}
               </>
             ) : (
               <>
                 <XCircle className="h-3 w-3 mr-1" />
-                Finalizado
+                {t("status.finished")}
               </>
             )}
           </CloudBadge>
@@ -204,26 +207,26 @@ const InfoCultivos = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
           <InfoItem
             icon={MapPin}
-            label="Finca"
+            label={t("fields.farm")}
             value={cultivo.finca?.nombre_finca}
           />
 
           <InfoItem
             icon={Ruler}
-            label="Área"
+            label={t("fields.area")}
             value={`${cultivo.area_sembrada} ${cultivo.unidad_medida}`}
           />
 
           <InfoItem
             icon={Calendar}
-            label="Siembra"
+            label={t("fields.planting")}
             value={formatDate(cultivo.fecha_siembra)}
           />
 
           {cultivo.fecha_cosecha_estimada && (
             <InfoItem
               icon={CalendarDays}
-              label="Cosecha estimada"
+              label={t("fields.estimatedHarvest")}
               value={formatDate(cultivo.fecha_cosecha_estimada)}
             />
           )}
@@ -231,7 +234,7 @@ const InfoCultivos = ({
           {cultivo.temporada && (
             <InfoItem
               icon={Sprout}
-              label="Temporada"
+              label={t("fields.season")}
               value={cultivo.temporada}
             />
           )}
@@ -245,7 +248,7 @@ const InfoCultivos = ({
           variant="outline"
           icon={Edit}
         >
-          Editar
+          {t("buttons.edit")}
         </CloudButton>
 
         <CloudButton
@@ -254,7 +257,7 @@ const InfoCultivos = ({
           variant="outline"
           icon={Eye}
         >
-          Detalles
+          {t("buttons.details")}
         </CloudButton>
 
         {cultivo.isActive && (
@@ -265,7 +268,7 @@ const InfoCultivos = ({
             icon={Flag}
             className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-[0_4px_16px_rgba(245,158,11,0.25)]"
           >
-            Finalizar
+            {t("buttons.finish")}
           </CloudButton>
         )}
       </div>
@@ -273,8 +276,8 @@ const InfoCultivos = ({
       <Modal
         open={openModalStatus}
         onOpenChange={setOpenModalStatus}
-        title="¿Deseas marcar el cultivo como finalizado?"
-        description="Una vez marques el cultivo como finalizado no se podrá cambiar dicha acción"
+        title={t("finishModal.title")}
+        description={t("finishModal.description")}
         size="xl"
       >
         <div className="flex flex-col sm:flex-row gap-3 justify-end">
@@ -283,14 +286,15 @@ const InfoCultivos = ({
             variant="outline"
             className="rounded-full px-6"
           >
-            Cancelar
+            {t("buttons.cancel")}
           </Button>
+
           <Button
             onClick={() => handleUpdateStatus(!cultivo.isActive)}
             className="rounded-full px-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-[0_4px_16px_rgba(245,158,11,0.25)]"
           >
             <Flag className="h-4 w-4 mr-2" />
-            Confirmar Finalización
+            {t("buttons.confirmFinish")}
           </Button>
         </div>
       </Modal>
@@ -298,8 +302,8 @@ const InfoCultivos = ({
       <Modal
         open={ModalViewDetails}
         onOpenChange={setModalViewDetails}
-        title="Detalles de tu cultivo"
-        description="Aquí podrás observar detalladamente toda la información de tu cultivo"
+        title={t("detailsModal.title")}
+        description={t("detailsModal.description")}
         size="4xl"
       >
         {selectedCultivo && (

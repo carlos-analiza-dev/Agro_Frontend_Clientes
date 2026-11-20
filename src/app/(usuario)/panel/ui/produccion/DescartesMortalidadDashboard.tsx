@@ -1,5 +1,7 @@
 "use client";
+
 import React, { Dispatch, SetStateAction } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import {
   Card,
   CardContent,
@@ -36,7 +38,7 @@ import {
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS, es } from "date-fns/locale";
 import { ResponseDescartesEspecie } from "@/api/dashboard/interfaces/produccion/response-descartes.interface";
 import {
   DEFAULT_COLOR,
@@ -78,18 +80,25 @@ const DescartesMortalidadDashboard = ({
   setSelectedFincas,
   showFincaFilter = true,
 }: Props) => {
+  const t = useTranslations("descartesMortalidadDashboard");
+  const locale = useLocale();
+  const dateLocale = locale.startsWith("en") ? enUS : es;
+
   const monthOptions = React.useMemo(() => {
     const options = [];
     const today = new Date();
+
     for (let i = 0; i < 12; i++) {
       const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+
       options.push({
         value: format(date, "yyyy-MM"),
-        label: format(date, "MMMM yyyy", { locale: es }),
+        label: format(date, "MMMM yyyy", { locale: dateLocale }),
       });
     }
+
     return options;
-  }, []);
+  }, [dateLocale]);
 
   const chartData = React.useMemo(() => {
     if (!descartes_mortalidad || !Array.isArray(descartes_mortalidad))
@@ -111,12 +120,12 @@ const DescartesMortalidadDashboard = ({
       return (
         DISCARD_COLORS[especie as keyof typeof DISCARD_COLORS] || DEFAULT_COLOR
       );
-    } else {
-      return (
-        MORTALITY_COLORS[especie as keyof typeof MORTALITY_COLORS] ||
-        DEFAULT_COLOR
-      );
     }
+
+    return (
+      MORTALITY_COLORS[especie as keyof typeof MORTALITY_COLORS] ||
+      DEFAULT_COLOR
+    );
   };
 
   const getIconColor = () => {
@@ -137,7 +146,9 @@ const DescartesMortalidadDashboard = ({
           <p className="text-sm text-muted-foreground">
             {title}:{" "}
             <span
-              className={`font-bold ${isDescarte ? "text-amber-500" : "text-red-500"}`}
+              className={`font-bold ${
+                isDescarte ? "text-amber-500" : "text-red-500"
+              }`}
             >
               {payload[0].value}
             </span>
@@ -145,32 +156,49 @@ const DescartesMortalidadDashboard = ({
         </div>
       );
     }
+
     return null;
   };
 
   const EstadisticasCard = () => (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <Card
-        className={`border-l-4 ${isDescarte ? "border-l-amber-500" : "border-l-red-500"}`}
+        className={`border-l-4 ${
+          isDescarte ? "border-l-amber-500" : "border-l-red-500"
+        }`}
       >
         <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium">Total {title}</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            {t("statistics.total", { title })}
+          </CardTitle>
           <TrendingDown
-            className={`h-4 w-4 ${isDescarte ? "text-amber-500" : "text-red-500"}`}
+            className={`h-4 w-4 ${
+              isDescarte ? "text-amber-500" : "text-red-500"
+            }`}
           />
         </CardHeader>
+
         <CardContent>
           {cargando ? (
             <Skeleton className="h-8 w-20" />
           ) : (
             <div
-              className={`text-2xl font-bold ${isDescarte ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400"}`}
+              className={`text-2xl font-bold ${
+                isDescarte
+                  ? "text-amber-600 dark:text-amber-400"
+                  : "text-red-600 dark:text-red-400"
+              }`}
             >
               {totalDescartes}
             </div>
           )}
+
           <p className="text-xs text-muted-foreground">
-            En {format(new Date(selectedMonth), "MMMM yyyy", { locale: es })}
+            {t("statistics.inMonth", {
+              month: format(new Date(`${selectedMonth}-01`), "MMMM yyyy", {
+                locale: dateLocale,
+              }),
+            })}
           </p>
         </CardContent>
       </Card>
@@ -178,18 +206,20 @@ const DescartesMortalidadDashboard = ({
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium">
-            Especies Afectadas
+            {t("statistics.affectedSpecies")}
           </CardTitle>
           <Package className="h-4 w-4 text-blue-500" />
         </CardHeader>
+
         <CardContent>
           {cargando ? (
             <Skeleton className="h-8 w-20" />
           ) : (
             <div className="text-2xl font-bold">{chartData.length}</div>
           )}
+
           <p className="text-xs capitalize text-muted-foreground">
-            Especies con {sub_title} registrados
+            {t("statistics.speciesWithRecords", { sub_title })}
           </p>
         </CardContent>
       </Card>
@@ -197,26 +227,34 @@ const DescartesMortalidadDashboard = ({
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium">
-            Especie Principal
+            {t("statistics.mainSpecies")}
           </CardTitle>
           <AlertCircle
-            className={`h-4 w-4 ${isDescarte ? "text-amber-500" : "text-red-500"}`}
+            className={`h-4 w-4 ${
+              isDescarte ? "text-amber-500" : "text-red-500"
+            }`}
           />
         </CardHeader>
+
         <CardContent>
           {cargando ? (
             <Skeleton className="h-8 w-20" />
           ) : (
             <div
-              className={`text-2xl font-bold ${isDescarte ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400"}`}
+              className={`text-2xl font-bold ${
+                isDescarte
+                  ? "text-amber-600 dark:text-amber-400"
+                  : "text-red-600 dark:text-red-400"
+              }`}
             >
               {chartData.length > 0
                 ? chartData.reduce((a, b) => (a.value > b.value ? a : b)).name
                 : "N/A"}
             </div>
           )}
+
           <p className="text-xs capitalize text-muted-foreground">
-            Mayor cantidad de {sub_title}
+            {t("statistics.highestQuantity", { sub_title })}
           </p>
         </CardContent>
       </Card>
@@ -229,30 +267,35 @@ const DescartesMortalidadDashboard = ({
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-lg capitalize flex items-center gap-2">
-              {sub_title} por Especie
+              {t("charts.bySpecies", { sub_title })}
               <span
                 className={`text-xs px-2 py-0.5 rounded-full ${getBadgeColor()}`}
               >
-                {isDescarte ? "Descarte" : "Mortalidad"}
+                {isDescarte ? t("types.discard") : t("types.mortality")}
               </span>
             </CardTitle>
+
             <CardDescription className="capitalize">
-              Distribución de animales {title} por especie
+              {t("charts.distribution", { title })}
             </CardDescription>
           </div>
+
           <div
-            className={`w-3 h-3 rounded-full ${isDescarte ? "bg-amber-500" : "bg-red-500"}`}
+            className={`w-3 h-3 rounded-full ${
+              isDescarte ? "bg-amber-500" : "bg-red-500"
+            }`}
           />
         </div>
       </CardHeader>
+
       <CardContent>
         {cargando ? (
           <Skeleton className="h-[300px] w-full" />
         ) : chartData.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground">
             <Package className="h-12 w-12 mb-2 opacity-50" />
-            <p className="capitalize">No hay datos de {sub_title}</p>
-            <p className="text-sm">Para este período</p>
+            <p className="capitalize">{t("empty.noData", { sub_title })}</p>
+            <p className="text-sm">{t("empty.period")}</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={300}>
@@ -286,29 +329,34 @@ const DescartesMortalidadDashboard = ({
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-lg flex items-center gap-2">
-              Distribución Porcentual
+              {t("charts.percentageDistribution")}
               <span
                 className={`text-xs px-2 py-0.5 rounded-full ${getBadgeColor()}`}
               >
-                {isDescarte ? "Descarte" : "Mortalidad"}
+                {isDescarte ? t("types.discard") : t("types.mortality")}
               </span>
             </CardTitle>
+
             <CardDescription className="capitalize">
-              Porcentaje de {sub_title} por especie
+              {t("charts.percentageBySpecies", { sub_title })}
             </CardDescription>
           </div>
+
           <div
-            className={`w-3 h-3 rounded-full ${isDescarte ? "bg-amber-500" : "bg-red-500"}`}
+            className={`w-3 h-3 rounded-full ${
+              isDescarte ? "bg-amber-500" : "bg-red-500"
+            }`}
           />
         </div>
       </CardHeader>
+
       <CardContent>
         {cargando ? (
           <Skeleton className="h-[300px] w-full" />
         ) : chartData.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground">
             <Package className="h-12 w-12 mb-2 opacity-50" />
-            <p>No hay datos disponibles</p>
+            <p>{t("empty.unavailable")}</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={300}>
@@ -319,7 +367,7 @@ const DescartesMortalidadDashboard = ({
                 cy="50%"
                 labelLine={false}
                 label={({ name, percent }) =>
-                  `${name} ${(percent * 100).toFixed(0)}%`
+                  `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
                 }
                 outerRadius={100}
                 fill="#8884d8"
@@ -329,6 +377,7 @@ const DescartesMortalidadDashboard = ({
                   <Cell key={`cell-${index}`} fill={getColor(entry.name)} />
                 ))}
               </Pie>
+
               <Tooltip content={<CustomTooltip />} />
               <Legend />
             </PieChart>
@@ -344,6 +393,7 @@ const DescartesMortalidadDashboard = ({
     return (
       <div className="flex items-center gap-2">
         <Building2 className="h-4 w-4 text-muted-foreground" />
+
         <Select
           value={selectedFincas?.id || "all"}
           onValueChange={(value) => {
@@ -356,10 +406,12 @@ const DescartesMortalidadDashboard = ({
           }}
         >
           <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Todas las fincas" />
+            <SelectValue placeholder={t("farmFilter.placeholder")} />
           </SelectTrigger>
+
           <SelectContent>
-            <SelectItem value="all">Todas las fincas</SelectItem>
+            <SelectItem value="all">{t("farmFilter.all")}</SelectItem>
+
             {fincas.map((finca) => (
               <SelectItem key={finca.id} value={finca.id}>
                 {finca.nombre_finca}
@@ -375,19 +427,20 @@ const DescartesMortalidadDashboard = ({
     <div className="p-6 space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1
-            className={`text-base md:text-2xl capitalize font-bold flex items-center gap-2`}
-          >
+          <h1 className="text-base md:text-2xl capitalize font-bold flex items-center gap-2">
             <TrendingDown className={`h-6 w-6 ${getIconColor()}`} />
-            Dashboard de {sub_title}
+            {t("header.dashboard", { sub_title })}
+
             <span
               className={`text-xs px-3 py-1 rounded-full ${getBadgeColor()} font-normal`}
             >
-              {isDescarte ? "Descartes" : "Mortalidad"}
+              {isDescarte ? t("types.discards") : t("types.mortality")}
             </span>
           </h1>
+
           <p className="text-muted-foreground capitalize">
-            Análisis de animales {title} por especie
+            {t("header.analysis", { title })}
+
             {selectedFincas && (
               <span className="ml-2 font-medium text-foreground">
                 • {selectedFincas.nombre_finca}
@@ -395,14 +448,18 @@ const DescartesMortalidadDashboard = ({
             )}
           </p>
         </div>
+
         <div className="flex items-center gap-3 flex-wrap">
           <FincaFilter />
+
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-muted-foreground" />
+
             <Select value={selectedMonth} onValueChange={setSelectedMonth}>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Seleccionar mes" />
+                <SelectValue placeholder={t("monthFilter.placeholder")} />
               </SelectTrigger>
+
               <SelectContent>
                 {monthOptions.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
@@ -424,20 +481,17 @@ const DescartesMortalidadDashboard = ({
 
       <div className="text-xs text-muted-foreground text-center border-t pt-4">
         <p>
-          Datos actualizados al{" "}
-          {format(new Date(), "dd 'de' MMMM 'de' yyyy", { locale: es })}
+          {t("footer.updatedAt", {
+            date: format(new Date(), "PPP", { locale: dateLocale }),
+          })}
         </p>
+
         {isDescarte && (
-          <p className="mt-1">
-            Los {sub_title} incluyen: ventas, traslados, bajas por calidad,
-            entre otros
-          </p>
+          <p className="mt-1">{t("footer.discardIncludes", { sub_title })}</p>
         )}
+
         {!isDescarte && (
-          <p className="mt-1">
-            Los {sub_title} incluyen: enfermedades, accidentes, causas
-            naturales, entre otros
-          </p>
+          <p className="mt-1">{t("footer.mortalityIncludes", { sub_title })}</p>
         )}
       </div>
     </div>

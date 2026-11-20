@@ -1,28 +1,35 @@
 "use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useParams, useRouter } from "next/navigation";
 import FormTrabajador from "../ui/FormTrabajador";
 import useGetClienteById from "@/hooks/clientes/useGetClienteById";
+import { useTranslations } from "next-intl";
 
 const EditarTrabajadorPage = () => {
+  const t = useTranslations("editarTrabajadorPage");
+
   const params = useParams();
   const trabajadorId = params.id as string;
   const router = useRouter();
+
   const { data: trabajador } = useGetClienteById(trabajadorId);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center gap-3 mb-6">
-          <h1 className="text-2xl font-bold">Editar Trabajador</h1>
+          <h1 className="text-2xl font-bold">{t("title")}</h1>
         </div>
 
         <Card className="shadow-lg border-t-4 border-t-primary">
           <CardHeader className="pb-4">
-            <CardTitle className="text-lg">Editar Trabajador</CardTitle>
+            <CardTitle className="text-lg">{t("card.title")}</CardTitle>
             <p className="text-sm text-muted-foreground">
-              Completa los datos para editar trabajador
+              {t("card.description")}
             </p>
           </CardHeader>
+
           <CardContent>
             <FormTrabajador
               trabajador={trabajador}

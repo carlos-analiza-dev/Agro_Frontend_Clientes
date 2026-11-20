@@ -13,6 +13,7 @@ import {
   Clock,
 } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Finca } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
 import GoogleMapViewer from "@/components/generics/GoogleMapViewer";
 import { formatDateOnly } from "@/helpers/funciones/formatDateOnly";
@@ -49,7 +50,15 @@ const CloudBadge = ({
   );
 };
 
-const StatusIndicator = ({ isActive }: { isActive: boolean }) => (
+const StatusIndicator = ({
+  isActive,
+  activeLabel,
+  inactiveLabel,
+}: {
+  isActive: boolean;
+  activeLabel: string;
+  inactiveLabel: string;
+}) => (
   <div className="flex items-center gap-2">
     <div
       className={cn("relative flex h-2.5 w-2.5", isActive && "animate-pulse")}
@@ -73,7 +82,7 @@ const StatusIndicator = ({ isActive }: { isActive: boolean }) => (
         isActive ? "text-green-600" : "text-gray-400",
       )}
     >
-      {isActive ? "Activa" : "Inactiva"}
+      {isActive ? activeLabel : inactiveLabel}
     </span>
   </div>
 );
@@ -108,6 +117,7 @@ const StatCard = ({
 );
 
 export const CardFincas = ({ finca, onPress }: CardFincasProps) => {
+  const t = useTranslations("cardFincas");
   const [isPressed, setIsPressed] = useState(false);
 
   const handleMouseDown = () => setIsPressed(true);
@@ -133,7 +143,11 @@ export const CardFincas = ({ finca, onPress }: CardFincasProps) => {
               <span className="text-xl font-bold bg-gradient-to-r from-green-700 to-green-600 bg-clip-text text-transparent">
                 {finca.nombre_finca}
               </span>
-              <StatusIndicator isActive={finca.isActive} />
+              <StatusIndicator
+                isActive={finca.isActive}
+                activeLabel={t("status.active")}
+                inactiveLabel={t("status.inactive")}
+              />
             </CardTitle>
           </CardHeader>
 
@@ -141,12 +155,12 @@ export const CardFincas = ({ finca, onPress }: CardFincasProps) => {
             <div className="grid grid-cols-2 gap-3">
               <StatCard
                 icon={Activity}
-                label="Animales"
+                label={t("statistics.animals")}
                 value={finca.cantidad_animales}
               />
               <StatCard
                 icon={MapPinned}
-                label="Ubicación"
+                label={t("statistics.location")}
                 value={`${finca.municipio.nombre}, ${finca.departamento.nombre}`}
                 className="col-span-2"
               />
@@ -156,25 +170,33 @@ export const CardFincas = ({ finca, onPress }: CardFincasProps) => {
               <div className="p-3 rounded-xl bg-gray-50/50 backdrop-blur-sm border border-gray-100/50 text-center transition-all duration-200 hover:bg-green-50/50 hover:border-green-200/50">
                 <div className="flex items-center justify-center gap-1 text-gray-500">
                   <LandPlot className="h-3.5 w-3.5" />
-                  <span className="text-xs font-medium">Total</span>
+                  <span className="text-xs font-medium">
+                    {t("areas.total")}
+                  </span>
                 </div>
                 <span className="text-sm font-bold text-gray-700">
                   {finca.tamaño_total} {finca.medida_finca}
                 </span>
               </div>
+
               <div className="p-3 rounded-xl bg-gray-50/50 backdrop-blur-sm border border-gray-100/50 text-center transition-all duration-200 hover:bg-green-50/50 hover:border-green-200/50">
                 <div className="flex items-center justify-center gap-1 text-gray-500">
                   <Trees className="h-3.5 w-3.5" />
-                  <span className="text-xs font-medium">Ganadería</span>
+                  <span className="text-xs font-medium">
+                    {t("areas.livestock")}
+                  </span>
                 </div>
                 <span className="text-sm font-bold text-gray-700">
                   {finca.area_ganaderia} {finca.medida_finca}
                 </span>
               </div>
+
               <div className="p-3 rounded-xl bg-gray-50/50 backdrop-blur-sm border border-gray-100/50 text-center transition-all duration-200 hover:bg-green-50/50 hover:border-green-200/50 col-span-2 sm:col-span-1">
                 <div className="flex items-center justify-center gap-1 text-gray-500">
                   <Box className="h-3.5 w-3.5" />
-                  <span className="text-xs font-medium">Agricultura</span>
+                  <span className="text-xs font-medium">
+                    {t("areas.agriculture")}
+                  </span>
                 </div>
                 <span className="text-sm font-bold text-gray-700">
                   {finca.area_agricola} {finca.medida_finca}
@@ -185,7 +207,7 @@ export const CardFincas = ({ finca, onPress }: CardFincasProps) => {
             <div className="space-y-1.5">
               <span className="text-xs text-gray-400 font-medium uppercase tracking-wider flex items-center gap-2">
                 <Box className="h-3.5 w-3.5" />
-                Tipos de Explotación
+                {t("sections.exploitationTypes")}
               </span>
               <div className="flex flex-wrap gap-2">
                 {finca.tipo_explotacion.map(({ tipo_explotacion }, index) => (
@@ -199,7 +221,7 @@ export const CardFincas = ({ finca, onPress }: CardFincasProps) => {
             <div className="space-y-1.5">
               <span className="text-xs text-gray-400 font-medium uppercase tracking-wider flex items-center gap-2">
                 <PawPrint className="h-3.5 w-3.5" />
-                Especies
+                {t("sections.species")}
               </span>
               <div className="flex flex-wrap gap-2">
                 {finca.especies_maneja.map(({ especie, cantidad }, index) => (
@@ -218,7 +240,7 @@ export const CardFincas = ({ finca, onPress }: CardFincasProps) => {
                 <Clock className="h-3.5 w-3.5" />
               </div>
               <span className="text-xs text-gray-400">
-                Registrada:{" "}
+                {t("sections.registered")}:{" "}
                 <span className="text-gray-600 font-medium">
                   {formatDateOnly(finca.fecha_registro)}
                 </span>
@@ -234,7 +256,7 @@ export const CardFincas = ({ finca, onPress }: CardFincasProps) => {
             <MapPin className="h-4 w-4" />
           </div>
           <h3 className="text-lg font-semibold bg-gradient-to-r from-green-700 to-green-600 bg-clip-text text-transparent">
-            Ubicación - {finca.nombre_finca}
+            {t("map.locationOf", { name: finca.nombre_finca })}
           </h3>
           <Badge
             variant="outline"

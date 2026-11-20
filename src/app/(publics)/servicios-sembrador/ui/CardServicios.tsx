@@ -1,6 +1,7 @@
 import { Servicio } from "@/api/servicios/interfaces/response-categorias-services";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -10,6 +11,7 @@ interface Props {
 
 const CardServicios = ({ categoria }: Props) => {
   const router = useRouter();
+  const t = useTranslations("cardServicios");
   return (
     <Card
       onClick={() => router.push(`/servicios-sembrador/${categoria.id}`)}
@@ -60,7 +62,7 @@ const CardServicios = ({ categoria }: Props) => {
                     variant={subServicio.disponible ? "default" : "destructive"}
                     className="flex-shrink-0 ml-2"
                   >
-                    {subServicio.disponible ? "Disponible" : "No disponible"}
+                    {subServicio.disponible ? t("available") : t("unavailable")}
                   </Badge>
                 </div>
                 {subServicio.descripcion && (
@@ -74,7 +76,7 @@ const CardServicios = ({ categoria }: Props) => {
 
           {categoria.subServicios.length > 3 && (
             <div className="p-3 text-center text-sm text-muted-foreground bg-muted/30">
-              +{categoria.subServicios.length - 3} servicios más
+              +{categoria.subServicios.length - 3} {t("moreServices")}
             </div>
           )}
         </div>

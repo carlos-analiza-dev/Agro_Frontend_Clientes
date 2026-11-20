@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CartItem } from "@/providers/store/useCartStore";
 import { Minus, Plus, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -23,7 +24,7 @@ const CardCarrito = ({
   increaseQuantity,
 }: Props) => {
   const [isDeleting, setIsDeleting] = useState(false);
-
+  const t = useTranslations("cardCarrito");
   const getImagenPrincipal = (imagenes: any[]) => {
     if (!imagenes || imagenes.length === 0) {
       return "/images/ProductNF.png";
@@ -42,9 +43,9 @@ const CardCarrito = ({
     setIsDeleting(true);
     try {
       removeFromCart(item.id, item.sucursalId);
-      toast.success("Producto eliminado del carrito");
+      toast.success(t("notifications.productRemoved"));
     } catch (error) {
-      toast.error("Error al eliminar el producto");
+      toast.error(t("notifications.removeError"));
     } finally {
       setIsDeleting(false);
     }
@@ -75,14 +76,14 @@ const CardCarrito = ({
                   {item.nombre}
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1">
-                  {item.marca?.nombre || "Sin marca"}
+                  {item.marca?.nombre || t("brand")}
                 </p>
                 {item.sucursalId && item.nombreSucursal && (
                   <Badge
                     variant="outline"
                     className="mt-1 text-xs inline-block max-w-full truncate"
                   >
-                    Sucursal: {item.nombreSucursal}
+                    {t("branch", { name: item.nombreSucursal })}
                   </Badge>
                 )}
               </div>
@@ -93,7 +94,7 @@ const CardCarrito = ({
                 onClick={() => handleRemoveCart(item)}
                 disabled={isDeleting}
                 className="h-8 w-8 sm:h-9 sm:w-9 text-red-500 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
-                aria-label="Eliminar producto"
+                aria-label={t("deleteProduct")}
               >
                 <Trash2
                   className={`h-4 w-4 ${isDeleting ? "animate-pulse" : ""}`}
@@ -106,14 +107,14 @@ const CardCarrito = ({
                 <div className="flex justify-between items-center">
                   <div className="flex flex-col">
                     <span className="text-xs text-gray-500">
-                      Precio unitario
+                      {t("unitPrice")}
                     </span>
                     <span className="text-base font-bold text-green-600">
                       {moneda || "$"} {precioUnitario.toFixed(2)}
                     </span>
                   </div>
                   <div className="text-right">
-                    <span className="text-xs text-gray-500">Total</span>
+                    <span className="text-xs text-gray-500">{t("total")}</span>
                     <p className="text-base font-bold text-green-600">
                       {moneda || "$"} {totalItem.toFixed(2)}
                     </p>
@@ -128,7 +129,7 @@ const CardCarrito = ({
                       onClick={() => decreaseQuantity(item.id, item.sucursalId)}
                       disabled={item.quantity <= 1}
                       className="h-8 w-8"
-                      aria-label="Disminuir cantidad"
+                      aria-label={t("decreaseQuantity")}
                     >
                       <Minus className="h-3 w-3" />
                     </Button>
@@ -142,13 +143,13 @@ const CardCarrito = ({
                       size="icon"
                       onClick={() => increaseQuantity(item.id, item.sucursalId)}
                       className="h-8 w-8"
-                      aria-label="Aumentar cantidad"
+                      aria-label={t("increaseQuantity")}
                     >
                       <Plus className="h-3 w-3" />
                     </Button>
 
                     <span className="text-xs text-gray-500 ml-1">
-                      {item.unidad_venta || "unidad"}
+                      {item.unidad_venta || t("unit")}
                     </span>
                   </div>
                 </div>
@@ -190,7 +191,7 @@ const CardCarrito = ({
                   <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3">
                     <div>
                       <span className="text-xs text-gray-500">
-                        Precio unitario
+                        {t("unitPrice")}
                       </span>
                       <p className="text-sm sm:text-base text-gray-700">
                         {moneda || "$"} {precioUnitario.toFixed(2)}

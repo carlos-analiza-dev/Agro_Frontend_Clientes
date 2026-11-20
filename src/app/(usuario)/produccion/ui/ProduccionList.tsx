@@ -63,6 +63,7 @@ import { ganaderaDefault } from "@/helpers/data/ganaderia";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { CreateProduccionFinca } from "@/api/produccion/interface/crear-produccion-finca.interface";
+import { useTranslations } from "next-intl";
 
 interface ProduccionGanaderaCardProps {
   produccion: ObtenerProduccionByUserInterface;
@@ -71,6 +72,7 @@ interface ProduccionGanaderaCardProps {
 const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
   produccion,
 }) => {
+  const t = useTranslations("produccionList");
   const queryClient = useQueryClient();
   const { finca, ganadera, agricola, alternativa, apicultura, forrajesInsumo } =
     produccion;
@@ -79,15 +81,15 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isOpenGanadera, setIsOpenGanadera] = useState(false);
   const [produccionGanadera, setProduccionGanadera] = useState<Ganadera | null>(
-    null
+    null,
   );
   const [isOpenForrajes, setIsOpenForrajes] = useState(false);
   const [forrajesInsumos, setForrajesInsumos] = useState<ForrajesInsumo | null>(
-    null
+    null,
   );
   const [isOpenAgricola, setIsOpenAgricola] = useState(false);
   const [produccionAgricola, setProduccionAgricola] = useState<Agricola | null>(
-    null
+    null,
   );
 
   const [isOpenAlternativa, setIsOpenAlternativa] = useState(false);
@@ -181,10 +183,10 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
       await ActualizarProduccionFinca(produccion.id, updateData);
 
       setIsModalOpen(false);
-      toast.success("Datos actualizados con exito");
+      toast.success(t("messages.dataUpdated"));
       queryClient.invalidateQueries({ queryKey: ["producciones-user"] });
     } catch (error) {
-      toast.error("Error al actualizar los tipos de producción");
+      toast.error(t("messages.updateTypesError"));
 
       setTipos({
         consumo_propio: produccion.consumo_propio,
@@ -210,10 +212,10 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
           ...datosParaEnviar,
           produccionFincaId: produccion.id,
         });
-        toast.success("Producción ganadera creada con éxito");
+        toast.success(t("messages.livestockCreated"));
       } else {
         await ActualizarProduccionGanadera(ganadera?.id ?? "", datosParaEnviar);
-        toast.success("Producción ganadera actualizada con éxito");
+        toast.success(t("messages.livestockUpdated"));
       }
 
       setIsOpenGanadera(false);
@@ -221,7 +223,11 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
       queryClient.invalidateQueries({ queryKey: ["producciones-user"] });
     } catch (error) {
       toast.error(
-        `Error al ${isCreatingGanadera ? "crear" : "actualizar"} la producción ganadera`
+        t(
+          isCreatingGanadera
+            ? "errors.livestockCreate"
+            : "errors.livestockUpdate",
+        ),
       );
     } finally {
       setIsLoading(false);
@@ -239,12 +245,12 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
           insumos: insumosData,
           produccionFincaId: produccion.id,
         });
-        toast.success("Forrajes e insumos creados con éxito");
+        toast.success(t("messages.fodderCreated"));
       } else {
         await ActualizarProduccionForrajes(forrajesInsumo?.id ?? "", {
           insumos: insumosData,
         });
-        toast.success("Forrajes e insumos actualizados con éxito");
+        toast.success(t("messages.fodderUpdated"));
       }
 
       setIsOpenForrajes(false);
@@ -252,7 +258,7 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
       queryClient.invalidateQueries({ queryKey: ["producciones-user"] });
     } catch (error) {
       toast.error(
-        `Error al ${isCreatingForrajes ? "crear" : "actualizar"} forrajes e insumos`
+        t(isCreatingForrajes ? "errors.fodderCreate" : "errors.fodderUpdate"),
       );
     } finally {
       setIsLoading(false);
@@ -272,10 +278,10 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
           produccionFincaId: produccion.id,
           cultivos: produccionAgricola.cultivos,
         });
-        toast.success("Producción agrícola creada con éxito");
+        toast.success(t("messages.agriculturalCreated"));
       } else {
         await ActualizarProduccionAgricola(agricola?.id ?? "", rest);
-        toast.success("Producción agrícola actualizada con éxito");
+        toast.success(t("messages.agriculturalUpdated"));
       }
 
       setIsOpenAgricola(false);
@@ -283,7 +289,11 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
       queryClient.invalidateQueries({ queryKey: ["producciones-user"] });
     } catch (error) {
       toast.error(
-        `Error al ${isCreatingAgricola ? "crear" : "actualizar"} la producción agrícola`
+        t(
+          isCreatingAgricola
+            ? "errors.agriculturalCreate"
+            : "errors.agriculturalUpdate",
+        ),
       );
     } finally {
       setIsLoading(false);
@@ -304,7 +314,7 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
           produccionFincaId: produccion.id,
         });
 
-        toast.success("Producción apícola creada con éxito");
+        toast.success(t("messages.beeCreated"));
       } else {
         await ActualizarProduccionApicultura(apicultura?.id ?? "", {
           cantidad_por_cosecha: Number(rest.cantidad_por_cosecha),
@@ -312,7 +322,7 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
           frecuencia_cosecha: rest.frecuencia_cosecha,
           numero_colmenas: rest.numero_colmenas,
         });
-        toast.success("Producción apícola actualizada con éxito");
+        toast.success(t("messages.beeUpdated"));
       }
 
       setIsOpenProduccionApicultura(false);
@@ -320,7 +330,7 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
       queryClient.invalidateQueries({ queryKey: ["producciones-user"] });
     } catch (error) {
       toast.error(
-        `Error al ${isCreatingApicultura ? "crear" : "actualizar"} la producción apícola`
+        t(isCreatingApicultura ? "errors.beeCreate" : "errors.beeUpdate"),
       );
     } finally {
       setIsLoading(false);
@@ -336,7 +346,7 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
       const { id, ...rest } = data;
 
       const actividadesValidas = rest.actividades.filter(
-        (act) => act.tipo.trim() !== ""
+        (act) => act.tipo.trim() !== "",
       );
 
       if (isCreatingAlternativa) {
@@ -344,12 +354,12 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
           produccionFincaId: produccion.id,
           actividades: actividadesValidas,
         });
-        toast.success("Producción alternativa creada con éxito");
+        toast.success(t("messages.alternativeCreated"));
       } else {
         await ActualizarProduccionAlternativa(alternativa?.id ?? "", {
           actividades: actividadesValidas,
         });
-        toast.success("Producción alternativa actualizada con éxito");
+        toast.success(t("messages.alternativeUpdated"));
       }
 
       setIsOpenAlternativa(false);
@@ -357,7 +367,11 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
       queryClient.invalidateQueries({ queryKey: ["producciones-user"] });
     } catch (error) {
       toast.error(
-        `Error al ${isCreatingAlternativa ? "crear" : "actualizar"} la producción alternativa`
+        t(
+          isCreatingAlternativa
+            ? "errors.alternativeCreate"
+            : "errors.alternativeUpdate",
+        ),
       );
     } finally {
       setIsLoading(false);
@@ -393,6 +407,16 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
     setIsCreatingAlternativa(false);
     setProduccionAlternativa(alternativa);
   };
+
+  const productionTypes = [
+    { key: "consumo_propio", label: t("types.ownConsumption") },
+    { key: "produccion_venta", label: t("types.forSale") },
+    { key: "produccion_mixta", label: t("types.mixed") },
+    {
+      key: "transformacion_artesanal",
+      label: t("types.artisanalTransformation"),
+    },
+  ];
 
   return (
     <div>
@@ -437,14 +461,16 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="font-semibold">Producción Ganadera</h4>
+                        <h4 className="font-semibold">
+                          {t("sections.livestock")}
+                        </h4>
                         <p className="text-sm text-muted-foreground mt-1">
-                          No hay datos de producción ganadera registrados
+                          {t("empty.livestock")}
                         </p>
                       </div>
                       <Button onClick={handleCreateGanadera} size="sm">
                         <Plus className="h-4 w-4 mr-1" />
-                        Agregar
+                        {t("buttons.add")}
                       </Button>
                     </div>
                   </CardContent>
@@ -464,14 +490,16 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="font-semibold">Forrajes e Insumos</h4>
+                        <h4 className="font-semibold">
+                          {t("sections.fodder")}
+                        </h4>
                         <p className="text-sm text-muted-foreground mt-1">
-                          No hay datos de forrajes registrados
+                          {t("empty.fodder")}
                         </p>
                       </div>
                       <Button onClick={handleCreateForrajes} size="sm">
                         <Plus className="h-4 w-4 mr-1" />
-                        Agregar
+                        {t("buttons.add")}
                       </Button>
                     </div>
                   </CardContent>
@@ -491,14 +519,16 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="font-semibold">Producción Agrícola</h4>
+                        <h4 className="font-semibold">
+                          {t("sections.agricultural")}
+                        </h4>
                         <p className="text-sm text-muted-foreground mt-1">
-                          No hay datos de producción agrícola registrados
+                          {t("empty.agricultural")}
                         </p>
                       </div>
                       <Button onClick={handleCreateAgricola} size="sm">
                         <Plus className="h-4 w-4 mr-1" />
-                        Agregar
+                        {t("buttons.add")}
                       </Button>
                     </div>
                   </CardContent>
@@ -518,14 +548,14 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="font-semibold">Producción Apícola</h4>
+                        <h4 className="font-semibold">{t("sections.bee")}</h4>
                         <p className="text-sm text-muted-foreground mt-1">
-                          No hay datos de producción apícola registrados
+                          {t("empty.bee")}
                         </p>
                       </div>
                       <Button onClick={handleCreateApicultura} size="sm">
                         <Plus className="h-4 w-4 mr-1" />
-                        Agregar
+                        {t("buttons.add")}
                       </Button>
                     </div>
                   </CardContent>
@@ -546,15 +576,15 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
                     <div className="flex items-center justify-between">
                       <div>
                         <h4 className="font-semibold">
-                          Producción Alternativa
+                          {t("sections.alternative")}
                         </h4>
                         <p className="text-sm text-muted-foreground mt-1">
-                          No hay datos de producción alternativa registrados
+                          {t("empty.alternative")}
                         </p>
                       </div>
                       <Button onClick={handleCreateAlternativa} size="sm">
                         <Plus className="h-4 w-4 mr-1" />
-                        Agregar
+                        {t("buttons.add")}
                       </Button>
                     </div>
                   </CardContent>
@@ -565,7 +595,7 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
 
             {!hasProductionData && (
               <div className="text-center py-8 text-muted-foreground">
-                <p>No hay datos de producción registrados para esta finca.</p>
+                <p>{t("empty.all")}</p>
               </div>
             )}
           </div>
@@ -580,25 +610,25 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
                 {tipos.consumo_propio && (
                   <Badge variant="default" className="flex items-center gap-1">
                     <Home className="h-3 w-3" />
-                    Consumo propio
+                    {t("types.ownConsumption")}
                   </Badge>
                 )}
                 {tipos.produccion_venta && (
                   <Badge variant="default" className="flex items-center gap-1">
                     <DollarSign className="h-3 w-3" />
-                    Producción para venta
+                    {t("types.forSale")}
                   </Badge>
                 )}
                 {tipos.produccion_mixta && (
                   <Badge variant="default" className="flex items-center gap-1">
                     <Layers className="h-3 w-3" />
-                    Producción mixta
+                    {t("types.mixed")}
                   </Badge>
                 )}
                 {tipos.transformacion_artesanal && (
                   <Badge variant="default" className="flex items-center gap-1">
                     <Factory className="h-3 w-3" />
-                    Transformación artesanal
+                    {t("types.artisanalTransformation")}
                   </Badge>
                 )}
               </div>
@@ -611,7 +641,8 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
               size="sm"
               onClick={() => setIsModalOpen(true)}
             >
-              <Pencil className="h-4 w-4 mr-1" /> Editar tipo de producción
+              <Pencil className="h-4 w-4 mr-1" />{" "}
+              {t("buttons.editProductionType")}
             </Button>
           </div>
         </CardContent>
@@ -623,19 +654,13 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
           {" "}
           <AlertDialogHeader>
             {" "}
-            <AlertDialogTitle>Editar tipo de producción</AlertDialogTitle>{" "}
+            <AlertDialogTitle>
+              {t("buttons.editProductionType")}
+            </AlertDialogTitle>{" "}
           </AlertDialogHeader>{" "}
           <div className="space-y-3 py-2">
             {" "}
-            {[
-              { key: "consumo_propio", label: "Consumo propio" },
-              { key: "produccion_venta", label: "Producción para venta" },
-              { key: "produccion_mixta", label: "Producción mixta" },
-              {
-                key: "transformacion_artesanal",
-                label: "Transformación artesanal",
-              },
-            ].map((item) => (
+            {productionTypes.map((item) => (
               <div key={item.key} className="flex items-center justify-between">
                 {" "}
                 <Label htmlFor={item.key}>{item.label}</Label>{" "}
@@ -668,8 +693,8 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
           <AlertDialogHeader>
             <AlertDialogTitle>
               {isCreatingGanadera
-                ? "Crear producción ganadera"
-                : "Editar producción ganadera"}
+                ? t("dialogs.createLivestock")
+                : t("dialogs.editLivestock")}
             </AlertDialogTitle>
           </AlertDialogHeader>
 
@@ -693,10 +718,10 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
             </AlertDialogCancel>
             <Button onClick={handleSaveGanadera} disabled={isLoading}>
               {isLoading
-                ? "Guardando..."
+                ? t("buttons.saving")
                 : isCreatingGanadera
-                  ? "Crear"
-                  : "Guardar cambios"}
+                  ? t("buttons.create")
+                  : t("buttons.saveChanges")}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -705,7 +730,11 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
       <AlertDialog open={isOpenForrajes} onOpenChange={setIsOpenForrajes}>
         <AlertDialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <AlertDialogHeader>
-            <AlertDialogTitle>Editar forrajes e insumos</AlertDialogTitle>
+            <AlertDialogTitle>
+              {isCreatingForrajes
+                ? t("dialogs.createFodder")
+                : t("dialogs.editFodder")}
+            </AlertDialogTitle>
           </AlertDialogHeader>
 
           <div className="space-y-3 py-2">
@@ -722,7 +751,11 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
               Cancelar
             </AlertDialogCancel>
             <Button onClick={handleSaveForrajes} disabled={isLoading}>
-              {isLoading ? "Guardando..." : "Guardar cambios"}
+              {isLoading
+                ? t("buttons.saving")
+                : isCreatingForrajes
+                  ? t("buttons.create")
+                  : t("buttons.saveChanges")}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -731,7 +764,11 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
       <AlertDialog open={isOpenAgricola} onOpenChange={setIsOpenAgricola}>
         <AlertDialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <AlertDialogHeader>
-            <AlertDialogTitle>Editar Produccion Agricola</AlertDialogTitle>
+            <AlertDialogTitle>
+              {isCreatingAgricola
+                ? t("dialogs.createAgricultural")
+                : t("dialogs.editAgricultural")}
+            </AlertDialogTitle>
           </AlertDialogHeader>
 
           <div className="space-y-3 py-2">
@@ -748,7 +785,11 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
               Cancelar
             </AlertDialogCancel>
             <Button onClick={handleSaveAgricola} disabled={isLoading}>
-              {isLoading ? "Guardando..." : "Guardar cambios"}
+              {isLoading
+                ? t("buttons.saving")
+                : isCreatingAgricola
+                  ? t("buttons.create")
+                  : t("buttons.saveChanges")}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -762,8 +803,8 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
           <AlertDialogHeader>
             <AlertDialogTitle>
               {isCreatingApicultura
-                ? "Crear producción apícola"
-                : "Editar producción apícola"}
+                ? t("dialogs.createBee")
+                : t("dialogs.editBee")}
             </AlertDialogTitle>
           </AlertDialogHeader>
 
@@ -787,10 +828,10 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
             </AlertDialogCancel>
             <Button onClick={handleSaveApicultura} disabled={isLoading}>
               {isLoading
-                ? "Guardando..."
+                ? t("buttons.saving")
                 : isCreatingApicultura
-                  ? "Crear"
-                  : "Guardar cambios"}
+                  ? t("buttons.create")
+                  : t("buttons.saveChanges")}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -801,8 +842,8 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
           <AlertDialogHeader>
             <AlertDialogTitle>
               {isCreatingAlternativa
-                ? "Crear producción alternativa"
-                : "Editar producción alternativa"}
+                ? t("dialogs.createAlternative")
+                : t("dialogs.editAlternative")}
             </AlertDialogTitle>
           </AlertDialogHeader>
 

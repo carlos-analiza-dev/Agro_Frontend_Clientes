@@ -1,5 +1,7 @@
 "use client";
+
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PawPrintIcon } from "lucide-react";
 import FormAddAnimal from "@/components/animales/FormAddAnimal";
@@ -14,10 +16,13 @@ import FormAddOvino from "@/components/animales/FormAddOvino";
 import FormAddPorcino from "@/components/animales/FormAddPorcino";
 
 const CrearAnimalPage = () => {
+  const t = useTranslations("crearAnimalPage");
+
   const especiesConPadres = ["bovino"];
   const [activeTab, setActiveTab] = useState("animal");
   const [especieName, setEspecieName] = useState("");
   const [selectedEspecieId, setSelectedEspecieId] = useState("");
+
   const { data: especies } = useGetEspecies();
 
   const especieNombreNormalizado = especieName.toLowerCase();
@@ -33,14 +38,15 @@ const CrearAnimalPage = () => {
     <div className="container mx-auto max-w-4xl">
       <div className="flex items-center mb-6">
         <PawPrintIcon className="h-5 w-5 md:h-8 md:w-8 mr-2" />
-        <h1 className="text-lg md:text-3xl font-bold">Crear Nuevo Animal</h1>
+        <h1 className="text-lg md:text-3xl font-bold">{t("title")}</h1>
       </div>
 
       <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border">
         <div className="space-y-2">
           <Label className="text-sm font-medium">
-            Especie <span className="text-red-500">*</span>
+            {t("fields.species")} <span className="text-red-500">*</span>
           </Label>
+
           <RadioGroup
             value={selectedEspecieId}
             onValueChange={(value) => {
@@ -59,14 +65,14 @@ const CrearAnimalPage = () => {
                 key={especie.value}
                 htmlFor={`especie-${especie.value}`}
                 className={`
-        flex items-center gap-3 rounded-lg border p-4 cursor-pointer
-        hover:bg-muted transition-colors
-        ${
-          selectedEspecieId === especie.value
-            ? "border-primary bg-primary/10"
-            : ""
-        }
-      `}
+                  flex items-center gap-3 rounded-lg border p-4 cursor-pointer
+                  hover:bg-muted transition-colors
+                  ${
+                    selectedEspecieId === especie.value
+                      ? "border-primary bg-primary/10"
+                      : ""
+                  }
+                `}
               >
                 <RadioGroupItem
                   value={especie.value}
@@ -79,7 +85,7 @@ const CrearAnimalPage = () => {
 
           {!selectedEspecieId && (
             <p className="text-sm text-amber-600 dark:text-amber-400">
-              ⚠️ Selecciona una especie para continuar
+              ⚠️ {t("messages.selectSpeciesWarning")}
             </p>
           )}
         </div>
@@ -89,13 +95,10 @@ const CrearAnimalPage = () => {
         <div className="mt-8 rounded-xl border border-dashed bg-muted/30 p-10 text-center">
           <PawPrintIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
 
-          <h2 className="text-2xl font-semibold mb-2">
-            Selecciona una especie
-          </h2>
+          <h2 className="text-2xl font-semibold mb-2">{t("empty.title")}</h2>
 
           <p className="text-muted-foreground max-w-md mx-auto">
-            Elige la especie del animal que deseas registrar para mostrar el
-            formulario correspondiente.
+            {t("empty.description")}
           </p>
         </div>
       )}
@@ -103,9 +106,11 @@ const CrearAnimalPage = () => {
       {especieName.toLowerCase() === "avicola" && (
         <FormAddAvicola selectedEspecieId={selectedEspecieId} />
       )}
+
       {especieName.toLowerCase() === "porcino" && (
         <FormAddPorcino selectedEspecieId={selectedEspecieId} />
       )}
+
       {especieName.toLowerCase() === "caprino" && (
         <Tabs
           value={activeTab}
@@ -113,9 +118,9 @@ const CrearAnimalPage = () => {
           className="w-full h-[90vh]"
         >
           <TabsList className="grid grid-cols-3 mb-6">
-            <TabsTrigger value="animal">Datos Animal</TabsTrigger>
-            <TabsTrigger value="padre">Datos Padre</TabsTrigger>
-            <TabsTrigger value="madre">Datos Madre</TabsTrigger>
+            <TabsTrigger value="animal">{t("tabs.animal")}</TabsTrigger>
+            <TabsTrigger value="padre">{t("tabs.father")}</TabsTrigger>
+            <TabsTrigger value="madre">{t("tabs.mother")}</TabsTrigger>
           </TabsList>
 
           <FormAddCaprino
@@ -124,6 +129,7 @@ const CrearAnimalPage = () => {
           />
         </Tabs>
       )}
+
       {especieName.toLowerCase() === "ovino" && (
         <Tabs
           value={activeTab}
@@ -131,9 +137,9 @@ const CrearAnimalPage = () => {
           className="w-full h-[90vh]"
         >
           <TabsList className="grid grid-cols-3 mb-6">
-            <TabsTrigger value="animal">Datos Animal</TabsTrigger>
-            <TabsTrigger value="padre">Datos Padre</TabsTrigger>
-            <TabsTrigger value="madre">Datos Madre</TabsTrigger>
+            <TabsTrigger value="animal">{t("tabs.animal")}</TabsTrigger>
+            <TabsTrigger value="padre">{t("tabs.father")}</TabsTrigger>
+            <TabsTrigger value="madre">{t("tabs.mother")}</TabsTrigger>
           </TabsList>
 
           <FormAddOvino
@@ -142,9 +148,11 @@ const CrearAnimalPage = () => {
           />
         </Tabs>
       )}
+
       {especieName.toLowerCase() === "peces" && (
         <FormAddPeces selectedEspecieId={selectedEspecieId} />
       )}
+
       {especieName.toLowerCase() === "equino" && (
         <Tabs
           value={activeTab}
@@ -152,9 +160,9 @@ const CrearAnimalPage = () => {
           className="w-full h-[90vh]"
         >
           <TabsList className="grid grid-cols-3 mb-6">
-            <TabsTrigger value="animal">Datos Animal</TabsTrigger>
-            <TabsTrigger value="padre">Datos Padre</TabsTrigger>
-            <TabsTrigger value="madre">Datos Madre</TabsTrigger>
+            <TabsTrigger value="animal">{t("tabs.animal")}</TabsTrigger>
+            <TabsTrigger value="padre">{t("tabs.father")}</TabsTrigger>
+            <TabsTrigger value="madre">{t("tabs.mother")}</TabsTrigger>
           </TabsList>
 
           <FormAddEquino
@@ -171,9 +179,9 @@ const CrearAnimalPage = () => {
           className="w-full h-[90vh]"
         >
           <TabsList className="grid grid-cols-3 mb-6">
-            <TabsTrigger value="animal">Datos Animal</TabsTrigger>
-            <TabsTrigger value="padre">Datos Padre</TabsTrigger>
-            <TabsTrigger value="madre">Datos Madre</TabsTrigger>
+            <TabsTrigger value="animal">{t("tabs.animal")}</TabsTrigger>
+            <TabsTrigger value="padre">{t("tabs.father")}</TabsTrigger>
+            <TabsTrigger value="madre">{t("tabs.mother")}</TabsTrigger>
           </TabsList>
 
           <FormAddAnimal

@@ -1,4 +1,5 @@
 "use client";
+
 import useGetTrabajadores from "@/hooks/trabajadores/useGetTrabajadores";
 import { useState, useEffect } from "react";
 import {
@@ -9,7 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-
 import { Button } from "@/components/ui/button";
 import { Search, UserCheck, Users, Plus, Filter, X } from "lucide-react";
 import Paginacion from "@/components/generics/Paginacion";
@@ -25,10 +25,14 @@ import { useAuthStore } from "@/providers/store/useAuthStore";
 import ButtonAdd from "@/components/generics/ButtonAdd";
 import { StatCard } from "@/components/generics/StatCard";
 import TitlePage from "@/components/generics/TitlePage";
+import { useTranslations } from "next-intl";
 
 const TrabajadoresPage = () => {
+  const t = useTranslations("trabajadoresPage");
+
   const { cliente } = useAuthStore();
   const router = useRouter();
+
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [itemsPerPage] = useState(10);
@@ -36,6 +40,7 @@ const TrabajadoresPage = () => {
   const [trabajador, setTrabajador] = useState<Trabajador | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [filterVerified, setFilterVerified] = useState<string>("todos");
+
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const {
@@ -63,7 +68,9 @@ const TrabajadoresPage = () => {
     }) || [];
 
   const totalPages = Math.ceil((trabajadoresData?.total || 0) / itemsPerPage);
+
   const hasActiveFilters = searchTerm !== "" || filterVerified !== "todos";
+
   const totalFiltrados = filteredTrabajadores.length;
 
   useEffect(() => {
@@ -110,8 +117,8 @@ const TrabajadoresPage = () => {
             className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3"
           >
             <TitlePage
-              title={`Trabajadores`}
-              description="Gestión de trabajadores asignados a fincas"
+              title={t("title")}
+              description={t("description")}
               Icon={Users}
             />
 
@@ -123,10 +130,11 @@ const TrabajadoresPage = () => {
                 className="w-full sm:w-auto"
               >
                 <Filter className="mr-2 h-4 w-4" />
-                Filtros
+                {t("filters.button")}
+
                 {hasActiveFilters && (
                   <Badge variant="secondary" className="ml-2">
-                    Activo
+                    {t("filters.active")}
                   </Badge>
                 )}
               </Button>
@@ -134,7 +142,7 @@ const TrabajadoresPage = () => {
               <ButtonAdd
                 id="id-trabajadores-add-button"
                 Icon={Plus}
-                title="Nuevo Trabajador"
+                title={t("buttons.newWorker")}
                 action={() => handleAddTrabajador()}
                 className="bg-green-600 hover:bg-green-700"
               />
@@ -145,7 +153,7 @@ const TrabajadoresPage = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
 
             <Input
-              placeholder="Buscar por nombre, identificación o teléfono..."
+              placeholder={t("search.placeholder")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-9 pr-9 w-full"
@@ -156,6 +164,7 @@ const TrabajadoresPage = () => {
                 id="id-trabajadores-clear-search"
                 onClick={() => setSearchTerm("")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                aria-label={t("search.clear")}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -166,7 +175,7 @@ const TrabajadoresPage = () => {
             <Card id="id-trabajadores-filters" className="p-4">
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <h3 className="font-medium">Filtros</h3>
+                  <h3 className="font-medium">{t("filters.title")}</h3>
 
                   <Button
                     id="id-trabajadores-clear-filters"
@@ -174,14 +183,14 @@ const TrabajadoresPage = () => {
                     size="sm"
                     onClick={clearFilters}
                   >
-                    Limpiar todos
+                    {t("filters.clearAll")}
                   </Button>
                 </div>
 
                 <div className="grid grid-cols-1 gap-3">
                   <div id="id-trabajadores-filter-verified">
                     <label className="text-sm font-medium mb-2 block">
-                      Estado de verificación
+                      {t("filters.verificationStatus")}
                     </label>
 
                     <div className="flex flex-wrap gap-2">
@@ -194,7 +203,7 @@ const TrabajadoresPage = () => {
                         onClick={() => setFilterVerified("todos")}
                         className="flex-1"
                       >
-                        Todos
+                        {t("filters.all")}
                       </Button>
 
                       <Button
@@ -208,7 +217,7 @@ const TrabajadoresPage = () => {
                         onClick={() => setFilterVerified("verificados")}
                         className="flex-1"
                       >
-                        Verificados
+                        {t("filters.verified")}
                       </Button>
 
                       <Button
@@ -222,7 +231,7 @@ const TrabajadoresPage = () => {
                         onClick={() => setFilterVerified("no_verificados")}
                         className="flex-1"
                       >
-                        No verificados
+                        {t("filters.unverified")}
                       </Button>
                     </div>
                   </div>
@@ -237,7 +246,7 @@ const TrabajadoresPage = () => {
           className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4"
         >
           <StatCard
-            title="Total Trabajadores"
+            title={t("statistics.totalWorkers")}
             icon={Users}
             value={trabajadoresData?.total || 0}
             gradientFrom="from-blue-50"
@@ -247,7 +256,7 @@ const TrabajadoresPage = () => {
           />
 
           <StatCard
-            title="Verificados"
+            title={t("statistics.verified")}
             icon={UserCheck}
             value={
               trabajadoresData?.trabajadores?.filter((t) => t.verified)
@@ -263,21 +272,26 @@ const TrabajadoresPage = () => {
         <Card id="id-trabajadores-list">
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="text-lg sm:text-xl">
-              Lista de Trabajadores
+              {t("list.title")}
             </CardTitle>
 
             <CardDescription>
-              {trabajadoresData?.total || 0} trabajadores registrados en el
-              sistema
+              {t("list.registered", {
+                total: trabajadoresData?.total || 0,
+              })}
+
               {hasActiveFilters && totalFiltrados > 0 && (
                 <span className="block mt-1 text-primary">
-                  Mostrando {totalFiltrados} de {trabajadoresData?.total || 0}{" "}
-                  trabajadores con filtros aplicados
+                  {t("list.filteredResults", {
+                    showing: totalFiltrados,
+                    total: trabajadoresData?.total || 0,
+                  })}
                 </span>
               )}
+
               {hasActiveFilters && totalFiltrados === 0 && (
                 <span className="block mt-1 text-destructive">
-                  No hay resultados con los filtros aplicados
+                  {t("list.noFilteredResults")}
                 </span>
               )}
             </CardDescription>
@@ -317,10 +331,16 @@ const TrabajadoresPage = () => {
                     id="id-trabajadores-results-count"
                     className="mt-4 text-xs sm:text-sm text-muted-foreground text-center px-4 sm:px-0"
                   >
-                    Mostrando {totalFiltrados} de {trabajadoresData?.total || 0}{" "}
-                    trabajadores
+                    {t("list.showingResults", {
+                      showing: totalFiltrados,
+                      total: trabajadoresData?.total || 0,
+                    })}
+
                     {currentPage > 1 &&
-                      ` - Página ${currentPage} de ${totalPages}`}
+                      ` - ${t("list.page", {
+                        current: currentPage,
+                        total: totalPages,
+                      })}`}
                   </div>
                 )}
               </>
@@ -330,11 +350,9 @@ const TrabajadoresPage = () => {
       </div>
 
       <Modal
-        title={trabajador ? "Editar Trabajador" : "Nuevo Trabajador"}
+        title={trabajador ? t("modal.editTitle") : t("modal.createTitle")}
         description={
-          trabajador
-            ? "Aquí podrás editar la información del trabajador"
-            : "Aquí Podrás Ingresar un nuevo trabajador"
+          trabajador ? t("modal.editDescription") : t("modal.createDescription")
         }
         open={openAddTrabajador}
         onOpenChange={(open) => {

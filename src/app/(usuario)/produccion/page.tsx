@@ -1,5 +1,7 @@
 "use client";
+
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { BadgeDollarSign, PackagePlus, ShoppingBasket } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,13 +19,9 @@ import {
 
 const ProduccionGanaderoPage = () => {
   const router = useRouter();
+  const t = useTranslations("produccionGanaderoPage");
 
-  const {
-    data: producciones,
-
-    isLoading,
-    refetch,
-  } = useGetProduccionesUserId();
+  const { data: producciones, isLoading, refetch } = useGetProduccionesUserId();
 
   const onRefresh = async () => {
     await refetch();
@@ -43,7 +41,7 @@ const ProduccionGanaderoPage = () => {
           id="id-produccion-header"
           className="block md:flex justify-between items-center mb-6"
         >
-          <h1 className="text-lg md:text-2xl font-bold">Mis Producciones</h1>
+          <h1 className="text-lg md:text-2xl font-bold">{t("title")}</h1>
 
           <DropdownMenu>
             <DropdownMenuTrigger
@@ -53,7 +51,7 @@ const ProduccionGanaderoPage = () => {
             >
               <Button variant="outline" className="gap-2">
                 <BadgeDollarSign className="h-4 w-4" />
-                Control de Productos
+                {t("productControl")}
               </Button>
             </DropdownMenuTrigger>
 
@@ -64,7 +62,7 @@ const ProduccionGanaderoPage = () => {
                 onClick={() => router.push("/produccion/precios-productos")}
               >
                 <ShoppingBasket className="h-4 w-4 mr-2" />
-                Productos
+                {t("products")}
               </DropdownMenuItem>
 
               <DropdownMenuItem
@@ -73,7 +71,7 @@ const ProduccionGanaderoPage = () => {
                 onClick={() => router.push("/produccion/inventario-productos")}
               >
                 <PackagePlus className="h-4 w-4 mr-2" />
-                Inventario
+                {t("inventory")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -91,8 +89,8 @@ const ProduccionGanaderoPage = () => {
           <Card id="id-produccion-empty" className="mt-8">
             <CardContent className="pt-6 text-center">
               <MessageError
-                titulo="No hay producciones registradas"
-                descripcion="No se encontraron producciones registradas. Puedes crear una nueva producción haciendo clic en el botón +"
+                titulo={t("empty.title")}
+                descripcion={t("empty.description")}
                 onPress={onRefresh}
               />
             </CardContent>
@@ -115,6 +113,7 @@ const LoadingState = () => {
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-9 w-24" />
       </div>
+
       <div className="space-y-4">
         {[...Array(3)].map((_, i) => (
           <Card key={i} className="w-full">

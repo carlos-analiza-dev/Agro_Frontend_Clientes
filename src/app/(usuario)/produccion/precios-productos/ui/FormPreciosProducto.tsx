@@ -1,3 +1,5 @@
+"use client";
+
 import { CrearPrecioProducto } from "@/api/precios-producto-ganadero/accions/crear-precio-producto";
 import { EditarPrecioProducto } from "@/api/precios-producto-ganadero/accions/editar-precio-producto";
 import { CrearPrecioProductoInterface } from "@/api/precios-producto-ganadero/interface/crear-precio-producto.interface";
@@ -18,6 +20,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 interface Props {
   producto: ResponseProductosVenta;
@@ -34,6 +37,8 @@ const FormPreciosProducto = ({
   precioToEdit,
   onSuccess,
 }: Props) => {
+  const t = useTranslations("formPreciosProducto");
+
   const { cliente } = useAuthStore();
   const queryClient = useQueryClient();
   const moneda = cliente?.pais.simbolo_moneda ?? "L";
@@ -88,6 +93,7 @@ const FormPreciosProducto = ({
           (u) =>
             u.value.toUpperCase() === precioToEdit.unidadMedida.toUpperCase(),
         );
+
         if (unidadEncontrada) {
           setValue("unidadMedida", unidadEncontrada.value);
         }
@@ -96,6 +102,11 @@ const FormPreciosProducto = ({
       return () => clearTimeout(timeout);
     }
   }, [precioToEdit, openModal, setValue]);
+
+  const getUnitLabel = (value: string, fallback: string) => {
+    const key = `units.${value}`;
+    return t.has(key) ? t(key) : fallback;
+  };
 
   const onSubmit = async (data: CrearPrecioProductoInterface) => {
     if (!producto) return;
@@ -112,10 +123,10 @@ const FormPreciosProducto = ({
 
       if (isEditing && precioToEdit) {
         await EditarPrecioProducto(precioToEdit.id, dataToSend);
-        toast.success(`Precio actualizado con éxito para: ${producto.nombre}`);
+        toast.success(t("messages.updateSuccess", { name: producto.nombre }));
       } else {
         await CrearPrecioProducto(dataToSend);
-        toast.success(`Precio agregado con éxito para: ${producto.nombre}`);
+        toast.success(t("messages.createSuccess", { name: producto.nombre }));
       }
 
       reset({
@@ -128,13 +139,14 @@ const FormPreciosProducto = ({
       queryClient.invalidateQueries({ queryKey: ["productos-venta"] });
 
       setOpenModal(false);
+
       if (onSuccess) {
         onSuccess();
       }
     } catch (error: any) {
       toast.error(
         error.response?.data?.message ||
-          `Error al ${isEditing ? "actualizar" : "agregar"} el precio. Por favor, intenta de nuevo.`,
+          t(isEditing ? "errors.update" : "errors.create"),
       );
     } finally {
       setIsSubmitting(false);
@@ -155,12 +167,13 @@ const FormPreciosProducto = ({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="unidadMedida">
-          Unidad de Medida <span className="text-red-500">*</span>
+          {t("fields.unit")} <span className="text-red-500">*</span>
         </Label>
+
         <Controller
           name="unidadMedida"
           control={control}
-          rules={{ required: "La unidad de medida es requerida" }}
+          rules={{ required: t("validation.unitRequired") }}
           render={({ field }) => (
             <Select
               onValueChange={field.onChange}
@@ -171,18 +184,20 @@ const FormPreciosProducto = ({
               <SelectTrigger
                 className={errors.unidadMedida ? "border-red-500" : ""}
               >
-                <SelectValue placeholder="Selecciona la unidad" />
+                <SelectValue placeholder={t("placeholders.unit")} />
               </SelectTrigger>
+
               <SelectContent>
                 {unidades_productos.map((unidad) => (
                   <SelectItem key={unidad.value} value={unidad.value}>
-                    {unidad.nombre}
+                    {getUnitLabel(unidad.value, unidad.nombre)}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           )}
         />
+
         {errors.unidadMedida && (
           <p className="text-sm text-red-600">{errors.unidadMedida.message}</p>
         )}
@@ -190,8 +205,10 @@ const FormPreciosProducto = ({
 
       <div className="space-y-2">
         <Label htmlFor="precio">
-          Precio ({moneda}) <span className="text-red-500">*</span>
+          {t("fields.price", { currency: moneda })}{" "}
+          <span className="text-red-500">*</span>
         </Label>
+
         <Input
           id="precio"
           type="number"
@@ -199,16 +216,17 @@ const FormPreciosProducto = ({
           min="0"
           placeholder={`0.00 ${moneda}`}
           {...register("precio", {
-            required: "El precio es requerido",
+            required: t("validation.priceRequired"),
             min: {
               value: 0.01,
-              message: "El precio debe ser mayor a 0",
+              message: t("validation.priceMin"),
             },
             valueAsNumber: true,
           })}
           disabled={isSubmitting}
           className={errors.precio ? "border-red-500" : ""}
         />
+
         {errors.precio && (
           <p className="text-sm text-red-600">{errors.precio.message}</p>
         )}
@@ -216,15 +234,16 @@ const FormPreciosProducto = ({
 
       <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
         <p>
-          Producto: <span className="font-medium">{producto.nombre}</span>
+          {t("product")}: <span className="font-medium">{producto.nombre}</span>
         </p>
+
         <p>
-          Categoría: <span className="font-medium">{producto.categoria}</span>
+          {t("category")}:{" "}
+          <span className="font-medium">{producto.categoria}</span>
         </p>
+
         {isEditing && (
-          <p className="mt-1 text-blue-600 font-medium">
-            ✏️ Editando precio existente
-          </p>
+          <p className="mt-1 text-blue-600 font-medium">✏️ {t("editing")}</p>
         )}
       </div>
 
@@ -238,20 +257,21 @@ const FormPreciosProducto = ({
           onClick={handleCloseModal}
           disabled={isSubmitting}
         >
-          Cancelar
+          {t("buttons.cancel")}
         </Button>
+
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? (
             <>
               <span className="mr-2">
-                {isEditing ? "Actualizando..." : "Agregando..."}
+                {isEditing ? t("buttons.updating") : t("buttons.adding")}
               </span>
               <span className="animate-spin">⏳</span>
             </>
           ) : isEditing ? (
-            "Actualizar Precio"
+            t("buttons.update")
           ) : (
-            "Agregar Precio"
+            t("buttons.add")
           )}
         </Button>
       </div>

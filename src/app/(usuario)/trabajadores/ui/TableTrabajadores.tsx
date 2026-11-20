@@ -38,6 +38,7 @@ import {
   Building2,
 } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import ResumenPermiso from "./ResumenPermiso";
 import TablePermisosCliente from "./TablePermisosCliente";
 import TablePermisosAsignados from "./TablePermisosAsignados";
@@ -53,7 +54,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { CrearPermisoClienteInterface } from "@/api/permisos/interface/crear-permiso-cliente.interface";
 import { CrearPermisoByCliente } from "@/api/permisos/accions/crear-permiso_by_cliente";
-import VerifiedBadge from "./VerifiedBadge";
 import { ActualizarVerificacion } from "@/api/cliente/accions/update-verified";
 import useGetFincasByTrabajador from "@/hooks/fincas-trabajador/useGetFincasByTrabajador";
 import TableFincasTrabajador from "./TableFincasTrabajador";
@@ -65,6 +65,7 @@ import { useRouter } from "next/navigation";
 import { getInitials } from "@/helpers/funciones/getInitials";
 import { Cliente } from "@/interfaces/auth/cliente";
 import useGetPermisosByPaquete from "@/hooks/permisos/useGetPermisosByPaquete";
+import VerifiedBadge from "./VerifiedBadge";
 
 interface Props {
   filteredTrabajadores: Trabajador[] | undefined;
@@ -79,8 +80,10 @@ const TableTrabajadores = ({
   isMobile,
   cliente,
 }: Props) => {
+  const t = useTranslations("tableTrabajadores");
   const queryClient = useQueryClient();
   const router = useRouter();
+
   const [permisosSeleccionados, setPermisosSeleccionados] = useState<string[]>(
     [],
   );
@@ -94,11 +97,12 @@ const TableTrabajadores = ({
   const [verficiado, setVerficiado] = useState(false);
   const [openViewFincasTrabajador, setOpenViewFincasTrabajador] =
     useState(false);
+
   const { data: permisos_cliente } = useGetPermisosByCliente(clienteId);
   const { data: permisos_activos } = useGetPermisosByPaquete(paqueteId);
 
-  const { data: fincas_trabajador, isLoading: cargando } =
-    useGetFincasByTrabajador(clienteId);
+  const { data: fincas_trabajador } = useGetFincasByTrabajador(clienteId);
+
   const permisosDisponibles = permisos_activos?.filter(
     (permisoActivo) =>
       !permisos_cliente?.some(
@@ -131,9 +135,10 @@ const TableTrabajadores = ({
       queryClient.invalidateQueries({
         queryKey: ["permisos-clienteId", clienteId],
       });
-      toast.success("Permiso actualizado correctamente");
+
+      toast.success(t("messages.permissionUpdated"));
     } catch (error) {
-      toast.error("Error al actualizar el permiso");
+      toast.error(t("errors.updatePermission"));
     }
   };
 
@@ -144,9 +149,10 @@ const TableTrabajadores = ({
       queryClient.invalidateQueries({
         queryKey: ["permisos-clienteId", clienteId],
       });
-      toast.success("Permiso eliminado correctamente");
+
+      toast.success(t("messages.permissionDeleted"));
     } catch (error) {
-      toast.error("Error al eliminar el permiso");
+      toast.error(t("errors.deletePermission"));
     }
   };
 
@@ -173,7 +179,7 @@ const TableTrabajadores = ({
 
   const handleConfirmarAgregarPermiso = async () => {
     if (permisosSeleccionados.length === 0) {
-      toast.error("Por favor selecciona al menos un permiso");
+      toast.error(t("errors.selectAtLeastOnePermission"));
       return;
     }
 
@@ -197,35 +203,39 @@ const TableTrabajadores = ({
       });
 
       toast.success(
-        `${permisosSeleccionados.length} permiso(s) agregado(s) correctamente`,
+        t("messages.permissionsAdded", { count: permisosSeleccionados.length }),
       );
+
       setOpenAddPermisos(false);
       setPermisosSeleccionados([]);
     } catch (error) {
-      toast.error("Error al agregar los permisos");
+      toast.error(t("errors.addPermissions"));
     }
   };
 
   const updatedVerified = async (verified: boolean) => {
     if (!clienteId) {
-      toast.error(
-        "Debes seleccionar un trabajador para poder actualizar su estado de verificacion",
-      );
+      toast.error(t("errors.selectWorkerToUpdateVerification"));
       return;
     }
+
     try {
       await ActualizarVerificacion(clienteId, verified);
-      toast.success("Estado del Trabajador Actualizado exitosamente");
+
+      toast.success(t("messages.workerVerificationUpdated"));
+
       queryClient.invalidateQueries({
         queryKey: ["permisos-clienteId", clienteId],
       });
+
       queryClient.invalidateQueries({
         queryKey: ["trabajadores"],
       });
+
       setClienteId("");
       setOpenVerified(false);
     } catch (error) {
-      toast.error("Ocurrio un error al verificar el trabajador");
+      toast.error(t("errors.verifyWorker"));
     }
   };
 
@@ -271,46 +281,57 @@ const TableTrabajadores = ({
                         <Badge variant="outline" className="text-xs">
                           {trabajador.rol}
                         </Badge>
-                        {VerifiedBadge(trabajador.verified)}
+                        <VerifiedBadge verified={trabajador.verified} />
                       </div>
                     </div>
                   </div>
+
                   <div className="flex gap-1">
                     <Button
                       onClick={() => handleEditTrabajador(trabajador)}
                       variant="ghost"
                       size="sm"
                       className="h-8 w-8 p-0"
+                      aria-label={t("actions.editWorker")}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
+
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button
                           variant="ghost"
                           size="sm"
                           className="h-8 w-8 p-0"
+                          aria-label={t("actions.openMenu")}
                         >
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
+
                       <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                        <DropdownMenuLabel>
+                          {t("actions.title")}
+                        </DropdownMenuLabel>
+
                         <DropdownMenuItem
                           onClick={() => handleViewClienteId(trabajador.id)}
                         >
                           <Plus className="mr-2 h-4 w-4" />
-                          Asignar permisos
+                          {t("actions.assignPermissions")}
                         </DropdownMenuItem>
+
                         <DropdownMenuItem
                           onClick={() =>
                             handleAddFincas(trabajador.id, trabajador.nombre)
                           }
                         >
                           <Users className="mr-2 h-4 w-4" />
-                          Asignar a finca
+                          {t("actions.assignFarm")}
                         </DropdownMenuItem>
+
                         <DropdownMenuSeparator />
+
                         {trabajador.verified ? (
                           <DropdownMenuItem
                             onClick={() =>
@@ -322,7 +343,7 @@ const TableTrabajadores = ({
                             className="text-red-600"
                           >
                             <UserX className="mr-2 h-4 w-4" />
-                            Invalidar
+                            {t("actions.invalidate")}
                           </DropdownMenuItem>
                         ) : (
                           <DropdownMenuItem
@@ -335,7 +356,7 @@ const TableTrabajadores = ({
                             className="text-green-600"
                           >
                             <UserCheck className="mr-2 h-4 w-4" />
-                            Verificar
+                            {t("actions.verify")}
                           </DropdownMenuItem>
                         )}
                       </DropdownMenuContent>
@@ -348,7 +369,7 @@ const TableTrabajadores = ({
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">
-                      Identificación
+                      {t("fields.identification")}
                     </span>
                     <span className="text-sm font-mono">
                       {trabajador.identificacion}
@@ -357,7 +378,7 @@ const TableTrabajadores = ({
 
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">
-                      Teléfono
+                      {t("fields.phone")}
                     </span>
                     <div className="flex items-center gap-1">
                       <Phone className="h-3 w-3 text-muted-foreground" />
@@ -366,23 +387,26 @@ const TableTrabajadores = ({
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Email</span>
+                    <span className="text-xs text-muted-foreground">
+                      {t("fields.email")}
+                    </span>
                     <div className="flex items-center gap-1">
                       <Mail className="h-3 w-3 text-muted-foreground" />
                       <span className="text-sm truncate max-w-[180px]">
-                        {trabajador.email || "No registrado"}
+                        {trabajador.email || t("values.notRegistered")}
                       </span>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">
-                      Ubicación
+                      {t("fields.location")}
                     </span>
                     <div className="flex items-center gap-1">
                       <MapPin className="h-3 w-3 text-muted-foreground" />
                       <span className="text-sm">
-                        {trabajador.municipio?.nombre || "N/A"}
+                        {trabajador.municipio?.nombre ||
+                          t("values.notAvailable")}
                       </span>
                     </div>
                   </div>
@@ -398,7 +422,7 @@ const TableTrabajadores = ({
                 >
                   <span className="flex items-center gap-2">
                     <Building2 className="h-4 w-4" />
-                    Ver fincas asignadas
+                    {t("actions.viewAssignedFarms")}
                   </span>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
@@ -409,16 +433,14 @@ const TableTrabajadores = ({
           <Card>
             <CardContent className="py-8 text-center">
               <Users className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-              <p className="text-muted-foreground">
-                No se encontraron trabajadores
-              </p>
+              <p className="text-muted-foreground">{t("empty.noWorkers")}</p>
             </CardContent>
           </Card>
         )}
 
         <Modal
-          title="Permisos del Trabajador"
-          description="Aquí puedes observar y gestionar los permisos a los cuales tiene acceso el trabajador"
+          title={t("modals.workerPermissions.title")}
+          description={t("modals.workerPermissions.description")}
           open={openModalPermisos}
           onOpenChange={setOpenModalPermisos}
           size="full"
@@ -426,7 +448,9 @@ const TableTrabajadores = ({
         >
           <div className="space-y-4 p-2">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-              <h3 className="text-lg font-semibold">Permisos Asignados</h3>
+              <h3 className="text-lg font-semibold">
+                {t("permissions.assignedTitle")}
+              </h3>
               <Button
                 onClick={handleAgregarPermiso}
                 size="sm"
@@ -436,7 +460,7 @@ const TableTrabajadores = ({
                 }
               >
                 <Plus className="h-4 w-4" />
-                Agregar Permiso
+                {t("permissions.add")}
               </Button>
             </div>
 
@@ -451,7 +475,7 @@ const TableTrabajadores = ({
             ) : (
               <div className="text-center py-8 border rounded-lg">
                 <p className="text-gray-500">
-                  No hay permisos asignados para este cliente
+                  {t("permissions.emptyAssigned")}
                 </p>
                 <Button
                   onClick={handleAgregarPermiso}
@@ -462,7 +486,7 @@ const TableTrabajadores = ({
                   }
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  Agregar Primer Permiso
+                  {t("permissions.addFirst")}
                 </Button>
               </div>
             )}
@@ -474,8 +498,8 @@ const TableTrabajadores = ({
         </Modal>
 
         <Modal
-          title="Agregar Permisos al Trabajador"
-          description="Selecciona uno o múltiples permisos para agregar al trabajador"
+          title={t("modals.addPermissions.title")}
+          description={t("modals.addPermissions.description")}
           open={openAddPermisos}
           onOpenChange={setOpenAddPermisos}
           size="full"
@@ -486,9 +510,12 @@ const TableTrabajadores = ({
               <>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sticky top-0 z-10 py-2 bg-white">
                   <span className="text-sm text-gray-600 font-medium">
-                    {permisosSeleccionados.length} de{" "}
-                    {permisosDisponibles.length} seleccionados
+                    {t("permissions.selectedCount", {
+                      selected: permisosSeleccionados.length,
+                      total: permisosDisponibles.length,
+                    })}
                   </span>
+
                   <div className="flex gap-2 w-full sm:w-auto">
                     <Button
                       variant="outline"
@@ -496,7 +523,7 @@ const TableTrabajadores = ({
                       onClick={handleSeleccionarTodos}
                       className="flex-1"
                     >
-                      Seleccionar Todos
+                      {t("permissions.selectAll")}
                     </Button>
                     <Button
                       variant="outline"
@@ -504,7 +531,7 @@ const TableTrabajadores = ({
                       onClick={handleDeseleccionarTodos}
                       className="flex-1"
                     >
-                      Deseleccionar Todos
+                      {t("permissions.deselectAll")}
                     </Button>
                   </div>
                 </div>
@@ -522,7 +549,7 @@ const TableTrabajadores = ({
             ) : (
               <div className="text-center py-8 border rounded-lg">
                 <p className="text-gray-500">
-                  No hay permisos disponibles para agregar
+                  {t("permissions.emptyAvailable")}
                 </p>
               </div>
             )}
@@ -531,15 +558,19 @@ const TableTrabajadores = ({
               <div className="bg-blue-50 border border-blue-200 rounded-lg">
                 <div className="p-4 border-b border-blue-200">
                   <h4 className="font-semibold text-blue-800">
-                    Permisos Seleccionados ({permisosSeleccionados.length})
+                    {t("permissions.selectedTitle", {
+                      count: permisosSeleccionados.length,
+                    })}
                   </h4>
                 </div>
+
                 <div className="max-h-48 overflow-y-auto">
                   <div className="p-4 space-y-3">
                     {permisosSeleccionados.map((permisoId) => {
                       const permiso = permisosDisponibles?.find(
                         (p) => p.id === permisoId,
                       );
+
                       return permiso ? (
                         <div
                           key={permisoId}
@@ -553,13 +584,14 @@ const TableTrabajadores = ({
                               {permiso.descripcion}
                             </p>
                           </div>
+
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleSeleccionarPermiso(permisoId)}
                             className="text-red-500 hover:text-red-700 ml-2 flex-shrink-0"
                           >
-                            Quitar
+                            {t("actions.remove")}
                           </Button>
                         </div>
                       ) : null;
@@ -569,6 +601,7 @@ const TableTrabajadores = ({
               </div>
             )}
           </div>
+
           <AlertDialogFooter className="mt-4 pt-4 border-t border-gray-200 flex-shrink-0">
             <AlertDialogCancel
               onClick={() => {
@@ -576,20 +609,23 @@ const TableTrabajadores = ({
                 setPermisosSeleccionados([]);
               }}
             >
-              Cancelar
+              {t("buttons.cancel")}
             </AlertDialogCancel>
+
             <AlertDialogAction
               onClick={handleConfirmarAgregarPermiso}
               disabled={permisosSeleccionados.length === 0}
             >
-              Agregar {permisosSeleccionados.length} Permiso(s)
+              {t("permissions.addSelected", {
+                count: permisosSeleccionados.length,
+              })}
             </AlertDialogAction>
           </AlertDialogFooter>
         </Modal>
 
         <Modal
-          title="Agregar Finca"
-          description="Aqui podras agregar las fincas que tendra asignadas este trabajador"
+          title={t("modals.addFarm.title")}
+          description={t("modals.addFarm.description")}
           open={isOpenFinca}
           onOpenChange={setIsOpenFinca}
           size="full"
@@ -605,8 +641,8 @@ const TableTrabajadores = ({
         </Modal>
 
         <Modal
-          title="Modificar Verificacion"
-          description="Aqui podras verificar o invalidar un usuario"
+          title={t("modals.verification.title")}
+          description={t("modals.verification.description")}
           open={openVerified}
           onOpenChange={setOpenVerified}
           size="sm"
@@ -614,15 +650,15 @@ const TableTrabajadores = ({
         >
           <div className="flex flex-col sm:flex-row justify-between gap-3">
             <AlertDialogAction onClick={() => updatedVerified(!verficiado)}>
-              Actualizar
+              {t("buttons.update")}
             </AlertDialogAction>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{t("buttons.cancel")}</AlertDialogCancel>
           </div>
         </Modal>
 
         <Modal
-          title="Fincas Asignadas Al Trabajador"
-          description="Aqui se observan las fincas que tiene asignadas este trabajador"
+          title={t("modals.assignedFarms.title")}
+          description={t("modals.assignedFarms.description")}
           open={openViewFincasTrabajador}
           onOpenChange={setOpenViewFincasTrabajador}
           size="full"
@@ -639,14 +675,21 @@ const TableTrabajadores = ({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="text-center">Trabajador</TableHead>
-            <TableHead className="text-center">Identificación</TableHead>
-            <TableHead className="text-center">Contacto</TableHead>
-            <TableHead className="text-center">Ubicación</TableHead>
-            <TableHead className="text-center">Fincas</TableHead>
-            <TableHead className="text-right">Acciones</TableHead>
+            <TableHead className="text-center">{t("columns.worker")}</TableHead>
+            <TableHead className="text-center">
+              {t("columns.identification")}
+            </TableHead>
+            <TableHead className="text-center">
+              {t("columns.contact")}
+            </TableHead>
+            <TableHead className="text-center">
+              {t("columns.location")}
+            </TableHead>
+            <TableHead className="text-center">{t("columns.farms")}</TableHead>
+            <TableHead className="text-right">{t("columns.actions")}</TableHead>
           </TableRow>
         </TableHeader>
+
         <TableBody>
           {filteredTrabajadores && filteredTrabajadores.length > 0 ? (
             filteredTrabajadores.map((trabajador) => (
@@ -666,14 +709,16 @@ const TableTrabajadores = ({
                     </div>
                   </div>
                 </TableCell>
+
                 <TableCell className="text-center">
                   <div>
                     <div className="font-mono text-sm">
                       {trabajador.identificacion}
                     </div>
-                    {VerifiedBadge(trabajador.verified)}
+                    <VerifiedBadge verified={trabajador.verified} />
                   </div>
                 </TableCell>
+
                 <TableCell>
                   <div className="space-y-1">
                     <div className="flex items-center gap-1 text-sm">
@@ -682,17 +727,19 @@ const TableTrabajadores = ({
                     </div>
                     <div className="flex items-center gap-1 text-sm text-muted-foreground">
                       <Mail className="h-3 w-3" />
-                      {trabajador.email || "No registrado"}
+                      {trabajador.email || t("values.notRegistered")}
                     </div>
                   </div>
                 </TableCell>
+
                 <TableCell>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
                         <div className="flex items-center gap-1 text-sm">
                           <MapPin className="h-3 w-3" />
-                          {trabajador.municipio?.nombre || "N/A"}
+                          {trabajador.municipio?.nombre ||
+                            t("values.notAvailable")}
                         </div>
                       </TooltipTrigger>
                       <TooltipContent>
@@ -704,6 +751,7 @@ const TableTrabajadores = ({
                     </Tooltip>
                   </TooltipProvider>
                 </TableCell>
+
                 <TableCell className="text-center">
                   <Button
                     id="id-ver-finca-trabajador"
@@ -711,9 +759,10 @@ const TableTrabajadores = ({
                     variant="ghost"
                     size="sm"
                   >
-                    Ver Fincas
+                    {t("actions.viewFarms")}
                   </Button>
                 </TableCell>
+
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-1">
                     <Button
@@ -722,32 +771,45 @@ const TableTrabajadores = ({
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
+                      aria-label={t("actions.editWorker")}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
+
                     <DropdownMenu>
                       <DropdownMenuTrigger id="id-options-trabajador" asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
+                        <Button
+                          variant="ghost"
+                          className="h-8 w-8 p-0"
+                          aria-label={t("actions.openMenu")}
+                        >
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
+
                       <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                        <DropdownMenuLabel>
+                          {t("actions.title")}
+                        </DropdownMenuLabel>
+
                         <DropdownMenuItem
                           onClick={() => handleViewClienteId(trabajador.id)}
                         >
                           <Plus className="mr-2 h-4 w-4" />
-                          Asignar permisos
+                          {t("actions.assignPermissions")}
                         </DropdownMenuItem>
+
                         <DropdownMenuItem
                           onClick={() =>
                             handleAddFincas(trabajador.id, trabajador.nombre)
                           }
                         >
                           <Users className="mr-2 h-4 w-4" />
-                          Asignar a finca
+                          {t("actions.assignFarm")}
                         </DropdownMenuItem>
+
                         <DropdownMenuSeparator />
+
                         {trabajador.verified ? (
                           <DropdownMenuItem
                             onClick={() =>
@@ -759,7 +821,7 @@ const TableTrabajadores = ({
                             className="text-red-600"
                           >
                             <UserX className="mr-2 h-4 w-4" />
-                            Invalidar
+                            {t("actions.invalidate")}
                           </DropdownMenuItem>
                         ) : (
                           <DropdownMenuItem
@@ -772,7 +834,7 @@ const TableTrabajadores = ({
                             className="text-green-600"
                           >
                             <UserCheck className="mr-2 h-4 w-4" />
-                            Verificar
+                            {t("actions.verify")}
                           </DropdownMenuItem>
                         )}
                       </DropdownMenuContent>
@@ -787,7 +849,7 @@ const TableTrabajadores = ({
                 <div className="flex flex-col items-center gap-2">
                   <Users className="h-12 w-12 text-muted-foreground" />
                   <p className="text-muted-foreground">
-                    No se encontraron trabajadores
+                    {t("empty.noWorkers")}
                   </p>
                 </div>
               </TableCell>
@@ -797,8 +859,8 @@ const TableTrabajadores = ({
       </Table>
 
       <Modal
-        title="Permisos del Trabajador"
-        description="Aquí puedes observar y gestionar los permisos a los cuales tiene acceso el trabajador"
+        title={t("modals.workerPermissions.title")}
+        description={t("modals.workerPermissions.description")}
         open={openModalPermisos}
         onOpenChange={setOpenModalPermisos}
         size="3xl"
@@ -806,7 +868,9 @@ const TableTrabajadores = ({
       >
         <div className="space-y-4">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold">Permisos Asignados</h3>
+            <h3 className="text-lg font-semibold">
+              {t("permissions.assignedTitle")}
+            </h3>
             <Button
               onClick={handleAgregarPermiso}
               size="sm"
@@ -816,7 +880,7 @@ const TableTrabajadores = ({
               }
             >
               <Plus className="h-4 w-4" />
-              Agregar Permiso
+              {t("permissions.add")}
             </Button>
           </div>
 
@@ -830,9 +894,7 @@ const TableTrabajadores = ({
             </div>
           ) : (
             <div className="text-center py-8 border rounded-lg">
-              <p className="text-gray-500">
-                No hay permisos asignados para este cliente
-              </p>
+              <p className="text-gray-500">{t("permissions.emptyAssigned")}</p>
               <Button
                 onClick={handleAgregarPermiso}
                 variant="outline"
@@ -842,7 +904,7 @@ const TableTrabajadores = ({
                 }
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Agregar Primer Permiso
+                {t("permissions.addFirst")}
               </Button>
             </div>
           )}
@@ -854,8 +916,8 @@ const TableTrabajadores = ({
       </Modal>
 
       <Modal
-        title="Agregar Permisos al Trabajador"
-        description="Selecciona uno o múltiples permisos para agregar al trabajador"
+        title={t("modals.addPermissions.title")}
+        description={t("modals.addPermissions.description")}
         open={openAddPermisos}
         onOpenChange={setOpenAddPermisos}
         size="2xl"
@@ -866,23 +928,26 @@ const TableTrabajadores = ({
             <>
               <div className="flex justify-between items-center bg-white sticky top-0 z-10 py-2">
                 <span className="text-sm text-gray-600 font-medium">
-                  {permisosSeleccionados.length} de {permisosDisponibles.length}{" "}
-                  seleccionados
+                  {t("permissions.selectedCount", {
+                    selected: permisosSeleccionados.length,
+                    total: permisosDisponibles.length,
+                  })}
                 </span>
+
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={handleSeleccionarTodos}
                   >
-                    Seleccionar Todos
+                    {t("permissions.selectAll")}
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={handleDeseleccionarTodos}
                   >
-                    Deseleccionar Todos
+                    {t("permissions.deselectAll")}
                   </Button>
                 </div>
               </div>
@@ -899,9 +964,7 @@ const TableTrabajadores = ({
             </>
           ) : (
             <div className="text-center py-8 border rounded-lg">
-              <p className="text-gray-500">
-                No hay permisos disponibles para agregar
-              </p>
+              <p className="text-gray-500">{t("permissions.emptyAvailable")}</p>
             </div>
           )}
 
@@ -909,15 +972,19 @@ const TableTrabajadores = ({
             <div className="bg-blue-50 border border-blue-200 rounded-lg">
               <div className="p-4 border-b border-blue-200">
                 <h4 className="font-semibold text-blue-800">
-                  Permisos Seleccionados ({permisosSeleccionados.length})
+                  {t("permissions.selectedTitle", {
+                    count: permisosSeleccionados.length,
+                  })}
                 </h4>
               </div>
+
               <div className="max-h-48 overflow-y-auto">
                 <div className="p-4 space-y-3">
                   {permisosSeleccionados.map((permisoId) => {
                     const permiso = permisosDisponibles?.find(
                       (p) => p.id === permisoId,
                     );
+
                     return permiso ? (
                       <div
                         key={permisoId}
@@ -931,13 +998,14 @@ const TableTrabajadores = ({
                             {permiso.descripcion}
                           </p>
                         </div>
+
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => handleSeleccionarPermiso(permisoId)}
                           className="text-red-500 hover:text-red-700 ml-2 flex-shrink-0"
                         >
-                          Quitar
+                          {t("actions.remove")}
                         </Button>
                       </div>
                     ) : null;
@@ -947,6 +1015,7 @@ const TableTrabajadores = ({
             </div>
           )}
         </div>
+
         <AlertDialogFooter className="mt-4 pt-4 border-t border-gray-200 flex-shrink-0">
           <AlertDialogCancel
             onClick={() => {
@@ -954,20 +1023,23 @@ const TableTrabajadores = ({
               setPermisosSeleccionados([]);
             }}
           >
-            Cancelar
+            {t("buttons.cancel")}
           </AlertDialogCancel>
+
           <AlertDialogAction
             onClick={handleConfirmarAgregarPermiso}
             disabled={permisosSeleccionados.length === 0}
           >
-            Agregar {permisosSeleccionados.length} Permiso(s)
+            {t("permissions.addSelected", {
+              count: permisosSeleccionados.length,
+            })}
           </AlertDialogAction>
         </AlertDialogFooter>
       </Modal>
 
       <Modal
-        title="Agregar Finca"
-        description="Aqui podras agregar las fincas que tendra asignadas este trabajador"
+        title={t("modals.addFarm.title")}
+        description={t("modals.addFarm.description")}
         open={isOpenFinca}
         onOpenChange={setIsOpenFinca}
         size="xl"
@@ -983,22 +1055,22 @@ const TableTrabajadores = ({
       </Modal>
 
       <Modal
-        title="Modificar Verificacion"
-        description="Aqui podras verificar o invalidar un usuario"
+        title={t("modals.verification.title")}
+        description={t("modals.verification.description")}
         open={openVerified}
         onOpenChange={setOpenVerified}
       >
         <div className="flex justify-between">
           <AlertDialogAction onClick={() => updatedVerified(!verficiado)}>
-            Actualizar
+            {t("buttons.update")}
           </AlertDialogAction>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel>{t("buttons.cancel")}</AlertDialogCancel>
         </div>
       </Modal>
 
       <Modal
-        title="Fincas Asignadas Al Trabajador"
-        description="Aqui se observan las fincas que tiene asignadas este trabajador"
+        title={t("modals.assignedFarms.title")}
+        description={t("modals.assignedFarms.description")}
         open={openViewFincasTrabajador}
         onOpenChange={setOpenViewFincasTrabajador}
         size="4xl"

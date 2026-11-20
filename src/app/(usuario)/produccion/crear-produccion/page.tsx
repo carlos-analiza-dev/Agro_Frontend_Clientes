@@ -1,9 +1,12 @@
 "use client";
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -18,13 +21,16 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+
 import { ArrowLeft, Loader2, Save, Tractor } from "lucide-react";
+
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { Finca } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import { CreateProduccionFinca } from "@/api/produccion/interface/crear-produccion-finca.interface";
 import { CrearProduccionFinca } from "@/api/produccion/accions/crear-produccion-finca";
 import { toast } from "react-toastify";
+
 import GanaderaSection from "../ui/GanaderaSection";
 import AgricolaSection from "../ui/AgricolaSection";
 import ForrajesSection from "../ui/ForrajesSection";
@@ -39,17 +45,21 @@ type ProductionSection =
   | "apicultura";
 
 const CrearProduccionPage = () => {
+  const t = useTranslations("crearProduccionPage");
+
   const { cliente } = useAuthStore();
   const userId = cliente?.id || "";
   const queryClient = useQueryClient();
   const router = useRouter();
+
   const [section, setSection] = useState<ProductionSection>("ganadera");
   const [fincaSeleccionada, setFincaSeleccionada] = useState<Finca | null>(
     null,
   );
+
   const { data: fincas } = useFincasPropietarios(userId);
 
-  const { control, handleSubmit, watch, setValue, reset } =
+  const { control, handleSubmit, watch, reset } =
     useForm<CreateProduccionFinca>();
 
   const {
@@ -86,17 +96,17 @@ const CrearProduccionPage = () => {
     })) || [];
 
   const sectionConfig = {
-    ganadera: { label: "Ganadería", icon: "🐄" },
-    forrajes: { label: "Forrajes", icon: "🌾" },
-    agricola: { label: "Agrícola", icon: "🌱" },
-    apicultura: { label: "Apicultura", icon: "🐝" },
-    alternativa: { label: "Alternativa", icon: "🔄" },
+    ganadera: { label: t("sections.livestock"), icon: "🐄" },
+    forrajes: { label: t("sections.fodder"), icon: "🌾" },
+    agricola: { label: t("sections.agriculture"), icon: "🌱" },
+    apicultura: { label: t("sections.beekeeping"), icon: "🐝" },
+    alternativa: { label: t("sections.alternative"), icon: "🔄" },
   };
 
   const mutate_produccion = useMutation({
     mutationFn: (data: CreateProduccionFinca) => CrearProduccionFinca(data),
     onSuccess: () => {
-      toast.success("Producción creada con éxito");
+      toast.success(t("messages.createSuccess"));
       queryClient.invalidateQueries({ queryKey: ["producciones-user"] });
       reset();
       router.back();
@@ -104,15 +114,16 @@ const CrearProduccionPage = () => {
     onError: (error) => {
       if (isAxiosError(error)) {
         const messages = error.response?.data?.message;
+
         const errorMessage = Array.isArray(messages)
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al ingresar la producción";
+            : t("messages.createError");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Contacte al administrador");
+        toast.error(t("messages.contactAdministrator"));
       }
     },
   });
@@ -130,7 +141,7 @@ const CrearProduccionPage = () => {
             <div className="text-center py-8 text-muted-foreground">
               <Tractor className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p className="text-sm sm:text-base px-4">
-                Selecciona una finca para habilitar las secciones de producción
+                {t("empty.selectFarm")}
               </p>
             </div>
           </CardContent>
@@ -141,6 +152,7 @@ const CrearProduccionPage = () => {
     switch (section) {
       case "ganadera":
         return <GanaderaSection control={control} watch={watch} />;
+
       case "agricola":
         return (
           <AgricolaSection
@@ -152,6 +164,7 @@ const CrearProduccionPage = () => {
             fincaSeleccionada={fincaSeleccionada}
           />
         );
+
       case "forrajes":
         return (
           <ForrajesSection
@@ -163,6 +176,7 @@ const CrearProduccionPage = () => {
             fincaSeleccionada={fincaSeleccionada}
           />
         );
+
       case "alternativa":
         return (
           <AlternativaSection
@@ -173,8 +187,10 @@ const CrearProduccionPage = () => {
             watch={watch}
           />
         );
+
       case "apicultura":
         return <ApiculturaSection control={control} />;
+
       default:
         return null;
     }
@@ -191,11 +207,13 @@ const CrearProduccionPage = () => {
             size="sm"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">Volver</span>
+            <span className="hidden sm:inline">{t("buttons.back")}</span>
           </Button>
+
           <h1 className="text-lg md:text-xl font-semibold truncate">
-            Nueva Producción
+            {t("title")}
           </h1>
+
           <div className="w-16 md:w-20" />
         </div>
       </div>
@@ -205,15 +223,16 @@ const CrearProduccionPage = () => {
           <CardHeader className="px-4 py-4 md:px-6 md:py-6">
             <CardTitle className="text-lg md:text-2xl font-bold flex items-center gap-2">
               <Tractor className="h-5 w-5 md:h-6 md:w-6" />
-              <span>Crear Nueva Producción</span>
+              <span>{t("cardTitle")}</span>
             </CardTitle>
           </CardHeader>
 
           <CardContent className="px-4 py-4 md:px-6 md:py-6 space-y-4 md:space-y-6">
             <div className="space-y-2">
               <Label htmlFor="finca" className="text-sm md:text-base">
-                Seleccionar Finca <span className="text-red-500">*</span>
+                {t("fields.farm")} <span className="text-red-500">*</span>
               </Label>
+
               <Controller
                 control={control}
                 name="fincaId"
@@ -222,15 +241,18 @@ const CrearProduccionPage = () => {
                     value={field.value}
                     onValueChange={(value) => {
                       field.onChange(value);
+
                       const finca = fincas?.data.fincas.find(
                         (f) => f.id === value,
                       );
+
                       setFincaSeleccionada(finca || null);
                     }}
                   >
                     <SelectTrigger id="finca" className="h-11 md:h-10">
-                      <SelectValue placeholder="Selecciona una finca" />
+                      <SelectValue placeholder={t("placeholders.farm")} />
                     </SelectTrigger>
+
                     <SelectContent>
                       {fincasItems.map((finca) => (
                         <SelectItem key={finca.value} value={finca.value}>
@@ -247,13 +269,19 @@ const CrearProduccionPage = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
               {[
-                { name: "produccion_mixta", label: "Producción mixta" },
+                {
+                  name: "produccion_mixta",
+                  label: t("fields.mixedProduction"),
+                },
                 {
                   name: "transformacion_artesanal",
-                  label: "Transformación artesanal",
+                  label: t("fields.artisanalProcessing"),
                 },
-                { name: "consumo_propio", label: "Consumo propio" },
-                { name: "produccion_venta", label: "Producción para venta" },
+                { name: "consumo_propio", label: t("fields.ownConsumption") },
+                {
+                  name: "produccion_venta",
+                  label: t("fields.productionForSale"),
+                },
               ].map((item) => (
                 <div
                   key={item.name}
@@ -265,6 +293,7 @@ const CrearProduccionPage = () => {
                   >
                     {item.label}
                   </Label>
+
                   <Controller
                     control={control}
                     name={item.name as any}
@@ -284,7 +313,7 @@ const CrearProduccionPage = () => {
 
             <div className="space-y-3 md:space-y-4">
               <Label className="text-sm md:text-base font-medium">
-                Sección de Producción
+                {t("fields.productionSection")}
               </Label>
 
               <div className="-mx-4 px-4 overflow-x-auto pb-2 md:pb-0 md:overflow-visible">
@@ -327,12 +356,12 @@ const CrearProduccionPage = () => {
                 {mutate_produccion.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Guardando...
+                    {t("buttons.saving")}
                   </>
                 ) : (
                   <>
                     <Save className="mr-2 h-4 w-4" />
-                    Guardar Producción
+                    {t("buttons.save")}
                   </>
                 )}
               </Button>

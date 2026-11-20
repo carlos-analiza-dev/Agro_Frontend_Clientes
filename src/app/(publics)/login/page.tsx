@@ -10,10 +10,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuthRedirect } from "@/helpers/funciones/useAuthRedirect";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function LoginPage() {
+  const t = useTranslations("login");
   const { isChecking } = useAuthRedirect();
 
   if (isChecking) {
@@ -26,9 +28,8 @@ export default function LoginPage() {
         <Image
           src="/images/Ganaderia.png"
           alt="Campo agrícola"
-          layout="fill"
-          objectFit="cover"
-          className="opacity-20"
+          fill
+          className="object-cover opacity-20"
           priority
           unoptimized
         />
@@ -38,11 +39,10 @@ export default function LoginPage() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold text-green-700">
-              El Sembrador FDN
+              {t("title")}
             </CardTitle>
-            <CardDescription>
-              Accede a tu cuenta para gestionar tus servicios agrícolas
-            </CardDescription>
+
+            <CardDescription>{t("description")}</CardDescription>
           </CardHeader>
 
           <CardContent>
@@ -54,15 +54,16 @@ export default function LoginPage() {
               href="/reset-password"
               className="text-green-600 hover:underline"
             >
-              ¿Olvidaste tu contraseña?
+              {t("forgotPassword")}
             </Link>
+
             <div className="text-sm text-gray-600">
-              ¿No tienes una cuenta?{" "}
+              {t("noAccount")}{" "}
               <Link
                 href="/register"
                 className="text-green-600 p-0 h-auto hover:underline"
               >
-                Regístrate aquí
+                {t("register")}
               </Link>
             </div>
           </CardFooter>

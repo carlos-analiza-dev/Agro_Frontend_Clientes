@@ -1,3 +1,5 @@
+"use client";
+
 import { CrearProductoGanadero } from "@/api/productos-ganadero/accions/crear-producto-ganadero";
 import { EditarProductoGanadero } from "@/api/productos-ganadero/accions/editar-producto";
 import { CrearProductoGanaderoInterface } from "@/api/productos-ganadero/interfaces/crear-producto-ganadero.interface";
@@ -19,6 +21,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 interface FormAddProductoProps {
   openModal: boolean;
@@ -33,6 +36,8 @@ const FormAddProducto = ({
   productoToEdit,
   onSuccess,
 }: FormAddProductoProps) => {
+  const t = useTranslations("formAddProducto");
+
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -79,6 +84,7 @@ const FormAddProducto = ({
           (cat) =>
             cat.value.toUpperCase() === productoToEdit.categoria.toUpperCase(),
         );
+
         if (categoriaEncontrada) {
           setValue("categoria", categoriaEncontrada.value);
         }
@@ -94,10 +100,10 @@ const FormAddProducto = ({
 
       if (isEditing && productoToEdit) {
         await EditarProductoGanadero(productoToEdit.id, data);
-        toast.success(`Producto actualizado con éxito`);
+        toast.success(t("messages.updateSuccess"));
       } else {
         await CrearProductoGanadero(data);
-        toast.success("Producto creado exitosamente");
+        toast.success(t("messages.createSuccess"));
       }
 
       reset({
@@ -114,11 +120,16 @@ const FormAddProducto = ({
     } catch (error: any) {
       toast.error(
         error.response?.data?.message ||
-          `Error al ${isEditing ? "actualizar" : "crear"} el producto. Por favor, intenta de nuevo.`,
+          t(isEditing ? "errors.update" : "errors.create"),
       );
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const getCategoryLabel = (value: string, fallback: string) => {
+    const key = `categories.${value}`;
+    return t.has(key) ? t(key) : fallback;
   };
 
   return (
@@ -128,38 +139,40 @@ const FormAddProducto = ({
     >
       {isEditing && (
         <div className="mb-4 p-2 bg-blue-50 border border-blue-200 rounded text-blue-700 text-sm">
-          ✏️ Editando producto:{" "}
+          ✏️ {t("editing")}{" "}
           <span className="font-semibold">{productoToEdit?.nombre}</span>
         </div>
       )}
 
       <div className="mt-3">
-        <Label htmlFor="nombre">Nombre del Producto</Label>
+        <Label htmlFor="nombre">{t("fields.productName")}</Label>
         <Input
           id="nombre"
-          placeholder="Ejem: Leche, Queso, Mantequilla, Carne Molida ..."
+          placeholder={t("placeholders.productName")}
           type="text"
           {...register("nombre", {
-            required: "El nombre del producto es requerido",
+            required: t("validation.nameRequired"),
             minLength: {
               value: 3,
-              message: "El nombre debe tener al menos 3 caracteres",
+              message: t("validation.nameMinLength"),
             },
           })}
           disabled={isSubmitting}
           className={errors.nombre ? "border-red-500" : ""}
         />
+
         {errors.nombre && (
           <p className="mt-1 text-sm text-red-600">{errors.nombre.message}</p>
         )}
       </div>
 
       <div className="mt-3">
-        <Label htmlFor="categoria">Categoría</Label>
+        <Label htmlFor="categoria">{t("fields.category")}</Label>
+
         <Controller
           name="categoria"
           control={control}
-          rules={{ required: "La categoría es requerida" }}
+          rules={{ required: t("validation.categoryRequired") }}
           render={({ field }) => (
             <Select
               onValueChange={field.onChange}
@@ -170,11 +183,13 @@ const FormAddProducto = ({
               <SelectTrigger
                 className={errors.categoria ? "border-red-500" : ""}
               >
-                <SelectValue placeholder="Selecciona la Categoría" />
+                <SelectValue placeholder={t("placeholders.category")} />
               </SelectTrigger>
+
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Categorías</SelectLabel>
+                  <SelectLabel>{t("fields.categories")}</SelectLabel>
+
                   {categorias_productos.map((cat) => (
                     <SelectItem
                       key={cat.id}
@@ -183,7 +198,7 @@ const FormAddProducto = ({
                         field.value === cat.value ? "checked" : "unchecked"
                       }
                     >
-                      {cat.nombre}
+                      {getCategoryLabel(cat.value, cat.nombre)}
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -191,6 +206,7 @@ const FormAddProducto = ({
             </Select>
           )}
         />
+
         {errors.categoria && (
           <p className="mt-1 text-sm text-red-600">
             {errors.categoria.message}
@@ -203,14 +219,14 @@ const FormAddProducto = ({
           {isSubmitting ? (
             <>
               <span className="mr-2">
-                {isEditing ? "Actualizando..." : "Creando..."}
+                {isEditing ? t("buttons.updating") : t("buttons.creating")}
               </span>
               <span className="animate-spin">⏳</span>
             </>
           ) : isEditing ? (
-            "Actualizar Producto"
+            t("buttons.update")
           ) : (
-            "Agregar Producto"
+            t("buttons.add")
           )}
         </Button>
       </div>

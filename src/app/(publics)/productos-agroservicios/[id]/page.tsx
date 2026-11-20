@@ -35,8 +35,10 @@ import {
   handleShareTwitter,
   handleShareWhatsApp,
 } from "@/helpers/data/social-media/redes-sociales";
+import { useTranslations } from "next-intl";
 
-const ProductDetailsPage = () => {
+const ProducPublictDetailsPage = () => {
+  const t = useTranslations("productDetails");
   const { id } = useParams();
   const productoId = id as string;
   const router = useRouter();
@@ -231,8 +233,8 @@ const ProductDetailsPage = () => {
     return (
       <div className="flex items-center justify-center min-h-screen px-4">
         <MessageError
-          titulo="Error al cargar la información"
-          descripcion="Ocurrió un error al cargar los datos del producto o sucursales"
+          titulo={t("errors.loadingTitle")}
+          descripcion={t("errors.loadingDescription")}
           onPress={onRefresh}
         />
       </div>
@@ -251,8 +253,8 @@ const ProductDetailsPage = () => {
     return (
       <div className="flex items-center justify-center min-h-screen px-4">
         <MessageError
-          titulo="No se encontró el producto seleccionado"
-          descripcion="El producto que buscas no está disponible"
+          titulo={t("errors.notFoundTitle")}
+          descripcion={t("errors.notFoundDescription")}
           onPress={onRefresh}
         />
       </div>
@@ -277,7 +279,7 @@ const ProductDetailsPage = () => {
               >
                 <Share2 className="h-4 w-4" />
                 {!isMobile && (
-                  <span className="hidden sm:inline">Compartir</span>
+                  <span className="hidden sm:inline">{t("share.button")}</span>
                 )}
               </Button>
             </DropdownMenuTrigger>
@@ -301,7 +303,7 @@ const ProductDetailsPage = () => {
                 >
                   <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.514 1.086 3.584l-1.133 3.839 3.951-1.122c1.015.524 2.159.803 3.34.804 3.18 0 5.767-2.587 5.768-5.766.001-3.18-2.586-5.767-5.766-5.767l.001-.001zm0 9.352c-.891 0-1.768-.241-2.529-.692l-.179-.107-2.346.666.736-2.287-.117-.185c-.492-.787-.752-1.689-.752-2.617 0-2.642 2.149-4.79 4.791-4.79 2.642 0 4.79 2.148 4.79 4.79 0 2.642-2.148 4.79-4.79 4.79z" />
                 </svg>
-                WhatsApp
+                {t("share.whatsapp")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => handleShareFacebook(productoId)}
@@ -314,7 +316,7 @@ const ProductDetailsPage = () => {
                 >
                   <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12z" />
                 </svg>
-                Facebook
+                {t("share.facebook")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => handleShareTwitter(productoId, producto)}
@@ -327,7 +329,7 @@ const ProductDetailsPage = () => {
                 >
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
-                Twitter/X
+                {t("share.twitter")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => handleCopyLink(productoId)}
@@ -343,7 +345,7 @@ const ProductDetailsPage = () => {
                   <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
                   <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
                 </svg>
-                Copiar enlace
+                {t("share.copyLink")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -392,7 +394,7 @@ const ProductDetailsPage = () => {
         <div className="mt-8 lg:mt-12 px-0 sm:px-2 lg:px-4 max-w-6xl mx-auto pb-8 lg:pb-10">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
             <h1 className="text-xl sm:text-2xl font-bold">
-              Opiniones Destacadas
+              {t("reviews.title")}
             </h1>
 
             {cliente && producto_comprado && !producto_opinado && (
@@ -403,7 +405,7 @@ const ProductDetailsPage = () => {
                 size="sm"
               >
                 <MessageSquarePlus className="h-4 w-4" />
-                {mostrarFormOpinion ? "Cancelar" : "Agregar opinión"}
+                {mostrarFormOpinion ? t("reviews.cancel") : t("reviews.add")}
               </Button>
             )}
 
@@ -411,7 +413,7 @@ const ProductDetailsPage = () => {
               <div className="flex items-center gap-2 p-3 border border-green-200 bg-green-50 rounded-lg w-full sm:w-auto">
                 <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
                 <p className="text-xs sm:text-sm font-medium text-green-800">
-                  Ya opinaste sobre este producto
+                  {t("reviews.alreadyReviewed")}
                 </p>
               </div>
             )}
@@ -442,18 +444,20 @@ const ProductDetailsPage = () => {
                   !mostrarFormOpinion && (
                     <div className="mt-6 p-4 border rounded-lg bg-blue-50">
                       <h3 className="font-semibold text-blue-800 mb-2 text-sm sm:text-base">
-                        ¿Te gustó este producto?
+                        {t("reviews.question")}
                       </h3>
+
                       <p className="text-xs sm:text-sm text-blue-700 mb-3">
-                        Comparte tu experiencia con otros clientes
+                        {t("reviews.description")}
                       </p>
+
                       <Button
                         onClick={() => setMostrarFormOpinion(true)}
                         variant="outline"
                         size="sm"
                         className="w-full text-xs sm:text-sm"
                       >
-                        Escribir mi opinión
+                        {t("reviews.write")}
                       </Button>
                     </div>
                   )}
@@ -490,4 +494,4 @@ const ProductDetailsPage = () => {
   );
 };
 
-export default ProductDetailsPage;
+export default ProducPublictDetailsPage;

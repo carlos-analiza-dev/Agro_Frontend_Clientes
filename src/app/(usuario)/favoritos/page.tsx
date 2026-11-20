@@ -5,8 +5,10 @@ import { useFavoritos } from "@/hooks/favoritos/useFavoritos";
 import { Heart, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ProductCard from "@/components/products/ProductCard";
+import { useTranslations } from "next-intl";
 
 export default function FavoritosPage() {
+  const t = useTranslations("favorites");
   const { favoritos, limpiarFavoritos } = useFavoritos();
   const router = useRouter();
 
@@ -18,7 +20,9 @@ export default function FavoritosPage() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Heart className="h-5 w-5" />
-            <span className="font-medium">{favoritos.length} favoritos</span>
+            <span className="font-medium">
+              {t("savedProducts", { count: favoritos.length })}
+            </span>
           </div>
 
           {tieneFavoritos && (
@@ -29,21 +33,28 @@ export default function FavoritosPage() {
               className="gap-2"
             >
               <Trash2 className="h-4 w-4" />
-              Limpiar
+              {t("clear")}
             </Button>
           )}
         </div>
       </div>
 
       <div className="text-center">
-        <h1 className="text-2xl md:text-3xl font-bold mb-2">Mis Favoritos</h1>
+        <h1 className="text-2xl md:text-3xl font-bold mb-2">{t("title")}</h1>
 
         {!tieneFavoritos ? (
           <div className="py-16 space-y-4">
             <Heart className="h-16 w-16 mx-auto text-muted-foreground/40" />
-            <p className="text-muted-foreground">
-              No tienes productos favoritos
+
+            <p className="text-muted-foreground">{t("emptyTitle")}</p>
+
+            <p className="text-sm text-muted-foreground">
+              {t("emptyDescription")}
             </p>
+
+            <Button onClick={() => router.push("/productos")}>
+              {t("exploreProducts")}
+            </Button>
           </div>
         ) : (
           <>
@@ -61,8 +72,7 @@ export default function FavoritosPage() {
 
             <div className="mt-8 pt-6 border-t">
               <p className="text-sm text-muted-foreground">
-                {favoritos.length} producto{favoritos.length !== 1 ? "s" : ""}{" "}
-                en favoritos
+                {t("productsInFavorites", { count: favoritos.length })}
               </p>
             </div>
           </>

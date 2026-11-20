@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -28,18 +29,23 @@ import ButtonAdd from "@/components/generics/ButtonAdd";
 import TitlePage from "@/components/generics/TitlePage";
 
 const CultivoPage = () => {
+  const t = useTranslations("cultivosPage");
+
   const { cliente } = useAuthStore();
   const propietarioId = cliente?.id ?? "";
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const isMobile = useMediaQuery("(max-width: 768px)");
   const router = useRouter();
+
   const [filters, setFilters] = useState({
     offset: 0,
     limit: 10,
     fincaId: "",
   });
+
   const [selectedCultivo, setSelectedCultivo] = useState<Cultivo | null>(null);
   const [openModal, setOpenModal] = useState(false);
+
   const { data: cultivosData, isLoading } = useGetCultivos(filters);
   const { data: fincasData } = useFincasPropietarios(propietarioId);
 
@@ -88,13 +94,13 @@ const CultivoPage = () => {
         className="md:flex justify-between items-center"
       >
         <TitlePage
-          title={`Cultivos`}
-          description="Registra y monitorea todos los cultivos de tus fincas"
+          title={t("title")}
+          description={t("description")}
           Icon={Sprout}
         />
 
         <ButtonAdd
-          title="Agregar Cultivo"
+          title={t("buttons.addCrop")}
           Icon={Sprout}
           action={handleAddCultivo}
           className="bg-green-600 hover:bg-green-700"
@@ -113,10 +119,12 @@ const CultivoPage = () => {
             >
               <SelectTrigger>
                 <MapPin className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Todas las fincas" />
+                <SelectValue placeholder={t("filters.allFarms")} />
               </SelectTrigger>
+
               <SelectContent>
-                <SelectItem value="todas">Todas las fincas</SelectItem>
+                <SelectItem value="todas">{t("filters.allFarms")}</SelectItem>
+
                 {fincasData?.data?.fincas.map((finca: Finca) => (
                   <SelectItem key={finca.id} value={finca.id}>
                     {finca.nombre_finca}
@@ -134,7 +142,7 @@ const CultivoPage = () => {
               className="gap-2"
             >
               <X className="h-4 w-4" />
-              Limpiar
+              {t("buttons.clear")}
             </Button>
           )}
         </div>
@@ -147,21 +155,27 @@ const CultivoPage = () => {
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <Sprout className="h-16 w-16 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">
-                No hay cultivos registrados
-              </h3>
+
+              <h3 className="text-lg font-semibold mb-2">{t("empty.title")}</h3>
+
               <p className="text-muted-foreground text-center">
-                Comienza registrando tu primer cultivo
+                {t("empty.description")}
               </p>
             </CardContent>
           </Card>
         ) : (
           <div id="id-cultivo-card">
             {cultivosData?.cultivos.map((cultivo: Cultivo) => {
-              const estado = getEstadoCultivo(
+              const estadoCultivo = getEstadoCultivo(
                 cultivo.fecha_siembra,
                 cultivo.tipo_cultivo,
               );
+
+              const estado = {
+                label: t(estadoCultivo.labelKey),
+                variant: estadoCultivo.variant,
+              };
+
               return (
                 <Card
                   key={cultivo.id}
@@ -190,20 +204,23 @@ const CultivoPage = () => {
             )}
 
             <div className="text-center text-sm text-muted-foreground">
-              Mostrando {cultivosData?.cultivos.length} de {cultivosData?.total}{" "}
-              cultivos
+              {t("pagination.showing", {
+                current: cultivosData?.cultivos.length ?? 0,
+                total: cultivosData?.total ?? 0,
+              })}
             </div>
           </div>
         )}
       </div>
+
       <Modal
         open={openModal}
         onOpenChange={setOpenModal}
-        title={selectedCultivo ? "Editar Cultivo" : "Registrar Nuevo Cultivo"}
+        title={selectedCultivo ? t("modal.editTitle") : t("modal.createTitle")}
         description={
           selectedCultivo
-            ? "Aqui podras editar el cultivo seleccionado"
-            : "Aqui podras ingresar un nuevo cultivo para tu finca"
+            ? t("modal.editDescription")
+            : t("modal.createDescription")
         }
         size="2xl"
         height="auto"

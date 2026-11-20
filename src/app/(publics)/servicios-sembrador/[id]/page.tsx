@@ -3,11 +3,14 @@
 import useServicioById from "@/hooks/servicios/useServicioById";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import {
   Package,
   CheckCircle,
@@ -27,19 +30,25 @@ import {
   Phone,
   MapPin as MapPinIcon,
 } from "lucide-react";
+
 import Link from "next/link";
 import { PreciosPorPai } from "@/api/servicios/interfaces/response-categorias-services";
 import SkeletonCard from "@/components/generics/SkeletonCard";
 import Modal from "@/components/generics/Modal";
 
-const ServicioPage = () => {
+const ServicioPageDetails = () => {
+  const t = useTranslations("serviceDetails");
+
   const { id } = useParams();
   const router = useRouter();
   const servicioId = id as string;
+
   const paisStorage = localStorage.getItem("selectedCountry");
   const pais = paisStorage ? JSON.parse(paisStorage) : null;
   const paisId = pais?.id;
+
   const { data: servicio, isLoading } = useServicioById(servicioId);
+
   const [openModal, setOpenModal] = useState(false);
   const [selectedSubServicio, setSelectedSubServicio] = useState<any>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -50,6 +59,7 @@ const ServicioPage = () => {
       const user = localStorage.getItem("user");
       setIsAuthenticated(!!token && !!user);
     };
+
     checkAuth();
   }, []);
 
@@ -78,6 +88,7 @@ const ServicioPage = () => {
       "selectedSubServicio",
       JSON.stringify(selectedSubServicio),
     );
+
     router.push("/login");
   };
 
@@ -86,6 +97,7 @@ const ServicioPage = () => {
       "selectedSubServicio",
       JSON.stringify(selectedSubServicio),
     );
+
     router.push("/register");
   };
 
@@ -99,16 +111,19 @@ const ServicioPage = () => {
         <div className="container mx-auto px-4 py-8">
           <Card className="text-center py-12">
             <AlertCircle className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
+
             <CardTitle className="text-2xl mb-2">
-              Servicio no encontrado
+              {t("notFound.title")}
             </CardTitle>
+
             <p className="text-muted-foreground mb-6">
-              No pudimos encontrar el servicio que estás buscando.
+              {t("notFound.description")}
             </p>
+
             <Link href="/servicios">
               <Button variant="outline">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Volver a servicios
+                {t("notFound.back")}
               </Button>
             </Link>
           </Card>
@@ -124,11 +139,15 @@ const ServicioPage = () => {
           <div className="mb-8">
             <Badge className="mb-4 bg-primary/10 text-primary hover:bg-primary/20">
               <CheckCircle className="w-3 h-3 mr-1" />
-              {servicio.data.isActive ? "Activo" : "Inactivo"}
+              {servicio.data.isActive
+                ? t("status.active")
+                : t("status.inactive")}
             </Badge>
+
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
               {servicio.data.nombre}
             </h1>
+
             <p className="text-muted-foreground text-lg leading-relaxed">
               {servicio.data.descripcion}
             </p>
@@ -141,11 +160,15 @@ const ServicioPage = () => {
                   <div className="p-3 bg-primary/10 rounded-lg">
                     <Layers className="h-6 w-6 text-primary" />
                   </div>
+
                   <div>
                     <p className="text-2xl font-bold">
                       {servicio.data.subServicios?.length || 0}
                     </p>
-                    <p className="text-sm text-muted-foreground">Servicios</p>
+
+                    <p className="text-sm text-muted-foreground">
+                      {t("stats.services")}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -157,13 +180,17 @@ const ServicioPage = () => {
                   <div className="p-3 bg-primary/10 rounded-lg">
                     <TrendingUp className="h-6 w-6 text-primary" />
                   </div>
+
                   <div>
                     <p className="text-2xl font-bold">
                       {servicio.data.subServicios?.filter(
                         (s: any) => s.isActive,
                       ).length || 0}
                     </p>
-                    <p className="text-sm text-muted-foreground">Activos</p>
+
+                    <p className="text-sm text-muted-foreground">
+                      {t("stats.active")}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -173,11 +200,13 @@ const ServicioPage = () => {
           <div className="mb-8">
             <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
               <Package className="h-6 w-6 text-primary" />
-              Servicios Disponibles
+              {t("availableServices.title")}
             </h2>
+
             <p className="text-muted-foreground mb-6">
-              Explora todos los servicios disponibles dentro de{" "}
-              {servicio.data.nombre}
+              {t("availableServices.description", {
+                name: servicio.data.nombre,
+              })}
             </p>
 
             {servicio.data.subServicios &&
@@ -207,25 +236,28 @@ const ServicioPage = () => {
                             <CardTitle className="text-2xl mb-2">
                               {subServicio.nombre}
                             </CardTitle>
+
                             <Badge
                               variant={
                                 subServicio.isActive ? "default" : "destructive"
                               }
                             >
                               {subServicio.isActive
-                                ? "Disponible"
-                                : "No disponible"}
+                                ? t("status.available")
+                                : t("status.unavailable")}
                             </Badge>
                           </div>
                         </div>
                       </CardHeader>
+
                       <CardContent className="space-y-6">
                         {subServicio.descripcion && (
                           <div>
                             <h3 className="font-semibold mb-2 flex items-center gap-2">
                               <Info className="h-4 w-4" />
-                              Descripción
+                              {t("details.description")}
                             </h3>
+
                             <p className="text-muted-foreground">
                               {subServicio.descripcion}
                             </p>
@@ -239,8 +271,9 @@ const ServicioPage = () => {
                             <div>
                               <h3 className="font-semibold mb-4 flex items-center gap-2">
                                 <DollarSign className="h-4 w-4" />
-                                Paquetes por País
+                                {t("details.packagesByCountry")}
                               </h3>
+
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {subServicio.preciosPorPais.map(
                                   (precio: PreciosPorPai) => (
@@ -255,10 +288,12 @@ const ServicioPage = () => {
                                               <Building2 className="h-4 w-4" />
                                               {precio.pais?.nombre}
                                             </p>
+
                                             <p className="text-sm text-muted-foreground">
                                               {precio.pais?.code}
                                             </p>
                                           </div>
+
                                           <Badge variant="outline">
                                             {precio.pais?.simbolo_moneda}{" "}
                                             {precio.precio}
@@ -268,24 +303,31 @@ const ServicioPage = () => {
                                         <div className="grid grid-cols-2 gap-3 text-sm mt-3">
                                           <div className="flex items-center gap-2">
                                             <Clock className="h-4 w-4 text-muted-foreground" />
+
                                             <div>
                                               <p className="text-muted-foreground text-xs">
-                                                Tiempo
+                                                {t("details.time")}
                                               </p>
+
                                               <p className="font-medium">
-                                                {precio.tiempo} hrs
+                                                {precio.tiempo}{" "}
+                                                {t("details.hours")}
                                               </p>
                                             </div>
                                           </div>
+
                                           <div className="flex items-center gap-2">
                                             <Tag className="h-4 w-4 text-muted-foreground" />
+
                                             <div>
                                               <p className="text-muted-foreground text-xs">
-                                                Cantidad
+                                                {t("details.quantity")}
                                               </p>
+
                                               <p className="font-medium">
                                                 {precio.cantidadMin} -{" "}
-                                                {precio.cantidadMax} animales
+                                                {precio.cantidadMax}{" "}
+                                                {t("details.animals")}
                                               </p>
                                             </div>
                                           </div>
@@ -307,7 +349,9 @@ const ServicioPage = () => {
                           onClick={() => handleSolicitarServicio(subServicio)}
                         >
                           <ShoppingCart className="h-4 w-4" />
-                          Solicitar {subServicio.nombre}
+                          {t("details.request", {
+                            name: subServicio.nombre,
+                          })}
                         </Button>
                       </CardContent>
                     </Card>
@@ -317,11 +361,13 @@ const ServicioPage = () => {
             ) : (
               <Card className="text-center py-12">
                 <AlertCircle className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
+
                 <CardTitle className="text-xl mb-2">
-                  No hay servicios disponibles
+                  {t("availableServices.emptyTitle")}
                 </CardTitle>
+
                 <p className="text-muted-foreground">
-                  Este servicio no tiene servicios asociados actualmente.
+                  {t("availableServices.emptyDescription")}
                 </p>
               </Card>
             )}
@@ -332,8 +378,8 @@ const ServicioPage = () => {
       <Modal
         open={openModal}
         onOpenChange={setOpenModal}
-        title="🔐 Autenticación Requerida"
-        description="Para solicitar nuestros servicios es necesario que estés autenticado en nuestro sitio"
+        title={t("authentication.title")}
+        description={t("authentication.description")}
         size="xl"
         height="auto"
       >
@@ -341,11 +387,13 @@ const ServicioPage = () => {
           {selectedSubServicio && (
             <div className="bg-primary/5 rounded-lg p-4 border border-primary/20">
               <h4 className="font-semibold text-primary mb-2">
-                Servicio seleccionado:
+                {t("authentication.selectedService")}
               </h4>
+
               <p className="text-foreground font-medium">
                 {selectedSubServicio.nombre}
               </p>
+
               {selectedSubServicio.descripcion && (
                 <p className="text-sm text-muted-foreground mt-1">
                   {selectedSubServicio.descripcion.substring(0, 100)}...
@@ -359,12 +407,14 @@ const ServicioPage = () => {
               <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
                 <Mail className="h-4 w-4 text-blue-600 dark:text-blue-400" />
               </div>
+
               <div>
                 <p className="font-medium text-sm">
-                  Seguimiento en tiempo real
+                  {t("authentication.benefits.tracking.title")}
                 </p>
+
                 <p className="text-xs text-muted-foreground">
-                  Recibe notificaciones y actualizaciones de tu solicitud
+                  {t("authentication.benefits.tracking.description")}
                 </p>
               </div>
             </div>
@@ -373,10 +423,14 @@ const ServicioPage = () => {
               <div className="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg">
                 <Phone className="h-4 w-4 text-green-600 dark:text-green-400" />
               </div>
+
               <div>
-                <p className="font-medium text-sm">Soporte prioritario</p>
+                <p className="font-medium text-sm">
+                  {t("authentication.benefits.support.title")}
+                </p>
+
                 <p className="text-xs text-muted-foreground">
-                  Atención personalizada para usuarios registrados
+                  {t("authentication.benefits.support.description")}
                 </p>
               </div>
             </div>
@@ -385,10 +439,14 @@ const ServicioPage = () => {
               <div className="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg">
                 <MapPinIcon className="h-4 w-4 text-purple-600 dark:text-purple-400" />
               </div>
+
               <div>
-                <p className="font-medium text-sm">Historial de servicios</p>
+                <p className="font-medium text-sm">
+                  {t("authentication.benefits.history.title")}
+                </p>
+
                 <p className="text-xs text-muted-foreground">
-                  Accede a tu historial completo de solicitudes
+                  {t("authentication.benefits.history.description")}
                 </p>
               </div>
             </div>
@@ -397,10 +455,14 @@ const ServicioPage = () => {
               <div className="p-2 bg-orange-100 dark:bg-orange-900/50 rounded-lg">
                 <DollarSign className="h-4 w-4 text-orange-600 dark:text-orange-400" />
               </div>
+
               <div>
-                <p className="font-medium text-sm">Ofertas exclusivas</p>
+                <p className="font-medium text-sm">
+                  {t("authentication.benefits.offers.title")}
+                </p>
+
                 <p className="text-xs text-muted-foreground">
-                  Accede a promociones especiales para miembros
+                  {t("authentication.benefits.offers.description")}
                 </p>
               </div>
             </div>
@@ -413,8 +475,9 @@ const ServicioPage = () => {
               size="lg"
             >
               <LogIn className="h-4 w-4" />
-              Iniciar Sesión
+              {t("authentication.login")}
             </Button>
+
             <Button
               onClick={handleRegisterRedirect}
               variant="outline"
@@ -422,18 +485,18 @@ const ServicioPage = () => {
               size="lg"
             >
               <UserPlus className="h-4 w-4" />
-              Registrarse
+              {t("authentication.register")}
             </Button>
           </div>
 
           <p className="text-center text-xs text-muted-foreground pt-2">
-            Al autenticarte, aceptas nuestros{" "}
+            {t("authentication.termsPrefix")}{" "}
             <Link href="/terminos" className="text-primary hover:underline">
-              términos y condiciones
+              {t("authentication.terms")}
             </Link>{" "}
-            y{" "}
+            {t("authentication.and")}{" "}
             <Link href="/privacidad" className="text-primary hover:underline">
-              políticas de privacidad
+              {t("authentication.privacy")}
             </Link>
           </p>
         </div>
@@ -442,4 +505,4 @@ const ServicioPage = () => {
   );
 };
 
-export default ServicioPage;
+export default ServicioPageDetails;

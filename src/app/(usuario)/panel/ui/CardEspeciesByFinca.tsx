@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import React from "react";
 import {
@@ -10,6 +12,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useTranslations } from "next-intl";
 
 interface Props {
   barChartData: { total: number; finca: string }[];
@@ -22,11 +25,14 @@ const CardEspeciesByFinca = ({
   especiesUnicas,
   ESPECIES_COLORS,
 }: Props) => {
+  const t = useTranslations("cardEspeciesByFinca");
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Especies por Finca</CardTitle>
+        <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
+
       <CardContent>
         <div className="h-96">
           <ResponsiveContainer width="100%" height="100%">
@@ -35,16 +41,31 @@ const CardEspeciesByFinca = ({
               margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
+
               <XAxis
                 dataKey="finca"
                 angle={-45}
                 textAnchor="end"
                 height={60}
                 fontSize={12}
+                label={{
+                  value: t("xAxis"),
+                  position: "insideBottom",
+                  offset: -65,
+                }}
               />
-              <YAxis />
+
+              <YAxis
+                label={{
+                  value: t("yAxis"),
+                  angle: -90,
+                  position: "insideLeft",
+                }}
+              />
+
               <Tooltip />
               <Legend />
+
               {especiesUnicas.map((especie, index) => (
                 <Bar
                   key={especie}

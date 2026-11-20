@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useState, useCallback, useRef } from "react";
 
 interface UserLocation {
@@ -28,6 +29,7 @@ const isSafari = (): boolean => {
 };
 
 const useUserLocation = () => {
+  const t = useTranslations("userLocation");
   const [location, setLocation] = useState<UserLocation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -130,9 +132,7 @@ const useUserLocation = () => {
         !byUserInteraction &&
         !locationRequestedRef.current
       ) {
-        setError(
-          "Para Safari, por favor haz clic en 'Usar mi ubicación' para continuar",
-        );
+        setError(t("errors.safariInteraction"));
         setLoading(false);
         setPermissionStatus((prev) => ({
           ...prev,
@@ -144,9 +144,7 @@ const useUserLocation = () => {
       const permission = await checkPermission();
 
       if (permission.isBlocked) {
-        setError(
-          "La ubicación está bloqueada. Por favor, habilítala en Configuración de tu navegador",
-        );
+        setError(t("errors.blocked"));
         setLoading(false);
         return;
       }
@@ -202,7 +200,7 @@ const useUserLocation = () => {
               ciudad:
                 ciudad ||
                 `${Math.round(latitud * 100) / 100}, ${Math.round(longitud * 100) / 100}`,
-              pais: pais || "Ubicación obtenida",
+              pais: pais || t("fallback.obtained"),
             };
 
             try {
@@ -223,10 +221,10 @@ const useUserLocation = () => {
               latitud: position.coords.latitude,
               longitud: position.coords.longitude,
               ciudad: `${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)}`,
-              pais: "Coordenadas obtenidas",
+              pais: t("fallback.coordinates"),
             };
             setLocation(userLocation);
-            setError("Ubicación obtenida correctamente");
+            setError(t("errors.success"));
           } finally {
             setLoading(false);
           }
@@ -234,9 +232,7 @@ const useUserLocation = () => {
         (err) => {
           switch (err.code) {
             case err.PERMISSION_DENIED:
-              setError(
-                "Permiso denegado. En Safari: Ve a Configuración > Safari > Ubicación > Permitir",
-              );
+              setError(t("errors.permissionDenied"));
               setPermissionStatus((prev) => ({
                 ...prev,
                 isBlocked: true,
@@ -244,17 +240,13 @@ const useUserLocation = () => {
               }));
               break;
             case err.POSITION_UNAVAILABLE:
-              setError(
-                "Ubicación no disponible. Verifica que los servicios de ubicación estén activados en Sistema > Privacidad > Ubicación",
-              );
+              setError(t("errors.positionUnavailable"));
               break;
             case err.TIMEOUT:
-              setError(
-                "Tiempo de espera agotado. Intenta nuevamente o verifica tu conexión",
-              );
+              setError(t("errors.timeout"));
               break;
             default:
-              setError(`Error: ${err.message}. Intenta nuevamente`);
+              setError(t("errors.generic", { message: err.message }));
           }
 
           setLoading(false);
@@ -262,13 +254,13 @@ const useUserLocation = () => {
         options,
       );
     },
-    [checkPermission, permissionStatus.isBlocked],
+    [checkPermission, permissionStatus.isBlocked, t],
   );
 
   const retryLocation = useCallback(() => {
     setError("");
     requestLocation(true);
-  }, [requestLocation]);
+  }, [requestLocation, t]);
 
   useEffect(() => {
     const cachedLocation = localStorage.getItem(STORAGE_KEY);
@@ -300,7 +292,7 @@ const useUserLocation = () => {
       return () => clearTimeout(timer);
     } else if (!hasCachedValidLocation && isSafariBrowser.current) {
       setLoading(false);
-      setError("Para continuar, permite el acceso a tu ubicación");
+      setError(t("errors.requestPermission"));
       setPermissionStatus((prev) => ({ ...prev, needsUserInteraction: true }));
     }
   }, [requestLocation]);

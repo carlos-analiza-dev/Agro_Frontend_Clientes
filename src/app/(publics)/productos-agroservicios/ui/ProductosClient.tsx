@@ -1,8 +1,12 @@
 "use client";
+
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
+import { useTranslations } from "next-intl";
+
 import { Button } from "@/components/ui/button";
 import { Grid3x3, RefreshCw, ShoppingCart, Sparkles } from "lucide-react";
+
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import ProductCard from "@/components/products/ProductCard";
@@ -14,14 +18,18 @@ import CategoryButton from "@/components/products/CategoryButton";
 import SkeletonProducts from "@/components/products/SkeletonProducts";
 
 const ProductosClient = () => {
+  const t = useTranslations("publicProducts");
+
   const { cliente } = useAuthStore();
+
   const paisStorage = localStorage.getItem("selectedCountry");
   const pais = paisStorage ? JSON.parse(paisStorage) : null;
-
   const paisId = pais?.id;
 
   const router = useRouter();
+
   const [categoriaId, setCategoriaId] = useState("");
+
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -68,6 +76,7 @@ const ProductosClient = () => {
     observerRef.current = new IntersectionObserver(
       (entries) => {
         const firstEntry = entries[0];
+
         if (firstEntry.isIntersecting && hasNextPage && !isFetchingNextPage) {
           fetchNextPage();
         }
@@ -97,17 +106,21 @@ const ProductosClient = () => {
           <div className="mb-8 text-center">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/50 backdrop-blur-sm border border-white/40 mb-4">
               <Sparkles className="h-4 w-4 text-green-500" />
+
               <span className="text-xs font-medium text-gray-500">
-                Cargando productos...
+                {t("loading")}
               </span>
             </div>
+
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-700 via-green-600 to-green-700 bg-clip-text text-transparent">
-              Productos Disponibles
+              {t("title")}
             </h1>
+
             <p className="text-sm md:text-base text-gray-400 mt-2">
-              Descubre nuestra amplia gama de productos
+              {t("description")}
             </p>
           </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
             {[...Array(8)].map((_, i) => (
               <SkeletonProducts key={i} />
@@ -124,15 +137,17 @@ const ProductosClient = () => {
         <div className="max-w-7xl mx-auto">
           <div className="mb-8 text-center">
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-700 via-green-600 to-green-700 bg-clip-text text-transparent">
-              Productos Disponibles
+              {t("title")}
             </h1>
+
             <p className="text-sm md:text-base text-gray-400 mt-2">
-              Descubre nuestra amplia gama de productos
+              {t("description")}
             </p>
           </div>
 
           <div className="relative mb-6">
             <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-gray-50/50 to-transparent z-10 pointer-events-none md:hidden" />
+
             <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-50/50 to-transparent z-10 pointer-events-none md:hidden" />
 
             <div
@@ -145,8 +160,9 @@ const ProductosClient = () => {
                   isActive={categoriaId === ""}
                   onClick={() => setCategoriaId("")}
                 >
-                  Todos
+                  {t("allCategories")}
                 </CategoryButton>
+
                 {categorias?.map((categoria) => (
                   <CategoryButton
                     key={categoria.id}
@@ -172,26 +188,32 @@ const ProductosClient = () => {
         <div className="mb-8 text-center relative">
           <div className="absolute inset-0 -z-10">
             <div className="absolute top-0 left-1/4 w-64 h-64 bg-green-200/20 rounded-full blur-3xl" />
+
             <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-blue-200/20 rounded-full blur-3xl" />
           </div>
 
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/50 backdrop-blur-sm border border-white/40 mb-4">
             <Sparkles className="h-4 w-4 text-green-500" />
+
             <span className="text-xs font-medium text-gray-500">
-              {todosLosProductos.length} productos disponibles
+              {t("productCount", {
+                count: todosLosProductos.length,
+              })}
             </span>
           </div>
 
           <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-700 via-green-600 to-green-700 bg-clip-text text-transparent">
-            Productos Disponibles
+            {t("title")}
           </h1>
+
           <p className="text-sm md:text-base text-gray-400 mt-2">
-            Descubre nuestra amplia gama de productos
+            {t("description")}
           </p>
         </div>
 
         <div className="relative mb-6">
           <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-gray-50/50 to-transparent z-10 pointer-events-none md:hidden" />
+
           <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-50/50 to-transparent z-10 pointer-events-none md:hidden" />
 
           <div
@@ -204,8 +226,9 @@ const ProductosClient = () => {
                 isActive={categoriaId === ""}
                 onClick={() => setCategoriaId("")}
               >
-                Todos
+                {t("allCategories")}
               </CategoryButton>
+
               {categorias?.map((categoria) => (
                 <CategoryButton
                   key={categoria.id}
@@ -238,10 +261,10 @@ const ProductosClient = () => {
                 className="w-full h-12 flex justify-center items-center mt-6"
               >
                 {isFetchingNextPage ? (
-                  <LoaderProducts text="Cargando más productos..." />
+                  <LoaderProducts text={t("loadingMore")} />
                 ) : (
                   <span className="text-sm text-gray-400">
-                    Desplázate para cargar más
+                    {t("scrollToLoad")}
                   </span>
                 )}
               </div>
@@ -249,7 +272,7 @@ const ProductosClient = () => {
 
             {isFetchingNextPage && !isMobile && (
               <div className="flex justify-center mt-8">
-                <LoaderProducts text="Cargando..." />
+                <LoaderProducts text={t("loadingSimple")} />
               </div>
             )}
 
@@ -261,7 +284,7 @@ const ProductosClient = () => {
                   variant="ghost"
                 >
                   <Grid3x3 className="w-4 h-4 mr-2" />
-                  Cargar más productos
+                  {t("loadMore")}
                 </Button>
               </div>
             )}
@@ -270,7 +293,7 @@ const ProductosClient = () => {
               <div className="text-center mt-8">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 backdrop-blur-sm border border-gray-200/50">
                   <span className="text-sm text-gray-400">
-                    Has visto todos los productos disponibles
+                    {t("allViewed")}
                   </span>
                 </div>
               </div>
@@ -281,18 +304,19 @@ const ProductosClient = () => {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/80 backdrop-blur-sm border border-gray-200/50 mb-4">
               <ShoppingCart className="w-10 h-10 text-gray-300" />
             </div>
+
             <h3 className="text-xl font-semibold text-gray-700 mb-2">
-              No hay productos disponibles
+              {t("empty.title")}
             </h3>
-            <p className="text-gray-400 mb-4">
-              Prueba a recargar la página o vuelve más tarde
-            </p>
+
+            <p className="text-gray-400 mb-4">{t("empty.description")}</p>
+
             <Button
               onClick={onRefresh}
               className="rounded-full px-6 py-2.5 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-[0_4px_16px_rgba(34,197,94,0.3)] transition-all duration-300"
             >
               <RefreshCw className="w-4 h-4 mr-2" />
-              Recargar
+              {t("empty.reload")}
             </Button>
           </div>
         )}

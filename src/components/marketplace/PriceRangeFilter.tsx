@@ -1,8 +1,11 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DollarSign, X, AlertCircle } from "lucide-react";
 import { Slider } from "../ui/slider";
+import { useTranslations } from "next-intl";
 
 interface PriceRangeFilterProps {
   onPriceChange: (min: number | undefined, max: number | undefined) => void;
@@ -21,6 +24,8 @@ export const PriceRangeFilter = ({
   initialMax,
   currency = "$",
 }: PriceRangeFilterProps) => {
+  const t = useTranslations("priceRangeFilter");
+
   const [localMin, setLocalMin] = useState<number>(initialMin ?? minPrice);
   const [localMax, setLocalMax] = useState<number>(initialMax ?? maxPrice);
   const [isOpen, setIsOpen] = useState(false);
@@ -48,7 +53,7 @@ export const PriceRangeFilter = ({
 
   const handleApply = () => {
     if (tempMin > tempMax) {
-      setError("El precio mínimo no puede ser mayor al máximo");
+      setError(t("errors.minGreaterThanMax"));
       return;
     }
 
@@ -80,7 +85,7 @@ export const PriceRangeFilter = ({
       setError("");
     } else {
       setTempMin(value);
-      setError("El precio mínimo no puede ser mayor al máximo");
+      setError(t("errors.minGreaterThanMax"));
     }
   };
 
@@ -92,7 +97,7 @@ export const PriceRangeFilter = ({
       setError("");
     } else {
       setTempMax(value);
-      setError("El precio máximo no puede ser menor al mínimo");
+      setError(t("errors.maxLessThanMin"));
     }
   };
 
@@ -127,12 +132,12 @@ export const PriceRangeFilter = ({
         `}
       >
         <DollarSign size={16} />
-        <span>Precio</span>
+        <span>{t("price")}</span>
         {hasActiveFilter && (
           <span className="ml-1 px-1.5 py-0.5 text-xs bg-primary text-primary-foreground rounded-full">
-            {localMin > minPrice && `$${localMin}`}
+            {localMin > minPrice && `${currency}${localMin}`}
             {localMin > minPrice && localMax < maxPrice && " - "}
-            {localMax < maxPrice && `$${localMax}`}
+            {localMax < maxPrice && `${currency}${localMax}`}
           </span>
         )}
       </button>
@@ -146,10 +151,11 @@ export const PriceRangeFilter = ({
 
           <div className="absolute right-0 mt-2 w-80 z-50 bg-background border rounded-lg shadow-lg p-4">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="font-medium text-sm">Rango de precio</h3>
+              <h3 className="font-medium text-sm">{t("rangeTitle")}</h3>
               <button
                 onClick={() => setIsOpen(false)}
                 className="p-1 hover:bg-accent rounded-full transition-colors"
+                aria-label={t("clear")}
               >
                 <X size={16} />
               </button>
@@ -169,7 +175,7 @@ export const PriceRangeFilter = ({
             <div className="flex gap-3 mb-2">
               <div className="flex-1">
                 <label className="text-xs text-muted-foreground block mb-1">
-                  Mínimo
+                  {t("minimum")}
                 </label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
@@ -183,13 +189,14 @@ export const PriceRangeFilter = ({
                     onChange={handleMinInputChange}
                     onBlur={handleMinBlur}
                     className={`pl-7 ${!isValidRange ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-                    placeholder="Mín"
+                    placeholder={t("minPlaceholder")}
                   />
                 </div>
               </div>
+
               <div className="flex-1">
                 <label className="text-xs text-muted-foreground block mb-1">
-                  Máximo
+                  {t("maximum")}
                 </label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
@@ -203,7 +210,7 @@ export const PriceRangeFilter = ({
                     onChange={handleMaxInputChange}
                     onBlur={handleMaxBlur}
                     className={`pl-7 ${!isValidRange ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-                    placeholder="Máx"
+                    placeholder={t("maxPlaceholder")}
                   />
                 </div>
               </div>
@@ -218,7 +225,7 @@ export const PriceRangeFilter = ({
 
             <div className="text-xs text-muted-foreground text-center mb-4">
               {tempMin === minPrice && tempMax === maxPrice
-                ? "Todos los precios"
+                ? t("allPrices")
                 : `${currency}${tempMin.toLocaleString()} - ${currency}${tempMax.toLocaleString()}`}
             </div>
 
@@ -229,7 +236,7 @@ export const PriceRangeFilter = ({
                 onClick={handleClear}
                 className="flex-1"
               >
-                Limpiar
+                {t("clear")}
               </Button>
               <Button
                 size="sm"
@@ -237,13 +244,13 @@ export const PriceRangeFilter = ({
                 className="flex-1"
                 disabled={!isValidRange}
               >
-                Aplicar
+                {t("apply")}
               </Button>
             </div>
 
             {!isValidRange && (
               <p className="text-xs text-red-500 mt-2 text-center">
-                El precio mínimo debe ser menor o igual al máximo
+                {t("errors.invalidRange")}
               </p>
             )}
           </div>

@@ -1,4 +1,6 @@
 "use client";
+
+import { useTranslations } from "next-intl";
 import { meses, tiposCultivo } from "@/helpers/data/dataProduccionFinca";
 import React from "react";
 import {
@@ -50,6 +52,8 @@ const AgricolaSection: React.FC<AgricolaSectionProps> = ({
   watch,
   fincaSeleccionada,
 }) => {
+  const t = useTranslations("agricolaSection");
+
   const addNewCultivo = () => {
     append({
       tipo: "" as CultivoTipo,
@@ -65,18 +69,20 @@ const AgricolaSection: React.FC<AgricolaSectionProps> = ({
       <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 py-3 md:px-6 md:py-4">
         <CardTitle className="flex items-center gap-2 text-base md:text-lg">
           <Sprout className="h-4 w-4 md:h-5 md:w-5" />
-          Producción Agrícola
+          {t("title")}
           <Badge variant="secondary" className="ml-2 text-xs">
-            {fields.length} cultivo{fields.length !== 1 ? "s" : ""}
+            {t("cropCount", { count: fields.length })}
           </Badge>
         </CardTitle>
+
         <Button
           onClick={addNewCultivo}
           size="sm"
           className="w-full sm:w-auto h-9 text-sm"
+          type="button"
         >
           <Plus className="h-4 w-4 mr-1" />
-          Agregar Cultivo
+          {t("buttons.addCrop")}
         </Button>
       </CardHeader>
 
@@ -89,14 +95,17 @@ const AgricolaSection: React.FC<AgricolaSectionProps> = ({
             <CardContent className="p-3 md:p-4">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
                 <h4 className="font-semibold text-sm md:text-base">
-                  Cultivo {index + 1}
+                  {t("cropNumber", { number: index + 1 })}
                 </h4>
+
                 {fields.length > 1 && (
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => remove(index)}
                     className="h-8 w-8 p-0 text-destructive self-end sm:self-auto"
+                    type="button"
+                    aria-label={t("buttons.removeCrop")}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -105,7 +114,10 @@ const AgricolaSection: React.FC<AgricolaSectionProps> = ({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs md:text-sm">Tipo de cultivo</Label>
+                  <Label className="text-xs md:text-sm">
+                    {t("fields.cropType")}
+                  </Label>
+
                   <Controller
                     control={control}
                     name={`agricola.cultivos.${index}.tipo`}
@@ -115,8 +127,11 @@ const AgricolaSection: React.FC<AgricolaSectionProps> = ({
                         onValueChange={field.onChange}
                       >
                         <SelectTrigger className="h-9 md:h-10 text-sm">
-                          <SelectValue placeholder="Seleccione tipo" />
+                          <SelectValue
+                            placeholder={t("placeholders.cropType")}
+                          />
                         </SelectTrigger>
+
                         <SelectContent>
                           {tiposCultivo.map((tipo) => (
                             <SelectItem
@@ -134,13 +149,16 @@ const AgricolaSection: React.FC<AgricolaSectionProps> = ({
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="text-xs md:text-sm">Estacionalidad</Label>
+                  <Label className="text-xs md:text-sm">
+                    {t("fields.seasonality")}
+                  </Label>
+
                   <Controller
                     control={control}
                     name={`agricola.cultivos.${index}.estacionalidad`}
                     render={({ field }) => (
                       <Input
-                        placeholder="Ej: Primavera/Verano"
+                        placeholder={t("placeholders.seasonality")}
                         className="h-9 md:h-10 text-sm"
                         value={field.value || ""}
                         onChange={field.onChange}
@@ -151,14 +169,15 @@ const AgricolaSection: React.FC<AgricolaSectionProps> = ({
 
                 <div className="space-y-1.5">
                   <Label className="text-xs md:text-sm">
-                    Duración del cultivo
+                    {t("fields.duration")}
                   </Label>
+
                   <Controller
                     control={control}
                     name={`agricola.cultivos.${index}.tiempo_estimado_cultivo`}
                     render={({ field }) => (
                       <Input
-                        placeholder="Ej: 6 meses"
+                        placeholder={t("placeholders.duration")}
                         className="h-9 md:h-10 text-sm"
                         value={field.value || ""}
                         onChange={field.onChange}
@@ -169,15 +188,18 @@ const AgricolaSection: React.FC<AgricolaSectionProps> = ({
 
                 <div className="space-y-1.5">
                   <Label className="text-xs md:text-sm">
-                    Producción por {fincaSeleccionada.medida_finca}
+                    {t("fields.productionPerUnit", {
+                      unit: fincaSeleccionada.medida_finca,
+                    })}
                   </Label>
+
                   <Controller
                     control={control}
                     name={`agricola.cultivos.${index}.cantidad_producida_hectareas`}
                     render={({ field }) => (
                       <Input
                         type="number"
-                        placeholder="Ej: 3000 kg"
+                        placeholder={t("placeholders.production")}
                         className="h-9 md:h-10 text-sm"
                         value={field.value || ""}
                         onChange={field.onChange}
@@ -189,8 +211,9 @@ const AgricolaSection: React.FC<AgricolaSectionProps> = ({
 
               <div className="mt-4 space-y-2">
                 <Label className="text-xs md:text-sm">
-                  Meses de producción
+                  {t("fields.productionMonths")}
                 </Label>
+
                 <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
                   {meses.map((mes) => (
                     <Controller
@@ -206,10 +229,12 @@ const AgricolaSection: React.FC<AgricolaSectionProps> = ({
                               const newValue = checked
                                 ? [...value, mes]
                                 : value.filter((item) => item !== mes);
+
                               onChange(newValue);
                             }}
                             className="h-4 w-4"
                           />
+
                           <Label
                             htmlFor={`mes-${index}-${mes}`}
                             className="text-xs sm:text-sm cursor-pointer"
@@ -229,15 +254,18 @@ const AgricolaSection: React.FC<AgricolaSectionProps> = ({
         {fields.length === 0 && (
           <div className="text-center py-8 md:py-12 text-muted-foreground">
             <Sprout className="h-8 w-8 md:h-12 md:w-12 mx-auto mb-3 md:mb-4 opacity-50" />
-            <p className="text-sm md:text-base">No hay cultivos agregados</p>
+
+            <p className="text-sm md:text-base">{t("empty.title")}</p>
+
             <Button
               onClick={addNewCultivo}
               variant="outline"
               size="sm"
               className="mt-3 md:mt-4 h-9 text-sm"
+              type="button"
             >
               <Plus className="h-4 w-4 mr-1" />
-              Agregar primer cultivo
+              {t("buttons.addFirstCrop")}
             </Button>
           </div>
         )}

@@ -1,13 +1,19 @@
 "use client";
+
 import { Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 export const EcommerceButton = () => {
-  const ecommerceUrl = `${process.env.NEXT_PUBLIC_APP_URL}/marketplace`;
+  const t = useTranslations("ecommerceButton");
+
+  const ecommerceUrl = process.env.NEXT_PUBLIC_APP_URL
+    ? `${process.env.NEXT_PUBLIC_APP_URL}/marketplace`
+    : "";
 
   if (!ecommerceUrl) {
-    toast.error("La tienda aún no está configurada");
+    toast.error(t("notConfigured"));
     return null;
   }
 
@@ -37,8 +43,8 @@ export const EcommerceButton = () => {
         "
       >
         <Store className="h-4 w-4 animate-pulse" />
-        <span className="hidden sm:inline">Ir a AgroMarket</span>
-        <span className="sm:hidden">Tienda</span>
+        <span className="hidden sm:inline">{t("goToMarket")}</span>
+        <span className="sm:hidden">{t("store")}</span>
       </Button>
     </a>
   );

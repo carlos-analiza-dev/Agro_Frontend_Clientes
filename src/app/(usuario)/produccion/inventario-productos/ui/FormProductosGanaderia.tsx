@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +25,7 @@ import { EditarInventarioProducto } from "@/api/inventario-productos/accions/edi
 import { unidades_productos } from "@/helpers/data/medida-productos-ganadero";
 import { isAxiosError } from "axios";
 import { Inventario } from "@/api/inventario-productos/interfaces/response-inventario.interface";
+import { useTranslations } from "next-intl";
 
 interface FormProductosGanaderiaProps {
   onSuccess?: () => void;
@@ -43,6 +46,8 @@ const FormProductosGanaderia = ({
   isEdit = false,
   inventarioEdit = null,
 }: FormProductosGanaderiaProps) => {
+  const t = useTranslations("formProductosGanaderia");
+
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id ?? "";
   const queryClient = useQueryClient();
@@ -50,6 +55,7 @@ const FormProductosGanaderia = ({
 
   const { data: productosData, isLoading: loadingProductos } =
     useGetProductoVenta();
+
   const { data: fincasData, isLoading: loadingFincas } =
     useFincasPropietarios(clienteId);
 
@@ -96,17 +102,22 @@ const FormProductosGanaderia = ({
     }
   }, [isEdit, inventarioEdit, reset]);
 
+  const getUnitLabel = (value: string, fallback: string) => {
+    const key = `units.${value}`;
+    return t.has(key) ? t(key) : fallback;
+  };
+
   const onSubmit = async (data: InventarioFormData) => {
     try {
       setIsSubmitting(true);
 
       if (data.cantidad <= 0) {
-        toast.error("La cantidad debe ser mayor a 0");
+        toast.error(t("validation.quantityMin"));
         return;
       }
 
       if (data.stockMinimo < 0) {
-        toast.error("El stock mínimo no puede ser negativo");
+        toast.error(t("validation.stockMin"));
         return;
       }
 
@@ -116,15 +127,20 @@ const FormProductosGanaderia = ({
           unidadMedida: data.unidadMedida,
           stockMinimo: data.stockMinimo,
         });
-        toast.success("Inventario actualizado exitosamente");
+
+        toast.success(t("messages.updateSuccess"));
       } else {
         await AgregarInventarioProducto(data);
-        toast.success("Producto agregado al inventario exitosamente");
+
+        toast.success(t("messages.createSuccess"));
       }
 
       reset();
 
-      queryClient.invalidateQueries({ queryKey: ["inventario-productos"] });
+      queryClient.invalidateQueries({
+        queryKey: ["inventario-productos"],
+      });
+
       if (isEdit && inventarioEdit) {
         queryClient.invalidateQueries({
           queryKey: ["inventario-item", inventarioEdit.id],
@@ -138,7 +154,7 @@ const FormProductosGanaderia = ({
       if (isAxiosError(error)) {
         toast.error(
           error.response?.data?.message ||
-            `Error al ${isEdit ? "actualizar" : "agregar"} el producto al inventario.`,
+            t(isEdit ? "errors.update" : "errors.create"),
         );
       }
     } finally {
@@ -147,6 +163,7 @@ const FormProductosGanaderia = ({
   };
 
   const productoSeleccionado = watch("productoId");
+
   const productoInfo = productos.find(
     (p: any) => p.id === productoSeleccionado,
   );
@@ -156,12 +173,12 @@ const FormProductosGanaderia = ({
       {isEdit && inventarioEdit && (
         <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
           <p className="text-sm text-amber-800">
-            <span className="font-semibold">Editando:</span>{" "}
+            <span className="font-semibold">{t("editing.label")}</span>{" "}
             {inventarioEdit.producto.nombre} -{" "}
             {inventarioEdit.finca.nombre_finca}
           </p>
           <p className="text-xs text-amber-600 mt-1">
-            Solo puedes modificar cantidad, unidad y stock mínimo
+            {t("editing.description")}
           </p>
         </div>
       )}
@@ -170,12 +187,13 @@ const FormProductosGanaderia = ({
         <>
           <div className="space-y-2">
             <Label htmlFor="productoId">
-              Producto <span className="text-red-500">*</span>
+              {t("fields.product")} <span className="text-red-500">*</span>
             </Label>
+
             <Controller
               name="productoId"
               control={control}
-              rules={{ required: "Debes seleccionar un producto" }}
+              rules={{ required: t("validation.productRequired") }}
               render={({ field }) => (
                 <Select
                   onValueChange={field.onChange}
@@ -185,11 +203,15 @@ const FormProductosGanaderia = ({
                   <SelectTrigger
                     className={errors.productoId ? "border-red-500" : ""}
                   >
-                    <SelectValue placeholder="Selecciona un producto" />
+                    <SelectValue placeholder={t("placeholders.product")} />
                   </SelectTrigger>
+
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Productos disponibles</SelectLabel>
+                      <SelectLabel>
+                        {t("selects.availableProducts")}
+                      </SelectLabel>
+
                       {loadingProductos ? (
                         <div className="flex justify-center py-4">
                           <Loader2 className="h-5 w-5 animate-spin text-gray-500" />
@@ -202,7 +224,7 @@ const FormProductosGanaderia = ({
                         ))
                       ) : (
                         <div className="px-2 py-4 text-center text-gray-500">
-                          No hay productos disponibles
+                          {t("empty.products")}
                         </div>
                       )}
                     </SelectGroup>
@@ -210,6 +232,7 @@ const FormProductosGanaderia = ({
                 </Select>
               )}
             />
+
             {errors.productoId && (
               <p className="text-sm text-red-600">
                 {errors.productoId.message}
@@ -219,12 +242,13 @@ const FormProductosGanaderia = ({
 
           <div className="space-y-2">
             <Label htmlFor="fincaId">
-              Finca <span className="text-red-500">*</span>
+              {t("fields.farm")} <span className="text-red-500">*</span>
             </Label>
+
             <Controller
               name="fincaId"
               control={control}
-              rules={{ required: "Debes seleccionar una finca" }}
+              rules={{ required: t("validation.farmRequired") }}
               render={({ field }) => (
                 <Select
                   onValueChange={field.onChange}
@@ -234,11 +258,13 @@ const FormProductosGanaderia = ({
                   <SelectTrigger
                     className={errors.fincaId ? "border-red-500" : ""}
                   >
-                    <SelectValue placeholder="Selecciona una finca" />
+                    <SelectValue placeholder={t("placeholders.farm")} />
                   </SelectTrigger>
+
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Mis fincas</SelectLabel>
+                      <SelectLabel>{t("selects.myFarms")}</SelectLabel>
+
                       {loadingFincas ? (
                         <div className="flex justify-center py-4">
                           <Loader2 className="h-5 w-5 animate-spin text-gray-500" />
@@ -251,7 +277,7 @@ const FormProductosGanaderia = ({
                         ))
                       ) : (
                         <div className="px-2 py-4 text-center text-gray-500">
-                          No hay fincas disponibles
+                          {t("empty.farms")}
                         </div>
                       )}
                     </SelectGroup>
@@ -259,6 +285,7 @@ const FormProductosGanaderia = ({
                 </Select>
               )}
             />
+
             {errors.fincaId && (
               <p className="text-sm text-red-600">{errors.fincaId.message}</p>
             )}
@@ -268,8 +295,9 @@ const FormProductosGanaderia = ({
 
       <div className="space-y-2">
         <Label htmlFor="cantidad">
-          Cantidad <span className="text-red-500">*</span>
+          {t("fields.quantity")} <span className="text-red-500">*</span>
         </Label>
+
         <Input
           id="cantidad"
           type="number"
@@ -277,16 +305,17 @@ const FormProductosGanaderia = ({
           min="0.01"
           placeholder="0.00"
           {...register("cantidad", {
-            required: "La cantidad es requerida",
+            required: t("validation.quantityRequired"),
             min: {
               value: 0.01,
-              message: "La cantidad debe ser mayor a 0",
+              message: t("validation.quantityMin"),
             },
             valueAsNumber: true,
           })}
           disabled={isSubmitting}
           className={errors.cantidad ? "border-red-500" : ""}
         />
+
         {errors.cantidad && (
           <p className="text-sm text-red-600">{errors.cantidad.message}</p>
         )}
@@ -294,12 +323,13 @@ const FormProductosGanaderia = ({
 
       <div className="space-y-2">
         <Label htmlFor="unidadMedida">
-          Unidad de Medida <span className="text-red-500">*</span>
+          {t("fields.unit")} <span className="text-red-500">*</span>
         </Label>
+
         <Controller
           name="unidadMedida"
           control={control}
-          rules={{ required: "Debes seleccionar una unidad de medida" }}
+          rules={{ required: t("validation.unitRequired") }}
           render={({ field }) => (
             <Select
               onValueChange={field.onChange}
@@ -309,14 +339,16 @@ const FormProductosGanaderia = ({
               <SelectTrigger
                 className={errors.unidadMedida ? "border-red-500" : ""}
               >
-                <SelectValue placeholder="Selecciona una unidad" />
+                <SelectValue placeholder={t("placeholders.unit")} />
               </SelectTrigger>
+
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Unidades de medida</SelectLabel>
+                  <SelectLabel>{t("selects.units")}</SelectLabel>
+
                   {unidades_productos.map((unidad) => (
                     <SelectItem key={unidad.value} value={unidad.value}>
-                      {unidad.nombre}
+                      {getUnitLabel(unidad.value, unidad.nombre)}
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -324,6 +356,7 @@ const FormProductosGanaderia = ({
             </Select>
           )}
         />
+
         {errors.unidadMedida && (
           <p className="text-sm text-red-600">{errors.unidadMedida.message}</p>
         )}
@@ -331,8 +364,9 @@ const FormProductosGanaderia = ({
 
       <div className="space-y-2">
         <Label htmlFor="stockMinimo">
-          Stock Mínimo <span className="text-red-500">*</span>
+          {t("fields.minimumStock")} <span className="text-red-500">*</span>
         </Label>
+
         <Input
           id="stockMinimo"
           type="number"
@@ -340,32 +374,37 @@ const FormProductosGanaderia = ({
           min="0"
           placeholder="0.00"
           {...register("stockMinimo", {
-            required: "El stock mínimo es requerido",
+            required: t("validation.stockRequired"),
             min: {
               value: 0,
-              message: "El stock mínimo no puede ser negativo",
+              message: t("validation.stockMin"),
             },
             valueAsNumber: true,
           })}
           disabled={isSubmitting}
           className={errors.stockMinimo ? "border-red-500" : ""}
         />
+
         {errors.stockMinimo && (
           <p className="text-sm text-red-600">{errors.stockMinimo.message}</p>
         )}
+
         <p className="text-xs text-gray-500">
-          Cantidad mínima para alertas de bajo stock
+          {t("fields.minimumStockDescription")}
         </p>
       </div>
 
       {productoInfo && !isEdit && (
         <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
           <p className="text-sm text-blue-800">
-            <span className="font-semibold">Producto seleccionado:</span>{" "}
+            <span className="font-semibold">{t("selectedProduct.label")}</span>{" "}
             {productoInfo.nombre}
           </p>
+
           <p className="text-sm text-blue-600">
-            <span className="font-semibold">Categoría:</span>{" "}
+            <span className="font-semibold">
+              {t("selectedProduct.category")}
+            </span>{" "}
             {productoInfo.categoria}
           </p>
         </div>
@@ -376,12 +415,12 @@ const FormProductosGanaderia = ({
           {isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {isEdit ? "Actualizando..." : "Agregando..."}
+              {isEdit ? t("buttons.updating") : t("buttons.adding")}
             </>
           ) : isEdit ? (
-            "Actualizar Inventario"
+            t("buttons.update")
           ) : (
-            "Agregar al Inventario"
+            t("buttons.add")
           )}
         </Button>
       </div>

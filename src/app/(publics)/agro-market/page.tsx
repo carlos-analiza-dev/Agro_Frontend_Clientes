@@ -8,9 +8,11 @@ import { RadioFilter } from "@/components/marketplace/RadioFilter";
 import useUserLocation from "@/hooks/location/useUserLocation";
 import useGetAllPublicaciones from "@/hooks/market-animales/useGetAllPublicaciones";
 import { MapPin, Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useRef, useState } from "react";
 
 const AgroMarketPublicPage = () => {
+  const t = useTranslations("agroMarketPublic");
   const { location } = useUserLocation();
   const [radio, setRadio] = useState<number>(100);
   const [priceMin, setPriceMin] = useState<number | undefined>(undefined);
@@ -94,15 +96,15 @@ const AgroMarketPublicPage = () => {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/50 backdrop-blur-sm border border-white/40 mb-4">
               <Sparkles className="h-4 w-4 text-green-500" />
               <span className="text-xs font-medium text-gray-500">
-                Sin resultados
+                {t("noResults")}
               </span>
             </div>
 
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-700 via-green-600 to-green-700 bg-clip-text text-transparent">
-              Destacados de hoy
+              {t("todayHighlights")}
             </h1>
             <p className="text-sm md:text-base text-gray-400 mt-2">
-              Ajusta los filtros para encontrar más publicaciones
+              {t("adjustFilters")}
             </p>
           </div>
 
@@ -135,9 +137,7 @@ const AgroMarketPublicPage = () => {
               variant="error"
               onRefresh={handleRefresh}
               isLoading={isLoading}
-              description={
-                error?.message || "No se pudieron cargar los productos"
-              }
+              description={error?.message || t("loadError")}
             />
           </div>
         </div>
@@ -157,15 +157,17 @@ const AgroMarketPublicPage = () => {
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/50 backdrop-blur-sm border border-white/40 mb-4">
             <Sparkles className="h-4 w-4 text-green-500" />
             <span className="text-xs font-medium text-gray-500">
-              {publicaciones_publicas.length} publicaciones disponibles
+              {t("availablePublications", {
+                count: publicaciones_publicas.length,
+              })}
             </span>
           </div>
 
           <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-700 via-green-600 to-green-700 bg-clip-text text-transparent">
-            Destacados de hoy
+            {t("todayHighlights")}
           </h1>
           <p className="text-sm md:text-base text-gray-400 mt-2">
-            Descubre los mejores animales disponibles
+            {t("discoverAnimals")}
           </p>
         </div>
 
@@ -218,7 +220,7 @@ const AgroMarketPublicPage = () => {
             <div className="flex flex-col items-center gap-3">
               <div className="w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full animate-spin" />
               <p className="text-sm text-muted-foreground">
-                Cargando más publicaciones...
+                {t("loadingMore")}
               </p>
             </div>
           </div>
@@ -228,7 +230,7 @@ const AgroMarketPublicPage = () => {
           <div className="text-center mt-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 backdrop-blur-sm border border-gray-200/50">
               <span className="text-sm text-gray-400">
-                Has visto todas las publicaciones disponibles
+                {t("allPublicationsViewed")}
               </span>
             </div>
           </div>

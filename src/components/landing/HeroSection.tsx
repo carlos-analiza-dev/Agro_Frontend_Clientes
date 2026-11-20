@@ -1,12 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Play, Sparkles, Leaf, Shield, Users } from "lucide-react";
+import { ArrowRight, Sparkles, Leaf, Shield, Users } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
+import { useTranslations } from "next-intl";
 
 const Card = ({
   children,
@@ -46,6 +47,8 @@ const StatItem = ({
 );
 
 export default function HeroSection() {
+  const t = useTranslations("hero");
+
   return (
     <section className="relative bg-gradient-to-br from-green-50/40 via-white to-green-50/30 overflow-hidden">
       <div className="absolute inset-0 bg-grid-green-900/[0.02] bg-[size:50px_50px]" />
@@ -65,21 +68,18 @@ export default function HeroSection() {
             transition={{ duration: 0.6 }}
             className="space-y-8"
           >
-            <Badge variant={"outline"}>Disponible en toda Centroamérica</Badge>
+            <Badge variant="outline">{t("badge")}</Badge>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-              <span className="text-gray-900">
-                Transforma tu producción agropecuaria con
-              </span>
+              <span className="text-gray-900">{t("title")}</span>
+
               <span className="block mt-2 bg-gradient-to-r from-green-600 via-green-700 to-green-600 bg-clip-text text-transparent">
                 El Sembrador
               </span>
             </h1>
 
             <p className="text-xl text-gray-400 leading-relaxed max-w-lg">
-              Sistema integral de gestión para ganado, cultivos y productos
-              veterinarios. Optimiza tu producción agrícola y ganadera con
-              tecnología de punta.
+              {t("description")}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -88,7 +88,7 @@ export default function HeroSection() {
                   size="lg"
                   className="rounded-full px-8 py-3 h-auto text-base font-medium bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-[0_4px_16px_rgba(34,197,94,0.25)] hover:shadow-[0_6px_24px_rgba(34,197,94,0.35)] transition-all duration-300"
                 >
-                  Comenzar ahora
+                  {t("cta")}
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
@@ -105,11 +105,12 @@ export default function HeroSection() {
                   </div>
                 ))}
               </div>
+
               <div className="text-sm text-gray-400">
                 <span className="font-bold text-green-600 text-base">
                   +5000
                 </span>{" "}
-                productores confían en nosotros
+                {t("producers")}
               </div>
             </div>
 
@@ -118,21 +119,25 @@ export default function HeroSection() {
                 <div className="flex flex-col items-center">
                   <Leaf className="h-5 w-5 text-green-600 mb-1" />
                   <span className="text-lg font-bold text-gray-900">200+</span>
-                  <span className="text-xs text-gray-400">Fincas activas</span>
+                  <span className="text-xs text-gray-400">{t("farms")}</span>
                 </div>
               </Card>
+
               <Card className="text-center">
                 <div className="flex flex-col items-center">
                   <Shield className="h-5 w-5 text-green-600 mb-1" />
                   <span className="text-lg font-bold text-gray-900">98%</span>
-                  <span className="text-xs text-gray-400">Satisfacción</span>
+                  <span className="text-xs text-gray-400">
+                    {t("satisfaction")}
+                  </span>
                 </div>
               </Card>
+
               <Card className="text-center">
                 <div className="flex flex-col items-center">
                   <Users className="h-5 w-5 text-green-600 mb-1" />
                   <span className="text-lg font-bold text-gray-900">5K+</span>
-                  <span className="text-xs text-gray-400">Usuarios</span>
+                  <span className="text-xs text-gray-400">{t("users")}</span>
                 </div>
               </Card>
             </div>
@@ -147,12 +152,13 @@ export default function HeroSection() {
             <div className="relative rounded-2xl overflow-hidden shadow-[0_8px_40px_rgba(0,0,0,0.08)] border border-white/40">
               <Image
                 src="/images/agricultura.jpg"
-                alt="Agricultura moderna en Centroamérica"
+                alt={t("imageAlt")}
                 width={600}
                 height={500}
                 className="w-full h-auto"
                 priority
               />
+
               <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent" />
 
               <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-xl px-4 py-2 shadow-[0_4px_16px_rgba(0,0,0,0.06)] border border-white/40">
@@ -160,10 +166,10 @@ export default function HeroSection() {
                   <span className="text-lg">🌾</span>
                   <div>
                     <p className="text-xs font-semibold text-gray-900">
-                      Tecnología agrícola
+                      {t("techTitle")}
                     </p>
                     <p className="text-[10px] text-gray-400">
-                      Gestión inteligente
+                      {t("techSubtitle")}
                     </p>
                   </div>
                 </div>
@@ -172,11 +178,7 @@ export default function HeroSection() {
 
             <div className="absolute -bottom-6 -left-6 animate-float">
               <Card className="shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
-                <StatItem
-                  icon="🌱"
-                  label="hectáreas gestionadas"
-                  value="+10,000"
-                />
+                <StatItem icon="🌱" label={t("hectares")} value="+10,000" />
               </Card>
             </div>
 
@@ -190,9 +192,7 @@ export default function HeroSection() {
                     <p className="text-xs font-semibold text-gray-900">
                       Premium
                     </p>
-                    <p className="text-[10px] text-gray-400">
-                      Plan AgroGestión
-                    </p>
+                    <p className="text-[10px] text-gray-400">{t("plan")}</p>
                   </div>
                 </div>
               </Card>

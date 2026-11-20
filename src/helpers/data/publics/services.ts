@@ -1,4 +1,3 @@
-// src/helpers/data/publics/services.ts
 import {
   Sprout,
   Building2,

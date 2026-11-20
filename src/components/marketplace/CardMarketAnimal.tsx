@@ -16,6 +16,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { TipoPublicacion } from "@/interfaces/enums/market/tipo_publicacion.enum";
 import { formatCurrency } from "@/helpers/funciones/formatCurrency";
+import { useTranslations } from "next-intl";
 
 interface Props {
   animal: ProductoAnimal;
@@ -26,6 +27,8 @@ interface Props {
 const CardMarketAnimal = ({ animal, link_page, isAuthenticated }: Props) => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const t = useTranslations("cardMarketAnimal");
+
   const image = animal.imagenes?.[0]?.url || "/images/agricultura.jpg";
 
   const esAlquiler = animal.tipo_publicacion === TipoPublicacion.ALQUILERES;
@@ -40,18 +43,23 @@ const CardMarketAnimal = ({ animal, link_page, isAuthenticated }: Props) => {
 
   const obtenerPrecioMasBajo = () => {
     const precios = [];
+
     if (animal.precioHora && Number(animal.precioHora) > 0)
       precios.push({ valor: animal.precioHora, unidad: "hora" });
+
     if (animal.precioDia && Number(animal.precioDia) > 0)
       precios.push({ valor: animal.precioDia, unidad: "día" });
+
     if (animal.precioSemana && Number(animal.precioSemana) > 0)
       precios.push({ valor: animal.precioSemana, unidad: "semana" });
+
     if (animal.precioMes && Number(animal.precioMes) > 0)
       precios.push({ valor: animal.precioMes, unidad: "mes" });
 
     if (precios.length === 0) return null;
 
     const masBajo = precios.reduce((min, p) => (p.valor < min.valor ? p : min));
+
     return masBajo;
   };
 
@@ -70,6 +78,21 @@ const CardMarketAnimal = ({ animal, link_page, isAuthenticated }: Props) => {
     }
   };
 
+  const getTranslatedPeriod = (unidad: string) => {
+    switch (unidad) {
+      case "hora":
+        return t("periods.hour");
+      case "día":
+        return t("periods.day");
+      case "semana":
+        return t("periods.week");
+      case "mes":
+        return t("periods.month");
+      default:
+        return unidad;
+    }
+  };
+
   const renderPrecio = () => {
     if (esAlquiler) {
       const precioMasBajo = obtenerPrecioMasBajo();
@@ -78,7 +101,7 @@ const CardMarketAnimal = ({ animal, link_page, isAuthenticated }: Props) => {
         return (
           <div className="text-sm text-muted-foreground">
             <span className="font-semibold text-yellow-600">
-              Precios disponibles
+              {t("pricesAvailable")}
             </span>
           </div>
         );
@@ -99,21 +122,25 @@ const CardMarketAnimal = ({ animal, link_page, isAuthenticated }: Props) => {
               {animal.moneda} {precioMasBajo.valor}
             </h3>
             <span className="text-sm text-muted-foreground">
-              /{precioMasBajo.unidad}
+              /{getTranslatedPeriod(precioMasBajo.unidad)}
             </span>
           </div>
+
           {cantidadPrecios > 1 && (
             <p className="text-xs text-muted-foreground">
               + {cantidadPrecios - 1}{" "}
-              {cantidadPrecios - 1 === 1 ? "opción" : "opciones"} más
+              {cantidadPrecios - 1 === 1
+                ? t("additionalOptions.one")
+                : t("additionalOptions.other")}
             </p>
           )}
+
           {animal.deposito && (
             <Badge
               variant="outline"
               className="text-xs border-yellow-400 text-yellow-600"
             >
-              Depósito:{" "}
+              {t("deposit")}:{" "}
               {formatCurrency(animal.montoDeposito ?? 0, animal.moneda)}
             </Badge>
           )}
@@ -158,7 +185,7 @@ const CardMarketAnimal = ({ animal, link_page, isAuthenticated }: Props) => {
         variant="secondary"
         className="text-xs bg-blue-50 text-blue-600 border-blue-200"
       >
-        Disponible para alquiler
+        {t("availableForRent")}
       </Badge>
     );
   };
@@ -181,12 +208,13 @@ const CardMarketAnimal = ({ animal, link_page, isAuthenticated }: Props) => {
         <div className="absolute top-3 right-3 flex flex-col gap-2">
           {esAlquiler && (
             <Badge className="bg-blue-500 hover:bg-blue-600 text-white">
-              Alquiler
+              {t("rental")}
             </Badge>
           )}
+
           {animal.oferta && !esAlquiler && (
             <Badge className="bg-red-500 hover:bg-red-600 text-white">
-              Oferta
+              {t("offer")}
             </Badge>
           )}
         </div>

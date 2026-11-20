@@ -12,12 +12,16 @@ import {
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 const NotSelecteCountry = () => {
   const router = useRouter();
+  const t = useTranslations("notSelectedCountry");
+
   const [isHovering, setIsHovering] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
   const [isSelecting, setIsSelecting] = useState(false);
+
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -30,7 +34,7 @@ const NotSelecteCountry = () => {
           router.replace("/productos-agroservicios");
         }
       } catch (error) {
-        toast.error("Ocurrio un errro al verificar el pais");
+        toast.error(t("verificationError"));
       } finally {
         setIsChecking(false);
       }
@@ -43,12 +47,13 @@ const NotSelecteCountry = () => {
         clearInterval(intervalRef.current);
       }
     };
-  }, [router]);
+  }, [router, t]);
 
   const handleSelectCountry = () => {
     setIsSelecting(true);
 
     const countryButton = document.querySelector(".country-dropdown button");
+
     if (countryButton) {
       (countryButton as HTMLButtonElement).click();
 
@@ -61,11 +66,12 @@ const NotSelecteCountry = () => {
             if (intervalRef.current) {
               clearInterval(intervalRef.current);
             }
+
             setIsSelecting(false);
             router.push("/productos-agroservicios");
           }
         } catch (error) {
-          toast.error("Error verificando país");
+          toast.error(t("errors.checkingSelection"));
         }
       }, 500);
 
@@ -85,7 +91,7 @@ const NotSelecteCountry = () => {
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-orange-50/30 flex items-center justify-center px-4">
         <div className="text-center">
           <Loader2 className="h-12 w-12 animate-spin text-orange-600 mx-auto mb-4" />
-          <p className="text-gray-600">Verificando tu ubicación...</p>
+          <p className="text-gray-600">{t("checkingCountry")}</p>
         </div>
       </div>
     );
@@ -102,19 +108,17 @@ const NotSelecteCountry = () => {
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="bg-orange-100 rounded-full w-28 h-28 animate-ping opacity-20" />
               </div>
+
               <div className="relative bg-orange-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto shadow-lg">
                 <Globe className="h-12 w-12 text-orange-600 animate-pulse" />
               </div>
             </div>
 
             <h1 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-4">
-              ¡Selecciona tu país!
+              {t("title")}
             </h1>
 
-            <p className="text-center text-gray-600 mb-8">
-              Para acceder a esta página y ver los productos disponibles,
-              necesitamos saber desde dónde nos visitas.
-            </p>
+            <p className="text-center text-gray-600 mb-8">{t("description")}</p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
@@ -122,13 +126,14 @@ const NotSelecteCountry = () => {
                   <div className="bg-blue-100 rounded-lg p-2">
                     <MapPin className="h-5 w-5 text-blue-600" />
                   </div>
+
                   <h3 className="font-semibold text-gray-900">
-                    Precios locales
+                    {t("benefits.localPrices.title")}
                   </h3>
                 </div>
+
                 <p className="text-sm text-gray-600">
-                  Verás los precios en tu moneda local y productos disponibles
-                  en tu región.
+                  {t("benefits.localPrices.description")}
                 </p>
               </div>
 
@@ -137,13 +142,14 @@ const NotSelecteCountry = () => {
                   <div className="bg-green-100 rounded-lg p-2">
                     <AlertCircle className="h-5 w-5 text-green-600" />
                   </div>
+
                   <h3 className="font-semibold text-gray-900">
-                    Disponibilidad real
+                    {t("benefits.availability.title")}
                   </h3>
                 </div>
+
                 <p className="text-sm text-gray-600">
-                  Te mostraremos solo productos que se pueden enviar a tu
-                  ubicación.
+                  {t("benefits.availability.description")}
                 </p>
               </div>
             </div>
@@ -162,7 +168,9 @@ const NotSelecteCountry = () => {
                   ) : (
                     <Globe className="h-5 w-5" />
                   )}
-                  {isSelecting ? "Seleccionando..." : "Seleccionar país"}
+
+                  {isSelecting ? t("selecting") : t("selectCountry")}
+
                   {!isSelecting && isHovering ? (
                     <ArrowRight className="h-4 w-4 transition-all" />
                   ) : (
@@ -171,6 +179,7 @@ const NotSelecteCountry = () => {
                     )
                   )}
                 </span>
+
                 <div className="absolute inset-0 bg-orange-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
               </button>
 
@@ -179,17 +188,17 @@ const NotSelecteCountry = () => {
                 variant="outline"
                 className="border-gray-300 hover:border-orange-300 hover:bg-orange-50 px-8 py-3 rounded-full transition-all"
               >
-                Ir al inicio
+                {t("goHome")}
               </Button>
             </div>
 
             <p className="text-center text-xs text-gray-400 mt-8 pt-4 border-t border-gray-100">
-              ¿Problemas para seleccionar tu país?{" "}
+              {t("supportQuestion")}{" "}
               <button
                 onClick={() => router.push("/contacto")}
                 className="text-orange-600 hover:text-orange-700 hover:underline font-medium"
               >
-                Contacta con soporte
+                {t("contactSupport")}
               </button>
             </p>
           </div>

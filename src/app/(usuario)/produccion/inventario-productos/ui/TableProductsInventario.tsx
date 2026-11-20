@@ -1,3 +1,5 @@
+"use client";
+
 import { Inventario } from "@/api/inventario-productos/interfaces/response-inventario.interface";
 import Modal from "@/components/generics/Modal";
 import { Badge } from "@/components/ui/badge";
@@ -15,12 +17,15 @@ import { formatDate } from "@/helpers/funciones/formatDate";
 import { useState } from "react";
 import FormProductosGanaderia from "./FormProductosGanaderia";
 import { Edit, AlertTriangle } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   inventario: Inventario[];
 }
 
 const TableProductsInventario = ({ inventario }: Props) => {
+  const t = useTranslations("tableProductsInventario");
+
   const [onOpenModal, setOnOpenModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [inventarioEdit, setInventarioEdit] = useState<Inventario | null>(null);
@@ -46,20 +51,24 @@ const TableProductsInventario = ({ inventario }: Props) => {
                   <h3 className="font-semibold text-base text-gray-900">
                     {item.producto.nombre}
                   </h3>
+
                   <div className="flex items-center gap-2 mt-1">
                     <Badge variant="secondary" className="text-xs">
                       {item.producto.categoria}
                     </Badge>
+
                     <span className="text-xs text-gray-500">
                       {item.unidadMedida}
                     </span>
                   </div>
                 </div>
+
                 <Button
                   onClick={() => handleEdit(item)}
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 text-gray-500"
+                  aria-label={t("actions.edit")}
                 >
                   <Edit className="h-4 w-4" />
                 </Button>
@@ -69,6 +78,7 @@ const TableProductsInventario = ({ inventario }: Props) => {
                 <p className="text-sm font-medium text-gray-700">
                   {item.finca.nombre_finca}
                 </p>
+
                 <p className="text-xs text-gray-500">
                   {item.finca.abreviatura}
                 </p>
@@ -76,15 +86,24 @@ const TableProductsInventario = ({ inventario }: Props) => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Cantidad</p>
+                  <p className="text-xs text-gray-500 mb-1">
+                    {t("fields.quantity")}
+                  </p>
+
                   <p
-                    className={`text-base font-semibold ${isLowStock ? "text-red-600" : "text-gray-900"}`}
+                    className={`text-base font-semibold ${
+                      isLowStock ? "text-red-600" : "text-gray-900"
+                    }`}
                   >
                     {cantidad.toFixed(2)}
                   </p>
                 </div>
+
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Stock Mínimo</p>
+                  <p className="text-xs text-gray-500 mb-1">
+                    {t("fields.minimumStock")}
+                  </p>
+
                   <p className="text-base font-semibold text-gray-900">
                     {stockMinimo.toFixed(2)}
                   </p>
@@ -94,8 +113,9 @@ const TableProductsInventario = ({ inventario }: Props) => {
               {isLowStock && (
                 <div className="mt-3 flex items-center gap-2 bg-red-50 text-red-700 p-2 rounded-lg">
                   <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+
                   <span className="text-xs font-medium">
-                    Stock por debajo del mínimo
+                    {t("alerts.lowStock")}
                   </span>
                 </div>
               )}
@@ -112,31 +132,39 @@ const TableProductsInventario = ({ inventario }: Props) => {
         <TableHeader>
           <TableRow>
             <TableHead className="text-center font-bold whitespace-nowrap">
-              Producto
+              {t("columns.product")}
             </TableHead>
+
             <TableHead className="text-center font-bold whitespace-nowrap">
-              Categoría
+              {t("columns.category")}
             </TableHead>
+
             <TableHead className="text-center font-bold whitespace-nowrap">
-              Finca
+              {t("columns.farm")}
             </TableHead>
+
             <TableHead className="text-center font-bold whitespace-nowrap">
-              Cantidad
+              {t("columns.quantity")}
             </TableHead>
+
             <TableHead className="text-center font-bold whitespace-nowrap">
-              Stock Mínimo
+              {t("columns.minimumStock")}
             </TableHead>
+
             <TableHead className="text-center font-bold whitespace-nowrap">
-              Unidad
+              {t("columns.unit")}
             </TableHead>
+
             <TableHead className="text-center font-bold whitespace-nowrap">
-              Última actualización
+              {t("columns.lastUpdate")}
             </TableHead>
+
             <TableHead className="text-center font-bold whitespace-nowrap">
-              Acciones
+              {t("columns.actions")}
             </TableHead>
           </TableRow>
         </TableHeader>
+
         <TableBody>
           {inventario.map((item) => {
             const stockMinimo = parseFloat(item.stockMinimo);
@@ -148,43 +176,52 @@ const TableProductsInventario = ({ inventario }: Props) => {
                 <TableCell className="text-center whitespace-nowrap">
                   {item.producto.nombre}
                 </TableCell>
+
                 <TableCell className="text-center">
                   <Badge className="whitespace-nowrap">
                     {item.producto.categoria}
                   </Badge>
                 </TableCell>
+
                 <TableCell className="text-center">
                   <div className="flex flex-col">
                     <span className="whitespace-nowrap">
                       {item.finca.nombre_finca}
                     </span>
+
                     <span className="text-xs text-gray-500 whitespace-nowrap">
                       {item.finca.abreviatura}
                     </span>
                   </div>
                 </TableCell>
+
                 <TableCell className="text-center whitespace-nowrap">
                   <span className={isLowStock ? "text-red-600 font-bold" : ""}>
                     {cantidad.toFixed(2)}
                   </span>
+
                   {isLowStock && (
                     <Badge
                       variant="destructive"
                       className="ml-2 text-xs whitespace-nowrap"
                     >
-                      Bajo stock
+                      {t("alerts.lowStockBadge")}
                     </Badge>
                   )}
                 </TableCell>
+
                 <TableCell className="text-center whitespace-nowrap">
                   {stockMinimo.toFixed(2)}
                 </TableCell>
+
                 <TableCell className="text-center whitespace-nowrap">
                   {item.unidadMedida}
                 </TableCell>
+
                 <TableCell className="text-center whitespace-nowrap">
                   {formatDate(item.updatedAt)}
                 </TableCell>
+
                 <TableCell className="text-center">
                   <Button
                     onClick={() => handleEdit(item)}
@@ -192,7 +229,7 @@ const TableProductsInventario = ({ inventario }: Props) => {
                     size="sm"
                     className="whitespace-nowrap"
                   >
-                    Editar
+                    {t("actions.edit")}
                   </Button>
                 </TableCell>
               </TableRow>
@@ -212,8 +249,8 @@ const TableProductsInventario = ({ inventario }: Props) => {
       <Modal
         open={onOpenModal}
         onOpenChange={setOnOpenModal}
-        title="Editar Inventario"
-        description="Aquí podrás editar productos de tu inventario"
+        title={t("modal.title")}
+        description={t("modal.description")}
         className="sm:max-w-lg"
       >
         <FormProductosGanaderia

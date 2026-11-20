@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2, Activity, DollarSign } from "lucide-react";
 import {
   Alternativa,
@@ -22,6 +22,8 @@ const FormProduccionAlternativa: React.FC<FormProduccionAlternativaProps> = ({
   produccionAlternativa,
   onDataChange,
 }) => {
+  const t = useTranslations("formProduccionAlternativa");
+
   const [actividades, setActividades] = useState<Actividade[]>([]);
 
   useEffect(() => {
@@ -31,7 +33,7 @@ const FormProduccionAlternativa: React.FC<FormProduccionAlternativaProps> = ({
           ...act,
           unidad_medida: act.unidad_medida || "",
           ingresos_anuales: act.ingresos_anuales || 0,
-        }))
+        })),
       );
     } else {
       setActividades([
@@ -60,6 +62,7 @@ const FormProduccionAlternativa: React.FC<FormProduccionAlternativaProps> = ({
             ingresos_anuales: act.ingresos_anuales || 0,
           })),
       };
+
       onDataChange(data);
     }
   };
@@ -75,6 +78,7 @@ const FormProduccionAlternativa: React.FC<FormProduccionAlternativaProps> = ({
         descripcion: "",
       },
     ];
+
     updateActividadesAndNotify(newActividades);
   };
 
@@ -88,11 +92,12 @@ const FormProduccionAlternativa: React.FC<FormProduccionAlternativaProps> = ({
   const updateActividad = (
     index: number,
     field: keyof Actividade,
-    value: any
+    value: any,
   ) => {
     const newActividades = actividades.map((act, i) =>
-      i === index ? { ...act, [field]: value } : act
+      i === index ? { ...act, [field]: value } : act,
     );
+
     updateActividadesAndNotify(newActividades);
   };
 
@@ -101,14 +106,15 @@ const FormProduccionAlternativa: React.FC<FormProduccionAlternativaProps> = ({
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
           <Activity className="h-5 w-5" />
-          Actividades Alternativas
+          {t("title")}
           <Badge variant="secondary" className="ml-2">
-            {actividades.length} actividad{actividades.length !== 1 ? "es" : ""}
+            {t("activityCount", { count: actividades.length })}
           </Badge>
         </CardTitle>
+
         <Button onClick={addActividad} size="sm" type="button">
           <Plus className="h-4 w-4 mr-1" />
-          Agregar Actividad
+          {t("buttons.addActivity")}
         </Button>
       </CardHeader>
 
@@ -122,14 +128,16 @@ const FormProduccionAlternativa: React.FC<FormProduccionAlternativaProps> = ({
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <h4 className="font-semibold text-lg">
-                    Actividad {index + 1}
+                    {t("activityNumber", { number: index + 1 })}
                   </h4>
+
                   {actividad.tipo && (
                     <Badge variant="outline" className="text-sm">
                       {actividad.tipo}
                     </Badge>
                   )}
                 </div>
+
                 {actividades.length > 1 && (
                   <Button
                     variant="ghost"
@@ -137,6 +145,7 @@ const FormProduccionAlternativa: React.FC<FormProduccionAlternativaProps> = ({
                     onClick={() => removeActividad(index)}
                     className="h-8 w-8 p-0 text-destructive hover:bg-destructive/10"
                     type="button"
+                    aria-label={t("buttons.removeActivity")}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -149,11 +158,12 @@ const FormProduccionAlternativa: React.FC<FormProduccionAlternativaProps> = ({
                     htmlFor={`tipo-${index}`}
                     className="text-sm font-medium"
                   >
-                    Tipo de actividad *
+                    {t("fields.activityType")} *
                   </Label>
+
                   <Input
                     id={`tipo-${index}`}
-                    placeholder="Ej: Abonos orgánicos, Turismo rural, Artesanías, Procesamiento de alimentos..."
+                    placeholder={t("placeholders.activityType")}
                     value={actividad.tipo}
                     onChange={(e) =>
                       updateActividad(index, "tipo", e.target.value)
@@ -168,17 +178,18 @@ const FormProduccionAlternativa: React.FC<FormProduccionAlternativaProps> = ({
                       htmlFor={`cantidad-${index}`}
                       className="text-sm font-medium"
                     >
-                      Cantidad producida *
+                      {t("fields.quantityProduced")} *
                     </Label>
+
                     <Input
                       id={`cantidad-${index}`}
-                      placeholder="Ej: 500"
+                      placeholder={t("placeholders.quantityProduced")}
                       value={actividad.cantidad_producida}
                       onChange={(e) =>
                         updateActividad(
                           index,
                           "cantidad_producida",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     />
@@ -189,11 +200,12 @@ const FormProduccionAlternativa: React.FC<FormProduccionAlternativaProps> = ({
                       htmlFor={`unidad-${index}`}
                       className="text-sm font-medium"
                     >
-                      Unidad de medida
+                      {t("fields.measurementUnit")}
                     </Label>
+
                     <Input
                       id={`unidad-${index}`}
-                      placeholder="Ej: kilogramos, unidades, litros..."
+                      placeholder={t("placeholders.measurementUnit")}
                       value={actividad.unidad_medida || ""}
                       onChange={(e) =>
                         updateActividad(index, "unidad_medida", e.target.value)
@@ -207,18 +219,19 @@ const FormProduccionAlternativa: React.FC<FormProduccionAlternativaProps> = ({
                       className="text-sm font-medium flex items-center gap-1"
                     >
                       <DollarSign className="h-3 w-3" />
-                      Ingresos anuales
+                      {t("fields.annualIncome")}
                     </Label>
+
                     <Input
                       id={`ingresos-${index}`}
                       type="number"
-                      placeholder="Ej: 1200"
+                      placeholder={t("placeholders.annualIncome")}
                       value={actividad.ingresos_anuales || ""}
                       onChange={(e) =>
                         updateActividad(
                           index,
                           "ingresos_anuales",
-                          Number(e.target.value) || 0
+                          Number(e.target.value) || 0,
                         )
                       }
                     />
@@ -232,16 +245,16 @@ const FormProduccionAlternativa: React.FC<FormProduccionAlternativaProps> = ({
         {actividades.length === 0 && (
           <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
             <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p className="text-lg font-medium">
-              No hay actividades alternativas agregadas
-            </p>
+
+            <p className="text-lg font-medium">{t("empty.title")}</p>
+
             <p className="text-sm mt-2 max-w-md mx-auto">
-              Ej: Turismo rural, artesanías, procesamiento de alimentos, abonos
-              orgánicos, energías renovables, etc.
+              {t("empty.description")}
             </p>
+
             <Button onClick={addActividad} className="mt-4" type="button">
               <Plus className="h-4 w-4 mr-2" />
-              Agregar primera actividad
+              {t("buttons.addFirstActivity")}
             </Button>
           </div>
         )}

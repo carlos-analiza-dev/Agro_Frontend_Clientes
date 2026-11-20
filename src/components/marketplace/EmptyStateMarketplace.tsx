@@ -12,6 +12,7 @@ import {
   Locate,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface EmptyStateMarketplaceProps {
   variant?:
@@ -47,6 +48,7 @@ const EmptyStateMarketplace = ({
   location,
 }: EmptyStateMarketplaceProps) => {
   const router = useRouter();
+  const t = useTranslations("emptyStateMarketplace");
 
   const getVariantConfig = () => {
     switch (variant) {
@@ -55,61 +57,63 @@ const EmptyStateMarketplace = ({
           icon: AlertCircle,
           iconColor: "text-destructive",
           bgColor: "bg-destructive/10",
-          defaultTitle: "Error al cargar productos",
-          defaultDescription:
-            "No se pudieron cargar los productos. Por favor, intenta nuevamente.",
+          defaultTitle: t("variants.error.title"),
+          defaultDescription: t("variants.error.description"),
           showRefreshButton: true,
           showClearButton: false,
           showBrowseButton: false,
         };
+
       case "no-location":
         return {
           icon: MapPin,
           iconColor: "text-muted-foreground",
           bgColor: "bg-muted",
-          defaultTitle: "Ubicación no disponible",
-          defaultDescription:
-            "Necesitamos tu ubicación para mostrarte productos cercanos.",
+          defaultTitle: t("variants.noLocation.title"),
+          defaultDescription: t("variants.noLocation.description"),
           showRefreshButton: false,
           showClearButton: false,
           showBrowseButton: false,
           showRetryButton: true,
         };
+
       case "no-nearby":
         return {
           icon: MapPin,
           iconColor: "text-muted-foreground",
           bgColor: "bg-muted",
-          defaultTitle: "No hay productos cercanos",
+          defaultTitle: t("variants.noNearby.title"),
           defaultDescription: location?.radio
-            ? `No encontramos productos en un radio de ${location.radio} km de tu ubicación.`
-            : "No encontramos productos cerca de tu ubicación.",
+            ? t("variants.noNearby.descriptionWithRadius", {
+                radius: location.radio,
+              })
+            : t("variants.noNearby.description"),
           showRefreshButton: true,
           showClearButton: false,
           showBrowseButton: true,
           showRetryButton: false,
         };
+
       case "no-filters":
         return {
           icon: PackageSearch,
           iconColor: "text-muted-foreground",
           bgColor: "bg-muted",
-          defaultTitle: "No se encontraron productos",
-          defaultDescription:
-            "No hay productos que coincidan con los filtros seleccionados.",
+          defaultTitle: t("variants.noFilters.title"),
+          defaultDescription: t("variants.noFilters.description"),
           showRefreshButton: true,
           showClearButton: true,
           showBrowseButton: false,
           showRetryButton: false,
         };
+
       default:
         return {
           icon: ShoppingBag,
           iconColor: "text-muted-foreground",
           bgColor: "bg-muted",
-          defaultTitle: "No hay productos disponibles",
-          defaultDescription:
-            "Actualmente no hay productos publicados en el marketplace.",
+          defaultTitle: t("variants.noProducts.title"),
+          defaultDescription: t("variants.noProducts.description"),
           showRefreshButton: true,
           showClearButton: false,
           showBrowseButton: false,
@@ -160,12 +164,18 @@ const EmptyStateMarketplace = ({
           <div className="flex items-center justify-center gap-2 text-sm">
             <MapPin className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">
-              Tu ubicación: {location.ciudad}, {location.pais}
+              {t("location.yourLocation", {
+                city: location.ciudad || "",
+                country: location.pais || "",
+              })}
             </span>
           </div>
+
           {location.radio && (
             <p className="text-xs text-muted-foreground mt-1">
-              Radio de búsqueda: {location.radio} km
+              {t("location.searchRadius", {
+                radius: location.radio,
+              })}
             </p>
           )}
         </div>
@@ -180,7 +190,7 @@ const EmptyStateMarketplace = ({
             className="gap-2"
           >
             <FilterX className="h-4 w-4" />
-            Limpiar filtros
+            {t("buttons.clearFilters")}
           </Button>
         )}
 
@@ -194,7 +204,7 @@ const EmptyStateMarketplace = ({
             <RefreshCw
               className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
             />
-            Recargar productos
+            {t("buttons.refreshProducts")}
           </Button>
         )}
 
@@ -205,7 +215,7 @@ const EmptyStateMarketplace = ({
             className="gap-2"
           >
             <Store className="h-4 w-4" />
-            Ver todos los productos
+            {t("buttons.viewAllProducts")}
           </Button>
         )}
 
@@ -216,17 +226,14 @@ const EmptyStateMarketplace = ({
             className="gap-2"
           >
             <Locate className="h-4 w-4" />
-            Reintentar ubicación
+            {t("buttons.retryLocation")}
           </Button>
         )}
       </div>
 
       {variant === "no-nearby" && (
         <div className="mt-6 pt-4 border-t max-w-md">
-          <p className="text-xs text-muted-foreground">
-            💡 Sugerencia: Puedes aumentar el radio de búsqueda en los filtros
-            para encontrar más productos.
-          </p>
+          <p className="text-xs text-muted-foreground">{t("suggestion")}</p>
         </div>
       )}
     </div>

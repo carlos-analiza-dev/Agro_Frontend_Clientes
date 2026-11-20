@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   BarChart,
@@ -10,6 +12,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
+import { useTranslations } from "next-intl";
 import CardDetalles from "./CardDetalles";
 
 interface FincaProduccion {
@@ -43,29 +46,31 @@ const PRODUCCION_COLORS = {
 };
 
 const CardProduccionFinca = ({ produccionData }: CardProduccionFincaProps) => {
+  const t = useTranslations("cardProduccionFinca");
+
   if (!produccionData) return null;
 
   const fincasChartData = produccionData.fincas.map((finca) => ({
     finca: finca.nombre_finca,
-    "Vacas Ordeño": finca.vacas_ordeño,
-    "Vacas Secas": finca.vacas_secas,
-    Terneros: finca.terneros,
-    "Total Bovinos": finca.total_bovinos,
+    [t("categories.milkingCows")]: finca.vacas_ordeño,
+    [t("categories.dryCows")]: finca.vacas_secas,
+    [t("categories.calves")]: finca.terneros,
+    [t("categories.totalCattle")]: finca.total_bovinos,
   }));
 
   const totalesData = [
     {
-      name: "Vacas Ordeño",
+      name: t("categories.milkingCows"),
       value: produccionData.total_vacas_ordeño,
       color: PRODUCCION_COLORS.ordeño,
     },
     {
-      name: "Vacas Secas",
+      name: t("categories.dryCows"),
       value: produccionData.total_vacas_secas,
       color: PRODUCCION_COLORS.secas,
     },
     {
-      name: "Terneros",
+      name: t("categories.calves"),
       value: produccionData.total_terneros,
       color: PRODUCCION_COLORS.terneros,
     },
@@ -75,7 +80,7 @@ const CardProduccionFinca = ({ produccionData }: CardProduccionFincaProps) => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <CardDetalles
-          titulo="Vacas en Ordeño"
+          titulo={t("details.milkingCows")}
           bgColor="bg-blue-50"
           colorText="text-blue-800"
           colorNumbers="text-blue-600"
@@ -90,7 +95,7 @@ const CardProduccionFinca = ({ produccionData }: CardProduccionFincaProps) => {
         />
 
         <CardDetalles
-          titulo="Vacas Secas"
+          titulo={t("details.dryCows")}
           bgColor="bg-green-50"
           colorText="text-green-800"
           colorNumbers="text-green-600"
@@ -105,7 +110,7 @@ const CardProduccionFinca = ({ produccionData }: CardProduccionFincaProps) => {
         />
 
         <CardDetalles
-          titulo="Terneros"
+          titulo={t("details.calves")}
           bgColor="bg-amber-50"
           colorText="text-amber-800"
           colorNumbers="text-amber-600"
@@ -119,7 +124,7 @@ const CardProduccionFinca = ({ produccionData }: CardProduccionFincaProps) => {
         />
 
         <CardDetalles
-          titulo="Total Bovinos"
+          titulo={t("details.totalCattle")}
           bgColor="bg-purple-50"
           colorText="text-purple-800"
           colorNumbers="text-purple-600"
@@ -131,8 +136,9 @@ const CardProduccionFinca = ({ produccionData }: CardProduccionFincaProps) => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Distribución de Bovinos</CardTitle>
+            <CardTitle>{t("charts.cattleDistribution")}</CardTitle>
           </CardHeader>
+
           <CardContent>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -143,11 +149,17 @@ const CardProduccionFinca = ({ produccionData }: CardProduccionFincaProps) => {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
+
                   <Tooltip
-                    formatter={(value) => [`${value} animales`, "Cantidad"]}
+                    formatter={(value) => [
+                      `${value} ${t("animals")}`,
+                      t("quantity"),
+                    ]}
                   />
+
                   <Legend />
-                  <Bar dataKey="value" name="Cantidad">
+
+                  <Bar dataKey="value" name={t("quantity")}>
                     {totalesData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
@@ -160,8 +172,9 @@ const CardProduccionFinca = ({ produccionData }: CardProduccionFincaProps) => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Producción por Finca</CardTitle>
+            <CardTitle>{t("charts.productionByFarm")}</CardTitle>
           </CardHeader>
+
           <CardContent>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -172,13 +185,30 @@ const CardProduccionFinca = ({ produccionData }: CardProduccionFincaProps) => {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="finca" />
                   <YAxis />
+
                   <Tooltip
-                    formatter={(value) => [`${value} animales`, "Cantidad"]}
+                    formatter={(value) => [
+                      `${value} ${t("animals")}`,
+                      t("quantity"),
+                    ]}
                   />
+
                   <Legend />
-                  <Bar dataKey="Vacas Ordeño" fill={PRODUCCION_COLORS.ordeño} />
-                  <Bar dataKey="Vacas Secas" fill={PRODUCCION_COLORS.secas} />
-                  <Bar dataKey="Terneros" fill={PRODUCCION_COLORS.terneros} />
+
+                  <Bar
+                    dataKey={t("categories.milkingCows")}
+                    fill={PRODUCCION_COLORS.ordeño}
+                  />
+
+                  <Bar
+                    dataKey={t("categories.dryCows")}
+                    fill={PRODUCCION_COLORS.secas}
+                  />
+
+                  <Bar
+                    dataKey={t("categories.calves")}
+                    fill={PRODUCCION_COLORS.terneros}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </div>

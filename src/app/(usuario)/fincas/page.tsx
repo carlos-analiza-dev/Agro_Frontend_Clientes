@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -14,10 +15,13 @@ import { getPropietarioId } from "@/helpers/funciones/getPropietarioId";
 import { TipoCliente } from "@/interfaces/enums/clientes.enums";
 
 export default function FincasPageGanaderos() {
+  const t = useTranslations("fincasPageGanaderos");
   const router = useRouter();
+
   const { cliente } = useAuthStore();
   const clienteId = cliente ? getPropietarioId(cliente) : null;
   const isPropietario = cliente?.rol === TipoCliente.PROPIETARIO;
+
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
@@ -25,6 +29,7 @@ export default function FincasPageGanaderos() {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
     }, 800);
+
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
@@ -58,7 +63,7 @@ export default function FincasPageGanaderos() {
       <div id="fincas-container" className="min-h-screen p-4 bg-background">
         <div id="buscador-principal" className="p-4 pb-2">
           <Buscador
-            title="Buscar finca por nombre..."
+            title={t("searchPlaceholder")}
             setSearchTerm={setSearchTerm}
             searchTerm={searchTerm}
           />
@@ -66,15 +71,15 @@ export default function FincasPageGanaderos() {
 
         <MessageError
           id="message-error-empty"
-          titulo="Sin fincas"
-          descripcion="No se encontraron fincas disponibles en este momento"
+          titulo={t("empty.title")}
+          descripcion={t("empty.description")}
           onPress={onRefresh}
         />
 
         {isPropietario && (
           <FAB
             id="fab-crear-finca"
-            titulo="Crear Finca"
+            titulo={t("createFarm")}
             onPress={() => router.push("/fincas/crear-fincas")}
           />
         )}
@@ -86,7 +91,7 @@ export default function FincasPageGanaderos() {
     <div id="fincas-container" className="min-h-screen bg-background">
       <div id="buscador-principal" className="p-4 pb-2">
         <Buscador
-          title="Buscar finca por nombre..."
+          title={t("searchPlaceholder")}
           setSearchTerm={setSearchTerm}
           searchTerm={searchTerm}
         />
@@ -97,7 +102,7 @@ export default function FincasPageGanaderos() {
         className="h-[calc(100vh-140px)] p-4 pt-0"
       >
         <h2 id="titulo-mis-fincas" className="text-xl font-bold mb-4 mt-2">
-          Mis Fincas
+          {t("myFarms")}
         </h2>
 
         {fincas.data.fincas.map((finca) => (
@@ -111,7 +116,7 @@ export default function FincasPageGanaderos() {
 
       {isPropietario && (
         <FAB
-          titulo="Crear Finca"
+          titulo={t("createFarm")}
           onPress={() => router.push("/fincas/crear-fincas")}
           id="fab-crear-finca"
         />

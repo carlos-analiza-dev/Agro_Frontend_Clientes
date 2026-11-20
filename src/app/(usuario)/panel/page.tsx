@@ -1,4 +1,5 @@
 "use client";
+
 import useGetTotalAnimales from "@/hooks/dashboard/useGetTotalAnimales";
 import useGetTotalFincas from "@/hooks/dashboard/useGetTotalFincas";
 import CardTotales from "./ui/CardTotales";
@@ -19,32 +20,51 @@ import { format } from "date-fns";
 import useGetMortalidadEspcies from "@/hooks/dashboard/produccion/useGetMortalidadEspcies";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import { Finca } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
+import { useTranslations } from "next-intl";
 
 const PanelPageGanadero = () => {
+  const t = useTranslations("dashboardGanadero");
+
   const { cliente } = useAuthStore();
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
+
   const { data: total_animales } = useGetTotalAnimales();
   const { data: total_fincas } = useGetTotalFincas();
   const { data: citas_completadas } = useGetTotalCitasCompletadas();
+
   const { data: resumen_cultivos, isLoading: isLoadingCultivos } =
     useGetResumenCultivos();
+
   const { data: cultivos_tipo, isLoading: isLoadingCultivosTipo } =
     useGetCultivosPorTipo();
+
   const { data: area_finca_cultivos, isLoading: isLoadingAreaFinca } =
     useGetAreaCultivoByFinca();
-  const [nombreSeccion, setNombreSeccion] = useState<string>("Ganadero");
+
+  const [nombreSeccion, setNombreSeccion] = useState<string>(
+    t("sections.livestock"),
+  );
+
   const [selectedMonth, setSelectedMonth] = useState<string>(
     format(new Date(), "yyyy-MM"),
   );
+
   const [selectedMonthMortalidad, setSelectedMonthMortalidad] =
     useState<string>(format(new Date(), "yyyy-MM"));
+
   const [selectedFincas, setSelectedFincas] = useState<Finca | null>(null);
+
   const [selectedFincasMortalidad, setSelectedFincasMortalidad] =
     useState<Finca | null>(null);
+
   const { data: fincas } = useFincasPropietarios(cliente?.id ?? "");
 
   const { data: descartes, isLoading: cargando_descartes } =
-    useGetDescartesEspcies({ mes: selectedMonth, fincaId: selectedFincas?.id });
+    useGetDescartesEspcies({
+      mes: selectedMonth,
+      fincaId: selectedFincas?.id,
+    });
+
   const { data: mortalidad, isLoading: cargando_mortalidad } =
     useGetMortalidadEspcies({
       mes: selectedMonthMortalidad,
@@ -58,7 +78,7 @@ const PanelPageGanadero = () => {
         className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
       >
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-          Panel de {nombreSeccion}
+          {t("title", { section: nombreSeccion })}
         </h1>
       </div>
 
@@ -67,19 +87,21 @@ const PanelPageGanadero = () => {
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
       >
         <CardTotales
-          titulo="Total de Animales Registrados"
+          titulo={t("totals.animals.title")}
           total={total_animales || 0}
-          sub_titulo="Animales en total"
+          sub_titulo={t("totals.animals.subtitle")}
         />
+
         <CardTotales
-          titulo="Total de Fincas"
+          titulo={t("totals.farms.title")}
           total={total_fincas || 0}
-          sub_titulo="Fincas en total"
+          sub_titulo={t("totals.farms.subtitle")}
         />
+
         <CardTotales
-          titulo="Total de Citas Completadas"
+          titulo={t("totals.appointments.title")}
           total={citas_completadas || 0}
-          sub_titulo="Citas en total"
+          sub_titulo={t("totals.appointments.subtitle")}
         />
       </div>
 
@@ -91,27 +113,29 @@ const PanelPageGanadero = () => {
           >
             <TabsTrigger
               id="id-tab-ganaderia"
-              onClick={() => setNombreSeccion("Ganaderia")}
+              onClick={() => setNombreSeccion(t("sections.livestock"))}
               value="ganaderia"
               className="text-sm sm:text-base"
             >
-              Ganadería
+              {t("tabs.livestock")}
             </TabsTrigger>
+
             <TabsTrigger
               id="id-tab-agricola"
-              onClick={() => setNombreSeccion("Agricultura")}
+              onClick={() => setNombreSeccion(t("sections.agriculture"))}
               value="agricola"
               className="text-sm sm:text-base"
             >
-              Agrícola
+              {t("tabs.agriculture")}
             </TabsTrigger>
+
             <TabsTrigger
               id="id-tab-produccion"
-              onClick={() => setNombreSeccion("Produccion")}
+              onClick={() => setNombreSeccion(t("sections.production"))}
               value="produccion"
               className="text-sm sm:text-base"
             >
-              Producción
+              {t("tabs.production")}
             </TabsTrigger>
           </TabsList>
 
@@ -129,6 +153,7 @@ const PanelPageGanadero = () => {
                 moneda={moneda}
               />
             </div>
+
             <div
               id="id-cultivos-detalle"
               className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-2 md:mt-5"
@@ -139,6 +164,7 @@ const PanelPageGanadero = () => {
                   isLoading={isLoadingCultivosTipo}
                 />
               </div>
+
               <div id="id-area-cultivos-finca">
                 <AreaCultivoByFinca
                   data={area_finca_cultivos}
@@ -165,6 +191,7 @@ const PanelPageGanadero = () => {
                   showFincaFilter={true}
                 />
               </div>
+
               <div id="id-mortalidad">
                 <DescartesMortalidadDashboard
                   descartes_mortalidad={mortalidad}

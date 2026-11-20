@@ -1,5 +1,8 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import React from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   porcentajeNacidos: number;
@@ -12,28 +15,36 @@ const CardTasaReproduccion = ({
   totalNacidos,
   totalOrigen,
 }: Props) => {
+  const t = useTranslations("cardTasaReproduccion");
+
   return (
     <Card className="bg-blue-50 border-blue-200">
       <CardHeader>
-        <CardTitle className="text-blue-800">Tasa de Reproducción</CardTitle>
+        <CardTitle className="text-blue-800">{t("title")}</CardTitle>
       </CardHeader>
+
       <CardContent>
         <div className="flex items-center justify-between">
           <div>
             <div className="text-3xl font-bold text-blue-600">
               {porcentajeNacidos.toFixed(1)}%
             </div>
+
             <p className="text-sm text-blue-600">
-              {totalNacidos} de {totalOrigen} animales son nacidos en la finca
+              {t("bornDescription", {
+                born: totalNacidos,
+                total: totalOrigen,
+              })}
             </p>
           </div>
+
           <div className="text-right">
             <div className="text-lg font-semibold text-blue-800">
-              Autosuficiencia
+              {t("selfSufficiency")}
             </div>
+
             <p className="text-sm text-blue-600">
-              {porcentajeNacidos >= 50 ? "Alta" : "Baja"} capacidad de
-              reproducción
+              {t(porcentajeNacidos >= 50 ? "highCapacity" : "lowCapacity")}
             </p>
           </div>
         </div>

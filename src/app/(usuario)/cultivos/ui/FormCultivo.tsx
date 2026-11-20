@@ -1,5 +1,8 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
 import { useQueryClient } from "@tanstack/react-query";
@@ -43,13 +46,9 @@ interface Props {
 const formatearFecha = (fecha: string | Date | undefined): string => {
   if (!fecha) return new Date().toISOString().split("T")[0];
 
-  if (typeof fecha === "string") {
-    return fecha.split("T")[0];
-  }
+  if (typeof fecha === "string") return fecha.split("T")[0];
 
-  if (fecha instanceof Date) {
-    return fecha.toISOString().split("T")[0];
-  }
+  if (fecha instanceof Date) return fecha.toISOString().split("T")[0];
 
   return new Date().toISOString().split("T")[0];
 };
@@ -71,12 +70,26 @@ const calcularFechaCosecha = (
 };
 
 const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
+  const t = useTranslations("formCultivo");
+
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [fechaCosechaSugerida, setFechaCosechaSugerida] = useState<string>("");
   const [showEconomics, setShowEconomics] = useState(false);
+
   const queryClient = useQueryClient();
   const isEditing = !!cultivo;
+
+  // Traduce la etiqueta visible sin modificar el valor enviado al backend.
+  const traducirOpcion = (
+    grupo: string,
+    key: string,
+    value: string,
+  ): string => {
+    const translationKey = `options.${grupo}.${key}`;
+
+    return t.has(translationKey) ? t(translationKey) : value;
+  };
 
   const {
     register,
@@ -115,6 +128,7 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
   const fechaSiembraSeleccionada = watch("fecha_siembra");
   const fincaIdSeleccionada = watch("fincaId");
   const fincaSeleccionada = fincas?.find((f) => f.id === fincaIdSeleccionada);
+
   const costo_semilla = watch("costo_semilla") || 0;
   const costo_fertilizantes = watch("costo_fertilizantes") || 0;
   const costo_mano_obra = watch("costo_mano_obra") || 0;
@@ -124,7 +138,9 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
   useEffect(() => {
     const costosTotales =
       costo_semilla + costo_fertilizantes + costo_mano_obra + otros_costos;
+
     const ganancia = ingreso_estimado - costosTotales;
+
     if (ganancia !== watch("ganancia_estimada")) {
       setValue("ganancia_estimada", ganancia > 0 ? ganancia : 0);
     }
@@ -149,6 +165,7 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
         setFechaCosechaSugerida(fechaCosecha);
 
         const currentFechaCosecha = watch("fecha_cosecha_estimada");
+
         if (!currentFechaCosecha || (!isEditing && !cultivo)) {
           setValue("fecha_cosecha_estimada", fechaCosecha);
         }
@@ -233,8 +250,10 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
         fincaId: "",
         isActive: true,
       });
+
       setShowEconomics(false);
     }
+
     setIsLoading(false);
   }, [cultivo, setValue, reset]);
 
@@ -254,10 +273,10 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
 
       if (isEditing && cultivo) {
         await editarCultivo(cultivo.id, dataToSend);
-        toast.success("Cultivo actualizado correctamente");
+        toast.success(t("messages.updateSuccess"));
       } else {
         await ingresarCultivo(dataToSend);
-        toast.success("Cultivo registrado correctamente");
+        toast.success(t("messages.createSuccess"));
       }
 
       reset();
@@ -270,15 +289,17 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
     } catch (error) {
       if (isAxiosError(error)) {
         const messages = error.response?.data?.message;
-        const errorMessage = Array.isArray(messages)
+
+        const apiErrorMessage = Array.isArray(messages)
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al registrar el cultivo";
-        setErrorMessage(errorMessage);
-        toast.error(errorMessage);
+            : t("messages.submitError");
+
+        setErrorMessage(apiErrorMessage);
+        toast.error(apiErrorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("messages.unexpectedError"));
       }
     }
   };
@@ -286,16 +307,13 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600" />
       </div>
     );
   }
 
   const tiposCultivoOptions = Object.entries(TipoCultivoEnum).map(
-    ([key, value]) => ({
-      key,
-      value,
-    }),
+    ([key, value]) => ({ key, value }),
   );
 
   const tipoSueloOptions = Object.entries(TipoSuelo).map(([key, value]) => ({
@@ -304,17 +322,11 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
   }));
 
   const metodoSiembraOptions = Object.entries(MetodoSiembra).map(
-    ([key, value]) => ({
-      key,
-      value,
-    }),
+    ([key, value]) => ({ key, value }),
   );
 
   const sistemaRiegoOptions = Object.entries(TipoSistemaRiego).map(
-    ([key, value]) => ({
-      key,
-      value,
-    }),
+    ([key, value]) => ({ key, value }),
   );
 
   return (
@@ -323,7 +335,11 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
         <Alert variant="destructive" className="mb-4">
           <AlertCircleIcon className="h-4 w-4" />
           <AlertTitle>
-            Error al {isEditing ? "actualizar" : "registrar"} el Cultivo
+            {t("error.title", {
+              action: isEditing
+                ? t("error.actions.update")
+                : t("error.actions.create"),
+            })}
           </AlertTitle>
           <AlertDescription className="whitespace-pre-line">
             {errorMessage}
@@ -335,12 +351,15 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
         <Alert className="bg-green-50 border-green-200 dark:bg-green-950">
           <Sprout className="h-4 w-4 text-green-600" />
           <AlertTitle className="text-green-800 dark:text-green-300">
-            Información del ciclo
+            {t("cycle.title")}
           </AlertTitle>
           <AlertDescription className="text-green-700 dark:text-green-300 text-sm">
             <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-              💡 Según el ciclo de {tipoCultivoSeleccionado}, la cosecha
-              estimada sería el {formatDate(fechaCosechaSugerida)}
+              💡{" "}
+              {t("cycle.suggestion", {
+                crop: tipoCultivoSeleccionado,
+                date: formatDate(fechaCosechaSugerida),
+              })}
             </p>
           </AlertDescription>
         </Alert>
@@ -348,23 +367,24 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
 
       <div className="space-y-4">
         <h3 className="text-lg font-semibold border-b pb-2">
-          Información Básica
+          {t("sections.basic")}
         </h3>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
             <Label htmlFor="nombre_cultivo">
-              Nombre del Cultivo <span className="text-red-500">*</span>
+              {t("fields.cropName")} <span className="text-red-500">*</span>
             </Label>
             <Input
               id="nombre_cultivo"
               {...register("nombre_cultivo", {
-                required: "El nombre del cultivo es requerido",
+                required: t("validation.cropNameRequired"),
                 maxLength: {
                   value: 150,
-                  message: "El nombre no puede exceder los 150 caracteres",
+                  message: t("validation.cropNameMaxLength"),
                 },
               })}
-              placeholder="Ej: Maíz Híbrido Blanco"
+              placeholder={t("placeholders.cropName")}
               className={errors.nombre_cultivo ? "border-red-500" : ""}
               disabled={isSubmitting}
             />
@@ -377,7 +397,7 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
 
           <div>
             <Label htmlFor="tipo_cultivo">
-              Tipo de Cultivo <span className="text-red-500">*</span>
+              {t("fields.cropType")} <span className="text-red-500">*</span>
             </Label>
             <Select
               value={watch("tipo_cultivo")}
@@ -389,14 +409,14 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
               <SelectTrigger
                 className={errors.tipo_cultivo ? "border-red-500" : ""}
               >
-                <SelectValue placeholder="Seleccionar tipo de cultivo" />
+                <SelectValue placeholder={t("placeholders.cropType")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Tipos de Cultivo</SelectLabel>
+                  <SelectLabel>{t("groups.cropTypes")}</SelectLabel>
                   {tiposCultivoOptions.map((tipo) => (
                     <SelectItem key={tipo.key} value={tipo.value}>
-                      {tipo.value}
+                      {traducirOpcion("cropTypes", tipo.key, tipo.value)}
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -411,7 +431,7 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
 
           <div>
             <Label htmlFor="fincaId">
-              Finca <span className="text-red-500">*</span>
+              {t("fields.farm")} <span className="text-red-500">*</span>
             </Label>
             <Select
               value={watch("fincaId")}
@@ -419,11 +439,11 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
               disabled={isSubmitting}
             >
               <SelectTrigger className={errors.fincaId ? "border-red-500" : ""}>
-                <SelectValue placeholder="Seleccionar finca" />
+                <SelectValue placeholder={t("placeholders.farm")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Fincas</SelectLabel>
+                  <SelectLabel>{t("groups.farms")}</SelectLabel>
                   {fincas?.map((finca) => (
                     <SelectItem key={finca.id} value={finca.id}>
                       {finca.nombre_finca}
@@ -440,16 +460,16 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
           </div>
 
           <div>
-            <Label htmlFor="variedad">Variedad</Label>
+            <Label htmlFor="variedad">{t("fields.variety")}</Label>
             <Input
               id="variedad"
               {...register("variedad", {
                 maxLength: {
                   value: 100,
-                  message: "La variedad no puede exceder los 100 caracteres",
+                  message: t("validation.varietyMaxLength"),
                 },
               })}
-              placeholder="Ej: NB-6, Híbrido blanco"
+              placeholder={t("placeholders.variety")}
               className={errors.variedad ? "border-red-500" : ""}
               disabled={isSubmitting}
             />
@@ -462,7 +482,7 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
 
           <div>
             <Label htmlFor="area_sembrada">
-              Área Sembrada{" "}
+              {t("fields.plantedArea")}{" "}
               {fincaIdSeleccionada && `- ${fincaSeleccionada?.medida_finca}`}{" "}
               <span className="text-red-500">*</span>
             </Label>
@@ -472,14 +492,14 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
               step="0.01"
               min="0.01"
               {...register("area_sembrada", {
-                required: "El área sembrada es requerida",
+                required: t("validation.plantedAreaRequired"),
                 min: {
                   value: 0.01,
-                  message: "El área debe ser mayor a 0",
+                  message: t("validation.plantedAreaMin"),
                 },
                 valueAsNumber: true,
               })}
-              placeholder="Ej: 5.5"
+              placeholder={t("placeholders.plantedArea")}
               className={errors.area_sembrada ? "border-red-500" : ""}
               disabled={isSubmitting}
             />
@@ -491,16 +511,16 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
           </div>
 
           <div>
-            <Label htmlFor="temporada">Temporada</Label>
+            <Label htmlFor="temporada">{t("fields.season")}</Label>
             <Input
               id="temporada"
               {...register("temporada", {
                 maxLength: {
                   value: 50,
-                  message: "La temporada no puede exceder los 50 caracteres",
+                  message: t("validation.seasonMaxLength"),
                 },
               })}
-              placeholder="Ej: Primera, Segunda, Postrera"
+              placeholder={t("placeholders.season")}
               className={errors.temporada ? "border-red-500" : ""}
               disabled={isSubmitting}
             />
@@ -513,13 +533,13 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
 
           <div>
             <Label htmlFor="fecha_siembra">
-              Fecha de Siembra <span className="text-red-500">*</span>
+              {t("fields.plantingDate")} <span className="text-red-500">*</span>
             </Label>
             <Input
               id="fecha_siembra"
               type="date"
               {...register("fecha_siembra", {
-                required: "La fecha de siembra es requerida",
+                required: t("validation.plantingDateRequired"),
               })}
               className={errors.fecha_siembra ? "border-red-500" : ""}
               disabled={isSubmitting}
@@ -533,10 +553,14 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
 
           <div>
             <Label htmlFor="fecha_cosecha_estimada">
-              Fecha Estimada de Cosecha
+              {t("fields.estimatedHarvest")}
               {fechaCosechaSugerida && (
-                <span className="text-xs text-red-400 text-muted-foreground ml-2">
-                  (Sugerida: {formatDate(fechaCosechaSugerida)})
+                <span className="text-xs text-muted-foreground ml-2">
+                  (
+                  {t("cycle.suggestedDate", {
+                    date: formatDate(fechaCosechaSugerida),
+                  })}
+                  )
                 </span>
               )}
             </Label>
@@ -561,12 +585,13 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
 
       <div className="space-y-4">
         <h3 className="text-lg font-semibold border-b pb-2">
-          Información de Suelo y Siembra
+          {t("sections.soilAndPlanting")}
         </h3>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="tipo_suelo">
-              Tipo de Suelo <span className="text-red-500">*</span>
+              {t("fields.soilType")} <span className="text-red-500">*</span>
             </Label>
             <Select
               value={watch("tipo_suelo")}
@@ -578,14 +603,14 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
               <SelectTrigger
                 className={errors.tipo_suelo ? "border-red-500" : ""}
               >
-                <SelectValue placeholder="Seleccionar tipo de suelo" />
+                <SelectValue placeholder={t("placeholders.soilType")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Tipos de Suelo</SelectLabel>
+                  <SelectLabel>{t("groups.soilTypes")}</SelectLabel>
                   {tipoSueloOptions.map((suelo) => (
                     <SelectItem key={suelo.key} value={suelo.value}>
-                      {suelo.value}
+                      {traducirOpcion("soilTypes", suelo.key, suelo.value)}
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -599,7 +624,7 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
           </div>
 
           <div>
-            <Label htmlFor="ph_suelo">pH del Suelo</Label>
+            <Label htmlFor="ph_suelo">{t("fields.soilPh")}</Label>
             <Input
               id="ph_suelo"
               type="number"
@@ -607,14 +632,15 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
               min="0"
               max="14"
               {...register("ph_suelo")}
-              placeholder="Ej: 6.5"
+              placeholder={t("placeholders.soilPh")}
               disabled={isSubmitting}
             />
           </div>
 
           <div>
             <Label htmlFor="metodo_siembra">
-              Método de Siembra <span className="text-red-500">*</span>
+              {t("fields.plantingMethod")}{" "}
+              <span className="text-red-500">*</span>
             </Label>
             <Select
               value={watch("metodo_siembra")}
@@ -626,14 +652,18 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
               <SelectTrigger
                 className={errors.metodo_siembra ? "border-red-500" : ""}
               >
-                <SelectValue placeholder="Seleccionar método de siembra" />
+                <SelectValue placeholder={t("placeholders.plantingMethod")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Métodos de Siembra</SelectLabel>
+                  <SelectLabel>{t("groups.plantingMethods")}</SelectLabel>
                   {metodoSiembraOptions.map((metodo) => (
                     <SelectItem key={metodo.key} value={metodo.value}>
-                      {metodo.value}
+                      {traducirOpcion(
+                        "plantingMethods",
+                        metodo.key,
+                        metodo.value,
+                      )}
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -648,7 +678,8 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
 
           <div>
             <Label htmlFor="sistema_riego">
-              Sistema de Riego <span className="text-red-500">*</span>
+              {t("fields.irrigationSystem")}{" "}
+              <span className="text-red-500">*</span>
             </Label>
             <Select
               value={watch("sistema_riego")}
@@ -660,14 +691,18 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
               <SelectTrigger
                 className={errors.sistema_riego ? "border-red-500" : ""}
               >
-                <SelectValue placeholder="Seleccionar sistema de riego" />
+                <SelectValue placeholder={t("placeholders.irrigationSystem")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Sistemas de Riego</SelectLabel>
+                  <SelectLabel>{t("groups.irrigationSystems")}</SelectLabel>
                   {sistemaRiegoOptions.map((riego) => (
                     <SelectItem key={riego.key} value={riego.value}>
-                      {riego.value}
+                      {traducirOpcion(
+                        "irrigationSystems",
+                        riego.key,
+                        riego.value,
+                      )}
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -684,11 +719,14 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
 
       <div className="space-y-4">
         <h3 className="text-lg font-semibold border-b pb-2">
-          Información de Producción
+          {t("sections.production")}
         </h3>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="produccion_estimada">Producción Estimada</Label>
+            <Label htmlFor="produccion_estimada">
+              {t("fields.estimatedProduction")}
+            </Label>
             <div className="flex gap-2">
               <Input
                 id="produccion_estimada"
@@ -698,14 +736,17 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
                 {...register("produccion_estimada", {
                   valueAsNumber: true,
                 })}
-                placeholder="Ej: 5000"
+                placeholder={t("placeholders.estimatedProduction")}
                 className="flex-1"
                 disabled={isSubmitting}
               />
             </div>
           </div>
+
           <div>
-            <Label htmlFor="produccion_estimada">Unidad de Medida</Label>
+            <Label htmlFor="unidad_produccion">
+              {t("fields.measurementUnit")}
+            </Label>
             <Select
               value={watch("unidad_produccion")}
               onValueChange={(value) =>
@@ -716,11 +757,11 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
               <SelectTrigger
                 className={errors.unidad_produccion ? "border-red-500" : ""}
               >
-                <SelectValue placeholder="Seleccionar unidad" />
+                <SelectValue placeholder={t("placeholders.measurementUnit")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Unidad</SelectLabel>
+                  <SelectLabel>{t("groups.units")}</SelectLabel>
                   {unidades_productos.map((unidad) => (
                     <SelectItem key={unidad.id} value={unidad.value}>
                       {unidad.value}
@@ -739,18 +780,20 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
           onClick={() => setShowEconomics(!showEconomics)}
           className="text-sm font-semibold text-green-600 hover:text-green-700 flex items-center gap-2"
         >
-          {showEconomics ? "▼" : "▶"} {showEconomics ? "Ocultar" : "Mostrar"}{" "}
-          Información Económica
+          {showEconomics ? "▼" : "▶"}{" "}
+          {showEconomics ? t("economics.hide") : t("economics.show")}{" "}
+          {t("sections.economic")}
         </button>
 
         {showEconomics && (
           <div className="space-y-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
             <h3 className="text-md font-semibold">
-              Costos e Ingresos Estimados
+              {t("economics.costsAndIncome")}
             </h3>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="costo_semilla">Costo de Semilla</Label>
+                <Label htmlFor="costo_semilla">{t("fields.seedCost")}</Label>
                 <div className="relative">
                   <span className="absolute left-3 top-3 text-muted-foreground">
                     {moneda}
@@ -772,7 +815,7 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
 
               <div>
                 <Label htmlFor="costo_fertilizantes">
-                  Costo de Fertilizantes
+                  {t("fields.fertilizerCost")}
                 </Label>
                 <div className="relative">
                   <span className="absolute left-3 top-3 text-muted-foreground">
@@ -794,7 +837,7 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
               </div>
 
               <div>
-                <Label htmlFor="costo_mano_obra">Costo de Mano de Obra</Label>
+                <Label htmlFor="costo_mano_obra">{t("fields.laborCost")}</Label>
                 <div className="relative">
                   <span className="absolute left-3 top-3 text-muted-foreground">
                     {moneda}
@@ -815,7 +858,7 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
               </div>
 
               <div>
-                <Label htmlFor="otros_costos">Otros Costos</Label>
+                <Label htmlFor="otros_costos">{t("fields.otherCosts")}</Label>
                 <div className="relative">
                   <span className="absolute left-3 top-3 text-muted-foreground">
                     {moneda}
@@ -838,7 +881,9 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
               <div className="border-t pt-4 mt-2 md:col-span-2">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <Label htmlFor="ingreso_estimado">Ingreso Estimado</Label>
+                    <Label htmlFor="ingreso_estimado">
+                      {t("fields.estimatedIncome")}
+                    </Label>
                     <div className="relative">
                       <span className="absolute left-3 top-3 text-muted-foreground">
                         {moneda}
@@ -859,7 +904,9 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
                   </div>
 
                   <div>
-                    <Label htmlFor="ganancia_estimada">Ganancia Estimada</Label>
+                    <Label htmlFor="ganancia_estimada">
+                      {t("fields.estimatedProfit")}
+                    </Label>
                     <div className="relative">
                       <span className="absolute left-3 top-3 text-muted-foreground">
                         {moneda}
@@ -875,14 +922,14 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
                       />
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
-                      *Calculado automáticamente (Ingresos - Costos totales)
+                      *{t("economics.automaticCalculation")}
                     </p>
                   </div>
 
                   <div className="flex items-end">
                     <div className="text-sm text-muted-foreground">
                       <p>
-                        Costos Totales: $
+                        {t("economics.totalCosts")}: {moneda}
                         {(
                           costo_semilla +
                           costo_fertilizantes +
@@ -906,18 +953,19 @@ const FormCultivo = ({ fincas, cultivo, onSuccess, moneda }: Props) => {
           onClick={() => onSuccess()}
           disabled={isSubmitting}
         >
-          Cancelar
+          {t("buttons.cancel")}
         </Button>
+
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? (
             <span className="flex items-center gap-2">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              {isEditing ? "Actualizando..." : "Guardando..."}
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+              {isEditing ? t("buttons.updating") : t("buttons.saving")}
             </span>
           ) : isEditing ? (
-            "Actualizar Cultivo"
+            t("buttons.updateCrop")
           ) : (
-            "Registrar Cultivo"
+            t("buttons.createCrop")
           )}
         </Button>
       </div>

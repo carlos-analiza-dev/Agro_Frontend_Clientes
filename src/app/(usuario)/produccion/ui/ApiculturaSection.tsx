@@ -2,6 +2,7 @@
 
 import { calidadesMiel } from "@/helpers/data/dataProduccionFinca";
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Control, Controller } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -30,6 +31,8 @@ interface ApiculturaSectionProps {
 }
 
 const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
+  const t = useTranslations("apiculturaSection");
+
   return (
     <Card className="w-full border-0 md:border shadow-sm overflow-hidden">
       <CardHeader className="bg-gradient-to-r from-amber-50 to-yellow-50 border-b px-4 py-4 md:px-6 md:py-6">
@@ -38,14 +41,15 @@ const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
             <div className="p-1.5 md:p-2 bg-amber-100 rounded-lg">
               <Flower2 className="h-5 w-5 md:h-6 md:w-6 text-amber-600" />
             </div>
-            <span>Producción Apícola</span>
+            <span>{t("title")}</span>
           </div>
+
           <Badge
             variant="secondary"
             className="w-fit sm:ml-2 bg-amber-100 text-amber-800 text-xs md:text-sm"
           >
             <FlaskConical className="h-3 w-3 mr-1" />
-            Gestión de colmenas y miel
+            {t("subtitle")}
           </Badge>
         </CardTitle>
       </CardHeader>
@@ -61,8 +65,9 @@ const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
                 <div className="p-1 md:p-1.5 bg-blue-100 rounded-md">
                   <Calculator className="h-3.5 w-3.5 md:h-4 md:w-4 text-blue-600" />
                 </div>
-                Número de colmenas
+                {t("fields.hives")}
               </Label>
+
               <Controller
                 control={control}
                 name="apicultura.numero_colmenas"
@@ -70,7 +75,7 @@ const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
                   <Input
                     id="numero-colmenas"
                     type="number"
-                    placeholder="Ej: 25"
+                    placeholder={t("placeholders.hives")}
                     value={field.value?.toString() || ""}
                     onChange={(e) =>
                       field.onChange(
@@ -81,8 +86,9 @@ const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
                   />
                 )}
               />
+
               <p className="text-xs md:text-sm text-muted-foreground">
-                Total de colmenas activas en producción
+                {t("descriptions.hives")}
               </p>
             </div>
 
@@ -94,23 +100,25 @@ const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
                 <div className="p-1 md:p-1.5 bg-green-100 rounded-md">
                   <Calendar className="h-3.5 w-3.5 md:h-4 md:w-4 text-green-600" />
                 </div>
-                Frecuencia de cosecha
+                {t("fields.harvestFrequency")}
               </Label>
+
               <Controller
                 control={control}
                 name="apicultura.frecuencia_cosecha"
                 render={({ field }) => (
                   <Input
                     id="frecuencia-cosecha"
-                    placeholder="Ej: Cada 2 meses, Trimestral..."
+                    placeholder={t("placeholders.harvestFrequency")}
                     value={field.value || ""}
                     onChange={field.onChange}
                     className="h-10 md:h-12 text-sm md:text-base"
                   />
                 )}
               />
+
               <p className="text-xs md:text-sm text-muted-foreground">
-                Periodicidad con la que realiza la cosecha de miel
+                {t("descriptions.harvestFrequency")}
               </p>
             </div>
           </div>
@@ -124,8 +132,9 @@ const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
                 <div className="p-1 md:p-1.5 bg-orange-100 rounded-md">
                   <Scale className="h-3.5 w-3.5 md:h-4 md:w-4 text-orange-600" />
                 </div>
-                Cantidad por cosecha (kg)
+                {t("fields.quantityPerHarvest")}
               </Label>
+
               <Controller
                 control={control}
                 name="apicultura.cantidad_por_cosecha"
@@ -134,7 +143,7 @@ const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
                     id="cantidad-cosecha"
                     type="number"
                     step="0.01"
-                    placeholder="Ej: 150.75"
+                    placeholder={t("placeholders.quantityPerHarvest")}
                     value={field.value?.toString() || ""}
                     onChange={(e) =>
                       field.onChange(
@@ -145,8 +154,9 @@ const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
                   />
                 )}
               />
+
               <p className="text-xs md:text-sm text-muted-foreground">
-                Peso promedio obtenido por cada cosecha
+                {t("descriptions.quantityPerHarvest")}
               </p>
             </div>
 
@@ -158,8 +168,9 @@ const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
                 <div className="p-1 md:p-1.5 bg-purple-100 rounded-md">
                   <Flower className="h-3.5 w-3.5 md:h-4 md:w-4 text-purple-600" />
                 </div>
-                Calidad de la miel
+                {t("fields.honeyQuality")}
               </Label>
+
               <Controller
                 control={control}
                 name="apicultura.calidad_miel"
@@ -172,8 +183,11 @@ const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
                       id="calidad-miel"
                       className="h-10 md:h-12 text-sm md:text-base"
                     >
-                      <SelectValue placeholder="Seleccione la calidad" />
+                      <SelectValue
+                        placeholder={t("placeholders.honeyQuality")}
+                      />
                     </SelectTrigger>
+
                     <SelectContent>
                       {calidadesMiel.map((calidad) => (
                         <SelectItem
@@ -193,8 +207,9 @@ const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
                   </Select>
                 )}
               />
+
               <p className="text-xs md:text-sm text-muted-foreground">
-                Clasificación según estándares de calidad
+                {t("descriptions.honeyQuality")}
               </p>
             </div>
           </div>
@@ -205,14 +220,14 @@ const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
             <div className="flex-shrink-0">
               <Droplets className="h-5 w-5 md:h-6 md:w-6 text-amber-600" />
             </div>
+
             <div>
               <h4 className="font-semibold text-amber-800 text-sm md:text-base">
-                Información sobre producción apícola
+                {t("information.title")}
               </h4>
+
               <p className="text-xs md:text-sm text-amber-700 mt-1 leading-relaxed">
-                La producción apícola incluye el manejo de colmenas, cosecha de
-                miel y otros productos derivados como polen, propóleos y cera de
-                abejas.
+                {t("information.description")}
               </p>
             </div>
           </div>

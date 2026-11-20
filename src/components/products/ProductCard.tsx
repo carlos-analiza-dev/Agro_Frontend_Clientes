@@ -15,6 +15,7 @@ import { Cliente } from "@/interfaces/auth/cliente";
 import { useFavoritos } from "@/hooks/favoritos/useFavoritos";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   producto: Producto;
@@ -31,36 +32,39 @@ const FavoriteButton = ({
   isFavorite: boolean;
   onClick: (e: React.MouseEvent) => void;
   id?: string;
-}) => (
-  <Button
-    id={id}
-    variant="ghost"
-    size="icon"
-    onClick={onClick}
-    className={cn(
-      "relative h-9 w-9 rounded-full transition-all duration-300 backdrop-blur-sm",
-      "hover:scale-110 active:scale-95",
-      isFavorite
-        ? "bg-red-50/80 border border-red-200/50 text-red-500 shadow-[0_2px_12px_rgba(239,68,68,0.15)]"
-        : "bg-white/80 border border-gray-200/50 text-gray-400 hover:bg-red-50/50 hover:text-red-500 hover:border-red-200/50",
-    )}
-    title={isFavorite ? "Remover de favoritos" : "Agregar a favoritos"}
-  >
-    <Heart
-      className={cn(
-        "h-4 w-4 transition-all duration-300",
-        isFavorite && "fill-current",
-      )}
-    />
-    {isFavorite && (
-      <span className="absolute -top-1 -right-1 flex h-2 w-2">
-        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-        <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
-      </span>
-    )}
-  </Button>
-);
+}) => {
+  const t = useTranslations("productCard");
 
+  return (
+    <Button
+      id={id}
+      variant="ghost"
+      size="icon"
+      onClick={onClick}
+      className={cn(
+        "relative h-9 w-9 rounded-full transition-all duration-300 backdrop-blur-sm",
+        "hover:scale-110 active:scale-95",
+        isFavorite
+          ? "bg-red-50/80 border border-red-200/50 text-red-500 shadow-[0_2px_12px_rgba(239,68,68,0.15)]"
+          : "bg-white/80 border border-gray-200/50 text-gray-400 hover:bg-red-50/50 hover:text-red-500 hover:border-red-200/50",
+      )}
+      title={isFavorite ? t("favorite.remove") : t("favorite.add")}
+    >
+      <Heart
+        className={cn(
+          "h-4 w-4 transition-all duration-300",
+          isFavorite && "fill-current",
+        )}
+      />
+      {isFavorite && (
+        <span className="absolute -top-1 -right-1 flex h-2 w-2">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+        </span>
+      )}
+    </Button>
+  );
+};
 const ActionButton = ({
   children,
   onClick,
@@ -100,6 +104,7 @@ const ActionButton = ({
 
 const ProductCard = ({ producto, user, onPress, className = "" }: Props) => {
   const { esFavorito, toggleFavorito } = useFavoritos();
+  const t = useTranslations("productCard");
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const paisStorage = localStorage.getItem("selectedCountry");
@@ -165,12 +170,12 @@ const ProductCard = ({ producto, user, onPress, className = "" }: Props) => {
 
           <div className="absolute top-3 left-3 right-3 flex flex-wrap gap-1.5">
             <Badge variant="default" className="text-xs bg-green-700">
-              {producto.categoria?.nombre || "General"}
+              {producto.categoria?.nombre || t("category")}
             </Badge>
 
             {!producto.disponible && (
               <Badge variant="destructive" className="text-xs">
-                Agotado
+                {t("outOfStock")}
               </Badge>
             )}
           </div>
@@ -222,11 +227,11 @@ const ProductCard = ({ producto, user, onPress, className = "" }: Props) => {
             {producto.disponible ? (
               <>
                 <Eye className="h-4 w-4" />
-                <span className="hidden sm:inline">Ver Detalles</span>
+                <span className="hidden sm:inline">{t("viewDetails")}</span>
                 <Plus className="h-4 w-4 sm:hidden" />
               </>
             ) : (
-              "No Disponible"
+              t("unavailable")
             )}
           </ActionButton>
         </div>

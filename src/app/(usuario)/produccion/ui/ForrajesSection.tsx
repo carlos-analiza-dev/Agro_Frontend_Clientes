@@ -1,4 +1,6 @@
 "use client";
+
+import { useTranslations } from "next-intl";
 import {
   meses,
   tiposHeno,
@@ -53,6 +55,8 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
   watch,
   fincaSeleccionada,
 }) => {
+  const t = useTranslations("forrajesSection");
+
   const addNewInsumo = () => {
     append({
       tipo: "Heno" as InsumoTipo,
@@ -64,18 +68,20 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
       <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 py-3 md:px-6 md:py-4">
         <CardTitle className="flex items-center gap-2 text-base md:text-lg">
           <BarrelIcon className="h-4 w-4 md:h-5 md:w-5" />
-          Forrajes e Insumos
+          {t("title")}
           <Badge variant="secondary" className="ml-2 text-xs">
-            {fields.length} insumo{fields.length !== 1 ? "s" : ""}
+            {t("insumoCount", { count: fields.length })}
           </Badge>
         </CardTitle>
+
         <Button
           onClick={addNewInsumo}
           size="sm"
           className="w-full sm:w-auto h-9 text-sm"
+          type="button"
         >
           <Plus className="h-4 w-4 mr-1" />
-          Agregar Insumo
+          {t("buttons.add")}
         </Button>
       </CardHeader>
 
@@ -93,8 +99,9 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
                   <div className="flex items-center gap-2 w-full sm:w-auto">
                     <h4 className="font-semibold text-sm md:text-base">
-                      Insumo {index + 1}
+                      {t("insumoNumber", { number: index + 1 })}
                     </h4>
+
                     <Badge variant="outline" className="text-xs">
                       {currentTipo}
                     </Badge>
@@ -106,6 +113,8 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
                       size="sm"
                       onClick={() => remove(index)}
                       className="h-8 w-8 p-0 text-destructive self-end sm:self-auto"
+                      type="button"
+                      aria-label={t("buttons.remove")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -115,8 +124,9 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
                 <div className="space-y-3 md:space-y-4">
                   <div className="space-y-1.5">
                     <Label className="text-xs md:text-sm font-medium">
-                      Tipo de insumo
+                      {t("fields.supplyType")}
                     </Label>
+
                     <Controller
                       control={control}
                       name={`forrajesInsumo.insumos.${index}.tipo`}
@@ -126,8 +136,11 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
                           onValueChange={field.onChange}
                         >
                           <SelectTrigger className="h-9 md:h-10 text-sm">
-                            <SelectValue placeholder="Seleccione tipo" />
+                            <SelectValue
+                              placeholder={t("placeholders.supplyType")}
+                            />
                           </SelectTrigger>
+
                           <SelectContent>
                             {tiposInsumo.map((tipo) => (
                               <SelectItem
@@ -148,8 +161,9 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
                     <>
                       <div className="space-y-1.5">
                         <Label className="text-xs md:text-sm">
-                          Tipo de heno
+                          {t("fields.hayType")}
                         </Label>
+
                         <Controller
                           control={control}
                           name={`forrajesInsumo.insumos.${index}.tipo_heno`}
@@ -159,8 +173,11 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
                               onValueChange={field.onChange}
                             >
                               <SelectTrigger className="h-9 md:h-10 text-sm">
-                                <SelectValue placeholder="Seleccione tipo de heno" />
+                                <SelectValue
+                                  placeholder={t("placeholders.hayType")}
+                                />
                               </SelectTrigger>
+
                               <SelectContent>
                                 {tiposHeno.map((tipo) => (
                                   <SelectItem
@@ -179,14 +196,15 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
 
                       <div className="space-y-1.5">
                         <Label className="text-xs md:text-sm">
-                          Estacionalidad
+                          {t("fields.seasonality")}
                         </Label>
+
                         <Controller
                           control={control}
                           name={`forrajesInsumo.insumos.${index}.estacionalidad_heno`}
                           render={({ field }) => (
                             <Input
-                              placeholder="Ej: Primavera/Verano"
+                              placeholder={t("placeholders.seasonality")}
                               className="h-9 md:h-10 text-sm"
                               value={field.value || ""}
                               onChange={field.onChange}
@@ -197,8 +215,9 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
 
                       <div className="space-y-2">
                         <Label className="text-xs md:text-sm">
-                          Meses de producción
+                          {t("fields.productionMonths")}
                         </Label>
+
                         <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
                           {meses.map((mes) => (
                             <Controller
@@ -214,10 +233,12 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
                                       const newValue = checked
                                         ? [...value, mes]
                                         : value.filter((item) => item !== mes);
+
                                       onChange(newValue);
                                     }}
                                     className="h-4 w-4"
                                   />
+
                                   <Label
                                     htmlFor={`mes-${index}-${mes}`}
                                     className="text-xs sm:text-sm cursor-pointer"
@@ -235,16 +256,20 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
                     <>
                       <div className="space-y-1.5">
                         <Label className="text-xs md:text-sm">
-                          Producción por{" "}
-                          {fincaSeleccionada?.medida_finca || "hectárea"}
+                          {t("fields.productionPerUnit", {
+                            unit:
+                              fincaSeleccionada?.medida_finca ||
+                              t("units.hectare"),
+                          })}
                         </Label>
+
                         <Controller
                           control={control}
                           name={`forrajesInsumo.insumos.${index}.produccion_manzana`}
                           render={({ field }) => (
                             <Input
                               type="number"
-                              placeholder="Ej: 15 toneladas"
+                              placeholder={t("placeholders.production")}
                               className="h-9 md:h-10 text-sm"
                               value={field.value || ""}
                               onChange={field.onChange}
@@ -255,14 +280,15 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
 
                       <div className="space-y-1.5">
                         <Label className="text-xs md:text-sm">
-                          Tiempo estimado de cultivo
+                          {t("fields.estimatedGrowingTime")}
                         </Label>
+
                         <Controller
                           control={control}
                           name={`forrajesInsumo.insumos.${index}.tiempo_estimado_cultivo`}
                           render={({ field }) => (
                             <Input
-                              placeholder="Ej: 3 meses"
+                              placeholder={t("placeholders.growingTime")}
                               className="h-9 md:h-10 text-sm"
                               value={field.value || ""}
                               onChange={field.onChange}
@@ -281,15 +307,18 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
         {fields.length === 0 && (
           <div className="text-center py-8 md:py-12 text-muted-foreground">
             <BarrelIcon className="h-8 w-8 md:h-12 md:w-12 mx-auto mb-3 md:mb-4 opacity-50" />
-            <p className="text-sm md:text-base">No hay insumos agregados</p>
+
+            <p className="text-sm md:text-base">{t("empty.title")}</p>
+
             <Button
               onClick={addNewInsumo}
               variant="outline"
               size="sm"
               className="mt-3 md:mt-4 h-9 text-sm"
+              type="button"
             >
               <Plus className="h-4 w-4 mr-1" />
-              Agregar primer insumo
+              {t("buttons.addFirst")}
             </Button>
           </div>
         )}

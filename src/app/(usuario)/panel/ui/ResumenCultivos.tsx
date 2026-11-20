@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Card,
   CardContent,
@@ -30,6 +31,7 @@ import {
 } from "lucide-react";
 import SkeletonCard from "@/components/generics/SkeletonCard";
 import { ResponseResumenCultivos } from "@/api/dashboard/interfaces/cultivos/resumen-cultivos.interface";
+import { useTranslations } from "next-intl";
 
 interface Props {
   data: ResponseResumenCultivos | undefined;
@@ -38,6 +40,8 @@ interface Props {
 }
 
 const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
+  const t = useTranslations("resumenCultivos");
+
   if (isLoading) {
     return <SkeletonCard />;
   }
@@ -47,11 +51,9 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
       <Card className="w-full">
         <CardContent className="flex flex-col items-center justify-center py-12">
           <Sprout className="h-16 w-16 text-gray-300 mb-4" />
-          <p className="text-gray-500 text-center">
-            No hay cultivos registrados actualmente
-          </p>
+          <p className="text-gray-500 text-center">{t("empty.title")}</p>
           <p className="text-sm text-gray-400 text-center mt-2">
-            Los cultivos que registres aparecerán aquí
+            {t("empty.description")}
           </p>
         </CardContent>
       </Card>
@@ -60,13 +62,13 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
 
   const costosIngresosData = [
     {
-      name: "Costos",
+      name: t("categories.costs"),
       value: data.costoTotal,
       color: "#ef4444",
       icon: "💰",
     },
     {
-      name: "Ingresos",
+      name: t("categories.income"),
       value: data.ingresoTotal,
       color: "#10b981",
       icon: "💵",
@@ -74,9 +76,13 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
   ];
 
   const distribucionData = [
-    { name: "Inversión", value: data.costoTotal, color: "#f59e0b" },
     {
-      name: "Ganancia",
+      name: t("categories.investment"),
+      value: data.costoTotal,
+      color: "#f59e0b",
+    },
+    {
+      name: t("categories.profit"),
       value: Math.max(0, data.gananciaTotal),
       color: "#10b981",
     },
@@ -84,7 +90,7 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
 
   const indicadores = [
     {
-      titulo: "Total Cultivos",
+      titulo: t("indicators.totalCrops"),
       valor: data.totalCultivos,
       unidad: "",
       icono: Sprout,
@@ -92,7 +98,7 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
       bgColor: "bg-green-100",
     },
     {
-      titulo: "Área Total Sembrada",
+      titulo: t("indicators.totalPlantedArea"),
       valor: data.areaTotalSembrada.toFixed(2),
       unidad: "ha",
       icono: Ruler,
@@ -100,7 +106,7 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
       bgColor: "bg-blue-100",
     },
     {
-      titulo: "Producción Estimada",
+      titulo: t("indicators.estimatedProduction"),
       valor: data.produccionEstimada.toFixed(0),
       unidad: "kg",
       icono: Package,
@@ -108,7 +114,7 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
       bgColor: "bg-purple-100",
     },
     {
-      titulo: "Ganancia Total",
+      titulo: t("indicators.totalProfit"),
       valor: `${moneda}${data.gananciaTotal.toLocaleString()}`,
       unidad: "",
       icono: PiggyBank,
@@ -119,12 +125,13 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
 
   const margenGanancia =
     data.ingresoTotal > 0 ? (data.gananciaTotal / data.ingresoTotal) * 100 : 0;
+
   const roi =
     data.costoTotal > 0 ? (data.gananciaTotal / data.costoTotal) * 100 : 0;
 
   const eficienciaData = [
     {
-      name: "Rentabilidad",
+      name: t("categories.profitability"),
       value: Math.max(0, margenGanancia),
       meta: 30,
       color: "#10b981",
@@ -148,10 +155,12 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
                   <p className="text-sm font-medium text-gray-500 mb-1">
                     {indicador.titulo}
                   </p>
+
                   <div className="flex items-baseline gap-1">
                     <p className="text-2xl font-bold text-gray-900">
                       {indicador.valor}
                     </p>
+
                     {indicador.unidad && (
                       <p className="text-sm text-gray-500">
                         {indicador.unidad}
@@ -159,6 +168,7 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
                     )}
                   </div>
                 </div>
+
                 <div className={`${indicador.bgColor} p-3 rounded-full`}>
                   <indicador.icono className={`h-6 w-6 ${indicador.color}`} />
                 </div>
@@ -173,12 +183,14 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-green-600" />
-              Costos vs Ingresos
+              {t("charts.costsVsIncome.title")}
             </CardTitle>
+
             <CardDescription>
-              Comparativa entre inversión y retorno económico
+              {t("charts.costsVsIncome.description")}
             </CardDescription>
           </CardHeader>
+
           <CardContent>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -186,13 +198,16 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
+
                   <Tooltip
                     formatter={(value: number) => [
                       `${moneda}${value.toLocaleString()}`,
-                      "",
+                      t("charts.amount"),
                     ]}
                   />
+
                   <Legend />
+
                   <Bar dataKey="value" fill="#8884d8" radius={[8, 8, 0, 0]}>
                     {costosIngresosData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
@@ -208,12 +223,14 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-blue-600" />
-              Distribución de Valor
+              {t("charts.valueDistribution.title")}
             </CardTitle>
+
             <CardDescription>
-              Proporción entre inversión y ganancia
+              {t("charts.valueDistribution.description")}
             </CardDescription>
           </CardHeader>
+
           <CardContent>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -223,7 +240,9 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={(entry) => `${entry.name}: ${entry.value}%`}
+                    label={(entry) =>
+                      `${entry.name}: ${moneda}${entry.value.toLocaleString()}`
+                    }
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
@@ -232,12 +251,14 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
+
                   <Tooltip
                     formatter={(value: number) => [
                       `${moneda}${value.toLocaleString()}`,
-                      "",
+                      t("charts.amount"),
                     ]}
                   />
+
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
@@ -251,19 +272,22 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-green-600" />
-              Indicadores de Rentabilidad
+              {t("charts.profitability.title")}
             </CardTitle>
+
             <CardDescription>
-              Métricas clave del negocio agrícola
+              {t("charts.profitability.description")}
             </CardDescription>
           </CardHeader>
+
           <CardContent className="space-y-4">
             <div className="space-y-3">
               <div>
                 <div className="flex justify-between mb-2">
                   <span className="text-sm font-medium text-gray-600">
-                    Margen de Ganancia
+                    {t("indicators.profitMargin")}
                   </span>
+
                   <span
                     className={`text-sm font-bold ${
                       margenGanancia >= 0 ? "text-green-600" : "text-red-600"
@@ -272,6 +296,7 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
                     {margenGanancia.toFixed(1)}%
                   </span>
                 </div>
+
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
                     className="bg-green-600 h-2 rounded-full transition-all"
@@ -280,16 +305,18 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
                     }}
                   />
                 </div>
+
                 <p className="text-xs text-gray-500 mt-1">
-                  Porcentaje de ganancia sobre los ingresos totales
+                  {t("indicators.profitMarginDescription")}
                 </p>
               </div>
 
               <div>
                 <div className="flex justify-between mb-2">
                   <span className="text-sm font-medium text-gray-600">
-                    Retorno de Inversión (ROI)
+                    {t("indicators.roi")}
                   </span>
+
                   <span
                     className={`text-sm font-bold ${
                       roi >= 0 ? "text-green-600" : "text-red-600"
@@ -298,14 +325,18 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
                     {roi.toFixed(1)}%
                   </span>
                 </div>
+
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
                     className="bg-blue-600 h-2 rounded-full transition-all"
-                    style={{ width: `${Math.min(100, Math.max(0, roi))}%` }}
+                    style={{
+                      width: `${Math.min(100, Math.max(0, roi))}%`,
+                    }}
                   />
                 </div>
+
                 <p className="text-xs text-gray-500 mt-1">
-                  Ganancia por cada unidad monetaria invertida
+                  {t("indicators.roiDescription")}
                 </p>
               </div>
             </div>
@@ -313,7 +344,10 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
             <div className="pt-4 border-t">
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center">
-                  <p className="text-xs text-gray-500">Productividad por ha</p>
+                  <p className="text-xs text-gray-500">
+                    {t("indicators.productivityPerHa")}
+                  </p>
+
                   <p className="text-lg font-bold text-gray-900">
                     {data.produccionEstimada > 0 && data.areaTotalSembrada > 0
                       ? (
@@ -323,11 +357,17 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
                     <span className="text-xs">kg/ha</span>
                   </p>
                 </div>
+
                 <div className="text-center">
-                  <p className="text-xs text-gray-500">Valor por kg</p>
+                  <p className="text-xs text-gray-500">
+                    {t("indicators.valuePerKg")}
+                  </p>
+
                   <p className="text-lg font-bold text-gray-900">
                     {data.produccionEstimada > 0 && data.ingresoTotal > 0
-                      ? `${moneda}${(data.ingresoTotal / data.produccionEstimada).toFixed(2)}`
+                      ? `${moneda}${(
+                          data.ingresoTotal / data.produccionEstimada
+                        ).toFixed(2)}`
                       : `${moneda}0`}
                   </p>
                 </div>
@@ -340,46 +380,54 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-purple-600" />
-              Eficiencia vs Meta
+              {t("charts.efficiency.title")}
             </CardTitle>
+
             <CardDescription>
-              Comparación de métricas actuales con objetivos
+              {t("charts.efficiency.description")}
             </CardDescription>
           </CardHeader>
+
           <CardContent>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={eficienciaData}>
                   <CartesianGrid strokeDasharray="3 3" />
+
                   <XAxis dataKey="name" />
+
                   <YAxis
                     label={{
-                      value: "Porcentaje (%)",
+                      value: t("charts.percentage"),
                       angle: -90,
                       position: "insideLeft",
                     }}
                   />
+
                   <Tooltip
                     formatter={(value: number) => [
                       `${value.toFixed(1)}%`,
-                      "Valor actual",
+                      t("charts.currentValue"),
                     ]}
                   />
+
                   <Legend />
+
                   <Bar
                     dataKey="value"
                     fill="#8884d8"
-                    name="Valor Actual"
+                    name={t("charts.currentValue")}
                     radius={[8, 8, 0, 0]}
                   >
                     {eficienciaData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Bar>
+
                   <Bar
                     dataKey="meta"
                     fill="#9ca3af"
-                    name="Meta"
+                    name={t("charts.target")}
                     radius={[8, 8, 0, 0]}
                   />
                 </BarChart>
@@ -393,21 +441,32 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
-              <p className="text-sm text-gray-600 mb-1">Total Costos</p>
+              <p className="text-sm text-gray-600 mb-1">
+                {t("summary.totalCosts")}
+              </p>
+
               <p className="text-2xl font-bold text-red-600">
                 {moneda}
                 {data.costoTotal.toLocaleString()}
               </p>
             </div>
+
             <div className="text-center">
-              <p className="text-sm text-gray-600 mb-1">Total Ingresos</p>
+              <p className="text-sm text-gray-600 mb-1">
+                {t("summary.totalIncome")}
+              </p>
+
               <p className="text-2xl font-bold text-green-600">
                 {moneda}
                 {data.ingresoTotal.toLocaleString()}
               </p>
             </div>
+
             <div className="text-center">
-              <p className="text-sm text-gray-600 mb-1">Ganancia Neta</p>
+              <p className="text-sm text-gray-600 mb-1">
+                {t("summary.netProfit")}
+              </p>
+
               <p
                 className={`text-2xl font-bold ${
                   data.gananciaTotal >= 0 ? "text-green-600" : "text-red-600"
@@ -415,6 +474,7 @@ const ResumenCultivos = ({ data, isLoading, moneda = "$" }: Props) => {
               >
                 {moneda}
                 {data.gananciaTotal.toLocaleString()}
+
                 {data.gananciaTotal >= 0 ? (
                   <TrendingUp className="inline ml-2 h-5 w-5" />
                 ) : (

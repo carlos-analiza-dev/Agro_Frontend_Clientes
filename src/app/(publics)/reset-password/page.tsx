@@ -21,6 +21,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { toast } from "react-toastify";
 
 type FormData = {
@@ -30,6 +31,8 @@ type FormData = {
 };
 
 const ResetPasswordPage = () => {
+  const t = useTranslations("resetPassword");
+
   const {
     register,
     handleSubmit,
@@ -37,24 +40,25 @@ const ResetPasswordPage = () => {
     watch,
     reset,
   } = useForm<FormData>();
+
   const { isChecking } = useAuthRedirect();
   const router = useRouter();
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const mutation = useMutation({
     mutationFn: CambiarContraseña,
     onSuccess: () => {
-      toast.success("Contraseña cambiada exitosamente");
+      toast.success(t("success"));
       reset();
+
       setTimeout(() => {
         router.push("/");
       }, 3000);
     },
     onError: (error: any) => {
-      toast.error(
-        error.response?.data?.message || "Error al cambiar la contraseña",
-      );
+      toast.error(error.response?.data?.message || t("errors.changePassword"));
     },
   });
 
@@ -65,7 +69,7 @@ const ResetPasswordPage = () => {
 
   const validateEmail = (email: string) => {
     const re = /\S+@\S+\.\S+/;
-    return re.test(email) || "Por favor ingresa un correo válido";
+    return re.test(email) || t("errors.emailInvalid");
   };
 
   if (isChecking) {
@@ -79,9 +83,8 @@ const ResetPasswordPage = () => {
           src="/images/Ganaderia.png"
           unoptimized
           alt="Campo agrícola"
-          layout="fill"
-          objectFit="cover"
-          className="opacity-20"
+          fill
+          className="object-cover opacity-20"
         />
       </div>
 
@@ -89,24 +92,27 @@ const ResetPasswordPage = () => {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold text-green-700">
-              El Sembrador FDN
+              {t("title")}
             </CardTitle>
-            <CardDescription>¿No recuerdas tu contraseña?</CardDescription>
+
+            <CardDescription>{t("description")}</CardDescription>
           </CardHeader>
 
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="email">Correo Electrónico</Label>
+                <Label htmlFor="email">{t("email")}</Label>
+
                 <Input
                   id="email"
                   type="email"
-                  placeholder="example@correo.com"
+                  placeholder={t("emailPlaceholder")}
                   {...register("email", {
-                    required: "El correo es requerido",
+                    required: t("errors.emailRequired"),
                     validate: validateEmail,
                   })}
                 />
+
                 {errors.email && (
                   <p className="text-sm font-medium text-red-500">
                     {errors.email.message}
@@ -115,29 +121,34 @@ const ResetPasswordPage = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="nuevaContrasena">Nueva Contraseña</Label>
+                <Label htmlFor="nuevaContrasena">{t("newPassword")}</Label>
+
                 <div className="relative">
                   <Input
                     id="nuevaContrasena"
                     type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
+                    placeholder={t("passwordPlaceholder")}
                     {...register("nuevaContrasena", {
-                      required: "La contraseña es requerida",
+                      required: t("errors.passwordRequired"),
                       minLength: {
                         value: 6,
-                        message:
-                          "La contraseña debe tener al menos 6 caracteres",
+                        message: t("errors.passwordMinLength"),
                       },
                     })}
                   />
+
                   <button
                     type="button"
+                    aria-label={
+                      showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
+                    }
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
+
                 {errors.nuevaContrasena && (
                   <p className="text-sm font-medium text-red-500">
                     {errors.nuevaContrasena.message}
@@ -146,21 +157,28 @@ const ResetPasswordPage = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
+                <Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
+
                 <div className="relative">
                   <Input
                     id="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
-                    placeholder="••••••••"
+                    placeholder={t("passwordPlaceholder")}
                     {...register("confirmPassword", {
-                      required: "Por favor confirma tu contraseña",
+                      required: t("errors.confirmPasswordRequired"),
                       validate: (value) =>
                         value === watch("nuevaContrasena") ||
-                        "Las contraseñas no coinciden",
+                        t("errors.passwordMismatch"),
                     })}
                   />
+
                   <button
                     type="button"
+                    aria-label={
+                      showConfirmPassword
+                        ? "Ocultar contraseña"
+                        : "Mostrar contraseña"
+                    }
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
@@ -171,6 +189,7 @@ const ResetPasswordPage = () => {
                     )}
                   </button>
                 </div>
+
                 {errors.confirmPassword && (
                   <p className="text-sm font-medium text-red-500">
                     {errors.confirmPassword.message}
@@ -183,18 +202,18 @@ const ResetPasswordPage = () => {
                 className="w-full bg-green-600 hover:bg-green-700"
                 disabled={mutation.isPending}
               >
-                {mutation.isPending ? "Procesando..." : "Restablecer"}
+                {mutation.isPending ? t("processing") : t("submit")}
               </Button>
             </form>
           </CardContent>
 
-          <CardFooter className="flex justify-between items-center space-y-2">
+          <CardFooter className="flex items-center justify-between space-y-2">
             <Link href="/register" className="text-green-600 hover:underline">
-              Registrate
+              {t("register")}
             </Link>
 
             <Link href="/login" className="text-green-600 hover:underline">
-              Iniciar Sesion
+              {t("login")}
             </Link>
           </CardFooter>
         </Card>

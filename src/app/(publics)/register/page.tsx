@@ -2,7 +2,6 @@
 
 import { FullScreenLoader } from "@/components/generics/FullScreenLoader";
 import FormRegister from "@/components/Login/FormRegister";
-
 import {
   Card,
   CardContent,
@@ -11,26 +10,27 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuthRedirect } from "@/helpers/funciones/useAuthRedirect";
-
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 
 export default function RegisterPage() {
+  const t = useTranslations("register");
   const { isChecking } = useAuthRedirect();
 
   if (isChecking) {
     return <FullScreenLoader />;
   }
+
   return (
     <div className="relative min-h-screen">
       <div className="absolute inset-0 z-0">
         <Image
           src="/images/Ganaderia.png"
           alt="Campo agrícola"
-          layout="fill"
-          objectFit="cover"
+          fill
           priority
           unoptimized
-          className="opacity-20"
+          className="object-cover opacity-20"
         />
       </div>
 
@@ -38,11 +38,9 @@ export default function RegisterPage() {
         <Card className="w-full max-w-2xl">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold text-green-700">
-              Registro en El Sembrador FDN
+              {t("title")}
             </CardTitle>
-            <CardDescription>
-              Completa el formulario para crear tu cuenta
-            </CardDescription>
+            <CardDescription>{t("description")}</CardDescription>
           </CardHeader>
 
           <CardContent>

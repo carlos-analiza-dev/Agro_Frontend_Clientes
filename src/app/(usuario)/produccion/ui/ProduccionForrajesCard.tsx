@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -25,12 +26,27 @@ const ProduccionForrajesCard: React.FC<ProduccionForrajesCardProps> = ({
   forrajesInsumo,
   handleProduccionForrajes,
 }) => {
+  const t = useTranslations("produccionForrajesCard");
+
+  const getInsumoTranslation = (tipo: string) => {
+    const translations: Record<string, string> = {
+      Heno: "types.hay",
+      Silo: "types.silage",
+      Pasto: "types.grass",
+      Harina: "types.flour",
+      "Alimentos Concentrados elaborados": "types.concentratedFeed",
+    };
+
+    const key = translations[tipo];
+
+    return key ? t(key) : tipo;
+  };
+
   const getInsumoIcon = (tipo: string) => {
     switch (tipo) {
       case "Heno":
         return Wheat;
       case "Silo":
-        return Sprout;
       case "Pasto":
       case "Harina":
       case "Alimentos Concentrados elaborados":
@@ -69,16 +85,19 @@ const ProduccionForrajesCard: React.FC<ProduccionForrajesCardProps> = ({
           size="sm"
           onClick={() => handleProduccionForrajes(forrajesInsumo)}
         >
-          <Pencil className="h-4 w-4 mr-1" /> Editar Forraje
+          <Pencil className="h-4 w-4 mr-1" />
+          {t("buttons.edit")}
         </Button>
       </div>
+
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-lg">
           <Leaf className="h-5 w-5 text-primary" />
-          Forrajes e Insumos
+          {t("title")}
           <Badge variant="secondary" className="ml-2">
-            {forrajesInsumo.insumos.length} insumo
-            {forrajesInsumo.insumos.length !== 1 ? "s" : ""}
+            {t("summary.insumos", {
+              count: forrajesInsumo.insumos.length,
+            })}
           </Badge>
         </CardTitle>
       </CardHeader>
@@ -94,12 +113,14 @@ const ProduccionForrajesCard: React.FC<ProduccionForrajesCardProps> = ({
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <IconComponent className="h-5 w-5 text-primary" />
-                  <h3 className="font-semibold text-base">{insumo.tipo}</h3>
+                  <h3 className="font-semibold text-base">
+                    {getInsumoTranslation(insumo.tipo)}
+                  </h3>
                   <Badge
                     variant="outline"
                     className={getInsumoColor(insumo.tipo)}
                   >
-                    {insumo.tipo}
+                    {getInsumoTranslation(insumo.tipo)}
                   </Badge>
                 </div>
 
@@ -109,7 +130,9 @@ const ProduccionForrajesCard: React.FC<ProduccionForrajesCardProps> = ({
                       <div className="flex items-center gap-2">
                         <Wheat className="h-4 w-4 text-muted-foreground" />
                         <div>
-                          <span className="font-medium">Tipo de heno:</span>
+                          <span className="font-medium">
+                            {t("fields.hayType")}:
+                          </span>
                           <span className="text-muted-foreground ml-1">
                             {insumo.tipo_heno}
                           </span>
@@ -121,7 +144,9 @@ const ProduccionForrajesCard: React.FC<ProduccionForrajesCardProps> = ({
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
                         <div>
-                          <span className="font-medium">Estacionalidad:</span>
+                          <span className="font-medium">
+                            {t("fields.seasonality")}:
+                          </span>
                           <span className="text-muted-foreground ml-1">
                             {insumo.estacionalidad_heno}
                           </span>
@@ -135,7 +160,7 @@ const ProduccionForrajesCard: React.FC<ProduccionForrajesCardProps> = ({
                           <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4 text-muted-foreground" />
                             <span className="font-medium">
-                              Meses de producción:
+                              {t("fields.productionMonths")}
                             </span>
                           </div>
                           <div className="flex flex-wrap gap-2">
@@ -160,7 +185,9 @@ const ProduccionForrajesCard: React.FC<ProduccionForrajesCardProps> = ({
                       <div className="flex items-center gap-2">
                         <Scale className="h-4 w-4 text-muted-foreground" />
                         <div>
-                          <span className="font-medium">Producción:</span>
+                          <span className="font-medium">
+                            {t("fields.production")}:
+                          </span>
                           <span className="text-muted-foreground ml-1">
                             {insumo.produccion_manzana}
                           </span>
@@ -172,7 +199,9 @@ const ProduccionForrajesCard: React.FC<ProduccionForrajesCardProps> = ({
                       <div className="flex items-center gap-2">
                         <Clock className="h-4 w-4 text-muted-foreground" />
                         <div>
-                          <span className="font-medium">Tiempo estimado:</span>
+                          <span className="font-medium">
+                            {t("fields.estimatedTime")}:
+                          </span>
                           <span className="text-muted-foreground ml-1">
                             {insumo.tiempo_estimado_cultivo}
                           </span>
@@ -188,7 +217,9 @@ const ProduccionForrajesCard: React.FC<ProduccionForrajesCardProps> = ({
                       <div className="flex items-center gap-2">
                         <Scale className="h-4 w-4 text-muted-foreground" />
                         <div>
-                          <span className="font-medium">Producción:</span>
+                          <span className="font-medium">
+                            {t("fields.production")}:
+                          </span>
                           <span className="text-muted-foreground ml-1">
                             {insumo.produccion_manzana}
                           </span>
@@ -200,7 +231,9 @@ const ProduccionForrajesCard: React.FC<ProduccionForrajesCardProps> = ({
                       <div className="flex items-center gap-2">
                         <Clock className="h-4 w-4 text-muted-foreground" />
                         <div>
-                          <span className="font-medium">Tiempo estimado:</span>
+                          <span className="font-medium">
+                            {t("fields.estimatedTime")}:
+                          </span>
                           <span className="text-muted-foreground ml-1">
                             {insumo.tiempo_estimado_cultivo}
                           </span>

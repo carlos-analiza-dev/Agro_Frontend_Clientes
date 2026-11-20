@@ -15,6 +15,7 @@ import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   imagenes:
@@ -38,6 +39,8 @@ const CardDetailsProducto = ({
   selectedImageIndex,
   setSelectedImageIndex,
 }: Props) => {
+  const t = useTranslations("productDetails.cardDetailsProducto");
+
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [current, setCurrent] = useState(0);
   const [internalApi, setInternalApi] = useState<CarouselApi>();
@@ -86,7 +89,7 @@ const CardDetailsProducto = ({
       <Card className="overflow-hidden">
         <div className="p-4">
           <div className="w-full aspect-square flex items-center justify-center bg-gray-100 rounded-xl">
-            Sin imágenes
+            {t("noImages")}
           </div>
         </div>
       </Card>
@@ -108,7 +111,10 @@ const CardDetailsProducto = ({
                     <Image
                       src={imagen.url}
                       unoptimized
-                      alt={`${producto.nombre} - Imagen ${index + 1}`}
+                      alt={t("productImageAlt", {
+                        product: producto.nombre,
+                        number: index + 1,
+                      })}
                       fill
                       className="object-contain"
                       priority={index === 0}
@@ -147,7 +153,9 @@ const CardDetailsProducto = ({
                         ? "w-2 h-2 bg-green-600 scale-100"
                         : "w-1.5 h-1.5 bg-gray-400 scale-75 hover:bg-gray-500",
                     )}
-                    aria-label={`Ir a imagen ${index + 1}`}
+                    aria-label={t("goToImage", {
+                      number: index + 1,
+                    })}
                   />
                 ))}
               </div>
@@ -165,10 +173,16 @@ const CardDetailsProducto = ({
                         ? "border-green-500 ring-2 ring-green-200 scale-105"
                         : "border-transparent opacity-60 hover:opacity-100 hover:scale-105",
                     )}
+                    aria-label={t("selectThumbnail", {
+                      number: index + 1,
+                    })}
                   >
                     <Image
                       src={imagen.url}
-                      alt={`${producto.nombre} - Miniatura ${index + 1}`}
+                      alt={t("productThumbnailAlt", {
+                        product: producto.nombre,
+                        number: index + 1,
+                      })}
                       unoptimized
                       fill
                       sizes="80px"

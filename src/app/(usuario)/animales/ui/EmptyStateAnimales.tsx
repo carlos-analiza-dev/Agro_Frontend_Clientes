@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   PlusCircle,
@@ -37,6 +38,8 @@ const EmptyStateAnimales = ({
   actionText,
   error,
 }: EmptyStateAnimalesProps) => {
+  const t = useTranslations("emptyStateAnimales");
+
   const getVariantConfig = () => {
     switch (variant) {
       case "error":
@@ -44,43 +47,41 @@ const EmptyStateAnimales = ({
           icon: AlertCircle,
           iconColor: "text-destructive",
           bgColor: "bg-destructive/10",
-          defaultTitle: "Error al cargar los animales",
-          defaultDescription:
-            error ||
-            "Ocurrió un error al cargar los datos. Por favor, intenta nuevamente.",
+          defaultTitle: t("variants.error.title"),
+          defaultDescription: error || t("variants.error.description"),
           showAddButton: false,
           showClearButton: false,
         };
+
       case "loading":
         return {
           icon: Loader2,
           iconColor: "text-muted-foreground",
           bgColor: "bg-muted",
-          defaultTitle: "Cargando animales...",
-          defaultDescription:
-            "Por favor espera mientras cargamos la información.",
+          defaultTitle: t("variants.loading.title"),
+          defaultDescription: t("variants.loading.description"),
           showAddButton: false,
           showClearButton: false,
         };
+
       case "no-filters":
         return {
           icon: PawPrint,
           iconColor: "text-muted-foreground",
           bgColor: "bg-muted",
-          defaultTitle: "No se encontraron animales",
-          defaultDescription:
-            "No hay animales que coincidan con los filtros seleccionados. Intenta con otros criterios.",
+          defaultTitle: t("variants.noFilters.title"),
+          defaultDescription: t("variants.noFilters.description"),
           showAddButton: false,
           showClearButton: true,
         };
+
       default:
         return {
           icon: PawPrint,
           iconColor: "text-muted-foreground",
           bgColor: "bg-muted",
-          defaultTitle: "No tienes animales registrados",
-          defaultDescription:
-            "Comienza agregando tu primer animal a la finca para llevar un control completo.",
+          defaultTitle: t("variants.noData.title"),
+          defaultDescription: t("variants.noData.description"),
           showAddButton: true,
           showClearButton: false,
         };
@@ -111,14 +112,18 @@ const EmptyStateAnimales = ({
   }
 
   const showFilters = variant === "no-filters" || hasFilters;
-  const defaultActionText = showFilters ? "Limpiar filtros" : "Agregar animal";
+  const defaultActionText = showFilters
+    ? t("buttons.clearFilters")
+    : t("buttons.addAnimal");
 
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
       <div className="relative">
         <div className={`rounded-full p-4 mb-4 ${config.bgColor}`}>
           <Icon
-            className={`h-12 w-12 ${config.iconColor} ${variant === "error" ? "animate-pulse" : ""}`}
+            className={`h-12 w-12 ${config.iconColor} ${
+              variant === "error" ? "animate-pulse" : ""
+            }`}
           />
         </div>
 
@@ -130,7 +135,9 @@ const EmptyStateAnimales = ({
       </div>
 
       <h3
-        className={`text-xl font-semibold mb-2 ${variant === "error" ? "text-destructive" : ""}`}
+        className={`text-xl font-semibold mb-2 ${
+          variant === "error" ? "text-destructive" : ""
+        }`}
       >
         {title || config.defaultTitle}
       </h3>
@@ -148,7 +155,7 @@ const EmptyStateAnimales = ({
             className="gap-2"
           >
             <FilterX className="h-4 w-4" />
-            Limpiar filtros
+            {t("buttons.clearFilters")}
           </Button>
         )}
 
@@ -169,7 +176,7 @@ const EmptyStateAnimales = ({
             <RefreshCw
               className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
             />
-            Recargar
+            {t("buttons.refresh")}
           </Button>
         )}
       </div>

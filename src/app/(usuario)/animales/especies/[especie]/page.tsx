@@ -1,4 +1,6 @@
 "use client";
+
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -84,23 +86,30 @@ const getEspecieTipo = (nombreEspecie: string): string => {
   return "default";
 };
 
-const EspeciesPageAnimales = () => {
+const EspeciesPageDetailsAnimales = () => {
+  const t = useTranslations("especiesPageDetailsAnimales");
+
   const params = useParams();
   const especie = params.especie as string;
 
   const router = useRouter();
   const queryClient = useQueryClient();
   const { cliente } = useAuthStore();
+
   const [fincaId, setFincaId] = useState("");
   const [especieId, setEspecieId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const isMobile = useMediaQuery("(max-width: 768px)");
+
   const { data: fincas } = useFincasPropietarios(cliente?.id ?? "");
   const { data: especies } = useGetEspecies();
+
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const [isScrolling, setIsScrolling] = useState(false);
   const [isCargaMasivaOpen, setIsCargaMasivaOpen] = useState(false);
+
   const finca = fincaId === "all" ? "" : fincaId;
 
   const {
@@ -175,12 +184,13 @@ const EspeciesPageAnimales = () => {
     animalId: string,
   ) => {
     if (!cliente) return;
+
     try {
       await uploadProfileImageAnimal(imageUri, animalId);
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
-      toast.success("Imagen actualizada correctamente");
+      toast.success(t("messages.imageUpdated"));
     } catch (error) {
-      toast.error("Error al actualizar la imagen de perfil");
+      toast.error(t("errors.updateProfileImage"));
     }
   };
 
@@ -194,31 +204,29 @@ const EspeciesPageAnimales = () => {
     refetch();
   };
 
-  const handleAddAnimal = () => {
-    router.push("/animales/crear-animal");
-  };
-
   const animales = data?.pages.flatMap((page) => page.data) || [];
 
   const getActiveFilterName = () => {
     const filters = [];
 
     if (debouncedSearchTerm) {
-      filters.push(`Búsqueda: "${debouncedSearchTerm}"`);
+      filters.push(t("filters.search", { value: debouncedSearchTerm }));
     }
 
     if (fincaId && fincaId !== "all") {
       const fincaName = fincas?.data?.fincas.find(
         (f) => f.id === fincaId,
       )?.nombre_finca;
-      filters.push(`Finca: ${fincaName || fincaId}`);
+
+      filters.push(t("filters.farm", { value: fincaName || fincaId }));
     }
 
     if (especieId && especieId !== "all") {
       const especieName = especies?.data?.find(
         (e) => e.id === especieId,
       )?.nombre;
-      filters.push(`Especie: ${especieName || especieId}`);
+
+      filters.push(t("filters.species", { value: especieName || especieId }));
     }
 
     return filters;
@@ -234,8 +242,9 @@ const EspeciesPageAnimales = () => {
       <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
         <div className="flex flex-wrap items-center gap-2">
           <Filter className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+
           <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
-            Filtros activos:
+            {t("filters.active")}
           </span>
 
           <div className="flex flex-wrap gap-2">
@@ -257,7 +266,7 @@ const EspeciesPageAnimales = () => {
             className="ml-auto text-blue-600 hover:text-blue-700 hover:bg-blue-100 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/50"
           >
             <X className="h-4 w-4 mr-1" />
-            Limpiar todos
+            {t("filters.clearAll")}
           </Button>
         </div>
       </div>
@@ -289,7 +298,6 @@ const EspeciesPageAnimales = () => {
       case "porcino":
         return <PorcinoCard key={key} {...commonProps} />;
       case "bovino":
-
       default:
         return <AnimalCard key={key} {...commonProps} />;
     }
@@ -306,9 +314,9 @@ const EspeciesPageAnimales = () => {
           hasFilters={false}
           onRefresh={handleRefresh}
           isLoading={isLoading}
-          title="Error al cargar los animales"
-          description="No se pudieron cargar los animales. Por favor, intenta nuevamente."
-          actionText="Recargar"
+          title={t("empty.errorTitle")}
+          description={t("empty.errorDescription")}
+          actionText={t("empty.refresh")}
         />
       </div>
     );
@@ -318,17 +326,19 @@ const EspeciesPageAnimales = () => {
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <Buscador
-          title="Buscar por identificador o nombre..."
+          title={t("filters.searchPlaceholder")}
           setSearchTerm={setSearchTerm}
           searchTerm={searchTerm}
         />
 
         <Select value={fincaId} onValueChange={setFincaId}>
           <SelectTrigger>
-            <SelectValue placeholder="Seleccionar finca" />
+            <SelectValue placeholder={t("filters.farmPlaceholder")} />
           </SelectTrigger>
+
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="all">{t("filters.allFarms")}</SelectItem>
+
             {fincas?.data?.fincas.map((finca) => (
               <SelectItem key={finca.id} value={finca.id}>
                 {finca.nombre_finca}
@@ -346,7 +356,7 @@ const EspeciesPageAnimales = () => {
     return (
       <div className="container mx-auto p-4 pb-20">
         <div className="block md:flex justify-between items-center mb-6">
-          <h1 className="text-lg md:text-3xl font-bold">Mis Animales</h1>
+          <h1 className="text-lg md:text-3xl font-bold">{t("title")}</h1>
 
           <div className="mt-4 md:mt-0 flex flex-col sm:flex-row flex-wrap justify-center gap-3 w-full md:w-auto">
             <Button
@@ -355,14 +365,14 @@ const EspeciesPageAnimales = () => {
               onClick={() => setIsCargaMasivaOpen(true)}
             >
               <UploadCloud className="h-4 w-4" />
-              Carga Masiva
+              {t("actions.bulkUpload")}
             </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="gap-2 w-full sm:w-auto">
                   <Scale className="h-4 w-4" />
-                  Control de Peso
+                  {t("actions.weightControl")}
                 </Button>
               </DropdownMenuTrigger>
 
@@ -372,7 +382,7 @@ const EspeciesPageAnimales = () => {
                   onClick={() => router.push("/animales/control-peso")}
                 >
                   <PawPrint className="h-4 w-4 mr-2" />
-                  Por Animal
+                  {t("actions.byAnimal")}
                 </DropdownMenuItem>
 
                 <DropdownMenuItem
@@ -380,7 +390,7 @@ const EspeciesPageAnimales = () => {
                   onClick={() => router.push("/animales/peso-raza")}
                 >
                   <Dna className="h-4 w-4 mr-2" />
-                  Por Raza
+                  {t("actions.byBreed")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -389,7 +399,7 @@ const EspeciesPageAnimales = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="gap-2 w-full sm:w-auto">
                   <Wheat className="h-4 w-4" />
-                  Alimentación
+                  {t("actions.feeding")}
                 </Button>
               </DropdownMenuTrigger>
 
@@ -399,7 +409,7 @@ const EspeciesPageAnimales = () => {
                   onClick={() => router.push("/animales/alimentacion")}
                 >
                   <Utensils className="h-4 w-4 mr-2" />
-                  Ver Alimentación
+                  {t("actions.viewFeeding")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -413,17 +423,19 @@ const EspeciesPageAnimales = () => {
             hasFilters={false}
             onRefresh={handleRefresh}
             isLoading={isLoading}
-            title="No hay animales registrados"
-            description="Comienza agregando tu primer animal o lote avícola."
-            actionText="Agregar Animal"
+            title={t("empty.noAnimalsTitle")}
+            description={t("empty.noAnimalsDescription")}
+            actionText={t("actions.addAnimal")}
           />
         </div>
+
         <CargaMasivaModal
           isOpen={isCargaMasivaOpen}
           onClose={() => setIsCargaMasivaOpen(false)}
         />
+
         <FAB
-          titulo="Agregar Animal"
+          titulo={t("actions.addAnimal")}
           onPress={() => router.push("/animales/crear-animal")}
         />
       </div>
@@ -434,7 +446,7 @@ const EspeciesPageAnimales = () => {
     <div className="container mx-auto p-4 pb-20">
       <div className="block md:flex justify-between items-center mb-6">
         <h1 className="text-lg md:text-3xl font-bold">
-          Mis Animales - {especie.toUpperCase()}
+          {t("titleWithSpecies", { species: especie.toUpperCase() })}
         </h1>
 
         <div className="mt-4 md:mt-0 flex flex-col sm:flex-row flex-wrap justify-center gap-3 w-full md:w-auto">
@@ -444,14 +456,14 @@ const EspeciesPageAnimales = () => {
             onClick={() => setIsCargaMasivaOpen(true)}
           >
             <UploadCloud className="h-4 w-4" />
-            Carga Masiva
+            {t("actions.bulkUpload")}
           </Button>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="gap-2 w-full sm:w-auto">
                 <Scale className="h-4 w-4" />
-                Control de Peso
+                {t("actions.weightControl")}
               </Button>
             </DropdownMenuTrigger>
 
@@ -461,7 +473,7 @@ const EspeciesPageAnimales = () => {
                 onClick={() => router.push("/animales/control-peso")}
               >
                 <PawPrint className="h-4 w-4 mr-2" />
-                Por Animal
+                {t("actions.byAnimal")}
               </DropdownMenuItem>
 
               <DropdownMenuItem
@@ -469,7 +481,7 @@ const EspeciesPageAnimales = () => {
                 onClick={() => router.push("/animales/peso-raza")}
               >
                 <Dna className="h-4 w-4 mr-2" />
-                Por Raza
+                {t("actions.byBreed")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -478,7 +490,7 @@ const EspeciesPageAnimales = () => {
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="gap-2 w-full sm:w-auto">
                 <Wheat className="h-4 w-4" />
-                Alimentación
+                {t("actions.feeding")}
               </Button>
             </DropdownMenuTrigger>
 
@@ -488,7 +500,7 @@ const EspeciesPageAnimales = () => {
                 onClick={() => router.push("/animales/alimentacion")}
               >
                 <Utensils className="h-4 w-4 mr-2" />
-                Ver Alimentación
+                {t("actions.viewFeeding")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -506,7 +518,9 @@ const EspeciesPageAnimales = () => {
           {isFetchingNextPage ? (
             <div className="flex items-center gap-2">
               <RefreshCw className="h-5 w-5 animate-spin" />
-              <span className="text-sm text-gray-500">Cargando más...</span>
+              <span className="text-sm text-gray-500">
+                {t("pagination.loading")}
+              </span>
             </div>
           ) : (
             <Button
@@ -514,21 +528,23 @@ const EspeciesPageAnimales = () => {
               onClick={loadMore}
               className="w-full max-w-xs"
             >
-              Cargar más animales
+              {t("pagination.loadMore")}
             </Button>
           )}
         </div>
       )}
+
       <CargaMasivaModal
         isOpen={isCargaMasivaOpen}
         onClose={() => setIsCargaMasivaOpen(false)}
       />
+
       <FAB
-        titulo="Agregar Animal"
+        titulo={t("actions.addAnimal")}
         onPress={() => router.push("/animales/crear-animal")}
       />
     </div>
   );
 };
 
-export default EspeciesPageAnimales;
+export default EspeciesPageDetailsAnimales;

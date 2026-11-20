@@ -2,6 +2,7 @@
 
 import { Apicultura } from "@/api/produccion/interface/obter-producciones-userId.interface";
 import React, { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,6 +34,8 @@ const FormProduccionApicultura = ({
   produccionApicultura,
   onDataChange,
 }: Props) => {
+  const t = useTranslations("formProduccionApicultura");
+
   const [formData, setFormData] = useState({
     numero_colmenas: produccionApicultura?.numero_colmenas || 0,
     frecuencia_cosecha: produccionApicultura?.frecuencia_cosecha || "",
@@ -56,6 +59,7 @@ const FormProduccionApicultura = ({
       ...formData,
       [field]: value,
     };
+
     setFormData(updatedData);
 
     if (onDataChange && produccionApicultura) {
@@ -79,13 +83,13 @@ const FormProduccionApicultura = ({
             <Flower2 className="h-6 w-6 text-amber-600" />
           </div>
           <div>
-            <div>Producción Apícola</div>
+            <div>{t("title")}</div>
             <Badge
               variant="secondary"
               className="mt-1 bg-amber-100 text-amber-800"
             >
               <FlaskConical className="h-3 w-3 mr-1" />
-              Gestión de colmenas y miel
+              {t("subtitle")}
             </Badge>
           </div>
         </CardTitle>
@@ -102,12 +106,13 @@ const FormProduccionApicultura = ({
                 <div className="p-1.5 bg-blue-100 rounded-md">
                   <Calculator className="h-4 w-4 text-blue-600" />
                 </div>
-                Número de colmenas
+                {t("fields.hives")}
               </Label>
+
               <Input
                 id="numero-colmenas"
                 type="number"
-                placeholder="Ej: 25"
+                placeholder={t("placeholders.hives")}
                 value={formData.numero_colmenas || ""}
                 onChange={(e) =>
                   handleNumberChange("numero_colmenas", e.target.value)
@@ -115,8 +120,9 @@ const FormProduccionApicultura = ({
                 className="text-lg py-6"
                 min="0"
               />
+
               <p className="text-sm text-muted-foreground">
-                Total de colmenas activas en producción
+                {t("descriptions.hives")}
               </p>
             </div>
 
@@ -128,19 +134,21 @@ const FormProduccionApicultura = ({
                 <div className="p-1.5 bg-green-100 rounded-md">
                   <Calendar className="h-4 w-4 text-green-600" />
                 </div>
-                Frecuencia de cosecha
+                {t("fields.harvestFrequency")}
               </Label>
+
               <Input
                 id="frecuencia-cosecha"
-                placeholder="Ej: Cada 2 meses, Trimestral, Anual..."
+                placeholder={t("placeholders.harvestFrequency")}
                 value={formData.frecuencia_cosecha}
                 onChange={(e) =>
                   handleChange("frecuencia_cosecha", e.target.value)
                 }
                 className="py-6"
               />
+
               <p className="text-sm text-muted-foreground">
-                Periodicidad con la que realiza la cosecha de miel
+                {t("descriptions.harvestFrequency")}
               </p>
             </div>
           </div>
@@ -154,13 +162,14 @@ const FormProduccionApicultura = ({
                 <div className="p-1.5 bg-orange-100 rounded-md">
                   <Scale className="h-4 w-4 text-orange-600" />
                 </div>
-                Cantidad por cosecha (kg)
+                {t("fields.quantityPerHarvest")}
               </Label>
+
               <Input
                 id="cantidad-cosecha"
                 type="number"
                 step="0.01"
-                placeholder="Ej: 150.75"
+                placeholder={t("placeholders.quantityPerHarvest")}
                 value={formData.cantidad_por_cosecha || ""}
                 onChange={(e) =>
                   handleNumberChange("cantidad_por_cosecha", e.target.value)
@@ -168,8 +177,9 @@ const FormProduccionApicultura = ({
                 className="text-lg py-6"
                 min="0"
               />
+
               <p className="text-sm text-muted-foreground">
-                Peso promedio obtenido por cada cosecha
+                {t("descriptions.quantityPerHarvest")}
               </p>
             </div>
 
@@ -181,15 +191,17 @@ const FormProduccionApicultura = ({
                 <div className="p-1.5 bg-purple-100 rounded-md">
                   <Flower className="h-4 w-4 text-purple-600" />
                 </div>
-                Calidad de la miel
+                {t("fields.honeyQuality")}
               </Label>
+
               <Select
                 value={formData.calidad_miel}
                 onValueChange={(value) => handleChange("calidad_miel", value)}
               >
                 <SelectTrigger id="calidad-miel" className="py-6">
-                  <SelectValue placeholder="Seleccione la calidad" />
+                  <SelectValue placeholder={t("placeholders.honeyQuality")} />
                 </SelectTrigger>
+
                 <SelectContent>
                   {calidadesMiel.map((calidad) => (
                     <SelectItem key={calidad} value={calidad} className="py-3">
@@ -201,8 +213,9 @@ const FormProduccionApicultura = ({
                   ))}
                 </SelectContent>
               </Select>
+
               <p className="text-sm text-muted-foreground">
-                Clasificación según estándares de calidad
+                {t("descriptions.honeyQuality")}
               </p>
             </div>
           </div>
@@ -213,12 +226,10 @@ const FormProduccionApicultura = ({
             <Droplets className="h-5 w-5 text-amber-600 mt-0.5" />
             <div>
               <h4 className="font-semibold text-amber-800">
-                Información sobre producción apícola
+                {t("information.title")}
               </h4>
               <p className="text-sm text-amber-700 mt-1">
-                La producción apícola incluye el manejo de colmenas, cosecha de
-                miel y otros productos derivados como polen, propóleos y cera de
-                abejas.
+                {t("information.description")}
               </p>
             </div>
           </div>

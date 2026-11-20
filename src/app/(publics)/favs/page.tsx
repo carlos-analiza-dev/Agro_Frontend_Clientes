@@ -5,21 +5,39 @@ import { useFavoritos } from "@/hooks/favoritos/useFavoritos";
 import { Heart, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ProductCard from "@/components/products/ProductCard";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 export default function FavoritosPage() {
   const { favoritos, limpiarFavoritos } = useFavoritos();
   const router = useRouter();
+  const t = useTranslations("favorites");
 
-  const paisStorage = localStorage.getItem("selectedCountry");
-  const pais = paisStorage ? JSON.parse(paisStorage) : null;
-  const paisId = pais?.id;
+  const [paisId, setPaisId] = useState<string | null>(null);
+  const [isCheckingCountry, setIsCheckingCountry] = useState(true);
 
   useEffect(() => {
-    if (!paisId) {
+    try {
+      const paisStorage = localStorage.getItem("selectedCountry");
+      const pais = paisStorage ? JSON.parse(paisStorage) : null;
+
+      setPaisId(pais?.id ?? null);
+    } catch {
+      setPaisId(null);
+    } finally {
+      setIsCheckingCountry(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isCheckingCountry && !paisId) {
       router.push("/not-selected-country");
     }
-  }, [paisId, router]);
+  }, [paisId, isCheckingCountry, router]);
+
+  if (isCheckingCountry || !paisId) {
+    return null;
+  }
 
   const tieneFavoritos = favoritos.length > 0;
 
@@ -28,11 +46,10 @@ export default function FavoritosPage() {
       <div className="w-full max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold">Mis Favoritos</h1>
+            <h1 className="text-3xl md:text-4xl font-bold">{t("title")}</h1>
+
             <p className="text-muted-foreground text-sm">
-              {favoritos.length} producto{favoritos.length !== 1 ? "s" : ""}{" "}
-              guardado
-              {favoritos.length !== 1 ? "s" : ""}
+              {t("savedProducts", { count: favoritos.length })}
             </p>
           </div>
 
@@ -50,7 +67,7 @@ export default function FavoritosPage() {
                 className="gap-2"
               >
                 <Trash2 className="h-4 w-4" />
-                Limpiar
+                {t("clear")}
               </Button>
             )}
           </div>
@@ -61,17 +78,18 @@ export default function FavoritosPage() {
             <div className="bg-muted/40 p-6 rounded-2xl mb-4">
               <Heart className="h-14 w-14 text-muted-foreground/50" />
             </div>
-            <h2 className="text-xl font-semibold mb-2">
-              No tienes productos favoritos
-            </h2>
+
+            <h2 className="text-xl font-semibold mb-2">{t("emptyTitle")}</h2>
+
             <p className="text-muted-foreground max-w-md">
-              Cuando agregues productos a favoritos aparecerán aquí.
+              {t("emptyDescription")}
             </p>
+
             <Button
               onClick={() => router.push("/productos-agroservicios")}
               className="mt-6"
             >
-              Explorar productos
+              {t("exploreProducts")}
             </Button>
           </div>
         ) : (
@@ -92,8 +110,9 @@ export default function FavoritosPage() {
 
             <div className="mt-10 pt-6 border-t text-center">
               <p className="text-sm text-muted-foreground">
-                {favoritos.length} producto{favoritos.length !== 1 ? "s" : ""}{" "}
-                en favoritos
+                {t("productsInFavorites", {
+                  count: favoritos.length,
+                })}
               </p>
             </div>
           </>

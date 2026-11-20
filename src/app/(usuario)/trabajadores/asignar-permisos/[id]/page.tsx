@@ -1,4 +1,5 @@
 "use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useGetPermisosByCliente from "@/hooks/permisos/useGetPermisosByCliente";
 import { useParams } from "next/navigation";
@@ -20,13 +21,18 @@ import {
 import { CrearPermisoClienteInterface } from "@/api/permisos/interface/crear-permiso-cliente.interface";
 import { CrearPermisoByCliente } from "@/api/permisos/accions/crear-permiso_by_cliente";
 import TablePermisosCliente from "../../ui/TablePermisosCliente";
+import { useTranslations } from "next-intl";
 
 const AsignarPermisosPage = () => {
+  const t = useTranslations("asignarPermisosPage");
+
   const queryClient = useQueryClient();
   const params = useParams();
   const trabajadorId = params.id as string;
+
   const { data: permisos_cliente } = useGetPermisosByCliente(trabajadorId);
   const { data: permisos_activos } = useGetPermisosPropietario();
+
   const [openAddPermisos, setOpenAddPermisos] = useState(false);
   const [permisosSeleccionados, setPermisosSeleccionados] = useState<string[]>(
     [],
@@ -44,9 +50,10 @@ const AsignarPermisosPage = () => {
       queryClient.invalidateQueries({
         queryKey: ["permisos-clienteId", trabajadorId],
       });
-      toast.success("Permiso actualizado correctamente");
+
+      toast.success(t("messages.permissionUpdated"));
     } catch (error) {
-      toast.error("Error al actualizar el permiso");
+      toast.error(t("errors.updatePermission"));
     }
   };
 
@@ -57,9 +64,10 @@ const AsignarPermisosPage = () => {
       queryClient.invalidateQueries({
         queryKey: ["permisos-clienteId", trabajadorId],
       });
-      toast.success("Permiso eliminado correctamente");
+
+      toast.success(t("messages.permissionDeleted"));
     } catch (error) {
-      toast.error("Error al eliminar el permiso");
+      toast.error(t("errors.deletePermission"));
     }
   };
 
@@ -90,7 +98,7 @@ const AsignarPermisosPage = () => {
 
   const handleConfirmarAgregarPermiso = async () => {
     if (permisosSeleccionados.length === 0) {
-      toast.error("Por favor selecciona al menos un permiso");
+      toast.error(t("errors.selectAtLeastOne"));
       return;
     }
 
@@ -104,6 +112,7 @@ const AsignarPermisosPage = () => {
           editar: false,
           eliminar: false,
         };
+
         return CrearPermisoByCliente(nuevoPermiso);
       });
 
@@ -114,12 +123,15 @@ const AsignarPermisosPage = () => {
       });
 
       toast.success(
-        `${permisosSeleccionados.length} permiso(s) agregado(s) correctamente`,
+        t("messages.permissionsAdded", {
+          count: permisosSeleccionados.length,
+        }),
       );
+
       setOpenAddPermisos(false);
       setPermisosSeleccionados([]);
     } catch (error) {
-      toast.error("Error al agregar los permisos");
+      toast.error(t("errors.addPermissions"));
     }
   };
 
@@ -135,7 +147,7 @@ const AsignarPermisosPage = () => {
       <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
         <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
           <h1 className="text-xl sm:text-2xl font-bold leading-tight">
-            Permisos Asignados
+            {t("title")}
           </h1>
         </div>
 
@@ -146,19 +158,19 @@ const AsignarPermisosPage = () => {
           disabled={!permisosDisponibles || permisosDisponibles.length === 0}
         >
           <Plus className="h-4 w-4" />
-          Agregar Permiso
+          {t("buttons.addPermission")}
         </Button>
 
         <Card className="shadow-lg border-t-4 border-t-primary overflow-hidden mt-4 sm:mt-0">
           <CardHeader className="pb-2 sm:pb-4 px-4 sm:px-6">
             <CardTitle className="text-base sm:text-lg">
-              Permisos del Trabajador
+              {t("card.title")}
             </CardTitle>
             <p className="text-xs sm:text-sm text-muted-foreground">
-              Aquí podrás observar los permisos que tiene asignados el
-              trabajador
+              {t("card.description")}
             </p>
           </CardHeader>
+
           <CardContent className="p-0 sm:p-6 overflow-x-auto">
             <div className="min-w-full">
               <TablePermisosAsignados
@@ -170,9 +182,10 @@ const AsignarPermisosPage = () => {
           </CardContent>
         </Card>
       </div>
+
       <Modal
-        title="Agregar Permisos al Trabajador"
-        description="Selecciona uno o múltiples permisos para agregar al trabajador"
+        title={t("modal.title")}
+        description={t("modal.description")}
         open={openAddPermisos}
         onOpenChange={setOpenAddPermisos}
         size="full"
@@ -183,9 +196,12 @@ const AsignarPermisosPage = () => {
             <>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sticky top-0 z-10 py-2 bg-white">
                 <span className="text-sm text-gray-600 font-medium">
-                  {permisosSeleccionados.length} de {permisosDisponibles.length}{" "}
-                  seleccionados
+                  {t("selection.selectedCount", {
+                    selected: permisosSeleccionados.length,
+                    total: permisosDisponibles.length,
+                  })}
                 </span>
+
                 <div className="flex gap-2 w-full sm:w-auto">
                   <Button
                     variant="outline"
@@ -193,15 +209,16 @@ const AsignarPermisosPage = () => {
                     onClick={handleSeleccionarTodos}
                     className="flex-1"
                   >
-                    Seleccionar Todos
+                    {t("buttons.selectAll")}
                   </Button>
+
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={handleDeseleccionarTodos}
                     className="flex-1"
                   >
-                    Deseleccionar Todos
+                    {t("buttons.deselectAll")}
                   </Button>
                 </div>
               </div>
@@ -218,9 +235,7 @@ const AsignarPermisosPage = () => {
             </>
           ) : (
             <div className="text-center py-8 border rounded-lg">
-              <p className="text-gray-500">
-                No hay permisos disponibles para agregar
-              </p>
+              <p className="text-gray-500">{t("empty.noPermissions")}</p>
             </div>
           )}
 
@@ -228,15 +243,19 @@ const AsignarPermisosPage = () => {
             <div className="bg-blue-50 border border-blue-200 rounded-lg">
               <div className="p-4 border-b border-blue-200">
                 <h4 className="font-semibold text-blue-800">
-                  Permisos Seleccionados ({permisosSeleccionados.length})
+                  {t("selection.selectedTitle", {
+                    count: permisosSeleccionados.length,
+                  })}
                 </h4>
               </div>
+
               <div className="max-h-48 overflow-y-auto">
                 <div className="p-4 space-y-3">
                   {permisosSeleccionados.map((permisoId) => {
                     const permiso = permisosDisponibles?.find(
                       (p) => p.id === permisoId,
                     );
+
                     return permiso ? (
                       <div
                         key={permisoId}
@@ -250,13 +269,14 @@ const AsignarPermisosPage = () => {
                             {permiso.descripcion}
                           </p>
                         </div>
+
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => handleSeleccionarPermiso(permisoId)}
                           className="text-red-500 hover:text-red-700 ml-2 flex-shrink-0"
                         >
-                          Quitar
+                          {t("buttons.remove")}
                         </Button>
                       </div>
                     ) : null;
@@ -266,6 +286,7 @@ const AsignarPermisosPage = () => {
             </div>
           )}
         </div>
+
         <AlertDialogFooter className="mt-4 pt-4 border-t border-gray-200 flex-shrink-0">
           <AlertDialogCancel
             onClick={() => {
@@ -273,13 +294,16 @@ const AsignarPermisosPage = () => {
               setPermisosSeleccionados([]);
             }}
           >
-            Cancelar
+            {t("buttons.cancel")}
           </AlertDialogCancel>
+
           <AlertDialogAction
             onClick={handleConfirmarAgregarPermiso}
             disabled={permisosSeleccionados.length === 0}
           >
-            Agregar {permisosSeleccionados.length} Permiso(s)
+            {t("buttons.addSelected", {
+              count: permisosSeleccionados.length,
+            })}
           </AlertDialogAction>
         </AlertDialogFooter>
       </Modal>

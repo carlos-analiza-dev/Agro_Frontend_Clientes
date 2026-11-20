@@ -1,4 +1,5 @@
 "use client";
+
 import SkeletonCard from "@/components/generics/SkeletonCard";
 import useGetPesosByRaza from "@/hooks/historial-pesos/useGetPesosByRaza";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,9 +16,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import FormAddPesoRaza from "./ui/FormAddPesoRaza";
 
 const PesoRazaAnimal = () => {
+  const t = useTranslations("pesoRazaAnimal");
+
   const { data: pesos, isLoading } = useGetPesosByRaza();
   const [openModal, setOpenModal] = useState(false);
   const [selectedPeso, setSelectedPeso] = useState<ResponsePesoByRaza | null>(
@@ -46,20 +50,23 @@ const PesoRazaAnimal = () => {
     <div className="container p-4">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-lg md:text-2xl font-bold text-gray-800">
-          Pesos Promedio por Raza
+          {t("title")}
         </h1>
-        <Button onClick={handleAdd}>Agregar +</Button>
+
+        <Button onClick={handleAdd}>{t("buttons.add")}</Button>
       </div>
 
       {!pesos || pesos.length === 0 ? (
         <Card className="bg-gray-50">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Scale className="h-16 w-16 text-gray-400 mb-4" />
+
             <p className="text-xl text-gray-600 text-center">
-              No hay registros de pesos por raza
+              {t("empty.title")}
             </p>
+
             <p className="text-sm text-gray-400 mt-2">
-              Los pesos promedio aparecerán aquí cuando tengas registros
+              {t("empty.description")}
             </p>
           </CardContent>
         </Card>
@@ -74,18 +81,21 @@ const PesoRazaAnimal = () => {
       <AlertDialog open={openModal} onOpenChange={setOpenModal}>
         <AlertDialogContent>
           <div className="flex justify-end">
-            <AlertDialogCancel>X</AlertDialogCancel>
+            <AlertDialogCancel>{t("buttons.close")}</AlertDialogCancel>
           </div>
+
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {selectedPeso ? "Editar Peso por Raza" : "Agregar Peso por Raza"}
+              {selectedPeso ? t("modal.editTitle") : t("modal.addTitle")}
             </AlertDialogTitle>
+
             <AlertDialogDescription>
               {selectedPeso
-                ? "Modifica el rango de peso promedio diario para esta raza"
-                : "En este formulario podras agregar el peso promedio diario de tus animales por raza"}
+                ? t("modal.editDescription")
+                : t("modal.addDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
+
           <div className="p-3">
             <FormAddPesoRaza
               openModal={openModal}

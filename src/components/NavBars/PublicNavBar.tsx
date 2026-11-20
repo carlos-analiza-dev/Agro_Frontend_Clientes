@@ -24,6 +24,8 @@ import { toast } from "react-toastify";
 import SheetContentClientOut from "../generics/SheetContentClientOut";
 import { cn } from "@/lib/utils";
 import { navItemsPublic } from "@/helpers/data/navbars/publicItemsNavBars";
+import LanguageSwitcher from "../i18n/LanguageSwitcher";
+import { useTranslations } from "next-intl";
 
 const BadgeCounter = ({ count }: { count: number }) => {
   if (count === 0) return null;
@@ -84,7 +86,7 @@ const CountrySelector = ({
   onSelect: (pais: Pais) => void;
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const t = useTranslations("navbar");
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -133,8 +135,10 @@ const CountrySelector = ({
       {isOpen && paises?.data?.length > 0 && (
         <div className="absolute right-0 mt-2 w-64 sm:w-72 bg-white/95 backdrop-blur-xl rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] border border-white/40 py-2 z-50 max-h-96 overflow-y-auto animate-in slide-in-from-top-2 fade-in duration-200">
           <div className="px-4 py-3 border-b border-gray-100/50">
-            <p className="text-sm font-semibold text-gray-900">Tu país</p>
-            <p className="text-xs text-gray-400">Ver precios en tu moneda</p>
+            <p className="text-sm font-semibold text-gray-900">
+              {t("yourCountry")}
+            </p>
+            <p className="text-xs text-gray-400">{t("viewPrices")}</p>
           </div>
           <div className="py-1">
             {paises.data.map((pais: any) => (
@@ -180,26 +184,34 @@ const MobileCountryButton = ({
   selectedCountry: Pais | null;
   isLoading: boolean;
   onClick: () => void;
-}) => (
-  <Button
-    variant="ghost"
-    className={cn(
-      "sm:hidden flex items-center gap-1 rounded-full px-2.5 h-8 text-xs font-medium transition-all",
-      "bg-white/50 hover:bg-green-50/80",
-      hasSelectedCountry
-        ? "text-gray-600 hover:text-green-600"
-        : "text-green-600 bg-green-50/80 animate-pulse",
-    )}
-    onClick={onClick}
-    disabled={isLoading}
-  >
-    <Globe className="h-3.5 w-3.5" />
-    <span className="font-medium truncate max-w-[60px]">
-      {hasSelectedCountry ? selectedCountry?.nombre?.substring(0, 10) : "País"}
-    </span>
-    <ChevronDown className="h-2.5 w-2.5" />
-  </Button>
-);
+}) => {
+  const t = useTranslations("navbar");
+
+  return (
+    <Button
+      variant="ghost"
+      className={cn(
+        "sm:hidden flex items-center gap-1 rounded-full px-2.5 h-8 text-xs font-medium transition-all",
+        "bg-white/50 hover:bg-green-50/80",
+        hasSelectedCountry
+          ? "text-gray-600 hover:text-green-600"
+          : "text-green-600 bg-green-50/80 animate-pulse",
+      )}
+      onClick={onClick}
+      disabled={isLoading}
+    >
+      <Globe className="h-3.5 w-3.5" />
+
+      <span className="font-medium truncate max-w-[60px]">
+        {hasSelectedCountry
+          ? selectedCountry?.nombre?.substring(0, 10)
+          : t("country")}
+      </span>
+
+      <ChevronDown className="h-2.5 w-2.5" />
+    </Button>
+  );
+};
 
 const CountryModal = ({
   isOpen,
@@ -214,6 +226,7 @@ const CountryModal = ({
   onSelect: (pais: Pais) => void;
   onClose: () => void;
 }) => {
+  const t = useTranslations("navbar");
   if (!isOpen || !paises?.data?.length) return null;
 
   return (
@@ -222,11 +235,10 @@ const CountryModal = ({
         <div className="flex justify-between items-center p-5 border-b border-gray-100/50">
           <div>
             <h3 className="text-xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
-              Selecciona tu país
+              {t("selectYourCountry")}
             </h3>
-            <p className="text-sm text-gray-400 mt-0.5">
-              Precios en moneda local
-            </p>
+
+            <p className="text-sm text-gray-400 mt-0.5">{t("localPrices")}</p>
           </div>
           <button
             onClick={onClose}
@@ -286,26 +298,31 @@ const UserActionsDesktop = ({
 }: {
   onLogin: () => void;
   onRegister: () => void;
-}) => (
-  <div className="hidden sm:flex items-center gap-1.5">
-    <div className="w-px h-6 bg-gradient-to-b from-transparent via-gray-200 to-transparent mx-1" />
-    <Button
-      onClick={onLogin}
-      variant="ghost"
-      className="rounded-full px-4 text-sm font-medium text-gray-600 hover:text-green-600 hover:bg-green-50/50 transition-all duration-300"
-    >
-      <LogIn className="h-4 w-4 mr-1.5 transition-transform group-hover:scale-110" />
-      Iniciar Sesión
-    </Button>
-    <Button
-      onClick={onRegister}
-      className="rounded-full px-5 text-sm font-medium bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-[0_4px_16px_rgba(34,197,94,0.35)] hover:shadow-[0_6px_24px_rgba(34,197,94,0.45)] transition-all duration-300 transform hover:scale-[1.02]"
-    >
-      <Leaf className="h-3.5 w-3.5 mr-1.5" />
-      Registrarse
-    </Button>
-  </div>
-);
+}) => {
+  const t = useTranslations("navbar");
+
+  return (
+    <div className="hidden sm:flex items-center gap-1.5">
+      <div className="w-px h-6 bg-gradient-to-b from-transparent via-gray-200 to-transparent mx-1" />
+      <Button
+        onClick={onLogin}
+        variant="ghost"
+        className="rounded-full px-4 text-sm font-medium text-gray-600 hover:text-green-600 hover:bg-green-50/50 transition-all duration-300"
+      >
+        <LogIn className="h-4 w-4 mr-1.5 transition-transform group-hover:scale-110" />
+        {t("login")}
+      </Button>
+      <Button
+        onClick={onRegister}
+        className="rounded-full px-5 text-sm font-medium bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-[0_4px_16px_rgba(34,197,94,0.35)] hover:shadow-[0_6px_24px_rgba(34,197,94,0.45)] transition-all duration-300 transform hover:scale-[1.02]"
+      >
+        <Leaf className="h-3.5 w-3.5 mr-1.5" />
+        {t("register")}
+      </Button>
+      <LanguageSwitcher className="hidden sm:flex" />
+    </div>
+  );
+};
 
 const UserActionsMobile = ({
   onLogin,
@@ -313,25 +330,29 @@ const UserActionsMobile = ({
 }: {
   onLogin: () => void;
   onRegister: () => void;
-}) => (
-  <div className="flex sm:hidden items-center gap-0.5">
-    <Button
-      onClick={onRegister}
-      variant="ghost"
-      size="icon"
-      className="h-8 w-8 rounded-full hover:bg-green-50/80 transition-colors"
-      title="Registrarse"
-    >
-      <UserPlus className="h-4 w-4 text-gray-600" />
-    </Button>
-    <Button
-      onClick={onLogin}
-      className="rounded-full px-3 py-1.5 h-8 text-xs font-medium bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-[0_4px_12px_rgba(34,197,94,0.3)] transition-all duration-300"
-    >
-      Iniciar Sesión
-    </Button>
-  </div>
-);
+}) => {
+  const t = useTranslations("navbar");
+
+  return (
+    <div className="flex sm:hidden items-center gap-0.5">
+      <Button
+        onClick={onRegister}
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 rounded-full hover:bg-green-50/80 transition-colors"
+        title={t("register")}
+      >
+        <UserPlus className="h-4 w-4 text-gray-600" />
+      </Button>
+      <Button
+        onClick={onLogin}
+        className="rounded-full px-3 py-1.5 h-8 text-xs font-medium bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-[0_4px_12px_rgba(34,197,94,0.3)] transition-all duration-300"
+      >
+        {t("login")}
+      </Button>
+    </div>
+  );
+};
 
 const useScrollEffect = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -346,6 +367,7 @@ const useScrollEffect = () => {
 };
 
 const useCountrySelection = (paises: any) => {
+  const t = useTranslations("navbar");
   const [selectedCountry, setSelectedCountry] = useState<Pais | null>(null);
   const [hasSelectedCountry, setHasSelectedCountry] = useState(false);
   const [previousCountryId, setPreviousCountryId] = useState<string | null>(
@@ -388,7 +410,7 @@ const useCountrySelection = (paises: any) => {
       previousCountryId !== selectedCountry.id
     ) {
       setPreviousCountryId(selectedCountry.id);
-      toast.info(`🔄 Mostrando productos para ${selectedCountry.nombre}`, {
+      toast.info(t("countryChanged", { country: selectedCountry.nombre }), {
         position: "top-center",
         autoClose: 2000,
         className: "rounded-xl shadow-lg",
@@ -425,6 +447,7 @@ const useCountrySelection = (paises: any) => {
 };
 
 const PublicNavBar = () => {
+  const t = useTranslations("navbar");
   const { data: paises, isLoading: paisesLoading } = useGetPaisesActivos();
   const { cantidadFavoritos } = useFavoritos();
   const { totalItems } = useCartStore();
@@ -443,14 +466,11 @@ const PublicNavBar = () => {
 
   const ensureCountrySelected = (): boolean => {
     if (!hasSelectedCountry) {
-      toast.info(
-        "🌍 Para ver los productos disponibles, primero debes seleccionar tu país",
-        {
-          position: "top-center",
-          autoClose: 4000,
-          className: "rounded-xl shadow-lg",
-        },
-      );
+      toast.info(t("selectCountryRequired"), {
+        position: "top-center",
+        autoClose: 4000,
+        className: "rounded-xl shadow-lg",
+      });
       setTimeout(() => setIsCountryModalOpen(true), 500);
       return false;
     }
@@ -493,7 +513,7 @@ const PublicNavBar = () => {
             : "bg-white/80 backdrop-blur-sm border-b border-white/20",
         )}
       >
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+        <div className="w-full px-3 sm:px-4 lg:px-8">
           <div className="flex items-center justify-between h-14 sm:h-16 lg:h-20">
             <div className="flex items-center gap-2 sm:gap-4">
               <Button
@@ -501,7 +521,7 @@ const PublicNavBar = () => {
                 size="icon"
                 className="lg:hidden hover:bg-green-50/80 rounded-full h-9 w-9 transition-all duration-300"
                 onClick={() => setIsMobileMenuOpen(true)}
-                aria-label="Abrir menú"
+                aria-label={t("openMenu")}
               >
                 <Menu className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600" />
               </Button>
@@ -542,7 +562,7 @@ const PublicNavBar = () => {
                     )}
                   >
                     <Icon className="h-3.5 w-3.5" />
-                    {label}
+                    {t(`public.${label}`)}
                   </button>
                 );
               })}
@@ -572,14 +592,14 @@ const PublicNavBar = () => {
                     icon={Heart}
                     count={cantidadFavoritos}
                     onClick={handleNavigation("/favs")}
-                    title="Favoritos"
+                    title={t("favorites")}
                     color="text-red-400 hover:text-red-500"
                   />
                   <ActionButton
                     icon={ShoppingCart}
                     count={cantidadCarrito}
                     onClick={handleNavigation("/carrito")}
-                    title="Carrito"
+                    title={t("cart")}
                     color="text-green-500 hover:text-green-600"
                   />
                 </>

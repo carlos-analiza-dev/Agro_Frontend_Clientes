@@ -7,6 +7,7 @@ import { z } from "zod";
 import { isAxiosError } from "axios";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,45 +24,50 @@ import useFincasById from "@/hooks/fincas/useFincasById";
 import EspecieCantidadPicker from "../crear-fincas/ui/EspecieCantidadPicker";
 import MapaSeleccionDireccion from "@/components/maps/MapaSeleccionDireccion";
 
-const fincaSchema = z
-  .object({
-    nombre_finca: z.string().min(1, "El nombre de la finca es requerido"),
-    ubicacion: z.string().min(1, "La ubicación es requerida"),
-    abreviatura: z.string().optional(),
-    tamaño_total: z.string().min(1, "El tamaño total es requerido"),
-    area_ganaderia: z.string().optional(),
-    area_agricola: z.string().optional(),
-    tipo_explotacion: z.array(
-      z.object({
-        tipo_explotacion: z.string(),
-      }),
-    ),
-    especies_maneja: z
-      .array(
-        z.object({
-          especie: z.string(),
-          cantidad: z.number().min(1, "La cantidad debe ser mayor a 0"),
-        }),
-      )
-      .min(1, "Debe agregar al menos una especie"),
-    latitud: z.number().optional(),
-    longitud: z.number().optional(),
-  })
-  .refine(
-    (data) => !!data.area_ganaderia?.trim() || !!data.area_agricola?.trim(),
-    {
-      message: "Debe ingresar al menos un área: ganadería o agrícola",
-      path: ["area_ganaderia"],
-    },
-  );
-
-type FincaFormData = z.infer<typeof fincaSchema>;
-
 type UnidadMedida = "ha" | "mz" | "m2" | "km2" | "ac" | "ft2" | "yd2";
 
 export default function FincaDetailsPage() {
+  const t = useTranslations("fincaDetails");
+
+  const fincaSchema = z
+    .object({
+      nombre_finca: z.string().min(1, t("validation.farmNameRequired")),
+      ubicacion: z.string().min(1, t("validation.locationRequired")),
+      abreviatura: z.string().optional(),
+      tamaño_total: z.string().min(1, t("validation.totalSizeRequired")),
+      area_ganaderia: z.string().optional(),
+      area_agricola: z.string().optional(),
+      tipo_explotacion: z.array(
+        z.object({
+          tipo_explotacion: z.string(),
+        }),
+      ),
+      especies_maneja: z
+        .array(
+          z.object({
+            especie: z.string(),
+            cantidad: z
+              .number()
+              .min(1, t("validation.quantityGreaterThanZero")),
+          }),
+        )
+        .min(1, t("validation.minimumOneSpecies")),
+      latitud: z.number().optional(),
+      longitud: z.number().optional(),
+    })
+    .refine(
+      (data) => !!data.area_ganaderia?.trim() || !!data.area_agricola?.trim(),
+      {
+        message: t("validation.minimumOneArea"),
+        path: ["area_ganaderia"],
+      },
+    );
+
+  type FincaFormData = z.infer<typeof fincaSchema>;
+
   const router = useRouter();
   const queryClient = useQueryClient();
+
   const [modalVisible, setModalVisible] = useState(false);
   const [unidadMedida, setUnidadMedida] = useState<UnidadMedida>("ha");
   const [explotacionSeleccionada, setExplotacionSeleccionada] = useState<
@@ -70,6 +76,7 @@ export default function FincaDetailsPage() {
 
   const params = useParams();
   const fincaId = params.id as string;
+
   const { data: finca, isLoading, isError } = useFincasById(fincaId);
 
   const {
@@ -96,6 +103,7 @@ export default function FincaDetailsPage() {
   useEffect(() => {
     if (finca?.data) {
       const fincaData = finca.data;
+
       const unidadesValidas: UnidadMedida[] = [
         "ha",
         "mz",
@@ -105,11 +113,13 @@ export default function FincaDetailsPage() {
         "ft2",
         "yd2",
       ];
+
       const medidaFinca = unidadesValidas.includes(
         fincaData.medida_finca as UnidadMedida,
       )
         ? (fincaData.medida_finca as UnidadMedida)
         : "ha";
+
       reset({
         nombre_finca: fincaData.nombre_finca,
         abreviatura: fincaData.abreviatura || "",
@@ -125,8 +135,8 @@ export default function FincaDetailsPage() {
 
       setUnidadMedida(medidaFinca);
 
-      if (finca.data.tipo_explotacion) {
-        const explotacion = finca.data.tipo_explotacion.map(
+      if (fincaData.tipo_explotacion) {
+        const explotacion = fincaData.tipo_explotacion.map(
           (a) => a.tipo_explotacion,
         );
         setExplotacionSeleccionada(explotacion);
@@ -142,7 +152,7 @@ export default function FincaDetailsPage() {
       );
 
       if (totalAnimales === 0) {
-        toast.error("Debe agregar al menos un animal en las especies");
+        toast.error(t("messages.minimumOneAnimal"));
         return;
       }
 
@@ -155,20 +165,28 @@ export default function FincaDetailsPage() {
       const response = await ActualizarFinca(fincaId, fincaData);
 
       if (response.status === 200) {
-        toast.success("Finca actualizada correctamente");
+        toast.success(t("messages.updateSuccess"));
         router.push("/animales/crear-animal");
         reset();
-        queryClient.invalidateQueries({ queryKey: ["fincas-propietario"] });
-        queryClient.invalidateQueries({ queryKey: ["especies-fincas"] });
-        queryClient.invalidateQueries({ queryKey: ["finca", fincaId] });
+
+        queryClient.invalidateQueries({
+          queryKey: ["fincas-propietario"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["especies-fincas"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["finca", fincaId],
+        });
       }
     } catch (error) {
       if (isAxiosError(error)) {
         const errorMessage =
-          error.response?.data?.message || "No se pudo actualizar la finca";
+          error.response?.data?.message || t("messages.updateError");
+
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado al actualizar la finca");
+        toast.error(t("messages.unexpectedError"));
       }
     }
   };
@@ -179,11 +197,19 @@ export default function FincaDetailsPage() {
       : [...explotacionSeleccionada, alimento];
 
     setExplotacionSeleccionada(nuevasExplotacion);
+
     setValue(
       "tipo_explotacion",
       nuevasExplotacion.map((a) => ({ tipo_explotacion: a })),
     );
   };
+
+  const unidades = [
+    { value: "ha", label: t("units.hectare") },
+    { value: "mz", label: t("units.manzana") },
+    { value: "m2", label: t("units.squareMeters") },
+    { value: "ac", label: t("units.acres") },
+  ];
 
   if (isLoading) {
     return (
@@ -208,13 +234,17 @@ export default function FincaDetailsPage() {
       <div className="min-h-screen bg-background p-4 flex items-center justify-center">
         <Card className="max-w-md w-full">
           <CardContent className="p-6 text-center">
-            <h2 className="text-xl font-bold text-destructive mb-2">Error</h2>
+            <h2 className="text-xl font-bold text-destructive mb-2">
+              {t("error.title")}
+            </h2>
+
             <p className="text-muted-foreground mb-4">
-              No se pudo cargar la información de la finca
+              {t("error.description")}
             </p>
+
             <Button onClick={() => router.push("/fincas")}>
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Volver a fincas
+              {t("buttons.backToFarms")}
             </Button>
           </CardContent>
         </Card>
@@ -231,7 +261,7 @@ export default function FincaDetailsPage() {
           <CardHeader>
             <CardTitle className="text-2xl font-bold flex items-center gap-2">
               <Home className="h-6 w-6" />
-              Editar Finca
+              {t("title")}
             </CardTitle>
           </CardHeader>
 
@@ -240,16 +270,19 @@ export default function FincaDetailsPage() {
               <ScrollArea className="h-[calc(100vh-250px)] pr-4">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="nombre_finca">Nombre de la finca</Label>
+                    <Label htmlFor="nombre_finca">{t("fields.farmName")}</Label>
+
                     <div className="relative">
                       <Home className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+
                       <Input
                         id="nombre_finca"
-                        placeholder="Nombre de la finca"
+                        placeholder={t("placeholders.farmName")}
                         className="pl-10"
                         {...register("nombre_finca")}
                       />
                     </div>
+
                     {errors.nombre_finca && (
                       <p className="text-sm text-destructive">
                         {errors.nombre_finca.message}
@@ -258,18 +291,21 @@ export default function FincaDetailsPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="ubicacion">Ubicación</Label>
+                    <Label htmlFor="ubicacion">{t("fields.location")}</Label>
+
                     <div className="relative">
                       <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+
                       <Input
                         id="ubicacion"
-                        placeholder="Ubicación"
+                        placeholder={t("placeholders.location")}
                         className="pl-10 cursor-pointer"
                         readOnly
                         value={watch("ubicacion") || ""}
                         onClick={() => setModalVisible(true)}
                       />
                     </div>
+
                     {errors.ubicacion && (
                       <p className="text-sm text-destructive">
                         {errors.ubicacion.message}
@@ -280,13 +316,15 @@ export default function FincaDetailsPage() {
                   <div className="grid grid-cols-1 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="abreviatura">
-                        Abreviatura (opcional)
+                        {t("fields.abbreviation")}
                       </Label>
+
                       <div className="relative">
                         <Type className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+
                         <Input
                           id="abreviatura"
-                          placeholder="Abreviatura"
+                          placeholder={t("placeholders.abbreviation")}
                           className="pl-10"
                           {...register("abreviatura")}
                         />
@@ -295,18 +333,14 @@ export default function FincaDetailsPage() {
                   </div>
 
                   <div className="space-y-4">
-                    <Label>Unidad de medida</Label>
+                    <Label>{t("fields.measurementUnit")}</Label>
+
                     <p className="text-sm font-medium">
-                      Medida seleccionada: {unidadMedida}
+                      {t("fields.selectedMeasure")}: {unidadMedida}
                     </p>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                      {[
-                        { value: "ha", label: "Hectárea (ha)" },
-                        { value: "mz", label: "Manzana (mz)" },
-                        { value: "m2", label: "Metros cuadrados (m²)" },
-                        { value: "ac", label: "Acres (ac)" },
-                      ].map((medida) => (
+                      {unidades.map((medida) => (
                         <div
                           key={medida.value}
                           className="flex items-center space-x-2"
@@ -318,6 +352,7 @@ export default function FincaDetailsPage() {
                               setUnidadMedida(medida.value as UnidadMedida)
                             }
                           />
+
                           <label
                             htmlFor={medida.value}
                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
@@ -332,20 +367,25 @@ export default function FincaDetailsPage() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="tamaño_total">
-                        Tamaño total ({unidadMedida})
+                        {t("fields.totalSize", { unit: unidadMedida })}
                       </Label>
+
                       <div className="relative">
                         <Map className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+
                         <Input
                           id="tamaño_total"
                           type="number"
                           min={0}
                           step={0.5}
-                          placeholder={`Tamaño total en ${unidadMedida}`}
+                          placeholder={t("placeholders.totalSize", {
+                            unit: unidadMedida,
+                          })}
                           className="pl-10"
                           {...register("tamaño_total")}
                         />
                       </div>
+
                       {errors.tamaño_total && (
                         <p className="text-sm text-destructive">
                           {errors.tamaño_total.message}
@@ -355,19 +395,24 @@ export default function FincaDetailsPage() {
 
                     <div className="space-y-2">
                       <Label htmlFor="area_ganaderia">
-                        Área de ganadería ({unidadMedida})
+                        {t("fields.livestockArea", { unit: unidadMedida })}
                       </Label>
+
                       <div className="relative">
                         <Layers className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+
                         <Input
                           id="area_ganaderia"
                           type="number"
                           min={0}
-                          placeholder={`Área de ganadería en ${unidadMedida}`}
+                          placeholder={t("placeholders.livestockArea", {
+                            unit: unidadMedida,
+                          })}
                           className="pl-10"
                           {...register("area_ganaderia")}
                         />
                       </div>
+
                       {errors.area_ganaderia && (
                         <p className="text-sm text-destructive">
                           {errors.area_ganaderia.message}
@@ -377,19 +422,24 @@ export default function FincaDetailsPage() {
 
                     <div className="space-y-2">
                       <Label htmlFor="area_agricola">
-                        Área agrícola ({unidadMedida})
+                        {t("fields.agriculturalArea", { unit: unidadMedida })}
                       </Label>
+
                       <div className="relative">
                         <Layers className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+
                         <Input
                           id="area_agricola"
                           type="number"
                           min={0}
-                          placeholder={`Área agrícola en ${unidadMedida}`}
+                          placeholder={t("placeholders.agriculturalArea", {
+                            unit: unidadMedida,
+                          })}
                           className="pl-10"
                           {...register("area_agricola")}
                         />
                       </div>
+
                       {errors.area_agricola && (
                         <p className="text-sm text-destructive">
                           {errors.area_agricola.message}
@@ -399,7 +449,8 @@ export default function FincaDetailsPage() {
                   </div>
 
                   <div className="space-y-4">
-                    <Label>Tipo de explotación</Label>
+                    <Label>{t("fields.exploitationType")}</Label>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       {TipoExplotacion.map((explotacion) => (
                         <div
@@ -419,7 +470,7 @@ export default function FincaDetailsPage() {
                             htmlFor={explotacion.explotacion}
                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                           >
-                            {explotacion.explotacion}
+                            {t(`tipoExplotacion.${explotacion.id}`)}
                           </label>
                         </div>
                       ))}
@@ -427,12 +478,14 @@ export default function FincaDetailsPage() {
                   </div>
 
                   <div className="space-y-4">
-                    <Label>Especies y cantidades</Label>
+                    <Label>{t("fields.speciesAndQuantities")}</Label>
+
                     <EspecieCantidadPicker
                       value={watch("especies_maneja") || []}
                       onChange={(val) => setValue("especies_maneja", val)}
                       cantidadTotal={cantidadAnimalesTotal}
                     />
+
                     {errors.especies_maneja && (
                       <p className="text-sm text-destructive">
                         {errors.especies_maneja.message}
@@ -447,7 +500,9 @@ export default function FincaDetailsPage() {
                       className="gap-2"
                     >
                       <Save className="h-4 w-4" />
-                      {isSubmitting ? "Guardando..." : "Guardar Cambios"}
+                      {isSubmitting
+                        ? t("buttons.saving")
+                        : t("buttons.saveChanges")}
                     </Button>
                   </div>
                 </div>

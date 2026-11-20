@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,14 +34,18 @@ export default function EspecieCantidadPicker({
   cantidadTotal,
   disabled = false,
 }: EspecieCantidadPickerProps) {
+  const t = useTranslations("especieCantidadPicker");
+
   const { data: especies_options } = useGetEspecies();
   const [especies, setEspecies] = useState<EspecieCantidad[]>(value);
+
   useEffect(() => {
     setEspecies(value);
   }, [value]);
 
   const addEspecie = () => {
     if (disabled) return;
+
     const nuevasEspecies = [...especies, { especie: "", cantidad: 0 }];
     setEspecies(nuevasEspecies);
     onChange(nuevasEspecies);
@@ -48,6 +53,7 @@ export default function EspecieCantidadPicker({
 
   const removeEspecie = (index: number) => {
     if (disabled) return;
+
     const nuevasEspecies = especies.filter((_, i) => i !== index);
     setEspecies(nuevasEspecies);
     onChange(nuevasEspecies);
@@ -59,28 +65,34 @@ export default function EspecieCantidadPicker({
     newValue: string | number,
   ) => {
     if (disabled) return;
+
     const nuevasEspecies = [...especies];
+
     nuevasEspecies[index] = {
       ...nuevasEspecies[index],
       [field]: field === "cantidad" ? Number(newValue) : newValue,
     };
+
     setEspecies(nuevasEspecies);
     onChange(nuevasEspecies);
   };
 
   const sumaActual = especies.reduce((sum, item) => sum + item.cantidad, 0);
+
   const diferencia = cantidadTotal - sumaActual;
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Gestión de Especies</CardTitle>
+        <CardTitle className="text-lg">{t("title")}</CardTitle>
       </CardHeader>
+
       <CardContent className="space-y-4">
         {especies.map((especie, index) => (
           <div key={index} className="grid grid-cols-3 gap-4 items-end">
             <div className="space-y-2">
-              <Label>Especie</Label>
+              <Label>{t("fields.species")}</Label>
+
               <Select
                 value={especie.especie}
                 onValueChange={(value) =>
@@ -89,8 +101,9 @@ export default function EspecieCantidadPicker({
                 disabled={disabled}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar especie" />
+                  <SelectValue placeholder={t("placeholders.species")} />
                 </SelectTrigger>
+
                 <SelectContent>
                   {especies_options?.data?.map((option) => (
                     <SelectItem key={option.id} value={option.nombre}>
@@ -102,14 +115,16 @@ export default function EspecieCantidadPicker({
             </div>
 
             <div className="space-y-2">
-              <Label>Cantidad</Label>
+              <Label>{t("fields.quantity")}</Label>
+
               <Input
                 type="number"
+                min={0}
                 value={especie.cantidad}
                 onChange={(e) =>
                   updateEspecie(index, "cantidad", e.target.value)
                 }
-                placeholder="Cantidad"
+                placeholder={t("placeholders.quantity")}
                 disabled={disabled}
               />
             </div>
@@ -120,6 +135,7 @@ export default function EspecieCantidadPicker({
                 variant="destructive"
                 size="icon"
                 onClick={() => removeEspecie(index)}
+                aria-label={t("buttons.removeSpecies")}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -135,24 +151,31 @@ export default function EspecieCantidadPicker({
             className="gap-2"
           >
             <Plus className="h-4 w-4" />
-            Agregar Especie
+            {t("buttons.addSpecies")}
           </Button>
         )}
 
         {cantidadTotal > 0 && (
           <div className="text-sm text-muted-foreground">
-            <p>Total animales: {cantidadTotal}</p>
-            <p>Suma actual: {sumaActual}</p>
+            <p>
+              {t("summary.totalAnimals")}: {cantidadTotal}
+            </p>
+
+            <p>
+              {t("summary.currentSum")}: {sumaActual}
+            </p>
+
             <p
               className={
                 diferencia !== 0 ? "text-destructive" : "text-green-600"
               }
             >
-              Diferencia: {diferencia}
+              {t("summary.difference")}: {diferencia}
             </p>
+
             {diferencia !== 0 && (
               <p className="text-destructive text-xs">
-                La suma de especies debe coincidir con el total de animales
+                {t("summary.mismatch")}
               </p>
             )}
           </div>

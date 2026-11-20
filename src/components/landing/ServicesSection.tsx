@@ -7,14 +7,19 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { services_principal } from "@/helpers/data/publics/services";
+import { useTranslations } from "next-intl";
 
 const ServiceCard = ({
   service,
   index,
+  t,
 }: {
   service: (typeof services_principal)[number];
   index: number;
+  t: ReturnType<typeof useTranslations<"services">>;
 }) => {
+  const translationKey = `items.${service.id}`;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -67,18 +72,18 @@ const ServiceCard = ({
               )}
             >
               <Sparkles className="h-3 w-3" />
-              {service.badge}
+              {t(`${translationKey}.badge`)}
             </span>
           </div>
 
           <CardTitle className="text-xl font-bold mt-4 group-hover:text-green-600 transition-colors duration-300">
-            {service.title}
+            {t(`${translationKey}.title`)}
           </CardTitle>
         </CardHeader>
 
         <CardContent className="relative">
           <p className="text-gray-500 leading-relaxed text-sm">
-            {service.description}
+            {t(`${translationKey}.description`)}
           </p>
 
           <ul className="mt-5 space-y-2">
@@ -95,7 +100,7 @@ const ServiceCard = ({
                 >
                   <f.icon className={cn("w-3.5 h-3.5", service.iconColor)} />
                 </span>
-                <span>{f.label}</span>
+                <span>{t(`${translationKey}.features.${i}`)}</span>
               </li>
             ))}
           </ul>
@@ -108,7 +113,7 @@ const ServiceCard = ({
                 service.iconColor,
               )}
             >
-              <span>Explorar sistema</span>
+              <span>{t("explore")}</span>
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover/link:translate-x-1" />
             </Link>
           </div>
@@ -144,6 +149,8 @@ const DecorativeParticle = ({
 );
 
 export default function ServicesSection() {
+  const t = useTranslations("services");
+
   return (
     <section className="relative py-20 overflow-hidden bg-gradient-to-br from-gray-50/40 via-white to-green-50/20">
       <div className="absolute inset-0 bg-grid-green-900/[0.02] bg-[size:50px_50px]" />
@@ -170,21 +177,25 @@ export default function ServicesSection() {
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/60 backdrop-blur-sm border border-white/40 mb-4">
             <Sparkles className="h-4 w-4 text-green-500" />
             <span className="text-xs font-medium text-green-600 uppercase tracking-wider">
-              Nuestro Ecosistema
+              {t("badge")}
             </span>
           </div>
+
           <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-700 via-green-600 to-green-700 bg-clip-text text-transparent">
-            Tres sistemas, una sola plataforma
+            {t("title")}
           </h2>
-          <p className="text-gray-500 mt-3 text-lg">
-            Todo lo que necesitas para producir, gestionar tu agroservicio y
-            vender en el mercado agro centroamericano
-          </p>
+
+          <p className="text-gray-500 mt-3 text-lg">{t("description")}</p>
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services_principal.map((service, index) => (
-            <ServiceCard key={service.id} service={service} index={index} />
+            <ServiceCard
+              key={service.id}
+              service={service}
+              index={index}
+              t={t}
+            />
           ))}
         </div>
 
@@ -196,15 +207,14 @@ export default function ServicesSection() {
           className="text-center mt-14"
         >
           <div className="inline-flex flex-wrap items-center justify-center gap-4 px-6 py-3 rounded-full bg-white/60 backdrop-blur-sm border border-white/40 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-            <span className="text-sm text-gray-500">
-              ¿Listo para transformar tu producción?
-            </span>
+            <span className="text-sm text-gray-500">{t("cta")}</span>
+
             <Button
               asChild
               className="rounded-full px-6 py-1.5 h-auto text-sm font-medium bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-[0_4px_16px_rgba(34,197,94,0.2)] hover:shadow-[0_6px_24px_rgba(34,197,94,0.3)] transition-all duration-300"
             >
               <Link href="/register">
-                Comenzar ahora
+                {t("ctaButton")}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>

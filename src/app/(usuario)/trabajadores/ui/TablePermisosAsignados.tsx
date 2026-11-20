@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   permisos_cliente: ResponsePermisosInterface[];
@@ -26,15 +27,18 @@ const TablePermisosAsignados = ({
   handlePermisoChange,
   handleEliminarPermiso,
 }: Props) => {
+  const t = useTranslations("tablePermisosAsignados");
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Módulo</TableHead>
-          <TableHead className="text-center">Ver</TableHead>
-          <TableHead className="text-center">Acciones</TableHead>
+          <TableHead>{t("columns.module")}</TableHead>
+          <TableHead className="text-center">{t("columns.view")}</TableHead>
+          <TableHead className="text-center">{t("columns.actions")}</TableHead>
         </TableRow>
       </TableHeader>
+
       <TableBody>
         {permisos_cliente.map((permisoCliente) => (
           <TableRow key={permisoCliente.id}>
@@ -46,6 +50,7 @@ const TablePermisosAsignados = ({
                 </p>
               </div>
             </TableCell>
+
             <TableCell className="text-center">
               <Checkbox
                 checked={permisoCliente.ver}
@@ -56,6 +61,9 @@ const TablePermisosAsignados = ({
                     checked as boolean,
                   )
                 }
+                aria-label={t("actions.toggleView", {
+                  module: permisoCliente.permiso.modulo,
+                })}
               />
             </TableCell>
 
@@ -65,6 +73,9 @@ const TablePermisosAsignados = ({
                 size="icon"
                 onClick={() => handleEliminarPermiso(permisoCliente.id)}
                 className="h-8 w-8 text-red-500 hover:text-red-700"
+                aria-label={t("actions.deletePermission", {
+                  module: permisoCliente.permiso.modulo,
+                })}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>

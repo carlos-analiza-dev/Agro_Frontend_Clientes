@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { CrearPesoRazaInterface } from "@/api/peso-promedio-animal/interfaces/crear-peso-raza.interface";
 import { ResponsePesoByRaza } from "@/api/peso-promedio-animal/interfaces/obtener-pesos-by-raza.interface";
 import { Button } from "@/components/ui/button";
@@ -37,6 +40,8 @@ const FormAddPesoRaza = ({
   pesoData,
   onSuccess,
 }: Props) => {
+  const t = useTranslations("formAddPesoRaza");
+
   const [selectedEspecie, setSelectedEspecie] = useState<string>("");
   const isEditing = !!pesoData;
 
@@ -56,6 +61,7 @@ const FormAddPesoRaza = ({
   useEffect(() => {
     if (pesoData && openModal) {
       const especieId = (pesoData.raza as any).especieId || "";
+
       setSelectedEspecie(especieId);
       setValue("especieId", especieId);
       setValue("razaId", pesoData.raza.id);
@@ -80,7 +86,7 @@ const FormAddPesoRaza = ({
         };
 
         await EditarPesoByRaza(pesoData.id, payload);
-        toast.success("Rango de peso actualizado correctamente");
+        toast.success(t("messages.updateSuccess"));
       } else {
         const payload: CrearPesoRazaInterface = {
           razaId: data.razaId,
@@ -89,7 +95,7 @@ const FormAddPesoRaza = ({
         };
 
         await CrearPesoByRaza(payload);
-        toast.success("Rango de peso registrado correctamente");
+        toast.success(t("messages.createSuccess"));
       }
 
       reset();
@@ -100,15 +106,16 @@ const FormAddPesoRaza = ({
     } catch (error) {
       if (isAxiosError(error)) {
         const messages = error.response?.data?.message;
+
         const errorMessage = Array.isArray(messages)
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : `Error al ${isEditing ? "actualizar" : "registrar"} el rango de peso`;
+            : t(isEditing ? "errors.update" : "errors.create");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("errors.unexpected"));
       }
     }
   };
@@ -118,7 +125,8 @@ const FormAddPesoRaza = ({
       {!isEditing && (
         <>
           <div className="space-y-2">
-            <Label htmlFor="especie">Especie</Label>
+            <Label htmlFor="especie">{t("fields.species")}</Label>
+
             <Select
               onValueChange={(value) => {
                 setSelectedEspecie(value);
@@ -131,8 +139,9 @@ const FormAddPesoRaza = ({
               <SelectTrigger
                 className={errors.especieId ? "border-red-500" : ""}
               >
-                <SelectValue placeholder="Seleccionar especie" />
+                <SelectValue placeholder={t("placeholders.species")} />
               </SelectTrigger>
+
               <SelectContent>
                 {especies?.data?.map((especie) => (
                   <SelectItem key={especie.id} value={especie.id}>
@@ -141,13 +150,15 @@ const FormAddPesoRaza = ({
                 ))}
               </SelectContent>
             </Select>
+
             {errors.especieId && (
               <p className="text-sm text-red-500">{errors.especieId.message}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="raza">Raza del Animal</Label>
+            <Label htmlFor="raza">{t("fields.breed")}</Label>
+
             <Select
               onValueChange={(value) => setValue("razaId", value)}
               disabled={!selectedEspecie}
@@ -156,11 +167,12 @@ const FormAddPesoRaza = ({
                 <SelectValue
                   placeholder={
                     !selectedEspecie
-                      ? "Primero selecciona una especie"
-                      : "Seleccionar raza"
+                      ? t("placeholders.selectSpeciesFirst")
+                      : t("placeholders.breed")
                   }
                 />
               </SelectTrigger>
+
               <SelectContent>
                 {razas?.data?.map((raza) => (
                   <SelectItem key={raza.id} value={raza.id}>
@@ -169,6 +181,7 @@ const FormAddPesoRaza = ({
                 ))}
               </SelectContent>
             </Select>
+
             {errors.razaId && (
               <p className="text-sm text-red-500">{errors.razaId.message}</p>
             )}
@@ -177,18 +190,23 @@ const FormAddPesoRaza = ({
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="gananciaMinima">Ganancia Mínima Por Día (Lb)</Label>
+        <Label htmlFor="gananciaMinima">{t("fields.minimumGain")}</Label>
+
         <Input
           {...register("gananciaMinima", {
-            required: "La ganancia mínima es requerida",
-            min: { value: 0, message: "La ganancia mínima debe ser mayor a 0" },
+            required: t("validation.minimumRequired"),
+            min: {
+              value: 0,
+              message: t("validation.minimumGreaterThanZero"),
+            },
           })}
-          placeholder="Ej: 1.5"
+          placeholder={t("placeholders.minimumGain")}
           type="number"
           step="0.01"
           min={0}
           className={errors.gananciaMinima ? "border-red-500" : ""}
         />
+
         {errors.gananciaMinima && (
           <p className="text-sm text-red-500">
             {errors.gananciaMinima.message}
@@ -197,18 +215,23 @@ const FormAddPesoRaza = ({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="gananciaMaxima">Ganancia Máxima Por Día (Lb)</Label>
+        <Label htmlFor="gananciaMaxima">{t("fields.maximumGain")}</Label>
+
         <Input
           {...register("gananciaMaxima", {
-            required: "La ganancia máxima es requerida",
-            min: { value: 0, message: "La ganancia máxima debe ser mayor a 0" },
+            required: t("validation.maximumRequired"),
+            min: {
+              value: 0,
+              message: t("validation.maximumGreaterThanZero"),
+            },
           })}
-          placeholder="Ej: 2.5"
+          placeholder={t("placeholders.maximumGain")}
           type="number"
           step="0.01"
           min={0}
           className={errors.gananciaMaxima ? "border-red-500" : ""}
         />
+
         {errors.gananciaMaxima && (
           <p className="text-sm text-red-500">
             {errors.gananciaMaxima.message}
@@ -223,8 +246,9 @@ const FormAddPesoRaza = ({
           className="w-full"
           onClick={() => setOpenModal(false)}
         >
-          Cancelar
+          {t("buttons.cancel")}
         </Button>
+
         <Button
           type="submit"
           className="w-full bg-blue-600 hover:bg-blue-700"
@@ -232,11 +256,11 @@ const FormAddPesoRaza = ({
         >
           {isSubmitting
             ? isEditing
-              ? "Actualizando..."
-              : "Registrando..."
+              ? t("buttons.updating")
+              : t("buttons.registering")
             : isEditing
-              ? "Actualizar Rango"
-              : "Registrar Rango"}
+              ? t("buttons.updateRange")
+              : t("buttons.registerRange")}
         </Button>
       </div>
     </form>

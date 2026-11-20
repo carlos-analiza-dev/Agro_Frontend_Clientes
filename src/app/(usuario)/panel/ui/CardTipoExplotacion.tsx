@@ -1,5 +1,6 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import React from "react";
 import {
   Bar,
   BarChart,
@@ -11,6 +12,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useTranslations } from "next-intl";
 
 interface Props {
   explotacionData: { name: string; value: number; color: string }[];
@@ -21,11 +23,14 @@ const CardTipoExplotacion = ({
   EXPLOTACION_COLORS,
   explotacionData,
 }: Props) => {
+  const t = useTranslations("cardTipoExplotacion");
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Distribución por Tipo de Explotación</CardTitle>
+        <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
+
       <CardContent>
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
@@ -34,6 +39,7 @@ const CardTipoExplotacion = ({
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
+
               <XAxis
                 dataKey="name"
                 angle={-45}
@@ -41,10 +47,16 @@ const CardTipoExplotacion = ({
                 height={80}
                 fontSize={12}
               />
+
               <YAxis />
-              <Tooltip formatter={(value) => [`${value} fincas`, "Cantidad"]} />
+
+              <Tooltip
+                formatter={(value) => [`${value} ${t("farms")}`, t("quantity")]}
+              />
+
               <Legend />
-              <Bar dataKey="value" name="Fincas" fill="#8884d8">
+
+              <Bar dataKey="value" name={t("farms")} fill="#8884d8">
                 {explotacionData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}

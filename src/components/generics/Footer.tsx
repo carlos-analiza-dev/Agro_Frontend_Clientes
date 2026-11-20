@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Clock,
   CreditCard,
@@ -14,14 +16,18 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 const Footer = () => {
+  const t = useTranslations("footer");
+
   const [hasSelectedCountry, setHasSelectedCountry] = useState(false);
   const router = useRouter();
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
     const savedCountry = localStorage.getItem("selectedCountry");
+
     if (savedCountry) {
       setHasSelectedCountry(true);
     }
@@ -29,26 +35,28 @@ const Footer = () => {
 
   const canNavigate = () => {
     if (!hasSelectedCountry) {
-      toast.info("Para navegar, primero debes seleccionar tu país", {
+      toast.info(t("selectCountry"), {
         position: "top-center",
         autoClose: 3000,
       });
+
       return false;
     }
+
     return true;
   };
 
   const quickLinks = [
-    { name: "Productos", href: "/productos-agroservicios" },
-    { name: "Servicios", href: "/servicios-sembrador" },
-  ];
+    { id: "products", href: "/productos-agroservicios" },
+    { id: "services", href: "/servicios-sembrador" },
+  ] as const;
 
   const legalLinks = [
-    { name: "Términos y Condiciones", href: "/terminos" },
-    { name: "Política de Privacidad", href: "/privacidad" },
-    { name: "Preguntas Frecuentes", href: "/faq" },
-    { name: "Contacto", href: "/contacto" },
-  ];
+    { id: "terms", href: "/terminos" },
+    { id: "privacy", href: "/privacidad" },
+    { id: "faq", href: "/faq" },
+    { id: "contact", href: "/contacto" },
+  ] as const;
 
   const socialLinks = [
     {
@@ -72,43 +80,38 @@ const Footer = () => {
   ];
 
   const benefits = [
-    {
-      icon: Truck,
-      title: "Envíos a todo el país",
-      description: "Entrega rápida y segura",
-    },
-    {
-      icon: Shield,
-      title: "Productos de calidad",
-      description: "Garantía en todos nuestros productos",
-    },
-    {
-      icon: CreditCard,
-      title: "Pagos seguros",
-      description: "Múltiples métodos de pago",
-    },
-    {
-      icon: Heart,
-      title: "Atención personalizada",
-      description: "Asesoramiento experto",
-    },
+    { icon: Truck },
+    { icon: Shield },
+    { icon: CreditCard },
+    { icon: Heart },
   ];
+
   return (
     <footer className="bg-gray-900 text-white">
       <div className="border-b border-gray-800">
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {benefits.map((benefit, index) => (
-              <div key={index} className="flex items-center space-x-4">
-                <div className="flex-shrink-0">
-                  <benefit.icon className="h-8 w-8 text-green-500" />
+            {benefits.map((benefit, index) => {
+              const Icon = benefit.icon;
+
+              return (
+                <div key={index} className="flex items-center space-x-4">
+                  <div className="flex-shrink-0">
+                    <Icon className="h-8 w-8 text-green-500" />
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold text-white">
+                      {t(`benefits.${index}.title`)}
+                    </h3>
+
+                    <p className="text-sm text-gray-400">
+                      {t(`benefits.${index}.description`)}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-white">{benefit.title}</h3>
-                  <p className="text-sm text-gray-400">{benefit.description}</p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
@@ -117,32 +120,39 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-green-500">El Sembrador</h2>
+
             <p className="text-gray-400 text-sm leading-relaxed">
-              Agroservicios y Veterinaria comprometidos con el campo
-              centroamericano. Ofrecemos productos y servicios de alta calidad
-              para el cuidado de tu ganado y cultivos.
+              {t("description")}
             </p>
+
             <div className="flex space-x-4">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.name}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`text-gray-400 transition-colors ${social.color} hover:text-white`}
-                  aria-label={social.name}
-                >
-                  <social.icon className="h-5 w-5" />
-                </a>
-              ))}
+              {socialLinks.map((social) => {
+                const Icon = social.icon;
+
+                return (
+                  <a
+                    key={social.name}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`text-gray-400 transition-colors ${social.color} hover:text-white`}
+                    aria-label={social.name}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </a>
+                );
+              })}
             </div>
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-4">Enlaces rápidos</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              {t("quickLinksTitle")}
+            </h3>
+
             <ul className="space-y-2">
               {quickLinks.map((link) => (
-                <li key={link.name}>
+                <li key={link.id}>
                   <button
                     onClick={() => {
                       if (!canNavigate()) return;
@@ -150,7 +160,7 @@ const Footer = () => {
                     }}
                     className="text-gray-400 hover:text-green-500 transition-colors text-sm"
                   >
-                    {link.name}
+                    {t(`quickLinks.${link.id}`)}
                   </button>
                 </li>
               ))}
@@ -158,10 +168,12 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-4">Contacto</h3>
+            <h3 className="text-lg font-semibold mb-4">{t("contactTitle")}</h3>
+
             <ul className="space-y-3">
               <li className="flex items-center space-x-3">
                 <Phone className="h-5 w-5 text-green-500 flex-shrink-0" />
+
                 <a
                   href="tel:+573001234567"
                   className="text-gray-400 hover:text-green-500 transition-colors text-sm"
@@ -169,8 +181,10 @@ const Footer = () => {
                   +57 300 123 4567
                 </a>
               </li>
+
               <li className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-green-500 flex-shrink-0" />
+
                 <a
                   href="mailto:elsembrador@interactivecore.app"
                   className="text-gray-400 hover:text-green-500 transition-colors text-sm"
@@ -178,12 +192,14 @@ const Footer = () => {
                   elsembrador@interactivecore.app
                 </a>
               </li>
+
               <li className="flex items-start space-x-3">
                 <Clock className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+
                 <span className="text-gray-400 text-sm">
-                  Lunes a Viernes: 8:00 AM - 6:00 PM
+                  {t("schedule.weekdays")}
                   <br />
-                  Sábados: 8:00 AM - 1:00 PM
+                  {t("schedule.saturday")}
                 </span>
               </li>
             </ul>
@@ -195,25 +211,29 @@ const Footer = () => {
             <div className="flex flex-wrap justify-center gap-4">
               {legalLinks.map((link) => (
                 <Link
-                  key={link.name}
+                  key={link.id}
                   href={link.href}
                   className="text-gray-400 hover:text-green-500 transition-colors text-sm"
                 >
-                  {link.name}
+                  {t(`legalLinks.${link.id}`)}
                 </Link>
               ))}
             </div>
 
             <div className="text-gray-400 text-sm text-center">
-              © {currentYear} Interactive Core. Todos los derechos reservados.
+              © {currentYear} Interactive Core. {t("copyright")}
             </div>
 
             <div className="flex space-x-3">
-              <span className="text-gray-400 text-xs">Pagos seguros con:</span>
+              <span className="text-gray-400 text-xs">
+                {t("securePayments")}
+              </span>
+
               <div className="flex space-x-2">
                 <span className="text-xs bg-gray-800 px-2 py-1 rounded">
                   Visa
                 </span>
+
                 <span className="text-xs bg-gray-800 px-2 py-1 rounded">
                   Mastercard
                 </span>

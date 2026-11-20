@@ -22,6 +22,7 @@ import TourGuide from "../agroservicio/guia/TourGuide";
 import ButtonGuiaSystem from "../generics/ButtonGuiaSystem";
 import Image from "next/image";
 import { useNavItemsWithEspecies } from "@/hooks/fincas/useNavItemsWithEspecies";
+import { useTranslations, useLocale } from "next-intl";
 
 interface Props {
   handleLogout: () => Promise<void>;
@@ -80,38 +81,49 @@ const SidebarSection = ({
   </AccordionItem>
 );
 
-const LogoutButton = ({ onClick }: { onClick: () => Promise<void> }) => (
-  <button
-    onClick={onClick}
-    className={cn(
-      "flex w-full items-center rounded-xl px-4 py-3 text-sm font-medium",
-      "text-gray-500 hover:text-red-600 hover:bg-red-50/80",
-    )}
-  >
-    <LogOut className="mr-3 h-5 w-5" />
-    Cerrar sesión
-  </button>
-);
+const LogoutButton = ({ onClick }: { onClick: () => Promise<void> }) => {
+  const t = useTranslations("sidebar");
 
-const SidebarLogo = () => (
-  <div className="flex h-16 flex-shrink-0 items-center px-6 border-b border-gray-100/50 bg-gradient-to-r from-white via-green-50/20 to-white">
-    <div className="flex items-center gap-3">
-      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-green-600 to-green-700 shadow-[0_4px_16px_rgba(34,197,94,0.2)]">
-        <Sparkles className="h-4 w-4 text-white" />
-      </div>
-      <div>
-        <h1 className="text-lg font-bold bg-gradient-to-r from-green-700 to-green-600 bg-clip-text text-transparent leading-none">
-          Agroservicio
-        </h1>
-        <span className="text-[10px] text-gray-400 font-medium tracking-wider uppercase">
-          Panel de control
-        </span>
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "flex w-full items-center rounded-xl px-4 py-3 text-sm font-medium",
+        "text-gray-500 hover:text-red-600 hover:bg-red-50/80",
+      )}
+    >
+      <LogOut className="mr-3 h-5 w-5" />
+      {t("logout")}
+    </button>
+  );
+};
+
+const SidebarLogo = () => {
+  const t = useTranslations("sidebar");
+
+  return (
+    <div className="flex h-16 flex-shrink-0 items-center px-6 border-b border-gray-100/50 bg-gradient-to-r from-white via-green-50/20 to-white">
+      <div className="flex items-center gap-3">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-green-600 to-green-700 shadow-[0_4px_16px_rgba(34,197,94,0.2)]">
+          <Sparkles className="h-4 w-4 text-white" />
+        </div>
+
+        <div>
+          <h1 className="text-lg font-bold bg-gradient-to-r from-green-700 to-green-600 bg-clip-text text-transparent leading-none">
+            Agroservicio
+          </h1>
+          <span className="text-[10px] text-gray-400 font-medium tracking-wider uppercase">
+            {t("logo.subtitle")}
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
+  const t = useTranslations("sidebar");
+  const locale = useLocale();
   const { cliente } = useAuthStore();
   const pathname = usePathname();
   const router = useRouter();
@@ -129,6 +141,41 @@ const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
   } = useGetPermisosByCliente(clienteId);
 
   const { navItems, isLoading: isLoadingEspecies } = useNavItemsWithEspecies();
+
+  const getCategoryTranslation = (category: string) => {
+    const categoryKeys: Record<string, string> = {
+      Panel: "categories.panel",
+      Finca: "categories.farm",
+      Animales: "categories.animals",
+      "Sanidad Animal": "categories.animalHealth",
+      "Solicitudes El Sembrador": "categories.serviceRequests",
+      Pedidos: "categories.orders",
+      Finanzas: "categories.finances",
+      "Gestión de Nómina": "categories.payroll",
+      Actividades: "categories.activities",
+      Operaciones: "categories.operations",
+      "Consulta Inteligente": "categories.smartConsultation",
+      "Salud Animal": "categories.animalCare",
+      Reproducción: "categories.reproduction",
+      Paquetes: "categories.packages",
+      Cuenta: "categories.account",
+    };
+
+    const key = categoryKeys[category];
+
+    return key ? t(key) : category;
+  };
+
+  const getItemTranslation = (href: string, name: string) => {
+    const key = href
+      .replace(/^\/+/, "")
+      .replaceAll("/", "_")
+      .replaceAll("-", "_");
+
+    const translationKey = `items.${key}`;
+
+    return t.has(translationKey) ? t(translationKey) : name;
+  };
 
   const permisos = esPropietario ? permisosPaquete : permisosCliente;
 
@@ -165,8 +212,11 @@ const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
   const isItemActive = (href: string) => pathname === href;
 
   const allTourSteps = useMemo(() => {
-    return getClientesTourSteps(permisos ?? []);
-  }, [permisos]);
+    return getClientesTourSteps(
+      permisos ?? [],
+      locale.startsWith("en") ? "en" : "es",
+    );
+  }, [permisos, locale]);
 
   const currentTourSteps = useMemo(() => {
     return allTourSteps[pathname] || [];
@@ -216,7 +266,7 @@ const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
             {filteredNavItems.map((section) => (
               <SidebarSection
                 key={section.category}
-                category={section.category}
+                category={getCategoryTranslation(section.category)}
               >
                 {section.items.map((item) => {
                   const isActive = isItemActive(item.href);
@@ -225,7 +275,7 @@ const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
                       key={item.name}
                       href={item.href}
                       icon={item.icon}
-                      name={item.name}
+                      name={getItemTranslation(item.href, item.name)}
                       isActive={isActive}
                     />
                   );

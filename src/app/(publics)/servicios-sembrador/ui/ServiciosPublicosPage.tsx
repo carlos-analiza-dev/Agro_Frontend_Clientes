@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+
 import SkeletonCard from "@/components/generics/SkeletonCard";
 import Paginacion from "@/components/generics/Paginacion";
 import useGetCategoriasServices from "@/hooks/servicios/useGetCategoriasServices";
@@ -9,6 +11,8 @@ import CardServicios from "./CardServicios";
 import { EmptyServices } from "@/components/servicios/EmptyServices";
 
 const ServiciosPublicosPage = () => {
+  const t = useTranslations("publicServices");
+
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 6;
@@ -51,7 +55,7 @@ const ServiciosPublicosPage = () => {
   if (isError) {
     return (
       <div className="min-h-screen flex justify-center items-center bg-gradient-to-b from-background to-muted/20 p-4">
-        <div className="max-w-7xl mx-auto ">
+        <div className="max-w-7xl mx-auto">
           <EmptyServices
             onRefresh={onRefresh}
             countryName={pais?.nombre || pais?.name}
@@ -79,10 +83,11 @@ const ServiciosPublicosPage = () => {
       <div className="max-w-7xl mx-auto">
         <div className="mb-8 text-center">
           <h1 className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            Servicios Disponibles
+            {t("title")}
           </h1>
+
           <p className="text-muted-foreground text-sm md:text-base">
-            Descubre nuestra amplia gama de servicios profesionales
+            {t("description")}
           </p>
         </div>
 
@@ -103,10 +108,7 @@ const ServiciosPublicosPage = () => {
         )}
 
         <div className="mt-12 text-center text-sm text-muted-foreground border-t pt-6">
-          <p>
-            ¿Necesitas más información? Contáctanos para consultar sobre
-            nuestros servicios
-          </p>
+          <p>{t("footer")}</p>
         </div>
       </div>
     </div>

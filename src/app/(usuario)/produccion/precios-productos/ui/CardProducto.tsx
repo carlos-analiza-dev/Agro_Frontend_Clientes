@@ -1,3 +1,5 @@
+"use client";
+
 import { ResponseProductosVenta } from "@/api/productos-ganadero/interfaces/obtener-productos-precios.interface";
 import {
   AlertDialog,
@@ -10,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import FormPreciosProducto from "./FormPreciosProducto";
 
 interface Props {
@@ -17,6 +20,8 @@ interface Props {
 }
 
 const CardProducto = ({ producto }: Props) => {
+  const t = useTranslations("cardProducto");
+
   const [openModal, setOpenModal] = useState(false);
   const [precioToEdit, setPrecioToEdit] = useState<
     ResponseProductosVenta["ventas"][0] | null
@@ -46,17 +51,19 @@ const CardProducto = ({ producto }: Props) => {
           <img
             className="rounded-base mb-6"
             src={`/images/tipos_de_${producto.categoria.toLowerCase()}.jpg`}
-            alt="product image"
+            alt={t("productImage")}
             onError={(e) => {
               e.currentTarget.src = "/images/tipos_de_default.jpg";
             }}
           />
         </div>
+
         <div>
           <div className="flex items-center justify-between mb-4">
             <h5 className="text-xl text-heading font-semibold tracking-tight">
               {producto.nombre}
             </h5>
+
             <span className="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
               {producto.categoria}
             </span>
@@ -64,13 +71,15 @@ const CardProducto = ({ producto }: Props) => {
 
           <div className="mt-4 space-y-3">
             <h6 className="text-sm font-medium text-gray-500">
-              Precios de venta:
+              {t("salePrices")}:
             </h6>
+
             <div className="mt-2 mb-2">
               <Button variant="outline" onClick={handleAgregarClick}>
-                Agregar Precio +
+                {t("buttons.addPrice")}
               </Button>
             </div>
+
             {producto.ventas.length > 0 ? (
               producto.ventas.map((venta) => (
                 <div
@@ -82,6 +91,7 @@ const CardProducto = ({ producto }: Props) => {
                       {venta.unidadMedida}:
                     </span>
                   </div>
+
                   <div className="flex items-center space-x-3">
                     <span className="text-lg font-bold text-heading">
                       {venta.moneda} {parseFloat(venta.precio).toFixed(2)}
@@ -92,7 +102,8 @@ const CardProducto = ({ producto }: Props) => {
                       size="icon"
                       className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
                       onClick={() => handleEditarClick(venta)}
-                      title="Editar precio"
+                      title={t("buttons.editPrice")}
+                      aria-label={t("buttons.editPrice")}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -101,9 +112,9 @@ const CardProducto = ({ producto }: Props) => {
               ))
             ) : (
               <div className="p-4 text-center bg-gray-50 rounded-lg border border-gray-100">
-                <p className="text-gray-500">No hay precios configurados</p>
+                <p className="text-gray-500">{t("empty.title")}</p>
                 <p className="text-sm text-gray-400 mt-1">
-                  Haz clic en "Agregar Precio +" para configurar uno
+                  {t("empty.description")}
                 </p>
               </div>
             )}
@@ -112,7 +123,7 @@ const CardProducto = ({ producto }: Props) => {
           {producto.ventas && producto.ventas.length > 0 && (
             <div className="mt-4 pt-4 border-t border-gray-200">
               <p className="text-xs text-gray-500">
-                *Precios por{" "}
+                *{t("priceBy")}{" "}
                 {producto.ventas
                   .map((v) => v.unidadMedida.toLowerCase())
                   .join(", ")}
@@ -125,19 +136,23 @@ const CardProducto = ({ producto }: Props) => {
       <AlertDialog open={openModal} onOpenChange={handleCloseModal}>
         <AlertDialogContent className="sm:max-w-md">
           <div className="flex justify-end">
-            <AlertDialogCancel className="border-none hover:bg-gray-100">
+            <AlertDialogCancel
+              className="border-none hover:bg-gray-100"
+              aria-label={t("buttons.close")}
+            >
               ✕
             </AlertDialogCancel>
           </div>
 
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {precioToEdit ? "Editar Precio" : "Agregar Nuevo Precio"}
+              {precioToEdit ? t("modal.editTitle") : t("modal.addTitle")}
             </AlertDialogTitle>
+
             <AlertDialogDescription>
               {precioToEdit
-                ? `Modifica el precio de venta para ${producto.nombre}`
-                : `Configura un nuevo precio de venta para ${producto.nombre}`}
+                ? t("modal.editDescription", { name: producto.nombre })
+                : t("modal.addDescription", { name: producto.nombre })}
             </AlertDialogDescription>
           </AlertDialogHeader>
 

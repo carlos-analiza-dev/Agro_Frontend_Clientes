@@ -23,8 +23,10 @@ import SeleccionUbicacion from "@/components/cart/SeleccionaUbicacion";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { determinarTasaImpuesto } from "@/helpers/funciones/cart/determinarTasaImpuesto";
+import { useTranslations } from "next-intl";
 
 const CarritoPage = () => {
+  const t = useTranslations("cartPage");
   const router = useRouter();
   const { cliente } = useAuthStore();
   const [isErrorAuth, setIsErrorAuth] = useState("");
@@ -50,7 +52,7 @@ const CarritoPage = () => {
       if (!acc[sucursalId]) {
         acc[sucursalId] = {
           sucursalId,
-          nombreSucursal: item.nombreSucursal || "Sucursal sin nombre",
+          nombreSucursal: item.nombreSucursal || t("branches.unknownBranch"),
           productos: [],
           totalProductos: 0,
           subtotal: 0,
@@ -80,15 +82,13 @@ const CarritoPage = () => {
     onSuccess: () => {
       clearCart();
       queryClient.invalidateQueries({ queryKey: ["pedidos-cliente"] });
-      toast.success("¡Pedido realizado con éxito!");
+      toast.success(t("checkout.success"));
       router.push("/pedidos");
     },
     onError: (error) => {
       if (isAxiosError(error)) {
         const errorMessage =
-          error.response?.data?.message ||
-          error.message ||
-          "Error al realizar el pedido";
+          error.response?.data?.message || error.message || t("checkout.error");
         toast.error(errorMessage);
       }
     },
@@ -100,20 +100,18 @@ const CarritoPage = () => {
 
   const handleCheckout = (ubicacion: UbicacionPedido) => {
     if (!cliente) {
-      setIsErrorAuth(
-        "Debes iniciar sesión o registrate para realizar un pedido",
-      );
-      toast.error("Error de autenticacion al procesar el pedido");
+      setIsErrorAuth(t("checkout.authRequired"));
+      toast.error(t("checkout.authError"));
       return;
     }
 
     if (cart.length === 0) {
-      toast.error("El carrito está vacío");
+      toast.error(t("checkout.emptyCart"));
       return;
     }
 
     if (!ubicacion) {
-      toast.error("Debes seleccionar una ubicación de entrega");
+      toast.error(t("checkout.locationRequired"));
       return;
     }
 
@@ -181,7 +179,7 @@ const CarritoPage = () => {
   const handleUbicacionSeleccionada = (ubicacion: UbicacionPedido) => {
     setUbicacionSeleccionada(ubicacion);
     setMostrarSeleccionUbicacion(false);
-    toast.success("Ubicación de entrega configurada");
+    toast.success(t("location.success"));
   };
 
   if (cart.length === 0) {
@@ -189,11 +187,9 @@ const CarritoPage = () => {
       <div className="container mx-auto px-4 py-8 text-center">
         <ShoppingCart className="h-24 w-24 text-gray-400 mx-auto mb-6" />
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          Tu carrito está vacío
+          {t("empty.title")}
         </h2>
-        <p className="text-gray-600 mb-8">
-          Agrega algunos productos para comenzar a comprar
-        </p>
+        <p className="text-gray-600 mb-8">{t("empty.description")}</p>
       </div>
     );
   }
@@ -201,10 +197,8 @@ const CarritoPage = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Carrito de Compras</h1>
-        <p className="text-gray-600 mt-2">
-          Revisa y gestiona los productos en tu carrito
-        </p>
+        <h1 className="text-3xl font-bold text-gray-900">{t("title")}</h1>
+        <p className="text-gray-600 mt-2">{t("description")}</p>
       </div>
 
       {sonDiferentesSucursales && (
@@ -216,19 +210,18 @@ const CarritoPage = () => {
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-amber-800 text-base sm:text-lg">
-                  Productos de diferentes sucursales
+                  {t("branches.title")}
                 </h3>
+
                 <p className="text-amber-700 text-sm sm:text-base mt-1">
-                  Tu pedido incluye productos de {sucursalesUnicas.length}{" "}
-                  sucursal{sucursalesUnicas.length > 1 ? "es" : ""} diferentes.
-                  El tiempo de entrega estimado es de{" "}
-                  <strong>3 a 5 días hábiles</strong> debido a la consolidación
-                  de productos desde múltiples ubicaciones.
+                  {t("branches.description", {
+                    count: sucursalesUnicas.length,
+                  })}
                 </p>
                 <Separator className="my-3 bg-amber-200" />
                 <div className="space-y-2">
                   <p className="text-xs text-amber-700 font-medium">
-                    📦 Productos por sucursal:
+                    📦 {t("branches.productsByBranch")}
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {Object.values(productosPorSucursal).map((sucursal) => (
@@ -237,8 +230,10 @@ const CarritoPage = () => {
                         variant="secondary"
                         className="bg-white border border-amber-300 text-amber-700"
                       >
-                        {sucursal.nombreSucursal}: {sucursal.totalProductos}{" "}
-                        producto{sucursal.totalProductos !== 1 ? "s" : ""}
+                        {sucursal.nombreSucursal}:{" "}
+                        {t("branches.productCount", {
+                          count: sucursal.totalProductos,
+                        })}
                       </Badge>
                     ))}
                   </div>
@@ -285,7 +280,7 @@ const CarritoPage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <CardHeader>
-              <CardTitle>Selecciona Ubicación de Entrega</CardTitle>
+              <CardTitle>{t("location.title")}</CardTitle>
             </CardHeader>
             <CardContent>
               <SeleccionUbicacion
@@ -299,7 +294,7 @@ const CarritoPage = () => {
                 onClick={() => setMostrarSeleccionUbicacion(false)}
                 className="w-full mt-4"
               >
-                Cancelar
+                {t("location.cancel")}
               </Button>
             </CardContent>
           </Card>
@@ -310,10 +305,10 @@ const CarritoPage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <Card className="p-8 text-center">
             <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Procesando Pedido</h3>
-            <p className="text-gray-600">
-              Estamos creando tu pedido, por favor espera...
-            </p>
+            <h3 className="text-xl font-semibold mb-2">
+              {t("processing.title")}
+            </h3>
+            <p className="text-gray-600">{t("processing.description")}</p>
           </Card>
         </div>
       )}

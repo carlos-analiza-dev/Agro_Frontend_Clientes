@@ -1,6 +1,7 @@
 import { ArrowRight, Crown, MapPin, ShieldCheck, Sparkles } from "lucide-react";
 import { Button } from "../ui/button";
 import { Dispatch, SetStateAction } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   setShowPlanAlert: Dispatch<SetStateAction<boolean>>;
@@ -8,6 +9,8 @@ interface Props {
 }
 
 const AlertNotLogued = ({ setShowPlanAlert, redirect }: Props) => {
+  const t = useTranslations("alertNotLogued");
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div
@@ -19,12 +22,8 @@ const AlertNotLogued = ({ setShowPlanAlert, redirect }: Props) => {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm mb-3">
             <Crown className="w-8 h-8" />
           </div>
-          <h2 className="text-xl font-bold">
-            Necesitas un plan con AgroMarket
-          </h2>
-          <p className="text-sm text-green-50 mt-1">
-            Desbloquea toda la información de las publicaciones
-          </p>
+          <h2 className="text-xl font-bold">{t("title")}</h2>
+          <p className="text-sm text-green-50 mt-1">{t("description")}</p>
         </div>
 
         <div className="p-6">
@@ -33,25 +32,21 @@ const AlertNotLogued = ({ setShowPlanAlert, redirect }: Props) => {
               <div className="p-1.5 bg-green-100 rounded-full shrink-0 mt-0.5">
                 <ShieldCheck className="w-4 h-4 text-green-600" />
               </div>
-              <p className="text-sm text-gray-700">
-                Contacta directamente con vendedores verificados
-              </p>
+              <p className="text-sm text-gray-700">{t("benefits.contact")}</p>
             </div>
+
             <div className="flex items-start gap-3">
               <div className="p-1.5 bg-green-100 rounded-full shrink-0 mt-0.5">
                 <MapPin className="w-4 h-4 text-green-600" />
               </div>
-              <p className="text-sm text-gray-700">
-                Accede a la ubicación exacta de cada publicación
-              </p>
+              <p className="text-sm text-gray-700">{t("benefits.location")}</p>
             </div>
+
             <div className="flex items-start gap-3">
               <div className="p-1.5 bg-green-100 rounded-full shrink-0 mt-0.5">
                 <Sparkles className="w-4 h-4 text-green-600" />
               </div>
-              <p className="text-sm text-gray-700">
-                Más información, imágenes y detalles del producto
-              </p>
+              <p className="text-sm text-gray-700">{t("benefits.details")}</p>
             </div>
           </div>
 
@@ -60,15 +55,16 @@ const AlertNotLogued = ({ setShowPlanAlert, redirect }: Props) => {
               onClick={() => redirect()}
               className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800"
             >
-              Registrate
+              {t("buttons.register")}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
+
             <Button
               variant="ghost"
               onClick={() => setShowPlanAlert(false)}
               className="w-full text-gray-500"
             >
-              Más tarde
+              {t("buttons.later")}
             </Button>
           </div>
         </div>
