@@ -32,12 +32,12 @@ import { FormPorcinoData } from "@/api/animales/interfaces/crear-porcino.interfa
 import {
   condicionCorporalOptions,
   etapaPorcinoOptions,
-  sexoPorcinoOptions,
   tipoAlimentacionPorcinoOptions,
   tipoRegistroPorcinoOptions,
 } from "@/helpers/data/animales/animales-data";
 import { UpdateAnimalPorcino } from "@/api/animales/accions/update-animal";
 import { Animal } from "@/api/animales/interfaces/response-animales.interface";
+import { useTranslations } from "next-intl";
 
 interface Props {
   animalId: string;
@@ -45,6 +45,7 @@ interface Props {
 }
 
 const FormEditPorcino = ({ animalId, animal }: Props) => {
+  const t = useTranslations("FormAddPorcino");
   const router = useRouter();
   const queryClient = useQueryClient();
   const { cliente } = useAuthStore();
@@ -73,6 +74,11 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
 
   const { data: razas } = useGetRazasByEspecie(especieId);
   const { data: fincas } = useFincasPropietarios(cliente?.id ?? "");
+
+  const sexoItems = [
+    { value: "macho", label: t("fields.sexoMacho") },
+    { value: "hembra", label: t("fields.sexoHembra") },
+  ];
 
   useEffect(() => {
     if (animal) {
@@ -135,7 +141,7 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
     mutationFn: (data: FormPorcinoData) =>
       UpdateAnimalPorcino(animalId, data as any),
     onSuccess: () => {
-      toast.success("Porcino actualizado correctamente");
+      toast.success(t("messages.porcinoActualizado"));
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
       queryClient.invalidateQueries({ queryKey: ["animal-id", animalId] });
       router.push("/animales");
@@ -147,10 +153,10 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar el porcino";
+            : t("messages.errorActualizar");
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("messages.errorInesperado"));
       }
     },
   });
@@ -159,17 +165,17 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
     if (!cliente?.id) return;
 
     if (!data.fincaId) {
-      toast.error("Debes seleccionar una finca");
+      toast.error(t("validation.fincaRequired"));
       return;
     }
 
     if (!data.identificador || data.identificador.trim() === "") {
-      toast.error("El identificador es obligatorio");
+      toast.error(t("validation.identificadorRequired"));
       return;
     }
 
     if (!data.razaIds || data.razaIds.length === 0) {
-      toast.error("Debes seleccionar al menos una raza");
+      toast.error(t("validation.breedsRequired"));
       return;
     }
 
@@ -194,11 +200,12 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
       <Card className="max-w-4xl mx-auto">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold flex items-center gap-2">
-            Editar Porcino
+            {t("header.editTitle")}
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Actualiza la información del porcino. Los campos con{" "}
-            <span className="text-red-500">*</span> son obligatorios.
+            {t.rich("header.editSubtitle", {
+              red: (chunks) => <span className="text-red-500">{chunks}</span>,
+            })}
           </p>
         </CardHeader>
 
@@ -206,20 +213,20 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
           {/* Identificación */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Identificación
+              {t("sections.identificacion")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Sexo <span className="text-red-500">*</span>
+                  {t("fields.sexo")} <span className="text-red-500">*</span>
                 </Label>
                 <RadioGroup
                   value={watch("sexo") || ""}
                   onValueChange={(value) => setValue("sexo", value)}
                   className="space-y-2"
                 >
-                  {sexoPorcinoOptions.map((sexo) => (
+                  {sexoItems.map((sexo) => (
                     <div
                       key={sexo.value}
                       className="flex items-center space-x-2"
@@ -241,13 +248,14 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Identificador <span className="text-red-500">*</span>
+                  {t("fields.identificador")}{" "}
+                  <span className="text-red-500">*</span>
                 </Label>
                 <div className="flex items-center gap-2">
                   <div className="relative flex-1">
                     <Input
                       {...register("identificador")}
-                      placeholder="Ej: PORC-001, P001, etc."
+                      placeholder={t("fields.identificadorPlaceholder")}
                       className="w-full font-mono text-lg tracking-wider uppercase"
                     />
                   </div>
@@ -268,7 +276,7 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
                       </TooltipTrigger>
                       <TooltipContent side="right" className="max-w-xs">
                         <p className="text-xs">
-                          Identificador único del porcino
+                          {t("fields.identificadorHelp")}
                         </p>
                       </TooltipContent>
                     </Tooltip>
@@ -284,19 +292,23 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Nombre (opcional)</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.nombre")}
+                </Label>
                 <Input
                   {...register("nombre_animal")}
-                  placeholder="Ej: Lucero, Toro, etc."
+                  placeholder={t("fields.nombrePlaceholder")}
                   className="w-full"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Color / capa</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.color")}
+                </Label>
                 <Input
                   {...register("color")}
-                  placeholder="Ej: Blanco, Negro, Manchado"
+                  placeholder={t("fields.colorPlaceholder")}
                   className="w-full"
                 />
               </div>
@@ -304,14 +316,14 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
 
             <div className="space-y-2">
               <Label className="text-sm font-medium">
-                Finca <span className="text-red-500">*</span>
+                {t("fields.finca")} <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={watch("fincaId") || ""}
                 onValueChange={(value) => setValue("fincaId", value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecciona una finca" />
+                  <SelectValue placeholder={t("fields.fincaPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {fincasItems.map((finca) => (
@@ -330,13 +342,13 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
           {/* Características */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Características
+              {t("sections.caracteristicas")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Raza <span className="text-red-500">*</span>
+                  {t("fields.raza")} <span className="text-red-500">*</span>
                 </Label>
                 <div className="border rounded-lg p-3 space-y-2 max-h-48 overflow-y-auto bg-gray-50">
                   {razas?.data.map((raza) => (
@@ -372,7 +384,9 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Tipo de Registro</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.tipoRegistro")}
+                </Label>
                 <Select
                   value={watch("tipo_registro_porcino") || ""}
                   onValueChange={(value) =>
@@ -380,7 +394,9 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona el tipo de registro" />
+                    <SelectValue
+                      placeholder={t("fields.tipoRegistroPlaceholder")}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {tipoRegistroPorcinoOptions.map((opcion) => (
@@ -393,13 +409,15 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Etapa</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.etapa")}
+                </Label>
                 <Select
                   value={watch("etapa_porcino") || ""}
                   onValueChange={(value) => setValue("etapa_porcino", value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona la etapa" />
+                    <SelectValue placeholder={t("fields.etapaPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
                     {etapaPorcinoOptions.map((opcion) => (
@@ -414,36 +432,44 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Corral/Galera</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.corralGalera")}
+                </Label>
                 <Input
                   {...register("corral_galera")}
-                  placeholder="Ej: Corral A, Galera 1"
+                  placeholder={t("fields.corralGaleraPlaceholder")}
                   className="w-full"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Lote</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.lote")}
+                </Label>
                 <Input
                   {...register("lote")}
-                  placeholder="Ej: Lote 2024-1"
+                  placeholder={t("fields.lotePlaceholder")}
                   className="w-full"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Proveedor</Label>
+              <Label className="text-sm font-medium">
+                {t("fields.proveedor")}
+              </Label>
               <Input
                 {...register("proveedor")}
-                placeholder="Nombre del proveedor"
+                placeholder={t("fields.proveedorPlaceholder")}
                 className="w-full"
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Fecha de Ingreso</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.fechaIngreso")}
+                </Label>
                 <Input
                   type="date"
                   {...register("fecha_ingreso_porcino")}
@@ -452,27 +478,31 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Cantidad Inicial</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.cantidadInicial")}
+                </Label>
                 <Input
                   type="number"
                   min={1}
                   {...register("cantidad_inicial_porcino", {
                     valueAsNumber: true,
                   })}
-                  placeholder="Ej: 100"
+                  placeholder={t("fields.cantidadInicialPlaceholder")}
                   className="w-full"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Cantidad Actual</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.cantidadActual")}
+                </Label>
                 <Input
                   type="number"
                   min={0}
                   {...register("cantidad_actual_porcino", {
                     valueAsNumber: true,
                   })}
-                  placeholder="Ej: 95"
+                  placeholder={t("fields.cantidadActualPlaceholder")}
                   className="w-full"
                 />
               </div>
@@ -482,12 +512,14 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
           {/* Peso y Crecimiento */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Peso y Crecimiento
+              {t("sections.peso")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Peso Inicial (kg)</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.pesoInicial")}
+                </Label>
                 <Input
                   type="number"
                   step="0.1"
@@ -495,41 +527,43 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
                   {...register("peso_inicial_porcino", {
                     valueAsNumber: true,
                   })}
-                  placeholder="Ej: 8.5"
+                  placeholder={t("fields.pesoInicialPlaceholder")}
                   className="w-full"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Peso Promedio (kg)
+                  {t("fields.pesoPromedio")}
                 </Label>
                 <Input
                   type="number"
                   min={0}
                   {...register("peso_promedio")}
-                  placeholder="Ej: 45.5"
+                  placeholder={t("fields.pesoPromedioPlaceholder")}
                   className="w-full"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Ganancia de Peso (kg/día)
+                  {t("fields.gananciaPeso")}
                 </Label>
                 <Input
                   type="number"
                   step="0.01"
                   min={0}
                   {...register("ganancia_peso", { valueAsNumber: true })}
-                  placeholder="Ej: 0.25"
+                  placeholder={t("fields.gananciaPesoPlaceholder")}
                   className="w-full"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Fecha de Pesaje</Label>
+              <Label className="text-sm font-medium">
+                {t("fields.fechaPesaje")}
+              </Label>
               <Input
                 type="date"
                 {...register("fecha_pesaje_porcino")}
@@ -541,7 +575,7 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
           {/* Alimentación */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Alimentación
+              {t("sections.alimentacion")}
             </h3>
 
             <div className="border rounded-lg p-4 space-y-4 bg-gray-50">
@@ -603,27 +637,32 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
                           className="flex flex-wrap gap-4"
                         >
                           {[
-                            "comprado",
-                            "producido",
-                            "comprado y producido",
-                          ].map((origen) => (
+                            {
+                              value: "comprado",
+                              labelKey: "origenComprado",
+                            },
+                            {
+                              value: "producido",
+                              labelKey: "origenProducido",
+                            },
+                            {
+                              value: "comprado y producido",
+                              labelKey: "origenAmbos",
+                            },
+                          ].map(({ value, labelKey }) => (
                             <div
-                              key={origen}
+                              key={value}
                               className="flex items-center space-x-2"
                             >
                               <RadioGroupItem
-                                value={origen}
-                                id={`${alimento.value}-${origen}`}
+                                value={value}
+                                id={`${alimento.value}-${value}`}
                               />
                               <Label
-                                htmlFor={`${alimento.value}-${origen}`}
+                                htmlFor={`${alimento.value}-${value}`}
                                 className="text-sm"
                               >
-                                {origen === "comprado"
-                                  ? "Comprado"
-                                  : origen === "producido"
-                                    ? "Producido"
-                                    : "Comprado y producido"}
+                                {t(`alimentacion.${labelKey}`)}
                               </Label>
                             </div>
                           ))}
@@ -633,7 +672,9 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
                           "comprado y producido" && (
                           <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1">
-                              <Label className="text-xs">% Comprado</Label>
+                              <Label className="text-xs">
+                                {t("alimentacion.porcentajeComprado")}
+                              </Label>
                               <Input
                                 type="number"
                                 min="0"
@@ -657,12 +698,17 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
                                   );
                                   setValue("tipo_alimentacion", updated);
                                 }}
-                                placeholder="Ej: 60"
+                                placeholder={t(
+                                  "alimentacion.porcentajeEjemplo",
+                                  { value: 60 },
+                                )}
                                 className="w-full"
                               />
                             </div>
                             <div className="space-y-1">
-                              <Label className="text-xs">% Producido</Label>
+                              <Label className="text-xs">
+                                {t("alimentacion.porcentajeProducido")}
+                              </Label>
                               <Input
                                 type="number"
                                 min="0"
@@ -687,7 +733,10 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
                                   );
                                   setValue("tipo_alimentacion", updated);
                                 }}
-                                placeholder="Ej: 40"
+                                placeholder={t(
+                                  "alimentacion.porcentajeEjemplo",
+                                  { value: 40 },
+                                )}
                                 className="w-full"
                               />
                             </div>
@@ -699,7 +748,7 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
                                 alimentoSeleccionado.porcentaje_producido !==
                                 100 && (
                                 <p className="text-xs text-red-500 col-span-2">
-                                  ⚠️ La suma de porcentajes debe ser 100%
+                                  {t("alimentacion.porcentajeSumaError")}
                                 </p>
                               )}
                           </div>
@@ -714,7 +763,7 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Consumo Diario (kg)
+                  {t("fields.consumoDiario")}
                 </Label>
                 <Input
                   type="number"
@@ -723,7 +772,7 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
                   {...register("consumo_diario_porcino", {
                     valueAsNumber: true,
                   })}
-                  placeholder="Ej: 2.5"
+                  placeholder={t("fields.consumoDiarioPlaceholder")}
                   className="w-full"
                 />
               </div>
@@ -733,7 +782,7 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
           {/* Sanidad */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Sanidad
+              {t("sections.sanidad")}
             </h3>
 
             <div className="flex items-center space-x-2">
@@ -748,7 +797,7 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
                 htmlFor="desparasitado"
                 className="text-sm font-medium cursor-pointer"
               >
-                Desparasitado
+                {t("fields.desparasitado")}
               </Label>
             </div>
 
@@ -764,18 +813,22 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
                 htmlFor="cuarentena"
                 className="text-sm font-medium cursor-pointer"
               >
-                En Cuarentena
+                {t("fields.enCuarentena")}
               </Label>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Condición Corporal</Label>
+              <Label className="text-sm font-medium">
+                {t("fields.condicionCorporal")}
+              </Label>
               <Select
                 value={watch("condicion_corporal") || ""}
                 onValueChange={(value) => setValue("condicion_corporal", value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecciona la condición corporal" />
+                  <SelectValue
+                    placeholder={t("fields.condicionCorporalPlaceholder")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {condicionCorporalOptions.map((opcion) => (
@@ -788,19 +841,23 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Vacunas</Label>
+              <Label className="text-sm font-medium">
+                {t("fields.vacunas")}
+              </Label>
               <Textarea
                 {...register("vacunas")}
-                placeholder="Ej: Parvovirus, Leptospirosis, Erisipela"
+                placeholder={t("fields.vacunasPlaceholder")}
                 className="min-h-[80px]"
               />
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Tratamientos</Label>
+              <Label className="text-sm font-medium">
+                {t("fields.tratamientos")}
+              </Label>
               <Textarea
                 {...register("tratamientos")}
-                placeholder="Ej: Antibióticos, Vitaminas, Desparasitantes"
+                placeholder={t("fields.tratamientosPlaceholder")}
                 className="min-h-[80px]"
               />
             </div>
@@ -808,7 +865,7 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Bajas / Mortalidad
+                  {t("fields.bajasMortalidad")}
                 </Label>
                 <Input
                   type="number"
@@ -816,7 +873,7 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
                   {...register("bajas_mortalidad_porcino", {
                     valueAsNumber: true,
                   })}
-                  placeholder="Ej: 5"
+                  placeholder={t("fields.bajasMortalidadPlaceholder")}
                   className="w-full"
                 />
               </div>
@@ -826,12 +883,14 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
           {/* Salida */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Salida del Animal
+              {t("sections.salida")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Fecha de Salida</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.fechaSalida")}
+                </Label>
                 <Input
                   type="date"
                   {...register("fecha_salida_porcino")}
@@ -841,7 +900,7 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Peso de Salida (kg)
+                  {t("fields.pesoSalida")}
                 </Label>
                 <Input
                   type="number"
@@ -850,7 +909,7 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
                   {...register("peso_salida_porcino", {
                     valueAsNumber: true,
                   })}
-                  placeholder="Ej: 95.5"
+                  placeholder={t("fields.pesoSalidaPlaceholder")}
                   className="w-full"
                 />
               </div>
@@ -858,22 +917,26 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Comprador</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.comprador")}
+                </Label>
                 <Input
                   {...register("comprador_porcino")}
-                  placeholder="Nombre del comprador"
+                  placeholder={t("fields.compradorPlaceholder")}
                   className="w-full"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Precio ($)</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.precio")}
+                </Label>
                 <Input
                   type="number"
                   step="0.01"
                   min={0}
                   {...register("precio_porcino", { valueAsNumber: true })}
-                  placeholder="Ej: 5000"
+                  placeholder={t("fields.precioPlaceholder")}
                   className="w-full"
                 />
               </div>
@@ -881,7 +944,7 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
 
             <div className="space-y-2">
               <Label className="text-sm font-medium">
-                Rendimiento de Canal (%)
+                {t("fields.rendimientoCanal")}
               </Label>
               <Input
                 type="number"
@@ -890,7 +953,7 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
                 {...register("rendimiento_canal_porcino", {
                   valueAsNumber: true,
                 })}
-                placeholder="Ej: 75.5"
+                placeholder={t("fields.rendimientoCanalPlaceholder")}
                 className="w-full"
               />
             </div>
@@ -899,25 +962,27 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
           {/* Observaciones */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Observaciones
+              {t("sections.observaciones")}
             </h3>
 
             <div className="space-y-2">
               <Label className="text-sm font-medium">
-                Nombre del Criador/Origen
+                {t("fields.nombreCriadorOrigen")}
               </Label>
               <Input
                 {...register("nombre_criador_origen_animal")}
-                placeholder="Nombre del criador o lugar de origen"
+                placeholder={t("fields.nombreCriadorOrigenPlaceholder")}
                 className="w-full"
               />
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Observaciones</Label>
+              <Label className="text-sm font-medium">
+                {t("fields.observaciones")}
+              </Label>
               <Textarea
                 {...register("observaciones")}
-                placeholder="Observaciones adicionales sobre el porcino"
+                placeholder={t("fields.observacionesPlaceholder")}
                 className="min-h-[100px]"
               />
             </div>
@@ -929,7 +994,7 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
               variant="outline"
               onClick={() => router.push("/animales")}
             >
-              Cancelar
+              {t("buttons.cancelar")}
             </Button>
             <Button
               type="submit"
@@ -958,10 +1023,10 @@ const FormEditPorcino = ({ animalId, animal }: Props) => {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Actualizando...
+                  {t("buttons.actualizando")}
                 </>
               ) : (
-                "Actualizar Porcino"
+                t("buttons.actualizarPorcino")
               )}
             </Button>
           </div>

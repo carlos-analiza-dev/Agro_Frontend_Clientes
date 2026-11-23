@@ -1,8 +1,10 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MessageSquarePlus, CheckCircle } from "lucide-react";
+import { MessageSquarePlus, CheckCircle } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import useGetProductoById from "@/hooks/productos/useGetProductoById";
 import { MessageError } from "@/components/generics/MessageError";
@@ -25,6 +27,8 @@ import NoOpiniones from "@/components/products/NoOpiniones";
 import { ResponseInterfazPais } from "@/api/sucursales/interfaces/response-sucursal-pais.interface";
 
 const ProductDetailsPage = () => {
+  const t = useTranslations("productDetailsPage");
+
   const { id: productoId } = useParams();
   const { esFavorito, toggleFavorito } = useFavoritos();
   const { cliente } = useAuthStore();
@@ -207,8 +211,8 @@ const ProductDetailsPage = () => {
     return (
       <div className="flex items-center justify-center min-h-screen px-4">
         <MessageError
-          titulo="Error al cargar la información"
-          descripcion="Ocurrió un error al cargar los datos del producto o sucursales"
+          titulo={t("errors.loadTitle")}
+          descripcion={t("errors.loadDescription")}
           onPress={onRefresh}
         />
       </div>
@@ -227,8 +231,8 @@ const ProductDetailsPage = () => {
     return (
       <div className="flex items-center justify-center min-h-screen px-4">
         <MessageError
-          titulo="No se encontró el producto seleccionado"
-          descripcion="El producto que buscas no está disponible"
+          titulo={t("errors.notFoundTitle")}
+          descripcion={t("errors.notFoundDescription")}
           onPress={onRefresh}
         />
       </div>
@@ -294,7 +298,7 @@ const ProductDetailsPage = () => {
         <div className="mt-8 lg:mt-12 px-0 sm:px-2 lg:px-4 max-w-6xl mx-auto pb-8 lg:pb-10">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
             <h1 className="text-xl sm:text-2xl font-bold">
-              Opiniones Destacadas
+              {t("reviews.title")}
             </h1>
 
             {cliente && producto_comprado && !producto_opinado && (
@@ -305,7 +309,9 @@ const ProductDetailsPage = () => {
                 size="sm"
               >
                 <MessageSquarePlus className="h-4 w-4" />
-                {mostrarFormOpinion ? "Cancelar" : "Agregar opinión"}
+                {mostrarFormOpinion
+                  ? t("reviews.cancel")
+                  : t("reviews.addReview")}
               </Button>
             )}
 
@@ -313,7 +319,7 @@ const ProductDetailsPage = () => {
               <div className="flex items-center gap-2 p-3 border border-green-200 bg-green-50 rounded-lg w-full sm:w-auto">
                 <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
                 <p className="text-xs sm:text-sm font-medium text-green-800">
-                  Ya opinaste sobre este producto
+                  {t("reviews.alreadyReviewed")}
                 </p>
               </div>
             )}
@@ -344,10 +350,10 @@ const ProductDetailsPage = () => {
                   !mostrarFormOpinion && (
                     <div className="mt-6 p-4 border rounded-lg bg-blue-50">
                       <h3 className="font-semibold text-blue-800 mb-2 text-sm sm:text-base">
-                        ¿Te gustó este producto?
+                        {t("reviews.didYouLike")}
                       </h3>
                       <p className="text-xs sm:text-sm text-blue-700 mb-3">
-                        Comparte tu experiencia con otros clientes
+                        {t("reviews.shareExperience")}
                       </p>
                       <Button
                         onClick={() => setMostrarFormOpinion(true)}
@@ -355,7 +361,7 @@ const ProductDetailsPage = () => {
                         size="sm"
                         className="w-full text-xs sm:text-sm"
                       >
-                        Escribir mi opinión
+                        {t("reviews.writeReview")}
                       </Button>
                     </div>
                   )}

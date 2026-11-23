@@ -43,7 +43,6 @@ import {
   condicionCorporalOptions,
   edadCaprinoOptions,
   propositoCaprinoOptions,
-  sexoCaprinoOptions,
   tipoAlimentacionCaprinoOptions,
 } from "@/helpers/data/animales/animales-data";
 
@@ -106,6 +105,11 @@ const FormAddCaprino = ({ setActiveTab, selectedEspecieId }: Props) => {
     sexo: SexoAnimal.Hembra,
     especie: selectedEspecieId,
   });
+
+  const sexoItems = [
+    { value: "macho", label: t("fields.sexoMacho") },
+    { value: "hembra", label: t("fields.sexoHembra") },
+  ];
 
   useEffect(() => {
     if (machos) {
@@ -185,7 +189,6 @@ const FormAddCaprino = ({ setActiveTab, selectedEspecieId }: Props) => {
       value: finca.id,
     })) || [];
 
-  // ... (getIdentifierPrefix, getIdentifierPrefixPadre, getIdentifierPrefixMadre, formatNumber y los useEffect de identificadores SIN CAMBIOS) ...
   const getIdentifierPrefix = () => {
     const especie = especies?.data.find((e) => e.id === selectedEspecieId);
     const razaIds: string[] = watch("razaIds");
@@ -416,7 +419,7 @@ const FormAddCaprino = ({ setActiveTab, selectedEspecieId }: Props) => {
                     onValueChange={(value) => setValue("sexo", value)}
                     className="space-y-2"
                   >
-                    {sexoCaprinoOptions.map((sexo) => (
+                    {sexoItems.map((sexo) => (
                       <div
                         key={sexo.value}
                         className="flex items-center space-x-2"

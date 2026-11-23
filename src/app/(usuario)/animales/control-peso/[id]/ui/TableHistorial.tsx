@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { ResponseHistorialAnimal } from "@/api/peso-promedio-animal/interfaces/obtener-historial-pesos-animal.interface";
 import {
   Table,
@@ -36,6 +37,8 @@ interface Props {
 }
 
 const TableHistorial = ({ historial, animalId, onEdit, rangoPeso }: Props) => {
+  const t = useTranslations("tableHistorial");
+
   const [currentPage, setCurrentPage] = useState(1);
 
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -51,20 +54,22 @@ const TableHistorial = ({ historial, animalId, onEdit, rangoPeso }: Props) => {
 
     if (peso < rangoPeso.minimo) {
       return {
-        label: "Bajo",
+        label: t("status.low"),
         color: "bg-yellow-100 text-yellow-800 border-yellow-200",
         icon: AlertCircle,
       };
     }
+
     if (peso > rangoPeso.maximo) {
       return {
-        label: "Alto",
+        label: t("status.high"),
         color: "bg-orange-100 text-orange-800 border-orange-200",
         icon: AlertCircle,
       };
     }
+
     return {
-      label: "Normal",
+      label: t("status.normal"),
       color: "bg-green-100 text-green-800 border-green-200",
       icon: CheckCircle2,
     };
@@ -75,8 +80,10 @@ const TableHistorial = ({ historial, animalId, onEdit, rangoPeso }: Props) => {
 
   const paginatedData = useMemo(() => {
     if (!historial) return [];
+
     const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
+
     return historial.slice(start, end);
   }, [historial, currentPage, itemsPerPage]);
 
@@ -92,7 +99,7 @@ const TableHistorial = ({ historial, animalId, onEdit, rangoPeso }: Props) => {
     return (
       <div className="w-full rounded-md border">
         <div className="text-center py-8 sm:py-12 text-gray-500 px-4">
-          No hay registros de peso para este animal
+          {t("emptyHistory")}
         </div>
       </div>
     );
@@ -104,10 +111,13 @@ const TableHistorial = ({ historial, animalId, onEdit, rangoPeso }: Props) => {
         <div className="text-sm text-gray-500 mb-2 px-1">
           {rangoPeso ? (
             <span>
-              Rango esperado: {rangoPeso.minimo} - {rangoPeso.maximo} Kg
+              {t("expectedRange", {
+                min: rangoPeso.minimo,
+                max: rangoPeso.maximo,
+              })}
             </span>
           ) : (
-            "Historial de pesos"
+            t("historyTitle")
           )}
         </div>
 
@@ -130,12 +140,14 @@ const TableHistorial = ({ historial, animalId, onEdit, rangoPeso }: Props) => {
                         </span>
                       </div>
                     </div>
+
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => onEdit(item)}
                       className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                      title="Editar registro"
+                      title={t("editRecord")}
+                      aria-label={t("editRecord")}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -151,9 +163,9 @@ const TableHistorial = ({ historial, animalId, onEdit, rangoPeso }: Props) => {
                   )}
 
                   <div className="text-sm text-gray-600">
-                    <span className="font-medium">Observaciones: </span>
+                    <span className="font-medium">{t("observations")}: </span>
                     <span className="text-gray-500">
-                      {item.observaciones || "Sin observaciones"}
+                      {item.observaciones || t("noObservations")}
                     </span>
                   </div>
                 </CardContent>
@@ -172,11 +184,14 @@ const TableHistorial = ({ historial, animalId, onEdit, rangoPeso }: Props) => {
               className="gap-1"
             >
               <ChevronLeft className="h-4 w-4" />
-              Anterior
+              {t("previous")}
             </Button>
 
             <span className="text-sm text-gray-600">
-              Página {currentPage} de {totalPages}
+              {t("pageOf", {
+                current: currentPage,
+                total: totalPages,
+              })}
             </span>
 
             <Button
@@ -186,7 +201,7 @@ const TableHistorial = ({ historial, animalId, onEdit, rangoPeso }: Props) => {
               disabled={currentPage === totalPages}
               className="gap-1"
             >
-              Siguiente
+              {t("next")}
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
@@ -204,21 +219,36 @@ const TableHistorial = ({ historial, animalId, onEdit, rangoPeso }: Props) => {
             <TableCaption className="bg-gray-50 py-2">
               {rangoPeso ? (
                 <span className="text-sm">
-                  Rango esperado: {rangoPeso.minimo} - {rangoPeso.maximo} Kg
+                  {t("expectedRange", {
+                    min: rangoPeso.minimo,
+                    max: rangoPeso.maximo,
+                  })}
                 </span>
               ) : (
-                "Historial de pesos"
+                t("historyTitle")
               )}
             </TableCaption>
+
             <TableHeader className="bg-gray-50">
               <TableRow>
-                <TableHead className="text-center">Peso (Kg)</TableHead>
-                <TableHead className="text-center">Fecha</TableHead>
-                <TableHead className="text-center">Estado</TableHead>
-                <TableHead className="text-center">Observaciones</TableHead>
-                <TableHead className="text-center">Acciones</TableHead>
+                <TableHead className="text-center">
+                  {t("columns.weight")}
+                </TableHead>
+                <TableHead className="text-center">
+                  {t("columns.date")}
+                </TableHead>
+                <TableHead className="text-center">
+                  {t("columns.status")}
+                </TableHead>
+                <TableHead className="text-center">
+                  {t("columns.observations")}
+                </TableHead>
+                <TableHead className="text-center">
+                  {t("columns.actions")}
+                </TableHead>
               </TableRow>
             </TableHeader>
+
             <TableBody>
               {paginatedData.map((item) => {
                 const status = getPesoStatus(Number(item.peso));
@@ -229,7 +259,9 @@ const TableHistorial = ({ historial, animalId, onEdit, rangoPeso }: Props) => {
                     <TableCell className="text-center font-medium">
                       {item.peso} Kg
                     </TableCell>
+
                     <TableCell className="text-center">{item.fecha}</TableCell>
+
                     <TableCell className="text-center">
                       {status && (
                         <Badge variant="outline" className={status.color}>
@@ -238,16 +270,19 @@ const TableHistorial = ({ historial, animalId, onEdit, rangoPeso }: Props) => {
                         </Badge>
                       )}
                     </TableCell>
+
                     <TableCell className="text-center max-w-xs truncate">
                       {item.observaciones || "-"}
                     </TableCell>
+
                     <TableCell className="text-center">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => onEdit(item)}
                         className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                        title="Editar registro"
+                        title={t("editRecord")}
+                        aria-label={t("editRecord")}
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>

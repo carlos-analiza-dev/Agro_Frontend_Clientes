@@ -4,8 +4,11 @@ import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useRouter } from "next/navigation";
 import FormAlimentacionAnimal from "../ui/FormAlimentacionAnimal";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTranslations } from "next-intl";
 
 const NuevaAlimentacionPage = () => {
+  const t = useTranslations("nuevaAlimentacionPage");
+
   const { cliente } = useAuthStore();
   const router = useRouter();
   const moneda = cliente?.pais.simbolo_moneda || "$";
@@ -14,18 +17,18 @@ const NuevaAlimentacionPage = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center gap-3 mb-6">
-          <h1 className="text-2xl font-bold">Nueva Alimentación</h1>
+          <h1 className="text-2xl font-bold">{t("title")}</h1>
         </div>
 
         <Card className="shadow-lg border-t-4 border-t-primary">
           <CardHeader className="pb-4">
-            <CardTitle className="text-lg">
-              Registrar alimentación diaria
-            </CardTitle>
+            <CardTitle className="text-lg">{t("card.title")}</CardTitle>
+
             <p className="text-sm text-muted-foreground">
-              Completa los datos para registrar la alimentación de tu animal
+              {t("card.description")}
             </p>
           </CardHeader>
+
           <CardContent>
             <FormAlimentacionAnimal
               moneda={moneda}

@@ -3464,7 +3464,7 @@
     }
   },
   
-  "formAddAnimal": {
+ "formAddAnimal": {
     "animal": {
       "title": "Datos del Animal",
       "description": "Completa la información del animal. Los campos con * son obligatorios."
@@ -3481,9 +3481,14 @@
       "animalImages": "Imágenes del Animal"
     },
     "fields": {
+      "species": "Especie",
       "sex": "Sexo",
       "nameOptional": "Nombre (opcional)",
+      "namePlaceholder": "Ej: Lucero, Toro, etc.",
       "colorOptional": "Color (opcional)",
+      "sexoMacho": "Macho",
+      "sexoHembra": "Hembra",
+      "colorPlaceholder": "Ej: Negro, Blanco, Café",
       "tag": "Arete",
       "breeds": "Razas",
       "purityOptional": "Nivel de Pureza (opcional)",
@@ -3495,12 +3500,15 @@
       "producedPercentage": "% Producido",
       "supplementType": "Tipo de Complemento",
       "medicationOptional": "Medicamentos (opcional)",
+      "medicationPlaceholder": "Ej: Ivermectina, Vitaminas, etc.",
       "castrated": "Castrado",
       "sterilized": "Esterilizado",
       "characteristics": "Características",
+      "characteristicsPlaceholder": "Describe las características, comportamiento o cualquier observación relevante",
       "farm": "Finca",
       "animalWasPurchased": "¿El animal fue comprado?",
-      "originBreeder": "Nombre del criador (origen)"
+      "originBreeder": "Nombre del criador (origen)",
+      "originBreederPlaceholder": "Nombre del criador o lugar de origen"
     },
     "placeholders": {
       "age": "Edad en años",
@@ -3510,7 +3518,11 @@
     "labels": {
       "sixDigits": "6 dígitos",
       "tagHelp": "PRIMEROS SEIS DÍGITOS DE IDENTIFICACIÓN DEL ARETE",
-      "noName": "Sin nombre"
+      "noName": "Sin nombre",
+      "years": "años",
+      "example": "Ej: {value}",
+      "optional": "opcional",
+      "lastBirth": "Último parto"
     },
     "options": {
       "purchased": "Comprado",
@@ -3519,18 +3531,37 @@
     },
     "validation": {
       "percentagesMustEqual100": "La suma de porcentajes debe ser 100%",
-       "seleccionarMadre": "Debes seleccionar la madre para poder crear el animal",
-      "seleccionarPadre": "Debes seleccionar el padre para poder crear el animal"
+   "seleccionarPadre": "Debes seleccionar el padre para poder crear el animal",
+  "seleccionarMadre": "Debes seleccionar la madre para poder crear el animal",
+  "seleccionarPadreEditar": "Debes seleccionar un padre de la finca",
+  "seleccionarMadreEditar": "Debes seleccionar una madre de la finca",
+      "fieldRequired": "Este campo es obligatorio",
+      "selectSpecies": "Debes seleccionar una especie",
+      "selectSex": "Debes seleccionar un sexo",
+      "tagRequired": "El arete es obligatorio",
+      "tagSixDigits": "El arete debe tener 6 dígitos",
+      "tagNumeric": "El arete solo debe contener números",
+      "breedsRequired": "Debes seleccionar al menos una raza",
+      "reproductionTypeRequired": "Debes seleccionar un tipo de reproducción",
+      "productionTypeRequired": "Debes seleccionar un tipo de producción",
+      "ageRequired": "La edad es obligatoria",
+      "ageMin": "La edad no puede ser negativa"
     },
     "messages": {
       "automaticAge": "La edad se calcula automáticamente",
       "tryAnotherSearch": "Intenta con otro término de búsqueda",
       "animalCreado": "Animal creado correctamente",
+      "animalActualizado": "Animal actualizado correctamente",
       "errorCrear": "Hubo un error al crear el animal",
+      "errorActualizar": "Hubo un error al actualizar el animal",
       "errorInesperado": "Error inesperado. Contacte al administrador",
       "maxImagenes": "Máximo 5 imágenes permitidas",
       "imagenInvalida": "El archivo {name} no es una imagen válida",
-      "imagenExcede": "La imagen {name} excede el límite de 1MB"
+      "imagenExcede": "La imagen {name} excede el límite de 1MB",
+      "result": "{count} resultado",
+      "results": "{count} resultados",
+      "noMalesFound": "No se encontraron machos",
+      "noFemalesFound": "No se encontraron hembras"
     },
     "empty": {
       "noBreeds": "No hay razas disponibles"
@@ -3548,48 +3579,68 @@
       "belongsToFarm": "El padre pertenece a esta finca",
       "farmDescription": "Marca esta opción si el padre está registrado en tu ganadería",
       "search": "Buscar Padre",
-      "selectRegisteredMale": "Selecciona un macho registrado",
+      "searchHint": "(Selecciona un macho registrado)",
       "noMalesFound": "No se encontraron machos",
       "selected": "Padre seleccionado:",
       "name": "Nombre Padre",
+      "namePlaceholder": "Nombre del padre",
       "tag": "Arete Padre",
+      "tagHint": "(6 dígitos - opcional)",
+      "tagPlaceholder": "000000",
       "breeds": "Razas del Padre",
       "purity": "Nivel de Pureza del Padre",
       "breederName": "Nombre Criador del Padre",
+      "breederNamePlaceholder": "Nombre del criador",
       "ownerName": "Nombre Propietario del Padre",
-      "originFarm": "Finca de Origen del Padre"
+      "ownerNamePlaceholder": "Nombre del propietario",
+      "originFarm": "Finca de Origen del Padre",
+      "originFarmPlaceholder": "Nombre de la finca de origen"
     },
     "mother": {
       "title": "Datos de la Madre",
       "belongsToFarm": "La madre pertenece a esta finca",
       "farmDescription": "Marca esta opción si la madre está registrada en tu ganadería",
       "search": "Buscar Madre",
-      "selectRegisteredFemale": "Selecciona una hembra registrada",
+      "searchHint": "(Selecciona una hembra registrada)",
       "noFemalesFound": "No se encontraron hembras",
       "selected": "Madre seleccionada:",
       "birthNumber": "Número de parto",
       "birthNumberBadge": "Parto #{number}",
+      "birthNumberPlaceholder": "Ej: 1, 2, 3...",
       "lastBirth": "Último parto",
       "name": "Nombre Madre",
+      "namePlaceholder": "Nombre de la madre",
       "tag": "Arete Madre",
+      "tagHint": "(6 dígitos - opcional)",
+      "tagPlaceholder": "000000",
       "breeds": "Razas de la Madre",
       "purity": "Nivel de pureza",
       "breederName": "Nombre Criador",
+      "breederNamePlaceholder": "Nombre del criador",
       "ownerName": "Nombre Propietario",
-      "originFarm": "Nombre de la finca de origen"
+      "ownerNamePlaceholder": "Nombre del propietario",
+      "originFarm": "Nombre de la finca de origen",
+      "originFarmPlaceholder": "Nombre de la finca de origen"
     },
     "buttons": {
       "select": "Seleccionar",
       "change": "Cambiar",
       "previous": "Anterior",
+      "next": "Siguiente",
       "createAnimal": "Crear Animal",
-      "creating": "Creando..."
+      "updateAnimal": "Actualizar Animal",
+      "creating": "Creando...",
+      "updating": "Actualizando...",
+      "fatherData": "Datos del Padre",
+      "motherData": "Datos de la Madre"
     }
   },
   "FormAddPorcino": {
      "header": {
-    "title": "Datos del Porcino",
-    "subtitle": "Completa la información del porcino. Los campos con <red>*</red> son obligatorios."
+   "title": "Datos del Porcino",
+      "subtitle": "Completa la información del porcino. Los campos con <red>*</red> son obligatorios.",
+      "editTitle": "Editar Porcino",
+      "editSubtitle": "Actualiza la información del porcino. Los campos con <red>*</red> son obligatorios."
   },
     "sections": {
       "identificacion": "Identificación",
@@ -3607,6 +3658,8 @@
       "identificadorHelp": "Identificador único del porcino",
       "nombre": "Nombre (opcional)",
       "nombrePlaceholder": "Ej: Lucero, Toro, etc.",
+      "sexoMacho": "Macho",
+      "sexoHembra": "Hembra",
       "color": "Color / capa",
       "colorPlaceholder": "Ej: Blanco, Negro, Manchado",
       "finca": "Finca",
@@ -3675,22 +3728,35 @@
       "alt": "Vista previa {index}"
     },
     "buttons": {
-      "crearPorcino": "Crear Porcino",
-      "creando": "Creando..."
+    "crearPorcino": "Crear Porcino",
+      "creando": "Creando...",
+      "actualizarPorcino": "Actualizar Porcino",
+      "actualizando": "Actualizando...",
+      "cancelar": "Cancelar"
     },
-    "messages": {
+      "messages": {
       "porcinoCreado": "Porcino creado correctamente",
+      "porcinoActualizado": "Porcino actualizado correctamente",
       "errorCrear": "Hubo un error al crear el porcino",
+      "errorActualizar": "Hubo un error al actualizar el porcino",
       "errorInesperado": "Error inesperado. Contacte al administrador",
       "maxImagenes": "Máximo 5 imágenes permitidas",
       "imagenInvalida": "El archivo {name} no es una imagen válida",
       "imagenExcede": "La imagen {name} excede el límite de 1MB"
+    },
+    "validation": {
+      "fincaRequired": "Debes seleccionar una finca",
+      "identificadorRequired": "El identificador es obligatorio",
+      "breedsRequired": "Debes seleccionar al menos una raza",
+      "sexoRequired": "Debes seleccionar un sexo"
     }
   },
-  "FormAddCaprino": {
+   "FormAddCaprino": {
     "header": {
       "title": "Datos del Caprino",
-      "subtitle": "Completa la información del caprino. Los campos con <red>*</red> son obligatorios."
+      "subtitle": "Completa la información del caprino. Los campos con <red>*</red> son obligatorios.",
+      "editTitle": "Editar Caprino",
+      "editSubtitle": "Actualiza la información del caprino. Los campos con <red>*</red> son obligatorios."
     },
     "sections": {
       "identificacion": "Identificación",
@@ -3708,6 +3774,8 @@
       "areteCodigo": "Arete / código",
       "areteCodigoHelp": "PRIMEROS SEIS DÍGITOS DE IDENTIFICACIÓN DEL ARETE",
       "digits6": "6 dígitos",
+      "sexoMacho": "Macho Entero",
+      "sexoHembra": "Hembra",
       "nombre": "Nombre (opcional)",
       "nombrePlaceholder": "Ej: Lucero, Toro, etc.",
       "finca": "Finca",
@@ -3764,6 +3832,9 @@
       "maxInfo": "Máximo 5 imágenes · Formatos: JPG, PNG · Máximo 1MB cada una",
       "alt": "Vista previa {index}"
     },
+    "labels": {
+      "optional": "opcional"
+    },
     "padre": {
       "esDeFinca": "El padre pertenece a esta finca",
       "esDeFincaDesc": "Marca esta opción si el padre está registrado en tu ganadería",
@@ -3779,6 +3850,7 @@
       "padreSeleccionado": "Padre seleccionado:",
       "cambiar": "Cambiar",
       "nombrePadre": "Nombre Padre",
+      "nombrePadrePlaceholder": "Nombre del padre",
       "aretePadre": "Arete Padre",
       "aretePadreDesc": "(6 dígitos - opcional)",
       "razasPadre": "Razas del Padre",
@@ -3823,15 +3895,24 @@
       "siguientePadre": "Datos del Padre",
       "siguienteMadre": "Datos de la Madre",
       "crearCaprino": "Crear Caprino",
-      "creando": "Creando..."
+      "creando": "Creando...",
+      "actualizarCaprino": "Actualizar Caprino",
+      "actualizando": "Actualizando...",
+      "cancelar": "Cancelar"
     },
     "validation": {
-      "seleccionarMadre": "Debes seleccionar la madre para poder crear el caprino",
-      "seleccionarPadre": "Debes seleccionar el padre para poder crear el caprino"
+      "selectSpecies": "Debes seleccionar una especie",
+      "selectSex": "Debes seleccionar un sexo",
+      "breedsRequired": "Debes seleccionar al menos una raza",
+      "tagSixDigits": "El identificador debe tener 6 dígitos",
+      "seleccionarPadre": "Debes seleccionar el padre para poder crear el caprino",
+      "seleccionarMadre": "Debes seleccionar la madre para poder crear el caprino"
     },
     "messages": {
       "caprinoCreado": "Caprino creado correctamente",
+      "caprinoActualizado": "Caprino actualizado correctamente",
       "errorCrear": "Hubo un error al crear el caprino",
+      "errorActualizar": "Hubo un error al actualizar el caprino",
       "errorInesperado": "Error inesperado. Contacte al administrador",
       "maxImagenes": "Máximo 5 imágenes permitidas",
       "imagenInvalida": "El archivo {name} no es una imagen válida",
@@ -3841,7 +3922,9 @@
   "FormAddEquino": {
     "header": {
       "title": "Datos del Animal",
-      "subtitle": "Completa la información del animal. Los campos con <red>*</red> son obligatorios."
+      "subtitle": "Completa la información del animal. Los campos con <red>*</red> son obligatorios.",
+      "editTitle": "Editar Animal",
+      "editSubtitle": "Actualiza la información del animal. Los campos con <red>*</red> son obligatorios."
     },
     "sections": {
       "identificacion": "Identificación",
@@ -3870,6 +3953,8 @@
       "microchipPlaceholder": "Ej: 985141001234567, 900123456789012, etc.",
       "microchipHelp": "Código de identificación del microchip (15 dígitos recomendado)",
       "sexo": "Sexo",
+      "sexoMacho": "Macho",
+      "sexoHembra": "Hembra",
       "capaColor": "Capa / Color (opcional)",
       "capaColorPlaceholder": "Ej: Negro, Blanco, Café",
       "razas": "Razas",
@@ -3947,7 +4032,10 @@
       "fincaPlaceholder": "Selecciona una finca",
       "animalComprado": "¿El animal fue comprado?",
       "nombreCriadorOrigen": "Nombre del criador (origen)",
-      "nombreCriadorOrigenPlaceholder": "Nombre del criador o lugar de origen"
+      "nombreCriadorOrigenPlaceholder": "Nombre del criador o lugar de origen",
+      "guardarCambios": "Guardar Cambios",
+      "sinNombre": "Sin nombre",
+      "actualizando": "Actualizando..."
     },
     "buttons": {
       "agregar": "Agregar",
@@ -3956,7 +4044,10 @@
       "siguientePadre": "Datos del Padre",
       "siguienteMadre": "Datos de la Madre",
       "crearAnimal": "Crear Animal",
-      "creando": "Creando..."
+      "creando": "Creando...",
+      "guardarCambios": "Guardar Cambios",
+      "actualizarAnimal": "Actualizar Animal",
+      "actualizando": "Actualizando..."
     },
     "alimentacion": {
       "origenComprado": "Comprado",
@@ -3999,7 +4090,8 @@
       "nombrePropietarioPadre": "Nombre Propietario del Padre",
       "nombrePropietarioPadrePlaceholder": "Nombre del propietario",
       "fincaOrigenPadre": "Finca de Origen del Padre",
-      "fincaOrigenPadrePlaceholder": "Nombre de la finca de origen"
+      "fincaOrigenPadrePlaceholder": "Nombre de la finca de origen",
+      "resultadosCount": "{count, plural, =0 {0 resultados} one {# resultado} other {# resultados}}"
     },
     "madre": {
       "esDeFinca": "La madre pertenece a esta finca",
@@ -4022,16 +4114,21 @@
       "nombrePropietarioMadre": "Nombre Propietario",
       "nombrePropietarioMadrePlaceholder": "Nombre del propietario",
       "fincaOrigenMadre": "Nombre de la finca de origen",
-      "fincaOrigenMadrePlaceholder": "Nombre de la finca de origen"
+      "fincaOrigenMadrePlaceholder": "Nombre de la finca de origen",
+      "resultadosCount": "{count, plural, =0 {0 resultados} one {# resultado} other {# resultados}}"
     },
     "validation": {
       "seleccionarMadre": "Debes seleccionar la madre para poder crear el animal",
       "seleccionarPadre": "Debes seleccionar el padre para poder crear el animal",
+      "seleccionarMadreUpdate": "Debes seleccionar la madre para poder actualizar el animal",
+      "seleccionarPadreUpdate": "Debes seleccionar el padre para poder actualizar el animal",
       "elementoDuplicado": "Este elemento ya fue agregado"
     },
     "messages": {
       "animalCreado": "Animal creado correctamente",
+      "animalEdit": "Animal actualizado correctamente",
       "errorCrear": "Hubo un error al crear el animal",
+      "errorUpdate": "Hubo un error al actualizar el animal",
       "errorInesperado": "Error inesperado. Contacte al administrador",
       "maxImagenes": "Máximo 5 imágenes permitidas",
       "imagenInvalida": "El archivo {name} no es una imagen válida",
@@ -4041,7 +4138,9 @@
    "FormAddOvino": {
     "header": {
       "title": "Datos del Ovino",
-      "subtitle": "Completa la información del ovino. Los campos con <red>*</red> son obligatorios."
+      "subtitle": "Completa la información del ovino. Los campos con <red>*</red> son obligatorios.",
+       "editTitle": "Editar Ovino",
+      "editSubtitle": "Actualiza la información del ovino. Los campos con <red>*</red> son obligatorios."
     },
     "sections": {
       "identificacion": "Identificación",
@@ -4067,6 +4166,8 @@
       "fincaPlaceholder": "Selecciona una finca",
       "potrero": "Potrero (opcional)",
       "potreroPlaceholder": "Nombre del potrero",
+         "sexoMacho": "Macho Entero",
+      "sexoHembra": "Hembra",
       "foto": "Foto",
       "raza": "Raza",
       "edad": "Edad",
@@ -4107,7 +4208,12 @@
       "observacionesParasitos": "Observaciones",
       "observacionesParasitosPlaceholder": "Observaciones sobre parásitos",
       "observaciones": "Observaciones",
-      "observacionesPlaceholder": "Observaciones adicionales sobre el ovino"
+      "observacionesPlaceholder": "Observaciones adicionales sobre el ovino",
+      "opcional": "(opcional)",
+      "gananciaPeso": "Ganancia de peso (kg/día)",
+      "gananciaPesoPlaceholder": "Ej: 0.15",
+      "pezunas": "Pezuñas",
+      "pezunasPlaceholder": "Estado y tratamientos"
     },
     "alimentacion": {
       "origenComprado": "Comprado",
@@ -4150,7 +4256,8 @@
       "nombrePropietarioPadre": "Nombre Propietario del Padre",
       "nombrePropietarioPadrePlaceholder": "Nombre del propietario",
       "fincaOrigenPadre": "Finca de Origen del Padre",
-      "fincaOrigenPadrePlaceholder": "Nombre de la finca de origen"
+      "fincaOrigenPadrePlaceholder": "Nombre de la finca de origen",
+      "resultadosCount": "{count, plural, =0 {0 resultados} one {# resultado} other {# resultados}}"
     },
     "madre": {
       "esDeFinca": "La madre pertenece a esta finca",
@@ -4182,15 +4289,25 @@
       "siguientePadre": "Datos del Padre",
       "siguienteMadre": "Datos de la Madre",
       "crearOvino": "Crear Ovino",
-      "creando": "Creando..."
+      "creando": "Creando...",
+      "actualizarOvino": "Actualizar Ovino",
+      "actualizando": "Actualizando..."
     },
     "validation": {
-      "seleccionarMadre": "Debes seleccionar la madre para poder crear el ovino",
-      "seleccionarPadre": "Debes seleccionar el padre para poder crear el ovino"
+   "seleccionarMadre": "Debes seleccionar la madre para poder crear el ovino",
+      "seleccionarPadre": "Debes seleccionar el padre para poder crear el ovino",
+      "seleccionarEspecie": "Debes seleccionar una especie",
+      "seleccionarRaza": "Debes seleccionar al menos una raza",
+      "seleccionarSexo": "Debes seleccionar un sexo",
+      "identificadorInvalido": "El identificador debe tener 6 dígitos",
+      "seleccionarPadreFinca": "Debes seleccionar un padre de la finca",
+      "seleccionarMadreFinca": "Debes seleccionar una madre de la finca"
     },
     "messages": {
-      "ovinoCreado": "Ovino creado correctamente",
+ "ovinoCreado": "Ovino creado correctamente",
+      "ovinoActualizado": "Ovino actualizado correctamente",
       "errorCrear": "Hubo un error al crear el ovino",
+      "errorActualizar": "Hubo un error al actualizar el ovino",
       "errorInesperado": "Error inesperado. Contacte al administrador",
       "maxImagenes": "Máximo 5 imágenes permitidas",
       "imagenInvalida": "El archivo {name} no es una imagen válida",
@@ -4200,8 +4317,11 @@
    "FormAddAvicola": {
     "header": {
       "title": "Datos del Lote",
-      "subtitle": "Completa la información del lote avícola. Los campos con <red>*</red> son obligatorios."
+      "subtitle": "Completa la información del lote avícola. Los campos con <red>*</red> son obligatorios.",
+       "editTitle": "Editar Lote Avícola",
+      "editSubtitle": "Actualiza la información del lote avícola. Los campos con <red>*</red> son obligatorios."
     },
+    
     "sections": {
       "identificacion": "Identificación",
       "razas": "Razas del Lote",
@@ -4278,6 +4398,7 @@
       "finca": "Finca",
       "fincaPlaceholder": "Selecciona una finca",
       "loteActivo": "Lote Activo"
+      
     },
     "alimentacion": {
       "origenComprado": "Comprado",
@@ -4297,9 +4418,11 @@
       "alt": "Vista previa {index}"
     },
     "buttons": {
-      "cancelar": "Cancelar",
+ "cancelar": "Cancelar",
       "ingresarLote": "Ingresar Lote",
-      "creando": "Creando..."
+      "creando": "Creando...",
+      "actualizarLote": "Actualizar Lote",
+      "actualizando": "Actualizando..."
     },
     "validation": {
       "especieInvalida": "No se ha seleccionado una especie válida"
@@ -4315,8 +4438,14 @@
   },
   "FormAddPeces": {
     "header": {
-      "title": "Datos del Lote de Peces",
-      "subtitle": "Completa la información del lote piscícola. Los campos con <red>*</red> son obligatorios."
+"title": "Datos del Lote de Peces",
+      "subtitle": "Completa la información del lote piscícola. Los campos con <red>*</red> son obligatorios.",
+      "editTitle": "Editar Lote de Peces",
+      "editSubtitle": "Actualiza la información del lote piscícola. Los campos con <red>*</red> son obligatorios."
+      
+    },
+    "loading": {
+      "cargandoLote": "Cargando datos del lote..."
     },
     "sections": {
       "identificacion": "Identificación",
@@ -4427,20 +4556,2471 @@
       "alt": "Vista previa {index}"
     },
     "buttons": {
-      "cancelar": "Cancelar",
+    "cancelar": "Cancelar",
       "ingresarLotePeces": "Ingresar Lote de Peces",
-      "creando": "Creando..."
+      "creando": "Creando...",
+      "actualizarLotePeces": "Actualizar Lote de Peces",
+      "actualizando": "Actualizando..."
     },
     "validation": {
-      "especieInvalida": "No se ha seleccionado una especie válida"
+      "especieInvalida": "No se ha seleccionado una especie válida",
+      "seleccionarFinca": "Debes seleccionar una finca",
+      "seleccionarRaza": "Debes seleccionar al menos una raza",
+      "identificadorObligatorio": "El identificador es obligatorio",
+      "fechaSiembraObligatoria": "La fecha de siembra es obligatoria",
+      "cantidadInicialMayorCero": "La cantidad inicial debe ser mayor a 0"
     },
     "messages": {
-      "pecesCreado": "Lote de peces creado correctamente",
+"pecesCreado": "Lote de peces creado correctamente",
+      "pecesActualizado": "Lote de peces actualizado correctamente",
       "errorCrear": "Hubo un error al crear el lote de peces",
+      "errorActualizar": "Hubo un error al actualizar el lote de peces",
       "errorInesperado": "Error inesperado. Contacte al administrador",
       "maxImagenes": "Máximo 5 imágenes permitidas",
       "imagenInvalida": "El archivo {name} no es una imagen válida",
       "imagenExcede": "La imagen {name} excede el límite de 1MB"
+    }
+  },
+  "AnimalCard": {
+    "labels": {
+      "crossbreed": "Encaste",
+      "noBreed": "Sin raza",
+      "fatherData": "Datos del Padre",
+      "motherData": "Datos de la Madre",
+      "notAvailable": "N/D"
+    },
+    "tooltips": {
+      "discardAnimal": "Descartar Animal",
+      "uploadPhoto": "Subir Foto"
+    },
+    "buttons": {
+      "edit": "Editar",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "discardAnimal": "Descartar Animal"
+    },
+    "deathModal": {
+      "title": "Actualizar estado de vida",
+      "description": "Indique si el animal está vivo o ha fallecido.",
+      "hasDied": "¿El animal ha fallecido?",
+      "deathReason": "Razón de la muerte",
+      "deathReasonPlaceholder": "Ingrese la razón de la muerte"
+    },
+    "discardModal": {
+      "title": "Descartar Animal",
+      "description": "Esta acción marcará al animal como descartado. Asegúrese de ingresar toda la información requerida.",
+      "discardReason": "Razón de descarte *",
+      "discardReasonPlaceholder": "Ej: Venta, Muerte, Traslado, etc.",
+      "warningLabel": "Advertencia:",
+      "warningText": "Esta acción no se puede deshacer. El animal será marcado como descartado en el sistema."
+    },
+    "validation": {
+      "deathReasonRequired": "Debe ingresar una razón de muerte válida (no puede estar vacía o ser 'N/D')",
+      "discardReasonRequired": "Debe ingresar una razón de descarte válida"
+    },
+    "messages": {
+      "profileImageUpdated": "Perfil de animal actualizado exitosamente",
+      "profileImageUpdateError": "No se pudo actualizar la imagen de perfil",
+      "profileImageDeleted": "Foto de perfil del animal eliminada",
+      "profileImageDeleteError": "Error al eliminar la foto de perfil del animal",
+      "markedAsDeceased": "Animal marcado como fallecido",
+      "markedAsAlive": "Animal marcado como vivo",
+      "updateStatusError": "Hubo un error al actualizar el estado",
+      "contactAdmin": "Contacte al administrador",
+      "discardedSuccess": "Animal descartado exitosamente",
+      "discardError": "Hubo un error al descartar el animal"
+    }
+  },
+  "animalParentInfo": {
+    "name": "Nombre",
+    "tag": "Arete",
+    "breed": "Raza",
+    "crossbreed": "Encaste",
+    "noBreed": "Sin raza",
+    "birthNumber": "Número de parto"
+  },
+   "reproductiveStatus": {
+    "castrated": "Castrado",
+    "sterilized": "Esterilizado",
+    "yes": "Sí",
+    "no": "No"
+  },
+   "animalMedicamento": {
+    "medication": "Medicamento"
+  },
+   "infoAnimal": {
+    "birth": "Nacimiento",
+    "registration": "Registro",
+    "color": "Color",
+    "age": "Edad",
+    "years": "años",
+    "purity": "Pureza",
+    "reproduction": "Reproducción"
+  },
+  "animalFincaByPropietario": {
+    "farm": "Finca",
+    "characteristics": "Características",
+    "notAvailable": "N/D"
+  },
+  "cargaMasivaModal": {
+    "title": "Carga Masiva de Animales",
+    "description": "Sube un archivo Excel con los datos de los animales para registrarlos masivamente.",
+    "requiredFormat": "(Formato requerido)",
+    "templateStructure": "Estructura de la plantilla:",
+    "templateFields": {
+      "animalName": "nombre_animal (requerido)",
+      "sex": "sexo (requerido: Macho/Hembra)",
+      "birthDate": "fecha_nacimiento (requerido: YYYY-MM-DD)",
+      "averageAge": "edad_promedio (opcional)",
+      "fatherName": "nombre_padre (opcional)",
+      "motherName": "nombre_madre (opcional)"
+    },
+    "fields": {
+      "farm": "Finca",
+      "species": "Especie de animales",
+      "breed": "Raza de animales",
+      "excelFile": "Archivo Excel"
+    },
+    "placeholders": {
+      "farm": "Seleccionar finca",
+      "species": "Seleccionar especie",
+      "breed": "Seleccionar raza"
+    },
+    "buttons": {
+      "downloadTemplate": "Descargar plantilla",
+      "cancel": "Cancelar",
+      "uploading": "Cargando...",
+      "uploadAnimals": "Cargar Animales"
+    },
+    "messages": {
+      "templateDownloaded": "Plantilla descargada exitosamente",
+      "animalsLoaded": "animales cargados"
+    },
+    "errors": {
+      "invalidFile": "Por favor, selecciona un archivo Excel válido (.xlsx o .xls)",
+      "generateTemplate": "Error al generar la plantilla",
+      "selectFile": "Por favor, selecciona un archivo",
+      "selectFarmSpeciesBreed": "Por favor, selecciona finca, especie y raza",
+      "uploadAnimals": "Error al cargar los animales"
+    }
+  },
+   "AvicolaCard": {
+    "etapas": {
+      "recepcion": "Recepción de aves",
+      "cria": "Etapa de cría",
+      "crecimiento": "Etapa de crecimiento",
+      "engorde": "Etapa de engorde",
+      "ayuno": "Período de ayuno"
+    },
+    "labels": {
+      "batch": "Lote",
+      "birds": "Aves",
+      "crossbreed": "Encaste",
+      "noBreed": "Sin raza",
+      "currentStage": "Etapa Actual:",
+      "active": "Activo",
+      "quantity": "Cantidad:",
+      "birdsCount": "{count} aves",
+      "shed": "Galpón:",
+      "supplier": "Proveedor:",
+      "feeding": "Alimentación",
+      "consumption": "Consumo:",
+      "concentrate": "Concentrado:",
+      "water": "Agua:",
+      "production": "Producción",
+      "eggsPerDay": "Huevos/día:",
+      "broken": "Rotos:",
+      "grading": "Calificación:",
+      "layingPercentage": "% Postura:",
+      "layingDate": "Fecha Postura:",
+      "health": "Sanidad",
+      "vaccines": "Vacunas:",
+      "treatments": "Tratamientos:",
+      "dailyMortality": "Mortalidad Diaria:",
+      "averageWeight": "Peso Promedio:",
+      "productionType": "Producción:",
+      "noFarm": "Sin finca"
+    },
+    "tooltips": {
+      "discardAnimal": "Descartar Animal",
+      "uploadPhoto": "Subir Foto"
+    },
+    "buttons": {
+      "editBatch": "Editar Lote",
+      "cancel": "Cancelar",
+      "registerMortality": "Registrar Mortalidad",
+      "discardCount": "Descartar {quantity} aves"
+    },
+    "deathModal": {
+      "title": "Registrar mortalidad en el lote",
+      "description": "Registre la cantidad de aves que han fallecido y la razón.",
+      "deathQuantity": "Cantidad de aves fallecidas",
+      "deathQuantityPlaceholder": "Ingrese la cantidad de aves",
+      "availableQuantity": "Cantidad disponible en el lote: {quantity} aves",
+      "deathReason": "Razón de la muerte *",
+      "deathReasonPlaceholder": "Ej: Enfermedad, Accidentes, etc.",
+      "warningComplete": "Esta acción marcará todo el lote como finalizado",
+      "warningRemaining": "Quedarán {quantity} aves activas en el lote"
+    },
+    "discardModal": {
+      "title": "Descartar aves del lote",
+      "description": "Registre la cantidad de aves a descartar y la razón.",
+      "discardQuantity": "Cantidad de aves a descartar",
+      "discardQuantityPlaceholder": "Ingrese la cantidad de aves",
+      "discardReason": "Razón del descarte *",
+      "discardReasonPlaceholder": "Ej: Venta, Traslado, Baja calidad, etc.",
+      "warningComplete": "Esta acción descartará todo el lote",
+      "warningRemaining": "Quedarán {quantity} aves activas en el lote"
+    },
+    "validation": {
+      "validDeathQuantity": "Debe ingresar una cantidad válida de aves fallecidas",
+      "validDeathReason": "Debe ingresar una razón de muerte válida (no puede estar vacía o ser 'N/D')",
+      "deathQuantityExceeds": "La cantidad de aves fallecidas ({quantity}) excede la cantidad disponible ({available})",
+      "validDiscardQuantity": "Debe ingresar una cantidad válida de aves a descartar",
+      "validDiscardReason": "Debe ingresar una razón de descarte válida"
+    },
+    "messages": {
+      "profileImageUpdated": "Foto de perfil actualizada exitosamente",
+      "profileImageUpdateError": "No se pudo actualizar la imagen de perfil",
+      "imageDeleted": "Foto eliminada correctamente",
+      "profileImageDeleteError": "Error al eliminar la foto de perfil del animal",
+      "batchCompletedDeath": "Lote completamente finalizado. Se registraron {quantity} aves fallecidas.",
+      "deathRegistered": "Se registraron {quantity} aves fallecidas. Quedan {remaining} aves activas en el lote.",
+      "mortalityRegisterError": "Hubo un error al registrar la mortalidad",
+      "contactAdmin": "Contacte al administrador",
+      "batchDiscarded": "Lote descartado exitosamente",
+      "birdsDiscarded": "Se han descartado {quantity} aves del lote exitosamente",
+      "discardError": "Hubo un error al descartar el lote"
+    }
+  },
+   "CaprinoCard": {
+    "labels": {
+      "crossbreed": "Encaste",
+      "noBreed": "Sin raza",
+      "fatherData": "Datos del Padre",
+      "motherData": "Datos de la Madre"
+    },
+    "caprinoInfo": {
+      "title": "Información Caprina",
+      "bodyCondition": "Condición Corporal:",
+      "purpose": "Propósito:",
+      "paddock": "Potrero:",
+      "milkProduction": "Producción Lechera",
+      "litersPerDay": "Litros/día:",
+      "fat": "Grasa:",
+      "protein": "Proteína:",
+      "cells": "Células:",
+      "development": "Desarrollo",
+      "weaningWeight": "Peso destete:",
+      "weightGain": "Ganancia peso:",
+      "healthAndManagement": "Salud y Manejo",
+      "dewormed": "Desparasitado:",
+      "yes": "Sí",
+      "no": "No",
+      "vaccines": "Vacunas:",
+      "treatments": "Tratamientos:",
+      "mastitis": "Mastitis:",
+      "hooves": "Pezuñas:",
+      "geneticLine": "Línea Genética:"
+    },
+    "tooltips": {
+      "discardAnimal": "Descartar Animal",
+      "uploadPhoto": "Subir Foto"
+    },
+    "buttons": {
+      "edit": "Editar",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "discardAnimal": "Descartar Animal"
+    },
+    "deathModal": {
+      "title": "Actualizar estado de vida",
+      "description": "Indique si el animal está vivo o ha fallecido.",
+      "hasDied": "¿El animal ha fallecido?",
+      "deathReason": "Razón de la muerte",
+      "deathReasonPlaceholder": "Ingrese la razón de la muerte"
+    },
+    "discardModal": {
+      "title": "Descartar Animal",
+      "description": "Esta acción marcará el animal como descartado. Asegúrese de ingresar toda la información requerida.",
+      "discardReason": "Razón de descarte *",
+      "discardReasonPlaceholder": "Ej: Venta, Muerte, Traslado, etc.",
+      "warningLabel": "Advertencia:",
+      "warningText": "Esta acción no se puede deshacer. El animal será marcado como descartado en el sistema."
+    },
+    "validation": {
+      "deathReasonRequired": "Debe ingresar una razón de muerte válida (no puede estar vacía o ser 'N/D')",
+      "discardReasonRequired": "Debe ingresar una razón de descarte válida"
+    },
+    "messages": {
+      "profileImageUpdated": "Perfil de animal actualizado exitosamente",
+      "profileImageUpdateError": "No se pudo actualizar la imagen de perfil",
+      "profileImageDeleted": "Foto de perfil del animal eliminada",
+      "profileImageDeleteError": "Error al eliminar la foto de perfil del animal",
+      "markedAsDeceased": "Animal marcado como fallecido",
+      "markedAsAlive": "Animal marcado como vivo",
+      "updateStatusError": "Hubo un error al actualizar el estado",
+      "contactAdmin": "Contacte al administrador",
+      "discardedSuccess": "Animal descartado exitosamente",
+      "discardError": "Hubo un error al descartar el animal"
+    }
+  },
+   "EquinoCard": {
+    "labels": {
+      "deceased": "Fallecido",
+      "insured": "Asegurado",
+      "crossbreed": "Encaste",
+      "noBreed": "Sin raza",
+      "yearsOld": "{count} años",
+      "id": "ID",
+      "birthDate": "Nacimiento",
+      "height": "Alzada",
+      "weight": "Peso",
+      "notAvailable": "N/A",
+      "hands": "manos",
+      "cm": "cm",
+      "equineInfo": "Información Equina",
+      "details": "Detalles",
+      "dewormed": "Desparasitado",
+      "yes": "Sí",
+      "no": "No",
+      "vaccines": "Vacunas",
+      "veterinarian": "Veterinario",
+      "bodyCondition": "Condición Corporal",
+      "trainingLevel": "Nivel Entrenamiento",
+      "use": "Uso",
+      "genealogicalRecord": "Registro Genealógico",
+      "microchip": "Microchip",
+      "dentistry": "Odontología",
+      "allergies": "Alergias",
+      "injuries": "Lesiones",
+      "competitionResults": "Resultados Competencias",
+      "reproductiveHistory": "Historial Reproductivo",
+      "estimatedValue": "Valor Estimado",
+      "purchasePrice": "Precio Compra",
+      "owner": "Propietario",
+      "location": "Ubicación",
+      "purity": "Pureza",
+      "reproductionType": "Tipo Reproducción",
+      "father": "Padre",
+      "mother": "Madre",
+      "calvings": "Partos",
+      "observations": "Observaciones:"
+    },
+    "tooltips": {
+      "discardAnimal": "Descartar Animal",
+      "uploadPhoto": "Subir Foto"
+    },
+    "buttons": {
+      "editEquine": "Editar Equino",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "discardAnimal": "Descartar Animal"
+    },
+    "deathModal": {
+      "title": "Actualizar estado de vida",
+      "description": "Indique si el animal está vivo o ha fallecido.",
+      "hasDied": "¿El animal ha fallecido?",
+      "deathReason": "Razón de la muerte",
+      "deathReasonPlaceholder": "Ingrese la razón de la muerte"
+    },
+    "discardModal": {
+      "title": "Descartar Animal",
+      "description": "Esta acción marcará al animal como descartado. Asegúrese de ingresar toda la información requerida.",
+      "discardReason": "Razón de descarte *",
+      "discardReasonPlaceholder": "Ej: Venta, Muerte, Traslado, etc.",
+      "warningLabel": "Advertencia:",
+      "warningText": "Esta acción no se puede deshacer. El animal será marcado como descartado en el sistema."
+    },
+    "validation": {
+      "deathReasonRequired": "Debe ingresar una razón de muerte válida (no puede estar vacía o ser 'N/D')",
+      "discardReasonRequired": "Debe ingresar una razón de descarte válida"
+    },
+    "messages": {
+      "profileImageUpdated": "Perfil de animal actualizado exitosamente",
+      "profileImageUpdateError": "No se pudo actualizar la imagen de perfil",
+      "profileImageDeleted": "Foto de perfil del animal eliminada",
+      "profileImageDeleteError": "Error al eliminar la foto de perfil del animal",
+      "markedAsDeceased": "Animal marcado como fallecido",
+      "markedAsAlive": "Animal marcado como vivo",
+      "updateStatusError": "Hubo un error al actualizar el estado",
+      "contactAdmin": "Contacte al administrador",
+      "discardedSuccess": "Animal descartado exitosamente",
+      "discardError": "Hubo un error al descartar el animal"
+    }
+  },
+   "OvinoCard": {
+    "labels": {
+      "crossbreed": "Encaste",
+      "noBreed": "Sin raza",
+      "fatherData": "Datos del Padre",
+      "motherData": "Datos de la Madre"
+    },
+    "ovinoInfo": {
+      "title": "Información Ovina",
+      "category": "Categoría:",
+      "bodyCondition": "Condición Corporal:",
+      "purpose": "Propósito:",
+      "paddock": "Potrero:",
+      "birthWeight": "Peso Nacimiento:",
+      "weaningWeight": "Peso Destete:",
+      "weightGain": "Ganancia Peso:",
+      "woolData": "Datos de Lana",
+      "lastShearing": "Última esquila:",
+      "microns": "Micras:",
+      "color": "Color:",
+      "fleeceWeight": "Peso vellón:",
+      "shearingHistory": "Historial de Esquila",
+      "moreRecords": "+{count} registros más",
+      "famacha": "FAMACHA:",
+      "anemiaWarning": "(¡Anemia!)",
+      "parasitesRecord": "Registro de Parásitos",
+      "healthAndManagement": "Salud y Manejo",
+      "dewormed": "Desparasitado:",
+      "yes": "Sí",
+      "no": "No",
+      "vaccines": "Vacunas:",
+      "treatments": "Tratamientos:",
+      "hooves": "Pezuñas:",
+      "mortality": "Mortalidad:"
+    },
+    "famachaLevels": {
+      "optimal": "Óptimo",
+      "good": "Bueno",
+      "limit": "Límite",
+      "anemic": "Anémico",
+      "severe": "Severo"
+    },
+    "tooltips": {
+      "discardAnimal": "Descartar Animal",
+      "uploadPhoto": "Subir Foto"
+    },
+    "buttons": {
+      "edit": "Editar",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "discardAnimal": "Descartar Animal"
+    },
+    "deathModal": {
+      "title": "Actualizar estado de vida",
+      "description": "Indique si el animal está vivo o ha fallecido.",
+      "hasDied": "¿El animal ha fallecido?",
+      "deathReason": "Razón de la muerte",
+      "deathReasonPlaceholder": "Ingrese la razón de la muerte"
+    },
+    "discardModal": {
+      "title": "Descartar Animal",
+      "description": "Esta acción marcará el animal como descartado. Asegúrese de ingresar toda la información requerida.",
+      "discardReason": "Razón de descarte *",
+      "discardReasonPlaceholder": "Ej: Venta, Muerte, Traslado, etc.",
+      "warningLabel": "Advertencia:",
+      "warningText": "Esta acción no se puede deshacer. El animal será marcado como descartado en el sistema."
+    },
+    "validation": {
+      "deathReasonRequired": "Debe ingresar una razón de muerte válida (no puede estar vacía o ser 'N/D')",
+      "discardReasonRequired": "Debe ingresar una razón de descarte válida"
+    },
+    "messages": {
+      "profileImageUpdated": "Perfil de animal actualizado exitosamente",
+      "profileImageUpdateError": "No se pudo actualizar la imagen de perfil",
+      "profileImageDeleted": "Foto de perfil del animal eliminada",
+      "profileImageDeleteError": "Error al eliminar la foto de perfil del animal",
+      "markedAsDeceased": "Animal marcado como fallecido",
+      "markedAsAlive": "Animal marcado como vivo",
+      "updateStatusError": "Hubo un error al actualizar el estado",
+      "contactAdmin": "Contacte al administrador",
+      "discardedSuccess": "Animal descartado exitosamente",
+      "discardError": "Hubo un error al descartar el animal"
+    }
+  },
+   "PiscicolaCard": {
+    "etapas": {
+      "alevin": "Alevín",
+      "juvenil": "Juvenil",
+      "engorde": "Engorde"
+    },
+    "labels": {
+      "batch": "Lote",
+      "fish": "Peces",
+      "crossbreed": "Encaste",
+      "noBreed": "Sin raza",
+      "pondTankCage": "Estanque/Tanque/Jaula:",
+      "stocking": "Siembra:",
+      "fishCount": "{count} peces",
+      "supplier": "Proveedor:",
+      "density": "Densidad:",
+      "densityValue": "{value} por m³/m²",
+      "population": "Población",
+      "current": "Actual:",
+      "mortality": "Mortalidad:",
+      "growth": "Crecimiento",
+      "weight": "Peso:",
+      "biomass": "Biomasa:",
+      "size": "Talla:",
+      "sampling": "Muestreo:",
+      "samplingHistory": "Historial de Muestreos",
+      "waterQuality": "Calidad de Agua",
+      "turbidity": "Turbidez:",
+      "lastExchanges": "Últimos recambios:",
+      "feeding": "Alimentación",
+      "concentrate": "Concentrado:",
+      "protein": "Proteína:",
+      "ration": "Ración:",
+      "consumption": "Consumo:",
+      "health": "Sanidad",
+      "clinicalSigns": "Signos:",
+      "treatments": "Tratamientos:",
+      "bathsSalinity": "Baños/Salinidad:",
+      "laboratory": "Laboratorio:",
+      "noFarm": "Sin finca",
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "stockingDate": "Siembra:"
+    },
+    "tooltips": {
+      "discardAnimal": "Descartar Animal",
+      "uploadPhoto": "Subir Foto"
+    },
+    "buttons": {
+      "editBatch": "Editar Lote",
+      "cancel": "Cancelar",
+      "registerMortality": "Registrar Mortalidad",
+      "discardCount": "Descartar {quantity} peces"
+    },
+    "deathModal": {
+      "title": "Registrar mortalidad en el lote",
+      "description": "Registre la cantidad de peces que han fallecido y la razón.",
+      "deathQuantity": "Cantidad de peces fallecidas",
+      "deathQuantityPlaceholder": "Ingrese la cantidad de peces",
+      "availableQuantity": "Cantidad disponible en el lote: {quantity} peces",
+      "deathReason": "Razón de la muerte *",
+      "deathReasonPlaceholder": "Ej: Enfermedad, Accidentes, etc.",
+      "warningComplete": "Esta acción marcará todo el lote como finalizado",
+      "warningRemaining": "Quedarán {quantity} peces activas en el lote"
+    },
+    "discardModal": {
+      "title": "Descartar peces del lote",
+      "description": "Registre la cantidad de peces a descartar y la razón.",
+      "discardQuantity": "Cantidad de peces a descartar",
+      "discardQuantityPlaceholder": "Ingrese la cantidad de peces",
+      "discardReason": "Razón del descarte *",
+      "discardReasonPlaceholder": "Ej: Venta, Traslado, Baja calidad, etc.",
+      "warningComplete": "Esta acción descartará todo el lote",
+      "warningRemaining": "Quedarán {quantity} peces activas en el lote"
+    },
+    "validation": {
+      "validDeathQuantity": "Debe ingresar una cantidad válida de peces fallecidas",
+      "validDeathReason": "Debe ingresar una razón de muerte válida (no puede estar vacía o ser 'N/D')",
+      "deathQuantityExceeds": "La cantidad de peces fallecidas ({quantity}) excede la cantidad disponible ({available})",
+      "validDiscardQuantity": "Debe ingresar una cantidad válida de peces a descartar",
+      "validDiscardReason": "Debe ingresar una razón de descarte válida"
+    },
+    "messages": {
+      "profileImageUpdated": "Foto de perfil actualizada exitosamente",
+      "profileImageUpdateError": "No se pudo actualizar la imagen de perfil",
+      "imageDeleted": "Foto eliminada correctamente",
+      "profileImageDeleteError": "Error al eliminar la foto de perfil del animal",
+      "batchCompletedDeath": "Lote completamente finalizado. Se registraron {quantity} peces fallecidas.",
+      "deathRegistered": "Se registraron {quantity} peces fallecidas. Quedan {remaining} peces activas en el lote.",
+      "mortalityRegisterError": "Hubo un error al registrar la mortalidad",
+      "contactAdmin": "Contacte al administrador",
+      "batchDiscarded": "Lote descartado exitosamente",
+      "fishDiscarded": "Se han descartado {quantity} peces del lote exitosamente",
+      "discardError": "Hubo un error al descartar el lote"
+    }
+  },
+  "PorcinoCard": {
+    "etapas": {
+      "lactancia": "Lactancia",
+      "destete": "Destete",
+      "recria": "Recría",
+      "engorde": "Engorde",
+      "reproduccion": "Reproducción"
+    },
+    "labels": {
+      "pig": "Porcino",
+      "crossbreed": "Encaste",
+      "noBreed": "Sin raza",
+      "currentStage": "Etapa Actual:",
+      "inQuarantine": "En Cuarentena",
+      "active": "Activo",
+      "quantity": "Cantidad:",
+      "initialCurrentCount": "{initial} inicial / {current} actual",
+      "penBarn": "Corral/Galera:",
+      "batch": "Lote:",
+      "supplier": "Proveedor:",
+      "recordType": "Tipo Registro:",
+      "entryDate": "Fecha Ingreso:",
+      "weightAndGrowth": "Peso y Crecimiento",
+      "initialWeight": "Peso Inicial:",
+      "averageWeight": "Peso Promedio:",
+      "gain": "Ganancia:",
+      "lastWeighing": "Último Pesaje:",
+      "feeding": "Alimentación",
+      "dailyConsumption": "Consumo Diario:",
+      "conversion": "Conversión:",
+      "foods": "Alimentos:",
+      "health": "Sanidad",
+      "dewormed": "Desparasitado:",
+      "yes": "Sí",
+      "no": "No",
+      "quarantine": "Cuarentena:",
+      "quarantineActive": "Activa",
+      "quarantineInactive": "Inactiva",
+      "vaccines": "Vacunas:",
+      "treatments": "Tratamientos:",
+      "bodyCondition": "Condición Corporal:",
+      "lossesMortality": "Bajas/Mortalidad:",
+      "animalCount": "{count} animales",
+      "exitInfo": "Información de Salida",
+      "exitDate": "Fecha Salida:",
+      "exitWeight": "Peso Salida:",
+      "buyer": "Comprador:",
+      "price": "Precio:",
+      "carcassYield": "Rendimiento Canal:",
+      "breederOrigin": "Criador/Origen:",
+      "noFarm": "Sin finca"
+    },
+    "tooltips": {
+      "discardAnimal": "Descartar Animal",
+      "uploadPhoto": "Subir Foto"
+    },
+    "buttons": {
+      "editPig": "Editar Porcino",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "discardAnimal": "Descartar Animal"
+    },
+    "deathModal": {
+      "title": "Actualizar estado de vida",
+      "description": "Indique si el animal está vivo o ha fallecido.",
+      "hasDied": "¿El animal ha fallecido?",
+      "deathReason": "Razón de la muerte",
+      "deathReasonPlaceholder": "Ingrese la razón de la muerte"
+    },
+    "discardModal": {
+      "title": "Descartar Animal",
+      "description": "Esta acción marcará al animal como descartado. Asegúrese de ingresar toda la información requerida.",
+      "discardReason": "Razón de descarte *",
+      "discardReasonPlaceholder": "Ej: Venta, Muerte, Traslado, etc.",
+      "warningLabel": "Advertencia:",
+      "warningText": "Esta acción no se puede deshacer. El animal será marcado como descartado en el sistema."
+    },
+    "validation": {
+      "deathReasonRequired": "Debe ingresar una razón de muerte válida (no puede estar vacía o ser 'N/D')",
+      "discardReasonRequired": "Debe ingresar una razón de descarte válida"
+    },
+    "messages": {
+      "profileImageUpdated": "Foto de perfil actualizada exitosamente",
+      "profileImageUpdateError": "No se pudo actualizar la imagen de perfil",
+      "imageDeleted": "Foto eliminada correctamente",
+      "profileImageDeleteError": "Error al eliminar la foto de perfil del animal",
+      "markedAsFinished": "Porcino marcado como finalizado",
+      "markedAsActive": "Porcino marcado como activo",
+      "updateStatusError": "Hubo un error al actualizar el estado",
+      "contactAdmin": "Contacte al administrador",
+      "discardedSuccess": "Animal descartado exitosamente",
+      "discardError": "Hubo un error al descartar el animal"
+    }
+  },
+   "animalDetailsPage": {
+    "title": "Editar Animal",
+    "notFound": "No se encontró el animal",
+    "tabs": {
+      "animal": "Datos Animal",
+      "father": "Datos Padre",
+      "mother": "Datos Madre"
+    },
+    "unavailable": {
+      "title": "Formulario no disponible",
+      "description": "No se encontró un formulario específico para la especie \"{species}\". Esta especie no tiene configurado un formulario de edición en el sistema.",
+      "unspecified": "No especificada",
+      "availableSpecies": "Especies disponibles para edición: porcino, avícola, piscícola, equino, caprino, ovino, bovino"
+    }
+  },
+   "historialAnimalPeso": {
+    "searchPlaceholder": "Buscar por identificador...",
+    "emptySearch": "No se encontraron animales con ese identificador",
+    "emptyAnimals": "No hay animales disponibles"
+  },
+  "cardAnimalPeso": {
+    "age": "Edad: {age} años",
+    "viewHistory": "Ver Historial"
+  },
+  "AnimalHistorialPesoId": {
+    "header": {
+      "title": "Control de Peso",
+      "subtitle": "Gestione y monitoree el peso del animal a lo largo del tiempo"
+    },
+    "tabs": {
+      "calculator": "Calculadora",
+      "results": "Resultados"
+    },
+    "badges": {
+      "last": "Último:"
+    },
+    "units": {
+      "kg": "{value} Kg",
+      "kgRange": "{min} - {max} Kg"
+    },
+    "emptyState": {
+      "title": "Sin datos para mostrar",
+      "description": "Ingrese la edad del animal y presione \"Calcular\" para ver el rango de peso estimado según su raza"
+    },
+    "loading": {
+      "title": "Calculando rango de peso...",
+      "description": "Esto tomará solo unos segundos"
+    },
+    "comparison": {
+      "title": "Comparativa con el Historial",
+      "currentWeight": "Peso actual:",
+      "expectedRange": "Rango esperado:",
+      "noHistory": "No hay historial de pesos para comparar"
+    },
+    "history": {
+      "title": "Historial de Pesos",
+      "summary": "{count} registros • Último: {weight} Kg",
+      "addButton": "Agregar"
+    },
+    "modal": {
+      "addTitle": "Agregar nuevo peso",
+      "editTitle": "Editar registro de peso",
+      "addDescription": "Ingresa el peso actual del animal.",
+      "editDescription": "Modifica los datos del registro de peso."
+    },
+    "validation": {
+      "invalidAge": "Por favor ingrese una edad válida (mayor a 0)",
+      "ageTooHigh": "La edad ingresada es demasiado alta (máximo 600 meses)"
+    },
+    "messages": {
+      "calculationSuccess": "¡Cálculo exitoso!",
+      "calculationSuccessDesc": "Rango de peso para {raza} calculado correctamente",
+      "calculationError": "Hubo un error al calcular el rango de peso",
+      "genericCalculationError": "Ocurrió un error al procesar el rango de peso"
+    }
+  },
+  "tableHistorial": {
+    "status": {
+      "low": "Bajo",
+      "high": "Alto",
+      "normal": "Normal"
+    },
+    "emptyHistory": "No hay registros de peso para este animal",
+    "expectedRange": "Rango esperado: {min} - {max} Kg",
+    "historyTitle": "Historial de pesos",
+    "editRecord": "Editar registro",
+    "observations": "Observaciones",
+    "noObservations": "Sin observaciones",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "pageOf": "Página {current} de {total}",
+    "columns": {
+      "weight": "Peso (Kg)",
+      "date": "Fecha",
+      "status": "Estado",
+      "observations": "Observaciones",
+      "actions": "Acciones"
+    }
+  },
+   "resumenCalc": {
+    "title": "Resumen del cálculo",
+    "averageWeight": "Peso promedio",
+    "estimatedForAge": "Estimado para la edad consultada",
+    "ageRange": "Rango de edad",
+    "referenceCategory": "Categoría de referencia"
+  },
+  "formCalcularPesos": {
+    "animalAge": "Edad del Animal",
+    "tooltip": {
+      "enterAge": "Ingrese la edad en meses (1-600 meses)",
+      "ageEquivalent": "Equivalente a 0-50 años"
+    },
+    "placeholder": "Ej: 24",
+    "months": "meses",
+    "ageConversion": "{months} meses = {years} años {remainingMonths, plural, one {y 1 mes} other {y {remainingMonths} meses}}",
+    "calculating": "Calculando...",
+    "calculateExpectedWeight": "Calcular Peso Esperado",
+    "suggestedAges": "Edades sugeridas:",
+    "suggestionMonths": "{months} meses"
+  },
+  "formAddPeso": {
+    "fields": {
+      "weight": "Peso del Animal (Kg)",
+      "date": "Fecha de Registro",
+      "observations": "Observaciones"
+    },
+    "placeholders": {
+      "weight": "Ej: 450.5",
+      "observations": "Observaciones adicionales (opcional)"
+    },
+    "validation": {
+      "weightRequired": "El peso es requerido",
+      "weightMin": "El peso debe ser mayor a 0",
+      "weightMax": "El peso no puede ser mayor a 2000 kg",
+      "dateRequired": "La fecha es requerida",
+      "dateFuture": "La fecha no puede ser futura"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "updating": "Actualizando...",
+      "saving": "Guardando...",
+      "updateWeight": "Actualizar Peso",
+      "saveWeight": "Guardar Peso"
+    },
+    "messages": {
+      "updateSuccess": "Peso actualizado correctamente",
+      "createSuccess": "Peso agregado correctamente"
+    },
+    "errors": {
+      "update": "Error al actualizar",
+      "create": "Error al agregar",
+      "updateWeight": "Error al actualizar el peso",
+      "createWeight": "Error al agregar el peso"
+    }
+  },
+  "estadisticasPeso": {
+    "currentWeight": "Peso Actual",
+    "average": "Promedio",
+    "range": "Rango",
+    "lastRecord": "Último registro"
+  },
+  "cardPesos": {
+    "minimumExpected": "Peso Mínimo Esperado",
+    "maximumExpected": "Peso Máximo Esperado",
+    "basedOnAgeRange": "Basado en el rango de edad {range}"
+  },
+  "alimentacionAnimal": {
+    "title": "Alimentación",
+    "buttons": {
+      "add": "Agregar",
+      "addFeeding": "Agregar Alimentación",
+      "addFirstRecord": "Agregar Primer Registro"
+    },
+    "costs": {
+      "totalDaily": "Costo Total General Diario",
+      "allAnimals": "Total de todos los animales",
+      "averagePerAnimal": "Promedio por Animal",
+      "perAnimalDay": "Por animal/día",
+      "totalAnimals": "Total Animales",
+      "animalsWithRecords": "Animales con registros"
+    },
+    "quickAccess": "Acceso rápido",
+    "dailyCost": "Costo diario",
+    "empty": {
+      "title": "No hay registros de alimentación",
+      "description": "Comienza agregando alimentos a tus animales para ver su información aquí."
+    },
+    "modal": {
+      "title": "Agregar Alimentación",
+      "description": "Registra la alimentación diaria de tu animal"
+    }
+  },
+  "tableAlimentacionAnimal": {
+    "origin": {
+      "produced": "Producido"
+    },
+    "quantity": "Cantidad",
+    "cost": "Costo",
+    "buttons": {
+      "edit": "Editar"
+    },
+    "totalDailyCost": "Costo Total Diario",
+    "records": "{count, plural, one {# registro} other {# registros}}",
+    "perAnimal": "Por animal",
+    "columns": {
+      "food": "Alimento",
+      "origin": "Origen",
+      "quantity": "Cantidad",
+      "unit": "Unidad",
+      "dailyCost": "Costo Diario",
+      "date": "Fecha",
+      "actions": "Acciones"
+    },
+    "totalDailyCostPerAnimal": "Costo Total Diario por Animal",
+    "empty": {
+      "title": "No hay registros de alimentación",
+      "description": "Agrega alimentos para este animal"
+    },
+    "modal": {
+      "title": "Editar Alimentación",
+      "description": "Editar la alimentación diaria de tu animal"
+    }
+  },
+  "summaryTotalsCard": {
+    "dailySummary": "Resumen diario:",
+    "generalTotal": "Total general:",
+    "averagePerAnimal": "Promedio/animal:"
+  },
+  "formAlimentacionAnimal": {
+    "fields": {
+      "foodType": "Tipo de Alimentación",
+      "foodOrigin": "Origen de Alimentación",
+      "dailyQuantity": "Cantidad Diaria Consumida",
+      "unit": "Unidad de Medida",
+      "dailyCost": "Costo Diario ({currency})",
+      "entryDate": "Fecha de Ingreso",
+      "animal": "Animal"
+    },
+    "placeholders": {
+      "foodType": "Selecciona el tipo de alimento",
+      "foodOrigin": "Selecciona el origen del alimento",
+      "quantity": "Ejemplo: 20.5, 15, 10",
+      "unit": "Selecciona la unidad",
+      "dailyCost": "Cantidad Diaria Invertida ({currency})",
+      "loadingAnimals": "Cargando animales...",
+      "selectAnimal": "Selecciona el Animal"
+    },
+    "selectLabels": {
+      "food": "Alimento",
+      "origin": "Origen",
+      "unit": "Unidad",
+      "availableAnimals": "Animales Disponibles"
+    },
+    "validation": {
+      "quantityRequired": "La cantidad es requerida",
+      "quantityMin": "La cantidad debe ser mayor a 0",
+      "dailyCostRequired": "El costo diario es requerido",
+      "dailyCostMin": "El costo debe ser mayor a 0",
+      "dateRequired": "La fecha es requerida"
+    },
+    "catalog": {
+      "origin": {
+        "produced": "Producido",
+        "purchased": "Comprado"
+      }
+    },
+    "animal": {
+      "noBreed": "Sin raza"
+    },
+    "empty": {
+      "animals": "No se encontraron animales"
+    },
+    "buttons": {
+      "updating": "Actualizando...",
+      "adding": "Agregando...",
+      "updateFeeding": "Actualizar Alimentación",
+      "addFeeding": "Agregar Alimentación"
+    },
+    "messages": {
+      "updateSuccess": "Alimentación actualizada con éxito",
+      "createSuccess": "Alimentación agregada con éxito"
+    },
+    "errors": {
+      "processFood": "Hubo un error al procesar el alimento",
+      "contactAdmin": "Contacte al administrador"
+    }
+  },
+  "nuevaAlimentacionPage": {
+    "title": "Nueva Alimentación",
+    "card": {
+      "title": "Registrar alimentación diaria",
+      "description": "Completa los datos para registrar la alimentación de tu animal"
+    }
+  },
+  "editarAlimentacionPage": {
+    "title": "Editar Alimentación",
+    "card": {
+      "title": "Editando registro de {food}",
+      "description": "Modifica los datos de la alimentación del animal"
+    },
+    "error": {
+      "title": "Error",
+      "description": "No se pudo cargar la información"
+    },
+    "buttons": {
+      "back": "Volver"
+    }
+  },
+  "SanidadAnimalPage": {
+    "common": {
+      "notAvailable": "N/A"
+    },
+    "header": {
+      "title": "Sanidad",
+      "titleWithSpecies": "Sanidad - {species}",
+      "description": "Registra y monitorea la sanidad de tus animales por especie"
+    },
+    "buttons": {
+      "viewEvents": "Ver Eventos ({count})"
+    },
+    "filters": {
+      "speciesLabel": "Filtrar por especie:",
+      "speciesPlaceholder": "Seleccionar especie",
+      "allSpecies": "Todas las especies",
+      "showing": "Mostrando: <strong>{value}</strong>",
+      "all": "Todas"
+    },
+    "cards": {
+      "healthStatus": {
+        "title": "Estado sanitario"
+      },
+      "lastEvent": {
+        "title": "Último evento"
+      },
+      "nextEvent": {
+        "title": "Próximo evento"
+      },
+      "monthlyCost": {
+        "title": "Costo sanitario mes",
+        "avgDescription": "Promedio: {currency}{amount} por evento"
+      }
+    },
+    "stats": {
+      "noRecords": "Sin registros",
+      "noRecordsDesc": "No hay registros de sanidad",
+      "noRecordsHint": "Inicia registrando un evento sanitario",
+      "noEvents": "Sin eventos registrados",
+      "noScheduledEvents": "Sin eventos programados",
+      "noCosts": "Sin costos registrados",
+      "avgPerAnimal": "Promedio por animal/lote",
+      "upToDate": "Al día",
+      "allInOrder": "Todo en orden",
+      "noPendingEvents": "Sin eventos pendientes",
+      "onePending": "1 pendiente",
+      "nPending": "{count} pendientes",
+      "next": "Próximo: {services}",
+      "requiresAttention": "Requiere atención en los próximos 7 días",
+      "nextPrefix": "Próximo: {event}",
+      "unscheduled": "Sin programar",
+      "oneEvent": "1 evento",
+      "nEvents": "{count} eventos",
+      "totalRecords": "Total de registros: {count}",
+      "noRecordsForSpecies": "No hay registros de sanidad para esta especie"
+    },
+    "time": {
+      "today": "Hoy",
+      "oneDayAgo": "Hace 1 día",
+      "daysAgo": "Hace {count} días",
+      "days": "{count} días"
+    },
+    "tabs": {
+      "summary": "Resumen",
+      "monthlyCosts": "Costos Mensuales"
+    },
+    "summary": {
+      "title": "Resumen de Sanidad",
+      "description": "Lista completa de eventos sanitarios registrados",
+      "searchPlaceholder": "Buscar por servicio, responsable, animal...",
+      "searchPlaceholderMobile": "Buscar...",
+      "emptyState": "No se encontraron registros con los filtros aplicados"
+    },
+    "costs": {
+      "title": "Costos Mensuales por Servicio",
+      "description": "Análisis de costos sanitarios mensuales desglosados por tipo de servicio (últimos 12 meses)",
+      "emptyTitle": "No hay datos de costos disponibles",
+      "emptyDescription": "Los costos se mostrarán aquí una vez que registres eventos sanitarios",
+      "totalSpent": "Total gastado",
+      "monthlyAverage": "Promedio mensual",
+      "registeredServices": "Servicios registrados",
+      "highestExpense": "Mayor gasto",
+      "filterByService": "Filtrar por servicio:",
+      "allServices": "Todos los servicios",
+      "highestMonth": "Mes de mayor gasto",
+      "lowestMonth": "Mes de menor gasto",
+      "monthDescription": "{amount} ({count} eventos)"
+    },
+    "pagination": {
+      "showing": "Mostrando {from} - {to} de {total} registros"
+    },
+    "modal": {
+      "title": "Eventos",
+      "description": "Aquí podrás ver todos los eventos eliminados",
+      "deletedTab": "Eliminados ({count})",
+      "historyTab": "Historial de Cambios ({count})",
+      "noDeleted": "No hay eventos eliminados",
+      "noHistory": "No hay cambios registrados en el historial"
+    }
+  },
+  "tableResumenSanidad": {
+    "empty": "No hay registros para mostrar",
+    "columns": {
+      "service": "Servicio",
+      "animalLocation": "Animal/Galpón/Lote",
+      "date": "Fecha",
+      "nextDate": "Próxima fecha",
+      "responsible": "Responsable",
+      "actualCost": "Costo real",
+      "actions": "Acciones"
+    },
+    "labels": {
+      "animalLocation": "Animal / Galpón / Lote",
+      "id": "ID",
+      "poultryHouse": "Galpón",
+      "batch": "Lote",
+      "date": "Fecha",
+      "nextDate": "Próxima",
+      "responsible": "Responsable",
+      "cost": "Costo"
+    },
+    "values": {
+      "notAvailable": "N/A",
+      "notDefined": "N/D",
+      "noIdentification": "Sin identificación"
+    },
+    "actions": {
+      "openMenu": "Abrir menú de acciones",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    },
+    "delete": {
+      "title": "Eliminar evento sanitario",
+      "description": "¿Estás seguro que deseas eliminar el evento de {service}?",
+      "event": "Evento: {service}",
+      "animalLocation": "Animal/Galpón/Lote"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "deleting": "Eliminando..."
+    },
+    "messages": {
+      "deleteSuccess": "Evento eliminado con éxito"
+    },
+    "errors": {
+      "deleteEvent": "Hubo un error al eliminar el evento",
+      "unexpected": "Error inesperado. Contacte al administrador"
+    }
+  },
+  "tableHistorialCambios": {
+    "empty": "No hay cambios registrados en el historial",
+    "changeTypes": {
+      "eventDate": "Fecha del Evento",
+      "nextDate": "Próxima Fecha"
+    },
+    "dayDifference": {
+      "sameDay": "Mismo día",
+      "positive": "+{days, plural, one {# día} other {# días}}",
+      "negative": "-{days, plural, one {# día} other {# días}}"
+    },
+    "labels": {
+      "serviceAnimal": "Servicio / Animal",
+      "previousDate": "Fecha anterior",
+      "newDate": "Fecha nueva",
+      "reason": "Motivo",
+      "responsible": "Resp",
+      "id": "ID",
+      "poultryHouse": "Galpón",
+      "batch": "Lote"
+    },
+    "columns": {
+      "service": "Servicio",
+      "animalLocation": "Animal / Galpón / Lote",
+      "changeType": "Tipo de Cambio",
+      "previousDate": "Fecha Anterior",
+      "newDate": "Fecha Nueva",
+      "difference": "Diferencia",
+      "reason": "Motivo",
+      "user": "Usuario",
+      "changeDate": "Fecha Cambio"
+    },
+    "values": {
+      "notAvailable": "N/A",
+      "noIdentification": "Sin identificación",
+      "unknownUser": "Usuario desconocido",
+      "noReason": "Sin motivo"
+    },
+    "totalChanges": "Total de cambios"
+  },
+  "searchAnimales": {
+    "searchLabel": "Buscar animal/galpón/lote:",
+    "searchPlaceholder": "Buscar por nombre o identificación...",
+    "clearSearch": "Limpiar búsqueda",
+    "clearSelection": "Quitar animal seleccionado",
+    "loading": "Cargando animales...",
+    "noResults": "No se encontraron animales",
+    "identifier": "ID",
+    "noSpecies": "Sin especie",
+    "noBreed": "Sin raza"
+  },
+   "FormSanidad": {
+    "alerts": {
+      "errorTitle": "Error al {action} la Sanidad",
+      "update": "actualizar",
+      "register": "registrar"
+    },
+    "form": {
+      "healthService": "Servicio de Sanidad",
+      "serviceHint": "* Haz clic en una tarjeta para seleccionar el servicio",
+      "generalInfo": "Información General",
+      "searchAnimal": "Buscar animal, lote o galpón",
+      "searchPlaceholder": "Buscar por nombre, identificación, galpón o lote...",
+      "responsible": "Responsable",
+      "responsiblePlaceholder": "Nombre del responsable",
+      "responsibleRequired": "El responsable es requerido",
+      "eventDate": "Fecha del evento",
+      "dateRequired": "La fecha es requerida",
+      "nextEventDate": "Próxima fecha del evento",
+      "observations": "Observaciones",
+      "observationsPlaceholder": "Observaciones adicionales",
+      "baseCost": "Costo base ($)",
+      "baseCostPlaceholder": "Costo base",
+      "referencePrice": "Precio de referencia ($)",
+      "referencePricePlaceholder": "Precio de referencia",
+      "realCost": "Costo real ($)",
+      "realCostPlaceholder": "Costo real",
+      "estimatedValue": "Valor estimado ($)",
+      "estimatedValuePlaceholder": "Valor estimado",
+      "appliedTreatment": "Tratamiento aplicado",
+      "appliedTreatmentPlaceholder": "Tratamiento aplicado",
+      "reason": "Motivo",
+      "reasonPlaceholder": "Motivo del servicio",
+      "minZero": "El valor debe ser mayor o igual a 0"
+    },
+    "animalSearch": {
+      "loading": "Cargando...",
+      "noResults": "No se encontraron resultados",
+      "animals": "Animales",
+      "batchesAndSheds": "Lotes y Galpones",
+      "noName": "Sin nombre",
+      "noSpecies": "Sin especie",
+      "shed": "Galpón: {value}",
+      "batch": "Lote: {value}",
+      "animalsCount": "{count} animales",
+      "batchTag": "Lote",
+      "shedTag": "Galpón",
+      "selected": "Seleccionado",
+      "idPrefix": "ID: {value}",
+      "shedSuffix": " • Galpón: {value}",
+      "batchSuffix": " • Lote: {value}",
+      "animalsSuffix": " • {count} animales"
+    },
+    "services": {
+      "vacunacion": {
+        "vaccineApplied": "Vacuna aplicada",
+        "vaccineRequired": "La vacuna es requerida",
+        "vaccinePlaceholder": "Ej: Rabia, Fiebre aftosa",
+        "applicationRoute": "Vía de aplicación",
+        "routePlaceholder": "Seleccionar vía",
+        "routesGroup": "Vías de aplicación",
+        "routes": {
+          "intramuscular": "Intramuscular",
+          "subcutaneous": "Subcutánea",
+          "intradermal": "Intradérmica",
+          "oral": "Oral",
+          "nasal": "Nasal"
+        },
+        "dose": "Dosis",
+        "dosePlaceholder": "Ej: 2.5",
+        "doseTreatment": "Dosis/Tratamiento",
+        "doseTreatmentPlaceholder": "Ej: 2ml, 1 comprimido"
+      },
+      "desparasitacion": {
+        "type": "Tipo de desparasitación",
+        "typePlaceholder": "Seleccionar tipo",
+        "typesGroup": "Tipos",
+        "types": {
+          "internal": "Interna",
+          "external": "Externa",
+          "mixed": "Mixta"
+        },
+        "weightUsed": "Peso usado (kg)",
+        "weightPlaceholder": "Peso del animal para calcular dosis"
+      },
+      "revisionUbre": {
+        "testEvent": "Prueba/Evento",
+        "testPlaceholder": "Seleccionar prueba",
+        "testsGroup": "Pruebas",
+        "tests": {
+          "california": "California Mastitis Test",
+          "cellCount": "Conteo de células somáticas",
+          "visualInspection": "Inspección visual",
+          "culture": "Cultivo bacteriológico"
+        },
+        "affectedQuarter": "Cuarto afectado",
+        "quarterPlaceholder": "Seleccionar cuarto",
+        "quartersGroup": "Cuartos",
+        "quarters": {
+          "frontLeft": "Anterior izquierdo",
+          "frontRight": "Anterior derecho",
+          "rearLeft": "Posterior izquierdo",
+          "rearRight": "Posterior derecho",
+          "multiple": "Múltiple"
+        },
+        "milkWithdrawalDays": "Días de retiro de leche",
+        "milkWithdrawalPlaceholder": "Días sin consumo de leche",
+        "currentDailyLiters": "Litros diarios actuales",
+        "litersPlaceholder": "Producción diaria actual"
+      },
+      "atencionPezunas": {
+        "attentionType": "Tipo de atención",
+        "typePlaceholder": "Seleccionar tipo",
+        "typesGroup": "Tipos",
+        "types": {
+          "trimming": "Recorte",
+          "treatment": "Tratamiento",
+          "preventive": "Preventivo",
+          "emergency": "Emergencia"
+        },
+        "lamenessGrade": "Grado de cojera",
+        "gradePlaceholder": "Seleccionar grado",
+        "gradesGroup": "Grados",
+        "grades": {
+          "mild": "Leve (1-2)",
+          "moderate": "Moderado (3-4)",
+          "severe": "Severo (5)"
+        },
+        "affectedLimb": "Miembro afectado",
+        "limbPlaceholder": "Seleccionar miembro",
+        "limbsGroup": "Miembros",
+        "limbs": {
+          "frontLeft": "Anterior izquierdo",
+          "frontRight": "Anterior derecho",
+          "rearLeft": "Posterior izquierdo",
+          "rearRight": "Posterior derecho",
+          "multiple": "Múltiple"
+        }
+      },
+      "limpieza": {
+        "area": "Potrero/Corral/Área",
+        "areaRequired": "El área es requerida",
+        "areaPlaceholder": "Nombre del área o potrero",
+        "activity": "Actividad",
+        "activityPlaceholder": "Ej: Limpieza profunda, desinfección",
+        "restDays": "Días de descanso",
+        "restDaysPlaceholder": "Ej: 30, 45, 60 (separados por coma)",
+        "productMachine": "Producto/Maquinaria utilizada",
+        "productPlaceholder": "Ej: Cal, Hidrolavadora",
+        "animalLoad": "Carga animal",
+        "animalLoadPlaceholder": "Cantidad de animales en el área",
+        "productCost": "Costo producto/maquinaria",
+        "productCostPlaceholder": "Costo en $"
+      },
+      "esquila": {
+        "woolWeight": "Peso de lana (kg)",
+        "woolWeightRequired": "El peso de lana es requerido",
+        "woolWeightPlaceholder": "Peso en kilogramos",
+        "woolQuality": "Calidad de lana",
+        "qualityPlaceholder": "Seleccionar calidad",
+        "qualitiesGroup": "Calidades",
+        "qualities": {
+          "fine": "Fina",
+          "medium": "Media",
+          "thick": "Gruesa",
+          "mixed": "Mixta"
+        },
+        "woolColor": "Color de lana",
+        "woolColorPlaceholder": "Ej: Blanca, Negra, Marrón",
+        "shearer": "Responsable de esquila",
+        "shearerPlaceholder": "Nombre del esquilador"
+      },
+      "banoSanitario": {
+        "reason": "Motivo del baño",
+        "reasonPlaceholder": "Seleccionar motivo",
+        "reasonsGroup": "Motivos",
+        "reasons": {
+          "externalParasites": "Parásitos externos",
+          "preventive": "Preventivo",
+          "treatment": "Tratamiento",
+          "sanitary": "Sanitario"
+        },
+        "bathTime": "Tiempo de baño (minutos)",
+        "bathTimePlaceholder": "Tiempo en minutos",
+        "skinFindings": "Hallazgos en piel",
+        "skinFindingsPlaceholder": "Ej: Irritación, heridas, parásitos"
+      },
+      "odontologia": {
+        "procedure": "Procedimiento",
+        "procedurePlaceholder": "Seleccionar procedimiento",
+        "proceduresGroup": "Procedimientos",
+        "procedures": {
+          "scaling": "Raspado dental",
+          "extraction": "Extracción",
+          "deepCleaning": "Limpieza profunda",
+          "oralExam": "Examen oral"
+        },
+        "findings": "Hallazgos",
+        "findingsPlaceholder": "Ej: Caries, desgaste, inflamación"
+      },
+      "atencionCascos": {
+        "type": "Tipo",
+        "typePlaceholder": "Seleccionar tipo",
+        "typesGroup": "Tipos",
+        "types": {
+          "trimming": "Recorte",
+          "shoeing": "Herrado",
+          "treatment": "Tratamiento",
+          "preventive": "Preventivo"
+        },
+        "farrier": "Herrador",
+        "farrierPlaceholder": "Nombre del herrador"
+      },
+      "revisionLesiones": {
+        "injuryType": "Tipo de lesión",
+        "typePlaceholder": "Seleccionar tipo",
+        "typesGroup": "Tipos",
+        "types": {
+          "openWound": "Herida abierta",
+          "contusion": "Contusión",
+          "fracture": "Fractura",
+          "infection": "Infección",
+          "burn": "Quemadura",
+          "other": "Otro"
+        },
+        "affectedArea": "Zona afectada",
+        "areaPlaceholder": "Ej: Pata delantera, lomo, cabeza",
+        "severity": "Severidad",
+        "severityPlaceholder": "Seleccionar severidad",
+        "severitiesGroup": "Severidades",
+        "severities": {
+          "mild": "Leve",
+          "moderate": "Moderado",
+          "severe": "Grave",
+          "critical": "Crítico"
+        }
+      },
+      "evaluacionCondicionCorporal": {
+        "estimatedWeight": "Peso estimado (kg)",
+        "weightRequired": "El peso estimado es requerido",
+        "weightPlaceholder": "Peso en kilogramos",
+        "bodyCondition": "Condición corporal",
+        "conditionPlaceholder": "Seleccionar condición",
+        "conditionsGroup": "Condiciones",
+        "conditions": {
+          "veryThin": "1 - Muy delgado",
+          "thin": "2 - Delgado",
+          "normal": "3 - Normal",
+          "overweight": "4 - Sobrepeso",
+          "obese": "5 - Obeso"
+        },
+        "dietChange": "Cambio de dieta",
+        "dietPlaceholder": "Ej: Aumento de concentrado, cambio de forraje"
+      },
+      "controlMortalidad": {
+        "lossCount": "Cantidad de bajas",
+        "countRequired": "La cantidad de bajas es requerida",
+        "countPlaceholder": "Número de animales",
+        "probableCause": "Causa probable de la baja",
+        "causePlaceholder": "Ej: Enfermedad, accidente, edad",
+        "correctiveAction": "Acción correctiva",
+        "actionPlaceholder": "Ej: Aislamiento, vacunación, cambio de dieta"
+      },
+      "cambioCamaNido": {
+        "actionType": "Tipo de acción",
+        "actionPlaceholder": "Seleccionar acción",
+        "actionsGroup": "Acciones",
+        "actions": {
+          "partial": "Cambio parcial",
+          "total": "Cambio total",
+          "cleaning": "Limpieza",
+          "disinfection": "Desinfección"
+        },
+        "materialUsed": "Material utilizado",
+        "materialPlaceholder": "Ej: Viruta, Paja, Aserrín",
+        "quantityUsed": "Cantidad usada",
+        "quantityPlaceholder": "Cantidad en kg o m²"
+      },
+      "controlProduccion": {
+        "dailyEggs": "Huevos diarios",
+        "eggsRequired": "Los huevos diarios son requeridos",
+        "eggsPlaceholder": "Cantidad de huevos por día",
+        "brokenEggs": "Huevos rotos",
+        "brokenEggsPlaceholder": "Cantidad de huevos rotos",
+        "layingPercentage": "Porcentaje de postura",
+        "percentagePlaceholder": "Porcentaje (0-100)",
+        "eggQuality": "Calidad del huevo",
+        "qualityPlaceholder": "Seleccionar calidad",
+        "qualitiesGroup": "Calidades",
+        "qualities": {
+          "extra": "Extra",
+          "first": "Primera",
+          "second": "Segunda",
+          "third": "Tercera"
+        }
+      },
+      "controlCalidadAgua": {
+        "temperature": "Temperatura (°C)",
+        "temperatureRequired": "La temperatura es requerida",
+        "temperaturePlaceholder": "Temperatura del agua",
+        "oxygen": "Oxígeno (mg/L)",
+        "oxygenPlaceholder": "Nivel de oxígeno disuelto",
+        "ph": "pH",
+        "phPlaceholder": "pH del agua",
+        "ammonia": "Amonio (mg/L)",
+        "ammoniaPlaceholder": "Nivel de amonio",
+        "nitrites": "Nitritos (mg/L)",
+        "nitritesPlaceholder": "Nivel de nitritos"
+      },
+      "recambioAgua": {
+        "exchangePercentage": "Porcentaje de recambio (%)",
+        "percentageRequired": "El porcentaje es requerido",
+        "percentagePlaceholder": "Porcentaje (0-100)",
+        "estimatedVolume": "Volumen estimado (m³)",
+        "volumePlaceholder": "Volumen en metros cúbicos"
+      },
+      "muestreoBiometrico": {
+        "sampleCount": "Cantidad muestreada",
+        "countRequired": "La cantidad es requerida",
+        "countPlaceholder": "Número de peces muestreados",
+        "averageWeight": "Peso promedio (g)",
+        "weightPlaceholder": "Peso en gramos",
+        "averageSize": "Talla promedio (cm)",
+        "sizePlaceholder": "Talla en centímetros",
+        "estimatedBiomass": "Biomasa estimada (kg)",
+        "biomassPlaceholder": "Biomasa total estimada",
+        "fishStage": "Etapa de los peces",
+        "stagePlaceholder": "Seleccionar etapa",
+        "stagesGroup": "Etapas",
+        "stages": {
+          "fry": "Alevino",
+          "juvenile": "Juvenil",
+          "adult": "Adulto",
+          "breeder": "Reproductor"
+        }
+      },
+      "sifoneo": {
+        "siphonedArea": "Área sifoneada",
+        "areaRequired": "El área sifoneada es requerida",
+        "areaPlaceholder": "Ej: Estanque 3, Piscina 5, Sector Norte",
+        "equipmentUsed": "Equipo utilizado",
+        "equipmentPlaceholder": "Seleccionar equipo",
+        "equipmentGroup": "Equipos",
+        "equipment": {
+          "manual": "Sifón manual",
+          "electric": "Sifón eléctrico",
+          "centrifugalPump": "Bomba centrífuga",
+          "diaphragmPump": "Bomba de diafragma",
+          "bottomVacuum": "Aspiradora de fondos",
+          "commercial": "Sifón comercial",
+          "other": "Otro"
+        },
+        "workHours": "Horas de trabajo",
+        "hoursRequired": "Las horas de trabajo son requeridas",
+        "minHours": "El tiempo mínimo es 0.5 horas",
+        "hoursPlaceholder": "Ej: 2.5 horas",
+        "operationCost": "Costo de operación ($)",
+        "costPlaceholder": "Costo total de la operación"
+      }
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "save": "Guardar Sanidad",
+      "update": "Actualizar Sanidad",
+      "saving": "Guardando...",
+      "updating": "Actualizando..."
+    },
+    "messages": {
+      "createSuccess": "Sanidad ingresada correctamente",
+      "updateSuccess": "Sanidad actualizada correctamente",
+      "genericError": "Hubo un error al procesar la sanidad",
+      "unexpectedError": "Error inesperado. Contacte al administrador",
+      "submitError": "Error al registrar la sanidad"
+    }
+  },
+   "especiesPageSanidad": {
+    "loading": "Cargando especies...",
+    "title": "Lista de Especies",
+    "empty": "No hay especies disponibles",
+    "total": "Total de especies: {count}"
+  },
+  "SanidadByEspeciePage": {
+    "common": {
+      "notAvailable": "N/A"
+    },
+    "header": {
+      "title": "Sanidad - {species}",
+      "description": "Registra y monitorea la sanidad de tus animales por especie",
+      "addButton": "Ingresar sanidad {species}"
+    },
+    "cards": {
+      "healthStatus": {
+        "title": "Estado sanitario"
+      },
+      "lastEvent": {
+        "title": "Último evento"
+      },
+      "nextEvent": {
+        "title": "Próximo evento"
+      },
+      "monthlyCost": {
+        "title": "Costo sanitario mes",
+        "avgDescription": "Promedio: {currency}{amount} por evento"
+      }
+    },
+    "stats": {
+      "noRecords": "Sin registros",
+      "noRecordsDesc": "No hay registros de sanidad",
+      "noRecordsHint": "Inicia registrando un evento sanitario",
+      "noEvents": "Sin eventos registrados",
+      "noScheduledEvents": "Sin eventos programados",
+      "noCosts": "Sin costos registrados",
+      "avgPerAnimal": "Promedio por animal/lote",
+      "upToDate": "Al día",
+      "allInOrder": "Todo en orden",
+      "noPendingEvents": "Sin eventos pendientes",
+      "onePending": "1 pendiente",
+      "nPending": "{count} pendientes",
+      "next": "Próximo: {services}",
+      "requiresAttention": "Requiere atención en los próximos 7 días",
+      "nextPrefix": "Próximo: {event}",
+      "unscheduled": "Sin programar",
+      "oneEvent": "1 evento",
+      "nEvents": "{count} eventos",
+      "totalRecords": "Total de registros: {count}",
+      "noRecordsForSpecies": "No hay registros de sanidad para esta especie"
+    },
+    "time": {
+      "today": "Hoy",
+      "oneDayAgo": "Hace 1 día",
+      "daysAgo": "Hace {count} días",
+      "days": "{count} días"
+    },
+    "tabs": {
+      "summary": "Resumen",
+      "monthlyCosts": "Costos Mensuales"
+    },
+    "summary": {
+      "title": "Resumen de Sanidad",
+      "description": "Lista completa de eventos sanitarios registrados",
+      "searchPlaceholder": "Buscar por servicio, responsable, animal...",
+      "searchPlaceholderMobile": "Buscar...",
+      "filterPlaceholder": "Filtrar por tipo",
+      "allTypes": "Todos los tipos",
+      "clearFilter": "Limpiar",
+      "emptyState": "No se encontraron registros con los filtros aplicados"
+    },
+    "costs": {
+      "title": "Costos Mensuales por Servicio",
+      "description": "Análisis de costos sanitarios mensuales desglosados por tipo de servicio (últimos 12 meses)",
+      "emptyTitle": "No hay datos de costos disponibles",
+      "emptyDescription": "Los costos se mostrarán aquí una vez que registres eventos sanitarios",
+      "totalSpent": "Total gastado",
+      "monthlyAverage": "Promedio mensual",
+      "registeredServices": "Servicios registrados",
+      "highestExpense": "Mayor gasto",
+      "filterByService": "Filtrar por servicio:",
+      "allServices": "Todos los servicios",
+      "highestMonth": "Mes de mayor gasto",
+      "lowestMonth": "Mes de menor gasto",
+      "monthDescription": "{amount} ({count} eventos)"
+    },
+    "pagination": {
+      "showing": "Mostrando {from} - {to} de {total} registros"
+    },
+    "modal": {
+      "editTitle": "Editar Sanidad {species}",
+      "addTitle": "Ingresar Sanidad {species}",
+      "editDescription": "Aquí podrás editar datos de sanidad dependiendo de la especie",
+      "addDescription": "Aquí podrás ingresar datos de sanidad dependiendo de la especie"
+    }
+  },
+   "crearSanidadAnimalByEspecie": {
+    "title": "Ingresar Sanidad — {species}",
+    "card": {
+      "title": "Ingresa un nuevo evento de sanidad",
+      "description": "Completa los datos para ingresar el evento de sanidad"
+    }
+  },
+  "sanidadAnimalByIdPage": {
+    "title": "Editar Sanidad — {species}",
+    "card": {
+      "title": "Editando el evento sanitario",
+      "description": "Completa los datos para editar el evento sanitario"
+    }
+  },
+   "SanidadServices": {
+    "Vacunacion": "Vacunación",
+    "Desparasitacion": "Desparasitación",
+    "RevisionUbre": "Revisión de ubre",
+    "AtencionPezunas": "Atención de pezuñas",
+    "LimpiezaCorral": "Limpieza de corral",
+    "Esquila": "Esquila",
+    "BanoSanitario": "Baño sanitario",
+    "ControlMortalidad": "Registro de bajas / mortalidad",
+    "Odontologia": "Odontología",
+    "AtencionCascos": "Atención de cascos",
+    "RevisionLesiones": "Revisión de lesiones",
+    "EvaluacionCondicionCorporal": "Evaluación de condición corporal",
+    "CambioCamaNido": "Cambio de cama / nido",
+    "ControlProduccion": "Control de producción",
+    "LimpiezaGalpon": "Limpieza de galpón",
+    "ControlCalidadAgua": "Control de calidad del agua",
+    "RecambioAgua": "Recambio de agua",
+    "MuestreoBiometrico": "Muestreo biométrico",
+    "Sifoneo": "Sifoneo de estanques"
+  },
+  "servicesUser": {
+    "title": "Nuestros servicios",
+    "description": "Selecciona un servicio para agendar una cita"
+  },
+  "cardServiceUsers": {
+    "scheduleAppointment": "Agendar Cita"
+  },
+  "emptyServices": {
+    "title": "No hay servicios disponibles",
+    "descriptionWithCountry": "No encontramos servicios disponibles en {country} en este momento.",
+    "descriptionWithoutCountry": "No encontramos servicios disponibles en tu país en este momento.",
+    "tryAgainLater": "Por favor, intenta nuevamente más tarde.",
+    "retry": "Reintentar"
+  },
+  "agregarCitaServicioPage": {
+    "defaults": {
+      "service": "Servicio"
+    },
+    "title": "Nueva cita para {service}",
+    "description": "Complete la información requerida para agendar la cita",
+    "card": {
+      "title": "Información de la Cita"
+    },
+    "sections": {
+      "general": "Información General",
+      "animal": "Datos del Animal",
+      "veterinaryService": "Servicio Veterinario",
+      "serviceDetails": "Detalles del Servicio"
+    },
+    "fields": {
+      "farm": "Finca",
+      "species": "Especie",
+      "breed": "Raza",
+      "animals": "Seleccione los animales",
+      "specificService": "Servicio específico",
+      "veterinarian": "Veterinario",
+      "appointmentDate": "Fecha de la cita",
+      "availableSchedules": "Horarios Disponibles ({count} opciones)",
+      "duration": "Duración",
+      "estimatedDuration": "Duración estimada",
+      "totalCost": "Costo total"
+    },
+    "placeholders": {
+      "farm": "Selecciona una finca",
+      "species": "Selecciona la especie",
+      "breed": "Selecciona la raza",
+      "service": "Selecciona el servicio",
+      "veterinarian": "Selecciona el veterinario",
+      "schedule": "Selecciona un horario",
+      "duration": "La duración se calculará automáticamente",
+      "cost": "El costo se calculará automáticamente"
+    },
+    "units": {
+      "minutes": "min",
+      "hours": "hrs"
+    },
+    "validation": {
+      "dateRequired": "La fecha es requerida"
+    },
+    "messages": {
+      "noSuitableSchedules": "No hay horarios disponibles que puedan acomodar la duración del servicio seleccionado.",
+      "completeServiceInformation": "Completa la información del servicio para ver los horarios disponibles.",
+      "priceDisclaimer": "LOS PRECIOS PUEDEN VARIAR DEPENDIENDO DE LOS INSUMOS QUE SE UTILICEN",
+      "appointmentCreated": "Cita agendada exitosamente"
+    },
+    "errors": {
+      "unavailableTimeRange": "El rango completo no está disponible para esta hora de inicio",
+      "createAppointment": "Hubo un error al crear la cita",
+      "unexpected": "Error inesperado. Contacte al administrador"
+    },
+    "buttons": {
+      "back": "Volver",
+      "processing": "Procesando...",
+      "confirmAppointment": "Confirmar Cita"
+    }
+  },
+  "themedAnimalPicker": {
+    "selectAnimals": "Seleccionar animales",
+    "selectedCount": "{count, plural, one {# seleccionado} other {# seleccionados}}",
+    "clear": "Limpiar",
+    "allSelected": "Todos los animales han sido seleccionados",
+    "selectedAnimals": "Animales seleccionados:",
+    "noAnimals": "No hay animales disponibles"
+  },
+  "productosPage": {
+    "loading": "Cargando productos...",
+    "title": "Productos Disponibles",
+    "description": "Descubre nuestra amplia gama de productos",
+    "allCategories": "Todos",
+    "loadingMore": "Cargando más productos...",
+    "scrollToLoadMore": "Desplázate para cargar más",
+    "loadMore": "Cargar más productos",
+    "allProductsViewed": "Has visto todos los productos disponibles",
+    "empty": {
+      "title": "No hay productos disponibles",
+      "description": "Prueba a recargar la página o vuelve más tarde"
+    },
+    "refresh": "Recargar"
+  },
+   "productDetailsPage": {
+    "errors": {
+      "loadTitle": "Error al cargar la información",
+      "loadDescription": "Ocurrió un error al cargar los datos del producto o sucursales",
+      "notFoundTitle": "No se encontró el producto seleccionado",
+      "notFoundDescription": "El producto que buscas no está disponible"
+    },
+    "reviews": {
+      "title": "Opiniones Destacadas",
+      "cancel": "Cancelar",
+      "addReview": "Agregar opinión",
+      "alreadyReviewed": "Ya opinaste sobre este producto",
+      "didYouLike": "¿Te gustó este producto?",
+      "shareExperience": "Comparte tu experiencia con otros clientes",
+      "writeReview": "Escribir mi opinión"
+    }
+  },
+   "productosRelacionados": {
+    "error": "Error al cargar productos relacionados",
+    "title": "¿Qué otros productos compran los clientes tras ver este producto?",
+    "viewAll": "Ver todos"
+  },
+  "citasPage": {
+    "title": "Historial de Citas",
+    "updating": "Actualizando...",
+    "refresh": "Actualizar",
+    "empty": {
+      "title": "No se encontraron citas",
+      "description": "No se encontraron citas para este módulo en este momento."
+    },
+    "retry": "Reintentar",
+    "loadMore": "Cargar más citas"
+  },
+  "cardCitas": {
+    "notAvailable": "N/A",
+    "status": {
+      "pending": "PENDIENTE",
+      "cancelled": "CANCELADA",
+      "completed": "COMPLETADA"
+    },
+    "doctorPrefix": "Dr.",
+    "animals": "{count, plural, one {Animal (#)} other {Animales (#)}}",
+    "crossbreed": "Encaste",
+    "noBreed": "Sin raza",
+    "total": "Total"
+  },
+  "crearCitaPage": {
+    "header": {
+      "title": "Agendar una Cita",
+      "description": "Completa la información para programar tu cita veterinaria"
+    },
+    "card": {
+      "title": "Información de la Cita"
+    },
+    "sections": {
+      "general": "Información General",
+      "animal": "Información de los Animales",
+      "veterinary": "Servicio Veterinario",
+      "dateAndTime": "Fecha y Hora",
+      "serviceDetails": "Detalles del Servicio"
+    },
+    "fields": {
+      "farm": "Finca",
+      "species": "Especie",
+      "breed": "Raza",
+      "selectAnimals": "Seleccionar Animales",
+      "serviceType": "Tipo de Servicio",
+      "specificService": "Servicio Específico",
+      "veterinarian": "Veterinario",
+      "appointmentDate": "Fecha de la Cita",
+      "availableSchedules": "Horarios Disponibles: {count}",
+      "durationLabel": "{hours} horas {minutes} minutos",
+      "estimatedDuration": "Duración Estimada",
+      "totalCost": "Costo Total"
+    },
+    "placeholders": {
+      "farm": "Selecciona una finca",
+      "species": "Selecciona una especie",
+      "breed": "Selecciona una raza",
+      "serviceType": "Selecciona un tipo de servicio",
+      "specificService": "Selecciona un servicio",
+      "veterinarian": "Selecciona un veterinario",
+      "schedule": "Selecciona un horario",
+      "duration": "Duración del servicio",
+      "cost": "Costo del servicio"
+    },
+    "validation": {
+      "dateRequired": "La fecha de la cita es requerida"
+    },
+    "messages": {
+      "unavailableTimeRange": "El horario seleccionado no está disponible para la duración del servicio",
+      "appointmentSuccess": "¡Cita agendada correctamente!",
+      "noSuitableSchedules": "No hay horarios disponibles que se ajusten a la duración del servicio seleccionado.",
+      "completeServiceInformation": "Completa la información del servicio, veterinario y fecha para consultar los horarios disponibles.",
+      "priceDisclaimer": "El precio mostrado es una estimación y puede estar sujeto a cambios."
+    },
+    "errors": {
+      "createAppointment": "Error al crear la cita",
+      "unexpected": "Ocurrió un error inesperado"
+    },
+    "buttons": {
+      "processing": "Procesando...",
+      "confirmAppointment": "Confirmar Cita"
+    },
+    "units": {
+      "hours": "horas"
+    }
+  },
+  "pedidosPage": {
+    "title": "Mis Pedidos",
+    "showing": "Mostrando {start} - {end} de {total} pedidos"
+  },
+  "pedidoCard": {
+    "status": {
+      "pending": "Pendiente",
+      "processed": "Procesado",
+      "invoiced": "Facturado",
+      "cancelled": "Cancelado"
+    },
+    "multipleBranches": {
+      "title": "Pedido con múltiples sucursales",
+      "description": "Este pedido contiene productos provenientes de diferentes sucursales. Por esta razón, el tiempo de procesamiento y envío puede extenderse de 3 a 5 días hábiles."
+    },
+    "orderNumber": "Pedido #{id}",
+    "taxes": {
+      "label": "impuestos",
+      "view": "Ver",
+      "hide": "Ocultar",
+      "breakdown": "Desglose de Impuestos",
+      "taxableBase15": "Base Gravable 15%",
+      "taxableBase18": "Base Gravable 18%",
+      "exemptAmount": "Importe Exento",
+      "exoneratedAmount": "Importe Exonerado",
+      "isv15": "ISV 15%",
+      "isv18": "ISV 18%",
+      "total": "Total Impuestos"
+    },
+    "branches": "Sucursales",
+    "delivery": {
+      "title": "Entrega",
+      "farm": "Finca",
+      "cost": "Costo de Delivery"
+    },
+    "taxSummary": "Resumen Fiscal",
+    "subtotal": "Subtotal",
+    "products": "{count, plural, one {Producto (#)} other {Productos (#)}}",
+    "productCode": "Código",
+    "grandTotal": "Total General",
+    "buttons": {
+      "cancelOrder": "Cancelar Pedido"
+    },
+    "cancelDialog": {
+      "title": "¿Cancelar pedido?",
+      "description": "Esta acción",
+      "irreversible": "no se puede deshacer",
+      "consequences": "Si cancelas este pedido, se perderán todos los detalles asociados.",
+      "confirmation": "¿Deseas continuar?",
+      "back": "No, volver",
+      "confirm": "Sí, cancelar pedido"
+    },
+    "messages": {
+      "cancelSuccess": "Pedido cancelado correctamente"
+    },
+    "errors": {
+      "cancelOrder": "Error al cancelar el pedido"
+    }
+  },
+   "pedidosCanceladosPage": {
+    "title": "Mis Pedidos Cancelados",
+    "showing": "Mostrando {start} - {end} de {total} pedidos"
+  },
+  "pedidosFacturadosPage": {
+    "title": "Mis Pedidos Facturados",
+    "showing": "Mostrando {start} - {end} de {total} pedidos"
+  },
+   "pedidosProcesadosPage": {
+    "title": "Mis Pedidos Procesados",
+    "showing": "Mostrando {start} - {end} de {total} pedidos"
+  },
+  "emptyPedidos": {
+    "title": "No hay pedidos",
+    "description": "Aún no has realizado ningún pedido.",
+    "createOrder": "Crear nuevo pedido"
+  },
+   "gastosPage": {
+    "title": "Control de Gastos{farm}",
+    "description": "Registra y monitorea todos los gastos de tus fincas",
+    "filters": "Filtros",
+    "searchFilters": "Filtros de búsqueda",
+    "newExpense": "Nuevo Gasto",
+    "summary": {
+      "totalExpenses": "Total de gastos",
+      "showing": "Mostrando",
+      "records": "{count} de {total} registros"
+    },
+    "modal": {
+      "editTitle": "Editar Gasto",
+      "createTitle": "Ingresar Nuevo Gasto",
+      "editDescription": "Aquí podrás editar los gastos que tienes por cada finca",
+      "createDescription": "Aquí podrás ingresar los gastos que tienes por cada finca"
+    }
+  },
+   "tablaGastos": {
+    "empty": {
+      "title": "No hay gastos registrados",
+      "description": "Comienza registrando tu primer gasto usando el botón \"Nuevo Gasto\""
+    },
+    "columns": {
+      "date": "Fecha",
+      "category": "Categoría",
+      "concept": "Concepto",
+      "farm": "Finca",
+      "species": "Especie",
+      "amount": "Monto",
+      "paymentMethod": "Método de Pago",
+      "actions": "Acciones"
+    },
+    "buttons": {
+      "edit": "Editar"
+    }
+  },
+  "formGastos": {
+    "actions": {
+      "update": "actualizar",
+      "register": "registrar"
+    },
+    "fields": {
+      "category": "Categoría",
+      "farm": "Finca",
+      "species": "Especie",
+      "breed": "Raza",
+      "concept": "Concepto",
+      "amount": "Monto",
+      "expenseDate": "Fecha del Gasto",
+      "paymentMethod": "Método de Pago",
+      "description": "Descripción",
+      "additionalNotes": "Notas adicionales"
+    },
+    "placeholders": {
+      "category": "Seleccionar categoría",
+      "farm": "Seleccionar finca",
+      "species": "Seleccionar especie",
+      "breed": "Seleccionar raza",
+      "concept": "Ej: Compra de concentrado para ganado",
+      "amount": "0.00",
+      "paymentMethod": "Seleccionar método de pago",
+      "description": "Detalles adicionales del gasto...",
+      "notes": "Notas adicionales..."
+    },
+    "selectLabels": {
+      "categories": "Categorías",
+      "farms": "Fincas",
+      "species": "Especies",
+      "breeds": "Razas",
+      "paymentMethods": "Métodos de Pago"
+    },
+    "categories": {
+      "ALIMENTACION": "Alimentación",
+      "COMPRA_ANIMAL": "Compra de animal",
+      "MEDICAMENTOS": "Medicamentos",
+      "MANO_DE_OBRA": "Mano de obra",
+      "MANTENIMIENTO": "Mantenimiento",
+      "TRANSPORTE": "Transporte",
+      "OTROS": "Otros"
+    },
+    "paymentMethods": {
+      "EFECTIVO": "Efectivo",
+      "TRANSFERENCIA": "Transferencia",
+      "TARJETA": "Tarjeta",
+      "CHEQUE": "Cheque",
+      "OTRO": "Otro"
+    },
+    "validation": {
+      "conceptRequired": "El concepto es requerido",
+      "conceptMaxLength": "El concepto no puede exceder los 200 caracteres",
+      "amountRequired": "El monto es requerido",
+      "amountMin": "El monto debe ser mayor a 0",
+      "dateRequired": "La fecha es requerida",
+      "descriptionMaxLength": "La descripción no puede exceder los 500 caracteres",
+      "notesMaxLength": "Las notas no pueden exceder los 500 caracteres"
+    },
+    "messages": {
+      "selectSpeciesFirst": "* Selecciona una especie primero para ver las razas",
+      "updateSuccess": "Gasto actualizado correctamente",
+      "createSuccess": "Gasto registrado correctamente"
+    },
+    "errors": {
+      "title": "Error al {action} el gasto",
+      "registerExpense": "Hubo un error al registrar el gasto",
+      "unexpected": "Error inesperado. Contacte al administrador"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "updating": "Actualizando...",
+      "saving": "Guardando...",
+      "updateExpense": "Actualizar Gasto",
+      "registerExpense": "Registrar Gasto"
+    }
+  },
+    "cardGastosMobile": {
+    "empty": {
+      "title": "No hay gastos registrados",
+      "description": "Comienza registrando tu primer gasto"
+    },
+    "labels": {
+      "amount": "Monto",
+      "paymentMethod": "Método de pago",
+      "farm": "Finca",
+      "species": "Especie"
+    },
+    "buttons": {
+      "edit": "Editar"
+    },
+    "categories": {
+      "ALIMENTACION": "Alimentación",
+      "COMPRA_ANIMAL": "Compra de animal",
+      "MEDICAMENTOS": "Medicamentos",
+      "MANO_DE_OBRA": "Mano de obra",
+      "MANTENIMIENTO": "Mantenimiento",
+      "TRANSPORTE": "Transporte",
+      "OTROS": "Otros"
+    },
+    "paymentMethods": {
+      "EFECTIVO": "Efectivo",
+      "TRANSFERENCIA": "Transferencia",
+      "TARJETA": "Tarjeta",
+      "CHEQUE": "Cheque",
+      "OTRO": "Otro"
+    }
+  },
+  "nuevoGastoPage": {
+    "title": "Ingresar Gasto",
+    "card": {
+      "title": "Ingresa un nuevo gasto",
+      "description": "Completa los datos para ingresar el nuevo gasto"
+    }
+  },
+  "editarGastosPage": {
+    "title": "Editar Gasto",
+    "card": {
+      "title": "Editando el gasto",
+      "description": "Completa los datos para editar el gasto"
+    }
+  },
+   "ingresosPage": {
+    "title": "Control de Ingresos{farm}",
+    "description": "Registra y monitorea todos los ingresos de tus fincas",
+    "filters": "Filtros",
+    "searchFilters": "Filtros de búsqueda",
+    "newIncome": "Nuevo Ingreso",
+    "summary": {
+      "totalIncome": "Total de ingresos",
+      "showing": "Mostrando",
+      "records": "{count} de {total} registros"
+    },
+    "modal": {
+      "editTitle": "Editar Ingreso",
+      "createTitle": "Ingresar Nuevo Ingreso",
+      "editDescription": "Aquí podrás editar los ingresos que tienes por cada finca",
+      "createDescription": "Aquí podrás ingresar los ingresos que tienes por cada finca"
+    }
+  },
+   "tableIngresos": {
+    "empty": {
+      "title": "No hay ingresos registrados",
+      "description": "Comienza registrando tu primer ingreso usando el botón \"Nuevo Ingreso\""
+    },
+    "columns": {
+      "date": "Fecha",
+      "category": "Categoría",
+      "concept": "Concepto",
+      "farm": "Finca",
+      "species": "Especie",
+      "amount": "Monto",
+      "paymentMethod": "Método de pago",
+      "actions": "Acciones"
+    },
+    "buttons": {
+      "edit": "Editar"
+    },
+    "categories": {
+      "VENTA_ANIMAL": "Venta de animal",
+      "VENTA_PRODUCTO": "Venta de producto",
+      "PRODUCCION": "Producción",
+      "SERVICIOS": "Servicios",
+      "OTROS": "Otros"
+    },
+    "paymentMethods": {
+      "EFECTIVO": "Efectivo",
+      "TRANSFERENCIA": "Transferencia",
+      "TARJETA": "Tarjeta",
+      "CHEQUE": "Cheque",
+      "OTRO": "Otro"
+    }
+  },
+  "formIngresos": {
+    "actions": {
+      "update": "actualizar",
+      "register": "registrar"
+    },
+    "fields": {
+      "category": "Categoría",
+      "farm": "Finca",
+      "species": "Especie",
+      "breed": "Raza",
+      "concept": "Concepto",
+      "amount": "Monto",
+      "incomeDate": "Fecha del Ingreso",
+      "paymentMethod": "Método de Pago",
+      "description": "Descripción",
+      "additionalNotes": "Notas adicionales"
+    },
+    "placeholders": {
+      "category": "Seleccionar categoría",
+      "farm": "Seleccionar finca",
+      "species": "Seleccionar especie",
+      "breed": "Seleccionar raza",
+      "concept": "Ej: Compra de concentrado para ganado",
+      "amount": "0.00",
+      "paymentMethod": "Seleccionar método de pago",
+      "description": "Detalles adicionales del ingreso...",
+      "notes": "Notas adicionales..."
+    },
+    "selectLabels": {
+      "categories": "Categorías",
+      "farms": "Fincas",
+      "species": "Especies",
+      "breeds": "Razas",
+      "paymentMethods": "Métodos de Pago"
+    },
+    "categories": {
+      "VENTA_ANIMAL": "Venta de animal",
+      "VENTA_PRODUCTO": "Venta de producto",
+      "PRODUCCION": "Producción",
+      "SERVICIOS": "Servicios",
+      "OTROS": "Otros"
+    },
+    "paymentMethods": {
+      "EFECTIVO": "Efectivo",
+      "TRANSFERENCIA": "Transferencia",
+      "TARJETA": "Tarjeta",
+      "CHEQUE": "Cheque",
+      "OTRO": "Otro"
+    },
+    "validation": {
+      "conceptRequired": "El concepto es requerido",
+      "conceptMaxLength": "El concepto no puede exceder los 200 caracteres",
+      "amountRequired": "El monto es requerido",
+      "amountMin": "El monto debe ser mayor a 0",
+      "dateRequired": "La fecha es requerida",
+      "descriptionMaxLength": "La descripción no puede exceder los 500 caracteres",
+      "notesMaxLength": "Las notas no pueden exceder los 500 caracteres"
+    },
+    "messages": {
+      "selectSpeciesFirst": "* Selecciona una especie primero para ver las razas",
+      "updateSuccess": "Ingreso actualizado correctamente",
+      "createSuccess": "Ingreso registrado correctamente"
+    },
+    "errors": {
+      "title": "Error al {action} el ingreso",
+      "registerIncome": "Hubo un error al registrar el ingreso",
+      "unexpected": "Error inesperado. Contacte al administrador"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "updating": "Actualizando...",
+      "saving": "Guardando...",
+      "updateIncome": "Actualizar Ingreso",
+      "registerIncome": "Registrar Ingreso"
+    }
+  },
+  "cardIngresoMobile": {
+    "empty": {
+      "title": "No hay ingresos registrados",
+      "description": "Comienza registrando tu primer ingreso"
+    },
+    "labels": {
+      "amount": "Monto",
+      "paymentMethod": "Método de pago",
+      "farm": "Finca",
+      "species": "Especie"
+    },
+    "buttons": {
+      "edit": "Editar"
+    },
+    "categories": {
+      "VENTA_ANIMAL": "Venta de animal",
+      "VENTA_PRODUCTO": "Venta de producto",
+      "PRODUCCION": "Producción",
+      "SERVICIOS": "Servicios",
+      "OTROS": "Otros"
+    },
+    "paymentMethods": {
+      "EFECTIVO": "Efectivo",
+      "TRANSFERENCIA": "Transferencia",
+      "TARJETA": "Tarjeta",
+      "CHEQUE": "Cheque",
+      "OTRO": "Otro"
+    }
+  },
+   "nuevoIngresoPage": {
+    "title": "Registrar Ingreso",
+    "card": {
+      "title": "Ingresa un nuevo ingreso",
+      "description": "Completa los datos para registrar el nuevo ingreso"
+    }
+  },
+  "editarIngresoPage": {
+    "title": "Editar Ingreso",
+    "card": {
+      "title": "Editando el ingreso",
+      "description": "Completa los datos para editar el ingreso"
+    }
+  },
+   "filtrosGastosIngresos": {
+    "title": "Filtros",
+    "buttons": {
+      "clear": "Limpiar",
+      "close": "Cerrar"
+    },
+    "fields": {
+      "farm": "Finca",
+      "species": "Especie",
+      "category": "Categoría",
+      "paymentMethod": "Método de pago",
+      "dateRange": "Rango de fechas"
+    },
+    "placeholders": {
+      "allFarms": "Todas las fincas",
+      "allSpecies": "Todas las especies",
+      "allCategories": "Todas las categorías",
+      "allPaymentMethods": "Todos los métodos",
+      "dateFrom": "Fecha desde",
+      "dateTo": "Fecha hasta"
+    },
+    "categories": {
+      "ALIMENTACION": "Alimentación",
+      "COMPRA_ANIMAL": "Compra de animal",
+      "MEDICAMENTOS": "Medicamentos",
+      "MANO_DE_OBRA": "Mano de obra",
+      "MANTENIMIENTO": "Mantenimiento",
+      "TRANSPORTE": "Transporte",
+      "VENTA_ANIMAL": "Venta de animal",
+      "VENTA_PRODUCTO": "Venta de producto",
+      "PRODUCCION": "Producción",
+      "SERVICIOS": "Servicios",
+      "OTROS": "Otros"
+    },
+    "paymentMethods": {
+      "EFECTIVO": "Efectivo",
+      "TRANSFERENCIA": "Transferencia",
+      "TARJETA": "Tarjeta",
+      "CHEQUE": "Cheque",
+      "OTRO": "Otro"
+    }
+  },
+  "rentabilidadPage": {
+    "title": "Dashboard de Rentabilidad",
+    "description": "Análisis financiero de tu negocio ganadero",
+    "metrics": {
+      "totalIncome": "Total Ingresos",
+      "totalExpenses": "Total Gastos",
+      "netProfitability": "Rentabilidad Neta",
+      "profitabilityMargin": "Margen de Rentabilidad"
+    },
+    "indicators": {
+      "roi": "ROI (Retorno de Inversión)",
+      "roiDescription": "Rentabilidad vs inversión total",
+      "benefitCostRatio": "Ratio Beneficio/Costo",
+      "benefitCostDescription": "Ingresos por cada {currency}1 de gasto"
+    },
+    "tabs": {
+      "evolution": "Evolución",
+      "categories": "Categorías",
+      "farms": "Fincas"
+    },
+    "bestWorstMonth": {
+      "best": "Mejor Mes",
+      "worst": "Peor Mes"
+    },
+    "charts": {
+      "incomeByCategory": "Distribución de Ingresos por Categoría",
+      "expensesByCategory": "Distribución de Gastos por Categoría"
+    }
+  },
+   "filtrosRentabilidad": {
+    "title": "Filtros",
+    "activeFilters": "Filtros activos:",
+    "activeCount": "{count, plural, one {# activo} other {# activos}}",
+    "fields": {
+      "farm": "Finca",
+      "species": "Especie",
+      "dateRange": "Rango de fechas"
+    },
+    "placeholders": {
+      "allFarms": "Todas las fincas",
+      "allSpecies": "Todas las especies",
+      "dateFrom": "Fecha desde",
+      "dateTo": "Fecha hasta"
+    },
+    "active": {
+      "farm": "Finca: {name}",
+      "species": "Especie: {name}"
+    },
+    "buttons": {
+      "clear": "Limpiar",
+      "clearAll": "Limpiar todo",
+      "close": "Cerrar",
+      "cancel": "Cancelar",
+      "apply": "Aplicar filtros"
+    },
+    "removeFarm": "Quitar filtro de finca",
+    "removeSpecies": "Quitar filtro de especie",
+    "removeDates": "Quitar filtro de fechas"
+  },
+   "pieChartCategorias": {
+    "amount": "Monto"
+  },
+  "cardEvolucion": {
+    "title": "Evolución de Ingresos vs Gastos",
+    "periods": {
+      "month": "Mensual",
+      "week": "Semanal",
+      "year": "Anual"
+    },
+    "shortPeriods": {
+      "month": "Mes",
+      "week": "Sem",
+      "year": "Año"
+    },
+    "legend": {
+      "income": "Ingresos",
+      "expenses": "Gastos",
+      "profitability": "Rentabilidad",
+      "shortProfitability": "Rent."
+    },
+    "tooltip": {
+      "period": "Período"
+    },
+    "chartHint": "Toca cualquier punto para ver el valor exacto",
+    "empty": {
+      "title": "No hay datos disponibles",
+      "description": "Ajusta los filtros para ver información"
+    }
+  },
+   "cardMejorPeorMes": {
+    "period": "Período",
+    "profitability": "Rentabilidad",
+    "margin": "Margen"
+  },
+  "cardDetallesRentCategorias": {
+    "title": "Detalle por Categoría",
+    "columns": {
+      "category": "Categoría",
+      "type": "Tipo",
+      "amount": "Monto",
+      "percentage": "Porcentaje"
+    },
+    "types": {
+      "income": "Ingreso",
+      "expense": "Gasto"
+    },
+    "pagination": {
+      "page": "Página {current} de {total}"
+    }
+  },
+   "cardDetailsRentFincas": {
+    "title": "Detalle por Finca",
+    "columns": {
+      "farm": "Finca",
+      "income": "Ingresos",
+      "expenses": "Gastos",
+      "profitability": "Rentabilidad",
+      "margin": "Margen"
+    },
+    "pagination": {
+      "page": "Página {current} de {total}"
+    }
+  },
+   "cardFincasRentabilidad": {
+    "title": "Rentabilidad por Finca",
+    "series": {
+      "income": "Ingresos",
+      "expenses": "Gastos",
+      "profitability": "Rentabilidad"
     }
   }
 }

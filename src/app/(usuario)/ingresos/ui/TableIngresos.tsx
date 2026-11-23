@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import {
   Table,
   TableBody,
@@ -11,7 +14,6 @@ import { DollarSign, Pencil } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { getCategoriaIngresoColor } from "@/helpers/funciones/getCategoriaColor";
-import { getMetodoPagoLabel } from "@/helpers/funciones/getMetodoPago";
 import { Ingreso } from "@/api/finanzas/ingresos/interface/response-ingresos.interface";
 
 interface TablaImgresosProps {
@@ -27,6 +29,18 @@ export function TableIngresos({
   moneda = "L",
   handleEditIngreso,
 }: TablaImgresosProps) {
+  const t = useTranslations("tableIngresos");
+
+  const getCategoriaLabel = (categoria: string) => {
+    const key = `categories.${categoria}`;
+    return t.has(key) ? t(key) : categoria.replace(/_/g, " ");
+  };
+
+  const getMetodoPagoLabel = (metodo: string) => {
+    const key = `paymentMethods.${metodo}`;
+    return t.has(key) ? t(key) : metodo.replace(/_/g, " ");
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -44,11 +58,9 @@ export function TableIngresos({
           <DollarSign className="h-10 w-10 text-gray-400" />
         </div>
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          No hay ingresos registrados
+          {t("empty.title")}
         </h3>
-        <p className="text-gray-600">
-          Comienza registrando tu primer ingreso usando el botón "Nuevo Ingreso"
-        </p>
+        <p className="text-gray-600">{t("empty.description")}</p>
       </div>
     );
   }
@@ -58,15 +70,14 @@ export function TableIngresos({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Fecha</TableHead>
-            <TableHead>Categoría</TableHead>
-            <TableHead>Concepto</TableHead>
-            <TableHead>Finca</TableHead>
-            <TableHead>Especie</TableHead>
-            <TableHead>Monto</TableHead>
-            <TableHead>Método Pago</TableHead>
-
-            <TableHead>Acciones</TableHead>
+            <TableHead>{t("columns.date")}</TableHead>
+            <TableHead>{t("columns.category")}</TableHead>
+            <TableHead>{t("columns.concept")}</TableHead>
+            <TableHead>{t("columns.farm")}</TableHead>
+            <TableHead>{t("columns.species")}</TableHead>
+            <TableHead>{t("columns.amount")}</TableHead>
+            <TableHead>{t("columns.paymentMethod")}</TableHead>
+            <TableHead>{t("columns.actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -77,7 +88,7 @@ export function TableIngresos({
               </TableCell>
               <TableCell>
                 <Badge className={getCategoriaIngresoColor(ingreso.categoria)}>
-                  {ingreso.categoria.replace(/_/g, " ")}
+                  {getCategoriaLabel(ingreso.categoria)}
                 </Badge>
               </TableCell>
               <TableCell className="max-w-[200px]">
@@ -103,14 +114,13 @@ export function TableIngresos({
                   {getMetodoPagoLabel(ingreso.metodo_pago)}
                 </Badge>
               </TableCell>
-
               <TableCell className="text-sm text-gray-600">
                 <Button
                   id="edit-ingreso-btn"
                   onClick={() => handleEditIngreso(ingreso)}
-                  variant={"ghost"}
+                  variant="ghost"
                 >
-                  <Pencil /> Editar
+                  <Pencil /> {t("buttons.edit")}
                 </Button>
               </TableCell>
             </TableRow>

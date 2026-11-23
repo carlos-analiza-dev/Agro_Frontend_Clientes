@@ -30,7 +30,6 @@ import { toast } from "react-toastify";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { Animal } from "@/api/animales/interfaces/response-animales.interface";
-import useAnimalById from "@/hooks/animales/useAnimalById";
 import { useForm } from "react-hook-form";
 import { extractNumberFromIdentifier } from "@/helpers/funciones/extractNumberFromIdentifier ";
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
@@ -45,6 +44,7 @@ import { isAxiosError } from "axios";
 import { purezaOptions } from "@/helpers/data/purezaOptions";
 import { alimentosOptions } from "@/helpers/data/alimentos";
 import { tipoReproduccionOptions } from "@/helpers/data/tipoReproduccionOptions";
+import { useTranslations } from "next-intl";
 
 interface Props {
   animalId: string;
@@ -53,6 +53,7 @@ interface Props {
 }
 
 const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
+  const t = useTranslations("formAddAnimal");
   const queryClient = useQueryClient();
   const { cliente } = useAuthStore();
   const [showIdentifierHelp, setShowIdentifierHelp] = useState(false);
@@ -288,10 +289,10 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
       value: especie.id,
     })) || [];
 
-  const sexoItems = sexoOptions.map((sexo) => ({
-    label: sexo.label,
-    value: sexo.value,
-  }));
+  const sexoItems = [
+    { value: "macho", label: t("fields.sexoMacho") },
+    { value: "hembra", label: t("fields.sexoHembra") },
+  ];
 
   const tipoProduccionItems = dataTipoProduccion.map((produccion) => ({
     label: produccion.label,
@@ -451,7 +452,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
   const mutation = useMutation({
     mutationFn: (data: CrearAnimalByFinca) => ActualizarAnimal(animalId, data),
     onSuccess: () => {
-      toast.success("Animal actualizado correctamente");
+      toast.success(t("messages.animalActualizado"));
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
       queryClient.invalidateQueries({ queryKey: ["animal-id", animalId] });
       window.location.reload();
@@ -463,11 +464,11 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar el animal";
+            : t("messages.errorActualizar");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("messages.errorInesperado"));
       }
     },
   });
@@ -476,17 +477,17 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
     if (!cliente?.id) return;
 
     if (!data.especie) {
-      toast.error("Debes seleccionar una especie");
+      toast.error(t("validation.selectSpecies"));
       return;
     }
 
     if (!data.razaIds || data.razaIds.length === 0) {
-      toast.error("Debes seleccionar al menos una raza");
+      toast.error(t("validation.breedsRequired"));
       return;
     }
 
     if (!data.sexo) {
-      toast.error("Debes seleccionar un sexo");
+      toast.error(t("validation.selectSex"));
       return;
     }
 
@@ -494,17 +495,17 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
       !data.identificador ||
       !/^[A-ZÁÉÍÓÚÑ]{2}[A-ZÁÉÍÓÚÑ]{3,7}[12]-\d{6}$/.test(data.identificador)
     ) {
-      toast.error("El identificador debe tener 6 dígitos");
+      toast.error(t("validation.tagSixDigits"));
       return;
     }
 
     if (isPadreFinca && !selectedPadreId) {
-      toast.error("Debes seleccionar un padre de la finca");
+      toast.error(t("validation.seleccionarPadre"));
       return;
     }
 
     if (isMadreFinca && !selectedMadreId) {
-      toast.error("Debes seleccionar una madre de la finca");
+      toast.error(t("validation.seleccionarMadre"));
       return;
     }
 
@@ -528,30 +529,31 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
     mutation.mutate(animalData);
   };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <TabsContent value="animal">
         <Card className="max-w-4xl mx-auto">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold">
-              Datos del Animal
+              {t("animal.title")}
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              Completa la información del animal. Los campos con{" "}
-              <span className="text-red-500">*</span> son obligatorios.
+              {t("animal.description")}
             </p>
           </CardHeader>
 
           <CardContent className="space-y-6">
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Identificación
+                {t("sections.identification")}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Especie <span className="text-red-500">*</span>
+                    {t("fields.species")}{" "}
+                    <span className="text-red-500">*</span>
                   </Label>
                   <RadioGroup
                     value={
@@ -587,7 +589,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Sexo <span className="text-red-500">*</span>
+                    {t("fields.sex")} <span className="text-red-500">*</span>
                   </Label>
                   <RadioGroup
                     value={watch("sexo") || (animal ? animal.sexo : "")}
@@ -623,11 +625,11 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Nombre (opcional)
+                    {t("fields.nameOptional")}
                   </Label>
                   <Input
                     {...register("nombre_animal")}
-                    placeholder="Ej: Lucero, Toro, etc."
+                    placeholder={t("fields.namePlaceholder")}
                     className="w-full"
                   />
                   {errors.nombre_animal && (
@@ -639,11 +641,11 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Color (opcional)
+                    {t("fields.colorOptional")}
                   </Label>
                   <Input
                     {...register("color")}
-                    placeholder="Ej: Negro, Blanco, Café"
+                    placeholder={t("fields.colorPlaceholder")}
                     className="w-full"
                   />
                   {errors.color && (
@@ -656,7 +658,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Arete <span className="text-red-500">*</span>
+                  {t("fields.tag")} <span className="text-red-500">*</span>
                 </Label>
                 <div className="flex items-center gap-2">
                   <div className="relative flex-1">
@@ -669,7 +671,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                     />
                     <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
                       <span className="text-xs text-muted-foreground">
-                        6 dígitos
+                        {t("labels.sixDigits")}
                       </span>
                     </div>
                   </div>
@@ -689,9 +691,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent side="right" className="max-w-xs">
-                        <p className="text-xs">
-                          PRIMEROS SEIS DÍGITOS DE IDENTIFICACIÓN DEL ARETE
-                        </p>
+                        <p className="text-xs">{t("labels.tagHelp")}</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -706,13 +706,13 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Razas y Pureza
+                {t("sections.breedsAndPurity")}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Razas <span className="text-red-500">*</span>
+                    {t("fields.breeds")} <span className="text-red-500">*</span>
                   </Label>
                   <div className="border rounded-lg p-3 space-y-2 max-h-48 overflow-y-auto">
                     {razas?.data.map((raza) => (
@@ -742,7 +742,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                     ))}
                     {(!razas?.data || razas.data.length === 0) && (
                       <p className="text-sm text-muted-foreground">
-                        No hay razas disponibles
+                        {t("empty.noBreeds")}
                       </p>
                     )}
                   </div>
@@ -755,7 +755,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Nivel de Pureza (opcional)
+                    {t("fields.purityOptional")}
                   </Label>
                   <RadioGroup
                     value={watch("pureza") || (animal ? animal.pureza : "")}
@@ -786,13 +786,14 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Reproducción y Producción
+                {t("sections.reproductionAndProduction")}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Tipo de Reproducción <span className="text-red-500">*</span>
+                    {t("fields.reproductionType")}{" "}
+                    <span className="text-red-500">*</span>
                   </Label>
                   <RadioGroup
                     value={
@@ -832,7 +833,8 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Tipo de Producción <span className="text-red-500">*</span>
+                  {t("fields.productionType")}{" "}
+                  <span className="text-red-500">*</span>
                 </Label>
                 <RadioGroup
                   value={
@@ -870,7 +872,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Edad y Nacimiento
+                {t("sections.ageAndBirth")}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -879,7 +881,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                     htmlFor="fecha_nacimiento"
                     className="text-sm font-medium"
                   >
-                    Fecha de Nacimiento (opcional)
+                    {t("fields.birthDateOptional")}
                   </Label>
                   <Input
                     id="fecha_nacimiento"
@@ -900,7 +902,8 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Edad Promedio <span className="text-red-500">*</span>
+                    {t("fields.averageAge")}{" "}
+                    <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     type="number"
@@ -915,7 +918,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                         shouldValidate: true,
                       });
                     }}
-                    placeholder="Edad en años"
+                    placeholder={t("placeholders.age")}
                     className="w-full"
                   />
                   {errors.edad_promedio && (
@@ -925,7 +928,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                   )}
                   {fechaNacimiento && (
                     <p className="text-xs text-blue-600 flex items-center gap-1">
-                      <span>ℹ️</span> La edad se calcula automáticamente
+                      <span>ℹ️</span> {t("messages.automaticAge")}
                     </p>
                   )}
                 </div>
@@ -934,7 +937,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Alimentación <span className="text-red-500">*</span>
+                {t("sections.feeding")} <span className="text-red-500">*</span>
               </h3>
 
               <div className="border rounded-lg p-4 space-y-4 bg-gray-50">
@@ -999,27 +1002,26 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                             className="flex flex-wrap gap-4"
                           >
                             {[
-                              "comprado",
-                              "producido",
-                              "comprado y producido",
-                            ].map((origen) => (
+                              { value: "comprado", labelKey: "purchased" },
+                              { value: "producido", labelKey: "produced" },
+                              {
+                                value: "comprado y producido",
+                                labelKey: "purchasedAndProduced",
+                              },
+                            ].map(({ value, labelKey }) => (
                               <div
-                                key={origen}
+                                key={value}
                                 className="flex items-center space-x-2"
                               >
                                 <RadioGroupItem
-                                  value={origen}
-                                  id={`${alimento.value}-${origen}`}
+                                  value={value}
+                                  id={`${alimento.value}-${value}`}
                                 />
                                 <Label
-                                  htmlFor={`${alimento.value}-${origen}`}
+                                  htmlFor={`${alimento.value}-${value}`}
                                   className="text-sm"
                                 >
-                                  {origen === "comprado"
-                                    ? "Comprado"
-                                    : origen === "producido"
-                                      ? "Producido"
-                                      : "Comprado y producido"}
+                                  {t(`options.${labelKey}`)}
                                 </Label>
                               </div>
                             ))}
@@ -1029,7 +1031,9 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                             "comprado y producido" && (
                             <div className="grid grid-cols-2 gap-3">
                               <div className="space-y-1">
-                                <Label className="text-xs">% Comprado</Label>
+                                <Label className="text-xs">
+                                  {t("fields.purchasedPercentage")}
+                                </Label>
                                 <Input
                                   type="number"
                                   min="0"
@@ -1054,12 +1058,16 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                                     );
                                     setValue("tipo_alimentacion", updated);
                                   }}
-                                  placeholder="Ej: 60"
+                                  placeholder={t("labels.example", {
+                                    value: 60,
+                                  })}
                                   className="w-full"
                                 />
                               </div>
                               <div className="space-y-1">
-                                <Label className="text-xs">% Producido</Label>
+                                <Label className="text-xs">
+                                  {t("fields.producedPercentage")}
+                                </Label>
                                 <Input
                                   type="number"
                                   min="0"
@@ -1084,7 +1092,9 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                                     );
                                     setValue("tipo_alimentacion", updated);
                                   }}
-                                  placeholder="Ej: 40"
+                                  placeholder={t("labels.example", {
+                                    value: 40,
+                                  })}
                                   className="w-full"
                                 />
                               </div>
@@ -1096,7 +1106,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                                   alimentoSeleccionado.porcentaje_producido !==
                                   100 && (
                                   <p className="text-xs text-red-500 col-span-2">
-                                    ⚠️ La suma de porcentajes debe ser 100%
+                                    ⚠️ {t("validation.percentagesMustEqual100")}
                                   </p>
                                 )}
                             </div>
@@ -1111,13 +1121,14 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Complementos y Medicamentos
+                {t("sections.supplementsAndMedication")}
               </h3>
 
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Tipo de Complemento <span className="text-red-500">*</span>
+                    {t("fields.supplementType")}{" "}
+                    <span className="text-red-500">*</span>
                   </Label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {complementosOptions.map((complemento) => (
@@ -1161,11 +1172,11 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Medicamentos (opcional)
+                    {t("fields.medicationOptional")}
                   </Label>
                   <Input
                     {...register("medicamento")}
-                    placeholder="Ej: Ivermectina, Vitaminas, etc."
+                    placeholder={t("fields.medicationPlaceholder")}
                     className="w-full"
                   />
                   {errors.medicamento && (
@@ -1179,7 +1190,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Características Especiales
+                {t("sections.specialFeatures")}
               </h3>
 
               <div className="space-y-4">
@@ -1191,7 +1202,9 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                         setValue("castrado", checked === true)
                       }
                     />
-                    <Label className="font-medium">Castrado</Label>
+                    <Label className="font-medium">
+                      {t("fields.castrated")}
+                    </Label>
                   </div>
                 )}
 
@@ -1203,15 +1216,19 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                         setValue("esterelizado", checked === true)
                       }
                     />
-                    <Label className="font-medium">Esterilizado</Label>
+                    <Label className="font-medium">
+                      {t("fields.sterilized")}
+                    </Label>
                   </div>
                 )}
 
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Características</Label>
+                  <Label className="text-sm font-medium">
+                    {t("fields.characteristics")}
+                  </Label>
                   <Textarea
                     {...register("observaciones")}
-                    placeholder="Describe las características, comportamiento o cualquier observación relevante"
+                    placeholder={t("fields.characteristicsPlaceholder")}
                     className="min-h-[120px] w-full"
                   />
                   {errors.observaciones && (
@@ -1225,18 +1242,20 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Ubicación y Origen
+                {t("sections.locationAndOrigin")}
               </h3>
 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Finca</Label>
+                  <Label className="text-sm font-medium">
+                    {t("fields.farm")}
+                  </Label>
                   <Select
                     value={watch("fincaId") || animal?.finca?.id || ""}
                     onValueChange={(value) => setValue("fincaId", value)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecciona una finca" />
+                      <SelectValue placeholder={t("placeholders.selectFarm")} />
                     </SelectTrigger>
                     <SelectContent>
                       {fincasItems.map((finca) => (
@@ -1261,18 +1280,18 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                     }
                   />
                   <Label className="font-medium">
-                    ¿El animal fue comprado?
+                    {t("fields.animalWasPurchased")}
                   </Label>
                 </div>
 
                 {watch("compra_animal") && (
                   <div className="space-y-2 pl-6 border-l-2 border-green-200">
                     <Label className="text-sm font-medium">
-                      Nombre del criador (origen)
+                      {t("fields.originBreeder")}
                     </Label>
                     <Input
                       {...register("nombre_criador_origen_animal")}
-                      placeholder="Nombre del criador o lugar de origen"
+                      placeholder={t("fields.originBreederPlaceholder")}
                       className="w-full"
                     />
                     {errors.nombre_criador_origen_animal && (
@@ -1287,14 +1306,16 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
             <div className="pt-4 border-t flex gap-4 justify-end">
               <Button type="submit" disabled={mutation.isPending}>
-                {mutation.isPending ? "Actualizando..." : "Actualizar Animal"}
+                {mutation.isPending
+                  ? t("buttons.updating")
+                  : t("buttons.updateAnimal")}
               </Button>
               <Button
                 type="button"
                 onClick={() => setActiveTab("padre")}
                 className="group"
               >
-                <span>Datos del Padre</span>
+                <span>{t("buttons.fatherData")}</span>
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
@@ -1322,7 +1343,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                   />
                 </svg>
               </span>
-              Datos del Padre
+              {t("parent.title")}
             </CardTitle>
           </CardHeader>
 
@@ -1345,10 +1366,10 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                   htmlFor="padreFinca"
                   className="font-medium text-blue-900"
                 >
-                  El padre pertenece a esta finca
+                  {t("parent.belongsToFarm")}
                 </Label>
                 <p className="text-xs text-blue-700/70 mt-0.5">
-                  Marca esta opción si el padre está registrado en tu ganadería
+                  {t("parent.farmDescription")}
                 </p>
               </div>
             </div>
@@ -1357,16 +1378,16 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
-                    Buscar Padre <span className="text-red-500">*</span>
+                    {t("parent.search")} <span className="text-red-500">*</span>
                     <span className="text-xs text-muted-foreground font-normal">
-                      (Selecciona un macho registrado)
+                      {t("parent.searchHint")}
                     </span>
                   </Label>
 
                   <div className="relative">
                     <div className="relative">
                       <Input
-                        placeholder="Buscar por identificador o nombre..."
+                        placeholder={t("placeholders.searchByIdentifierOrName")}
                         value={searchPadreTerm}
                         onChange={(e) => {
                           setSearchPadreTerm(e.target.value);
@@ -1416,8 +1437,13 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                           {filteredMachos.length > 0 ? (
                             <div className="py-1">
                               <div className="px-3 py-1.5 text-xs text-muted-foreground bg-gray-50 border-b">
-                                {filteredMachos.length} resultado
-                                {filteredMachos.length > 1 ? "s" : ""}
+                                {filteredMachos.length === 1
+                                  ? t("messages.result", {
+                                      count: 1,
+                                    })
+                                  : t("messages.results", {
+                                      count: filteredMachos.length,
+                                    })}
                               </div>
                               {filteredMachos.map((macho) => (
                                 <div
@@ -1426,7 +1452,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                                   onClick={() => {
                                     setSelectedPadreId(macho.id);
                                     setSearchPadreTerm(
-                                      `${macho.identificador} - ${macho.nombre_animal || "Sin nombre"}`,
+                                      `${macho.identificador} - ${macho.nombre_animal || t("labels.noName")}`,
                                     );
                                     setIsPadreDropdownOpen(false);
                                   }}
@@ -1436,11 +1462,12 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                                       {macho.identificador}
                                     </span>
                                     <span className="text-sm text-gray-500">
-                                      {macho.nombre_animal || "Sin nombre"}
+                                      {macho.nombre_animal ||
+                                        t("labels.noName")}
                                     </span>
                                   </div>
                                   <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                                    Seleccionar
+                                    {t("buttons.select")}
                                   </span>
                                 </div>
                               ))}
@@ -1460,9 +1487,9 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                                   d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                                 />
                               </svg>
-                              <p>No se encontraron machos</p>
+                              <p>{t("parent.noMalesFound")}</p>
                               <p className="text-xs text-gray-400 mt-1">
-                                Intenta con otro término de búsqueda
+                                {t("messages.tryAnotherSearch")}
                               </p>
                             </div>
                           )}
@@ -1478,7 +1505,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                           <p className="text-sm text-green-700 flex items-center gap-2">
                             <span className="text-green-500">✓</span>
                             <span className="font-medium">
-                              Padre seleccionado:
+                              {t("parent.selected")}
                             </span>
                           </p>
                           <p className="text-sm font-semibold text-green-800 mt-1">
@@ -1508,7 +1535,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                               d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                             />
                           </svg>
-                          Cambiar
+                          {t("buttons.change")}
                         </Button>
                       </div>
                     </div>
@@ -1520,14 +1547,14 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nombre Padre
+                      {t("parent.name")}
                       <span className="text-xs text-muted-foreground font-normal">
-                        (opcional)
+                        ({t("labels.optional")})
                       </span>
                     </Label>
                     <Input
                       {...register("nombre_padre")}
-                      placeholder="Nombre del padre"
+                      placeholder={t("parent.namePlaceholder")}
                       className="focus:ring-2 focus:ring-blue-500/20"
                     />
                     {errors.nombre_padre && (
@@ -1540,9 +1567,9 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Arete Padre
+                      {t("parent.tag")}
                       <span className="text-xs text-muted-foreground font-normal">
-                        (6 dígitos - opcional)
+                        {t("parent.tagHint")}
                       </span>
                     </Label>
                     <div className="flex items-center gap-2">
@@ -1552,7 +1579,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                           onChange={(e) =>
                             handleIdentifierChangePadre(e.target.value)
                           }
-                          placeholder="000000"
+                          placeholder={t("parent.tagPlaceholder")}
                           maxLength={6}
                           className="flex-1 font-mono tracking-wider focus:ring-2 focus:ring-blue-500/20"
                         />
@@ -1576,9 +1603,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent side="top" className="max-w-xs">
-                            <p className="text-xs">
-                              PRIMEROS SEIS DÍGITOS DE IDENTIFICACIÓN DEL ARETE
-                            </p>
+                            <p className="text-xs">{t("labels.tagHelp")}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -1594,7 +1619,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
-                    Razas del Padre <span className="text-red-500">*</span>
+                    {t("parent.breeds")} <span className="text-red-500">*</span>
                   </Label>
                   <div className="border rounded-lg p-3 space-y-2 max-h-48 overflow-y-auto bg-gray-50">
                     {razas?.data.map((raza) => (
@@ -1632,7 +1657,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                     ))}
                     {(!razas?.data || razas.data.length === 0) && (
                       <p className="text-sm text-muted-foreground">
-                        No hay razas disponibles
+                        {t("empty.noBreeds")}
                       </p>
                     )}
                   </div>
@@ -1646,9 +1671,9 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nivel de Pureza del Padre
+                      {t("parent.purity")}
                       <span className="text-xs text-muted-foreground font-normal">
-                        (opcional)
+                        ({t("labels.optional")})
                       </span>
                     </Label>
                     <RadioGroup
@@ -1683,12 +1708,12 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nombre Criador del Padre{" "}
+                      {t("parent.breederName")}{" "}
                       <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       {...register("nombre_criador_padre")}
-                      placeholder="Nombre del criador"
+                      placeholder={t("parent.breederNamePlaceholder")}
                       className="focus:ring-2 focus:ring-blue-500/20"
                     />
                     {errors.nombre_criador_padre && (
@@ -1701,12 +1726,12 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nombre Propietario del Padre{" "}
+                      {t("parent.ownerName")}{" "}
                       <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       {...register("nombre_propietario_padre")}
-                      placeholder="Nombre del propietario"
+                      placeholder={t("parent.ownerNamePlaceholder")}
                       className="focus:ring-2 focus:ring-blue-500/20"
                     />
                     {errors.nombre_propietario_padre && (
@@ -1719,12 +1744,12 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Finca de Origen del Padre{" "}
+                      {t("parent.originFarm")}{" "}
                       <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       {...register("nombre_finca_origen_padre")}
-                      placeholder="Nombre de la finca de origen"
+                      placeholder={t("parent.originFarmPlaceholder")}
                       className="focus:ring-2 focus:ring-blue-500/20"
                     />
                     {errors.nombre_finca_origen_padre && (
@@ -1758,14 +1783,14 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                     d="M10 19l-7-7m0 0l7-7m-7 7h18"
                   />
                 </svg>
-                Anterior
+                {t("buttons.previous")}
               </Button>
               <Button
                 type="button"
                 onClick={() => setActiveTab("madre")}
                 className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white"
               >
-                Datos de la Madre
+                {t("buttons.motherData")}
                 <svg
                   className="w-4 h-4 ml-2"
                   fill="none"
@@ -1805,10 +1830,12 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                   />
                 </svg>
               </span>
-              Datos de la Madre
+              {t("mother.title")}
               {watch("numero_parto_madre") && (
                 <span className="ml-auto text-xs font-normal bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                  Parto #{watch("numero_parto_madre")}
+                  {t("mother.birthNumberBadge", {
+                    number: watch("numero_parto_madre"),
+                  })}
                 </span>
               )}
             </CardTitle>
@@ -1833,10 +1860,10 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                   htmlFor="madreFinca"
                   className="font-medium text-pink-900"
                 >
-                  La madre pertenece a esta finca
+                  {t("mother.belongsToFarm")}
                 </Label>
                 <p className="text-xs text-pink-700/70 mt-0.5">
-                  Marca esta opción si la madre está registrada en tu ganadería
+                  {t("mother.farmDescription")}
                 </p>
               </div>
             </div>
@@ -1845,16 +1872,16 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
-                    Buscar Madre <span className="text-red-500">*</span>
+                    {t("mother.search")} <span className="text-red-500">*</span>
                     <span className="text-xs text-muted-foreground font-normal">
-                      (Selecciona una hembra registrada)
+                      {t("mother.searchHint")}
                     </span>
                   </Label>
 
                   <div className="relative">
                     <div className="relative">
                       <Input
-                        placeholder="Buscar por identificador o nombre..."
+                        placeholder={t("placeholders.searchByIdentifierOrName")}
                         value={searchMadreTerm}
                         onChange={(e) => {
                           setSearchMadreTerm(e.target.value);
@@ -1904,8 +1931,13 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                           {filteredHembras.length > 0 ? (
                             <div className="py-1">
                               <div className="px-3 py-1.5 text-xs text-muted-foreground bg-gray-50 border-b">
-                                {filteredHembras.length} resultado
-                                {filteredHembras.length > 1 ? "s" : ""}
+                                {filteredHembras.length === 1
+                                  ? t("messages.result", {
+                                      count: 1,
+                                    })
+                                  : t("messages.results", {
+                                      count: filteredHembras.length,
+                                    })}
                               </div>
                               {filteredHembras.map((hembra) => (
                                 <div
@@ -1914,7 +1946,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                                   onClick={() => {
                                     setSelectedMadreId(hembra.id);
                                     setSearchMadreTerm(
-                                      `${hembra.identificador} - ${hembra.nombre_animal || "Sin nombre"}`,
+                                      `${hembra.identificador} - ${hembra.nombre_animal || t("labels.noName")}`,
                                     );
                                     setIsMadreDropdownOpen(false);
                                   }}
@@ -1924,11 +1956,12 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                                       {hembra.identificador}
                                     </span>
                                     <span className="text-sm text-gray-500">
-                                      {hembra.nombre_animal || "Sin nombre"}
+                                      {hembra.nombre_animal ||
+                                        t("labels.noName")}
                                     </span>
                                   </div>
                                   <span className="text-xs bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full">
-                                    Seleccionar
+                                    {t("buttons.select")}
                                   </span>
                                 </div>
                               ))}
@@ -1948,9 +1981,9 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                                   d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                                 />
                               </svg>
-                              <p>No se encontraron hembras</p>
+                              <p>{t("mother.noFemalesFound")}</p>
                               <p className="text-xs text-gray-400 mt-1">
-                                Intenta con otro término de búsqueda
+                                {t("messages.tryAnotherSearch")}
                               </p>
                             </div>
                           )}
@@ -1966,7 +1999,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                           <p className="text-sm text-green-700 flex items-center gap-2">
                             <span className="text-green-500">✓</span>
                             <span className="font-medium">
-                              Madre seleccionada:
+                              {t("mother.selected")}
                             </span>
                           </p>
                           <p className="text-sm font-semibold text-green-800 mt-1">
@@ -1996,7 +2029,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                               d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                             />
                           </svg>
-                          Cambiar
+                          {t("buttons.change")}
                         </Button>
                       </div>
                     </div>
@@ -2008,15 +2041,15 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nombre Madre
+                      {t("mother.name")}
                       <span className="text-xs text-muted-foreground font-normal">
-                        (opcional)
+                        ({t("labels.optional")})
                       </span>
                     </Label>
                     <Input
                       value={watch("nombre_madre") || ""}
                       onChange={(e) => setValue("nombre_madre", e.target.value)}
-                      placeholder="Nombre de la madre"
+                      placeholder={t("mother.namePlaceholder")}
                       className="focus:ring-2 focus:ring-pink-500/20"
                     />
                     {errors.nombre_madre && (
@@ -2029,9 +2062,9 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Arete Madre
+                      {t("mother.tag")}
                       <span className="text-xs text-muted-foreground font-normal">
-                        (6 dígitos - opcional)
+                        {t("mother.tagHint")}
                       </span>
                     </Label>
                     <div className="flex items-center gap-2">
@@ -2041,7 +2074,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                           onChange={(e) =>
                             handleIdentifierChangeMadre(e.target.value)
                           }
-                          placeholder="000000"
+                          placeholder={t("mother.tagPlaceholder")}
                           maxLength={6}
                           className="flex-1 font-mono tracking-wider focus:ring-2 focus:ring-pink-500/20"
                         />
@@ -2065,9 +2098,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent side="top" className="max-w-xs">
-                            <p className="text-xs">
-                              PRIMEROS SEIS DÍGITOS DE IDENTIFICACIÓN DEL ARETE
-                            </p>
+                            <p className="text-xs">{t("labels.tagHelp")}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -2083,7 +2114,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
-                    Razas de la Madre <span className="text-red-500">*</span>
+                    {t("mother.breeds")} <span className="text-red-500">*</span>
                   </Label>
                   <div className="border rounded-lg p-3 space-y-2 max-h-48 overflow-y-auto bg-gray-50">
                     {razas?.data.map((raza) => (
@@ -2121,7 +2152,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                     ))}
                     {(!razas?.data || razas.data.length === 0) && (
                       <p className="text-sm text-muted-foreground">
-                        No hay razas disponibles
+                        {t("empty.noBreeds")}
                       </p>
                     )}
                   </div>
@@ -2135,9 +2166,9 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nivel de pureza
+                      {t("mother.purity")}
                       <span className="text-xs text-muted-foreground font-normal">
-                        (opcional)
+                        ({t("labels.optional")})
                       </span>
                     </Label>
                     <RadioGroup
@@ -2172,9 +2203,10 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Número de parto <span className="text-red-500">*</span>
+                      {t("mother.birthNumber")}{" "}
+                      <span className="text-red-500">*</span>
                       <span className="text-xs text-muted-foreground font-normal">
-                        (Último parto)
+                        ({t("mother.lastBirth")})
                       </span>
                     </Label>
                     <div className="relative">
@@ -2182,7 +2214,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                         min={1}
                         {...register("numero_parto_madre")}
                         required
-                        placeholder="Ej: 1, 2, 3..."
+                        placeholder={t("mother.birthNumberPlaceholder")}
                         maxLength={2}
                         className="flex-1 font-medium focus:ring-2 focus:ring-pink-500/20"
                         type="number"
@@ -2201,14 +2233,15 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nombre Criador <span className="text-red-500">*</span>
+                      {t("mother.breederName")}{" "}
+                      <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       value={watch("nombre_criador_madre") || ""}
                       onChange={(e) =>
                         setValue("nombre_criador_madre", e.target.value)
                       }
-                      placeholder="Nombre del criador"
+                      placeholder={t("mother.breederNamePlaceholder")}
                       className="focus:ring-2 focus:ring-pink-500/20"
                     />
                     {errors.nombre_criador_madre && (
@@ -2221,14 +2254,15 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nombre Propietario <span className="text-red-500">*</span>
+                      {t("mother.ownerName")}{" "}
+                      <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       value={watch("nombre_propietario_madre") || ""}
                       onChange={(e) =>
                         setValue("nombre_propietario_madre", e.target.value)
                       }
-                      placeholder="Nombre del propietario"
+                      placeholder={t("mother.ownerNamePlaceholder")}
                       className="focus:ring-2 focus:ring-pink-500/20"
                     />
                     {errors.nombre_propietario_madre && (
@@ -2241,7 +2275,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
 
                   <div className="space-y-2 md:col-span-2">
                     <Label className="flex items-center gap-2">
-                      Nombre de la finca de origen{" "}
+                      {t("mother.originFarm")}{" "}
                       <span className="text-red-500">*</span>
                     </Label>
                     <Input
@@ -2249,7 +2283,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                       onChange={(e) =>
                         setValue("nombre_finca_origen_madre", e.target.value)
                       }
-                      placeholder="Nombre de la finca de origen"
+                      placeholder={t("mother.originFarmPlaceholder")}
                       className="focus:ring-2 focus:ring-pink-500/20"
                     />
                     {errors.nombre_finca_origen_madre && (
@@ -2283,7 +2317,7 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                     d="M10 19l-7-7m0 0l7-7m-7 7h18"
                   />
                 </svg>
-                Anterior
+                {t("buttons.previous")}
               </Button>
               <Button
                 type="submit"
@@ -2312,11 +2346,11 @@ const FormEditAnimales = ({ animal, animalId, setActiveTab }: Props) => {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       ></path>
                     </svg>
-                    Creando...
+                    {t("buttons.creating")}
                   </>
                 ) : (
                   <>
-                    Actualizar Animal
+                    {t("buttons.updateAnimal")}
                     <svg
                       className="w-4 h-4 ml-2"
                       fill="none"

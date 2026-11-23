@@ -212,10 +212,10 @@ const FormAddAnimal = ({ setActiveTab, selectedEspecieId }: Props) => {
     };
   }, []);
 
-  const sexoItems = sexoOptions.map((sexo) => ({
-    label: sexo.label,
-    value: sexo.value,
-  }));
+  const sexoItems = [
+    { value: "macho", label: t("fields.sexoMacho") },
+    { value: "hembra", label: t("fields.sexoHembra") },
+  ];
 
   const tipoProduccionItems = dataTipoProduccion.map((produccion) => ({
     label: produccion.label,

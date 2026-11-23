@@ -1,4 +1,5 @@
 "use client";
+
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -6,10 +7,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import useGetCitasByUser from "@/hooks/citas/useGetCitasByUser";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import CardCitas from "./ui/CardCitas";
 import { FAB } from "@/components/generics/FAB";
 
 const CitasPage = () => {
+  const t = useTranslations("citasPage");
+
   const router = useRouter();
   const limit = 10;
 
@@ -65,7 +69,7 @@ const CitasPage = () => {
         className="flex justify-between items-center mb-6"
       >
         <h1 id="id-citas-title" className="text-lg md:text-3xl font-bold">
-          Historial de Citas
+          {t("title")}
         </h1>
         <Button
           id="id-citas-refresh"
@@ -74,14 +78,14 @@ const CitasPage = () => {
           onClick={onRefresh}
           disabled={isRefetching}
         >
-          {isRefetching ? "Actualizando..." : "Actualizar"}
+          {isRefetching ? t("updating") : t("refresh")}
         </Button>
       </div>
 
       <ScrollArea id="id-citas-scroll-area" className="h-[calc(100vh-200px)]">
         <div id="id-citas-list" className="space-y-4">
           {allCitas.map((item) => (
-            <div id={`id-citas-card-wrapper`} key={item.id}>
+            <div id="id-citas-card-wrapper" key={item.id}>
               <CardCitas item={item} />
             </div>
           ))}
@@ -94,17 +98,17 @@ const CitasPage = () => {
           >
             <Alert id="id-citas-empty-alert" className="max-w-md text-center">
               <AlertTitle id="id-citas-empty-title">
-                No se encontraron citas
+                {t("empty.title")}
               </AlertTitle>
               <AlertDescription id="id-citas-empty-description">
-                No se encontraron citas para este módulo en este momento.
+                {t("empty.description")}
               </AlertDescription>
               <Button
                 id="id-citas-empty-retry"
                 onClick={onRefresh}
                 className="mt-4"
               >
-                Reintentar
+                {t("retry")}
               </Button>
             </Alert>
           </div>
@@ -130,7 +134,7 @@ const CitasPage = () => {
               onClick={loadMore}
               className="w-full max-w-xs"
             >
-              Cargar más citas
+              {t("loadMore")}
             </Button>
           </div>
         )}

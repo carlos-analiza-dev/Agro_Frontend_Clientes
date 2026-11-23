@@ -36,6 +36,7 @@ import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import { ActualizarPeces } from "@/api/animales/accions/update-animal";
 import { etapaOptions } from "@/helpers/data/animales/animales-data";
+import { useTranslations } from "next-intl";
 
 interface Props {
   animalId: string;
@@ -43,6 +44,7 @@ interface Props {
 }
 
 const FormEditPeces = ({ animalId, animal }: Props) => {
+  const t = useTranslations("FormAddPeces");
   const router = useRouter();
   const queryClient = useQueryClient();
   const { cliente } = useAuthStore();
@@ -157,7 +159,7 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
   const mutation = useMutation({
     mutationFn: (data: PecesData) => ActualizarPeces(animalId, data),
     onSuccess: () => {
-      toast.success("Lote de peces actualizado correctamente");
+      toast.success(t("messages.pecesActualizado"));
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
       queryClient.invalidateQueries({ queryKey: ["animal-id", animalId] });
       router.push("/animales");
@@ -169,11 +171,11 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar el lote de peces";
+            : t("messages.errorActualizar");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("messages.errorInesperado"));
       }
     },
   });
@@ -182,33 +184,32 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
     if (!cliente?.id) return;
 
     if (!data.fincaId) {
-      toast.error("Debes seleccionar una finca");
+      toast.error(t("validation.seleccionarFinca"));
       return;
     }
 
     if (!data.razaIds || data.razaIds.length === 0) {
-      toast.error("Debes seleccionar al menos una raza");
+      toast.error(t("validation.seleccionarRaza"));
       return;
     }
 
     if (!data.identificador || data.identificador.trim() === "") {
-      toast.error("El identificador es obligatorio");
+      toast.error(t("validation.identificadorObligatorio"));
       return;
     }
 
     if (!data.fecha_siembra) {
-      toast.error("La fecha de siembra es obligatoria");
+      toast.error(t("validation.fechaSiembraObligatoria"));
       return;
     }
 
     if (!data.cantidad_inicial || data.cantidad_inicial <= 0) {
-      toast.error("La cantidad inicial debe ser mayor a 0");
+      toast.error(t("validation.cantidadInicialMayorCero"));
       return;
     }
 
     mutation.mutate(data);
   };
-
   const handleSelectChange = (field: keyof PecesData, value: any) => {
     setValue(field, value);
   };
@@ -219,7 +220,7 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-600 mx-auto"></div>
           <p className="mt-4 text-muted-foreground">
-            Cargando datos del lote...
+            {t("loading.cargandoLote")}
           </p>
         </div>
       </div>
@@ -233,31 +234,35 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
           <div className="flex items-center gap-4">
             <div>
               <CardTitle className="text-2xl font-bold">
-                Editar Lote de Peces
+                {t("header.editTitle")}
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                Actualiza la información del lote piscícola. Los campos con{" "}
-                <span className="text-red-500">*</span> son obligatorios.
+                {t.rich("header.editSubtitle", {
+                  red: (chunks) => (
+                    <span className="text-red-500">{chunks}</span>
+                  ),
+                })}
               </p>
             </div>
           </div>
         </CardHeader>
 
         <CardContent className="space-y-6">
+          {/* Identificación */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Identificación
+              {t("sections.identificacion")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Estanque / Tanque / Jaula{" "}
+                  {t("fields.estanqueTanqueJaula")}{" "}
                   <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   {...register("estanque_tanque_jaula")}
-                  placeholder="Ej: Estanque 1, Tanque A, Jaula 3"
+                  placeholder={t("fields.estanqueTanqueJaulaPlaceholder")}
                 />
                 {errors.estanque_tanque_jaula && (
                   <p className="text-sm text-red-500">
@@ -268,7 +273,8 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Identificador del Lote <span className="text-red-500">*</span>
+                  {t("fields.identificador")}{" "}
+                  <span className="text-red-500">*</span>
                 </Label>
                 <div className="flex items-center gap-2">
                   <div className="relative flex-1">
@@ -279,13 +285,13 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
                         e.target.value = value;
                         setValue("identificador", value);
                       }}
-                      placeholder="Ej: 123ABC"
+                      placeholder={t("fields.identificadorPlaceholder")}
                       maxLength={6}
                       className="w-full font-mono text-lg tracking-wider uppercase"
                     />
                     <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
                       <span className="text-xs text-muted-foreground">
-                        6 caracteres
+                        {t("fields.chars6")}
                       </span>
                     </div>
                   </div>
@@ -306,8 +312,7 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
                       </TooltipTrigger>
                       <TooltipContent side="right" className="max-w-xs">
                         <p className="text-xs">
-                          Código de identificación del lote (máximo 6
-                          caracteres)
+                          {t("fields.identificadorHelp")}
                         </p>
                       </TooltipContent>
                     </Tooltip>
@@ -323,23 +328,24 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
 
             <div className="space-y-2">
               <Label className="text-sm font-medium">
-                Proveedor de Alevines
+                {t("fields.proveedorAlevines")}
               </Label>
               <Input
                 {...register("proveedor_alevines")}
-                placeholder="Nombre del proveedor"
+                placeholder={t("fields.proveedorAlevinesPlaceholder")}
               />
             </div>
           </div>
 
+          {/* Razas del Lote */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Razas del Lote <span className="text-red-500">*</span>
+              {t("sections.razas")} <span className="text-red-500">*</span>
             </h3>
 
             <div className="space-y-2">
               <Label className="text-sm font-medium">
-                Selecciona las razas que componen el lote
+                {t("fields.razasInfo")}
               </Label>
               <div className="border rounded-lg p-4 space-y-2 max-h-48 overflow-y-auto bg-gray-50">
                 {razas?.data && razas.data.length > 0 ? (
@@ -370,7 +376,7 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
                   ))
                 ) : (
                   <p className="text-sm text-muted-foreground text-center py-4">
-                    No hay razas disponibles para esta especie
+                    {t("fields.noRazas")}
                   </p>
                 )}
               </div>
@@ -379,21 +385,25 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
               )}
               {watch("razaIds") && watch("razaIds").length > 0 && (
                 <p className="text-xs text-green-600">
-                  ✓ {watch("razaIds").length} raza(s) seleccionada(s)
+                  {t("fields.razasSeleccionadas", {
+                    count: watch("razaIds").length,
+                  })}
                 </p>
               )}
             </div>
           </div>
 
+          {/* Siembra */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Siembra
+              {t("sections.siembra")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Fecha de Siembra <span className="text-red-500">*</span>
+                  {t("fields.fechaSiembra")}{" "}
+                  <span className="text-red-500">*</span>
                 </Label>
                 <Input type="date" {...register("fecha_siembra")} />
                 {errors.fecha_siembra && (
@@ -405,13 +415,14 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Cantidad Inicial <span className="text-red-500">*</span>
+                  {t("fields.cantidadInicial")}{" "}
+                  <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   type="number"
                   min={1}
                   {...register("cantidad_inicial", { valueAsNumber: true })}
-                  placeholder="Ej: 1000"
+                  placeholder={t("fields.cantidadInicialPlaceholder")}
                 />
                 {errors.cantidad_inicial && (
                   <p className="text-sm text-red-500">
@@ -424,46 +435,51 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Talla / Peso Inicial
+                  {t("fields.tallaPesoInicial")}
                 </Label>
                 <Input
                   {...register("talla_peso_inicial")}
-                  placeholder="Ej: 5cm / 2g"
+                  placeholder={t("fields.tallaPesoInicialPlaceholder")}
                 />
               </div>
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Densidad (por m³ / m²)
+                  {t("fields.densidad")}
                 </Label>
                 <Input
                   type="number"
                   step="0.01"
                   {...register("densidad_por_m3_m2", { valueAsNumber: true })}
-                  placeholder="Ej: 50"
+                  placeholder={t("fields.densidadPlaceholder")}
                 />
               </div>
             </div>
           </div>
 
+          {/* Población */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Población
+              {t("sections.poblacion")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Cantidad Actual</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.cantidadActual")}
+                </Label>
                 <Input
                   type="number"
                   min={0}
                   {...register("cantidad_actual", { valueAsNumber: true })}
-                  placeholder="Ej: 950"
+                  placeholder={t("fields.cantidadActualPlaceholder")}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Etapa</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.etapa")}
+                </Label>
                 <Select
                   value={watch("etapa") || ""}
                   onValueChange={(value) =>
@@ -471,7 +487,7 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona la etapa" />
+                    <SelectValue placeholder={t("fields.etapaPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
                     {etapaOptions.map((etapa) => (
@@ -486,18 +502,19 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
 
             <div className="space-y-2">
               <Label className="text-sm font-medium">
-                Mortalidad Diaria / Acumulada
+                {t("fields.mortalidadDiariaAcum")}
               </Label>
               <Input
                 {...register("mortalidad_diaria_acum")}
-                placeholder="Ej: 5/día o 50 acumuladas"
+                placeholder={t("fields.mortalidadDiariaAcumPlaceholder")}
               />
             </div>
           </div>
 
+          {/* Muestreos */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Muestreos
+              {t("sections.muestreos")}
             </h3>
 
             {muestreoFields.map((field, index) => (
@@ -506,7 +523,9 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
                 className="border rounded-lg p-4 space-y-3 bg-gray-50"
               >
                 <div className="flex justify-between items-center">
-                  <Label className="font-medium">Muestreo #{index + 1}</Label>
+                  <Label className="font-medium">
+                    {t("fields.muestreo", { index: index + 1 })}
+                  </Label>
                   <Button
                     type="button"
                     variant="destructive"
@@ -519,32 +538,32 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div className="space-y-1">
-                    <Label className="text-xs">Fecha</Label>
+                    <Label className="text-xs">{t("fields.fecha")}</Label>
                     <Input
                       type="date"
                       {...register(`muestreos.${index}.fecha_muestreo`)}
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs">Peso (g)</Label>
+                    <Label className="text-xs">{t("fields.pesoGramos")}</Label>
                     <Input
                       type="number"
                       step="0.01"
                       {...register(`muestreos.${index}.peso`, {
                         valueAsNumber: true,
                       })}
-                      placeholder="Ej: 150"
+                      placeholder={t("fields.pesoGramosPlaceholder")}
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs">Talla (cm)</Label>
+                    <Label className="text-xs">{t("fields.tallaCm")}</Label>
                     <Input
                       type="number"
                       step="0.1"
                       {...register(`muestreos.${index}.talla`, {
                         valueAsNumber: true,
                       })}
-                      placeholder="Ej: 15"
+                      placeholder={t("fields.tallaCmPlaceholder")}
                     />
                   </div>
                 </div>
@@ -560,81 +579,91 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
               }
             >
               <Plus className="h-4 w-4 mr-2" />
-              Agregar Muestreo
+              {t("fields.agregarMuestreo")}
             </Button>
           </div>
 
+          {/* Crecimiento */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Crecimiento
+              {t("sections.crecimiento")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Peso Promedio (g)</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.pesoPromedio")}
+                </Label>
                 <Input
                   type="number"
                   step="0.01"
                   {...register("peso_promedio", { valueAsNumber: true })}
-                  placeholder="Ej: 250"
+                  placeholder={t("fields.pesoPromedioPlaceholder")}
                 />
               </div>
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Biomasa Estimada (kg)
+                  {t("fields.biomasaEstimada")}
                 </Label>
                 <Input
                   type="number"
                   step="0.01"
                   {...register("biomasa_estimada", { valueAsNumber: true })}
-                  placeholder="Ej: 237.5"
+                  placeholder={t("fields.biomasaEstimadaPlaceholder")}
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Talla (cm)</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.talla")}
+                </Label>
                 <Input
                   type="number"
                   step="0.1"
                   {...register("talla", { valueAsNumber: true })}
-                  placeholder="Ej: 20"
+                  placeholder={t("fields.tallaPlaceholder")}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Fecha de Muestreo</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.fechaMuestreo")}
+                </Label>
                 <Input type="date" {...register("fecha_muestreo")} />
               </div>
             </div>
           </div>
 
+          {/* Calidad de Agua */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Calidad de Agua
+              {t("sections.calidadAgua")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Temperatura (°C)</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.temperatura")}
+                </Label>
                 <Input
                   type="number"
                   step="0.1"
                   {...register("calidad_agua.temperatura", {
                     valueAsNumber: true,
                   })}
-                  placeholder="Ej: 28"
+                  placeholder={t("fields.temperaturaPlaceholder")}
                 />
                 <p className="text-xs text-muted-foreground">
-                  ⟦Tilapia ideal 26–30 °C⟧
+                  {t("fields.temperaturaInfo")}
                 </p>
               </div>
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Oxígeno Disuelto (mg/L)
+                  {t("fields.oxigenoDisuelto")}
                 </Label>
                 <Input
                   type="number"
@@ -642,58 +671,66 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
                   {...register("calidad_agua.oxigeno_disuelto", {
                     valueAsNumber: true,
                   })}
-                  placeholder="Ej: 5.5"
+                  placeholder={t("fields.oxigenoDisueltoPlaceholder")}
                 />
                 <p className="text-xs text-muted-foreground">
-                  ⟦Mantener {">"} 4 mg/L⟧
+                  {t("fields.oxigenoDisueltoInfo")}
                 </p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">pH</Label>
+                <Label className="text-sm font-medium">{t("fields.ph")}</Label>
                 <Input
                   type="number"
                   step="0.1"
                   {...register("calidad_agua.ph", { valueAsNumber: true })}
-                  placeholder="Ej: 7.5"
+                  placeholder={t("fields.phPlaceholder")}
                 />
-                <p className="text-xs text-muted-foreground">⟦Rango 6.5 – 9⟧</p>
+                <p className="text-xs text-muted-foreground">
+                  {t("fields.phInfo")}
+                </p>
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Amonio (NH₃)</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.amonio")}
+                </Label>
                 <Input
                   type="number"
                   step="0.01"
                   {...register("calidad_agua.amonio", { valueAsNumber: true })}
-                  placeholder="Ej: 0.5"
+                  placeholder={t("fields.amonioPlaceholder")}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Nitrito (NO₂)</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.nitrito")}
+                </Label>
                 <Input
                   type="number"
                   step="0.01"
                   {...register("calidad_agua.nitrito", { valueAsNumber: true })}
-                  placeholder="Ej: 0.05"
+                  placeholder={t("fields.nitritoPlaceholder")}
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Turbidez</Label>
+              <Label className="text-sm font-medium">
+                {t("fields.turbidez")}
+              </Label>
               <Input
                 {...register("calidad_agua.turbidez")}
-                placeholder="Ej: 5 NTU"
+                placeholder={t("fields.turbidezPlaceholder")}
               />
             </div>
 
             <div className="space-y-3">
               <Label className="text-sm font-medium">
-                Historial de Recambios de Agua
+                {t("sections.recambios")}
               </Label>
 
               {recambioFields.map((field, index) => (
@@ -702,7 +739,9 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
                   className="border rounded-lg p-4 space-y-3 bg-gray-50"
                 >
                   <div className="flex justify-between items-center">
-                    <Label className="font-medium">Recambio #{index + 1}</Label>
+                    <Label className="font-medium">
+                      {t("fields.recambio", { index: index + 1 })}
+                    </Label>
                     <Button
                       type="button"
                       variant="destructive"
@@ -715,7 +754,7 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <Label className="text-xs">Fecha</Label>
+                      <Label className="text-xs">{t("fields.fecha")}</Label>
                       <Input
                         type="date"
                         {...register(
@@ -724,7 +763,9 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">% de Agua Recambiada</Label>
+                      <Label className="text-xs">
+                        {t("fields.porcentajeRecambio")}
+                      </Label>
                       <Input
                         type="number"
                         step="0.1"
@@ -732,14 +773,14 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
                           `calidad_agua.historial_recambios.${index}.porcentaje_recambio`,
                           { valueAsNumber: true },
                         )}
-                        placeholder="Ej: 20"
+                        placeholder={t("fields.porcentajeRecambioPlaceholder")}
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <Label className="text-xs">Volumen (m³)</Label>
+                      <Label className="text-xs">{t("fields.volumenM3")}</Label>
                       <Input
                         type="number"
                         step="0.1"
@@ -747,27 +788,27 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
                           `calidad_agua.historial_recambios.${index}.volumen_m3`,
                           { valueAsNumber: true },
                         )}
-                        placeholder="Ej: 10"
+                        placeholder={t("fields.volumenM3Placeholder")}
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Motivo</Label>
+                      <Label className="text-xs">{t("fields.motivo")}</Label>
                       <Input
                         {...register(
                           `calidad_agua.historial_recambios.${index}.motivo`,
                         )}
-                        placeholder="Calidad / Rutina / Floración algas"
+                        placeholder={t("fields.motivoPlaceholder")}
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1">
-                    <Label className="text-xs">Responsable</Label>
+                    <Label className="text-xs">{t("fields.responsable")}</Label>
                     <Input
                       {...register(
                         `calidad_agua.historial_recambios.${index}.responsable`,
                       )}
-                      placeholder="Nombre del responsable"
+                      placeholder={t("fields.responsablePlaceholder")}
                     />
                   </div>
                 </div>
@@ -788,74 +829,92 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
                 }
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Agregar Recambio
+                {t("fields.agregarRecambio")}
               </Button>
             </div>
           </div>
 
+          {/* Alimentación */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Alimentación
+              {t("sections.alimentacion")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Tipo de Concentrado
+                  {t("fields.tipoConcentrado")}
                 </Label>
                 <Input
                   {...register("tipo_concentrado")}
-                  placeholder="Ej: Iniciador, Crecimiento, Engorde"
+                  placeholder={t("fields.tipoConcentradoPlaceholder")}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Proteína %</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.proteinaPorcentaje")}
+                </Label>
                 <Input
                   type="number"
                   step="0.1"
                   {...register("proteina_porcentaje", { valueAsNumber: true })}
-                  placeholder="Ej: 28"
+                  placeholder={t("fields.proteinaPorcentajePlaceholder")}
                 />
                 <p className="text-xs text-muted-foreground">
-                  ⟦24 – 32 % según etapa⟧
+                  {t("fields.proteinaPorcentajeInfo")}
                 </p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Ración Diaria</Label>
-                <Input {...register("racion_diaria")} placeholder="Ej: 15 kg" />
+                <Label className="text-sm font-medium">
+                  {t("fields.racionDiaria")}
+                </Label>
+                <Input
+                  {...register("racion_diaria")}
+                  placeholder={t("fields.racionDiariaPlaceholder")}
+                />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Consumo</Label>
-                <Input {...register("consumo")} placeholder="Ej: 12.5 kg/día" />
+                <Label className="text-sm font-medium">
+                  {t("fields.consumo")}
+                </Label>
+                <Input
+                  {...register("consumo")}
+                  placeholder={t("fields.consumoPlaceholder")}
+                />
               </div>
             </div>
           </div>
 
+          {/* Sanidad */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Sanidad
+              {t("sections.sanidad")}
             </h3>
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Signos Clínicos</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.signosClinicos")}
+                </Label>
                 <Textarea
                   {...register("sanidad.signos_clinicos")}
-                  placeholder="Ej: Manchas, heridas, comportamiento anormal"
+                  placeholder={t("fields.signosClinicosPlaceholder")}
                   className="min-h-[80px]"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Tratamientos</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.tratamientos")}
+                </Label>
                 <Textarea
                   {...register("sanidad.tratamientos")}
-                  placeholder="Ej: Antibióticos, antiparasitarios"
+                  placeholder={t("fields.tratamientosPlaceholder")}
                   className="min-h-[80px]"
                 />
               </div>
@@ -863,28 +922,31 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Baños / Salinidad
+                    {t("fields.banosSalinidad")}
                   </Label>
                   <Input
                     {...register("sanidad.banos_salinidad")}
-                    placeholder="Ej: Baño de sal al 3%"
+                    placeholder={t("fields.banosSalinidadPlaceholder")}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Laboratorio</Label>
+                  <Label className="text-sm font-medium">
+                    {t("fields.laboratorio")}
+                  </Label>
                   <Input
                     {...register("sanidad.laboratorio")}
-                    placeholder="Nombre del laboratorio"
+                    placeholder={t("fields.laboratorioPlaceholder")}
                   />
                 </div>
               </div>
             </div>
           </div>
 
+          {/* Estado del Lote */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Estado del Lote
+              {t("sections.estado")}
             </h3>
 
             <div className="flex items-center space-x-2">
@@ -896,26 +958,27 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
                 id="lote_activo"
               />
               <Label htmlFor="lote_activo" className="text-sm font-medium">
-                Lote Activo
+                {t("fields.loteActivo")}
               </Label>
             </div>
           </div>
 
+          {/* Ubicación */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-              Ubicación
+              {t("sections.ubicacion")}
             </h3>
 
             <div className="space-y-2">
               <Label className="text-sm font-medium">
-                Finca <span className="text-red-500">*</span>
+                {t("fields.finca")} <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={watch("fincaId") || ""}
                 onValueChange={(value) => handleSelectChange("fincaId", value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecciona una finca" />
+                  <SelectValue placeholder={t("fields.fincaPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {fincasItems.map((finca) => (
@@ -937,7 +1000,7 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
               variant="outline"
               onClick={() => router.push("/animales")}
             >
-              Cancelar
+              {t("buttons.cancelar")}
             </Button>
             <Button
               type="submit"
@@ -966,10 +1029,10 @@ const FormEditPeces = ({ animalId, animal }: Props) => {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Actualizando...
+                  {t("buttons.actualizando")}
                 </>
               ) : (
-                "Actualizar Lote de Peces"
+                t("buttons.actualizarLotePeces")
               )}
             </Button>
           </div>

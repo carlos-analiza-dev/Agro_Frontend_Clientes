@@ -1,3 +1,4 @@
+import { useTranslations, useLocale } from "next-intl";
 import { RentabilidadPorPeriodo } from "@/api/finanzas/rentabilidad/interface/rentabilidad.interface";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { COLORS_RENTABILIDAD } from "@/helpers/data/rentabilidad_colors";
@@ -26,6 +27,9 @@ const CardEvolucion = ({
   setPeriodo,
   moneda,
 }: Props) => {
+  const t = useTranslations("cardEvolucion");
+  const locale = useLocale();
+
   const [dimensions, setDimensions] = useState({
     isMobile: false,
     isTablet: false,
@@ -75,26 +79,36 @@ const CardEvolucion = ({
     return { top: 10, right: 30, left: 0, bottom: 10 };
   };
 
+  const getLegendLabel = (value: string) => {
+    const labels: Record<string, string> = {
+      ingresos: t("legend.income"),
+      gastos: t("legend.expenses"),
+      rentabilidad: t("legend.profitability"),
+    };
+
+    return labels[value] || value;
+  };
+
   return (
     <Card className="w-full overflow-hidden">
       <CardHeader className="px-4 py-4 sm:px-6 sm:py-6">
         <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:justify-between sm:items-center">
           <CardTitle className="text-lg sm:text-xl font-semibold text-gray-900">
-            Evolución de Ingresos vs Gastos
+            {t("title")}
           </CardTitle>
 
           <div className="flex gap-1 sm:gap-2 bg-gray-50 p-1 rounded-lg w-full sm:w-auto">
             {(["month", "week", "year"] as const).map((p) => {
               const labels = {
-                month: "📅 Mensual",
-                week: "📊 Semanal",
-                year: "📈 Anual",
+                month: `📅 ${t("periods.month")}`,
+                week: `📊 ${t("periods.week")}`,
+                year: `📈 ${t("periods.year")}`,
               };
 
               const shortLabels = {
-                month: "📅 Mes",
-                week: "📊 Sem",
-                year: "📈 Año",
+                month: `📅 ${t("shortPeriods.month")}`,
+                week: `📊 ${t("shortPeriods.week")}`,
+                year: `📈 ${t("shortPeriods.year")}`,
               };
 
               return (
@@ -145,7 +159,7 @@ const CardEvolucion = ({
                 tick={{
                   fontSize: dimensions.isMobile ? 9 : 12,
                   fill: "#6b7280",
-                  fontWeight: dimensions.isMobile ? "normal" : "normal",
+                  fontWeight: "normal",
                 }}
                 angle={dimensions.isMobile ? -35 : 0}
                 textAnchor={dimensions.isMobile ? "end" : "middle"}
@@ -172,18 +186,24 @@ const CardEvolucion = ({
               />
 
               <Tooltip
-                formatter={(value: number) => [
-                  `${moneda}${value.toLocaleString(undefined, {
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0,
-                  })}`,
-                  "",
+                formatter={(value: number, name: string) => [
+                  `${moneda}${value.toLocaleString(
+                    locale === "en" ? "en-US" : "es-HN",
+                    {
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 0,
+                    },
+                  )}`,
+                  getLegendLabel(name),
                 ]}
                 labelFormatter={(label) => {
-                  if (dimensions.isMobile && label.length > 10) {
-                    return `Período: ${label.substring(0, 8)}...`;
+                  const periodLabel = String(label);
+
+                  if (dimensions.isMobile && periodLabel.length > 10) {
+                    return `${t("tooltip.period")}: ${periodLabel.substring(0, 8)}...`;
                   }
-                  return `Período: ${label}`;
+
+                  return `${t("tooltip.period")}: ${periodLabel}`;
                 }}
                 contentStyle={{
                   backgroundColor: "white",
@@ -211,9 +231,10 @@ const CardEvolucion = ({
                 verticalAlign="bottom"
                 height={dimensions.isMobile ? 32 : 40}
                 formatter={(value) => {
-                  if (dimensions.isMobile && value === "rentabilidad")
-                    return "Rent.";
-                  return value;
+                  if (dimensions.isMobile && value === "rentabilidad") {
+                    return t("legend.shortProfitability");
+                  }
+                  return getLegendLabel(value);
                 }}
               />
 
@@ -221,7 +242,7 @@ const CardEvolucion = ({
                 type="monotone"
                 dataKey="ingresos"
                 stroke={COLORS_RENTABILIDAD.ingresos}
-                name="Ingresos"
+                name="ingresos"
                 strokeWidth={dimensions.isMobile ? 2 : 2.5}
                 dot={!dimensions.isMobile}
                 activeDot={{
@@ -235,7 +256,7 @@ const CardEvolucion = ({
                 type="monotone"
                 dataKey="gastos"
                 stroke={COLORS_RENTABILIDAD.gastos}
-                name="Gastos"
+                name="gastos"
                 strokeWidth={dimensions.isMobile ? 2 : 2.5}
                 dot={!dimensions.isMobile}
                 activeDot={{
@@ -249,7 +270,7 @@ const CardEvolucion = ({
                 type="monotone"
                 dataKey="rentabilidad"
                 stroke={COLORS_RENTABILIDAD.rentabilidad}
-                name="Rentabilidad"
+                name="rentabilidad"
                 strokeWidth={dimensions.isMobile ? 2 : 2.5}
                 dot={!dimensions.isMobile}
                 activeDot={{
@@ -267,29 +288,27 @@ const CardEvolucion = ({
             <div className="flex justify-center gap-4 text-xs text-gray-500">
               <div className="flex items-center gap-1">
                 <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                <span>Ingresos</span>
+                <span>{t("legend.income")}</span>
               </div>
               <div className="flex items-center gap-1">
                 <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                <span>Gastos</span>
+                <span>{t("legend.expenses")}</span>
               </div>
               <div className="flex items-center gap-1">
                 <div className="w-2 h-2 rounded-full bg-orange-500"></div>
-                <span>Rent.</span>
+                <span>{t("legend.shortProfitability")}</span>
               </div>
             </div>
             <p className="text-xs text-center text-gray-400 mt-2">
-              💡 Toca cualquier punto para ver el valor exacto
+              💡 {t("chartHint")}
             </p>
           </div>
         )}
 
         {(!rentabilidadPeriodo || rentabilidadPeriodo.length === 0) && (
           <div className="flex flex-col items-center justify-center py-12 text-gray-500">
-            <p className="text-sm">No hay datos disponibles</p>
-            <p className="text-xs mt-1">
-              Ajusta los filtros para ver información
-            </p>
+            <p className="text-sm">{t("empty.title")}</p>
+            <p className="text-xs mt-1">{t("empty.description")}</p>
           </div>
         )}
       </CardContent>

@@ -319,7 +319,6 @@ const FormAddEquino = ({ selectedEspecieId, setActiveTab }: Props) => {
       value: finca.id,
     })) || [];
 
-  // 👇 Extrae el número de parto aquí para evitar el error de tipos en el JSX
   const numeroPartoMadre = watch("numero_parto_madre");
 
   const mutation = useMutation({

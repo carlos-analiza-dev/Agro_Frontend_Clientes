@@ -6,15 +6,6 @@ import { isAxiosError } from "axios";
 import { Animal } from "@/api/animales/interfaces/response-animales.interface";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -39,8 +30,6 @@ import {
   Ruler,
   Users,
   Clock,
-  DollarSign,
-  User,
   FlaskConical,
   Waves,
   Skull,
@@ -55,6 +44,7 @@ import { descartarPeces } from "@/api/animales/accions/update-animal";
 import Modal from "@/components/generics/Modal";
 import { formatDate } from "@/helpers/funciones/formatDate";
 import { formatDateOnly } from "@/helpers/funciones/formatDateOnly";
+import { useTranslations } from "next-intl";
 
 interface Props {
   animal: Animal;
@@ -63,6 +53,7 @@ interface Props {
 }
 
 const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
+  const t = useTranslations("PiscicolaCard");
   const [deathDialogVisible, setDeathDialogVisible] = useState(false);
   const [deathStatus, setDeathStatus] = useState(animal.animal_muerte);
   const [deathReason, setDeathReason] = useState(animal.razon_muerte);
@@ -126,6 +117,16 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
     Engorde: "bg-amber-500",
   };
 
+  const getEtapaLabel = (etapa: string) => {
+    const etapaKeyMap: Record<string, string> = {
+      Alevín: "alevin",
+      Juvenil: "juvenil",
+      Engorde: "engorde",
+    };
+    const key = etapaKeyMap[etapa];
+    return key ? t(`etapas.${key}`) : etapa;
+  };
+
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !animal.id) return;
@@ -138,17 +139,16 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
         if (onUpdateProfileImage) {
           await onUpdateProfileImage(imageDataUrl, animal.id);
-          toast.success("Foto de perfil actualizada exitosamente");
+          toast.success(t("messages.profileImageUpdated"));
           queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
         }
       };
       reader.readAsDataURL(file);
     } catch (error) {
-      toast.error("No se pudo actualizar la imagen de perfil");
+      toast.error(t("messages.profileImageUpdateError"));
       setLocalImage(null);
     }
   };
-
   const openGallery = () => {
     if (animal.profileImages && animal.profileImages.length > 0) {
       setGalleryVisible(true);
@@ -158,14 +158,14 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const handleDeleteImage = async (imageId: string) => {
     try {
       await eliminarImagenAnimal(imageId);
-      toast.success("Foto eliminada correctamente");
+      toast.success(t("messages.imageDeleted"));
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
       setGalleryVisible(false);
     } catch (error) {
       if (isAxiosError(error)) {
         toast.error(
           error.response?.data?.message ||
-            "Error al eliminar la foto de perfil del animal",
+            t("messages.profileImageDeleteError"),
         );
       }
     }
@@ -174,20 +174,21 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const handleDeathStatusUpdate = async () => {
     try {
       if (deathQuantity <= 0) {
-        toast.error("Debe ingresar una cantidad válida de peces fallecidas");
+        toast.error(t("validation.validDeathQuantity"));
         return;
       }
 
       if (!deathReason || deathReason.trim() === "" || deathReason === "N/D") {
-        toast.error(
-          "Debe ingresar una razón de muerte válida (no puede estar vacía o ser 'N/D')",
-        );
+        toast.error(t("validation.validDeathReason"));
         return;
       }
 
       if (deathQuantity > remainingQuantity) {
         toast.error(
-          `La cantidad de peces fallecidas (${deathQuantity}) excede la cantidad disponible (${remainingQuantity})`,
+          t("validation.deathQuantityExceeds", {
+            quantity: deathQuantity,
+            available: remainingQuantity,
+          }),
         );
         return;
       }
@@ -203,11 +204,14 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
       if (isCompleteDeath) {
         toast.success(
-          `Lote completamente finalizado. Se registraron ${deathQuantity} peces fallecidas.`,
+          t("messages.batchCompletedDeath", { quantity: deathQuantity }),
         );
       } else {
         toast.success(
-          `Se registraron ${deathQuantity} peces fallecidas. Quedan ${remainingQuantity - deathQuantity} peces activas en el lote.`,
+          t("messages.deathRegistered", {
+            quantity: deathQuantity,
+            remaining: remainingQuantity - deathQuantity,
+          }),
         );
       }
 
@@ -228,11 +232,11 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al registrar la mortalidad";
+            : t("messages.mortalityRegisterError");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Contacte al administrador");
+        toast.error(t("messages.contactAdmin"));
       }
     }
   };
@@ -240,12 +244,12 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const handleDiscardAnimal = async () => {
     try {
       if (discardQuantity <= 0) {
-        toast.error("Debe ingresar una cantidad válida de peces a descartar");
+        toast.error(t("validation.validDiscardQuantity"));
         return;
       }
 
       if (!discardReason || discardReason.trim() === "") {
-        toast.error("Debe ingresar una razón de descarte válida");
+        toast.error(t("validation.validDiscardReason"));
         return;
       }
 
@@ -262,16 +266,13 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
       });
 
       if (isCompleteDiscard) {
-        toast("Lote descartado exitosamente");
+        toast(t("messages.batchDiscarded"));
       } else {
-        toast(
-          `Se han descartado ${discardQuantity} peces del lote exitosamente`,
-        );
+        toast(t("messages.fishDiscarded", { quantity: discardQuantity }));
       }
       queryClient.invalidateQueries({
         queryKey: ["animales-propietario", animal.propietario.id],
       });
-      setDiscardDialogVisible(false);
       setDiscardDialogVisible(false);
       setDiscardQuantity(0);
       setDiscardReason("");
@@ -282,11 +283,11 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al descartar el lote";
+            : t("messages.discardError");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Contacte al administrador");
+        toast.error(t("messages.contactAdmin"));
       }
     }
   };
@@ -315,23 +316,23 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 {animal.identificador.toUpperCase()}
                 <Badge className="bg-cyan-500 hover:bg-cyan-600 text-xs">
                   <Fish className="h-3 w-3 mr-1" />
-                  Lote
+                  {t("labels.batch")}
                 </Badge>
                 {animal.etapa && (
                   <Badge
                     className={`${etapaColors[animal.etapa] || "bg-gray-500"} text-xs`}
                   >
-                    {animal.etapa}
+                    {getEtapaLabel(animal.etapa)}
                   </Badge>
                 )}
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                {animal.especie?.nombre || "Peces"} -{" "}
+                {animal.especie?.nombre || t("labels.fish")} -{" "}
                 {animal.razas?.length === 1
                   ? animal.razas[0].nombre
                   : animal.razas?.length > 1
-                    ? "Encaste"
-                    : "Sin raza"}
+                    ? t("labels.crossbreed")
+                    : t("labels.noBreed")}
               </p>
             </div>
           </div>
@@ -356,7 +357,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <Button
               variant="outline"
               size="icon"
-              title="Subir Foto"
+              title={t("tooltips.discardAnimal")}
               className="h-8 w-8 rounded-full border-cyan-300 dark:border-cyan-700 hover:bg-cyan-100 dark:hover:bg-cyan-900"
               onClick={() => setDiscardDialogVisible(true)}
             >
@@ -365,7 +366,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <Button
               variant="outline"
               size="icon"
-              title="Subir Foto"
+              title={t("tooltips.uploadPhoto")}
               className="h-8 w-8 rounded-full border-cyan-300 dark:border-cyan-700 hover:bg-cyan-100 dark:hover:bg-cyan-900"
               onClick={() => fileInputRef.current?.click()}
             >
@@ -388,22 +389,27 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2 col-span-2">
                 <Waves className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />
                 <span className="text-xs">
-                  <span className="font-medium">Estanque/Tanque/Jaula:</span>{" "}
+                  <span className="font-medium">
+                    {t("labels.pondTankCage")}
+                  </span>{" "}
                   <Badge variant="outline" className="text-xs">
                     {animal.estanque_tanque_jaula}
                   </Badge>
                 </span>
               </div>
             )}
-
             {animal.cantidad_inicial !== undefined &&
               animal.cantidad_inicial !== null && (
                 <div className="flex items-center gap-2 col-span-2 bg-cyan-50 dark:bg-cyan-950/30 p-2 rounded-lg">
                   <Fish className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
                   <span className="text-sm">
-                    <span className="font-semibold">Siembra:</span>{" "}
+                    <span className="font-semibold">
+                      {t("labels.stocking")}
+                    </span>{" "}
                     <Badge className="bg-cyan-500 hover:bg-cyan-600">
-                      {animal.cantidad_inicial} peces
+                      {t("labels.fishCount", {
+                        count: animal.cantidad_inicial,
+                      })}
                     </Badge>
                     {animal.fecha_siembra && (
                       <span className="text-xs text-muted-foreground ml-2">
@@ -418,7 +424,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2 col-span-2">
                 <Store className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />
                 <span className="text-xs">
-                  <span className="font-medium">Proveedor:</span>{" "}
+                  <span className="font-medium">{t("labels.supplier")}</span>{" "}
                   {animal.proveedor_alevines}
                 </span>
               </div>
@@ -429,8 +435,10 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <div className="flex items-center gap-2 col-span-2">
                   <Users className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />
                   <span className="text-xs">
-                    <span className="font-medium">Densidad:</span>{" "}
-                    {animal.densidad_por_m3_m2} por m³/m²
+                    <span className="font-medium">{t("labels.density")}</span>{" "}
+                    {t("labels.densityValue", {
+                      value: animal.densidad_por_m3_m2,
+                    })}
                   </span>
                 </div>
               )}
@@ -442,7 +450,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <div className="flex items-center gap-2">
               <Users className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />
               <span className="text-xs font-medium text-cyan-700 dark:text-cyan-400">
-                Población
+                {t("labels.population")}
               </span>
             </div>
 
@@ -452,7 +460,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                   <div className="flex items-center gap-2">
                     <Fish className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
                     <span className="text-xs">
-                      <span className="font-medium">Actual:</span>{" "}
+                      <span className="font-medium">{t("labels.current")}</span>{" "}
                       {animal.cantidad_actual}
                     </span>
                   </div>
@@ -462,7 +470,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <div className="flex items-center gap-2">
                   <AlertCircle className="h-3 w-3 text-red-500" />
                   <span className="text-xs">
-                    <span className="font-medium">Mortalidad:</span>{" "}
+                    <span className="font-medium">{t("labels.mortality")}</span>{" "}
                     {animal.mortalidad_diaria_acum}
                   </span>
                 </div>
@@ -480,7 +488,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <div className="flex items-center gap-2">
                   <Weight className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />
                   <span className="text-xs font-medium text-cyan-700 dark:text-cyan-400">
-                    Crecimiento
+                    {t("labels.growth")}
                   </span>
                 </div>
 
@@ -490,7 +498,9 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                       <div className="flex items-center gap-2">
                         <Scale className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
                         <span className="text-xs">
-                          <span className="font-medium">Peso:</span>{" "}
+                          <span className="font-medium">
+                            {t("labels.weight")}
+                          </span>{" "}
                           {animal.peso_promedio_pez} g
                         </span>
                       </div>
@@ -501,7 +511,9 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                       <div className="flex items-center gap-2">
                         <Weight className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
                         <span className="text-xs">
-                          <span className="font-medium">Biomasa:</span>{" "}
+                          <span className="font-medium">
+                            {t("labels.biomass")}
+                          </span>{" "}
                           {animal.biomasa_estimada} kg
                         </span>
                       </div>
@@ -512,7 +524,9 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                       <div className="flex items-center gap-2">
                         <Ruler className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
                         <span className="text-xs">
-                          <span className="font-medium">Talla:</span>{" "}
+                          <span className="font-medium">
+                            {t("labels.size")}
+                          </span>{" "}
                           {animal.talla_pez} cm
                         </span>
                       </div>
@@ -522,7 +536,9 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     <div className="flex items-center gap-2">
                       <Calendar className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
                       <span className="text-xs">
-                        <span className="font-medium">Muestreo:</span>{" "}
+                        <span className="font-medium">
+                          {t("labels.sampling")}
+                        </span>{" "}
                         {formatDateOnly(animal.fecha_muestreo_pez)}
                       </span>
                     </div>
@@ -540,7 +556,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <div className="flex items-center gap-2">
                   <FlaskConical className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />
                   <span className="text-xs font-medium text-cyan-700 dark:text-cyan-400">
-                    Historial de Muestreos
+                    {t("labels.samplingHistory")}
                   </span>
                 </div>
 
@@ -581,7 +597,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <div className="flex items-center gap-2">
                   <Droplets className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />
                   <span className="text-xs font-medium text-cyan-700 dark:text-cyan-400">
-                    Calidad de Agua
+                    {t("labels.waterQuality")}
                   </span>
                 </div>
 
@@ -631,7 +647,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     <div className="flex items-center gap-2 col-span-2">
                       <Droplets className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
                       <span className="text-xs">
-                        Turbidez: {calidadAgua.turbidez}
+                        {t("labels.turbidity")} {calidadAgua.turbidez}
                       </span>
                     </div>
                   )}
@@ -641,7 +657,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                   calidadAgua.historial_recambios.length > 0 && (
                     <div className="space-y-1">
                       <p className="text-xs text-muted-foreground">
-                        Últimos recambios:
+                        {t("labels.lastExchanges")}
                       </p>
                       {calidadAgua.historial_recambios
                         .slice(0, 2)
@@ -684,7 +700,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <div className="flex items-center gap-2">
                   <Package className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />
                   <span className="text-xs font-medium text-cyan-700 dark:text-cyan-400">
-                    Alimentación
+                    {t("labels.feeding")}
                   </span>
                 </div>
 
@@ -693,7 +709,9 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     <div className="flex items-center gap-2 col-span-2">
                       <Package className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
                       <span className="text-xs">
-                        <span className="font-medium">Concentrado:</span>{" "}
+                        <span className="font-medium">
+                          {t("labels.concentrate")}
+                        </span>{" "}
                         {animal.tipo_concentrado_pez}
                       </span>
                     </div>
@@ -704,7 +722,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                       <div className="flex items-center gap-2">
                         <Percent className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
                         <span className="text-xs">
-                          Proteína: {animal.proteina_porcentaje}%
+                          {t("labels.protein")} {animal.proteina_porcentaje}%
                         </span>
                       </div>
                     )}
@@ -713,7 +731,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     <div className="flex items-center gap-2">
                       <Package className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
                       <span className="text-xs">
-                        Ración: {animal.racion_diaria}
+                        {t("labels.ration")} {animal.racion_diaria}
                       </span>
                     </div>
                   )}
@@ -722,7 +740,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     <div className="flex items-center gap-2">
                       <Droplets className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
                       <span className="text-xs">
-                        Consumo: {animal.consumo_pez}
+                        {t("labels.consumption")} {animal.consumo_pez}
                       </span>
                     </div>
                   )}
@@ -739,7 +757,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <div className="flex items-center gap-2">
                   <Syringe className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />
                   <span className="text-xs font-medium text-cyan-700 dark:text-cyan-400">
-                    Sanidad
+                    {t("labels.health")}
                   </span>
                 </div>
 
@@ -748,7 +766,9 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     <div className="flex items-center gap-2">
                       <AlertCircle className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
                       <span className="text-xs">
-                        <span className="font-medium">Signos:</span>{" "}
+                        <span className="font-medium">
+                          {t("labels.clinicalSigns")}
+                        </span>{" "}
                         {sanidad.signos_clinicos}
                       </span>
                     </div>
@@ -758,7 +778,9 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     <div className="flex items-center gap-2">
                       <Pill className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
                       <span className="text-xs">
-                        <span className="font-medium">Tratamientos:</span>{" "}
+                        <span className="font-medium">
+                          {t("labels.treatments")}
+                        </span>{" "}
                         {sanidad.tratamientos}
                       </span>
                     </div>
@@ -768,7 +790,9 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     <div className="flex items-center gap-2">
                       <Droplets className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
                       <span className="text-xs">
-                        <span className="font-medium">Baños/Salinidad:</span>{" "}
+                        <span className="font-medium">
+                          {t("labels.bathsSalinity")}
+                        </span>{" "}
                         {sanidad.banos_salinidad}
                       </span>
                     </div>
@@ -778,7 +802,9 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     <div className="flex items-center gap-2">
                       <Beaker className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
                       <span className="text-xs">
-                        <span className="font-medium">Laboratorio:</span>{" "}
+                        <span className="font-medium">
+                          {t("labels.laboratory")}
+                        </span>{" "}
                         {sanidad.laboratorio}
                       </span>
                     </div>
@@ -794,7 +820,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <div className="flex items-center gap-2">
               <Building2 className="h-3.5 w-3.5 text-gray-500" />
               <span className="text-xs text-muted-foreground truncate">
-                {animal.finca?.nombre_finca || "Sin finca"}
+                {animal.finca?.nombre_finca || t("labels.noFarm")}
               </span>
             </div>
 
@@ -803,11 +829,11 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <span className="text-xs text-muted-foreground">
                 {animal.lote_activo ? (
                   <Badge className="bg-green-500 hover:bg-green-600 text-xs">
-                    Activo
+                    {t("labels.active")}
                   </Badge>
                 ) : (
                   <Badge variant="secondary" className="text-xs">
-                    Inactivo
+                    {t("labels.inactive")}
                   </Badge>
                 )}
               </span>
@@ -817,19 +843,19 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2 col-span-2">
                 <Calendar className="h-3.5 w-3.5 text-gray-500" />
                 <span className="text-xs text-muted-foreground">
-                  Siembra: {formatDateOnly(animal.fecha_siembra)}
+                  {t("labels.stockingDate")}{" "}
+                  {formatDateOnly(animal.fecha_siembra)}
                 </span>
               </div>
             )}
           </div>
-
           <div className="flex justify-center w-full space-x-2 mt-4">
             <Button
               className="w-full bg-cyan-600 hover:bg-cyan-700 text-white"
               onClick={onEdit}
             >
               <Fish className="h-4 w-4 mr-2" />
-              Editar Lote
+              {t("buttons.editBatch")}
             </Button>
           </div>
         </CardContent>
@@ -845,13 +871,15 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
       <Modal
         open={deathDialogVisible}
         onOpenChange={setDeathDialogVisible}
-        title="Registrar mortalidad en el lote"
-        description="Registre la cantidad de peces que han fallecido y la razón."
+        title={t("deathModal.title")}
+        description={t("deathModal.description")}
         showCloseButton={false}
       >
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="death-quantity">Cantidad de peces fallecidas</Label>
+            <Label htmlFor="death-quantity">
+              {t("deathModal.deathQuantity")}
+            </Label>
             <Input
               id="death-quantity"
               type="number"
@@ -862,27 +890,29 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 const value = parseInt(e.target.value) || 0;
                 setDeathQuantity(Math.min(value, remainingQuantity));
               }}
-              placeholder="Ingrese la cantidad de peces"
+              placeholder={t("deathModal.deathQuantityPlaceholder")}
             />
             <p className="text-xs text-muted-foreground">
-              Cantidad disponible en el lote: {remainingQuantity} peces
+              {t("deathModal.availableQuantity", {
+                quantity: remainingQuantity,
+              })}
             </p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="death-reason">Razón de la muerte *</Label>
+            <Label htmlFor="death-reason">{t("deathModal.deathReason")}</Label>
             <Input
               id="death-reason"
               value={deathReason}
               onChange={(e) => setDeathReason(e.target.value)}
-              placeholder="Ej: Enfermedad, Accidentes, etc."
+              placeholder={t("deathModal.deathReasonPlaceholder")}
             />
           </div>
 
           {remainingQuantity - deathQuantity === 0 && (
             <div className="bg-red-50 border border-red-200 rounded-md p-3">
               <p className="text-sm text-red-800 font-medium">
-                ⚠️ Esta acción marcará todo el lote como finalizado
+                ⚠️ {t("deathModal.warningComplete")}
               </p>
             </div>
           )}
@@ -890,8 +920,10 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           {deathQuantity > 0 && remainingQuantity - deathQuantity > 0 && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
               <p className="text-sm text-yellow-800">
-                💡 Quedarán {remainingQuantity - deathQuantity} peces activas en
-                el lote
+                💡{" "}
+                {t("deathModal.warningRemaining", {
+                  quantity: remainingQuantity - deathQuantity,
+                })}
               </p>
             </div>
           )}
@@ -907,20 +939,20 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               setDeathStatus(false);
             }}
           >
-            Cancelar
+            {t("buttons.cancel")}
           </Button>
           <Button
             onClick={handleDeathStatusUpdate}
             disabled={deathQuantity <= 0 || !deathReason}
           >
-            Registrar Mortalidad
+            {t("buttons.registerMortality")}
           </Button>
         </div>
       </Modal>
 
       <Modal
-        title="Descartar peces del lote"
-        description="Registre la cantidad de peces a descartar y la razón."
+        title={t("discardModal.title")}
+        description={t("discardModal.description")}
         open={discardDialogVisible}
         onOpenChange={setDiscardDialogVisible}
         showCloseButton={false}
@@ -928,7 +960,7 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <Label htmlFor="discard-quantity">
-              Cantidad de peces a descartar
+              {t("discardModal.discardQuantity")}
             </Label>
             <Input
               id="discard-quantity"
@@ -940,27 +972,31 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 const value = parseInt(e.target.value) || 0;
                 setDiscardQuantity(Math.min(value, remainingQuantity));
               }}
-              placeholder="Ingrese la cantidad de peces"
+              placeholder={t("discardModal.discardQuantityPlaceholder")}
             />
             <p className="text-xs text-muted-foreground">
-              Cantidad disponible en el lote: {remainingQuantity} peces
+              {t("deathModal.availableQuantity", {
+                quantity: remainingQuantity,
+              })}
             </p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="discard-reason">Razón del descarte *</Label>
+            <Label htmlFor="discard-reason">
+              {t("discardModal.discardReason")}
+            </Label>
             <Input
               id="discard-reason"
               value={discardReason}
               onChange={(e) => setDiscardReason(e.target.value)}
-              placeholder="Ej: Venta, Traslado, Baja calidad, etc."
+              placeholder={t("discardModal.discardReasonPlaceholder")}
             />
           </div>
 
           {remainingQuantity - discardQuantity === 0 && (
             <div className="bg-red-50 border border-red-200 rounded-md p-3">
               <p className="text-sm text-red-800 font-medium">
-                ⚠️ Esta acción descartará todo el lote
+                ⚠️ {t("discardModal.warningComplete")}
               </p>
             </div>
           )}
@@ -968,8 +1004,10 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           {discardQuantity > 0 && remainingQuantity - discardQuantity > 0 && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
               <p className="text-sm text-yellow-800">
-                💡 Quedarán {remainingQuantity - discardQuantity} peces activas
-                en el lote
+                💡{" "}
+                {t("discardModal.warningRemaining", {
+                  quantity: remainingQuantity - discardQuantity,
+                })}
               </p>
             </div>
           )}
@@ -984,14 +1022,14 @@ const PiscicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               setDiscardReason("");
             }}
           >
-            Cancelar
+            {t("buttons.cancel")}
           </Button>
           <Button
             variant="destructive"
             onClick={handleDiscardAnimal}
             disabled={discardQuantity <= 0 || !discardReason}
           >
-            Descartar {discardQuantity} peces
+            {t("buttons.discardCount", { quantity: discardQuantity })}
           </Button>
         </div>
       </Modal>

@@ -1,13 +1,17 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 interface Props {
   sexo: "Macho" | "Hembra";
   valor: boolean | undefined;
 }
 
 const ReproductiveStatus = ({ sexo, valor }: Props) => {
-  const label = sexo === "Macho" ? "Castrado" : "Esterilizado";
-  const texto = valor === true ? "Sí" : "No";
+  const t = useTranslations("reproductiveStatus");
+
+  const label = sexo === "Macho" ? t("castrated") : t("sterilized");
+  const texto = valor === true ? t("yes") : t("no");
 
   return (
     <div className="flex items-center gap-2 rounded-md bg-background p-2 my-1">

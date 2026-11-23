@@ -1,4 +1,6 @@
 "use client";
+
+import { useTranslations, useLocale } from "next-intl";
 import { RentabilidadPorFinca } from "@/api/finanzas/rentabilidad/interface/rentabilidad.interface";
 import Paginacion from "@/components/generics/Paginacion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +14,9 @@ interface Props {
 const ITEMS_PER_PAGE = 5;
 
 const CardDetailsRentFincas = ({ rentabilidadFincas = [], moneda }: Props) => {
+  const t = useTranslations("cardDetailsRentFincas");
+  const locale = useLocale();
+
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.ceil(rentabilidadFincas.length / ITEMS_PER_PAGE);
@@ -21,11 +26,14 @@ const CardDetailsRentFincas = ({ rentabilidadFincas = [], moneda }: Props) => {
     currentPage * ITEMS_PER_PAGE,
   );
 
+  const formatAmount = (amount: number) =>
+    amount.toLocaleString(locale === "en" ? "en-US" : "es-HN");
+
   return (
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-base sm:text-lg md:text-xl">
-          Detalle por Finca
+          {t("title")}
         </CardTitle>
       </CardHeader>
 
@@ -34,11 +42,15 @@ const CardDetailsRentFincas = ({ rentabilidadFincas = [], moneda }: Props) => {
           <table className="w-full text-sm">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-2 text-left">Finca</th>
-                <th className="px-4 py-2 text-right">Ingresos</th>
-                <th className="px-4 py-2 text-right">Gastos</th>
-                <th className="px-4 py-2 text-right">Rentabilidad</th>
-                <th className="px-4 py-2 text-right">Margen</th>
+                <th className="px-4 py-2 text-left">{t("columns.farm")}</th>
+                <th className="px-4 py-2 text-right">{t("columns.income")}</th>
+                <th className="px-4 py-2 text-right">
+                  {t("columns.expenses")}
+                </th>
+                <th className="px-4 py-2 text-right">
+                  {t("columns.profitability")}
+                </th>
+                <th className="px-4 py-2 text-right">{t("columns.margin")}</th>
               </tr>
             </thead>
 
@@ -49,12 +61,12 @@ const CardDetailsRentFincas = ({ rentabilidadFincas = [], moneda }: Props) => {
 
                   <td className="px-4 py-2 text-right text-green-600">
                     {moneda}
-                    {finca.ingresos.toLocaleString()}
+                    {formatAmount(finca.ingresos)}
                   </td>
 
                   <td className="px-4 py-2 text-right text-red-600">
                     {moneda}
-                    {finca.gastos.toLocaleString()}
+                    {formatAmount(finca.gastos)}
                   </td>
 
                   <td
@@ -65,7 +77,7 @@ const CardDetailsRentFincas = ({ rentabilidadFincas = [], moneda }: Props) => {
                     }`}
                   >
                     {moneda}
-                    {finca.rentabilidad.toLocaleString()}
+                    {formatAmount(finca.rentabilidad)}
                   </td>
 
                   <td
@@ -90,35 +102,37 @@ const CardDetailsRentFincas = ({ rentabilidadFincas = [], moneda }: Props) => {
               <h3 className="font-medium text-sm mb-2">{finca.fincaNombre}</h3>
 
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Ingresos</span>
+                <span className="text-gray-500">{t("columns.income")}</span>
                 <span className="text-green-600 font-medium">
                   {moneda}
-                  {finca.ingresos.toLocaleString()}
+                  {formatAmount(finca.ingresos)}
                 </span>
               </div>
 
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Gastos</span>
+                <span className="text-gray-500">{t("columns.expenses")}</span>
                 <span className="text-red-600 font-medium">
                   {moneda}
-                  {finca.gastos.toLocaleString()}
+                  {formatAmount(finca.gastos)}
                 </span>
               </div>
 
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Rentabilidad</span>
+                <span className="text-gray-500">
+                  {t("columns.profitability")}
+                </span>
                 <span
                   className={`font-semibold ${
                     finca.rentabilidad >= 0 ? "text-green-600" : "text-red-600"
                   }`}
                 >
                   {moneda}
-                  {finca.rentabilidad.toLocaleString()}
+                  {formatAmount(finca.rentabilidad)}
                 </span>
               </div>
 
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Margen</span>
+                <span className="text-gray-500">{t("columns.margin")}</span>
                 <span
                   className={
                     finca.margen >= 0 ? "text-green-600" : "text-red-600"
@@ -139,7 +153,10 @@ const CardDetailsRentFincas = ({ rentabilidadFincas = [], moneda }: Props) => {
           />
 
           <p className="text-xs text-gray-500">
-            Página {currentPage} de {totalPages}
+            {t("pagination.page", {
+              current: currentPage,
+              total: totalPages,
+            })}
           </p>
         </div>
       </CardContent>

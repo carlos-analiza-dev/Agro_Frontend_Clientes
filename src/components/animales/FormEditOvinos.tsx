@@ -39,13 +39,13 @@ import {
   condicionCorporalOptions,
   edadOvinoOptions,
   propositoOvinoOptions,
-  sexoCaprinoOptions,
   tipoAlimentacionCaprinoOptions,
   tipoNacimientoOptions,
 } from "@/helpers/data/animales/animales-data";
 import { UpdateAnimalOvino } from "@/api/animales/accions/update-animal";
 import { FormOvinoData } from "@/api/animales/interfaces/crear-ovino.interface";
 import { PurezaEnum } from "@/interfaces/enums/animales/animales-enums";
+import { useTranslations } from "next-intl";
 
 interface Props {
   animalId: string;
@@ -54,6 +54,7 @@ interface Props {
 }
 
 const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
+  const t = useTranslations("FormAddOvino");
   const queryClient = useQueryClient();
   const { cliente } = useAuthStore();
   const [showIdentifierHelp, setShowIdentifierHelp] = useState(false);
@@ -244,6 +245,11 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
     especie: animal?.especie?.id || "",
   });
 
+  const sexoItems = [
+    { value: "macho", label: t("fields.sexoMacho") },
+    { value: "hembra", label: t("fields.sexoHembra") },
+  ];
+
   useEffect(() => {
     if (machos) {
       const filtered = machos.filter(
@@ -408,7 +414,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
   const mutation = useMutation({
     mutationFn: (data: FormOvinoData) => UpdateAnimalOvino(animalId, data),
     onSuccess: () => {
-      toast.success("Ovino actualizado correctamente");
+      toast.success(t("messages.ovinoActualizado"));
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
       queryClient.invalidateQueries({ queryKey: ["animal-id", animalId] });
       window.location.reload();
@@ -420,11 +426,11 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar el ovino";
+            : t("messages.errorActualizar");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("messages.errorInesperado"));
       }
     },
   });
@@ -433,17 +439,17 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
     if (!cliente?.id) return;
 
     if (!data.especie) {
-      toast.error("Debes seleccionar una especie");
+      toast.error(t("validation.seleccionarEspecie"));
       return;
     }
 
     if (!data.razaIds || data.razaIds.length === 0) {
-      toast.error("Debes seleccionar al menos una raza");
+      toast.error(t("validation.seleccionarRaza"));
       return;
     }
 
     if (!data.sexo) {
-      toast.error("Debes seleccionar un sexo");
+      toast.error(t("validation.seleccionarSexo"));
       return;
     }
 
@@ -451,17 +457,17 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
       !data.identificador ||
       !/^[A-ZÁÉÍÓÚÑ]{2}[A-ZÁÉÍÓÚÑ]{3,7}[12]-\d{6}$/.test(data.identificador)
     ) {
-      toast.error("El identificador debe tener 6 dígitos");
+      toast.error(t("validation.identificadorInvalido"));
       return;
     }
 
     if (isPadreFinca && !selectedPadreId) {
-      toast.error("Debes seleccionar un padre de la finca");
+      toast.error(t("validation.seleccionarPadreFinca"));
       return;
     }
 
     if (isMadreFinca && !selectedMadreId) {
-      toast.error("Debes seleccionar una madre de la finca");
+      toast.error(t("validation.seleccionarMadreFinca"));
       return;
     }
 
@@ -484,18 +490,18 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
     mutation.mutate(animalData);
   };
-
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <TabsContent value="animal">
         <Card className="max-w-4xl mx-auto">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold flex items-center gap-2">
-              Editar Ovino
+              {t("header.title")}
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              Actualiza la información del ovino. Los campos con{" "}
-              <span className="text-red-500">*</span> son obligatorios.
+              {t.rich("header.subtitle", {
+                red: (chunks) => <span className="text-red-500">{chunks}</span>,
+              })}
             </p>
           </CardHeader>
 
@@ -503,13 +509,14 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
             {/* Identificación */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Identificación
+                {t("sections.identificacion")}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Arete / código <span className="text-red-500">*</span>
+                    {t("fields.areteCodigo")}{" "}
+                    <span className="text-red-500">*</span>
                   </Label>
                   <div className="flex items-center gap-2">
                     <div className="relative flex-1">
@@ -521,7 +528,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                         className="w-full font-mono text-lg tracking-wider"
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-                        6 dígitos
+                        {t("fields.digits6")}
                       </span>
                     </div>
                     <TooltipProvider>
@@ -541,7 +548,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                         </TooltipTrigger>
                         <TooltipContent side="right" className="max-w-xs">
                           <p className="text-xs">
-                            PRIMEROS SEIS DÍGITOS DE IDENTIFICACIÓN DEL ARETE
+                            {t("fields.areteCodigoHelp")}
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -556,11 +563,11 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Nombre (opcional)
+                    {t("fields.nombre")}
                   </Label>
                   <Input
                     {...register("nombre_animal")}
-                    placeholder="Ej: Lucero, Toro, etc."
+                    placeholder={t("fields.nombrePlaceholder")}
                     className="w-full"
                   />
                 </div>
@@ -568,13 +575,15 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Finca</Label>
+                  <Label className="text-sm font-medium">
+                    {t("fields.finca")}
+                  </Label>
                   <Select
                     defaultValue={animal ? animal.finca.id : watch("fincaId")}
                     onValueChange={(value) => setValue("fincaId", value)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecciona una finca" />
+                      <SelectValue placeholder={t("fields.fincaPlaceholder")} />
                     </SelectTrigger>
                     <SelectContent>
                       {fincasItems.map((finca) => (
@@ -593,11 +602,11 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Potrero (opcional)
+                    {t("fields.potrero")}
                   </Label>
                   <Input
                     {...register("potrero")}
-                    placeholder="Nombre del potrero"
+                    placeholder={t("fields.potreroPlaceholder")}
                     className="w-full"
                   />
                 </div>
@@ -607,13 +616,13 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
             {/* Características */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Características
+                {t("sections.caracteristicas")}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Raza <span className="text-red-500">*</span>
+                    {t("fields.raza")} <span className="text-red-500">*</span>
                   </Label>
                   <div className="border rounded-lg p-3 space-y-2 max-h-48 overflow-y-auto">
                     {razas?.data.map((raza) => (
@@ -651,14 +660,14 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Sexo <span className="text-red-500">*</span>
+                    {t("fields.sexo")} <span className="text-red-500">*</span>
                   </Label>
                   <RadioGroup
                     value={watch("sexo") || ""}
                     onValueChange={(value) => setValue("sexo", value)}
                     className="space-y-2"
                   >
-                    {sexoCaprinoOptions.map((sexo) => (
+                    {sexoItems.map((sexo) => (
                       <div
                         key={sexo.value}
                         className="flex items-center space-x-2"
@@ -687,7 +696,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Edad <span className="text-red-500">*</span>
+                    {t("fields.edad")} <span className="text-red-500">*</span>
                   </Label>
 
                   <RadioGroup
@@ -728,7 +737,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Fecha nacimiento
+                    {t("fields.fechaNacimiento")}
                   </Label>
                   <Input
                     type="date"
@@ -741,21 +750,25 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Color / capa</Label>
+                  <Label className="text-sm font-medium">
+                    {t("fields.color")}
+                  </Label>
                   <Input
                     {...register("color")}
-                    placeholder="Ej: Blanco, Negro, Café"
+                    placeholder={t("fields.colorPlaceholder")}
                     className="w-full"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Peso (kg)</Label>
+                  <Label className="text-sm font-medium">
+                    {t("fields.peso")}
+                  </Label>
                   <Input
                     type="number"
                     step="0.1"
                     {...register("peso")}
-                    placeholder="Ej: 45.5"
+                    placeholder={t("fields.pesoPlaceholder")}
                     className="w-full"
                   />
                 </div>
@@ -763,7 +776,8 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Condición corporal <span className="text-red-500">*</span>
+                  {t("fields.condicionCorporal")}{" "}
+                  <span className="text-red-500">*</span>
                 </Label>
                 <RadioGroup
                   value={watch("condicion_corporal") || ""}
@@ -798,7 +812,8 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
             {/* Propósito */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Propósito <span className="text-red-500">*</span>
+                {t("sections.proposito")}{" "}
+                <span className="text-red-500">*</span>
               </h3>
 
               <div className="space-y-2">
@@ -833,20 +848,22 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
             {/* Categoría y Nacimiento */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Categoría y Nacimiento
+                {t("sections.categoriaNacimiento")}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Categoría de edad
+                    {t("fields.categoriaEdad")}
                   </Label>
                   <Select
                     defaultValue={animal?.categoria_edad || ""}
                     onValueChange={(value) => setValue("categoria_edad", value)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecciona una categoría" />
+                      <SelectValue
+                        placeholder={t("fields.categoriaEdadPlaceholder")}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {categoriaEdadOptions.map((option) => (
@@ -860,7 +877,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Tipo de nacimiento
+                    {t("fields.tipoNacimiento")}
                   </Label>
                   <Select
                     defaultValue={animal?.tipo_nacimiento || ""}
@@ -869,7 +886,9 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecciona tipo de nacimiento" />
+                      <SelectValue
+                        placeholder={t("fields.tipoNacimientoPlaceholder")}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {tipoNacimientoOptions.map((option) => (
@@ -885,26 +904,26 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Peso al nacimiento (kg)
+                    {t("fields.pesoNacimiento")}
                   </Label>
                   <Input
                     type="number"
                     step="0.1"
                     {...register("peso_nacimiento")}
-                    placeholder="Ej: 3.5"
+                    placeholder={t("fields.pesoNacimientoPlaceholder")}
                     className="w-full"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Peso al destete (kg)
+                    {t("fields.pesoDestete")}
                   </Label>
                   <Input
                     type="number"
                     step="0.1"
                     {...register("peso_destete")}
-                    placeholder="Ej: 15.0"
+                    placeholder={t("fields.pesoDestetePlaceholder")}
                     className="w-full"
                   />
                 </div>
@@ -912,13 +931,13 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Ganancia de peso (kg/día)
+                  {t("fields.gananciaPeso")}
                 </Label>
                 <Input
                   type="number"
                   step="0.01"
                   {...register("ganancia_peso")}
-                  placeholder="Ej: 0.15"
+                  placeholder={t("fields.gananciaPesoPlaceholder")}
                   className="w-full"
                 />
               </div>
@@ -927,15 +946,17 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
             {/* Genealogía */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Genealogía
+                {t("sections.genealogia")}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Criador</Label>
+                  <Label className="text-sm font-medium">
+                    {t("fields.criador")}
+                  </Label>
                   <Input
                     {...register("nombre_criador_origen_animal")}
-                    placeholder="Nombre del criador"
+                    placeholder={t("fields.criadorPlaceholder")}
                     className="w-full"
                   />
                 </div>
@@ -945,13 +966,13 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
             {/* Producción de Lana */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Producción de Lana
+                {t("sections.lana")}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Fecha de esquila
+                    {t("fields.fechaEsquila")}
                   </Label>
                   <Input
                     type="date"
@@ -962,35 +983,37 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Calidad (micras)
+                    {t("fields.calidadMicras")}
                   </Label>
                   <Input
                     type="number"
                     step="0.1"
                     {...register("lana.calidad_micras")}
-                    placeholder="Ej: 22.5"
-                    className="w-full"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Color de lana</Label>
-                  <Input
-                    {...register("lana.color_lana")}
-                    placeholder="Ej: Blanco, Negro, Marrón"
+                    placeholder={t("fields.calidadMicrasPlaceholder")}
                     className="w-full"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Peso del vellón (kg)
+                    {t("fields.colorLana")}
+                  </Label>
+                  <Input
+                    {...register("lana.color_lana")}
+                    placeholder={t("fields.colorLanaPlaceholder")}
+                    className="w-full"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    {t("fields.pesoVellon")}
                   </Label>
                   <Input
                     type="number"
                     step="0.1"
                     {...register("lana.peso_vellon")}
-                    placeholder="Ej: 3.5"
+                    placeholder={t("fields.pesoVellonPlaceholder")}
                     className="w-full"
                   />
                 </div>
@@ -1000,37 +1023,41 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
             {/* Famacha y Parásitos */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Famacha y Parásitos
+                {t("sections.famachaParasitos")}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Famacha</Label>
+                  <Label className="text-sm font-medium">
+                    {t("fields.famacha")}
+                  </Label>
                   <Input
                     type="number"
                     min={1}
                     max={5}
                     {...register("famacha")}
-                    placeholder="Ej: 2"
+                    placeholder={t("fields.famachaPlaceholder")}
                     className="w-full"
                   />
                   <p className="text-xs text-muted-foreground">
-                    Valor de 1 a 5 (1 = sano, 5 = anémico)
+                    {t("fields.famachaInfo")}
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Tratamiento</Label>
+                  <Label className="text-sm font-medium">
+                    {t("fields.tratamiento")}
+                  </Label>
                   <Input
                     {...register("parasitos.0.tratamiento")}
-                    placeholder="Nombre del tratamiento"
+                    placeholder={t("fields.tratamientoPlaceholder")}
                     className="w-full"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    Fecha de tratamiento
+                    {t("fields.fechaTratamiento")}
                   </Label>
                   <Input
                     type="date"
@@ -1040,10 +1067,12 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Observaciones</Label>
+                  <Label className="text-sm font-medium">
+                    {t("fields.observacionesParasitos")}
+                  </Label>
                   <Input
                     {...register("parasitos.0.observaciones")}
-                    placeholder="Observaciones sobre parásitos"
+                    placeholder={t("fields.observacionesParasitosPlaceholder")}
                     className="w-full"
                   />
                 </div>
@@ -1053,7 +1082,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
             {/* Sanidad */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Sanidad
+                {t("sections.sanidad")}
               </h3>
 
               <div className="flex items-center space-x-2">
@@ -1071,7 +1100,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                   htmlFor="desparasitado"
                   className="text-sm font-medium cursor-pointer"
                 >
-                  Desparasitado
+                  {t("fields.desparasitado")}
                 </Label>
               </div>
 
@@ -1082,10 +1111,12 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
               )}
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Vacunas</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.vacunas")}
+                </Label>
                 <Input
                   {...register("vacunas")}
-                  placeholder="Ej: Brucelosis, Clostridiosis, Etc."
+                  placeholder={t("fields.vacunasPlaceholder")}
                   className="w-full"
                 />
                 {errors.vacunas && (
@@ -1096,19 +1127,23 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Pezuñas</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.pezunas")}
+                </Label>
                 <Input
                   {...register("pezunas")}
-                  placeholder="Estado y tratamientos"
+                  placeholder={t("fields.pezunasPlaceholder")}
                   className="w-full"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Tratamientos</Label>
+                <Label className="text-sm font-medium">
+                  {t("fields.tratamientos")}
+                </Label>
                 <Textarea
                   {...register("tratamientos")}
-                  placeholder="Descripción de tratamientos realizados"
+                  placeholder={t("fields.tratamientosPlaceholder")}
                   className="min-h-[80px]"
                 />
               </div>
@@ -1117,7 +1152,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
             {/* Alimentación */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b pb-2">
-                Alimentación
+                {t("sections.alimentacion")}
               </h3>
 
               <div className="border rounded-lg p-4 space-y-4 bg-gray-50">
@@ -1198,10 +1233,10 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                                   className="text-sm"
                                 >
                                   {origen === "comprado"
-                                    ? "Comprado"
+                                    ? t("alimentacion.origenComprado")
                                     : origen === "producido"
-                                      ? "Producido"
-                                      : "Comprado y producido"}
+                                      ? t("alimentacion.origenProducido")
+                                      : t("alimentacion.origenAmbos")}
                                 </Label>
                               </div>
                             ))}
@@ -1211,7 +1246,9 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                             "comprado y producido" && (
                             <div className="grid grid-cols-2 gap-3">
                               <div className="space-y-1">
-                                <Label className="text-xs">% Comprado</Label>
+                                <Label className="text-xs">
+                                  {t("alimentacion.porcentajeComprado")}
+                                </Label>
                                 <Input
                                   type="number"
                                   min="0"
@@ -1236,12 +1273,19 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                                     );
                                     setValue("tipo_alimentacion", updated);
                                   }}
-                                  placeholder="Ej: 60"
+                                  placeholder={t(
+                                    "alimentacion.porcentajeEjemplo",
+                                    {
+                                      value: 60,
+                                    },
+                                  )}
                                   className="w-full"
                                 />
                               </div>
                               <div className="space-y-1">
-                                <Label className="text-xs">% Producido</Label>
+                                <Label className="text-xs">
+                                  {t("alimentacion.porcentajeProducido")}
+                                </Label>
                                 <Input
                                   type="number"
                                   min="0"
@@ -1266,7 +1310,12 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                                     );
                                     setValue("tipo_alimentacion", updated);
                                   }}
-                                  placeholder="Ej: 40"
+                                  placeholder={t(
+                                    "alimentacion.porcentajeEjemplo",
+                                    {
+                                      value: 40,
+                                    },
+                                  )}
                                   className="w-full"
                                 />
                               </div>
@@ -1278,7 +1327,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                                   alimentoSeleccionado.porcentaje_producido !==
                                   100 && (
                                   <p className="text-xs text-red-500 col-span-2">
-                                    ⚠️ La suma de porcentajes debe ser 100%
+                                    {t("alimentacion.porcentajeSumaError")}
                                   </p>
                                 )}
                             </div>
@@ -1293,24 +1342,28 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
             {/* Observaciones */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Observaciones</Label>
+              <Label className="text-sm font-medium">
+                {t("fields.observaciones")}
+              </Label>
               <Textarea
                 {...register("observaciones")}
-                placeholder="Observaciones adicionales sobre el ovino"
+                placeholder={t("fields.observacionesPlaceholder")}
                 className="min-h-[100px]"
               />
             </div>
 
             <div className="pt-4 border-t flex gap-4 justify-end">
               <Button type="submit" disabled={mutation.isPending}>
-                {mutation.isPending ? "Actualizando..." : "Actualizar Ovino"}
+                {mutation.isPending
+                  ? t("buttons.actualizando")
+                  : t("buttons.actualizarOvino")}
               </Button>
               <Button
                 type="button"
                 onClick={() => setActiveTab("padre")}
                 className="group"
               >
-                <span>Datos del Padre</span>
+                <span>{t("buttons.siguientePadre")}</span>
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
@@ -1338,7 +1391,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                   />
                 </svg>
               </span>
-              Datos del Padre
+              {t("sections.datosPadre")}
             </CardTitle>
           </CardHeader>
 
@@ -1361,10 +1414,10 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                   htmlFor="padreFinca"
                   className="font-medium text-blue-900"
                 >
-                  El padre pertenece a esta finca
+                  {t("padre.esDeFinca")}
                 </Label>
                 <p className="text-xs text-blue-700/70 mt-0.5">
-                  Marca esta opción si el padre está registrado en tu ganadería
+                  {t("padre.esDeFincaDesc")}
                 </p>
               </div>
             </div>
@@ -1373,16 +1426,17 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
-                    Buscar Padre <span className="text-red-500">*</span>
+                    {t("padre.buscarPadre")}{" "}
+                    <span className="text-red-500">*</span>
                     <span className="text-xs text-muted-foreground font-normal">
-                      (Selecciona un macho registrado)
+                      {t("padre.buscarPadreDesc")}
                     </span>
                   </Label>
 
                   <div className="relative">
                     <div className="relative">
                       <Input
-                        placeholder="Buscar por identificador o nombre..."
+                        placeholder={t("padre.buscarPlaceholder")}
                         value={searchPadreTerm}
                         onChange={(e) => {
                           setSearchPadreTerm(e.target.value);
@@ -1432,8 +1486,9 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                           {filteredMachos.length > 0 ? (
                             <div className="py-1">
                               <div className="px-3 py-1.5 text-xs text-muted-foreground bg-gray-50 border-b">
-                                {filteredMachos.length} resultado
-                                {filteredMachos.length > 1 ? "s" : ""}
+                                {t("padre.resultadosCount", {
+                                  count: filteredMachos.length,
+                                })}
                               </div>
                               {filteredMachos.map((macho) => (
                                 <div
@@ -1442,7 +1497,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                                   onClick={() => {
                                     setSelectedPadreId(macho.id);
                                     setSearchPadreTerm(
-                                      `${macho.identificador} - ${macho.nombre_animal || "Sin nombre"}`,
+                                      `${macho.identificador} - ${macho.nombre_animal || t("padre.sinNombre")}`,
                                     );
                                     setIsPadreDropdownOpen(false);
                                   }}
@@ -1452,11 +1507,12 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                                       {macho.identificador}
                                     </span>
                                     <span className="text-sm text-gray-500">
-                                      {macho.nombre_animal || "Sin nombre"}
+                                      {macho.nombre_animal ||
+                                        t("padre.sinNombre")}
                                     </span>
                                   </div>
                                   <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                                    Seleccionar
+                                    {t("padre.seleccionar")}
                                   </span>
                                 </div>
                               ))}
@@ -1476,9 +1532,9 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                                   d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                                 />
                               </svg>
-                              <p>No se encontraron machos</p>
+                              <p>{t("padre.noMachos")}</p>
                               <p className="text-xs text-gray-400 mt-1">
-                                Intenta con otro término de búsqueda
+                                {t("padre.noMachosDesc")}
                               </p>
                             </div>
                           )}
@@ -1494,7 +1550,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                           <p className="text-sm text-green-700 flex items-center gap-2">
                             <span className="text-green-500">✓</span>
                             <span className="font-medium">
-                              Padre seleccionado:
+                              {t("padre.padreSeleccionado")}
                             </span>
                           </p>
                           <p className="text-sm font-semibold text-green-800 mt-1">
@@ -1524,7 +1580,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                               d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                             />
                           </svg>
-                          Cambiar
+                          {t("padre.cambiar")}
                         </Button>
                       </div>
                     </div>
@@ -1536,14 +1592,14 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nombre Padre
+                      {t("padre.nombrePadre")}
                       <span className="text-xs text-muted-foreground font-normal">
-                        (opcional)
+                        {t("fields.opcional")}
                       </span>
                     </Label>
                     <Input
                       {...register("nombre_padre")}
-                      placeholder="Nombre del padre"
+                      placeholder={t("padre.nombrePadrePlaceholder")}
                       className="focus:ring-2 focus:ring-blue-500/20"
                     />
                     {errors.nombre_padre && (
@@ -1556,9 +1612,9 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Arete Padre
+                      {t("padre.aretePadre")}
                       <span className="text-xs text-muted-foreground font-normal">
-                        (6 dígitos - opcional)
+                        {t("padre.aretePadreDesc")}
                       </span>
                     </Label>
                     <div className="flex items-center gap-2">
@@ -1593,7 +1649,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                           </TooltipTrigger>
                           <TooltipContent side="top" className="max-w-xs">
                             <p className="text-xs">
-                              PRIMEROS SEIS DÍGITOS DE IDENTIFICACIÓN DEL ARETE
+                              {t("fields.areteCodigoHelp")}
                             </p>
                           </TooltipContent>
                         </Tooltip>
@@ -1610,7 +1666,8 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
-                    Razas del Padre <span className="text-red-500">*</span>
+                    {t("padre.razasPadre")}{" "}
+                    <span className="text-red-500">*</span>
                   </Label>
                   <div className="border rounded-lg p-3 space-y-2 max-h-48 overflow-y-auto bg-gray-50">
                     {razas?.data.map((raza) => (
@@ -1648,7 +1705,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                     ))}
                     {(!razas?.data || razas.data.length === 0) && (
                       <p className="text-sm text-muted-foreground">
-                        No hay razas disponibles
+                        {t("padre.noRazas")}
                       </p>
                     )}
                   </div>
@@ -1663,9 +1720,9 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nivel de Pureza del Padre
+                      {t("padre.purezaPadre")}
                       <span className="text-xs text-muted-foreground font-normal">
-                        (opcional)
+                        {t("fields.opcional")}
                       </span>
                     </Label>
                     <Select
@@ -1678,10 +1735,14 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                       }
                     >
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Selecciona el nivel de pureza" />
+                        <SelectValue
+                          placeholder={t("padre.purezaPlaceholder")}
+                        />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="none">No especificado</SelectItem>
+                        <SelectItem value="none">
+                          {t("padre.purezaNoEspecificado")}
+                        </SelectItem>
                         {purezaOptions.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
                             {option.label}
@@ -1698,12 +1759,12 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nombre Criador del Padre{" "}
+                      {t("padre.nombreCriadorPadre")}{" "}
                       <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       {...register("nombre_criador_padre")}
-                      placeholder="Nombre del criador"
+                      placeholder={t("padre.nombreCriadorPadrePlaceholder")}
                       className="focus:ring-2 focus:ring-blue-500/20"
                     />
                     {errors.nombre_criador_padre && (
@@ -1716,12 +1777,12 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nombre Propietario del Padre{" "}
+                      {t("padre.nombrePropietarioPadre")}{" "}
                       <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       {...register("nombre_propietario_padre")}
-                      placeholder="Nombre del propietario"
+                      placeholder={t("padre.nombrePropietarioPadrePlaceholder")}
                       className="focus:ring-2 focus:ring-blue-500/20"
                     />
                     {errors.nombre_propietario_padre && (
@@ -1734,12 +1795,12 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Finca de Origen del Padre{" "}
+                      {t("padre.fincaOrigenPadre")}{" "}
                       <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       {...register("nombre_finca_origen_padre")}
-                      placeholder="Nombre de la finca de origen"
+                      placeholder={t("padre.fincaOrigenPadrePlaceholder")}
                       className="focus:ring-2 focus:ring-blue-500/20"
                     />
                     {errors.nombre_finca_origen_padre && (
@@ -1773,14 +1834,14 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                     d="M10 19l-7-7m0 0l7-7m-7 7h18"
                   />
                 </svg>
-                Anterior
+                {t("buttons.anterior")}
               </Button>
               <Button
                 type="button"
                 onClick={() => setActiveTab("madre")}
                 className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white"
               >
-                Datos de la Madre
+                {t("buttons.siguienteMadre")}
                 <svg
                   className="w-4 h-4 ml-2"
                   fill="none"
@@ -1820,10 +1881,12 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                   />
                 </svg>
               </span>
-              Datos de la Madre
+              {t("sections.datosMadre")}
               {watch("numero_parto_madre") && (
                 <span className="ml-auto text-xs font-normal bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                  Parto #{watch("numero_parto_madre")}
+                  {t("madre.parto", {
+                    numero: watch("numero_parto_madre") ?? 0,
+                  })}
                 </span>
               )}
             </CardTitle>
@@ -1848,10 +1911,10 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                   htmlFor="madreFinca"
                   className="font-medium text-pink-900"
                 >
-                  La madre pertenece a esta finca
+                  {t("madre.esDeFinca")}
                 </Label>
                 <p className="text-xs text-pink-700/70 mt-0.5">
-                  Marca esta opción si la madre está registrada en tu ganadería
+                  {t("madre.esDeFincaDesc")}
                 </p>
               </div>
             </div>
@@ -1860,16 +1923,17 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
-                    Buscar Madre <span className="text-red-500">*</span>
+                    {t("madre.buscarMadre")}{" "}
+                    <span className="text-red-500">*</span>
                     <span className="text-xs text-muted-foreground font-normal">
-                      (Selecciona una hembra registrada)
+                      {t("madre.buscarMadreDesc")}
                     </span>
                   </Label>
 
                   <div className="relative">
                     <div className="relative">
                       <Input
-                        placeholder="Buscar por identificador o nombre..."
+                        placeholder={t("padre.buscarPlaceholder")}
                         value={searchMadreTerm}
                         onChange={(e) => {
                           setSearchMadreTerm(e.target.value);
@@ -1919,8 +1983,9 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                           {filteredHembras.length > 0 ? (
                             <div className="py-1">
                               <div className="px-3 py-1.5 text-xs text-muted-foreground bg-gray-50 border-b">
-                                {filteredHembras.length} resultado
-                                {filteredHembras.length > 1 ? "s" : ""}
+                                {t("padre.resultadosCount", {
+                                  count: filteredHembras.length,
+                                })}
                               </div>
                               {filteredHembras.map((hembra) => (
                                 <div
@@ -1929,7 +1994,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                                   onClick={() => {
                                     setSelectedMadreId(hembra.id);
                                     setSearchMadreTerm(
-                                      `${hembra.identificador} - ${hembra.nombre_animal || "Sin nombre"}`,
+                                      `${hembra.identificador} - ${hembra.nombre_animal || t("padre.sinNombre")}`,
                                     );
                                     setIsMadreDropdownOpen(false);
                                   }}
@@ -1939,11 +2004,12 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                                       {hembra.identificador}
                                     </span>
                                     <span className="text-sm text-gray-500">
-                                      {hembra.nombre_animal || "Sin nombre"}
+                                      {hembra.nombre_animal ||
+                                        t("padre.sinNombre")}
                                     </span>
                                   </div>
                                   <span className="text-xs bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full">
-                                    Seleccionar
+                                    {t("padre.seleccionar")}
                                   </span>
                                 </div>
                               ))}
@@ -1963,9 +2029,9 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                                   d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                                 />
                               </svg>
-                              <p>No se encontraron hembras</p>
+                              <p>{t("madre.noHembras")}</p>
                               <p className="text-xs text-gray-400 mt-1">
-                                Intenta con otro término de búsqueda
+                                {t("madre.noHembrasDesc")}
                               </p>
                             </div>
                           )}
@@ -1981,7 +2047,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                           <p className="text-sm text-green-700 flex items-center gap-2">
                             <span className="text-green-500">✓</span>
                             <span className="font-medium">
-                              Madre seleccionada:
+                              {t("madre.madreSeleccionada")}
                             </span>
                           </p>
                           <p className="text-sm font-semibold text-green-800 mt-1">
@@ -2011,7 +2077,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                               d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                             />
                           </svg>
-                          Cambiar
+                          {t("padre.cambiar")}
                         </Button>
                       </div>
                     </div>
@@ -2020,9 +2086,10 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
-                    Número de parto <span className="text-red-500">*</span>
+                    {t("madre.numeroParto")}{" "}
+                    <span className="text-red-500">*</span>
                     <span className="text-xs text-muted-foreground font-normal">
-                      (Último parto)
+                      {t("madre.numeroPartoDesc")}
                     </span>
                   </Label>
                   <div className="relative">
@@ -2030,7 +2097,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                       min={1}
                       {...register("numero_parto_madre")}
                       required
-                      placeholder="Ej: 1, 2, 3..."
+                      placeholder={t("madre.numeroPartoPlaceholder")}
                       maxLength={2}
                       className="flex-1 font-medium focus:ring-2 focus:ring-pink-500/20"
                       type="number"
@@ -2052,14 +2119,14 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nombre Madre
+                      {t("madre.nombreMadre")}
                       <span className="text-xs text-muted-foreground font-normal">
-                        (opcional)
+                        {t("fields.opcional")}
                       </span>
                     </Label>
                     <Input
                       {...register("nombre_madre")}
-                      placeholder="Nombre de la madre"
+                      placeholder={t("madre.nombreMadrePlaceholder")}
                       className="focus:ring-2 focus:ring-pink-500/20"
                     />
                     {errors.nombre_madre && (
@@ -2072,9 +2139,9 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Arete Madre
+                      {t("madre.areteMadre")}
                       <span className="text-xs text-muted-foreground font-normal">
-                        (6 dígitos - opcional)
+                        {t("madre.areteMadreDesc")}
                       </span>
                     </Label>
                     <div className="flex items-center gap-2">
@@ -2109,7 +2176,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                           </TooltipTrigger>
                           <TooltipContent side="top" className="max-w-xs">
                             <p className="text-xs">
-                              PRIMEROS SEIS DÍGITOS DE IDENTIFICACIÓN DEL ARETE
+                              {t("fields.areteCodigoHelp")}
                             </p>
                           </TooltipContent>
                         </Tooltip>
@@ -2126,7 +2193,8 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
-                    Razas de la Madre <span className="text-red-500">*</span>
+                    {t("madre.razasMadre")}{" "}
+                    <span className="text-red-500">*</span>
                   </Label>
                   <div className="border rounded-lg p-3 space-y-2 max-h-48 overflow-y-auto bg-gray-50">
                     {razas?.data.map((raza) => (
@@ -2164,7 +2232,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                     ))}
                     {(!razas?.data || razas.data.length === 0) && (
                       <p className="text-sm text-muted-foreground">
-                        No hay razas disponibles
+                        {t("padre.noRazas")}
                       </p>
                     )}
                   </div>
@@ -2179,9 +2247,9 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nivel de pureza
+                      {t("madre.purezaMadre")}
                       <span className="text-xs text-muted-foreground font-normal">
-                        (opcional)
+                        {t("fields.opcional")}
                       </span>
                     </Label>
                     <Select
@@ -2194,10 +2262,14 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                       }
                     >
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Selecciona el nivel de pureza" />
+                        <SelectValue
+                          placeholder={t("padre.purezaPlaceholder")}
+                        />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="none">No especificado</SelectItem>
+                        <SelectItem value="none">
+                          {t("padre.purezaNoEspecificado")}
+                        </SelectItem>
                         {purezaOptions.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
                             {option.label}
@@ -2214,9 +2286,10 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Número de parto <span className="text-red-500">*</span>
+                      {t("madre.numeroParto")}{" "}
+                      <span className="text-red-500">*</span>
                       <span className="text-xs text-muted-foreground font-normal">
-                        (Último parto)
+                        {t("madre.numeroPartoDesc")}
                       </span>
                     </Label>
                     <div className="relative">
@@ -2224,7 +2297,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                         min={1}
                         {...register("numero_parto_madre")}
                         required
-                        placeholder="Ej: 1, 2, 3..."
+                        placeholder={t("madre.numeroPartoPlaceholder")}
                         maxLength={2}
                         className="flex-1 font-medium focus:ring-2 focus:ring-pink-500/20"
                         type="number"
@@ -2243,11 +2316,12 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nombre Criador <span className="text-red-500">*</span>
+                      {t("madre.nombreCriadorMadre")}{" "}
+                      <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       {...register("nombre_criador_madre")}
-                      placeholder="Nombre del criador"
+                      placeholder={t("madre.nombreCriadorMadrePlaceholder")}
                       className="focus:ring-2 focus:ring-pink-500/20"
                     />
                     {errors.nombre_criador_madre && (
@@ -2260,11 +2334,12 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                      Nombre Propietario <span className="text-red-500">*</span>
+                      {t("madre.nombrePropietarioMadre")}{" "}
+                      <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       {...register("nombre_propietario_madre")}
-                      placeholder="Nombre del propietario"
+                      placeholder={t("madre.nombrePropietarioMadrePlaceholder")}
                       className="focus:ring-2 focus:ring-pink-500/20"
                     />
                     {errors.nombre_propietario_madre && (
@@ -2277,12 +2352,12 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
 
                   <div className="space-y-2 md:col-span-2">
                     <Label className="flex items-center gap-2">
-                      Nombre de la finca de origen{" "}
+                      {t("madre.fincaOrigenMadre")}{" "}
                       <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       {...register("nombre_finca_origen_madre")}
-                      placeholder="Nombre de la finca de origen"
+                      placeholder={t("madre.fincaOrigenMadrePlaceholder")}
                       className="focus:ring-2 focus:ring-pink-500/20"
                     />
                     {errors.nombre_finca_origen_madre && (
@@ -2316,7 +2391,7 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                     d="M10 19l-7-7m0 0l7-7m-7 7h18"
                   />
                 </svg>
-                Anterior
+                {t("buttons.anterior")}
               </Button>
               <Button
                 type="submit"
@@ -2345,11 +2420,11 @@ const FormEditOvino = ({ animal, animalId, setActiveTab }: Props) => {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       ></path>
                     </svg>
-                    Actualizando...
+                    {t("buttons.actualizando")}
                   </>
                 ) : (
                   <>
-                    Actualizar Ovino
+                    {t("buttons.actualizarOvino")}
                     <svg
                       className="w-4 h-4 ml-2"
                       fill="none"

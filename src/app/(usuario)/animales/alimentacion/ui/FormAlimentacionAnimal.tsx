@@ -1,3 +1,5 @@
+"use client";
+
 import { CrearAlimetacionAnimal } from "@/api/alimentacion_animal/accions/crear-alimentacion";
 import { AgregarAlimentacionAnimalInterface } from "@/api/alimentacion_animal/interface/crear-alimentacion-animal.interface";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -25,6 +27,7 @@ import { toast } from "react-toastify";
 import { Loader2 } from "lucide-react";
 import { Alimento } from "@/api/alimentacion_animal/interface/response-alimentacion.interface";
 import { EditarAlimetacionAnimal } from "@/api/alimentacion_animal/accions/editar-alimentacion";
+import { useTranslations } from "next-intl";
 
 interface Props {
   moneda: string | undefined;
@@ -43,8 +46,11 @@ const FormAlimentacionAnimal = ({
   editAlimentacion,
   isEdit = false,
 }: Props) => {
+  const t = useTranslations("formAlimentacionAnimal");
+
   const { data: animales, isLoading: isLoadingAnimales } =
     useGetAnimalesPropietario();
+
   const queryClient = useQueryClient();
 
   const {
@@ -52,7 +58,6 @@ const FormAlimentacionAnimal = ({
     handleSubmit,
     reset,
     setValue,
-    watch,
     formState: { errors },
   } = useForm<AgregarAlimentacionAnimalInterface>({
     defaultValues: {
@@ -92,11 +97,11 @@ const FormAlimentacionAnimal = ({
         : CrearAlimetacionAnimal(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["alimentacion-animales"] });
+
       toast.success(
-        isEdit
-          ? "Alimentación actualizada con éxito"
-          : "Alimentación agregada con éxito",
+        isEdit ? t("messages.updateSuccess") : t("messages.createSuccess"),
       );
+
       reset();
       setOpenModal(false);
     },
@@ -107,11 +112,11 @@ const FormAlimentacionAnimal = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al procesar el alimento";
+            : t("errors.processFood");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Contacte al administrador");
+        toast.error(t("errors.contactAdmin"));
       }
     },
   });
@@ -126,21 +131,36 @@ const FormAlimentacionAnimal = ({
     mutation.mutate(formattedData);
   };
 
+  const getOriginLabel = (value: string, label: string) => {
+    if (value === "producido") {
+      return t("catalog.origin.produced");
+    }
+
+    if (value === "comprado") {
+      return t("catalog.origin.purchased");
+    }
+
+    return label;
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-1">
-        <Label className="font-bold">Tipo de Alimentación*</Label>
+        <Label className="font-bold">{t("fields.foodType")}*</Label>
+
         <Select
           onValueChange={(value) => setValue("tipoAlimento", value)}
           defaultValue={editAlimentacion?.tipoAlimento}
           required
         >
           <SelectTrigger>
-            <SelectValue placeholder="Selecciona el tipo de alimento" />
+            <SelectValue placeholder={t("placeholders.foodType")} />
           </SelectTrigger>
+
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Alimento</SelectLabel>
+              <SelectLabel>{t("selectLabels.food")}</SelectLabel>
+
               {alimentosOptions.map((alimento) => (
                 <SelectItem key={alimento.value} value={alimento.value}>
                   {alimento.label}
@@ -149,6 +169,7 @@ const FormAlimentacionAnimal = ({
             </SelectGroup>
           </SelectContent>
         </Select>
+
         {errors.tipoAlimento && (
           <p className="text-sm font-medium text-red-500">
             {errors.tipoAlimento.message as string}
@@ -157,26 +178,30 @@ const FormAlimentacionAnimal = ({
       </div>
 
       <div className="space-y-1">
-        <Label className="font-bold">Origen de Alimentación*</Label>
+        <Label className="font-bold">{t("fields.foodOrigin")}*</Label>
+
         <Select
           onValueChange={(value) => setValue("origen", value)}
           defaultValue={editAlimentacion?.origen}
           required
         >
           <SelectTrigger>
-            <SelectValue placeholder="Selecciona el origen del alimento" />
+            <SelectValue placeholder={t("placeholders.foodOrigin")} />
           </SelectTrigger>
+
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Origen</SelectLabel>
+              <SelectLabel>{t("selectLabels.origin")}</SelectLabel>
+
               {origenAlimentos.map((alimento) => (
                 <SelectItem key={alimento.id} value={alimento.value}>
-                  {alimento.label}
+                  {getOriginLabel(alimento.value, alimento.label)}
                 </SelectItem>
               ))}
             </SelectGroup>
           </SelectContent>
         </Select>
+
         {errors.origen && (
           <p className="text-sm font-medium text-red-500">
             {errors.origen.message as string}
@@ -185,17 +210,22 @@ const FormAlimentacionAnimal = ({
       </div>
 
       <div className="space-y-1">
-        <Label className="font-bold">Cantidad Diaria Consumida*</Label>
+        <Label className="font-bold">{t("fields.dailyQuantity")}*</Label>
+
         <Input
           type="number"
           step="0.01"
           min={0.1}
-          placeholder="Ejem: 20.5, 15, 10"
+          placeholder={t("placeholders.quantity")}
           {...register("cantidad", {
-            required: "La cantidad es requerida",
-            min: { value: 0.1, message: "La cantidad debe ser mayor a 0" },
+            required: t("validation.quantityRequired"),
+            min: {
+              value: 0.1,
+              message: t("validation.quantityMin"),
+            },
           })}
         />
+
         {errors.cantidad && (
           <p className="text-sm font-medium text-red-500">
             {errors.cantidad.message as string}
@@ -204,17 +234,20 @@ const FormAlimentacionAnimal = ({
       </div>
 
       <div className="space-y-1">
-        <Label className="font-bold">Unidad de Medida*</Label>
+        <Label className="font-bold">{t("fields.unit")}*</Label>
+
         <Select
           onValueChange={(value) => setValue("unidad", value)}
           defaultValue={editAlimentacion?.unidad}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Selecciona la unidad" />
+            <SelectValue placeholder={t("placeholders.unit")} />
           </SelectTrigger>
+
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Unidad</SelectLabel>
+              <SelectLabel>{t("selectLabels.unit")}</SelectLabel>
+
               {unidades_productos.map((unidad) => (
                 <SelectItem key={unidad.value} value={unidad.value}>
                   {unidad.nombre}
@@ -223,6 +256,7 @@ const FormAlimentacionAnimal = ({
             </SelectGroup>
           </SelectContent>
         </Select>
+
         {errors.unidad && (
           <p className="text-sm font-medium text-red-500">
             {errors.unidad.message as string}
@@ -231,17 +265,26 @@ const FormAlimentacionAnimal = ({
       </div>
 
       <div className="space-y-1">
-        <Label className="font-bold">Costo Diario ({moneda})*</Label>
+        <Label className="font-bold">
+          {t("fields.dailyCost", { currency: moneda || "$" })}*
+        </Label>
+
         <Input
           type="number"
           step="0.01"
           min={0.01}
-          placeholder={`Cantidad Diaria Invertida (${moneda})`}
+          placeholder={t("placeholders.dailyCost", {
+            currency: moneda || "$",
+          })}
           {...register("costo_diario", {
-            required: "El costo diario es requerido",
-            min: { value: 0.01, message: "El costo debe ser mayor a 0" },
+            required: t("validation.dailyCostRequired"),
+            min: {
+              value: 0.01,
+              message: t("validation.dailyCostMin"),
+            },
           })}
         />
+
         {errors.costo_diario && (
           <p className="text-sm font-medium text-red-500">
             {errors.costo_diario.message as string}
@@ -250,11 +293,15 @@ const FormAlimentacionAnimal = ({
       </div>
 
       <div className="space-y-1">
-        <Label className="font-bold">Fecha de Ingreso*</Label>
+        <Label className="font-bold">{t("fields.entryDate")}*</Label>
+
         <Input
           type="date"
-          {...register("fecha", { required: "La fecha es requerida" })}
+          {...register("fecha", {
+            required: t("validation.dateRequired"),
+          })}
         />
+
         {errors.fecha && (
           <p className="text-sm font-medium text-red-500">
             {errors.fecha.message as string}
@@ -264,7 +311,8 @@ const FormAlimentacionAnimal = ({
 
       {!isEdit && (
         <div className="space-y-1">
-          <Label className="font-bold">Animal*</Label>
+          <Label className="font-bold">{t("fields.animal")}*</Label>
+
           <Select
             onValueChange={(value) => setValue("animalId", value)}
             disabled={isLoadingAnimales}
@@ -273,16 +321,18 @@ const FormAlimentacionAnimal = ({
               <SelectValue
                 placeholder={
                   isLoadingAnimales
-                    ? "Cargando animales..."
-                    : "Selecciona el Animal"
+                    ? t("placeholders.loadingAnimals")
+                    : t("placeholders.selectAnimal")
                 }
               />
             </SelectTrigger>
+
             <SelectContent className="max-h-[300px]">
               <SelectGroup>
-                <SelectLabel>Animales Disponibles</SelectLabel>
-                {animales && animales?.length > 0 ? (
-                  animales?.map((animal) => (
+                <SelectLabel>{t("selectLabels.availableAnimals")}</SelectLabel>
+
+                {animales && animales.length > 0 ? (
+                  animales.map((animal) => (
                     <SelectItem
                       key={animal.id}
                       value={animal.id}
@@ -299,14 +349,17 @@ const FormAlimentacionAnimal = ({
                             }
                             alt={animal.identificador}
                           />
+
                           <AvatarFallback className="text-xs">
                             {animal.identificador?.slice(0, 2).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
+
                         <div>
                           <p className="font-medium">{animal.identificador}</p>
+
                           <p className="text-xs text-muted-foreground">
-                            {animal.razas?.[0]?.nombre || "Sin raza"} •{" "}
+                            {animal.razas?.[0]?.nombre || t("animal.noBreed")} •{" "}
                             {animal.sexo}
                           </p>
                         </div>
@@ -315,12 +368,13 @@ const FormAlimentacionAnimal = ({
                   ))
                 ) : (
                   <div className="p-4 text-center text-muted-foreground">
-                    No se encontraron animales
+                    {t("empty.animals")}
                   </div>
                 )}
               </SelectGroup>
             </SelectContent>
           </Select>
+
           {errors.animalId && (
             <p className="text-sm font-medium text-red-500">
               {errors.animalId.message as string}
@@ -334,12 +388,12 @@ const FormAlimentacionAnimal = ({
           {mutation.isPending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {isEdit ? "Actualizando..." : "Agregando..."}
+              {isEdit ? t("buttons.updating") : t("buttons.adding")}
             </>
           ) : isEdit ? (
-            "Actualizar Alimentación"
+            t("buttons.updateFeeding")
           ) : (
-            "Agregar Alimentación"
+            t("buttons.addFeeding")
           )}
         </Button>
       </div>

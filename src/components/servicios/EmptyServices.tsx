@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 interface EmptyServicesProps {
   onRefresh: () => Promise<void> | void;
   countryName?: string;
@@ -9,6 +11,8 @@ export const EmptyServices = ({
   onRefresh,
   countryName,
 }: EmptyServicesProps) => {
+  const t = useTranslations("emptyServices");
+
   return (
     <div className="flex flex-col items-center justify-center py-12 md:py-16 px-4">
       <div className="w-24 h-24 md:w-32 md:h-32 mb-6 text-muted-foreground">
@@ -35,18 +39,19 @@ export const EmptyServices = ({
       </div>
 
       <h3 className="text-lg md:text-xl font-semibold text-foreground mb-2">
-        No hay servicios disponibles
+        {t("title")}
       </h3>
 
       <p className="text-sm md:text-base text-muted-foreground text-center max-w-md mb-6">
         {countryName
-          ? `No encontramos servicios disponibles en ${countryName} en este momento.`
-          : "No encontramos servicios disponibles en tu país en este momento."}
-        Por favor, intenta nuevamente más tarde.
+          ? t("descriptionWithCountry", { country: countryName })
+          : t("descriptionWithoutCountry")}
+        {` ${t("tryAgainLater")}`}
       </p>
 
       {onRefresh && (
         <button
+          type="button"
           onClick={onRefresh}
           className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground rounded-lg hover:from-primary/90 hover:to-primary/70 transition-all duration-200 shadow-md hover:shadow-lg"
         >
@@ -63,7 +68,7 @@ export const EmptyServices = ({
               d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
             />
           </svg>
-          Reintentar
+          {t("retry")}
         </button>
       )}
     </div>

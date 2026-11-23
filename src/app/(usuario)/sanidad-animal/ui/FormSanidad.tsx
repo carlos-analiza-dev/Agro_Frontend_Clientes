@@ -33,6 +33,7 @@ import { toast } from "react-toastify";
 import { Sanidad } from "@/api/sanidad-animal/interface/response-sanidad-animal.interface";
 import { editarSanidad } from "@/api/sanidad-animal/accions/editar-sanidad-animal";
 import { formatDateToISOString } from "@/helpers/funciones/formatDateOnly";
+import { useTranslations } from "next-intl";
 
 interface Props {
   opciones_especie: {
@@ -97,6 +98,7 @@ const FormSanidad = ({
   tagTextColor = "text-green-700",
   tagBorderColor = "border-green-200",
 }: Props) => {
+  const t = useTranslations("FormSanidad");
   const [selectedService, setSelectedService] = useState<string>("");
   const [selectedServiceData, setSelectedServiceData] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -104,9 +106,6 @@ const FormSanidad = ({
   const [selectedAnimal, setSelectedAnimal] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [diasDescansoInput, setDiasDescansoInput] = useState<string>("");
-  const [productosMaquinariaInput, setProductosMaquinariaInput] =
-    useState<string>("");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { data: animales, isLoading: isLoadingAnimales } =
@@ -473,9 +472,7 @@ const FormSanidad = ({
     },
     onSuccess: () => {
       toast.success(
-        isEditing
-          ? "Sanidad actualizada correctamente"
-          : "Sanidad ingresada correctamente",
+        isEditing ? t("messages.updateSuccess") : t("messages.createSuccess"),
       );
       queryClient.invalidateQueries({ queryKey: ["sanidad-animal"] });
       queryClient.invalidateQueries({ queryKey: ["costos-mensuales-sanidad"] });
@@ -496,10 +493,10 @@ const FormSanidad = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al procesar la sanidad";
+            : t("messages.genericError");
         setErrorMessage(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("messages.unexpectedError"));
       }
     },
   });
@@ -517,7 +514,7 @@ const FormSanidad = ({
       dataToSend.tipo_servicio = selectedService;
       mutation.mutate(dataToSend as CreateSanidadAnimal);
     } catch (error) {
-      toast.error("Error al registrar la sanidad");
+      toast.error(t("messages.submitError"));
     }
   };
 
@@ -549,14 +546,18 @@ const FormSanidad = ({
   };
 
   const getAnimalDisplayInfo = (animal: Animal) => {
-    const nombre = animal.nombre_animal || "Sin nombre";
+    const nombre = animal.nombre_animal || t("animalSearch.noName");
     const identificador = animal.identificador
       ? `#${animal.identificador}`
       : "";
-    const galpon = animal.galpon ? `Galpón: ${animal.galpon}` : "";
-    const lote = animal.lote ? `Lote: ${animal.lote}` : "";
+    const galpon = animal.galpon
+      ? t("animalSearch.shed", { value: animal.galpon })
+      : "";
+    const lote = animal.lote
+      ? t("animalSearch.batch", { value: animal.lote })
+      : "";
     const cantidad = animal.cantidad_lote
-      ? `${animal.cantidad_lote} animales`
+      ? t("animalSearch.animalsCount", { count: animal.cantidad_lote })
       : "";
 
     return { nombre, identificador, galpon, lote, cantidad };
@@ -573,14 +574,15 @@ const FormSanidad = ({
           <div className="space-y-4">
             <div>
               <Label htmlFor="vacuna_aplicada">
-                Vacuna aplicada <span className="text-red-500">*</span>
+                {t("services.vacunacion.vaccineApplied")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="vacuna_aplicada"
                 {...register("vacuna_aplicada", {
-                  required: "La vacuna es requerida",
+                  required: t("services.vacunacion.vaccineRequired"),
                 })}
-                placeholder="Ej: Rabia, Fiebre aftosa"
+                placeholder={t("services.vacunacion.vaccinePlaceholder")}
                 className={errors.vacuna_aplicada ? "border-red-500" : ""}
                 disabled={isSubmitting}
               />
@@ -592,7 +594,9 @@ const FormSanidad = ({
             </div>
 
             <div>
-              <Label htmlFor="via_aplicacion_vacuna">Vía de aplicación</Label>
+              <Label htmlFor="via_aplicacion_vacuna">
+                {t("services.vacunacion.applicationRoute")}
+              </Label>
               <Select
                 value={watch("via_aplicacion_vacuna") || ""}
                 onValueChange={(value) =>
@@ -601,39 +605,55 @@ const FormSanidad = ({
                 disabled={isSubmitting}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar vía" />
+                  <SelectValue
+                    placeholder={t("services.vacunacion.routePlaceholder")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Vías de aplicación</SelectLabel>
-                    <SelectItem value="intramuscular">Intramuscular</SelectItem>
-                    <SelectItem value="subcutanea">Subcutánea</SelectItem>
-                    <SelectItem value="intradermica">Intradérmica</SelectItem>
-                    <SelectItem value="oral">Oral</SelectItem>
-                    <SelectItem value="nasal">Nasal</SelectItem>
+                    <SelectLabel>
+                      {t("services.vacunacion.routesGroup")}
+                    </SelectLabel>
+                    <SelectItem value="intramuscular">
+                      {t("services.vacunacion.routes.intramuscular")}
+                    </SelectItem>
+                    <SelectItem value="subcutanea">
+                      {t("services.vacunacion.routes.subcutaneous")}
+                    </SelectItem>
+                    <SelectItem value="intradermica">
+                      {t("services.vacunacion.routes.intradermal")}
+                    </SelectItem>
+                    <SelectItem value="oral">
+                      {t("services.vacunacion.routes.oral")}
+                    </SelectItem>
+                    <SelectItem value="nasal">
+                      {t("services.vacunacion.routes.nasal")}
+                    </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label htmlFor="dosis">Dosis</Label>
+              <Label htmlFor="dosis">{t("services.vacunacion.dose")}</Label>
               <Input
                 id="dosis"
                 type="number"
                 step="0.1"
                 {...register("dosis", { valueAsNumber: true })}
-                placeholder="Ej: 2.5"
+                placeholder={t("services.vacunacion.dosePlaceholder")}
                 disabled={isSubmitting}
               />
             </div>
 
             <div>
-              <Label htmlFor="dosis_tratamiento">Dosis/Tratamiento</Label>
+              <Label htmlFor="dosis_tratamiento">
+                {t("services.vacunacion.doseTreatment")}
+              </Label>
               <Input
                 id="dosis_tratamiento"
                 {...register("dosis_tratamiento")}
-                placeholder="Ej: 2ml, 1 comprimido"
+                placeholder={t("services.vacunacion.doseTreatmentPlaceholder")}
                 disabled={isSubmitting}
               />
             </div>
@@ -645,7 +665,8 @@ const FormSanidad = ({
           <div className="space-y-4">
             <div>
               <Label htmlFor="tipo_desparasitacion">
-                Tipo de desparasitación <span className="text-red-500">*</span>
+                {t("services.desparasitacion.type")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={watch("tipo_desparasitacion") || ""}
@@ -655,14 +676,24 @@ const FormSanidad = ({
                 disabled={mutation.isPending}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar tipo" />
+                  <SelectValue
+                    placeholder={t("services.desparasitacion.typePlaceholder")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Tipos</SelectLabel>
-                    <SelectItem value="interna">Interna</SelectItem>
-                    <SelectItem value="externa">Externa</SelectItem>
-                    <SelectItem value="mixta">Mixta</SelectItem>
+                    <SelectLabel>
+                      {t("services.desparasitacion.typesGroup")}
+                    </SelectLabel>
+                    <SelectItem value="interna">
+                      {t("services.desparasitacion.types.internal")}
+                    </SelectItem>
+                    <SelectItem value="externa">
+                      {t("services.desparasitacion.types.external")}
+                    </SelectItem>
+                    <SelectItem value="mixta">
+                      {t("services.desparasitacion.types.mixed")}
+                    </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -674,13 +705,15 @@ const FormSanidad = ({
             </div>
 
             <div>
-              <Label htmlFor="peso_usado">Peso usado (kg)</Label>
+              <Label htmlFor="peso_usado">
+                {t("services.desparasitacion.weightUsed")}
+              </Label>
               <Input
                 id="peso_usado"
                 type="number"
                 step="0.1"
                 {...register("peso_usado", { valueAsNumber: true })}
-                placeholder="Peso del animal para calcular dosis"
+                placeholder={t("services.desparasitacion.weightPlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
@@ -692,7 +725,8 @@ const FormSanidad = ({
           <div className="space-y-4">
             <div>
               <Label htmlFor="prueba_evento">
-                Prueba/Evento <span className="text-red-500">*</span>
+                {t("services.revisionUbre.testEvent")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={watch("prueba_evento") || ""}
@@ -700,22 +734,26 @@ const FormSanidad = ({
                 disabled={mutation.isPending}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar prueba" />
+                  <SelectValue
+                    placeholder={t("services.revisionUbre.testPlaceholder")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Pruebas</SelectLabel>
+                    <SelectLabel>
+                      {t("services.revisionUbre.testsGroup")}
+                    </SelectLabel>
                     <SelectItem value="california">
-                      California Mastitis Test
+                      {t("services.revisionUbre.tests.california")}
                     </SelectItem>
                     <SelectItem value="conteo_celulas">
-                      Conteo de células somáticas
+                      {t("services.revisionUbre.tests.cellCount")}
                     </SelectItem>
                     <SelectItem value="inspeccion_visual">
-                      Inspección visual
+                      {t("services.revisionUbre.tests.visualInspection")}
                     </SelectItem>
                     <SelectItem value="cultivo">
-                      Cultivo bacteriológico
+                      {t("services.revisionUbre.tests.culture")}
                     </SelectItem>
                   </SelectGroup>
                 </SelectContent>
@@ -728,50 +766,62 @@ const FormSanidad = ({
             </div>
 
             <div>
-              <Label htmlFor="cuarto_afectado">Cuarto afectado</Label>
+              <Label htmlFor="cuarto_afectado">
+                {t("services.revisionUbre.affectedQuarter")}
+              </Label>
               <Select
                 value={watch("cuarto_afectado") || ""}
                 onValueChange={(value) => setValue("cuarto_afectado", value)}
                 disabled={mutation.isPending}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar cuarto" />
+                  <SelectValue
+                    placeholder={t("services.revisionUbre.quarterPlaceholder")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Cuartos</SelectLabel>
+                    <SelectLabel>
+                      {t("services.revisionUbre.quartersGroup")}
+                    </SelectLabel>
                     <SelectItem value="anterior_izquierdo">
-                      Anterior izquierdo
+                      {t("services.revisionUbre.quarters.frontLeft")}
                     </SelectItem>
                     <SelectItem value="anterior_derecho">
-                      Anterior derecho
+                      {t("services.revisionUbre.quarters.frontRight")}
                     </SelectItem>
                     <SelectItem value="posterior_izquierdo">
-                      Posterior izquierdo
+                      {t("services.revisionUbre.quarters.rearLeft")}
                     </SelectItem>
                     <SelectItem value="posterior_derecho">
-                      Posterior derecho
+                      {t("services.revisionUbre.quarters.rearRight")}
                     </SelectItem>
-                    <SelectItem value="multiple">Múltiple</SelectItem>
+                    <SelectItem value="multiple">
+                      {t("services.revisionUbre.quarters.multiple")}
+                    </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label htmlFor="dias_retiro_leche">Días de retiro de leche</Label>
+              <Label htmlFor="dias_retiro_leche">
+                {t("services.revisionUbre.milkWithdrawalDays")}
+              </Label>
               <Input
                 id="dias_retiro_leche"
                 type="number"
                 {...register("dias_retiro_leche", { valueAsNumber: true })}
-                placeholder="Días sin consumo de leche"
+                placeholder={t(
+                  "services.revisionUbre.milkWithdrawalPlaceholder",
+                )}
                 disabled={mutation.isPending}
               />
             </div>
 
             <div>
               <Label htmlFor="litros_diarios_actuales">
-                Litros diarios actuales
+                {t("services.revisionUbre.currentDailyLiters")}
               </Label>
               <Input
                 id="litros_diarios_actuales"
@@ -780,7 +830,7 @@ const FormSanidad = ({
                 {...register("litros_diarios_actuales", {
                   valueAsNumber: true,
                 })}
-                placeholder="Producción diaria actual"
+                placeholder={t("services.revisionUbre.litersPlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
@@ -792,7 +842,8 @@ const FormSanidad = ({
           <div className="space-y-4">
             <div>
               <Label htmlFor="tipo_atencion">
-                Tipo de atención <span className="text-red-500">*</span>
+                {t("services.atencionPezunas.attentionType")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={watch("tipo_atencion") || ""}
@@ -800,15 +851,27 @@ const FormSanidad = ({
                 disabled={mutation.isPending}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar tipo" />
+                  <SelectValue
+                    placeholder={t("services.atencionPezunas.typePlaceholder")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Tipos</SelectLabel>
-                    <SelectItem value="recorte">Recorte</SelectItem>
-                    <SelectItem value="tratamiento">Tratamiento</SelectItem>
-                    <SelectItem value="preventivo">Preventivo</SelectItem>
-                    <SelectItem value="emergencia">Emergencia</SelectItem>
+                    <SelectLabel>
+                      {t("services.atencionPezunas.typesGroup")}
+                    </SelectLabel>
+                    <SelectItem value="recorte">
+                      {t("services.atencionPezunas.types.trimming")}
+                    </SelectItem>
+                    <SelectItem value="tratamiento">
+                      {t("services.atencionPezunas.types.treatment")}
+                    </SelectItem>
+                    <SelectItem value="preventivo">
+                      {t("services.atencionPezunas.types.preventive")}
+                    </SelectItem>
+                    <SelectItem value="emergencia">
+                      {t("services.atencionPezunas.types.emergency")}
+                    </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -820,52 +883,72 @@ const FormSanidad = ({
             </div>
 
             <div>
-              <Label htmlFor="grado_cojera">Grado de cojera</Label>
+              <Label htmlFor="grado_cojera">
+                {t("services.atencionPezunas.lamenessGrade")}
+              </Label>
               <Select
                 value={watch("grado_cojera") || ""}
                 onValueChange={(value) => setValue("grado_cojera", value)}
                 disabled={mutation.isPending}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar grado" />
+                  <SelectValue
+                    placeholder={t("services.atencionPezunas.gradePlaceholder")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Grados</SelectLabel>
-                    <SelectItem value="leve">Leve (1-2)</SelectItem>
-                    <SelectItem value="moderado">Moderado (3-4)</SelectItem>
-                    <SelectItem value="severo">Severo (5)</SelectItem>
+                    <SelectLabel>
+                      {t("services.atencionPezunas.gradesGroup")}
+                    </SelectLabel>
+                    <SelectItem value="leve">
+                      {t("services.atencionPezunas.grades.mild")}
+                    </SelectItem>
+                    <SelectItem value="moderado">
+                      {t("services.atencionPezunas.grades.moderate")}
+                    </SelectItem>
+                    <SelectItem value="severo">
+                      {t("services.atencionPezunas.grades.severe")}
+                    </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label htmlFor="miembro_afectado">Miembro afectado</Label>
+              <Label htmlFor="miembro_afectado">
+                {t("services.atencionPezunas.affectedLimb")}
+              </Label>
               <Select
                 value={watch("miembro_afectado") || ""}
                 onValueChange={(value) => setValue("miembro_afectado", value)}
                 disabled={mutation.isPending}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar miembro" />
+                  <SelectValue
+                    placeholder={t("services.atencionPezunas.limbPlaceholder")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Miembros</SelectLabel>
+                    <SelectLabel>
+                      {t("services.atencionPezunas.limbsGroup")}
+                    </SelectLabel>
                     <SelectItem value="anterior_izquierdo">
-                      Anterior izquierdo
+                      {t("services.atencionPezunas.limbs.frontLeft")}
                     </SelectItem>
                     <SelectItem value="anterior_derecho">
-                      Anterior derecho
+                      {t("services.atencionPezunas.limbs.frontRight")}
                     </SelectItem>
                     <SelectItem value="posterior_izquierdo">
-                      Posterior izquierdo
+                      {t("services.atencionPezunas.limbs.rearLeft")}
                     </SelectItem>
                     <SelectItem value="posterior_derecho">
-                      Posterior derecho
+                      {t("services.atencionPezunas.limbs.rearRight")}
                     </SelectItem>
-                    <SelectItem value="multiple">Múltiple</SelectItem>
+                    <SelectItem value="multiple">
+                      {t("services.atencionPezunas.limbs.multiple")}
+                    </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -879,14 +962,15 @@ const FormSanidad = ({
           <div className="space-y-4">
             <div>
               <Label htmlFor="potrero_corral_area">
-                Potrero/Corral/Área <span className="text-red-500">*</span>
+                {t("services.limpieza.area")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="potrero_corral_area"
                 {...register("potrero_corral_area", {
-                  required: "El área es requerida",
+                  required: t("services.limpieza.areaRequired"),
                 })}
-                placeholder="Nombre del área o potrero"
+                placeholder={t("services.limpieza.areaPlaceholder")}
                 className={errors.potrero_corral_area ? "border-red-500" : ""}
                 disabled={mutation.isPending}
               />
@@ -898,51 +982,57 @@ const FormSanidad = ({
             </div>
 
             <div>
-              <Label htmlFor="actividad">Actividad</Label>
+              <Label htmlFor="actividad">
+                {t("services.limpieza.activity")}
+              </Label>
               <Input
                 id="actividad"
                 {...register("actividad")}
-                placeholder="Ej: Limpieza profunda, desinfección"
+                placeholder={t("services.limpieza.activityPlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
 
             <div>
-              <Label htmlFor="dias_descanso">Días de descanso</Label>
+              <Label htmlFor="dias_descanso">
+                {t("services.limpieza.restDays")}
+              </Label>
               <Input
                 id="dias_descanso"
                 {...register("dias_descanso")}
-                placeholder="Ej: 30, 45, 60 (separados por coma)"
+                placeholder={t("services.limpieza.restDaysPlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
 
             <div>
               <Label htmlFor="producto_maquinaria_utilizada">
-                Producto/Maquinaria utilizada
+                {t("services.limpieza.productMachine")}
               </Label>
               <Input
                 id="producto_maquinaria_utilizada"
                 {...register("producto_maquinaria_utilizada")}
-                placeholder="Ej: Cal, Hidrolavadora"
+                placeholder={t("services.limpieza.productPlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
 
             <div>
-              <Label htmlFor="carga_animal">Carga animal</Label>
+              <Label htmlFor="carga_animal">
+                {t("services.limpieza.animalLoad")}
+              </Label>
               <Input
                 id="carga_animal"
                 type="number"
                 {...register("carga_animal", { valueAsNumber: true })}
-                placeholder="Cantidad de animales en el área"
+                placeholder={t("services.limpieza.animalLoadPlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
 
             <div>
               <Label htmlFor="costo_producto_maquinaria">
-                Costo producto/maquinaria
+                {t("services.limpieza.productCost")}
               </Label>
               <Input
                 id="costo_producto_maquinaria"
@@ -951,7 +1041,7 @@ const FormSanidad = ({
                 {...register("costo_producto_maquinaria", {
                   valueAsNumber: true,
                 })}
-                placeholder="Costo en $"
+                placeholder={t("services.limpieza.productCostPlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
@@ -963,17 +1053,18 @@ const FormSanidad = ({
           <div className="space-y-4">
             <div>
               <Label htmlFor="peso_lana">
-                Peso de lana (kg) <span className="text-red-500">*</span>
+                {t("services.esquila.woolWeight")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="peso_lana"
                 type="number"
                 step="0.1"
                 {...register("peso_lana", {
-                  required: "El peso de lana es requerido",
+                  required: t("services.esquila.woolWeightRequired"),
                   valueAsNumber: true,
                 })}
-                placeholder="Peso en kilogramos"
+                placeholder={t("services.esquila.woolWeightPlaceholder")}
                 className={errors.peso_lana ? "border-red-500" : ""}
                 disabled={mutation.isPending}
               />
@@ -985,45 +1076,61 @@ const FormSanidad = ({
             </div>
 
             <div>
-              <Label htmlFor="calidad_lana">Calidad de lana</Label>
+              <Label htmlFor="calidad_lana">
+                {t("services.esquila.woolQuality")}
+              </Label>
               <Select
                 value={watch("calidad_lana") || ""}
                 onValueChange={(value) => setValue("calidad_lana", value)}
                 disabled={mutation.isPending}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar calidad" />
+                  <SelectValue
+                    placeholder={t("services.esquila.qualityPlaceholder")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Calidades</SelectLabel>
-                    <SelectItem value="fina">Fina</SelectItem>
-                    <SelectItem value="media">Media</SelectItem>
-                    <SelectItem value="gruesa">Gruesa</SelectItem>
-                    <SelectItem value="mixta">Mixta</SelectItem>
+                    <SelectLabel>
+                      {t("services.esquila.qualitiesGroup")}
+                    </SelectLabel>
+                    <SelectItem value="fina">
+                      {t("services.esquila.qualities.fine")}
+                    </SelectItem>
+                    <SelectItem value="media">
+                      {t("services.esquila.qualities.medium")}
+                    </SelectItem>
+                    <SelectItem value="gruesa">
+                      {t("services.esquila.qualities.thick")}
+                    </SelectItem>
+                    <SelectItem value="mixta">
+                      {t("services.esquila.qualities.mixed")}
+                    </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label htmlFor="color_lana">Color de lana</Label>
+              <Label htmlFor="color_lana">
+                {t("services.esquila.woolColor")}
+              </Label>
               <Input
                 id="color_lana"
                 {...register("color_lana")}
-                placeholder="Ej: Blanca, Negra, Marrón"
+                placeholder={t("services.esquila.woolColorPlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
 
             <div>
               <Label htmlFor="responsable_esquila">
-                Responsable de esquila
+                {t("services.esquila.shearer")}
               </Label>
               <Input
                 id="responsable_esquila"
                 {...register("responsable_esquila")}
-                placeholder="Nombre del esquilador"
+                placeholder={t("services.esquila.shearerPlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
@@ -1035,7 +1142,8 @@ const FormSanidad = ({
           <div className="space-y-4">
             <div>
               <Label htmlFor="motivo_baño">
-                Motivo del baño <span className="text-red-500">*</span>
+                {t("services.banoSanitario.reason")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={watch("motivo_baño") || ""}
@@ -1043,17 +1151,27 @@ const FormSanidad = ({
                 disabled={mutation.isPending}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar motivo" />
+                  <SelectValue
+                    placeholder={t("services.banoSanitario.reasonPlaceholder")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Motivos</SelectLabel>
+                    <SelectLabel>
+                      {t("services.banoSanitario.reasonsGroup")}
+                    </SelectLabel>
                     <SelectItem value="parasitos_externos">
-                      Parásitos externos
+                      {t("services.banoSanitario.reasons.externalParasites")}
                     </SelectItem>
-                    <SelectItem value="preventivo">Preventivo</SelectItem>
-                    <SelectItem value="tratamiento">Tratamiento</SelectItem>
-                    <SelectItem value="sanitario">Sanitario</SelectItem>
+                    <SelectItem value="preventivo">
+                      {t("services.banoSanitario.reasons.preventive")}
+                    </SelectItem>
+                    <SelectItem value="tratamiento">
+                      {t("services.banoSanitario.reasons.treatment")}
+                    </SelectItem>
+                    <SelectItem value="sanitario">
+                      {t("services.banoSanitario.reasons.sanitary")}
+                    </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -1065,22 +1183,28 @@ const FormSanidad = ({
             </div>
 
             <div>
-              <Label htmlFor="tiempo_baño">Tiempo de baño (minutos)</Label>
+              <Label htmlFor="tiempo_baño">
+                {t("services.banoSanitario.bathTime")}
+              </Label>
               <Input
                 id="tiempo_baño"
                 type="number"
                 {...register("tiempo_baño", { valueAsNumber: true })}
-                placeholder="Tiempo en minutos"
+                placeholder={t("services.banoSanitario.bathTimePlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
 
             <div>
-              <Label htmlFor="hallazgos_piel">Hallazgos en piel</Label>
+              <Label htmlFor="hallazgos_piel">
+                {t("services.banoSanitario.skinFindings")}
+              </Label>
               <Input
                 id="hallazgos_piel"
                 {...register("hallazgos_piel")}
-                placeholder="Ej: Irritación, heridas, parásitos"
+                placeholder={t(
+                  "services.banoSanitario.skinFindingsPlaceholder",
+                )}
                 disabled={mutation.isPending}
               />
             </div>
@@ -1092,7 +1216,8 @@ const FormSanidad = ({
           <div className="space-y-4">
             <div>
               <Label htmlFor="procedimiento">
-                Procedimiento <span className="text-red-500">*</span>
+                {t("services.odontologia.procedure")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={watch("procedimiento") || ""}
@@ -1100,15 +1225,27 @@ const FormSanidad = ({
                 disabled={mutation.isPending}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar procedimiento" />
+                  <SelectValue
+                    placeholder={t("services.odontologia.procedurePlaceholder")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Procedimientos</SelectLabel>
-                    <SelectItem value="raspado">Raspado dental</SelectItem>
-                    <SelectItem value="extraccion">Extracción</SelectItem>
-                    <SelectItem value="limpieza">Limpieza profunda</SelectItem>
-                    <SelectItem value="examen">Examen oral</SelectItem>
+                    <SelectLabel>
+                      {t("services.odontologia.proceduresGroup")}
+                    </SelectLabel>
+                    <SelectItem value="raspado">
+                      {t("services.odontologia.procedures.scaling")}
+                    </SelectItem>
+                    <SelectItem value="extraccion">
+                      {t("services.odontologia.procedures.extraction")}
+                    </SelectItem>
+                    <SelectItem value="limpieza">
+                      {t("services.odontologia.procedures.deepCleaning")}
+                    </SelectItem>
+                    <SelectItem value="examen">
+                      {t("services.odontologia.procedures.oralExam")}
+                    </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -1120,11 +1257,13 @@ const FormSanidad = ({
             </div>
 
             <div>
-              <Label htmlFor="hallazgos">Hallazgos</Label>
+              <Label htmlFor="hallazgos">
+                {t("services.odontologia.findings")}
+              </Label>
               <Input
                 id="hallazgos"
                 {...register("hallazgos")}
-                placeholder="Ej: Caries, desgaste, inflamación"
+                placeholder={t("services.odontologia.findingsPlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
@@ -1136,7 +1275,8 @@ const FormSanidad = ({
           <div className="space-y-4">
             <div>
               <Label htmlFor="tipo">
-                Tipo <span className="text-red-500">*</span>
+                {t("services.atencionCascos.type")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={watch("tipo") || ""}
@@ -1144,15 +1284,27 @@ const FormSanidad = ({
                 disabled={mutation.isPending}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar tipo" />
+                  <SelectValue
+                    placeholder={t("services.atencionCascos.typePlaceholder")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Tipos</SelectLabel>
-                    <SelectItem value="recorte">Recorte</SelectItem>
-                    <SelectItem value="herrado">Herrado</SelectItem>
-                    <SelectItem value="tratamiento">Tratamiento</SelectItem>
-                    <SelectItem value="preventivo">Preventivo</SelectItem>
+                    <SelectLabel>
+                      {t("services.atencionCascos.typesGroup")}
+                    </SelectLabel>
+                    <SelectItem value="recorte">
+                      {t("services.atencionCascos.types.trimming")}
+                    </SelectItem>
+                    <SelectItem value="herrado">
+                      {t("services.atencionCascos.types.shoeing")}
+                    </SelectItem>
+                    <SelectItem value="tratamiento">
+                      {t("services.atencionCascos.types.treatment")}
+                    </SelectItem>
+                    <SelectItem value="preventivo">
+                      {t("services.atencionCascos.types.preventive")}
+                    </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -1164,11 +1316,13 @@ const FormSanidad = ({
             </div>
 
             <div>
-              <Label htmlFor="herrador">Herrador</Label>
+              <Label htmlFor="herrador">
+                {t("services.atencionCascos.farrier")}
+              </Label>
               <Input
                 id="herrador"
                 {...register("herrador")}
-                placeholder="Nombre del herrador"
+                placeholder={t("services.atencionCascos.farrierPlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
@@ -1180,7 +1334,8 @@ const FormSanidad = ({
           <div className="space-y-4">
             <div>
               <Label htmlFor="tipo_lesion">
-                Tipo de lesión <span className="text-red-500">*</span>
+                {t("services.revisionLesiones.injuryType")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={watch("tipo_lesion") || ""}
@@ -1188,19 +1343,33 @@ const FormSanidad = ({
                 disabled={mutation.isPending}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar tipo" />
+                  <SelectValue
+                    placeholder={t("services.revisionLesiones.typePlaceholder")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Tipos</SelectLabel>
+                    <SelectLabel>
+                      {t("services.revisionLesiones.typesGroup")}
+                    </SelectLabel>
                     <SelectItem value="herida_abierta">
-                      Herida abierta
+                      {t("services.revisionLesiones.types.openWound")}
                     </SelectItem>
-                    <SelectItem value="contusion">Contusión</SelectItem>
-                    <SelectItem value="fractura">Fractura</SelectItem>
-                    <SelectItem value="infeccion">Infección</SelectItem>
-                    <SelectItem value="quemadura">Quemadura</SelectItem>
-                    <SelectItem value="otro">Otro</SelectItem>
+                    <SelectItem value="contusion">
+                      {t("services.revisionLesiones.types.contusion")}
+                    </SelectItem>
+                    <SelectItem value="fractura">
+                      {t("services.revisionLesiones.types.fracture")}
+                    </SelectItem>
+                    <SelectItem value="infeccion">
+                      {t("services.revisionLesiones.types.infection")}
+                    </SelectItem>
+                    <SelectItem value="quemadura">
+                      {t("services.revisionLesiones.types.burn")}
+                    </SelectItem>
+                    <SelectItem value="otro">
+                      {t("services.revisionLesiones.types.other")}
+                    </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -1212,32 +1381,50 @@ const FormSanidad = ({
             </div>
 
             <div>
-              <Label htmlFor="zona_afectada">Zona afectada</Label>
+              <Label htmlFor="zona_afectada">
+                {t("services.revisionLesiones.affectedArea")}
+              </Label>
               <Input
                 id="zona_afectada"
                 {...register("zona_afectada")}
-                placeholder="Ej: Pata delantera, lomo, cabeza"
+                placeholder={t("services.revisionLesiones.areaPlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
 
             <div>
-              <Label htmlFor="severidad">Severidad</Label>
+              <Label htmlFor="severidad">
+                {t("services.revisionLesiones.severity")}
+              </Label>
               <Select
                 value={watch("severidad") || ""}
                 onValueChange={(value) => setValue("severidad", value)}
                 disabled={mutation.isPending}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar severidad" />
+                  <SelectValue
+                    placeholder={t(
+                      "services.revisionLesiones.severityPlaceholder",
+                    )}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Severidades</SelectLabel>
-                    <SelectItem value="leve">Leve</SelectItem>
-                    <SelectItem value="moderado">Moderado</SelectItem>
-                    <SelectItem value="grave">Grave</SelectItem>
-                    <SelectItem value="critico">Crítico</SelectItem>
+                    <SelectLabel>
+                      {t("services.revisionLesiones.severitiesGroup")}
+                    </SelectLabel>
+                    <SelectItem value="leve">
+                      {t("services.revisionLesiones.severities.mild")}
+                    </SelectItem>
+                    <SelectItem value="moderado">
+                      {t("services.revisionLesiones.severities.moderate")}
+                    </SelectItem>
+                    <SelectItem value="grave">
+                      {t("services.revisionLesiones.severities.severe")}
+                    </SelectItem>
+                    <SelectItem value="critico">
+                      {t("services.revisionLesiones.severities.critical")}
+                    </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -1250,17 +1437,22 @@ const FormSanidad = ({
           <div className="space-y-4">
             <div>
               <Label htmlFor="peso_estimado">
-                Peso estimado (kg) <span className="text-red-500">*</span>
+                {t("services.evaluacionCondicionCorporal.estimatedWeight")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="peso_estimado"
                 type="number"
                 step="0.1"
                 {...register("peso_estimado", {
-                  required: "El peso estimado es requerido",
+                  required: t(
+                    "services.evaluacionCondicionCorporal.weightRequired",
+                  ),
                   valueAsNumber: true,
                 })}
-                placeholder="Peso en kilogramos"
+                placeholder={t(
+                  "services.evaluacionCondicionCorporal.weightPlaceholder",
+                )}
                 className={errors.peso_estimado ? "border-red-500" : ""}
                 disabled={mutation.isPending}
               />
@@ -1272,34 +1464,68 @@ const FormSanidad = ({
             </div>
 
             <div>
-              <Label htmlFor="condicion_corporal">Condición corporal</Label>
+              <Label htmlFor="condicion_corporal">
+                {t("services.evaluacionCondicionCorporal.bodyCondition")}
+              </Label>
               <Select
                 value={watch("condicion_corporal") || ""}
                 onValueChange={(value) => setValue("condicion_corporal", value)}
                 disabled={mutation.isPending}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar condición" />
+                  <SelectValue
+                    placeholder={t(
+                      "services.evaluacionCondicionCorporal.conditionPlaceholder",
+                    )}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Condiciones</SelectLabel>
-                    <SelectItem value="1">1 - Muy delgado</SelectItem>
-                    <SelectItem value="2">2 - Delgado</SelectItem>
-                    <SelectItem value="3">3 - Normal</SelectItem>
-                    <SelectItem value="4">4 - Sobrepeso</SelectItem>
-                    <SelectItem value="5">5 - Obeso</SelectItem>
+                    <SelectLabel>
+                      {t(
+                        "services.evaluacionCondicionCorporal.conditionsGroup",
+                      )}
+                    </SelectLabel>
+                    <SelectItem value="1">
+                      {t(
+                        "services.evaluacionCondicionCorporal.conditions.veryThin",
+                      )}
+                    </SelectItem>
+                    <SelectItem value="2">
+                      {t(
+                        "services.evaluacionCondicionCorporal.conditions.thin",
+                      )}
+                    </SelectItem>
+                    <SelectItem value="3">
+                      {t(
+                        "services.evaluacionCondicionCorporal.conditions.normal",
+                      )}
+                    </SelectItem>
+                    <SelectItem value="4">
+                      {t(
+                        "services.evaluacionCondicionCorporal.conditions.overweight",
+                      )}
+                    </SelectItem>
+                    <SelectItem value="5">
+                      {t(
+                        "services.evaluacionCondicionCorporal.conditions.obese",
+                      )}
+                    </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label htmlFor="cambio_dieta">Cambio de dieta</Label>
+              <Label htmlFor="cambio_dieta">
+                {t("services.evaluacionCondicionCorporal.dietChange")}
+              </Label>
               <Input
                 id="cambio_dieta"
                 {...register("cambio_dieta")}
-                placeholder="Ej: Aumento de concentrado, cambio de forraje"
+                placeholder={t(
+                  "services.evaluacionCondicionCorporal.dietPlaceholder",
+                )}
                 disabled={mutation.isPending}
               />
             </div>
@@ -1311,16 +1537,17 @@ const FormSanidad = ({
           <div className="space-y-4">
             <div>
               <Label htmlFor="cantidad_bajas">
-                Cantidad de bajas <span className="text-red-500">*</span>
+                {t("services.controlMortalidad.lossCount")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="cantidad_bajas"
                 type="number"
                 {...register("cantidad_bajas", {
-                  required: "La cantidad de bajas es requerida",
+                  required: t("services.controlMortalidad.countRequired"),
                   valueAsNumber: true,
                 })}
-                placeholder="Número de animales"
+                placeholder={t("services.controlMortalidad.countPlaceholder")}
                 className={errors.cantidad_bajas ? "border-red-500" : ""}
                 disabled={mutation.isPending}
               />
@@ -1333,22 +1560,24 @@ const FormSanidad = ({
 
             <div>
               <Label htmlFor="causa_baja_probable">
-                Causa probable de la baja
+                {t("services.controlMortalidad.probableCause")}
               </Label>
               <Input
                 id="causa_baja_probable"
                 {...register("causa_baja_probable")}
-                placeholder="Ej: Enfermedad, accidente, edad"
+                placeholder={t("services.controlMortalidad.causePlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
 
             <div>
-              <Label htmlFor="accion_correctiva">Acción correctiva</Label>
+              <Label htmlFor="accion_correctiva">
+                {t("services.controlMortalidad.correctiveAction")}
+              </Label>
               <Input
                 id="accion_correctiva"
                 {...register("accion_correctiva")}
-                placeholder="Ej: Aislamiento, vacunación, cambio de dieta"
+                placeholder={t("services.controlMortalidad.actionPlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
@@ -1360,7 +1589,8 @@ const FormSanidad = ({
           <div className="space-y-4">
             <div>
               <Label htmlFor="tipo_accion">
-                Tipo de acción <span className="text-red-500">*</span>
+                {t("services.cambioCamaNido.actionType")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={watch("tipo_accion") || ""}
@@ -1368,17 +1598,27 @@ const FormSanidad = ({
                 disabled={mutation.isPending}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar acción" />
+                  <SelectValue
+                    placeholder={t("services.cambioCamaNido.actionPlaceholder")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Acciones</SelectLabel>
+                    <SelectLabel>
+                      {t("services.cambioCamaNido.actionsGroup")}
+                    </SelectLabel>
                     <SelectItem value="cambio_parcial">
-                      Cambio parcial
+                      {t("services.cambioCamaNido.actions.partial")}
                     </SelectItem>
-                    <SelectItem value="cambio_total">Cambio total</SelectItem>
-                    <SelectItem value="limpieza">Limpieza</SelectItem>
-                    <SelectItem value="desinfeccion">Desinfección</SelectItem>
+                    <SelectItem value="cambio_total">
+                      {t("services.cambioCamaNido.actions.total")}
+                    </SelectItem>
+                    <SelectItem value="limpieza">
+                      {t("services.cambioCamaNido.actions.cleaning")}
+                    </SelectItem>
+                    <SelectItem value="desinfeccion">
+                      {t("services.cambioCamaNido.actions.disinfection")}
+                    </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -1390,23 +1630,27 @@ const FormSanidad = ({
             </div>
 
             <div>
-              <Label htmlFor="material_utilizado">Material utilizado</Label>
+              <Label htmlFor="material_utilizado">
+                {t("services.cambioCamaNido.materialUsed")}
+              </Label>
               <Input
                 id="material_utilizado"
                 {...register("material_utilizado")}
-                placeholder="Ej: Viruta, Paja, Aserrín"
+                placeholder={t("services.cambioCamaNido.materialPlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
 
             <div>
-              <Label htmlFor="cantidad_usada">Cantidad usada</Label>
+              <Label htmlFor="cantidad_usada">
+                {t("services.cambioCamaNido.quantityUsed")}
+              </Label>
               <Input
                 id="cantidad_usada"
                 type="number"
                 step="0.1"
                 {...register("cantidad_usada", { valueAsNumber: true })}
-                placeholder="Cantidad en kg o m²"
+                placeholder={t("services.cambioCamaNido.quantityPlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
@@ -1418,16 +1662,17 @@ const FormSanidad = ({
           <div className="space-y-4">
             <div>
               <Label htmlFor="huevos_diarios">
-                Huevos diarios <span className="text-red-500">*</span>
+                {t("services.controlProduccion.dailyEggs")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="huevos_diarios"
                 type="number"
                 {...register("huevos_diarios", {
-                  required: "Los huevos diarios son requeridos",
+                  required: t("services.controlProduccion.eggsRequired"),
                   valueAsNumber: true,
                 })}
-                placeholder="Cantidad de huevos por día"
+                placeholder={t("services.controlProduccion.eggsPlaceholder")}
                 className={errors.huevos_diarios ? "border-red-500" : ""}
                 disabled={mutation.isPending}
               />
@@ -1439,45 +1684,69 @@ const FormSanidad = ({
             </div>
 
             <div>
-              <Label htmlFor="huevos_rotos">Huevos rotos</Label>
+              <Label htmlFor="huevos_rotos">
+                {t("services.controlProduccion.brokenEggs")}
+              </Label>
               <Input
                 id="huevos_rotos"
                 type="number"
                 {...register("huevos_rotos", { valueAsNumber: true })}
-                placeholder="Cantidad de huevos rotos"
+                placeholder={t(
+                  "services.controlProduccion.brokenEggsPlaceholder",
+                )}
                 disabled={mutation.isPending}
               />
             </div>
 
             <div>
-              <Label htmlFor="porcentaje_postura">Porcentaje de postura</Label>
+              <Label htmlFor="porcentaje_postura">
+                {t("services.controlProduccion.layingPercentage")}
+              </Label>
               <Input
                 id="porcentaje_postura"
                 type="number"
                 step="0.1"
                 {...register("porcentaje_postura", { valueAsNumber: true })}
-                placeholder="Porcentaje (0-100)"
+                placeholder={t(
+                  "services.controlProduccion.percentagePlaceholder",
+                )}
                 disabled={mutation.isPending}
               />
             </div>
 
             <div>
-              <Label htmlFor="calidad_huevo">Calidad del huevo</Label>
+              <Label htmlFor="calidad_huevo">
+                {t("services.controlProduccion.eggQuality")}
+              </Label>
               <Select
                 value={watch("calidad_huevo") || ""}
                 onValueChange={(value) => setValue("calidad_huevo", value)}
                 disabled={mutation.isPending}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar calidad" />
+                  <SelectValue
+                    placeholder={t(
+                      "services.controlProduccion.qualityPlaceholder",
+                    )}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Calidades</SelectLabel>
-                    <SelectItem value="extra">Extra</SelectItem>
-                    <SelectItem value="primera">Primera</SelectItem>
-                    <SelectItem value="segunda">Segunda</SelectItem>
-                    <SelectItem value="tercera">Tercera</SelectItem>
+                    <SelectLabel>
+                      {t("services.controlProduccion.qualitiesGroup")}
+                    </SelectLabel>
+                    <SelectItem value="extra">
+                      {t("services.controlProduccion.qualities.extra")}
+                    </SelectItem>
+                    <SelectItem value="primera">
+                      {t("services.controlProduccion.qualities.first")}
+                    </SelectItem>
+                    <SelectItem value="segunda">
+                      {t("services.controlProduccion.qualities.second")}
+                    </SelectItem>
+                    <SelectItem value="tercera">
+                      {t("services.controlProduccion.qualities.third")}
+                    </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -1490,17 +1759,22 @@ const FormSanidad = ({
           <div className="space-y-4">
             <div>
               <Label htmlFor="temperatura">
-                Temperatura (°C) <span className="text-red-500">*</span>
+                {t("services.controlCalidadAgua.temperature")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="temperatura"
                 type="number"
                 step="0.1"
                 {...register("temperatura", {
-                  required: "La temperatura es requerida",
+                  required: t(
+                    "services.controlCalidadAgua.temperatureRequired",
+                  ),
                   valueAsNumber: true,
                 })}
-                placeholder="Temperatura del agua"
+                placeholder={t(
+                  "services.controlCalidadAgua.temperaturePlaceholder",
+                )}
                 className={errors.temperatura ? "border-red-500" : ""}
                 disabled={mutation.isPending}
               />
@@ -1512,49 +1786,59 @@ const FormSanidad = ({
             </div>
 
             <div>
-              <Label htmlFor="oxigeno">Oxígeno (mg/L)</Label>
+              <Label htmlFor="oxigeno">
+                {t("services.controlCalidadAgua.oxygen")}
+              </Label>
               <Input
                 id="oxigeno"
                 type="number"
                 step="0.1"
                 {...register("oxigeno", { valueAsNumber: true })}
-                placeholder="Nivel de oxígeno disuelto"
+                placeholder={t("services.controlCalidadAgua.oxygenPlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
 
             <div>
-              <Label htmlFor="ph">pH</Label>
+              <Label htmlFor="ph">{t("services.controlCalidadAgua.ph")}</Label>
               <Input
                 id="ph"
                 type="number"
                 step="0.1"
                 {...register("ph", { valueAsNumber: true })}
-                placeholder="pH del agua"
+                placeholder={t("services.controlCalidadAgua.phPlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
 
             <div>
-              <Label htmlFor="amonio">Amonio (mg/L)</Label>
+              <Label htmlFor="amonio">
+                {t("services.controlCalidadAgua.ammonia")}
+              </Label>
               <Input
                 id="amonio"
                 type="number"
                 step="0.1"
                 {...register("amonio", { valueAsNumber: true })}
-                placeholder="Nivel de amonio"
+                placeholder={t(
+                  "services.controlCalidadAgua.ammoniaPlaceholder",
+                )}
                 disabled={mutation.isPending}
               />
             </div>
 
             <div>
-              <Label htmlFor="nitritos">Nitritos (mg/L)</Label>
+              <Label htmlFor="nitritos">
+                {t("services.controlCalidadAgua.nitrites")}
+              </Label>
               <Input
                 id="nitritos"
                 type="number"
                 step="0.1"
                 {...register("nitritos", { valueAsNumber: true })}
-                placeholder="Nivel de nitritos"
+                placeholder={t(
+                  "services.controlCalidadAgua.nitritesPlaceholder",
+                )}
                 disabled={mutation.isPending}
               />
             </div>
@@ -1566,7 +1850,7 @@ const FormSanidad = ({
           <div className="space-y-4">
             <div>
               <Label htmlFor="porcentaje_recambio">
-                Porcentaje de recambio (%){" "}
+                {t("services.recambioAgua.exchangePercentage")}{" "}
                 <span className="text-red-500">*</span>
               </Label>
               <Input
@@ -1574,10 +1858,10 @@ const FormSanidad = ({
                 type="number"
                 step="1"
                 {...register("porcentaje_recambio", {
-                  required: "El porcentaje es requerido",
+                  required: t("services.recambioAgua.percentageRequired"),
                   valueAsNumber: true,
                 })}
-                placeholder="Porcentaje (0-100)"
+                placeholder={t("services.recambioAgua.percentagePlaceholder")}
                 className={errors.porcentaje_recambio ? "border-red-500" : ""}
                 disabled={mutation.isPending}
               />
@@ -1589,13 +1873,15 @@ const FormSanidad = ({
             </div>
 
             <div>
-              <Label htmlFor="volumen_estimado">Volumen estimado (m³)</Label>
+              <Label htmlFor="volumen_estimado">
+                {t("services.recambioAgua.estimatedVolume")}
+              </Label>
               <Input
                 id="volumen_estimado"
                 type="number"
                 step="0.1"
                 {...register("volumen_estimado", { valueAsNumber: true })}
-                placeholder="Volumen en metros cúbicos"
+                placeholder={t("services.recambioAgua.volumePlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
@@ -1607,16 +1893,17 @@ const FormSanidad = ({
           <div className="space-y-4">
             <div>
               <Label htmlFor="cantidad_muestreo">
-                Cantidad muestreada <span className="text-red-500">*</span>
+                {t("services.muestreoBiometrico.sampleCount")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="cantidad_muestreo"
                 type="number"
                 {...register("cantidad_muestreo", {
-                  required: "La cantidad es requerida",
+                  required: t("services.muestreoBiometrico.countRequired"),
                   valueAsNumber: true,
                 })}
-                placeholder="Número de peces muestreados"
+                placeholder={t("services.muestreoBiometrico.countPlaceholder")}
                 className={errors.cantidad_muestreo ? "border-red-500" : ""}
                 disabled={mutation.isPending}
               />
@@ -1628,77 +1915,103 @@ const FormSanidad = ({
             </div>
 
             <div>
-              <Label htmlFor="peso_promedio">Peso promedio (g)</Label>
+              <Label htmlFor="peso_promedio">
+                {t("services.muestreoBiometrico.averageWeight")}
+              </Label>
               <Input
                 id="peso_promedio"
                 type="number"
                 step="0.1"
                 {...register("peso_promedio", { valueAsNumber: true })}
-                placeholder="Peso en gramos"
+                placeholder={t("services.muestreoBiometrico.weightPlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
 
             <div>
-              <Label htmlFor="talla_promedio">Talla promedio (cm)</Label>
+              <Label htmlFor="talla_promedio">
+                {t("services.muestreoBiometrico.averageSize")}
+              </Label>
               <Input
                 id="talla_promedio"
                 type="number"
                 step="0.1"
                 {...register("talla_promedio", { valueAsNumber: true })}
-                placeholder="Talla en centímetros"
+                placeholder={t("services.muestreoBiometrico.sizePlaceholder")}
                 disabled={mutation.isPending}
               />
             </div>
 
             <div>
-              <Label htmlFor="biomasa_estimada">Biomasa estimada (kg)</Label>
+              <Label htmlFor="biomasa_estimada">
+                {t("services.muestreoBiometrico.estimatedBiomass")}
+              </Label>
               <Input
                 id="biomasa_estimada"
                 type="number"
                 step="0.1"
                 {...register("biomasa_estimada", { valueAsNumber: true })}
-                placeholder="Biomasa total estimada"
+                placeholder={t(
+                  "services.muestreoBiometrico.biomassPlaceholder",
+                )}
                 disabled={mutation.isPending}
               />
             </div>
 
             <div>
-              <Label htmlFor="etapa_peces">Etapa de los peces</Label>
+              <Label htmlFor="etapa_peces">
+                {t("services.muestreoBiometrico.fishStage")}
+              </Label>
               <Select
                 value={watch("etapa_peces") || ""}
                 onValueChange={(value) => setValue("etapa_peces", value)}
                 disabled={mutation.isPending}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar etapa" />
+                  <SelectValue
+                    placeholder={t(
+                      "services.muestreoBiometrico.stagePlaceholder",
+                    )}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Etapas</SelectLabel>
-                    <SelectItem value="alevino">Alevino</SelectItem>
-                    <SelectItem value="juvenil">Juvenil</SelectItem>
-                    <SelectItem value="adulto">Adulto</SelectItem>
-                    <SelectItem value="reproductor">Reproductor</SelectItem>
+                    <SelectLabel>
+                      {t("services.muestreoBiometrico.stagesGroup")}
+                    </SelectLabel>
+                    <SelectItem value="alevino">
+                      {t("services.muestreoBiometrico.stages.fry")}
+                    </SelectItem>
+                    <SelectItem value="juvenil">
+                      {t("services.muestreoBiometrico.stages.juvenile")}
+                    </SelectItem>
+                    <SelectItem value="adulto">
+                      {t("services.muestreoBiometrico.stages.adult")}
+                    </SelectItem>
+                    <SelectItem value="reproductor">
+                      {t("services.muestreoBiometrico.stages.breeder")}
+                    </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
             </div>
           </div>
         );
+
       case "Sifoneo":
         return (
           <div className="space-y-4">
             <div>
               <Label htmlFor="area_sifoneo">
-                Área sifoneada <span className="text-red-500">*</span>
+                {t("services.sifoneo.siphonedArea")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="area_sifoneo"
                 {...register("area_sifoneo", {
-                  required: "El área sifoneada es requerida",
+                  required: t("services.sifoneo.areaRequired"),
                 })}
-                placeholder="Ej: Estanque 3, Piscina 5, Sector Norte"
+                placeholder={t("services.sifoneo.areaPlaceholder")}
                 className={errors.area_sifoneo ? "border-red-500" : ""}
                 disabled={isSubmitting}
               />
@@ -1711,7 +2024,8 @@ const FormSanidad = ({
 
             <div>
               <Label htmlFor="equipo_utilizado">
-                Equipo utilizado <span className="text-red-500">*</span>
+                {t("services.sifoneo.equipmentUsed")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={watch("equipo_utilizado") || ""}
@@ -1719,28 +2033,36 @@ const FormSanidad = ({
                 disabled={isSubmitting}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar equipo" />
+                  <SelectValue
+                    placeholder={t("services.sifoneo.equipmentPlaceholder")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Equipos</SelectLabel>
-                    <SelectItem value="sifon_manual">Sifón manual</SelectItem>
+                    <SelectLabel>
+                      {t("services.sifoneo.equipmentGroup")}
+                    </SelectLabel>
+                    <SelectItem value="sifon_manual">
+                      {t("services.sifoneo.equipment.manual")}
+                    </SelectItem>
                     <SelectItem value="sifon_electrico">
-                      Sifón eléctrico
+                      {t("services.sifoneo.equipment.electric")}
                     </SelectItem>
                     <SelectItem value="bomba_centrifuga">
-                      Bomba centrífuga
+                      {t("services.sifoneo.equipment.centrifugalPump")}
                     </SelectItem>
                     <SelectItem value="bomba_diafragma">
-                      Bomba de diafragma
+                      {t("services.sifoneo.equipment.diaphragmPump")}
                     </SelectItem>
                     <SelectItem value="aspiradora_fondos">
-                      Aspiradora de fondos
+                      {t("services.sifoneo.equipment.bottomVacuum")}
                     </SelectItem>
                     <SelectItem value="sifon_comercial">
-                      Sifón comercial
+                      {t("services.sifoneo.equipment.commercial")}
                     </SelectItem>
-                    <SelectItem value="otro">Otro</SelectItem>
+                    <SelectItem value="otro">
+                      {t("services.sifoneo.equipment.other")}
+                    </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -1753,21 +2075,22 @@ const FormSanidad = ({
 
             <div>
               <Label htmlFor="horas_trabajo">
-                Horas de trabajo <span className="text-red-500">*</span>
+                {t("services.sifoneo.workHours")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="horas_trabajo"
                 type="number"
                 step="0.5"
                 {...register("horas_trabajo", {
-                  required: "Las horas de trabajo son requeridas",
+                  required: t("services.sifoneo.hoursRequired"),
                   valueAsNumber: true,
                   min: {
                     value: 0.5,
-                    message: "El tiempo mínimo es 0.5 horas",
+                    message: t("services.sifoneo.minHours"),
                   },
                 })}
-                placeholder="Ej: 2.5 horas"
+                placeholder={t("services.sifoneo.hoursPlaceholder")}
                 className={errors.horas_trabajo ? "border-red-500" : ""}
                 disabled={isSubmitting}
               />
@@ -1780,7 +2103,7 @@ const FormSanidad = ({
 
             <div>
               <Label htmlFor="costo_producto_maquinaria">
-                Costo de operación ($)
+                {t("services.sifoneo.operationCost")}
               </Label>
               <Input
                 id="costo_producto_maquinaria"
@@ -1789,7 +2112,7 @@ const FormSanidad = ({
                 {...register("costo_producto_maquinaria", {
                   valueAsNumber: true,
                 })}
-                placeholder="Costo total de la operación"
+                placeholder={t("services.sifoneo.costPlaceholder")}
                 disabled={isSubmitting}
               />
             </div>
@@ -1807,7 +2130,9 @@ const FormSanidad = ({
         <Alert variant="destructive" className="mb-4">
           <AlertCircleIcon className="h-4 w-4" />
           <AlertTitle>
-            Error al {isEditing ? "actualizar" : "registrar"} la Sanidad
+            {t("alerts.errorTitle", {
+              action: isEditing ? t("alerts.update") : t("alerts.register"),
+            })}
           </AlertTitle>
           <AlertDescription className="whitespace-pre-line">
             {errorMessage}
@@ -1817,7 +2142,7 @@ const FormSanidad = ({
 
       <div>
         <Label className="text-base font-semibold">
-          Servicio de Sanidad <span className="text-red-500">*</span>
+          {t("form.healthService")} <span className="text-red-500">*</span>
         </Label>
         {errors.tipo_servicio && (
           <p className="text-sm text-red-500 mt-1">
@@ -1878,7 +2203,7 @@ const FormSanidad = ({
           })}
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          * Haz clic en una tarjeta para seleccionar el servicio
+          {t("form.serviceHint")}
         </p>
       </div>
 
@@ -1897,13 +2222,12 @@ const FormSanidad = ({
       )}
 
       <div className="border-t pt-4 mt-6">
-        <h3 className="text-lg font-semibold mb-4">Información General</h3>
+        <h3 className="text-lg font-semibold mb-4">{t("form.generalInfo")}</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2 relative" ref={dropdownRef}>
             <Label htmlFor="buscador">
-              Buscar animal, lote o galpón{" "}
-              <span className="text-red-500">*</span>
+              {t("form.searchAnimal")} <span className="text-red-500">*</span>
             </Label>
             <div className="relative">
               <div className="relative">
@@ -1921,7 +2245,7 @@ const FormSanidad = ({
                     }
                   }}
                   onFocus={() => setIsDropdownOpen(true)}
-                  placeholder="Buscar por nombre, identificación, galpón o lote..."
+                  placeholder={t("form.searchPlaceholder")}
                   className="pl-10 pr-20"
                   disabled={isSubmitting}
                 />
@@ -1952,18 +2276,18 @@ const FormSanidad = ({
               <div className="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-80 overflow-y-auto">
                 {isLoadingAnimales ? (
                   <div className="p-4 text-center text-muted-foreground">
-                    Cargando...
+                    {t("animalSearch.loading")}
                   </div>
                 ) : resultadosBusqueda.length === 0 ? (
                   <div className="p-4 text-center text-muted-foreground">
-                    No se encontraron resultados
+                    {t("animalSearch.noResults")}
                   </div>
                 ) : (
                   <>
                     {animalesIndividuales.length > 0 && (
                       <div>
                         <div className="px-3 py-2 bg-gray-50 text-xs font-semibold text-muted-foreground uppercase sticky top-0">
-                          Animales
+                          {t("animalSearch.animals")}
                         </div>
                         {animalesIndividuales.map((animal) => {
                           const info = getAnimalDisplayInfo(animal);
@@ -1987,7 +2311,8 @@ const FormSanidad = ({
                                 </div>
                               </div>
                               <Badge variant="outline" className="text-xs">
-                                {animal.especie?.nombre || "Sin especie"}
+                                {animal.especie?.nombre ||
+                                  t("animalSearch.noSpecies")}
                               </Badge>
                             </div>
                           );
@@ -1998,7 +2323,7 @@ const FormSanidad = ({
                     {lotesGalpones.length > 0 && (
                       <div>
                         <div className="px-3 py-2 bg-gray-50 text-xs font-semibold text-muted-foreground uppercase sticky top-0">
-                          Lotes y Galpones
+                          {t("animalSearch.batchesAndSheds")}
                         </div>
                         {lotesGalpones.map((animal) => {
                           const info = getAnimalDisplayInfo(animal);
@@ -2025,7 +2350,9 @@ const FormSanidad = ({
                                 </div>
                               </div>
                               <Badge variant="secondary" className="text-xs">
-                                {animal.cantidad_lote ? "Lote" : "Galpón"}
+                                {animal.cantidad_lote
+                                  ? t("animalSearch.batch")
+                                  : t("animalSearch.shed")}
                               </Badge>
                             </div>
                           );
@@ -2046,16 +2373,25 @@ const FormSanidad = ({
                     {selectedAnimal.nombre_animal ||
                       selectedAnimal.galpon ||
                       selectedAnimal.lote ||
-                      "Seleccionado"}
+                      t("animalSearch.selected")}
                   </span>
                   <span className={`text-xs ${textColor} ml-2`}>
                     {selectedAnimal.identificador &&
-                      `ID: ${selectedAnimal.identificador}`}
+                      t("animalSearch.idPrefix", {
+                        value: selectedAnimal.identificador,
+                      })}
                     {selectedAnimal.galpon &&
-                      ` • Galpón: ${selectedAnimal.galpon}`}
-                    {selectedAnimal.lote && ` • Lote: ${selectedAnimal.lote}`}
+                      t("animalSearch.shedSuffix", {
+                        value: selectedAnimal.galpon,
+                      })}
+                    {selectedAnimal.lote &&
+                      t("animalSearch.batchSuffix", {
+                        value: selectedAnimal.lote,
+                      })}
                     {selectedAnimal.cantidad_lote &&
-                      ` • ${selectedAnimal.cantidad_lote} animales`}
+                      t("animalSearch.animalsSuffix", {
+                        count: selectedAnimal.cantidad_lote,
+                      })}
                   </span>
                 </div>
                 <button
@@ -2071,14 +2407,14 @@ const FormSanidad = ({
 
           <div>
             <Label htmlFor="responsable">
-              Responsable <span className="text-red-500">*</span>
+              {t("form.responsible")} <span className="text-red-500">*</span>
             </Label>
             <Input
               id="responsable"
               {...register("responsable", {
-                required: "El responsable es requerido",
+                required: t("form.responsibleRequired"),
               })}
-              placeholder="Nombre del responsable"
+              placeholder={t("form.responsiblePlaceholder")}
               className={errors.responsable ? "border-red-500" : ""}
               disabled={isSubmitting}
             />
@@ -2091,13 +2427,13 @@ const FormSanidad = ({
 
           <div>
             <Label htmlFor="fecha_evento">
-              Fecha del evento <span className="text-red-500">*</span>
+              {t("form.eventDate")} <span className="text-red-500">*</span>
             </Label>
             <Input
               id="fecha_evento"
               type="date"
               {...register("fecha_evento", {
-                required: "La fecha es requerida",
+                required: t("form.dateRequired"),
               })}
               className={errors.fecha_evento ? "border-red-500" : ""}
               disabled={isSubmitting}
@@ -2111,7 +2447,7 @@ const FormSanidad = ({
 
           <div>
             <Label htmlFor="proxima_fecha_evento">
-              Próxima fecha del evento
+              {t("form.nextEventDate")}
             </Label>
             <Input
               id="proxima_fecha_evento"
@@ -2122,18 +2458,18 @@ const FormSanidad = ({
           </div>
 
           <div className="md:col-span-2">
-            <Label htmlFor="observaciones">Observaciones</Label>
+            <Label htmlFor="observaciones">{t("form.observations")}</Label>
             <Textarea
               id="observaciones"
               {...register("observaciones")}
-              placeholder="Observaciones adicionales"
+              placeholder={t("form.observationsPlaceholder")}
               rows={3}
               disabled={isSubmitting}
             />
           </div>
 
           <div>
-            <Label htmlFor="costo_base">Costo base ($)</Label>
+            <Label htmlFor="costo_base">{t("form.baseCost")}</Label>
             <Input
               id="costo_base"
               type="number"
@@ -2143,10 +2479,10 @@ const FormSanidad = ({
                 valueAsNumber: true,
                 min: {
                   value: 0,
-                  message: "El costo debe ser mayor o igual a 0",
+                  message: t("form.minZero"),
                 },
               })}
-              placeholder="Costo base"
+              placeholder={t("form.baseCostPlaceholder")}
               className={errors.costo_base ? "border-red-500" : ""}
               disabled={isSubmitting}
             />
@@ -2158,7 +2494,9 @@ const FormSanidad = ({
           </div>
 
           <div>
-            <Label htmlFor="precio_referencia">Precio de referencia ($)</Label>
+            <Label htmlFor="precio_referencia">
+              {t("form.referencePrice")}
+            </Label>
             <Input
               id="precio_referencia"
               type="number"
@@ -2168,10 +2506,10 @@ const FormSanidad = ({
                 valueAsNumber: true,
                 min: {
                   value: 0,
-                  message: "El precio debe ser mayor o igual a 0",
+                  message: t("form.minZero"),
                 },
               })}
-              placeholder="Precio de referencia"
+              placeholder={t("form.referencePricePlaceholder")}
               className={errors.precio_referencia ? "border-red-500" : ""}
               disabled={isSubmitting}
             />
@@ -2183,7 +2521,7 @@ const FormSanidad = ({
           </div>
 
           <div>
-            <Label htmlFor="costo_real">Costo real ($)</Label>
+            <Label htmlFor="costo_real">{t("form.realCost")}</Label>
             <Input
               id="costo_real"
               type="number"
@@ -2193,10 +2531,10 @@ const FormSanidad = ({
                 valueAsNumber: true,
                 min: {
                   value: 0,
-                  message: "El costo debe ser mayor o igual a 0",
+                  message: t("form.minZero"),
                 },
               })}
-              placeholder="Costo real"
+              placeholder={t("form.realCostPlaceholder")}
               className={errors.costo_real ? "border-red-500" : ""}
               disabled={isSubmitting}
             />
@@ -2208,7 +2546,7 @@ const FormSanidad = ({
           </div>
 
           <div>
-            <Label htmlFor="valor_estimado">Valor estimado ($)</Label>
+            <Label htmlFor="valor_estimado">{t("form.estimatedValue")}</Label>
             <Input
               id="valor_estimado"
               type="number"
@@ -2218,10 +2556,10 @@ const FormSanidad = ({
                 valueAsNumber: true,
                 min: {
                   value: 0,
-                  message: "El valor debe ser mayor o igual a 0",
+                  message: t("form.minZero"),
                 },
               })}
-              placeholder="Valor estimado"
+              placeholder={t("form.estimatedValuePlaceholder")}
               className={errors.valor_estimado ? "border-red-500" : ""}
               disabled={isSubmitting}
             />
@@ -2233,21 +2571,23 @@ const FormSanidad = ({
           </div>
 
           <div className="md:col-span-2">
-            <Label htmlFor="tratamiento_aplicado">Tratamiento aplicado</Label>
+            <Label htmlFor="tratamiento_aplicado">
+              {t("form.appliedTreatment")}
+            </Label>
             <Input
               id="tratamiento_aplicado"
               {...register("tratamiento_aplicado")}
-              placeholder="Tratamiento aplicado"
+              placeholder={t("form.appliedTreatmentPlaceholder")}
               disabled={isSubmitting}
             />
           </div>
 
           <div className="md:col-span-2">
-            <Label htmlFor="motivo">Motivo</Label>
+            <Label htmlFor="motivo">{t("form.reason")}</Label>
             <Input
               id="motivo"
               {...register("motivo")}
-              placeholder="Motivo del servicio"
+              placeholder={t("form.reasonPlaceholder")}
               disabled={isSubmitting}
             />
           </div>
@@ -2262,7 +2602,7 @@ const FormSanidad = ({
             onClick={() => onSuccess!()}
             disabled={isSubmitting}
           >
-            Cancelar
+            {t("buttons.cancel")}
           </Button>
         )}
         <Button
@@ -2273,12 +2613,12 @@ const FormSanidad = ({
           {isSubmitting ? (
             <span className="flex items-center gap-2">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              {isEditing ? "Actualizando..." : "Guardando..."}
+              {isEditing ? t("buttons.updating") : t("buttons.saving")}
             </span>
           ) : isEditing ? (
-            "Actualizar Sanidad"
+            t("buttons.update")
           ) : (
-            "Guardar Sanidad"
+            t("buttons.save")
           )}
         </Button>
       </div>

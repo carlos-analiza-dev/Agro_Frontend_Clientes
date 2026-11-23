@@ -38,6 +38,7 @@ import { EtapaAvicola } from "@/api/animales/interfaces/crear-avicola.interface"
 import { descartarAves } from "@/api/animales/accions/update-animal";
 import { format } from "date-fns";
 import Modal from "@/components/generics/Modal";
+import { useTranslations } from "next-intl";
 
 interface Props {
   animal: Animal;
@@ -61,15 +62,17 @@ const etapaIcons: Record<EtapaAvicola, React.ReactNode> = {
   [EtapaAvicola.AYUNO]: <Clock className="h-3 w-3 mr-1" />,
 };
 
-const etapaDescriptions: Record<EtapaAvicola, string> = {
-  [EtapaAvicola.RECEPCION]: "Recepción de aves",
-  [EtapaAvicola.CRIA]: "Etapa de cría",
-  [EtapaAvicola.CRECIMIENTO]: "Etapa de crecimiento",
-  [EtapaAvicola.ENGORDE]: "Etapa de engorde",
-  [EtapaAvicola.AYUNO]: "Período de ayuno",
-};
-
 const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
+  const t = useTranslations("AvicolaCard");
+
+  const etapaDescriptions: Record<EtapaAvicola, string> = {
+    [EtapaAvicola.RECEPCION]: t("etapas.recepcion"),
+    [EtapaAvicola.CRIA]: t("etapas.cria"),
+    [EtapaAvicola.CRECIMIENTO]: t("etapas.crecimiento"),
+    [EtapaAvicola.ENGORDE]: t("etapas.engorde"),
+    [EtapaAvicola.AYUNO]: t("etapas.ayuno"),
+  };
+
   const [deathDialogVisible, setDeathDialogVisible] = useState(false);
   const [deathStatus, setDeathStatus] = useState(animal.animal_muerte);
   const [deathReason, setDeathReason] = useState(animal.razon_muerte);
@@ -88,6 +91,7 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const [remainingQuantity, setRemainingQuantity] = useState<number>(
     animal.cantidad_lote || 0,
   );
+
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !animal.id) return;
@@ -100,13 +104,13 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
         if (onUpdateProfileImage) {
           await onUpdateProfileImage(imageDataUrl, animal.id);
-          toast.success("Foto de perfil actualizada exitosamente");
+          toast.success(t("messages.profileImageUpdated"));
           queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
         }
       };
       reader.readAsDataURL(file);
     } catch (error) {
-      toast.error("No se pudo actualizar la imagen de perfil");
+      toast.error(t("messages.profileImageUpdateError"));
       setLocalImage(null);
     }
   };
@@ -120,14 +124,14 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const handleDeleteImage = async (imageId: string) => {
     try {
       await eliminarImagenAnimal(imageId);
-      toast.success("Foto eliminada correctamente");
+      toast.success(t("messages.imageDeleted"));
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
       setGalleryVisible(false);
     } catch (error) {
       if (isAxiosError(error)) {
         toast.error(
           error.response?.data?.message ||
-            "Error al eliminar la foto de perfil del animal",
+            t("messages.profileImageDeleteError"),
         );
       }
     }
@@ -136,20 +140,21 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const handleDeathStatusUpdate = async () => {
     try {
       if (deathQuantity <= 0) {
-        toast.error("Debe ingresar una cantidad válida de aves fallecidas");
+        toast.error(t("validation.validDeathQuantity"));
         return;
       }
 
       if (!deathReason || deathReason.trim() === "" || deathReason === "N/D") {
-        toast.error(
-          "Debe ingresar una razón de muerte válida (no puede estar vacía o ser 'N/D')",
-        );
+        toast.error(t("validation.validDeathReason"));
         return;
       }
 
       if (deathQuantity > remainingQuantity) {
         toast.error(
-          `La cantidad de aves fallecidas (${deathQuantity}) excede la cantidad disponible (${remainingQuantity})`,
+          t("validation.deathQuantityExceeds", {
+            quantity: deathQuantity,
+            available: remainingQuantity,
+          }),
         );
         return;
       }
@@ -165,11 +170,14 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
       if (isCompleteDeath) {
         toast.success(
-          `Lote completamente finalizado. Se registraron ${deathQuantity} aves fallecidas.`,
+          t("messages.batchCompletedDeath", { quantity: deathQuantity }),
         );
       } else {
         toast.success(
-          `Se registraron ${deathQuantity} aves fallecidas. Quedan ${remainingQuantity - deathQuantity} aves activas en el lote.`,
+          t("messages.deathRegistered", {
+            quantity: deathQuantity,
+            remaining: remainingQuantity - deathQuantity,
+          }),
         );
       }
 
@@ -190,11 +198,11 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al registrar la mortalidad";
+            : t("messages.mortalityRegisterError");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Contacte al administrador");
+        toast.error(t("messages.contactAdmin"));
       }
     }
   };
@@ -202,12 +210,12 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const handleDiscardAnimal = async () => {
     try {
       if (discardQuantity <= 0) {
-        toast.error("Debe ingresar una cantidad válida de aves a descartar");
+        toast.error(t("validation.validDiscardQuantity"));
         return;
       }
 
       if (!discardReason || discardReason.trim() === "") {
-        toast.error("Debe ingresar una razón de descarte válida");
+        toast.error(t("validation.validDiscardReason"));
         return;
       }
 
@@ -224,16 +232,13 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
       });
 
       if (isCompleteDiscard) {
-        toast("Lote descartado exitosamente");
+        toast(t("messages.batchDiscarded"));
       } else {
-        toast(
-          `Se han descartado ${discardQuantity} aves del lote exitosamente`,
-        );
+        toast(t("messages.birdsDiscarded", { quantity: discardQuantity }));
       }
       queryClient.invalidateQueries({
         queryKey: ["animales-propietario", animal.propietario.id],
       });
-      setDiscardDialogVisible(false);
       setDiscardDialogVisible(false);
       setDiscardQuantity(0);
       setDiscardReason("");
@@ -244,11 +249,11 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al descartar el lote";
+            : t("messages.discardError");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Contacte al administrador");
+        toast.error(t("messages.contactAdmin"));
       }
     }
   };
@@ -277,16 +282,16 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 {animal.identificador.toUpperCase()}
                 <Badge className="bg-amber-500 hover:bg-amber-600 text-xs">
                   <Egg className="h-3 w-3 mr-1" />
-                  Lote
+                  {t("labels.batch")}
                 </Badge>
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                {animal.especie?.nombre || "Aves"} -{" "}
+                {animal.especie?.nombre || t("labels.birds")} -{" "}
                 {animal.razas?.length === 1
                   ? animal.razas[0].nombre
                   : animal.razas?.length > 1
-                    ? "Encaste"
-                    : "Sin raza"}
+                    ? t("labels.crossbreed")
+                    : t("labels.noBreed")}
               </p>
               {animal.tipo_ave && (
                 <p className="text-xs text-amber-600 dark:text-amber-400">
@@ -316,7 +321,7 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <Button
               variant="outline"
               size="icon"
-              title="Descartar Animal"
+              title={t("tooltips.discardAnimal")}
               className="h-8 w-8 rounded-full"
               onClick={() => setDiscardDialogVisible(true)}
             >
@@ -325,7 +330,7 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <Button
               variant="outline"
               size="icon"
-              title="Subir Foto"
+              title={t("tooltips.uploadPhoto")}
               className="h-8 w-8 rounded-full border-amber-300 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-amber-900"
               onClick={() => fileInputRef.current?.click()}
             >
@@ -349,7 +354,7 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <div className="flex items-center gap-2 flex-1">
                   <TrendingUp className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                   <span className="text-xs font-medium text-amber-700 dark:text-amber-400">
-                    Etapa Actual:
+                    {t("labels.currentStage")}
                   </span>
                   <Badge
                     className={`${etapaColors[etapaActual] || "bg-amber-500"} text-white text-xs px-3 py-1`}
@@ -361,7 +366,7 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <div className="flex items-center gap-1">
                   <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></div>
                   <span className="text-[10px] text-muted-foreground">
-                    Activo
+                    {t("labels.active")}
                   </span>
                 </div>
               </div>
@@ -374,9 +379,11 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <div className="flex items-center gap-2 col-span-2 bg-amber-50 dark:bg-amber-950/30 p-2 rounded-lg">
                   <Package className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                   <span className="text-sm">
-                    <span className="font-semibold">Cantidad:</span>{" "}
+                    <span className="font-semibold">
+                      {t("labels.quantity")}
+                    </span>{" "}
                     <Badge className="bg-amber-500 hover:bg-amber-600">
-                      {animal.cantidad_lote} aves
+                      {t("labels.birdsCount", { count: animal.cantidad_lote })}
                     </Badge>
                   </span>
                 </div>
@@ -386,7 +393,8 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2 col-span-2">
                 <Building2 className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
                 <span className="text-xs">
-                  <span className="font-medium">Galpón:</span> {animal.galpon}
+                  <span className="font-medium">{t("labels.shed")}</span>{" "}
+                  {animal.galpon}
                 </span>
               </div>
             )}
@@ -395,7 +403,7 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2 col-span-2">
                 <Store className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
                 <span className="text-xs">
-                  <span className="font-medium">Proveedor:</span>{" "}
+                  <span className="font-medium">{t("labels.supplier")}</span>{" "}
                   {animal.proveedor_aves}
                 </span>
               </div>
@@ -408,7 +416,7 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <div className="flex items-center gap-2">
               <Droplets className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
               <span className="text-xs font-medium text-amber-700 dark:text-amber-400">
-                Alimentación
+                {t("labels.feeding")}
               </span>
             </div>
 
@@ -417,7 +425,9 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <div className="flex items-center gap-2">
                   <Droplets className="h-3 w-3 text-amber-600 dark:text-amber-400" />
                   <span className="text-xs">
-                    <span className="font-medium">Consumo:</span>{" "}
+                    <span className="font-medium">
+                      {t("labels.consumption")}
+                    </span>{" "}
                     {animal.consumo_alimento}
                   </span>
                 </div>
@@ -427,7 +437,9 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <div className="flex items-center gap-2">
                   <Pill className="h-3 w-3 text-amber-600 dark:text-amber-400" />
                   <span className="text-xs">
-                    <span className="font-medium">Concentrado:</span>{" "}
+                    <span className="font-medium">
+                      {t("labels.concentrate")}
+                    </span>{" "}
                     {animal.tipo_concentrado}
                   </span>
                 </div>
@@ -437,7 +449,7 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <div className="flex items-center gap-2 col-span-2">
                   <Droplets className="h-3 w-3 text-blue-500" />
                   <span className="text-xs">
-                    <span className="font-medium">Agua:</span>{" "}
+                    <span className="font-medium">{t("labels.water")}</span>{" "}
                     {animal.consumo_agua}
                   </span>
                 </div>
@@ -457,7 +469,7 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2">
                 <Egg className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
                 <span className="text-xs font-medium text-amber-700 dark:text-amber-400">
-                  Producción
+                  {t("labels.production")}
                 </span>
               </div>
 
@@ -467,7 +479,9 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     <div className="flex items-center gap-2">
                       <Egg className="h-3 w-3 text-amber-600 dark:text-amber-400" />
                       <span className="text-xs">
-                        <span className="font-medium">Huevos/día:</span>{" "}
+                        <span className="font-medium">
+                          {t("labels.eggsPerDay")}
+                        </span>{" "}
                         {animal.huevos_diarios}
                       </span>
                     </div>
@@ -478,7 +492,9 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     <div className="flex items-center gap-2">
                       <AlertCircle className="h-3 w-3 text-red-500" />
                       <span className="text-xs">
-                        <span className="font-medium">Rotos:</span>{" "}
+                        <span className="font-medium">
+                          {t("labels.broken")}
+                        </span>{" "}
                         <Badge variant="destructive" className="text-xs">
                           {animal.huevos_rotos}
                         </Badge>
@@ -490,7 +506,7 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                   <div className="flex items-center gap-2">
                     <Egg className="h-3 w-3 text-amber-600 dark:text-amber-400" />
                     <span className="text-xs">
-                      <span className="font-medium">Calificación:</span>{" "}
+                      <span className="font-medium">{t("labels.grading")}</span>{" "}
                       {animal.calificacion_huevos}
                     </span>
                   </div>
@@ -500,7 +516,9 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                   <div className="flex items-center gap-2">
                     <Percent className="h-3 w-3 text-amber-600 dark:text-amber-400" />
                     <span className="text-xs">
-                      <span className="font-medium">% Postura:</span>{" "}
+                      <span className="font-medium">
+                        {t("labels.layingPercentage")}
+                      </span>{" "}
                       {animal.porcentaje_postura}%
                     </span>
                   </div>
@@ -510,7 +528,9 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                   <div className="flex items-center gap-2 col-span-2">
                     <Calendar className="h-3 w-3 text-amber-600 dark:text-amber-400" />
                     <span className="text-xs">
-                      <span className="font-medium">Fecha Postura:</span>{" "}
+                      <span className="font-medium">
+                        {t("labels.layingDate")}
+                      </span>{" "}
                       {new Date(animal.fecha_postura).toLocaleDateString()}
                     </span>
                   </div>
@@ -527,7 +547,7 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2">
                 <Syringe className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
                 <span className="text-xs font-medium text-amber-700 dark:text-amber-400">
-                  Sanidad
+                  {t("labels.health")}
                 </span>
               </div>
 
@@ -537,7 +557,9 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     <div className="flex items-center gap-2">
                       <Syringe className="h-3 w-3 text-amber-600 dark:text-amber-400" />
                       <span className="text-xs">
-                        <span className="font-medium">Vacunas:</span>{" "}
+                        <span className="font-medium">
+                          {t("labels.vaccines")}
+                        </span>{" "}
                         {animal.vacunas_lote}
                       </span>
                     </div>
@@ -547,7 +569,9 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                   <div className="flex items-center gap-2">
                     <Pill className="h-3 w-3 text-amber-600 dark:text-amber-400" />
                     <span className="text-xs">
-                      <span className="font-medium">Tratamientos:</span>{" "}
+                      <span className="font-medium">
+                        {t("labels.treatments")}
+                      </span>{" "}
                       {animal.tratamientos}
                     </span>
                   </div>
@@ -564,9 +588,13 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <div className="flex items-center gap-2 bg-red-50 dark:bg-red-950/30 p-2 rounded-lg">
                   <AlertCircle className="h-4 w-4 text-red-500" />
                   <span className="text-xs text-red-700 dark:text-red-400">
-                    <span className="font-medium">Mortalidad Diaria:</span>{" "}
+                    <span className="font-medium">
+                      {t("labels.dailyMortality")}
+                    </span>{" "}
                     <Badge variant="destructive" className="text-xs">
-                      {animal.mortalidad_diaria} aves
+                      {t("labels.birdsCount", {
+                        count: animal.mortalidad_diaria,
+                      })}
                     </Badge>
                   </span>
                 </div>
@@ -579,7 +607,9 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-950/30 p-2 rounded-lg">
                 <Weight className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 <span className="text-xs">
-                  <span className="font-medium">Peso Promedio:</span>{" "}
+                  <span className="font-medium">
+                    {t("labels.averageWeight")}
+                  </span>{" "}
                   {animal.peso_promedio} kg
                 </span>
               </div>
@@ -593,7 +623,9 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2">
                 <Package className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
                 <span className="text-xs">
-                  <span className="font-medium">Producción:</span>{" "}
+                  <span className="font-medium">
+                    {t("labels.productionType")}
+                  </span>{" "}
                   {animal.tipo_produccion}
                 </span>
               </div>
@@ -602,7 +634,7 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <div className="flex items-center gap-2 col-span-2">
               <Building2 className="h-3.5 w-3.5 text-gray-500" />
               <span className="text-xs text-muted-foreground">
-                {animal.finca?.nombre_finca || "Sin finca"}
+                {animal.finca?.nombre_finca || t("labels.noFarm")}
               </span>
             </div>
           </div>
@@ -613,7 +645,7 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               onClick={onEdit}
             >
               <Egg className="h-4 w-4 mr-2" />
-              Editar Lote
+              {t("buttons.editBatch")}
             </Button>
           </div>
         </CardContent>
@@ -629,13 +661,15 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
       <Modal
         open={deathDialogVisible}
         onOpenChange={setDeathDialogVisible}
-        title="Registrar mortalidad en el lote"
-        description="Registre la cantidad de aves que han fallecido y la razón."
+        title={t("deathModal.title")}
+        description={t("deathModal.description")}
         showCloseButton={false}
       >
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="death-quantity">Cantidad de aves fallecidas</Label>
+            <Label htmlFor="death-quantity">
+              {t("deathModal.deathQuantity")}
+            </Label>
             <Input
               id="death-quantity"
               type="number"
@@ -646,27 +680,29 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 const value = parseInt(e.target.value) || 0;
                 setDeathQuantity(Math.min(value, remainingQuantity));
               }}
-              placeholder="Ingrese la cantidad de aves"
+              placeholder={t("deathModal.deathQuantityPlaceholder")}
             />
             <p className="text-xs text-muted-foreground">
-              Cantidad disponible en el lote: {remainingQuantity} aves
+              {t("deathModal.availableQuantity", {
+                quantity: remainingQuantity,
+              })}
             </p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="death-reason">Razón de la muerte *</Label>
+            <Label htmlFor="death-reason">{t("deathModal.deathReason")}</Label>
             <Input
               id="death-reason"
               value={deathReason}
               onChange={(e) => setDeathReason(e.target.value)}
-              placeholder="Ej: Enfermedad, Accidentes, etc."
+              placeholder={t("deathModal.deathReasonPlaceholder")}
             />
           </div>
 
           {remainingQuantity - deathQuantity === 0 && (
             <div className="bg-red-50 border border-red-200 rounded-md p-3">
               <p className="text-sm text-red-800 font-medium">
-                ⚠️ Esta acción marcará todo el lote como finalizado
+                ⚠️ {t("deathModal.warningComplete")}
               </p>
             </div>
           )}
@@ -674,8 +710,10 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           {deathQuantity > 0 && remainingQuantity - deathQuantity > 0 && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
               <p className="text-sm text-yellow-800">
-                💡 Quedarán {remainingQuantity - deathQuantity} aves activas en
-                el lote
+                💡{" "}
+                {t("deathModal.warningRemaining", {
+                  quantity: remainingQuantity - deathQuantity,
+                })}
               </p>
             </div>
           )}
@@ -691,20 +729,20 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               setDeathStatus(false);
             }}
           >
-            Cancelar
+            {t("buttons.cancel")}
           </Button>
           <Button
             onClick={handleDeathStatusUpdate}
             disabled={deathQuantity <= 0 || !deathReason}
           >
-            Registrar Mortalidad
+            {t("buttons.registerMortality")}
           </Button>
         </div>
       </Modal>
 
       <Modal
-        title="Descartar aves del lote"
-        description="Registre la cantidad de aves a descartar y la razón."
+        title={t("discardModal.title")}
+        description={t("discardModal.description")}
         open={discardDialogVisible}
         onOpenChange={setDiscardDialogVisible}
         showCloseButton={false}
@@ -712,7 +750,7 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <Label htmlFor="discard-quantity">
-              Cantidad de aves a descartar
+              {t("discardModal.discardQuantity")}
             </Label>
             <Input
               id="discard-quantity"
@@ -724,27 +762,31 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 const value = parseInt(e.target.value) || 0;
                 setDiscardQuantity(Math.min(value, remainingQuantity));
               }}
-              placeholder="Ingrese la cantidad de aves"
+              placeholder={t("discardModal.discardQuantityPlaceholder")}
             />
             <p className="text-xs text-muted-foreground">
-              Cantidad disponible en el lote: {remainingQuantity} aves
+              {t("deathModal.availableQuantity", {
+                quantity: remainingQuantity,
+              })}
             </p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="discard-reason">Razón del descarte *</Label>
+            <Label htmlFor="discard-reason">
+              {t("discardModal.discardReason")}
+            </Label>
             <Input
               id="discard-reason"
               value={discardReason}
               onChange={(e) => setDiscardReason(e.target.value)}
-              placeholder="Ej: Venta, Traslado, Baja calidad, etc."
+              placeholder={t("discardModal.discardReasonPlaceholder")}
             />
           </div>
 
           {remainingQuantity - discardQuantity === 0 && (
             <div className="bg-red-50 border border-red-200 rounded-md p-3">
               <p className="text-sm text-red-800 font-medium">
-                ⚠️ Esta acción descartará todo el lote
+                ⚠️ {t("discardModal.warningComplete")}
               </p>
             </div>
           )}
@@ -752,8 +794,10 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           {discardQuantity > 0 && remainingQuantity - discardQuantity > 0 && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
               <p className="text-sm text-yellow-800">
-                💡 Quedarán {remainingQuantity - discardQuantity} aves activas
-                en el lote
+                💡{" "}
+                {t("discardModal.warningRemaining", {
+                  quantity: remainingQuantity - discardQuantity,
+                })}
               </p>
             </div>
           )}
@@ -768,14 +812,14 @@ const AvicolaCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               setDiscardReason("");
             }}
           >
-            Cancelar
+            {t("buttons.cancel")}
           </Button>
           <Button
             variant="destructive"
             onClick={handleDiscardAnimal}
             disabled={discardQuantity <= 0 || !discardReason}
           >
-            Descartar {discardQuantity} aves
+            {t("buttons.discardCount", { quantity: discardQuantity })}
           </Button>
         </div>
       </Modal>

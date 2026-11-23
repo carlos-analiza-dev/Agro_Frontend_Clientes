@@ -30,6 +30,7 @@ import { ChevronDown, Edit, Trash2, AlertCircle, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 interface Props {
   paginatedData: Sanidad[];
@@ -48,8 +49,11 @@ const TableResumenSanidad = ({
   acciones,
   isMobile,
 }: Props) => {
+  const t = useTranslations("tableResumenSanidad");
+
   const rounter = useRouter();
   const queryClient = useQueryClient();
+
   const [openDelete, setOpenDelete] = useState(false);
   const [selectedSanidad, setSelectedSanidad] = useState<Sanidad | null>(null);
 
@@ -59,9 +63,12 @@ const TableResumenSanidad = ({
       queryClient.invalidateQueries({ queryKey: ["sanidad-animal"] });
       queryClient.invalidateQueries({ queryKey: ["costos-mensuales-sanidad"] });
       queryClient.invalidateQueries({ queryKey: ["sanidad-eliminados"] });
-      toast.success("Evento eliminado con éxito");
+
+      toast.success(t("messages.deleteSuccess"));
+
       setOpenDelete(false);
       setSelectedSanidad(null);
+
       if (onDeleteSuccess) {
         onDeleteSuccess();
       }
@@ -69,14 +76,16 @@ const TableResumenSanidad = ({
     onError: (error) => {
       if (isAxiosError(error)) {
         const messages = error.response?.data?.message;
+
         const errorMessage = Array.isArray(messages)
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al eliminar el evento";
+            : t("errors.deleteEvent");
+
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("errors.unexpected"));
       }
     },
   });
@@ -107,7 +116,7 @@ const TableResumenSanidad = ({
         <div className="space-y-4">
           {paginatedData.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground border rounded-lg">
-              No hay registros para mostrar
+              {t("empty")}
             </div>
           ) : (
             paginatedData.map((item) => {
@@ -133,6 +142,7 @@ const TableResumenSanidad = ({
                             variant="ghost"
                             size="icon"
                             disabled={mutation.isPending}
+                            aria-label={t("actions.openMenu")}
                           >
                             <ChevronDown className="h-4 w-4" />
                           </Button>
@@ -143,7 +153,7 @@ const TableResumenSanidad = ({
                             onClick={() => handleEditSanidadMobil(item.id)}
                           >
                             <Edit className="mr-2 h-4 w-4" />
-                            Editar
+                            {t("actions.edit")}
                           </DropdownMenuItem>
 
                           <DropdownMenuItem
@@ -151,7 +161,7 @@ const TableResumenSanidad = ({
                             className="text-red-600"
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Eliminar
+                            {t("actions.delete")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -161,49 +171,57 @@ const TableResumenSanidad = ({
                   <div className="mt-4 space-y-3 text-sm">
                     <div>
                       <p className="text-muted-foreground">
-                        Animal / Galpón / Lote
+                        {t("labels.animalLocation")}
                       </p>
+
                       <p className="font-medium">
                         {item.animal?.nombre_animal ||
                           item.animal?.galpon ||
                           item.animal?.lote ||
-                          "N/A"}
+                          t("values.notAvailable")}
                       </p>
 
                       <p className="text-xs text-muted-foreground">
                         {item.animal?.identificador
-                          ? `ID: ${item.animal.identificador}`
+                          ? `${t("labels.id")}: ${item.animal.identificador}`
                           : item.animal?.galpon
-                            ? `Galpón: ${item.animal.galpon}`
+                            ? `${t("labels.poultryHouse")}: ${item.animal.galpon}`
                             : item.animal?.lote
-                              ? `Lote: ${item.animal.lote}`
-                              : "Sin identificación"}
+                              ? `${t("labels.batch")}: ${item.animal.lote}`
+                              : t("values.noIdentification")}
                       </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <p className="text-muted-foreground">Fecha</p>
+                        <p className="text-muted-foreground">
+                          {t("labels.date")}
+                        </p>
                         <p>{formatDate(item.fecha_evento)}</p>
                       </div>
 
                       <div>
-                        <p className="text-muted-foreground">Próxima</p>
+                        <p className="text-muted-foreground">
+                          {t("labels.nextDate")}
+                        </p>
                         <p>
-                          {" "}
                           {item.proxima_fecha_evento
                             ? formatDate(item.proxima_fecha_evento)
-                            : "N/D"}
+                            : t("values.notDefined")}
                         </p>
                       </div>
 
                       <div>
-                        <p className="text-muted-foreground">Responsable</p>
-                        <p>{item.responsable || "N/A"}</p>
+                        <p className="text-muted-foreground">
+                          {t("labels.responsible")}
+                        </p>
+                        <p>{item.responsable || t("values.notAvailable")}</p>
                       </div>
 
                       <div>
-                        <p className="text-muted-foreground">Costo</p>
+                        <p className="text-muted-foreground">
+                          {t("labels.cost")}
+                        </p>
 
                         {item.costo_real ? (
                           <p className="font-semibold">
@@ -226,14 +244,17 @@ const TableResumenSanidad = ({
           <Table className="min-w-[900px]">
             <TableHeader>
               <TableRow>
-                <TableHead>Servicio</TableHead>
-                <TableHead>Animal/Galpón/Lote</TableHead>
-                <TableHead>Fecha</TableHead>
-                <TableHead>Próxima fecha</TableHead>
-                <TableHead>Responsable</TableHead>
-                <TableHead>Costo real</TableHead>
+                <TableHead>{t("columns.service")}</TableHead>
+                <TableHead>{t("columns.animalLocation")}</TableHead>
+                <TableHead>{t("columns.date")}</TableHead>
+                <TableHead>{t("columns.nextDate")}</TableHead>
+                <TableHead>{t("columns.responsible")}</TableHead>
+                <TableHead>{t("columns.actualCost")}</TableHead>
+
                 {acciones && (
-                  <TableHead className="text-right">Acciones</TableHead>
+                  <TableHead className="text-right">
+                    {t("columns.actions")}
+                  </TableHead>
                 )}
               </TableRow>
             </TableHeader>
@@ -245,7 +266,7 @@ const TableResumenSanidad = ({
                     colSpan={7}
                     className="text-center py-8 text-muted-foreground"
                   >
-                    No hay registros para mostrar
+                    {t("empty")}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -269,17 +290,17 @@ const TableResumenSanidad = ({
                             {item.animal?.nombre_animal ||
                               item.animal?.galpon ||
                               item.animal?.lote ||
-                              "N/A"}
+                              t("values.notAvailable")}
                           </div>
 
                           <div className="text-xs text-muted-foreground">
                             {item.animal?.identificador
-                              ? `ID: ${item.animal.identificador}`
+                              ? `${t("labels.id")}: ${item.animal.identificador}`
                               : item.animal?.galpon
-                                ? `Galpón: ${item.animal.galpon}`
+                                ? `${t("labels.poultryHouse")}: ${item.animal.galpon}`
                                 : item.animal?.lote
-                                  ? `Lote: ${item.animal.lote}`
-                                  : "Sin identificación"}
+                                  ? `${t("labels.batch")}: ${item.animal.lote}`
+                                  : t("values.noIdentification")}
                           </div>
                         </div>
                       </TableCell>
@@ -289,10 +310,12 @@ const TableResumenSanidad = ({
                       <TableCell>
                         {item.proxima_fecha_evento
                           ? formatDate(item.proxima_fecha_evento)
-                          : "N/D"}
+                          : t("values.notDefined")}
                       </TableCell>
 
-                      <TableCell>{item.responsable || "N/A"}</TableCell>
+                      <TableCell>
+                        {item.responsable || t("values.notAvailable")}
+                      </TableCell>
 
                       <TableCell>
                         {item.costo_real ? (
@@ -313,6 +336,7 @@ const TableResumenSanidad = ({
                                 variant="ghost"
                                 size="sm"
                                 disabled={mutation.isPending}
+                                aria-label={t("actions.openMenu")}
                               >
                                 <ChevronDown className="h-4 w-4" />
                               </Button>
@@ -323,7 +347,7 @@ const TableResumenSanidad = ({
                                 onClick={() => handleEditSanidad(item)}
                               >
                                 <Edit className="mr-2 h-4 w-4" />
-                                Editar
+                                {t("actions.edit")}
                               </DropdownMenuItem>
 
                               <DropdownMenuItem
@@ -331,7 +355,7 @@ const TableResumenSanidad = ({
                                 className="text-red-600"
                               >
                                 <Trash2 className="mr-2 h-4 w-4" />
-                                Eliminar
+                                {t("actions.delete")}
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
@@ -354,8 +378,10 @@ const TableResumenSanidad = ({
             if (!open) setSelectedSanidad(null);
           }
         }}
-        title="Eliminar evento sanitario"
-        description={`¿Estás seguro que deseas eliminar el evento de ${selectedSanidad?.tipo_servicio}?`}
+        title={t("delete.title")}
+        description={t("delete.description", {
+          service: selectedSanidad?.tipo_servicio || "",
+        })}
         size="md"
         height="auto"
         showCloseButton={false}
@@ -365,23 +391,30 @@ const TableResumenSanidad = ({
             <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
               <div className="flex items-start gap-3">
                 <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
+
                 <div>
                   <p className="text-sm font-medium text-yellow-800">
-                    Evento: {selectedSanidad.tipo_servicio}
+                    {t("delete.event", {
+                      service: selectedSanidad.tipo_servicio,
+                    })}
                   </p>
+
                   <p className="text-sm text-yellow-700">
-                    Animal/Galpon/Lote:{" "}
+                    {t("delete.animalLocation")}:{" "}
                     {selectedSanidad.animal?.identificador ||
                       selectedSanidad.animal?.galpon ||
                       selectedSanidad.animal?.lote ||
-                      "N/A"}
+                      t("values.notAvailable")}
                   </p>
+
                   <p className="text-sm text-yellow-700">
-                    Fecha: {formatDate(selectedSanidad.fecha_evento)}
+                    {t("labels.date")}:{" "}
+                    {formatDate(selectedSanidad.fecha_evento)}
                   </p>
+
                   {selectedSanidad.costo_real && (
                     <p className="text-sm text-yellow-700">
-                      Costo: {moneda}
+                      {t("labels.cost")}: {moneda}
                       {parseFloat(selectedSanidad.costo_real).toFixed(2)}
                     </p>
                   )}
@@ -396,8 +429,9 @@ const TableResumenSanidad = ({
               onClick={closeDeleteModal}
               disabled={mutation.isPending}
             >
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
+
             <Button
               className="bg-red-600 hover:bg-red-700"
               onClick={handleDeleteEvento}
@@ -406,12 +440,12 @@ const TableResumenSanidad = ({
               {mutation.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Eliminando...
+                  {t("buttons.deleting")}
                 </>
               ) : (
                 <>
                   <Trash2 className="h-4 w-4 mr-2" />
-                  Eliminar
+                  {t("actions.delete")}
                 </>
               )}
             </Button>

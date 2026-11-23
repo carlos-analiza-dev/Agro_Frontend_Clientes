@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
@@ -26,7 +25,6 @@ import {
   AlertCircle,
   Package,
   TrendingUp,
-  Clock,
   PiggyBank,
   Scale,
   CalendarDays,
@@ -44,6 +42,7 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { descartarAnimal } from "@/api/animales/accions/update-animal";
 import Modal from "@/components/generics/Modal";
+import { useTranslations } from "next-intl";
 
 interface Props {
   animal: Animal;
@@ -52,6 +51,7 @@ interface Props {
 }
 
 const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
+  const t = useTranslations("PorcinoCard");
   const [deathDialogVisible, setDeathDialogVisible] = useState(false);
   const [deathStatus, setDeathStatus] = useState(animal.animal_muerte);
   const [deathReason, setDeathReason] = useState(animal.razon_muerte);
@@ -76,13 +76,13 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
         if (onUpdateProfileImage) {
           await onUpdateProfileImage(imageDataUrl, animal.id);
-          toast.success("Foto de perfil actualizada exitosamente");
+          toast.success(t("messages.profileImageUpdated"));
           queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
         }
       };
       reader.readAsDataURL(file);
     } catch (error) {
-      toast.error("No se pudo actualizar la imagen de perfil");
+      toast.error(t("messages.profileImageUpdateError"));
       setLocalImage(null);
     }
   };
@@ -96,14 +96,14 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const handleDeleteImage = async (imageId: string) => {
     try {
       await eliminarImagenAnimal(imageId);
-      toast.success("Foto eliminada correctamente");
+      toast.success(t("messages.imageDeleted"));
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
       setGalleryVisible(false);
     } catch (error) {
       if (isAxiosError(error)) {
         toast.error(
           error.response?.data?.message ||
-            "Error al eliminar la foto de perfil del animal",
+            t("messages.profileImageDeleteError"),
         );
       }
     }
@@ -115,9 +115,7 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
         deathStatus &&
         (!deathReason || deathReason.trim() === "" || deathReason === "N/D")
       ) {
-        toast.error(
-          "Debe ingresar una razón de muerte válida (no puede estar vacía o ser 'N/D')",
-        );
+        toast.error(t("validation.deathReasonRequired"));
         return;
       }
 
@@ -130,8 +128,8 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
       toast.success(
         deathStatus
-          ? "Porcino marcado como finalizado"
-          : "Porcino marcado como activo",
+          ? t("messages.markedAsFinished")
+          : t("messages.markedAsActive"),
       );
 
       queryClient.invalidateQueries({
@@ -145,11 +143,11 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar el estado";
+            : t("messages.updateStatusError");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Contacte al administrador");
+        toast.error(t("messages.contactAdmin"));
       }
     }
   };
@@ -157,7 +155,7 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const handleDiscardAnimal = async () => {
     try {
       if (!discardReason || discardReason.trim() === "") {
-        toast.error("Debe ingresar una razón de descarte válida");
+        toast.error(t("validation.discardReasonRequired"));
         return;
       }
 
@@ -168,7 +166,7 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
         cantidad: 1,
       });
 
-      toast("Animal descartado exitosamente");
+      toast(t("messages.discardedSuccess"));
       queryClient.invalidateQueries({
         queryKey: ["animales-propietario", animal.propietario.id],
       });
@@ -181,11 +179,11 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al descartar el animal";
+            : t("messages.discardError");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Contacte al administrador");
+        toast.error(t("messages.contactAdmin"));
       }
     }
   };
@@ -210,13 +208,22 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
       Reproducción: <Heart className="h-3 w-3 mr-1" />,
     };
 
+    const etapaKeyMap: Record<string, string> = {
+      Lactancia: "lactancia",
+      Destete: "destete",
+      Recría: "recria",
+      Engorde: "engorde",
+      Reproducción: "reproduccion",
+    };
+    const etapaKey = etapaKeyMap[etapa];
+    const label = etapaKey ? t(`etapas.${etapaKey}`) : etapa;
+
     return {
       color: colors[etapa] || "bg-amber-500",
       icon: icons[etapa] || <PiggyBank className="h-3 w-3 mr-1" />,
-      label: etapa,
+      label,
     };
   };
-
   const etapaInfo = getEtapaPorcinoBadge();
 
   return (
@@ -243,16 +250,16 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 {animal.identificador.toUpperCase()}
                 <Badge className="bg-pink-500 hover:bg-pink-600 text-xs">
                   <PiggyBank className="h-3 w-3 mr-1" />
-                  Porcino
+                  {t("labels.pig")}
                 </Badge>
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                {animal.especie?.nombre || "Porcino"} -{" "}
+                {animal.especie?.nombre || t("labels.pig")} -{" "}
                 {animal.razas?.length === 1
                   ? animal.razas[0].nombre
                   : animal.razas?.length > 1
-                    ? "Encaste"
-                    : "Sin raza"}
+                    ? t("labels.crossbreed")
+                    : t("labels.noBreed")}
               </p>
             </div>
           </div>
@@ -277,7 +284,7 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <Button
               variant="outline"
               size="icon"
-              title="Subir Foto"
+              title={t("tooltips.discardAnimal")}
               className="h-8 w-8 rounded-full border-pink-300 dark:border-pink-700 hover:bg-pink-100 dark:hover:bg-pink-900"
               onClick={() => setDiscardDialogVisible(true)}
             >
@@ -286,7 +293,7 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <Button
               variant="outline"
               size="icon"
-              title="Subir Foto"
+              title={t("tooltips.uploadPhoto")}
               className="h-8 w-8 rounded-full border-pink-300 dark:border-pink-700 hover:bg-pink-100 dark:hover:bg-pink-900"
               onClick={() => fileInputRef.current?.click()}
             >
@@ -304,14 +311,13 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
         </CardHeader>
 
         <CardContent className="p-4 pt-3">
-          {/* Etapa del Porcino */}
           {etapaInfo && (
             <div className="mb-3">
               <div className="flex items-center gap-2 bg-gradient-to-r from-pink-50 to-rose-50 dark:from-pink-950/30 dark:to-rose-950/20 p-2 rounded-lg border border-pink-200 dark:border-pink-800">
                 <div className="flex items-center gap-2 flex-1">
                   <TrendingUp className="h-4 w-4 text-pink-600 dark:text-pink-400" />
                   <span className="text-xs font-medium text-pink-700 dark:text-pink-400">
-                    Etapa Actual:
+                    {t("labels.currentStage")}
                   </span>
                   <Badge
                     className={`${etapaInfo.color} text-white text-xs px-3 py-1`}
@@ -323,7 +329,9 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <div className="flex items-center gap-1">
                   <div className="w-2 h-2 rounded-full bg-pink-400 animate-pulse"></div>
                   <span className="text-[10px] text-muted-foreground">
-                    {animal.cuarentena_porcino ? "En Cuarentena" : "Activo"}
+                    {animal.cuarentena_porcino
+                      ? t("labels.inQuarantine")
+                      : t("labels.active")}
                   </span>
                 </div>
               </div>
@@ -337,12 +345,16 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <div className="flex items-center gap-2 col-span-2 bg-pink-50 dark:bg-pink-950/30 p-2 rounded-lg">
                   <Package className="h-4 w-4 text-pink-600 dark:text-pink-400" />
                   <span className="text-sm">
-                    <span className="font-semibold">Cantidad:</span>{" "}
+                    <span className="font-semibold">
+                      {t("labels.quantity")}
+                    </span>{" "}
                     <Badge className="bg-pink-500 hover:bg-pink-600">
-                      {animal.cantidad_inicial_porcino} inicial /{" "}
-                      {animal.cantidad_actual_porcino ||
-                        animal.cantidad_inicial_porcino}{" "}
-                      actual
+                      {t("labels.initialCurrentCount", {
+                        initial: animal.cantidad_inicial_porcino,
+                        current:
+                          animal.cantidad_actual_porcino ||
+                          animal.cantidad_inicial_porcino,
+                      })}
                     </Badge>
                   </span>
                 </div>
@@ -352,7 +364,7 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2">
                 <Building2 className="h-3.5 w-3.5 text-pink-600 dark:text-pink-400" />
                 <span className="text-xs">
-                  <span className="font-medium">Corral/Galera:</span>{" "}
+                  <span className="font-medium">{t("labels.penBarn")}</span>{" "}
                   {animal.corral_galera}
                 </span>
               </div>
@@ -362,7 +374,8 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2">
                 <Hash className="h-3.5 w-3.5 text-pink-600 dark:text-pink-400" />
                 <span className="text-xs">
-                  <span className="font-medium">Lote:</span> {animal.lote}
+                  <span className="font-medium">{t("labels.batch")}</span>{" "}
+                  {animal.lote}
                 </span>
               </div>
             )}
@@ -371,7 +384,7 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2 col-span-2">
                 <Store className="h-3.5 w-3.5 text-pink-600 dark:text-pink-400" />
                 <span className="text-xs">
-                  <span className="font-medium">Proveedor:</span>{" "}
+                  <span className="font-medium">{t("labels.supplier")}</span>{" "}
                   {animal.proveedor}
                 </span>
               </div>
@@ -381,7 +394,7 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2 col-span-2">
                 <Stethoscope className="h-3.5 w-3.5 text-pink-600 dark:text-pink-400" />
                 <span className="text-xs">
-                  <span className="font-medium">Tipo Registro:</span>{" "}
+                  <span className="font-medium">{t("labels.recordType")}</span>{" "}
                   {animal.tipo_registro_porcino}
                 </span>
               </div>
@@ -391,7 +404,7 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2 col-span-2">
                 <CalendarDays className="h-3.5 w-3.5 text-pink-600 dark:text-pink-400" />
                 <span className="text-xs">
-                  <span className="font-medium">Fecha Ingreso:</span>{" "}
+                  <span className="font-medium">{t("labels.entryDate")}</span>{" "}
                   {new Date(animal.fecha_ingreso_porcino).toLocaleDateString()}
                 </span>
               </div>
@@ -409,7 +422,7 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2">
                 <Scale className="h-3.5 w-3.5 text-pink-600 dark:text-pink-400" />
                 <span className="text-xs font-medium text-pink-700 dark:text-pink-400">
-                  Peso y Crecimiento
+                  {t("labels.weightAndGrowth")}
                 </span>
               </div>
 
@@ -419,7 +432,9 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     <div className="flex items-center gap-2">
                       <Weight className="h-3 w-3 text-blue-500" />
                       <span className="text-xs">
-                        <span className="font-medium">Peso Inicial:</span>{" "}
+                        <span className="font-medium">
+                          {t("labels.initialWeight")}
+                        </span>{" "}
                         {animal.peso_inicial_porcino} kg
                       </span>
                     </div>
@@ -429,7 +444,9 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                   <div className="flex items-center gap-2">
                     <Weight className="h-3 w-3 text-green-500" />
                     <span className="text-xs">
-                      <span className="font-medium">Peso Promedio:</span>{" "}
+                      <span className="font-medium">
+                        {t("labels.averageWeight")}
+                      </span>{" "}
                       {animal.peso_promedio} kg
                     </span>
                   </div>
@@ -440,7 +457,7 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     <div className="flex items-center gap-2">
                       <TrendingUp className="h-3 w-3 text-amber-500" />
                       <span className="text-xs">
-                        <span className="font-medium">Ganancia:</span>{" "}
+                        <span className="font-medium">{t("labels.gain")}</span>{" "}
                         {animal.ganancia_peso} kg/día
                       </span>
                     </div>
@@ -450,7 +467,9 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                   <div className="flex items-center gap-2">
                     <Calendar className="h-3 w-3 text-pink-500" />
                     <span className="text-xs">
-                      <span className="font-medium">Último Pesaje:</span>{" "}
+                      <span className="font-medium">
+                        {t("labels.lastWeighing")}
+                      </span>{" "}
                       {new Date(
                         animal.fecha_pesaje_porcino,
                       ).toLocaleDateString()}
@@ -470,7 +489,7 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2">
                 <Droplets className="h-3.5 w-3.5 text-pink-600 dark:text-pink-400" />
                 <span className="text-xs font-medium text-pink-700 dark:text-pink-400">
-                  Alimentación
+                  {t("labels.feeding")}
                 </span>
               </div>
 
@@ -480,7 +499,9 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     <div className="flex items-center gap-2">
                       <Droplets className="h-3 w-3 text-amber-600 dark:text-amber-400" />
                       <span className="text-xs">
-                        <span className="font-medium">Consumo Diario:</span>{" "}
+                        <span className="font-medium">
+                          {t("labels.dailyConsumption")}
+                        </span>{" "}
                         {animal.consumo_diario_porcino} kg
                       </span>
                     </div>
@@ -491,7 +512,9 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     <div className="flex items-center gap-2">
                       <Percent className="h-3 w-3 text-blue-500" />
                       <span className="text-xs">
-                        <span className="font-medium">Conversión:</span>{" "}
+                        <span className="font-medium">
+                          {t("labels.conversion")}
+                        </span>{" "}
                         {animal.conversion_alimenticia_porcino}
                       </span>
                     </div>
@@ -502,7 +525,7 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     <div className="flex items-center gap-2 col-span-2">
                       <Pill className="h-3 w-3 text-pink-500" />
                       <span className="text-xs">
-                        <span className="font-medium">Alimentos:</span>{" "}
+                        <span className="font-medium">{t("labels.foods")}</span>{" "}
                         {animal.tipo_alimentacion
                           .map((a: any) => a.alimento)
                           .join(", ")}
@@ -523,7 +546,7 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2">
                 <Syringe className="h-3.5 w-3.5 text-pink-600 dark:text-pink-400" />
                 <span className="text-xs font-medium text-pink-700 dark:text-pink-400">
-                  Sanidad
+                  {t("labels.health")}
                 </span>
               </div>
 
@@ -534,14 +557,18 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                       className={`h-3 w-3 ${animal.desparasitado ? "text-green-500" : "text-red-500"}`}
                     />
                     <span className="text-xs">
-                      <span className="font-medium">Desparasitado:</span>{" "}
+                      <span className="font-medium">
+                        {t("labels.dewormed")}
+                      </span>{" "}
                       <Badge
                         variant={
                           animal.desparasitado ? "default" : "destructive"
                         }
                         className="text-xs"
                       >
-                        {animal.desparasitado ? "Sí" : "No"}
+                        {animal.desparasitado
+                          ? t("labels.yes")
+                          : t("labels.no")}
                       </Badge>
                     </span>
                   </div>
@@ -553,14 +580,18 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                       className={`h-3 w-3 ${!animal.cuarentena_porcino ? "text-green-500" : "text-yellow-500"}`}
                     />
                     <span className="text-xs">
-                      <span className="font-medium">Cuarentena:</span>{" "}
+                      <span className="font-medium">
+                        {t("labels.quarantine")}
+                      </span>{" "}
                       <Badge
                         variant={
                           animal.cuarentena_porcino ? "outline" : "default"
                         }
                         className="text-xs"
                       >
-                        {animal.cuarentena_porcino ? "Activa" : "Inactiva"}
+                        {animal.cuarentena_porcino
+                          ? t("labels.quarantineActive")
+                          : t("labels.quarantineInactive")}
                       </Badge>
                     </span>
                   </div>
@@ -570,7 +601,9 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                   <div className="flex items-center gap-2">
                     <Syringe className="h-3 w-3 text-pink-600 dark:text-pink-400" />
                     <span className="text-xs">
-                      <span className="font-medium">Vacunas:</span>{" "}
+                      <span className="font-medium">
+                        {t("labels.vaccines")}
+                      </span>{" "}
                       {animal.vacunas}
                     </span>
                   </div>
@@ -580,7 +613,9 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                   <div className="flex items-center gap-2">
                     <Pill className="h-3 w-3 text-pink-600 dark:text-pink-400" />
                     <span className="text-xs">
-                      <span className="font-medium">Tratamientos:</span>{" "}
+                      <span className="font-medium">
+                        {t("labels.treatments")}
+                      </span>{" "}
                       {animal.tratamientos}
                     </span>
                   </div>
@@ -590,7 +625,9 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                   <div className="flex items-center gap-2">
                     <Stethoscope className="h-3 w-3 text-pink-600 dark:text-pink-400" />
                     <span className="text-xs">
-                      <span className="font-medium">Condición Corporal:</span>{" "}
+                      <span className="font-medium">
+                        {t("labels.bodyCondition")}
+                      </span>{" "}
                       {animal.condicion_corporal}
                     </span>
                   </div>
@@ -598,7 +635,6 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               </div>
             </div>
           )}
-
           {animal.bajas_mortalidad_porcino !== undefined &&
             animal.bajas_mortalidad_porcino !== null &&
             animal.bajas_mortalidad_porcino > 0 && (
@@ -607,9 +643,13 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <div className="flex items-center gap-2 bg-red-50 dark:bg-red-950/30 p-2 rounded-lg">
                   <AlertCircle className="h-4 w-4 text-red-500" />
                   <span className="text-xs text-red-700 dark:text-red-400">
-                    <span className="font-medium">Bajas/Mortalidad:</span>{" "}
+                    <span className="font-medium">
+                      {t("labels.lossesMortality")}
+                    </span>{" "}
                     <Badge variant="destructive" className="text-xs">
-                      {animal.bajas_mortalidad_porcino} animales
+                      {t("labels.animalCount", {
+                        count: animal.bajas_mortalidad_porcino,
+                      })}
                     </Badge>
                   </span>
                 </div>
@@ -617,7 +657,6 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             )}
 
           <Separator className="my-3" />
-
           {(animal.fecha_salida_porcino ||
             animal.peso_salida_porcino ||
             animal.comprador_porcino ||
@@ -627,7 +666,7 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2">
                 <DollarSign className="h-3.5 w-3.5 text-pink-600 dark:text-pink-400" />
                 <span className="text-xs font-medium text-pink-700 dark:text-pink-400">
-                  Información de Salida
+                  {t("labels.exitInfo")}
                 </span>
               </div>
 
@@ -636,7 +675,9 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                   <div className="flex items-center gap-2">
                     <Calendar className="h-3 w-3 text-pink-500" />
                     <span className="text-xs">
-                      <span className="font-medium">Fecha Salida:</span>{" "}
+                      <span className="font-medium">
+                        {t("labels.exitDate")}
+                      </span>{" "}
                       {new Date(
                         animal.fecha_salida_porcino,
                       ).toLocaleDateString()}
@@ -649,7 +690,9 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     <div className="flex items-center gap-2">
                       <Weight className="h-3 w-3 text-blue-500" />
                       <span className="text-xs">
-                        <span className="font-medium">Peso Salida:</span>{" "}
+                        <span className="font-medium">
+                          {t("labels.exitWeight")}
+                        </span>{" "}
                         {animal.peso_salida_porcino} kg
                       </span>
                     </div>
@@ -659,7 +702,7 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                   <div className="flex items-center gap-2">
                     <User className="h-3 w-3 text-pink-500" />
                     <span className="text-xs">
-                      <span className="font-medium">Comprador:</span>{" "}
+                      <span className="font-medium">{t("labels.buyer")}</span>{" "}
                       {animal.comprador_porcino}
                     </span>
                   </div>
@@ -670,7 +713,8 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     <div className="flex items-center gap-2">
                       <DollarSign className="h-3 w-3 text-green-500" />
                       <span className="text-xs">
-                        <span className="font-medium">Precio:</span> ${" "}
+                        <span className="font-medium">{t("labels.price")}</span>{" "}
+                        ${" "}
                         {typeof animal.precio_porcino === "number"
                           ? animal.precio_porcino.toFixed(2)
                           : Number(animal.precio_porcino).toFixed(2)}
@@ -683,7 +727,9 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     <div className="flex items-center gap-2 col-span-2">
                       <Percent className="h-3 w-3 text-amber-500" />
                       <span className="text-xs">
-                        <span className="font-medium">Rendimiento Canal:</span>{" "}
+                        <span className="font-medium">
+                          {t("labels.carcassYield")}
+                        </span>{" "}
                         {animal.rendimiento_canal_porcino}%
                       </span>
                     </div>
@@ -691,6 +737,7 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               </div>
             </div>
           )}
+
           <Separator className="my-3" />
 
           <div className="grid grid-cols-2 gap-2">
@@ -698,7 +745,9 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2 col-span-2">
                 <User className="h-3.5 w-3.5 text-gray-500" />
                 <span className="text-xs">
-                  <span className="font-medium">Criador/Origen:</span>{" "}
+                  <span className="font-medium">
+                    {t("labels.breederOrigin")}
+                  </span>{" "}
                   {animal.nombre_criador_origen_animal}
                 </span>
               </div>
@@ -707,7 +756,7 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <div className="flex items-center gap-2 col-span-2">
               <Building2 className="h-3.5 w-3.5 text-gray-500" />
               <span className="text-xs text-muted-foreground">
-                {animal.finca?.nombre_finca || "Sin finca"}
+                {animal.finca?.nombre_finca || t("labels.noFarm")}
               </span>
             </div>
 
@@ -729,7 +778,7 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               onClick={onEdit}
             >
               <PiggyBank className="h-4 w-4 mr-2" />
-              Editar Porcino
+              {t("buttons.editPig")}
             </Button>
           </div>
         </CardContent>
@@ -745,12 +794,12 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
       <Modal
         open={deathDialogVisible}
         onOpenChange={setDeathDialogVisible}
-        title="Actualizar estado de vida"
-        description="Indique si el animal está vivo o ha fallecido."
+        title={t("deathModal.title")}
+        description={t("deathModal.description")}
         showCloseButton={false}
       >
         <div className="flex items-center justify-between py-4">
-          <Label htmlFor="death-status">¿El animal ha fallecido?</Label>
+          <Label htmlFor="death-status">{t("deathModal.hasDied")}</Label>
           <Switch
             id="death-status"
             checked={deathStatus}
@@ -763,12 +812,12 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
         {deathStatus && (
           <div className="space-y-2">
-            <Label htmlFor="death-reason">Razón de la muerte</Label>
+            <Label htmlFor="death-reason">{t("deathModal.deathReason")}</Label>
             <Input
               id="death-reason"
               value={deathReason}
               onChange={(e) => setDeathReason(e.target.value)}
-              placeholder="Ingrese la razón de la muerte"
+              placeholder={t("deathModal.deathReasonPlaceholder")}
             />
           </div>
         )}
@@ -779,36 +828,39 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               variant="outline"
               onClick={() => setDeathDialogVisible(false)}
             >
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
-            <Button onClick={handleDeathStatusUpdate}>Guardar</Button>
+            <Button onClick={handleDeathStatusUpdate}>
+              {t("buttons.save")}
+            </Button>
           </div>
         </div>
       </Modal>
 
       <Modal
-        title="Descartar Animal"
-        description="Esta acción marcará al animal como descartado. Asegúrese de
-              ingresar toda la información requerida."
+        title={t("discardModal.title")}
+        description={t("discardModal.description")}
         open={discardDialogVisible}
         onOpenChange={setDiscardDialogVisible}
         showCloseButton={false}
       >
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="discard-reason">Razón de descarte *</Label>
+            <Label htmlFor="discard-reason">
+              {t("discardModal.discardReason")}
+            </Label>
             <Input
               id="discard-reason"
               value={discardReason}
               onChange={(e) => setDiscardReason(e.target.value)}
-              placeholder="Ej: Venta, Muerte, Traslado, etc."
+              placeholder={t("discardModal.discardReasonPlaceholder")}
             />
           </div>
 
           <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
             <p className="text-sm text-yellow-800">
-              <strong>⚠️ Advertencia:</strong> Esta acción no se puede deshacer.
-              El animal será marcado como descartado en el sistema.
+              <strong>⚠️ {t("discardModal.warningLabel")}</strong>{" "}
+              {t("discardModal.warningText")}
             </p>
           </div>
         </div>
@@ -822,14 +874,14 @@ const PorcinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 setDiscardReason("");
               }}
             >
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
             <Button
               variant="destructive"
               onClick={handleDiscardAnimal}
               disabled={!discardReason}
             >
-              Descartar Animal
+              {t("buttons.discardAnimal")}
             </Button>
           </div>
         </div>

@@ -1,7 +1,8 @@
 "use client";
 
+import { useLocale, useTranslations } from "next-intl";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS, es } from "date-fns/locale";
 import {
   Table,
   TableBody,
@@ -31,6 +32,11 @@ export function TablaGastos({
   moneda = "L",
   handleEditGasto,
 }: TablaGastosProps) {
+  const t = useTranslations("tablaGastos");
+  const locale = useLocale();
+
+  const dateLocale = locale === "en" ? enUS : es;
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -48,11 +54,9 @@ export function TablaGastos({
           <DollarSign className="h-10 w-10 text-gray-400" />
         </div>
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          No hay gastos registrados
+          {t("empty.title")}
         </h3>
-        <p className="text-gray-600">
-          Comienza registrando tu primer gasto usando el botón "Nuevo Gasto"
-        </p>
+        <p className="text-gray-600">{t("empty.description")}</p>
       </div>
     );
   }
@@ -62,22 +66,23 @@ export function TablaGastos({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Fecha</TableHead>
-            <TableHead>Categoría</TableHead>
-            <TableHead>Concepto</TableHead>
-            <TableHead>Finca</TableHead>
-            <TableHead>Especie</TableHead>
-            <TableHead>Monto</TableHead>
-            <TableHead>Método Pago</TableHead>
-
-            <TableHead>Acciones</TableHead>
+            <TableHead>{t("columns.date")}</TableHead>
+            <TableHead>{t("columns.category")}</TableHead>
+            <TableHead>{t("columns.concept")}</TableHead>
+            <TableHead>{t("columns.farm")}</TableHead>
+            <TableHead>{t("columns.species")}</TableHead>
+            <TableHead>{t("columns.amount")}</TableHead>
+            <TableHead>{t("columns.paymentMethod")}</TableHead>
+            <TableHead>{t("columns.actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {gastos.map((gasto) => (
             <TableRow key={gasto.id} className="hover:bg-gray-50">
               <TableCell className="whitespace-nowrap">
-                {gasto.fecha_gasto}
+                {format(new Date(gasto.fecha_gasto), "PP", {
+                  locale: dateLocale,
+                })}
               </TableCell>
               <TableCell>
                 <Badge className={getCategoriaColor(gasto.categoria)}>
@@ -107,14 +112,13 @@ export function TablaGastos({
                   {getMetodoPagoLabel(gasto.metodo_pago)}
                 </Badge>
               </TableCell>
-
               <TableCell className="text-sm text-gray-600">
                 <Button
                   id="btn-edit-gasto"
                   onClick={() => handleEditGasto(gasto)}
-                  variant={"ghost"}
+                  variant="ghost"
                 >
-                  <Pencil /> Editar
+                  <Pencil /> {t("buttons.edit")}
                 </Button>
               </TableCell>
             </TableRow>

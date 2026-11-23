@@ -2,14 +2,17 @@
 
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import FormAlimentacionAnimal from "../ui/FormAlimentacionAnimal";
 import useGetAlimentacionPorId from "@/hooks/alimentacion_animales/useGetAlimentacionPorId";
+import { useTranslations } from "next-intl";
 
 const EditarAlimentacionPage = () => {
+  const t = useTranslations("editarAlimentacionPage");
+
   const { cliente } = useAuthStore();
   const router = useRouter();
   const params = useParams();
@@ -31,10 +34,12 @@ const EditarAlimentacionPage = () => {
             <Skeleton className="h-10 w-10 rounded-full" />
             <Skeleton className="h-8 w-48" />
           </div>
+
           <Card>
             <CardHeader>
               <Skeleton className="h-6 w-36" />
             </CardHeader>
+
             <CardContent className="space-y-4">
               <Skeleton className="h-10 w-full" />
               <Skeleton className="h-10 w-full" />
@@ -57,18 +62,20 @@ const EditarAlimentacionPage = () => {
               size="icon"
               onClick={() => router.back()}
               className="shrink-0"
+              aria-label={t("buttons.back")}
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-2xl font-bold">Error</h1>
+
+            <h1 className="text-2xl font-bold">{t("error.title")}</h1>
           </div>
+
           <Card className="border-destructive">
             <CardContent className="py-8 text-center">
-              <p className="text-destructive mb-2">
-                No se pudo cargar la información
-              </p>
+              <p className="text-destructive mb-2">{t("error.description")}</p>
+
               <Button onClick={() => router.back()} variant="outline">
-                Volver
+                {t("buttons.back")}
               </Button>
             </CardContent>
           </Card>
@@ -96,21 +103,27 @@ const EditarAlimentacionPage = () => {
             size="icon"
             onClick={() => router.back()}
             className="shrink-0"
+            aria-label={t("buttons.back")}
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-bold">Editar Alimentación</h1>
+
+          <h1 className="text-2xl font-bold">{t("title")}</h1>
         </div>
 
         <Card className="shadow-lg border-t-4 border-t-primary">
           <CardHeader className="pb-4">
             <CardTitle className="text-lg">
-              Editando registro de {alimentacion.tipoAlimento}
+              {t("card.title", {
+                food: alimentacion.tipoAlimento,
+              })}
             </CardTitle>
+
             <p className="text-sm text-muted-foreground">
-              Modifica los datos de la alimentación del animal
+              {t("card.description")}
             </p>
           </CardHeader>
+
           <CardContent>
             <FormAlimentacionAnimal
               moneda={moneda}

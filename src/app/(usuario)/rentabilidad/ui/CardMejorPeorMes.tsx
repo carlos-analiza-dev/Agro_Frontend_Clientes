@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LucideIcon } from "lucide-react";
 
@@ -33,6 +34,7 @@ const CardMejorPeorMes = ({
   icon: Icon,
   variant,
 }: Props) => {
+  const t = useTranslations("cardMejorPeorMes");
   const styles = variantStyles[variant];
 
   return (
@@ -45,14 +47,18 @@ const CardMejorPeorMes = ({
       </CardHeader>
 
       <CardContent>
-        <p className="text-sm text-gray-600">Período: {periodo}</p>
+        <p className="text-sm text-gray-600">
+          {t("period")}: {periodo}
+        </p>
 
         <p className={`text-lg font-semibold ${styles.value}`}>
-          Rentabilidad: {moneda}
+          {t("profitability")}: {moneda}
           {rentabilidad}
         </p>
 
-        <p className="text-sm text-gray-500">Margen: {margen}%</p>
+        <p className="text-sm text-gray-500">
+          {t("margin")}: {margen}%
+        </p>
       </CardContent>
     </Card>
   );

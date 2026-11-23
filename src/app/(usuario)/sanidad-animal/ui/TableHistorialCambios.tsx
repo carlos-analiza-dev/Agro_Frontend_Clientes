@@ -1,3 +1,5 @@
+"use client";
+
 import { Historial } from "@/api/sanidad-animal/interface/response-historial-cambios-sanidad";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -11,6 +13,7 @@ import {
 import { formatDate } from "@/helpers/funciones/formatDate";
 import { formatDateOnly } from "@/helpers/funciones/formatDateOnly";
 import { Calendar, Clock, User, History } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   historial: Historial[] | undefined;
@@ -19,17 +22,21 @@ interface Props {
 }
 
 const TableHistorialCambios = ({ historial, isMobile, total }: Props) => {
+  const t = useTranslations("tableHistorialCambios");
+
   if (!historial || historial.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground border rounded-lg">
         <History className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
-        <p>No hay cambios registrados en el historial</p>
+        <p>{t("empty")}</p>
       </div>
     );
   }
 
   const getTipoCambioLabel = (tipo: string) => {
-    return tipo === "fecha_evento" ? "Fecha del Evento" : "Próxima Fecha";
+    return tipo === "fecha_evento"
+      ? t("changeTypes.eventDate")
+      : t("changeTypes.nextDate");
   };
 
   const getTipoCambioColor = (tipo: string) => {
@@ -45,9 +52,11 @@ const TableHistorialCambios = ({ historial, isMobile, total }: Props) => {
   };
 
   const getDiasDiferenciaLabel = (dias: number) => {
-    if (dias === 0) return "Mismo día";
-    if (dias > 0) return `+${dias} día${dias > 1 ? "s" : ""}`;
-    return `${dias} día${dias < -1 ? "s" : ""}`;
+    if (dias === 0) return t("dayDifference.sameDay");
+
+    return dias > 0
+      ? t("dayDifference.positive", { days: dias })
+      : t("dayDifference.negative", { days: Math.abs(dias) });
   };
 
   return (
@@ -60,16 +69,18 @@ const TableHistorialCambios = ({ historial, isMobile, total }: Props) => {
               className="rounded-xl border bg-background p-4 shadow-sm"
             >
               <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <Badge className={getTipoCambioColor(item.tipo_cambio)}>
                     {getTipoCambioLabel(item.tipo_cambio)}
                   </Badge>
+
                   <Badge
                     className={getDiasDiferenciaColor(item.dias_diferencia)}
                   >
                     {getDiasDiferenciaLabel(item.dias_diferencia)}
                   </Badge>
                 </div>
+
                 <span className="text-xs text-muted-foreground">
                   {formatDate(item.fecha_cambio)}
                 </span>
@@ -77,22 +88,29 @@ const TableHistorialCambios = ({ historial, isMobile, total }: Props) => {
 
               <div className="mt-4 space-y-3 text-sm">
                 <div>
-                  <p className="text-muted-foreground">Servicio / Animal</p>
-                  <p className="font-medium">
-                    {item.sanidad?.tipo_servicio || "N/A"}
+                  <p className="text-muted-foreground">
+                    {t("labels.serviceAnimal")}
                   </p>
+
+                  <p className="font-medium">
+                    {item.sanidad?.tipo_servicio || t("values.notAvailable")}
+                  </p>
+
                   <p className="text-xs text-muted-foreground">
                     {item.sanidad?.animal?.nombre_animal ||
                       item.sanidad?.animal?.identificador ||
                       item.sanidad?.animal?.galpon ||
                       item.sanidad?.animal?.lote ||
-                      "Sin identificar"}
+                      t("values.noIdentification")}
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <p className="text-muted-foreground">Fecha anterior</p>
+                    <p className="text-muted-foreground">
+                      {t("labels.previousDate")}
+                    </p>
+
                     <div className="flex items-center gap-1">
                       <Calendar className="h-3 w-3 text-muted-foreground" />
                       <span className="line-through text-muted-foreground">
@@ -102,7 +120,10 @@ const TableHistorialCambios = ({ historial, isMobile, total }: Props) => {
                   </div>
 
                   <div>
-                    <p className="text-muted-foreground">Fecha nueva</p>
+                    <p className="text-muted-foreground">
+                      {t("labels.newDate")}
+                    </p>
+
                     <div className="flex items-center gap-1">
                       <Calendar className="h-3 w-3 text-blue-500" />
                       <span className="font-medium text-blue-600">
@@ -114,14 +135,16 @@ const TableHistorialCambios = ({ historial, isMobile, total }: Props) => {
 
                 {item.motivo_cambio && (
                   <div className="bg-gray-50 p-2 rounded-lg">
-                    <p className="text-xs text-muted-foreground">Motivo</p>
+                    <p className="text-xs text-muted-foreground">
+                      {t("labels.reason")}
+                    </p>
                     <p className="text-sm">{item.motivo_cambio}</p>
                   </div>
                 )}
 
                 <div className="flex items-center gap-2 text-xs text-muted-foreground border-t pt-2">
                   <User className="h-3 w-3" />
-                  <span>{item.usuario || "Usuario desconocido"}</span>
+                  <span>{item.usuario || t("values.unknownUser")}</span>
                 </div>
               </div>
             </div>
@@ -132,15 +155,15 @@ const TableHistorialCambios = ({ historial, isMobile, total }: Props) => {
           <Table className="min-w-[1000px]">
             <TableHeader>
               <TableRow>
-                <TableHead>Servicio</TableHead>
-                <TableHead>Animal / Galpón / Lote</TableHead>
-                <TableHead>Tipo de Cambio</TableHead>
-                <TableHead>Fecha Anterior</TableHead>
-                <TableHead>Fecha Nueva</TableHead>
-                <TableHead>Diferencia</TableHead>
-                <TableHead>Motivo</TableHead>
-                <TableHead>Usuario</TableHead>
-                <TableHead>Fecha Cambio</TableHead>
+                <TableHead>{t("columns.service")}</TableHead>
+                <TableHead>{t("columns.animalLocation")}</TableHead>
+                <TableHead>{t("columns.changeType")}</TableHead>
+                <TableHead>{t("columns.previousDate")}</TableHead>
+                <TableHead>{t("columns.newDate")}</TableHead>
+                <TableHead>{t("columns.difference")}</TableHead>
+                <TableHead>{t("columns.reason")}</TableHead>
+                <TableHead>{t("columns.user")}</TableHead>
+                <TableHead>{t("columns.changeDate")}</TableHead>
               </TableRow>
             </TableHeader>
 
@@ -150,11 +173,16 @@ const TableHistorialCambios = ({ historial, isMobile, total }: Props) => {
                   <TableCell>
                     <div>
                       <div className="font-medium">
-                        {item.sanidad?.tipo_servicio || "N/A"}
+                        {item.sanidad?.tipo_servicio ||
+                          t("values.notAvailable")}
                       </div>
+
                       <div className="text-xs text-muted-foreground">
                         {item.sanidad?.responsable && (
-                          <span>Resp: {item.sanidad.responsable}</span>
+                          <span>
+                            {t("labels.responsible")}:{" "}
+                            {item.sanidad.responsable}
+                          </span>
                         )}
                       </div>
                     </div>
@@ -166,16 +194,17 @@ const TableHistorialCambios = ({ historial, isMobile, total }: Props) => {
                         {item.sanidad?.animal?.nombre_animal ||
                           item.sanidad?.animal?.galpon ||
                           item.sanidad?.animal?.lote ||
-                          "N/A"}
+                          t("values.notAvailable")}
                       </div>
+
                       <div className="text-xs text-muted-foreground">
                         {item.sanidad?.animal?.identificador
-                          ? `ID: ${item.sanidad.animal.identificador}`
+                          ? `${t("labels.id")}: ${item.sanidad.animal.identificador}`
                           : item.sanidad?.animal?.galpon
-                            ? `Galpón: ${item.sanidad.animal.galpon}`
+                            ? `${t("labels.poultryHouse")}: ${item.sanidad.animal.galpon}`
                             : item.sanidad?.animal?.lote
-                              ? `Lote: ${item.sanidad.animal.lote}`
-                              : "Sin identificación"}
+                              ? `${t("labels.batch")}: ${item.sanidad.animal.lote}`
+                              : t("values.noIdentification")}
                       </div>
                     </div>
                   </TableCell>
@@ -216,7 +245,7 @@ const TableHistorialCambios = ({ historial, isMobile, total }: Props) => {
                     <div className="max-w-[150px]">
                       <p
                         className="text-sm truncate"
-                        title={item.motivo_cambio || "Sin motivo"}
+                        title={item.motivo_cambio || t("values.noReason")}
                       >
                         {item.motivo_cambio || "-"}
                       </p>
@@ -226,7 +255,9 @@ const TableHistorialCambios = ({ historial, isMobile, total }: Props) => {
                   <TableCell>
                     <div className="flex items-center gap-1">
                       <User className="h-3 w-3 text-muted-foreground" />
-                      <span className="text-sm">{item.usuario || "N/A"}</span>
+                      <span className="text-sm">
+                        {item.usuario || t("values.notAvailable")}
+                      </span>
                     </div>
                   </TableCell>
 
@@ -247,7 +278,7 @@ const TableHistorialCambios = ({ historial, isMobile, total }: Props) => {
 
       {total && total > 0 && (
         <div className="mt-4 text-sm text-muted-foreground">
-          Total de cambios: <span className="font-medium">{total}</span>
+          {t("totalChanges")}: <span className="font-medium">{total}</span>
         </div>
       )}
     </>

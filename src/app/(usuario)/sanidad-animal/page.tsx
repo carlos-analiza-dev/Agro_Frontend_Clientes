@@ -61,8 +61,10 @@ import ProximosEventosAlerta from "@/components/sanidad-animal/eventos/ProximosE
 import TableHistorialCambios from "./ui/TableHistorialCambios";
 import useGetSanidadHistorialCambios from "@/hooks/sanidad-animal/useGetSanidadHistorialCambios";
 import TitlePage from "@/components/generics/TitlePage";
+import { useTranslations } from "next-intl";
 
 const SanidadAnimalPage = () => {
+  const t = useTranslations("SanidadAnimalPage");
   const { cliente } = useAuthStore();
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -345,19 +347,19 @@ const SanidadAnimalPage = () => {
   const estadisticas = useMemo(() => {
     if (!sanidadData || sanidadData.length === 0) {
       return {
-        estadoSanitario: "Sin registros",
-        descripcionEstado: "No hay registros de sanidad",
-        parrafoEstado: "Inicia registrando un evento sanitario",
-        ultimoEvento: "N/A",
-        descripcionUltimo: "N/A",
-        parrafoUltimo: "Sin eventos registrados",
-        proximoEvento: "N/A",
-        descripcionProximo: "N/A",
-        parrafoProximo: "Sin eventos programados",
+        estadoSanitario: t("stats.noRecords"),
+        descripcionEstado: t("stats.noRecordsDesc"),
+        parrafoEstado: t("stats.noRecordsHint"),
+        ultimoEvento: t("common.notAvailable"),
+        descripcionUltimo: t("common.notAvailable"),
+        parrafoUltimo: t("stats.noEvents"),
+        proximoEvento: t("common.notAvailable"),
+        descripcionProximo: t("common.notAvailable"),
+        parrafoProximo: t("stats.noScheduledEvents"),
         costoSanitario: 0,
         costoSanitarioStr: `${moneda}0`,
-        descripcionCosto: "Sin costos registrados",
-        parrafoCosto: "Promedio por animal/lote",
+        descripcionCosto: t("stats.noCosts"),
+        parrafoCosto: t("stats.avgPerAnimal"),
         tieneEventosPendientes: false,
         eventosPendientes: 0,
         totalEventos: 0,
@@ -371,31 +373,32 @@ const SanidadAnimalPage = () => {
     );
 
     const ultimo = sortedData[0];
-    const ultimoEvento = ultimo?.tipo_servicio || "N/A";
+    const ultimoEvento = ultimo?.tipo_servicio || t("common.notAvailable");
     const fechaEvento = parseLocalDate(ultimo.fecha_evento);
 
-    let diasDesdeUltimo = "N/A";
+    let diasDesdeUltimo = t("common.notAvailable");
 
     if (ultimo?.fecha_evento) {
       const diffDays = differenceInCalendarDays(new Date(), fechaEvento);
 
       if (diffDays <= 0) {
-        diasDesdeUltimo = "Hoy";
+        diasDesdeUltimo = t("time.today");
       } else if (diffDays === 1) {
-        diasDesdeUltimo = "Hace 1 día";
+        diasDesdeUltimo = t("time.oneDayAgo");
       } else {
-        diasDesdeUltimo = `Hace ${diffDays} días`;
+        diasDesdeUltimo = t("time.daysAgo", { count: diffDays });
       }
     }
+
     const eventosConProxima = sortedData.filter(
       (item) =>
         item.proxima_fecha_evento &&
         new Date(item.proxima_fecha_evento) >= new Date(),
     );
 
-    let proximoEvento = "Sin programar";
-    let fechaProximo = "N/A";
-    let diasHastaProximo = "N/A";
+    let proximoEvento = t("stats.unscheduled");
+    let fechaProximo = t("common.notAvailable");
+    let diasHastaProximo = t("common.notAvailable");
 
     if (eventosConProxima.length > 0) {
       const proximo = eventosConProxima.sort(
@@ -404,12 +407,12 @@ const SanidadAnimalPage = () => {
           new Date(b.proxima_fecha_evento!).getTime(),
       )[0];
 
-      proximoEvento = proximo.tipo_servicio || "Sin programar";
+      proximoEvento = proximo.tipo_servicio || t("stats.unscheduled");
       fechaProximo = proximo.proxima_fecha_evento
         ? format(new Date(proximo.proxima_fecha_evento), "dd/MM/yyyy", {
             locale: es,
           })
-        : "N/A";
+        : t("common.notAvailable");
 
       if (proximo.proxima_fecha_evento) {
         const diffTime = Math.abs(
@@ -417,7 +420,10 @@ const SanidadAnimalPage = () => {
             new Date().getTime(),
         );
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        diasHastaProximo = diffDays === 0 ? "Hoy" : `${diffDays} días`;
+        diasHastaProximo =
+          diffDays === 0
+            ? t("time.today")
+            : t("time.days", { count: diffDays });
       }
     }
 
@@ -436,17 +442,20 @@ const SanidadAnimalPage = () => {
 
     const tienePendientes = eventosPendientes.length > 0;
 
-    let estadoSanitario = "Al día";
-    let descripcionEstado = "Todo en orden";
-    let parrafoEstado = "Sin eventos pendientes";
+    let estadoSanitario = t("stats.upToDate");
+    let descripcionEstado = t("stats.allInOrder");
+    let parrafoEstado = t("stats.noPendingEvents");
 
     if (eventosPendientes.length > 0) {
       const serviciosPendientes = eventosPendientes
         .map((e) => e.tipo_servicio)
         .join(", ");
-      estadoSanitario = `${eventosPendientes.length} pendiente${eventosPendientes.length > 1 ? "s" : ""}`;
-      descripcionEstado = `Próximo: ${serviciosPendientes}`;
-      parrafoEstado = `Requiere atención en los próximos 7 días`;
+      estadoSanitario =
+        eventosPendientes.length === 1
+          ? t("stats.onePending")
+          : t("stats.nPending", { count: eventosPendientes.length });
+      descripcionEstado = t("stats.next", { services: serviciosPendientes });
+      parrafoEstado = t("stats.requiresAttention");
     }
 
     const promedioPorEvento =
@@ -460,22 +469,27 @@ const SanidadAnimalPage = () => {
       descripcionUltimo: fechaEvento,
       parrafoUltimo: diasDesdeUltimo,
       proximoEvento:
-        diasHastaProximo !== "N/A" ? diasHastaProximo : "Sin programar",
+        diasHastaProximo !== t("common.notAvailable")
+          ? diasHastaProximo
+          : t("stats.unscheduled"),
       descripcionProximo: fechaProximo,
       parrafoProximo:
-        proximoEvento !== "Sin programar"
-          ? `Próximo: ${proximoEvento}`
-          : "Sin eventos programados",
+        proximoEvento !== t("stats.unscheduled")
+          ? t("stats.nextPrefix", { event: proximoEvento })
+          : t("stats.noScheduledEvents"),
       costoSanitario: costoTotal,
       costoSanitarioStr: `${moneda}${costoTotal.toFixed(2)}`,
-      descripcionCosto: `${sanidadData.length} evento${sanidadData.length > 1 ? "s" : ""}`,
-      parrafoCosto: `Promedio por animal/lote`,
+      descripcionCosto:
+        sanidadData.length === 1
+          ? t("stats.oneEvent")
+          : t("stats.nEvents", { count: sanidadData.length }),
+      parrafoCosto: t("stats.avgPerAnimal"),
       tieneEventosPendientes: tienePendientes,
       eventosPendientes: eventosPendientes.length,
       totalEventos: sanidadData.length,
       promedioPorEvento: promedioPorEvento,
     };
-  }, [sanidadData, moneda]);
+  }, [sanidadData, moneda, t]);
 
   const getEstadoIcon = () => {
     if (estadisticas.tieneEventosPendientes) {
@@ -503,8 +517,12 @@ const SanidadAnimalPage = () => {
         className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4"
       >
         <TitlePage
-          title={`Sanidad ${especieSeleccionada ? `- ${especieSeleccionada}` : ""}`}
-          description="Registra y monitorea la sanidad de tus animales por especie"
+          title={
+            especieSeleccionada
+              ? t("header.titleWithSpecies", { species: especieSeleccionada })
+              : t("header.title")
+          }
+          description={t("header.description")}
           Icon={ShieldPlus}
           id_title="id-sanidad-header-info"
           id_description="id-sanidad-subtitle"
@@ -518,7 +536,9 @@ const SanidadAnimalPage = () => {
             size={isMobile ? "sm" : "default"}
             className="w-full sm:w-auto"
           >
-            Ver Eventos ({eliminados.total + historial?.total!}){" "}
+            {t("buttons.viewEvents", {
+              count: (eliminados?.total ?? 0) + (historial?.total ?? 0),
+            })}{" "}
             <Eye className="h-4 w-4 ml-1" />
           </Button>
         )}
@@ -533,7 +553,7 @@ const SanidadAnimalPage = () => {
             id="id-sanidad-filtro-especie-label"
             className="text-xs sm:text-sm font-medium"
           >
-            Filtrar por especie:
+            {t("filters.speciesLabel")}
           </label>
           <Select
             value={especieSeleccionada}
@@ -546,10 +566,10 @@ const SanidadAnimalPage = () => {
               id="id-sanidad-filtro-especie-select"
               className="w-full sm:w-[200px]"
             >
-              <SelectValue placeholder="Seleccionar especie" />
+              <SelectValue placeholder={t("filters.speciesPlaceholder")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="todos">Todas las especies</SelectItem>
+              <SelectItem value="todos">{t("filters.allSpecies")}</SelectItem>
               {especies?.data.map((especie: ResponseEspecies) => (
                 <SelectItem key={especie.id} value={especie.nombre}>
                   {especie.nombre}
@@ -558,7 +578,10 @@ const SanidadAnimalPage = () => {
             </SelectContent>
           </Select>
           <span className="text-xs sm:text-sm text-muted-foreground">
-            Mostrando: <strong>{especieSeleccionada || "Todas"}</strong>
+            {t.rich("filters.showing", {
+              strong: (chunks) => <strong>{chunks}</strong>,
+              value: especieSeleccionada || t("filters.all"),
+            })}
           </span>
         </div>
 
@@ -585,7 +608,7 @@ const SanidadAnimalPage = () => {
         >
           <div id="id-sanidad-card-estado-sanitario">
             <CardSanidad
-              title="Estado sanitario"
+              title={t("cards.healthStatus.title")}
               description={estadisticas.estadoSanitario}
               parrafo={estadisticas.parrafoEstado}
               Icon={getEstadoIcon()}
@@ -593,7 +616,7 @@ const SanidadAnimalPage = () => {
           </div>
           <div id="id-sanidad-card-ultimo-evento">
             <CardSanidad
-              title="Último evento"
+              title={t("cards.lastEvent.title")}
               description={estadisticas.ultimoEvento}
               parrafo={estadisticas.parrafoUltimo}
               Icon={
@@ -607,7 +630,7 @@ const SanidadAnimalPage = () => {
           </div>
           <div id="id-sanidad-card-proximo-evento">
             <CardSanidad
-              title="Próximo evento"
+              title={t("cards.nextEvent.title")}
               description={estadisticas.proximoEvento}
               parrafo={estadisticas.parrafoProximo}
               Icon={Calendar}
@@ -615,9 +638,12 @@ const SanidadAnimalPage = () => {
           </div>
           <div id="id-sanidad-card-costo-mes">
             <CardSanidad
-              title="Costo sanitario mes"
+              title={t("cards.monthlyCost.title")}
               description={estadisticas.costoSanitarioStr}
-              parrafo={`Promedio: ${moneda}${estadisticas.promedioPorEvento.toFixed(2)} por evento`}
+              parrafo={t("cards.monthlyCost.avgDescription", {
+                currency: moneda,
+                amount: estadisticas.promedioPorEvento.toFixed(2),
+              })}
               Icon={DollarSign}
             />
           </div>
@@ -626,14 +652,11 @@ const SanidadAnimalPage = () => {
         <div>
           <ProximosEventosAlerta eventos={sanidadData} />
         </div>
-
         <div className="mt-2 text-xs sm:text-sm text-muted-foreground">
           {sanidadData.length > 0 ? (
-            <p>Total de registros: {filteredData.length}</p>
+            <p>{t("stats.totalRecords", { count: filteredData.length })}</p>
           ) : (
-            <p className="text-yellow-600">
-              No hay registros de sanidad para esta especie
-            </p>
+            <p className="text-yellow-600">{t("stats.noRecordsForSpecies")}</p>
           )}
         </div>
       </div>
@@ -652,14 +675,14 @@ const SanidadAnimalPage = () => {
               className="text-xs sm:text-sm"
               value="resumen"
             >
-              Resumen
+              {t("tabs.summary")}
             </TabsTrigger>
             <TabsTrigger
               id="id-sanidad-tab-costos"
               className="text-xs sm:text-sm"
               value="costos"
             >
-              Costos Mensuales
+              {t("tabs.monthlyCosts")}
             </TabsTrigger>
           </TabsList>
 
@@ -674,10 +697,10 @@ const SanidadAnimalPage = () => {
                 className="p-3 sm:p-6"
               >
                 <CardTitle className="text-base sm:text-lg">
-                  Resumen de Sanidad
+                  {t("summary.title")}
                 </CardTitle>
                 <CardDescription className="text-xs sm:text-sm">
-                  Lista completa de eventos sanitarios registrados
+                  {t("summary.description")}
                 </CardDescription>
               </CardHeader>
               <CardContent
@@ -695,8 +718,8 @@ const SanidadAnimalPage = () => {
                         id="id-sanidad-resumen-buscador"
                         placeholder={
                           isMobile
-                            ? "Buscar..."
-                            : "Buscar por servicio, responsable, animal..."
+                            ? t("summary.searchPlaceholderMobile")
+                            : t("summary.searchPlaceholder")
                         }
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -718,7 +741,7 @@ const SanidadAnimalPage = () => {
                     id="id-sanidad-resumen-empty"
                     className="text-center py-8 text-muted-foreground"
                   >
-                    No se encontraron registros con los filtros aplicados
+                    {t("summary.emptyState")}
                   </div>
                 ) : (
                   <div
@@ -738,9 +761,14 @@ const SanidadAnimalPage = () => {
                 {filteredData.length > 0 && (
                   <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
                     <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
-                      Mostrando {(currentPage - 1) * pageSize + 1} -{" "}
-                      {Math.min(currentPage * pageSize, filteredData.length)} de{" "}
-                      {filteredData.length} registros
+                      {t("pagination.showing", {
+                        from: (currentPage - 1) * pageSize + 1,
+                        to: Math.min(
+                          currentPage * pageSize,
+                          filteredData.length,
+                        ),
+                        total: filteredData.length,
+                      })}
                     </p>
                     <div>
                       <Paginacion
@@ -763,11 +791,10 @@ const SanidadAnimalPage = () => {
               >
                 <div>
                   <CardTitle className="text-base sm:text-lg">
-                    Costos Mensuales por Servicio
+                    {t("costs.title")}
                   </CardTitle>
                   <CardDescription className="text-xs sm:text-sm">
-                    Análisis de costos sanitarios mensuales desglosados por tipo
-                    de servicio (últimos 12 meses)
+                    {t("costs.description")}
                   </CardDescription>
                 </div>
               </CardHeader>
@@ -785,10 +812,9 @@ const SanidadAnimalPage = () => {
                     className="text-center py-12 text-muted-foreground"
                   >
                     <DollarSign className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
-                    <p>No hay datos de costos disponibles</p>
+                    <p>{t("costs.emptyTitle")}</p>
                     <p className="text-sm mt-1">
-                      Los costos se mostrarán aquí una vez que registres eventos
-                      sanitarios
+                      {t("costs.emptyDescription")}
                     </p>
                   </div>
                 ) : (
@@ -799,7 +825,7 @@ const SanidadAnimalPage = () => {
                     >
                       <div>
                         <StatCard
-                          title="Total gastado"
+                          title={t("costs.totalSpent")}
                           value={formatCurrency(
                             datosCostosProcesados.totalGeneral,
                             moneda,
@@ -814,7 +840,7 @@ const SanidadAnimalPage = () => {
 
                       <div>
                         <StatCard
-                          title="Promedio mensual"
+                          title={t("costs.monthlyAverage")}
                           value={formatCurrency(
                             datosCostosProcesados.promedioMensual,
                             moneda,
@@ -829,7 +855,7 @@ const SanidadAnimalPage = () => {
 
                       <div>
                         <StatCard
-                          title="Servicios registrados"
+                          title={t("costs.registeredServices")}
                           value={datosCostosProcesados.serviciosUnicos.length}
                           icon={Layers}
                           gradientFrom="from-purple-50"
@@ -841,10 +867,10 @@ const SanidadAnimalPage = () => {
 
                       <div>
                         <StatCard
-                          title="Mayor gasto"
+                          title={t("costs.highestExpense")}
                           value={
                             datosCostosProcesados.servicioConMayorCosto
-                              ?.nombre || "N/A"
+                              ?.nombre || t("common.notAvailable")
                           }
                           icon={TrendingUp}
                           gradientFrom="from-orange-50"
@@ -857,18 +883,18 @@ const SanidadAnimalPage = () => {
 
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                       <Label className="text-sm font-medium">
-                        Filtrar por servicio:
+                        {t("costs.filterByService")}
                       </Label>
                       <Select
                         value={selectedServicioGrafico}
                         onValueChange={setSelectedServicioGrafico}
                       >
                         <SelectTrigger className="w-full sm:w-[200px]">
-                          <SelectValue placeholder="Todos los servicios" />
+                          <SelectValue placeholder={t("costs.allServices")} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todos">
-                            Todos los servicios
+                            {t("costs.allServices")}
                           </SelectItem>
                           {datosCostosProcesados.serviciosUnicos.map(
                             (servicio) => (
@@ -913,14 +939,18 @@ const SanidadAnimalPage = () => {
                       {datosCostosProcesados.mesConMayorCosto && (
                         <div>
                           <CardSanidad
-                            title="Mes de mayor gasto"
+                            title={t("costs.highestMonth")}
                             description={
                               datosCostosProcesados.mesConMayorCosto.nombreMes
                             }
-                            parrafo={`${formatCurrency(
-                              datosCostosProcesados.mesConMayorCosto.total,
-                              moneda,
-                            )} (${datosCostosProcesados.mesConMayorCosto.cantidad} eventos)`}
+                            parrafo={t("costs.monthDescription", {
+                              amount: formatCurrency(
+                                datosCostosProcesados.mesConMayorCosto.total,
+                                moneda,
+                              ),
+                              count:
+                                datosCostosProcesados.mesConMayorCosto.cantidad,
+                            })}
                             Icon={TrendingUp}
                           />
                         </div>
@@ -929,14 +959,18 @@ const SanidadAnimalPage = () => {
                       {datosCostosProcesados.mesConMenorCosto && (
                         <div>
                           <CardSanidad
-                            title="Mes de menor gasto"
+                            title={t("costs.lowestMonth")}
                             description={
                               datosCostosProcesados.mesConMenorCosto.nombreMes
                             }
-                            parrafo={`${formatCurrency(
-                              datosCostosProcesados.mesConMenorCosto.total,
-                              moneda,
-                            )} (${datosCostosProcesados.mesConMenorCosto.cantidad} eventos)`}
+                            parrafo={t("costs.monthDescription", {
+                              amount: formatCurrency(
+                                datosCostosProcesados.mesConMenorCosto.total,
+                                moneda,
+                              ),
+                              count:
+                                datosCostosProcesados.mesConMenorCosto.cantidad,
+                            })}
                             Icon={TrendingDown}
                           />
                         </div>
@@ -953,8 +987,8 @@ const SanidadAnimalPage = () => {
       <Modal
         open={openViewsEliminados}
         onOpenChange={setOpenViewsEliminados}
-        title="Eventos"
-        description="Aquí podrás ver todos los eventos eliminados"
+        title={t("modal.title")}
+        description={t("modal.description")}
         height="auto"
         size={isMobile ? "full" : "6xl"}
       >
@@ -969,14 +1003,14 @@ const SanidadAnimalPage = () => {
               className="w-full"
               value="eliminados"
             >
-              Eliminados ({eliminadosData.length})
+              {t("modal.deletedTab", { count: eliminadosData.length })}
             </TabsTrigger>
             <TabsTrigger
               id="id-sanidad-modal-tab-historial"
               className="w-full"
               value="historial"
             >
-              Historial de Cambios ({historialData.length})
+              {t("modal.historyTab", { count: historialData.length })}
             </TabsTrigger>
           </TabsList>
 
@@ -991,7 +1025,7 @@ const SanidadAnimalPage = () => {
                   id="id-sanidad-modal-eliminados-empty"
                   className="text-center py-8 text-muted-foreground"
                 >
-                  No hay eventos eliminados
+                  {t("modal.noDeleted")}
                 </div>
               ) : (
                 <>
@@ -1014,13 +1048,14 @@ const SanidadAnimalPage = () => {
                         id="id-sanidad-modal-eliminados-paginacion-info"
                         className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left"
                       >
-                        Mostrando{" "}
-                        {(currentPageEliminados - 1) * pageSizeModal + 1} -{" "}
-                        {Math.min(
-                          currentPageEliminados * pageSizeModal,
-                          eliminadosData.length,
-                        )}{" "}
-                        de {eliminadosData.length} registros
+                        {t("pagination.showing", {
+                          from: (currentPageEliminados - 1) * pageSizeModal + 1,
+                          to: Math.min(
+                            currentPageEliminados * pageSizeModal,
+                            eliminadosData.length,
+                          ),
+                          total: eliminadosData.length,
+                        })}
                       </p>
                       <div id="id-sanidad-modal-eliminados-paginacion">
                         <Paginacion
@@ -1047,7 +1082,7 @@ const SanidadAnimalPage = () => {
                   id="id-sanidad-modal-historial-empty"
                   className="text-center py-8 text-muted-foreground"
                 >
-                  No hay cambios registrados en el historial
+                  {t("modal.noHistory")}
                 </div>
               ) : (
                 <>
@@ -1061,13 +1096,14 @@ const SanidadAnimalPage = () => {
                   {historialData.length > pageSizeModal && (
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
                       <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
-                        Mostrando{" "}
-                        {(currentPageHistorial - 1) * pageSizeModal + 1} -{" "}
-                        {Math.min(
-                          currentPageHistorial * pageSizeModal,
-                          historialData.length,
-                        )}{" "}
-                        de {historialData.length} registros
+                        {t("pagination.showing", {
+                          from: (currentPageHistorial - 1) * pageSizeModal + 1,
+                          to: Math.min(
+                            currentPageHistorial * pageSizeModal,
+                            historialData.length,
+                          ),
+                          total: historialData.length,
+                        })}
                       </p>
                       <div>
                         <Paginacion

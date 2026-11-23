@@ -35,7 +35,6 @@ import { FormPorcinoData } from "@/api/animales/interfaces/crear-porcino.interfa
 import {
   condicionCorporalOptions,
   etapaPorcinoOptions,
-  sexoPorcinoOptions,
   tipoAlimentacionPorcinoOptions,
   tipoRegistroPorcinoOptions,
 } from "@/helpers/data/animales/animales-data";
@@ -73,6 +72,11 @@ const FormAddPorcino = ({ selectedEspecieId }: Props) => {
       cuarentena_porcino: false,
     },
   });
+
+  const sexoItems = [
+    { value: "macho", label: t("fields.sexoMacho") },
+    { value: "hembra", label: t("fields.sexoHembra") },
+  ];
 
   const { data: razas } = useGetRazasByEspecie(selectedEspecieId);
   const { data: fincas } = useFincasPropietarios(cliente?.id ?? "");
@@ -226,7 +230,7 @@ const FormAddPorcino = ({ selectedEspecieId }: Props) => {
                   onValueChange={(value) => setValue("sexo", value)}
                   className="space-y-2"
                 >
-                  {sexoPorcinoOptions.map((sexo) => (
+                  {sexoItems.map((sexo) => (
                     <div
                       key={sexo.value}
                       className="flex items-center space-x-2"

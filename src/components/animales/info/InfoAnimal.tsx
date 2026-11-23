@@ -9,19 +9,23 @@ import {
   Baby,
   CalendarCheck,
 } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
 
 interface Props {
   animal: Animal;
 }
 
 const InfoAnimal = ({ animal }: Props) => {
+  const t = useTranslations("infoAnimal");
+  const locale = useLocale();
+
   return (
     <div className="space-y-2">
       {animal.fecha_nacimiento && (
         <div className="flex items-start gap-2 rounded-md bg-background p-2">
           <Calendar className="w-5 h-5 text-muted-foreground mt-1" />
           <p className="text-sm text-foreground">
-            <span className="font-medium">Nacimiento:</span>{" "}
+            <span className="font-medium">{t("birth")}:</span>{" "}
             {animal.fecha_nacimiento}
           </p>
         </div>
@@ -30,8 +34,8 @@ const InfoAnimal = ({ animal }: Props) => {
       <div className="flex items-start gap-2 rounded-md bg-background p-2">
         <CalendarCheck className="w-5 h-5 text-muted-foreground mt-1" />
         <p className="text-sm text-foreground">
-          <span className="font-medium">Registro:</span>{" "}
-          {new Date(animal.fecha_registro).toLocaleDateString()}
+          <span className="font-medium">{t("registration")}:</span>{" "}
+          {new Date(animal.fecha_registro).toLocaleDateString(locale)}
         </p>
       </div>
 
@@ -39,7 +43,7 @@ const InfoAnimal = ({ animal }: Props) => {
         <div className="flex items-start gap-2 rounded-md bg-background p-2">
           <Palette className="w-5 h-5 text-muted-foreground mt-1" />
           <p className="text-sm text-foreground">
-            <span className="font-medium">Color:</span> {animal.color}
+            <span className="font-medium">{t("color")}:</span> {animal.color}
           </p>
         </div>
       )}
@@ -47,7 +51,8 @@ const InfoAnimal = ({ animal }: Props) => {
       <div className="flex items-start gap-2 rounded-md bg-background p-2">
         <Clock className="w-5 h-5 text-muted-foreground mt-1" />
         <p className="text-sm text-foreground">
-          <span className="font-medium">Edad:</span> {animal.edad_promedio} años
+          <span className="font-medium">{t("age")}:</span>{" "}
+          {animal.edad_promedio} {t("years")}
         </p>
       </div>
 
@@ -55,7 +60,7 @@ const InfoAnimal = ({ animal }: Props) => {
         <div className="flex items-start gap-2 rounded-md bg-background p-2">
           <Dna className="w-5 h-5 text-muted-foreground mt-1" />
           <p className="text-sm text-foreground">
-            <span className="font-medium">Pureza:</span> {animal.pureza}
+            <span className="font-medium">{t("purity")}:</span> {animal.pureza}
           </p>
         </div>
       )}
@@ -63,7 +68,7 @@ const InfoAnimal = ({ animal }: Props) => {
       <div className="flex items-start gap-2 rounded-md bg-background p-2">
         <Baby className="w-5 h-5 text-muted-foreground mt-1" />
         <p className="text-sm text-foreground">
-          <span className="font-medium">Reproducción:</span>{" "}
+          <span className="font-medium">{t("reproduction")}:</span>{" "}
           {animal.tipo_reproduccion}
         </p>
       </div>

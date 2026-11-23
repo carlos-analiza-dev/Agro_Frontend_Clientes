@@ -3,6 +3,7 @@
 import useGetProductosDisponibles from "@/hooks/productos/useGetProductosDisponibles";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, ShoppingCart, Sparkles, Grid3x3 } from "lucide-react";
 import { useAuthStore } from "@/providers/store/useAuthStore";
@@ -15,6 +16,8 @@ import LoaderProducts from "@/components/products/LoaderProducts";
 import CategoryButton from "@/components/products/CategoryButton";
 
 const ProductosPage = () => {
+  const t = useTranslations("productosPage");
+
   const { cliente } = useAuthStore();
   const router = useRouter();
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -87,16 +90,19 @@ const ProductosPage = () => {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/50 backdrop-blur-sm border border-white/40 mb-4">
               <Sparkles className="h-4 w-4 text-green-500" />
               <span className="text-xs font-medium text-gray-500">
-                Cargando productos...
+                {t("loading")}
               </span>
             </div>
+
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-700 via-green-600 to-green-700 bg-clip-text text-transparent">
-              Productos Disponibles
+              {t("title")}
             </h1>
+
             <p className="text-sm md:text-base text-gray-400 mt-2">
-              Descubre nuestra amplia gama de productos
+              {t("description")}
             </p>
           </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
             {[...Array(8)].map((_, i) => (
               <SkeletonProducts key={i} />
@@ -116,10 +122,11 @@ const ProductosPage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="mb-8 text-center">
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-700 via-green-600 to-green-700 bg-clip-text text-transparent">
-              Productos Disponibles
+              {t("title")}
             </h1>
+
             <p className="text-sm md:text-base text-gray-400 mt-2">
-              Descubre nuestra amplia gama de productos
+              {t("description")}
             </p>
           </div>
 
@@ -143,7 +150,7 @@ const ProductosPage = () => {
                     isActive={categoriaId === ""}
                     onClick={() => setCategoriaId("")}
                   >
-                    Todos
+                    {t("allCategories")}
                   </CategoryButton>
                 </div>
 
@@ -181,10 +188,11 @@ const ProductosPage = () => {
           </div>
 
           <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-700 via-green-600 to-green-700 bg-clip-text text-transparent">
-            Productos Disponibles
+            {t("title")}
           </h1>
+
           <p className="text-sm md:text-base text-gray-400 mt-2">
-            Descubre nuestra amplia gama de productos
+            {t("description")}
           </p>
         </div>
 
@@ -205,7 +213,7 @@ const ProductosPage = () => {
                   isActive={categoriaId === ""}
                   onClick={() => setCategoriaId("")}
                 >
-                  Todos
+                  {t("allCategories")}
                 </CategoryButton>
               </div>
 
@@ -244,10 +252,10 @@ const ProductosPage = () => {
                 className="w-full h-12 flex justify-center items-center mt-6"
               >
                 {isFetchingNextPage ? (
-                  <LoaderProducts text="Cargando más productos..." />
+                  <LoaderProducts text={t("loadingMore")} />
                 ) : (
                   <span className="text-sm text-gray-400">
-                    Desplázate para cargar más
+                    {t("scrollToLoadMore")}
                   </span>
                 )}
               </div>
@@ -255,7 +263,7 @@ const ProductosPage = () => {
 
             {isFetchingNextPage && !isMobile && (
               <div className="flex justify-center mt-8">
-                <LoaderProducts text="Cargando..." />
+                <LoaderProducts text={t("loading")} />
               </div>
             )}
 
@@ -268,7 +276,7 @@ const ProductosPage = () => {
                   variant="ghost"
                 >
                   <Grid3x3 className="w-4 h-4 mr-2" />
-                  Cargar más productos
+                  {t("loadMore")}
                 </Button>
               </div>
             )}
@@ -277,7 +285,7 @@ const ProductosPage = () => {
               <div className="text-center mt-8">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 backdrop-blur-sm border border-gray-200/50">
                   <span className="text-sm text-gray-400">
-                    🎉 Has visto todos los productos disponibles
+                    🎉 {t("allProductsViewed")}
                   </span>
                 </div>
               </div>
@@ -288,18 +296,19 @@ const ProductosPage = () => {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/80 backdrop-blur-sm border border-gray-200/50 mb-4">
               <ShoppingCart className="w-10 h-10 text-gray-300" />
             </div>
+
             <h3 className="text-xl font-semibold text-gray-700 mb-2">
-              No hay productos disponibles
+              {t("empty.title")}
             </h3>
-            <p className="text-gray-400 mb-4">
-              Prueba a recargar la página o vuelve más tarde
-            </p>
+
+            <p className="text-gray-400 mb-4">{t("empty.description")}</p>
+
             <Button
               onClick={onRefresh}
               className="rounded-full px-6 py-2.5 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-[0_4px_16px_rgba(34,197,94,0.3)] transition-all duration-300"
             >
               <RefreshCw className="w-4 h-4 mr-2" />
-              Recargar
+              {t("refresh")}
             </Button>
           </div>
         )}

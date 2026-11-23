@@ -2,6 +2,7 @@
 
 import { Separator } from "@/components/ui/separator";
 import { User, Tag, PawPrint, Hash } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Raza {
   nombre: string;
@@ -22,7 +23,14 @@ const AnimalParentInfo = ({
   razas,
   numeroParto,
 }: Props) => {
-  if (!nombre && !arete && (!razas || razas.length === 0) && !numeroParto) {
+  const t = useTranslations("animalParentInfo");
+
+  if (
+    !nombre &&
+    !arete &&
+    (!razas || razas.length === 0) &&
+    numeroParto === undefined
+  ) {
     return null;
   }
 
@@ -36,7 +44,7 @@ const AnimalParentInfo = ({
         <div className="flex items-start gap-2 rounded-md bg-background p-2">
           <User className="h-5 w-5 text-muted-foreground" />
           <p className="text-sm text-foreground">
-            <span className="font-medium">Nombre:</span> {nombre}
+            <span className="font-medium">{t("name")}:</span> {nombre}
           </p>
         </div>
       )}
@@ -45,7 +53,7 @@ const AnimalParentInfo = ({
         <div className="flex items-start gap-2 rounded-md bg-background p-2">
           <Tag className="h-5 w-5 text-muted-foreground" />
           <p className="text-sm text-foreground">
-            <span className="font-medium">Arete:</span> {arete}
+            <span className="font-medium">{t("tag")}:</span> {arete}
           </p>
         </div>
       )}
@@ -54,12 +62,12 @@ const AnimalParentInfo = ({
         <div className="flex items-start gap-2 rounded-md bg-background p-2">
           <PawPrint className="h-5 w-5 text-muted-foreground" />
           <p className="text-sm text-foreground">
-            <span className="font-medium">Raza:</span>{" "}
+            <span className="font-medium">{t("breed")}:</span>{" "}
             {razas.length === 1
               ? razas[0].nombre
               : razas.length > 1
-                ? "Encaste"
-                : "Sin raza"}
+                ? t("crossbreed")
+                : t("noBreed")}
           </p>
         </div>
       )}
@@ -68,7 +76,8 @@ const AnimalParentInfo = ({
         <div className="flex items-start gap-2 rounded-md bg-background p-2">
           <Hash className="h-5 w-5 text-muted-foreground" />
           <p className="text-sm text-foreground">
-            <span className="font-medium">Número de parto:</span> {numeroParto}
+            <span className="font-medium">{t("birthNumber")}:</span>{" "}
+            {numeroParto}
           </p>
         </div>
       )}

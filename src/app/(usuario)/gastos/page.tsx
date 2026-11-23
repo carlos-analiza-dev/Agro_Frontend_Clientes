@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { BanknoteArrowDown, Filter, Plus } from "lucide-react";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
@@ -29,6 +30,8 @@ import ButtonAdd from "@/components/generics/ButtonAdd";
 import TitlePage from "@/components/generics/TitlePage";
 
 const GastosPage = () => {
+  const t = useTranslations("gastosPage");
+
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id ?? "";
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
@@ -121,8 +124,12 @@ const GastosPage = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <TitlePage
           id_title="gastos-page-title"
-          title={`Control de Gastos ${fincaSelected ? fincaSelected?.nombre_finca : ""}`}
-          description="Registra y monitorea todos los gastos de tus fincas"
+          title={t("title", {
+            farm: fincaSelected?.nombre_finca
+              ? ` - ${fincaSelected.nombre_finca}`
+              : "",
+          })}
+          description={t("description")}
           Icon={BanknoteArrowDown}
         />
 
@@ -136,7 +143,7 @@ const GastosPage = () => {
                   className="flex-1 sm:flex-none"
                 >
                   <Filter className="h-4 w-4 mr-2" />
-                  Filtros
+                  {t("filters")}
                   {contarFiltrosActivos() > 0 && (
                     <span className="ml-1 bg-green-600 text-white text-xs rounded-full w-5 h-5 inline-flex items-center justify-center">
                       {contarFiltrosActivos()}
@@ -147,7 +154,7 @@ const GastosPage = () => {
 
               <SheetContent side="bottom" className="h-[85vh] rounded-t-xl">
                 <SheetHeader>
-                  <SheetTitle>Filtros de búsqueda</SheetTitle>
+                  <SheetTitle>{t("searchFilters")}</SheetTitle>
                 </SheetHeader>
 
                 <div
@@ -173,7 +180,7 @@ const GastosPage = () => {
               className="flex-1 sm:flex-none"
             >
               <Filter className="h-4 w-4 mr-2" />
-              Filtros
+              {t("filters")}
               {contarFiltrosActivos() > 0 && (
                 <span className="ml-1 bg-green-600 text-white text-xs rounded-full w-5 h-5 inline-flex items-center justify-center">
                   {contarFiltrosActivos()}
@@ -185,7 +192,7 @@ const GastosPage = () => {
           <ButtonAdd
             id="add-gasto-btn"
             Icon={Plus}
-            title="Nuevo Gasto"
+            title={t("newExpense")}
             action={handleNewGasto}
             className="bg-green-600 hover:bg-green-700"
           />
@@ -242,7 +249,9 @@ const GastosPage = () => {
           className="bg-gray-50 rounded-lg p-4 flex flex-wrap justify-between items-center gap-4"
         >
           <div>
-            <span className="text-sm text-gray-600">Total de gastos:</span>
+            <span className="text-sm text-gray-600">
+              {t("summary.totalExpenses")}:
+            </span>
 
             <span className="ml-2 text-xl font-bold text-red-600">
               {moneda}{" "}
@@ -255,21 +264,26 @@ const GastosPage = () => {
           </div>
 
           <div>
-            <span className="text-sm text-gray-600">Mostrando:</span>
+            <span className="text-sm text-gray-600">
+              {t("summary.showing")}:
+            </span>
 
             <span className="ml-2 text-sm">
-              {gastosData.data.length} de {gastosData.total} registros
+              {t("summary.records", {
+                count: gastosData.data.length,
+                total: gastosData.total,
+              })}
             </span>
           </div>
         </div>
       )}
 
       <Modal
-        title={selectedGasto ? "Editar Gasto" : "Ingresar Nuevo Gasto"}
+        title={selectedGasto ? t("modal.editTitle") : t("modal.createTitle")}
         description={
           selectedGasto
-            ? "Aquí podrás editar los gastos que tienes por cada finca"
-            : "Aquí podrás ingresar los gastos que tienes por cada finca"
+            ? t("modal.editDescription")
+            : t("modal.createDescription")
         }
         open={openModal}
         onOpenChange={handleCloseModal}

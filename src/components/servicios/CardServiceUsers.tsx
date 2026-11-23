@@ -1,8 +1,11 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { Servicio } from "@/api/servicios/interfaces/response-servicios.interface";
 import ButtonAdd from "../generics/ButtonAdd";
+import { useTranslations } from "next-intl";
 
 interface Props {
   services: Servicio;
@@ -10,6 +13,8 @@ interface Props {
 }
 
 const CardServiceUsers = ({ services, onPress }: Props) => {
+  const t = useTranslations("cardServiceUsers");
+
   return (
     <Card className="w-full overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       <div className="relative w-full h-32 md:h-60">
@@ -29,10 +34,11 @@ const CardServiceUsers = ({ services, onPress }: Props) => {
               {services.nombre}
             </h3>
           </div>
+
           <ButtonAdd
             id="id-add-cita"
             Icon={ArrowRight}
-            title="Agendar Cita"
+            title={t("scheduleAppointment")}
             action={onPress}
             className="bg-green-600 hover:bg-green-700"
           />

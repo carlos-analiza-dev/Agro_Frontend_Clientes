@@ -89,11 +89,6 @@ export const etapaOptions = [
   { value: EtapaPez.ENGORDE, label: "Engorde" },
 ];
 
-export const sexoCaprinoOptions = [
-  { label: "Macho entero", value: "Macho" },
-  { label: "Hembra", value: "Hembra" },
-];
-
 export const edadCaprinoOptions = [
   { label: "Cabrito (0-4 m)", value: 1 },
   { label: "Cabrita / Cabrito de levante", value: 2 },
@@ -162,11 +157,6 @@ export const etapaAvicolaOptions = [
   { value: EtapaAvicola.CRECIMIENTO, label: "Crecimiento" },
   { value: EtapaAvicola.ENGORDE, label: "Engorde" },
   { value: EtapaAvicola.AYUNO, label: "Ayuno" },
-];
-
-export const sexoPorcinoOptions = [
-  { value: "Macho", label: "Macho" },
-  { value: "Hembra", label: "Hembra" },
 ];
 
 export const tipoRegistroPorcinoOptions = [

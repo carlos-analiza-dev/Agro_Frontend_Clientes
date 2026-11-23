@@ -41,7 +41,6 @@ import {
   condicionCorporalOptions,
   edadOvinoOptions,
   propositoOvinoOptions,
-  sexoCaprinoOptions,
   tipoAlimentacionCaprinoOptions,
   tipoNacimientoOptions,
 } from "@/helpers/data/animales/animales-data";
@@ -107,6 +106,11 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
     sexo: SexoAnimal.Hembra,
     especie: selectedEspecieId,
   });
+
+  const sexoItems = [
+    { value: "macho", label: t("fields.sexoMacho") },
+    { value: "hembra", label: t("fields.sexoHembra") },
+  ];
 
   useEffect(() => {
     if (machos) {
@@ -585,7 +589,7 @@ const FormAddOvino = ({ setActiveTab, selectedEspecieId }: Props) => {
                     onValueChange={(value) => setValue("sexo", value)}
                     className="space-y-2"
                   >
-                    {sexoCaprinoOptions.map((sexo) => (
+                    {sexoItems.map((sexo) => (
                       <div
                         key={sexo.value}
                         className="flex items-center space-x-2"

@@ -1,4 +1,5 @@
 "use client";
+
 import { EstadoPedido } from "@/api/pedidos/interface/crear-pedido.interface";
 import EmptyPedidos from "@/components/pedidos/EmptyPedidos";
 import PedidoCard from "@/components/pedidos/PedidoCard";
@@ -9,10 +10,12 @@ import useGetPedidosCliente from "@/hooks/pedidos/useGetPedidosCliente";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { AlertCircle, ShoppingCart } from "lucide-react";
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 
 const ITEMS_PER_PAGE = 5;
 
 const PedidosCanceladosPage = () => {
+  const t = useTranslations("pedidosCanceladosPage");
   const { cliente } = useAuthStore();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,11 +42,13 @@ const PedidosCanceladosPage = () => {
   return (
     <div id="id-container-pedidos" className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Mis Pedidos</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t("title")}</h1>
         <p className="text-gray-600">
-          Mostrando {(currentPage - 1) * ITEMS_PER_PAGE + 1} -{" "}
-          {Math.min(currentPage * ITEMS_PER_PAGE, pedidosData.total)} de{" "}
-          {pedidosData.total} pedidos
+          {t("showing", {
+            start: (currentPage - 1) * ITEMS_PER_PAGE + 1,
+            end: Math.min(currentPage * ITEMS_PER_PAGE, pedidosData.total),
+            total: pedidosData.total,
+          })}
         </p>
       </div>
 

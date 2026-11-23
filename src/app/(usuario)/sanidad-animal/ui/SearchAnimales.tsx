@@ -1,3 +1,5 @@
+"use client";
+
 import { Animal } from "@/api/animales/interfaces/response-animales.interface";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -5,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { ChevronDown, Search, User, X } from "lucide-react";
 import { Dispatch, RefObject, SetStateAction } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   animalDropdownRef: RefObject<HTMLDivElement>;
@@ -51,6 +54,8 @@ const SearchAnimales = ({
   badgeTextColor = "text-blue-700",
   badgeBorderColor = "border-blue-200",
 }: Props) => {
+  const t = useTranslations("searchAnimales");
+
   return (
     <div className="relative" ref={animalDropdownRef}>
       <div
@@ -59,16 +64,18 @@ const SearchAnimales = ({
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <User className={`h-4 w-4 ${iconColor} flex-shrink-0`} />
           <label className={`text-xs sm:text-sm font-medium ${textColor}`}>
-            Buscar animal/galpon/lote:
+            {t("searchLabel")}
           </label>
         </div>
+
         <div className="relative flex-1 w-full">
           <div className="relative">
             <Search
               className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 ${iconColor.replace("text-", "text-").replace("600", "400")}`}
             />
+
             <Input
-              placeholder="Buscar por nombre o identificación..."
+              placeholder={t("searchPlaceholder")}
               value={animalSearchTerm}
               onChange={(e) => {
                 setAnimalSearchTerm(e.target.value);
@@ -80,15 +87,18 @@ const SearchAnimales = ({
               onFocus={() => setIsAnimalDropdownOpen(true)}
               className={`pl-9 pr-10 h-9 sm:h-10 text-sm bg-white border ${inputBorderColor} ${inputFocusColor}`}
             />
+
             {animalSearchTerm && (
               <button
                 type="button"
                 onClick={clearAnimalSelection}
+                aria-label={t("clearSearch")}
                 className="absolute right-9 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
             )}
+
             <ChevronDown
               className={cn(
                 "absolute right-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground transition-transform",
@@ -101,11 +111,11 @@ const SearchAnimales = ({
             <div className="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
               {cargando_animales ? (
                 <div className="p-4 text-center text-muted-foreground">
-                  Cargando animales...
+                  {t("loading")}
                 </div>
               ) : animalesFiltrados.length === 0 ? (
                 <div className="p-4 text-center text-muted-foreground">
-                  No se encontraron animales
+                  {t("noResults")}
                 </div>
               ) : (
                 <div>
@@ -130,22 +140,27 @@ const SearchAnimales = ({
                               {animal.identificador.slice(0, 5)}
                             </AvatarFallback>
                           </Avatar>
+
                           <div className="font-medium text-sm">
                             {animal.nombre_animal || animal.identificador}
                           </div>
+
                           <div className="text-xs text-muted-foreground flex gap-2">
-                            <span>ID: {animal.identificador}</span>
+                            <span>
+                              {t("identifier")}: {animal.identificador}
+                            </span>
                             <span>•</span>
                             <span>
-                              {animal.especie?.nombre || "Sin especie"}
+                              {animal.especie?.nombre || t("noSpecies")}
                             </span>
                           </div>
                         </div>
                       </div>
+
                       <Badge variant="outline" className="text-xs">
                         {animal.razas.length > 0
                           ? animal.razas[0].nombre
-                          : "Sin raza"}
+                          : t("noBreed")}
                       </Badge>
                     </div>
                   ))}
@@ -154,6 +169,7 @@ const SearchAnimales = ({
             </div>
           )}
         </div>
+
         {selectedAnimal && (
           <Badge
             className={`${badgeBgColor} ${badgeTextColor} border ${badgeBorderColor} whitespace-nowrap text-xs`}
@@ -163,6 +179,7 @@ const SearchAnimales = ({
             <button
               type="button"
               onClick={clearAnimalSelection}
+              aria-label={t("clearSelection")}
               className="ml-1 hover:text-foreground"
             >
               <X className="h-3 w-3" />

@@ -1,3 +1,5 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Calendar, HelpCircle, Info, Loader2, Scale } from "lucide-react";
 import { FormEvent } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   handleSubmit: (e: FormEvent<Element>) => Promise<void>;
@@ -29,6 +32,8 @@ const FormCalcularPesos = ({
   error,
   edadNum,
 }: Props) => {
+  const t = useTranslations("formCalcularPesos");
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-3">
@@ -38,15 +43,18 @@ const FormCalcularPesos = ({
             className="text-sm font-medium text-gray-700 flex items-center gap-2"
           >
             <Calendar className="h-4 w-4 text-gray-400" />
-            Edad del Animal
+            {t("animalAge")}
           </label>
+
           <Tooltip>
             <TooltipTrigger asChild>
               <HelpCircle className="h-4 w-4 text-gray-400 cursor-help" />
             </TooltipTrigger>
             <TooltipContent side="top">
-              <p>Ingrese la edad en meses (1-600 meses)</p>
-              <p className="text-xs text-gray-300">Equivalente a 0-50 años</p>
+              <p>{t("tooltip.enterAge")}</p>
+              <p className="text-xs text-gray-300">
+                {t("tooltip.ageEquivalent")}
+              </p>
             </TooltipContent>
           </Tooltip>
         </div>
@@ -58,7 +66,7 @@ const FormCalcularPesos = ({
             min="1"
             max="600"
             step="1"
-            placeholder="Ej: 24"
+            placeholder={t("placeholder")}
             value={edad}
             onChange={(e) => {
               setEdad(e.target.value);
@@ -71,11 +79,12 @@ const FormCalcularPesos = ({
               edad && "border-blue-200 focus-visible:border-blue-500",
             )}
           />
+
           <Badge
             variant="secondary"
             className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none bg-gray-100"
           >
-            meses
+            {t("months")}
           </Badge>
         </div>
 
@@ -83,8 +92,11 @@ const FormCalcularPesos = ({
           <div className="flex items-center gap-2 text-sm text-gray-600 bg-blue-50 p-2 rounded-md">
             <Info className="h-4 w-4 text-blue-500" />
             <span>
-              {edadNum} meses = {Math.floor(edadNum / 12)} años{" "}
-              {edadNum % 12 > 0 ? `y ${edadNum % 12} meses` : ""}
+              {t("ageConversion", {
+                months: edadNum,
+                years: Math.floor(edadNum / 12),
+                remainingMonths: edadNum % 12,
+              })}
             </span>
           </div>
         )}
@@ -98,18 +110,19 @@ const FormCalcularPesos = ({
         {isLoading ? (
           <>
             <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-            Calculando...
+            {t("calculating")}
           </>
         ) : (
           <>
             <Scale className="mr-2 h-5 w-5" />
-            Calcular Peso Esperado
+            {t("calculateExpectedWeight")}
           </>
         )}
       </Button>
 
       <div className="pt-4 border-t">
-        <p className="text-xs text-gray-500 mb-2">Edades sugeridas:</p>
+        <p className="text-xs text-gray-500 mb-2">{t("suggestedAges")}</p>
+
         <div className="flex flex-wrap gap-2">
           {[6, 12, 24, 36, 48, 60].map((sugerencia) => (
             <Button
@@ -121,7 +134,7 @@ const FormCalcularPesos = ({
               disabled={isLoading}
               className="text-xs"
             >
-              {sugerencia} meses
+              {t("suggestionMonths", { months: sugerencia })}
             </Button>
           ))}
         </div>

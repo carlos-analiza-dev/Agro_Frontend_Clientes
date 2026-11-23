@@ -1,4 +1,6 @@
 "use client";
+
+import { useTranslations } from "next-intl";
 import { Ingreso } from "@/api/finanzas/ingresos/interface/response-ingresos.interface";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 import { useAuthStore } from "@/providers/store/useAuthStore";
@@ -28,6 +30,8 @@ import ButtonAdd from "@/components/generics/ButtonAdd";
 import TitlePage from "@/components/generics/TitlePage";
 
 const IngresosPage = () => {
+  const t = useTranslations("ingresosPage");
+
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id ?? "";
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
@@ -120,8 +124,10 @@ const IngresosPage = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <TitlePage
           id_title="ingresos-page-title"
-          title={`Control de Ingresos ${fincaSelected ? fincaSelected?.nombre_finca : ""}`}
-          description="Registra y monitorea todos los ingresos de tus fincas"
+          title={t("title", {
+            farm: fincaSelected ? ` ${fincaSelected.nombre_finca}` : "",
+          })}
+          description={t("description")}
           Icon={BanknoteArrowUp}
         />
 
@@ -135,7 +141,7 @@ const IngresosPage = () => {
                   className="flex-1 sm:flex-none"
                 >
                   <Filter className="h-4 w-4 mr-2" />
-                  Filtros
+                  {t("filters")}
                   {contarFiltrosActivos() > 0 && (
                     <span className="ml-1 bg-green-600 text-white text-xs rounded-full w-5 h-5 inline-flex items-center justify-center">
                       {contarFiltrosActivos()}
@@ -145,7 +151,7 @@ const IngresosPage = () => {
               </SheetTrigger>
               <SheetContent side="bottom" className="h-[85vh] rounded-t-xl">
                 <SheetHeader>
-                  <SheetTitle>Filtros de búsqueda</SheetTitle>
+                  <SheetTitle>{t("searchFilters")}</SheetTitle>
                 </SheetHeader>
                 <div className="mt-4 overflow-y-auto h-full pb-20">
                   <FiltrosGastosIngresos
@@ -167,7 +173,7 @@ const IngresosPage = () => {
               className="flex-1 sm:flex-none"
             >
               <Filter className="h-4 w-4 mr-2" />
-              Filtros
+              {t("filters")}
               {contarFiltrosActivos() > 0 && (
                 <span className="ml-1 bg-green-600 text-white text-xs rounded-full w-5 h-5 inline-flex items-center justify-center">
                   {contarFiltrosActivos()}
@@ -175,10 +181,11 @@ const IngresosPage = () => {
               )}
             </Button>
           )}
+
           <ButtonAdd
             id="add-ingreso-btn"
             Icon={Plus}
-            title="Nuevo Ingreso"
+            title={t("newIncome")}
             action={handleNewIngreso}
             className="bg-green-600 hover:bg-green-700"
           />
@@ -235,7 +242,9 @@ const IngresosPage = () => {
           className="bg-gray-50 rounded-lg p-4 flex flex-wrap justify-between items-center gap-4"
         >
           <div>
-            <span className="text-sm text-gray-600">Total de ingresos:</span>
+            <span className="text-sm text-gray-600">
+              {t("summary.totalIncome")}:
+            </span>
             <span className="ml-2 text-xl font-bold text-green-600">
               {moneda}{" "}
               {ingresosData.data
@@ -244,20 +253,25 @@ const IngresosPage = () => {
             </span>
           </div>
           <div>
-            <span className="text-sm text-gray-600">Mostrando:</span>
+            <span className="text-sm text-gray-600">
+              {t("summary.showing")}:
+            </span>
             <span className="ml-2 text-sm">
-              {ingresosData.data.length} de {ingresosData.total} registros
+              {t("summary.records", {
+                count: ingresosData.data.length,
+                total: ingresosData.total,
+              })}
             </span>
           </div>
         </div>
       )}
 
       <Modal
-        title={selectedIngreso ? "Editar Ingreso" : "Ingresar Nuevo Ingreso"}
+        title={selectedIngreso ? t("modal.editTitle") : t("modal.createTitle")}
         description={
           selectedIngreso
-            ? "Aquí podrás editar los ingresos que tienes por cada finca"
-            : "Aquí podrás ingresar los ingresos que tienes por cada finca"
+            ? t("modal.editDescription")
+            : t("modal.createDescription")
         }
         open={openModal}
         onOpenChange={handleCloseModal}

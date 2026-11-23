@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -13,13 +14,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import {
-  ChevronDown,
-  X,
-  List,
-  Image as ImageIcon,
-  PawPrint,
-} from "lucide-react";
+import { X, List, PawPrint } from "lucide-react";
 
 interface Animal {
   id: string;
@@ -41,9 +36,10 @@ const ThemedAnimalPicker = ({
   animals,
   selectedAnimals,
   onSelectionChange,
-  label = "Seleccionar animales",
+  label,
   multiple = true,
 }: ThemedAnimalPickerProps) => {
+  const t = useTranslations("themedAnimalPicker");
   const [isOpen, setIsOpen] = useState(false);
 
   const unselectedAnimals = animals.filter(
@@ -55,6 +51,7 @@ const ThemedAnimalPicker = ({
       const newSelection = selectedAnimals.includes(animalId)
         ? selectedAnimals.filter((id) => id !== animalId)
         : [...selectedAnimals, animalId];
+
       onSelectionChange(newSelection);
     } else {
       onSelectionChange(selectedAnimals.includes(animalId) ? [] : [animalId]);
@@ -86,16 +83,18 @@ const ThemedAnimalPicker = ({
           >
             <div className="flex items-center space-x-3">
               <List className="h-5 w-5" />
-              <span className="font-medium">{label}</span>
+              <span className="font-medium">{label || t("selectAnimals")}</span>
             </div>
           </AccordionTrigger>
+
           <AccordionContent className="px-0">
             <div className="border-t">
               {selectedAnimals.length > 0 && multiple && (
                 <div className="flex items-center justify-between px-4 py-2 border-b bg-muted/50">
                   <span className="text-sm text-muted-foreground">
-                    {selectedAnimals.length} seleccionado(s)
+                    {t("selectedCount", { count: selectedAnimals.length })}
                   </span>
+
                   <Button
                     variant="ghost"
                     size="sm"
@@ -103,7 +102,7 @@ const ThemedAnimalPicker = ({
                     className="h-8 px-2 text-destructive hover:text-destructive/90"
                   >
                     <X className="h-3 w-3 mr-1" />
-                    Limpiar
+                    {t("clear")}
                   </Button>
                 </div>
               )}
@@ -150,6 +149,7 @@ const ThemedAnimalPicker = ({
                               >
                                 {animal.identificador}
                               </Label>
+
                               <div className="flex items-center space-x-2 text-xs text-muted-foreground">
                                 <span>{animal.sexo}</span>
                                 <span>•</span>
@@ -163,7 +163,7 @@ const ThemedAnimalPicker = ({
                   ) : (
                     <div className="text-center py-8 text-muted-foreground">
                       <PawPrint className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                      <p>Todos los animales han sido seleccionados</p>
+                      <p>{t("allSelected")}</p>
                     </div>
                   )}
                 </div>
@@ -177,8 +177,9 @@ const ThemedAnimalPicker = ({
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-muted-foreground">
-              Animales seleccionados:
+              {t("selectedAnimals")}
             </span>
+
             <span className="text-xs text-muted-foreground">
               {selectedAnimals.length} / {animals.length}
             </span>
@@ -225,7 +226,7 @@ const ThemedAnimalPicker = ({
       {animals.length === 0 && (
         <div className="text-center py-6 border rounded-lg bg-muted/20">
           <PawPrint className="h-8 w-8 mx-auto mb-2 text-muted-foreground opacity-50" />
-          <p className="text-muted-foreground">No hay animales disponibles</p>
+          <p className="text-muted-foreground">{t("noAnimals")}</p>
         </div>
       )}
     </div>

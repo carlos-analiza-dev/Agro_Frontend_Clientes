@@ -1,3 +1,5 @@
+"use client";
+
 import { Alimento } from "@/api/alimentacion_animal/interface/response-alimentacion.interface";
 import {
   Table,
@@ -25,6 +27,7 @@ import FormAlimentacionAnimal from "./FormAlimentacionAnimal";
 import { Cliente } from "@/interfaces/auth/cliente";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 interface Props {
   alimentos: Alimento[];
@@ -41,6 +44,8 @@ const TableAlimentacionAnimal = ({
   isMobile,
   cliente,
 }: Props) => {
+  const t = useTranslations("tableAlimentacionAnimal");
+
   const [isEdit, setIsEdit] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [editAlimentacion, setEditAlimentacion] = useState<Alimento | null>(
@@ -68,6 +73,14 @@ const TableAlimentacionAnimal = ({
       setOpenModal(true);
       setEditAlimentacion(alimentacion);
     }
+  };
+
+  const getOrigenLabel = (origen: string) => {
+    if (origen === "producido") {
+      return t("origin.produced");
+    }
+
+    return origen;
   };
 
   return (
@@ -116,7 +129,7 @@ const TableAlimentacionAnimal = ({
                     }
                     className="ml-2"
                   >
-                    {alimento.origen}
+                    {getOrigenLabel(alimento.origen)}
                   </Badge>
                 </div>
               </AccordionTrigger>
@@ -130,7 +143,7 @@ const TableAlimentacionAnimal = ({
                       <CardContent className="p-3">
                         <div className="flex items-center gap-2 text-muted-foreground mb-1">
                           <Package className="h-3 w-3" />
-                          <span className="text-xs">Cantidad</span>
+                          <span className="text-xs">{t("quantity")}</span>
                         </div>
                         <p className="text-sm font-medium">
                           {alimento.cantidad} {alimento.unidad}
@@ -142,7 +155,7 @@ const TableAlimentacionAnimal = ({
                       <CardContent className="p-3">
                         <div className="flex items-center gap-2 text-muted-foreground mb-1">
                           <DollarSign className="h-3 w-3" />
-                          <span className="text-xs">Costo</span>
+                          <span className="text-xs">{t("cost")}</span>
                         </div>
                         <p className="text-sm font-medium text-primary">
                           {moneda} {alimento.costo_diario}
@@ -158,7 +171,7 @@ const TableAlimentacionAnimal = ({
                     onClick={() => handleEditAlimentacion(alimento)}
                   >
                     <Pencil className="h-3 w-3 mr-2" />
-                    Editar
+                    {t("buttons.edit")}
                   </Button>
                 </div>
               </AccordionContent>
@@ -174,10 +187,9 @@ const TableAlimentacionAnimal = ({
                   <DollarSign className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium">Costo Total Diario</p>
+                  <p className="text-sm font-medium">{t("totalDailyCost")}</p>
                   <p className="text-xs text-muted-foreground">
-                    {alimentos.length}{" "}
-                    {alimentos.length === 1 ? "registro" : "registros"}
+                    {t("records", { count: alimentos.length })}
                   </p>
                 </div>
               </div>
@@ -185,7 +197,9 @@ const TableAlimentacionAnimal = ({
                 <p className="text-2xl font-bold text-primary">
                   {moneda} {totalCosto.toFixed(2)}
                 </p>
-                <p className="text-xs text-muted-foreground">Por animal</p>
+                <p className="text-xs text-muted-foreground">
+                  {t("perAnimal")}
+                </p>
               </div>
             </div>
 
@@ -204,23 +218,25 @@ const TableAlimentacionAnimal = ({
           <TableHeader>
             <TableRow className="bg-muted/50">
               <TableHead className="text-center font-semibold">
-                Alimento
+                {t("columns.food")}
               </TableHead>
               <TableHead className="text-center font-semibold">
-                Origen
+                {t("columns.origin")}
               </TableHead>
               <TableHead className="text-center font-semibold">
-                Cantidad
+                {t("columns.quantity")}
               </TableHead>
               <TableHead className="text-center font-semibold">
-                Unidad
+                {t("columns.unit")}
               </TableHead>
               <TableHead className="text-center font-semibold">
-                Costo Diario
+                {t("columns.dailyCost")}
               </TableHead>
-              <TableHead className="text-center font-semibold">Fecha</TableHead>
               <TableHead className="text-center font-semibold">
-                Acciones
+                {t("columns.date")}
+              </TableHead>
+              <TableHead className="text-center font-semibold">
+                {t("columns.actions")}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -241,7 +257,7 @@ const TableAlimentacionAnimal = ({
                     }
                     className="capitalize"
                   >
-                    {alimento.origen}
+                    {getOrigenLabel(alimento.origen)}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-center">
@@ -262,7 +278,7 @@ const TableAlimentacionAnimal = ({
                     className="hover:bg-primary/10"
                   >
                     <Pencil className="h-4 w-4 mr-2" />
-                    Editar
+                    {t("buttons.edit")}
                   </Button>
                 </TableCell>
               </TableRow>
@@ -274,7 +290,7 @@ const TableAlimentacionAnimal = ({
               <TableCell colSpan={4} className="font-semibold">
                 <div className="flex items-center gap-2">
                   <DollarSign className="h-4 w-4" />
-                  Costo Total Diario por Animal
+                  {t("totalDailyCostPerAnimal")}
                 </div>
               </TableCell>
               <TableCell
@@ -295,10 +311,10 @@ const TableAlimentacionAnimal = ({
               <Package className="h-8 w-8 text-muted-foreground" />
             </div>
             <p className="text-muted-foreground font-medium">
-              No hay registros de alimentación
+              {t("empty.title")}
             </p>
             <p className="text-sm text-muted-foreground">
-              Agrega alimentos para este animal
+              {t("empty.description")}
             </p>
           </CardContent>
         </Card>
@@ -308,8 +324,8 @@ const TableAlimentacionAnimal = ({
         <Modal
           open={openModal}
           onOpenChange={setOpenModal}
-          title="Editar Alimentación"
-          description="Editar la alimentación diaria de tu animal"
+          title={t("modal.title")}
+          description={t("modal.description")}
           size="xl"
         >
           <FormAlimentacionAnimal

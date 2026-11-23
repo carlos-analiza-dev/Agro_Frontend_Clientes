@@ -1,5 +1,8 @@
+"use client";
+
 import useGetProductosRelacionados from "@/hooks/productos/useGetProductosRelacionados";
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -29,6 +32,8 @@ const ProductosRelacionados = ({
   tipo,
   limit = 6,
 }: Props) => {
+  const t = useTranslations("productosRelacionados");
+
   const { cliente } = useAuthStore();
   const { esFavorito, toggleFavorito } = useFavoritos();
 
@@ -42,9 +47,7 @@ const ProductosRelacionados = ({
     return (
       <Card className="mt-8">
         <CardContent className="p-6 text-center">
-          <p className="text-gray-500">
-            Error al cargar productos relacionados
-          </p>
+          <p className="text-gray-500">{t("error")}</p>
         </CardContent>
       </Card>
     );
@@ -61,12 +64,10 @@ const ProductosRelacionados = ({
     <Card className="mt-12">
       <CardHeader>
         <CardTitle className="block md:flex items-center justify-between">
-          <span className="text-sm md:text-xl font-bold">
-            ¿Qué otros productos compran los clientes tras ver este producto?
-          </span>
+          <span className="text-sm md:text-xl font-bold">{t("title")}</span>
           <Button variant="ghost" size="sm" asChild>
             <Link href="/productos">
-              Ver todos
+              {t("viewAll")}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>

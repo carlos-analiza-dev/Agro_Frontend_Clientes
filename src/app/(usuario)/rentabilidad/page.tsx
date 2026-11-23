@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import useGetRentabilidadGeneral from "@/hooks/finanzas/rentabilidad/useGetRentabilidadGeneral";
 import useGetRentabilidadPorPeriodo from "@/hooks/finanzas/rentabilidad/useGetRentabilidadPorPeriodo";
@@ -33,9 +34,12 @@ import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import TitlePage from "@/components/generics/TitlePage";
 
 const RentabilidadPage = () => {
+  const t = useTranslations("rentabilidadPage");
+
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id ?? "";
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
+
   const [filtros, setFiltros] = useState<FiltrosRentabilidad>({});
   const [periodo, setPeriodo] = useState<"day" | "week" | "month" | "year">(
     "month",
@@ -43,10 +47,13 @@ const RentabilidadPage = () => {
 
   const { data: rentabilidadGeneral, isLoading: isLoadingGeneral } =
     useGetRentabilidadGeneral(filtros);
+
   const { data: rentabilidadPeriodo, isLoading: isLoadingPeriodo } =
     useGetRentabilidadPorPeriodo(periodo, filtros);
+
   const { data: rentabilidadCategorias, isLoading: isLoadingCategorias } =
     useGetRentabilidadPorCategoria(filtros);
+
   const { data: rentabilidadFincas, isLoading: isLoadingFincas } =
     useGetRentabilidadPorFinca(filtros);
 
@@ -74,8 +81,8 @@ const RentabilidadPage = () => {
         <div className="space-y-4">
           <TitlePage
             id_title="rentabilidad-page-title"
-            title={`Dashboard de Rentabilidad`}
-            description="Análisis financiero de tu negocio ganadero"
+            title={t("title")}
+            description={t("description")}
             Icon={ChartNoAxesCombined}
           />
 
@@ -95,23 +102,25 @@ const RentabilidadPage = () => {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
           >
             <MetricCard
-              title="Total Ingresos"
+              title={t("metrics.totalIncome")}
               value={rentabilidadGeneral.totalIngresos}
               icon={DollarSign}
               color="text-green-600"
               bgColor="bg-green-50"
               prefix={moneda}
             />
+
             <MetricCard
-              title="Total Gastos"
+              title={t("metrics.totalExpenses")}
               value={rentabilidadGeneral.totalGastos}
               icon={Wallet}
               color="text-red-600"
               bgColor="bg-red-50"
               prefix={moneda}
             />
+
             <MetricCard
-              title="Rentabilidad Neta"
+              title={t("metrics.netProfitability")}
               value={rentabilidadGeneral.rentabilidadNeta}
               icon={
                 rentabilidadGeneral.rentabilidadNeta >= 0
@@ -130,8 +139,9 @@ const RentabilidadPage = () => {
               }
               prefix={moneda}
             />
+
             <MetricCard
-              title="Margen de Rentabilidad"
+              title={t("metrics.profitabilityMargin")}
               value={rentabilidadGeneral.margenRentabilidad}
               icon={Percent}
               color={
@@ -155,17 +165,21 @@ const RentabilidadPage = () => {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-gray-500">
-                  ROI (Retorno de Inversión)
+                  {t("indicators.roi")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div
-                  className={`text-2xl font-bold ${rentabilidadGeneral.roi >= 0 ? "text-green-600" : "text-red-600"}`}
+                  className={`text-2xl font-bold ${
+                    rentabilidadGeneral.roi >= 0
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }`}
                 >
                   {rentabilidadGeneral.roi.toFixed(2)}%
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Rentabilidad vs inversión total
+                  {t("indicators.roiDescription")}
                 </p>
               </CardContent>
             </Card>
@@ -173,7 +187,7 @@ const RentabilidadPage = () => {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-gray-500">
-                  Ratio Beneficio/Costo
+                  {t("indicators.benefitCostRatio")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -181,7 +195,7 @@ const RentabilidadPage = () => {
                   {ratio.toFixed(2)}
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Ingresos por cada {moneda}1 de gasto
+                  {t("indicators.benefitCostDescription", { currency: moneda })}
                 </p>
               </CardContent>
             </Card>
@@ -200,7 +214,7 @@ const RentabilidadPage = () => {
               className="flex items-center gap-2"
             >
               <BarChart3 className="h-4 w-4" />
-              Evolución
+              {t("tabs.evolution")}
             </TabsTrigger>
 
             <TabsTrigger
@@ -209,7 +223,7 @@ const RentabilidadPage = () => {
               className="flex items-center gap-2"
             >
               <TrendingUp className="h-4 w-4" />
-              Categorías
+              {t("tabs.categories")}
             </TabsTrigger>
 
             <TabsTrigger
@@ -218,7 +232,7 @@ const RentabilidadPage = () => {
               className="flex items-center gap-2"
             >
               <Building2 className="h-4 w-4" />
-              Fincas
+              {t("tabs.farms")}
             </TabsTrigger>
           </TabsList>
 
@@ -233,7 +247,7 @@ const RentabilidadPage = () => {
             {rentabilidadGeneral && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <CardMejorPeorMes
-                  title="Mejor Mes"
+                  title={t("bestWorstMonth.best")}
                   periodo={rentabilidadGeneral.mejorMes?.periodo || ""}
                   moneda={moneda}
                   rentabilidad={
@@ -248,7 +262,7 @@ const RentabilidadPage = () => {
                 />
 
                 <CardMejorPeorMes
-                  title="Peor Mes"
+                  title={t("bestWorstMonth.worst")}
                   periodo={rentabilidadGeneral.peorMes?.periodo || ""}
                   moneda={moneda}
                   rentabilidad={
@@ -268,14 +282,14 @@ const RentabilidadPage = () => {
           <TabsContent value="categorias" className="space-y-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <PieChartCategorias
-                title="Distribución de Ingresos por Categoría"
+                title={t("charts.incomeByCategory")}
                 data={rentabilidadCategorias || []}
                 tipo="ingreso"
                 moneda={moneda}
               />
 
               <PieChartCategorias
-                title="Distribución de Gastos por Categoría"
+                title={t("charts.expensesByCategory")}
                 data={rentabilidadCategorias || []}
                 tipo="gasto"
                 moneda={moneda}

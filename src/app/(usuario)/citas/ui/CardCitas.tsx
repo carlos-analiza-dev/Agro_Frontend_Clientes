@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Card,
   CardContent,
@@ -9,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { Cita } from "@/api/citas/interfaces/response-citas-user.interface";
 import { Calendar, Clock, MapPin, PawPrint, User } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
 
 interface Props {
   item: Cita;
@@ -16,11 +18,14 @@ interface Props {
 }
 
 const CardCitas = ({ item, onPress }: Props) => {
+  const t = useTranslations("cardCitas");
+  const locale = useLocale();
+
   const { cliente } = useAuthStore();
   const pais = cliente?.pais;
 
   const formatDate = (date: any): string => {
-    if (!date) return "N/A";
+    if (!date) return t("notAvailable");
 
     const options: Intl.DateTimeFormatOptions = {
       year: "numeric",
@@ -32,14 +37,27 @@ const CardCitas = ({ item, onPress }: Props) => {
       const [year, month, day] = date.split("-").map(Number);
       const dateObj = new Date(year, month - 1, day);
 
-      return dateObj.toLocaleDateString("es-ES", options);
+      return dateObj.toLocaleDateString(locale, options);
     }
 
     if (date instanceof Date) {
-      return date.toLocaleDateString("es-ES", options);
+      return date.toLocaleDateString(locale, options);
     }
 
-    return "N/A";
+    return t("notAvailable");
+  };
+
+  const getStatusLabel = () => {
+    switch (item.estado.toLowerCase()) {
+      case "pendiente":
+        return t("status.pending");
+      case "cancelada":
+        return t("status.cancelled");
+      case "completada":
+        return t("status.completed");
+      default:
+        return item.estado.toUpperCase();
+    }
   };
 
   const getStatusColor = () => {
@@ -73,7 +91,7 @@ const CardCitas = ({ item, onPress }: Props) => {
             </h3>
           </div>
           <Badge variant="outline" className={getStatusColor()}>
-            {item.estado.toUpperCase()}
+            {getStatusLabel()}
           </Badge>
         </div>
       </CardHeader>
@@ -95,7 +113,9 @@ const CardCitas = ({ item, onPress }: Props) => {
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
             <User className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm truncate">Dr. {item.medico.nombre}</span>
+            <span className="text-sm truncate">
+              {t("doctorPrefix")} {item.medico.nombre}
+            </span>
           </div>
 
           <div className="flex items-center space-x-2">
@@ -111,7 +131,7 @@ const CardCitas = ({ item, onPress }: Props) => {
         {item.animales.length > 0 && (
           <div className="border-t pt-3">
             <h4 className="font-medium text-sm mb-2">
-              Animales ({item.animales.length})
+              {t("animals", { count: item.animales.length })}
             </h4>
             <div className="space-y-2">
               {item.animales.map((animal, index) => (
@@ -129,8 +149,8 @@ const CardCitas = ({ item, onPress }: Props) => {
                     {animal.razas.length === 1
                       ? animal.razas[0]
                       : animal.razas.length > 1
-                        ? "Encaste"
-                        : "Sin raza"}
+                        ? t("crossbreed")
+                        : t("noBreed")}
                   </span>
                 </div>
               ))}
@@ -142,7 +162,7 @@ const CardCitas = ({ item, onPress }: Props) => {
       <CardFooter className="border-t pt-3">
         <div className="w-full text-right">
           <span className="font-bold text-green-700">
-            Total: {pais?.simbolo_moneda || "$"}{" "}
+            {t("total")}: {pais?.simbolo_moneda || "$"}{" "}
             {parseFloat(item.totalPagar).toFixed(2)}
           </span>
         </div>

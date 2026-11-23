@@ -39,6 +39,7 @@ import useGetHorasMedicoByFecha from "@/hooks/horarios/useGetHorasMedicoByFecha"
 import { toast } from "react-toastify";
 import { CreateCita } from "@/api/citas/accions/crear-cita";
 import ThemedAnimalPicker from "@/components/generics/ThemedAnimalPicker";
+import { useTranslations } from "next-intl";
 
 interface HoraDisponibleItem {
   value: string;
@@ -50,12 +51,14 @@ interface HoraDisponibleItem {
 }
 
 const AgregarCitaServicioPage = () => {
+  const t = useTranslations("agregarCitaServicioPage");
+
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const categoriaId = params.id as string;
-  const servicioNombre = searchParams.get("nombre") || "Servicio";
+  const servicioNombre = searchParams.get("nombre") || t("defaults.service");
 
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id || "";
@@ -88,14 +91,17 @@ const AgregarCitaServicioPage = () => {
   const { data: razas } = useGetRazasByEspecie(especieId);
   const { data: fincas } = useFincasPropietarios(clienteId);
   const fincaId = watch("fincaId");
+
   const { data: animales } = useGetAnimalesByFincaEspRaza(
     fincaId,
     especieId,
     razaId,
   );
+
   const { data: servicios } = useGetSubServiciosByServicioId(categoriaId);
 
   const subServicioId = watch("subServicioId");
+
   const { data: medicos } = userGetMedicoByEspecialidadesByPais(
     paisId,
     subServicioId,
@@ -211,6 +217,7 @@ const AgregarCitaServicioPage = () => {
 
   const handleHoraChange = (horaInicioSeleccionada: string) => {
     const duracionServicio = watch("duracion") || 0;
+
     const horaSeleccionada = filteredHours.find(
       (h) => h.horaInicio === horaInicioSeleccionada,
     );
@@ -230,14 +237,13 @@ const AgregarCitaServicioPage = () => {
       if (rangoCompletoDisponible) {
         const horasFin = Math.floor(finMinutos / 60);
         const minutosFin = finMinutos % 60;
+
         const horaFinFormateada = `${horasFin.toString().padStart(2, "0")}:${minutosFin.toString().padStart(2, "0")}`;
 
         setValue("horaInicio", horaSeleccionada.horaInicio);
         setValue("horaFin", horaFinFormateada);
       } else {
-        toast.error(
-          "El rango completo no está disponible para esta hora de inicio",
-        );
+        toast.error(t("errors.unavailableTimeRange"));
       }
     }
   };
@@ -245,7 +251,7 @@ const AgregarCitaServicioPage = () => {
   const mutation = useMutation({
     mutationFn: CreateCita,
     onSuccess: () => {
-      toast.success("Cita agendada exitosamente");
+      toast.success(t("messages.appointmentCreated"));
       queryClient.invalidateQueries({ queryKey: ["citas-user"] });
       reset();
       router.back();
@@ -253,15 +259,16 @@ const AgregarCitaServicioPage = () => {
     onError: (error) => {
       if (isAxiosError(error)) {
         const messages = error.response?.data?.message;
+
         const errorMessage = Array.isArray(messages)
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear la cita";
+            : t("errors.createAppointment");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("errors.unexpected"));
       }
     },
   });
@@ -328,42 +335,45 @@ const AgregarCitaServicioPage = () => {
           className="gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
-          Volver
+          {t("buttons.back")}
         </Button>
       </div>
+
       <div className="container max-w-4xl mx-auto px-4">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Nueva cita para {servicioNombre}
+            {t("title", { service: servicioNombre })}
           </h1>
-          <p className="text-gray-600">
-            Complete la información requerida para agendar la cita
-          </p>
+
+          <p className="text-gray-600">{t("description")}</p>
         </div>
 
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle className="text-xl font-semibold">
-              Información de la Cita
+              {t("card.title")}
             </CardTitle>
           </CardHeader>
+
           <CardContent className="p-6">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-4">
                 <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
                   <MapPin className="h-5 w-5" />
-                  Información General
+                  {t("sections.general")}
                 </h3>
 
                 <div className="space-y-2">
-                  <Label htmlFor="fincaId">Finca</Label>
+                  <Label htmlFor="fincaId">{t("fields.farm")}</Label>
+
                   <Select
                     onValueChange={(value) => setValue("fincaId", value)}
                     value={watch("fincaId")}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecciona una finca" />
+                      <SelectValue placeholder={t("placeholders.farm")} />
                     </SelectTrigger>
+
                     <SelectContent>
                       {allFincas.map((finca) => (
                         <SelectItem key={finca.value} value={finca.value}>
@@ -376,16 +386,18 @@ const AgregarCitaServicioPage = () => {
 
                 <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2 mt-6">
                   <PawPrint className="h-5 w-5" />
-                  Datos del Animal
+                  {t("sections.animal")}
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="especie">Especie</Label>
+                    <Label htmlFor="especie">{t("fields.species")}</Label>
+
                     <Select onValueChange={setEspecieId} value={especieId}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecciona la especie" />
+                        <SelectValue placeholder={t("placeholders.species")} />
                       </SelectTrigger>
+
                       <SelectContent>
                         {allEspecies.map((especie) => (
                           <SelectItem key={especie.value} value={especie.value}>
@@ -397,15 +409,17 @@ const AgregarCitaServicioPage = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="raza">Raza</Label>
+                    <Label htmlFor="raza">{t("fields.breed")}</Label>
+
                     <Select
                       onValueChange={setRazaId}
                       value={razaId}
                       disabled={!especieId}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecciona la raza" />
+                        <SelectValue placeholder={t("placeholders.breed")} />
                       </SelectTrigger>
+
                       <SelectContent>
                         {allRazas.map((raza) => (
                           <SelectItem key={raza.value} value={raza.value}>
@@ -418,7 +432,8 @@ const AgregarCitaServicioPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Seleccione los animales</Label>
+                  <Label>{t("fields.animals")}</Label>
+
                   <ThemedAnimalPicker
                     animals={animales?.data || []}
                     selectedAnimals={watch("animalesId") || []}
@@ -431,19 +446,23 @@ const AgregarCitaServicioPage = () => {
 
                 <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2 mt-6">
                   <Stethoscope className="h-5 w-5" />
-                  Servicio Veterinario
+                  {t("sections.veterinaryService")}
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="subServicioId">Servicio específico</Label>
+                    <Label htmlFor="subServicioId">
+                      {t("fields.specificService")}
+                    </Label>
+
                     <Select
                       onValueChange={handleServicioChange}
                       value={watch("subServicioId")}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecciona el servicio" />
+                        <SelectValue placeholder={t("placeholders.service")} />
                       </SelectTrigger>
+
                       <SelectContent>
                         {allServicios.map((servicio) => (
                           <SelectItem
@@ -458,14 +477,18 @@ const AgregarCitaServicioPage = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="medicoId">Veterinario</Label>
+                    <Label htmlFor="medicoId">{t("fields.veterinarian")}</Label>
+
                     <Select
                       onValueChange={(value) => setValue("medicoId", value)}
                       value={watch("medicoId")}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecciona el veterinario" />
+                        <SelectValue
+                          placeholder={t("placeholders.veterinarian")}
+                        />
                       </SelectTrigger>
+
                       <SelectContent>
                         {allMedicos.map((medico) => (
                           <SelectItem key={medico.value} value={medico.value}>
@@ -478,16 +501,18 @@ const AgregarCitaServicioPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="fecha">Fecha de la cita</Label>
+                  <Label htmlFor="fecha">{t("fields.appointmentDate")}</Label>
+
                   <Input
                     id="fecha"
                     type="date"
                     min={getMinDate()}
                     {...register("fecha", {
-                      required: "La fecha es requerida",
+                      required: t("validation.dateRequired"),
                     })}
                     className="w-full"
                   />
+
                   {errors.fecha && (
                     <p className="text-red-500 text-sm mt-1">
                       {errors.fecha.message}
@@ -502,20 +527,24 @@ const AgregarCitaServicioPage = () => {
                       className="flex items-center gap-2"
                     >
                       <Clock className="h-4 w-4" />
-                      Horarios Disponibles ({filteredHours.length} opciones)
+                      {t("fields.availableSchedules", {
+                        count: filteredHours.length,
+                      })}
                     </Label>
+
                     <Select
                       onValueChange={handleHoraChange}
                       value={watch("horaInicio")}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecciona un horario" />
+                        <SelectValue placeholder={t("placeholders.schedule")} />
                       </SelectTrigger>
+
                       <SelectContent>
                         {filteredHours.map((hora) => (
                           <SelectItem key={hora.value} value={hora.value}>
-                            {hora.label} (Duración: {hora.duracionDisponible}{" "}
-                            min)
+                            {hora.label} ({t("fields.duration")}:{" "}
+                            {hora.duracionDisponible} {t("units.minutes")})
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -527,32 +556,38 @@ const AgregarCitaServicioPage = () => {
                       {watch("subServicioId") &&
                       watch("medicoId") &&
                       watch("fecha")
-                        ? "No hay horarios disponibles que puedan acomodar la duración del servicio seleccionado."
-                        : "Completa la información del servicio para ver los horarios disponibles."}
+                        ? t("messages.noSuitableSchedules")
+                        : t("messages.completeServiceInformation")}
                     </p>
                   </div>
                 )}
 
                 <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2 mt-6">
                   <DollarSign className="h-5 w-5" />
-                  Detalles del Servicio
+                  {t("sections.serviceDetails")}
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="duracion">Duración estimada</Label>
+                    <Label htmlFor="duracion">
+                      {t("fields.estimatedDuration")}
+                    </Label>
+
                     <Input
                       id="duracion"
                       value={
-                        watch("duracion") ? `${watch("duracion")} hrs` : ""
+                        watch("duracion")
+                          ? `${watch("duracion")} ${t("units.hours")}`
+                          : ""
                       }
                       readOnly
-                      placeholder="Duración se calculará automáticamente"
+                      placeholder={t("placeholders.duration")}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="totalPagar">Costo total</Label>
+                    <Label htmlFor="totalPagar">{t("fields.totalCost")}</Label>
+
                     <Input
                       id="totalPagar"
                       value={
@@ -561,7 +596,7 @@ const AgregarCitaServicioPage = () => {
                           : ""
                       }
                       readOnly
-                      placeholder="Costo se calculará automáticamente"
+                      placeholder={t("placeholders.cost")}
                     />
                   </div>
                 </div>
@@ -569,8 +604,7 @@ const AgregarCitaServicioPage = () => {
                 {watch("totalPagar") > 0 && (
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                     <p className="text-blue-800 text-xs text-center italic">
-                      LOS PRECIOS PUEDEN VARIAR DEPENDIENDO DE LOS INSUMOS QUE
-                      SE UTILICEN
+                      {t("messages.priceDisclaimer")}
                     </p>
                   </div>
                 )}
@@ -585,10 +619,10 @@ const AgregarCitaServicioPage = () => {
                     {mutation.isPending ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Procesando...
+                        {t("buttons.processing")}
                       </>
                     ) : (
-                      "Confirmar Cita"
+                      t("buttons.confirmAppointment")
                     )}
                   </Button>
                 </div>

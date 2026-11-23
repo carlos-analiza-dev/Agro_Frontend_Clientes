@@ -1,6 +1,9 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Info, TrendingDown, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface CardPesosProps {
   tipo: "minimo" | "maximo";
@@ -10,16 +13,18 @@ interface CardPesosProps {
 }
 
 const CardPesos = ({ tipo, peso, rangoEdad, className }: CardPesosProps) => {
+  const t = useTranslations("cardPesos");
+
   const config = {
     minimo: {
-      titulo: "Peso Mínimo Esperado",
+      titulo: t("minimumExpected"),
       borderColor: "border-l-blue-500",
       bgIcon: "bg-blue-100",
       textColor: "text-blue-600",
       icon: TrendingDown,
     },
     maximo: {
-      titulo: "Peso Máximo Esperado",
+      titulo: t("maximumExpected"),
       borderColor: "border-l-green-500",
       bgIcon: "bg-green-100",
       textColor: "text-green-600",
@@ -49,7 +54,7 @@ const CardPesos = ({ tipo, peso, rangoEdad, className }: CardPesosProps) => {
         </div>
         <div className="flex items-center gap-2 text-sm text-gray-500">
           <Info className="h-4 w-4 flex-shrink-0" />
-          <span>Basado en el rango de edad {rangoEdad}</span>
+          <span>{t("basedOnAgeRange", { range: rangoEdad })}</span>
         </div>
       </CardContent>
     </Card>

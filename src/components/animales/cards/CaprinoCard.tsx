@@ -39,6 +39,7 @@ import AnimalParentInfo from "../info/AnimalParentInfo";
 import { format } from "date-fns";
 import { descartarAnimal } from "@/api/animales/accions/update-animal";
 import Modal from "@/components/generics/Modal";
+import { useTranslations } from "next-intl";
 
 interface Props {
   animal: Animal;
@@ -47,6 +48,7 @@ interface Props {
 }
 
 const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
+  const t = useTranslations("CaprinoCard");
   const [deathDialogVisible, setDeathDialogVisible] = useState(false);
   const [deathStatus, setDeathStatus] = useState(animal.animal_muerte);
   const [deathReason, setDeathReason] = useState(animal.razon_muerte);
@@ -72,13 +74,13 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
         if (onUpdateProfileImage) {
           await onUpdateProfileImage(imageDataUrl, animal.id);
-          toast("Perfil de animal actualizado exitosamente");
+          toast(t("messages.profileImageUpdated"));
           queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
         }
       };
       reader.readAsDataURL(file);
     } catch (error) {
-      toast.error("No se pudo actualizar la imagen de perfil");
+      toast.error(t("messages.profileImageUpdateError"));
       setLocalImage(null);
     }
   };
@@ -92,14 +94,14 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const handleDeleteImage = async (imageId: string) => {
     try {
       await eliminarImagenAnimal(imageId);
-      toast("Foto de perfil del animal eliminada");
+      toast(t("messages.profileImageDeleted"));
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
       setGalleryVisible(false);
     } catch (error) {
       if (isAxiosError(error)) {
         toast.error(
           error.response?.data?.message ||
-            "Error al eliminar la foto de perfil del animal",
+            t("messages.profileImageDeleteError"),
         );
       }
     }
@@ -111,9 +113,7 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
         deathStatus &&
         (!deathReason || deathReason.trim() === "" || deathReason === "N/D")
       ) {
-        toast.error(
-          "Debe ingresar una razón de muerte válida (no puede estar vacía o ser 'N/D')",
-        );
+        toast.error(t("validation.deathReasonRequired"));
         return;
       }
 
@@ -126,8 +126,8 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
       toast(
         deathStatus
-          ? "Animal marcado como fallecido"
-          : "Animal marcado como vivo",
+          ? t("messages.markedAsDeceased")
+          : t("messages.markedAsAlive"),
       );
 
       queryClient.invalidateQueries({
@@ -141,11 +141,11 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar el estado";
+            : t("messages.updateStatusError");
 
         toast(errorMessage);
       } else {
-        toast("Contacte al administrador");
+        toast(t("messages.contactAdmin"));
       }
     }
   };
@@ -153,7 +153,7 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const handleDiscardAnimal = async () => {
     try {
       if (!discardReason || discardReason.trim() === "") {
-        toast.error("Debe ingresar una razón de descarte válida");
+        toast.error(t("validation.discardReasonRequired"));
         return;
       }
 
@@ -164,7 +164,7 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
         cantidad: 1,
       });
 
-      toast("Animal descartado exitosamente");
+      toast(t("messages.discardedSuccess"));
       queryClient.invalidateQueries({
         queryKey: ["animales-propietario", animal.propietario.id],
       });
@@ -177,11 +177,11 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al descartar el animal";
+            : t("messages.discardError");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Contacte al administrador");
+        toast.error(t("messages.contactAdmin"));
       }
     }
   };
@@ -194,7 +194,7 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
         <div className="flex items-center gap-2">
           <PawPrint className="h-4 w-4 text-amber-600" />
           <h4 className="text-sm font-semibold text-amber-700">
-            Información Caprina
+            {t("caprinoInfo.title")}
           </h4>
         </div>
 
@@ -203,7 +203,9 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <div className="flex items-center gap-2">
               <Activity className="h-3 w-3 text-amber-600" />
               <span className="text-xs">
-                <span className="font-medium">Condición Corporal:</span>{" "}
+                <span className="font-medium">
+                  {t("caprinoInfo.bodyCondition")}
+                </span>{" "}
                 <Badge variant="outline" className="text-xs">
                   {animal.condicion_corporal}
                 </Badge>
@@ -215,7 +217,7 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <div className="flex items-center gap-2">
               <Dna className="h-3 w-3 text-amber-600" />
               <span className="text-xs">
-                <span className="font-medium">Propósito:</span>{" "}
+                <span className="font-medium">{t("caprinoInfo.purpose")}</span>{" "}
                 <Badge variant="outline" className="text-xs">
                   {animal.proposito}
                 </Badge>
@@ -227,7 +229,8 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <div className="flex items-center gap-2 col-span-2">
               <Ruler className="h-3 w-3 text-amber-600" />
               <span className="text-xs">
-                <span className="font-medium">Potrero:</span> {animal.potrero}
+                <span className="font-medium">{t("caprinoInfo.paddock")}</span>{" "}
+                {animal.potrero}
               </span>
             </div>
           )}
@@ -238,29 +241,37 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <div className="flex items-center gap-2 col-span-2">
                   <Milk className="h-3 w-3 text-blue-600" />
                   <span className="text-xs font-medium text-blue-700">
-                    Producción Lechera
+                    {t("caprinoInfo.milkProduction")}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 col-span-2 pl-4">
                   <span className="text-xs">
-                    <span className="font-medium">Litros/día:</span>{" "}
+                    <span className="font-medium">
+                      {t("caprinoInfo.litersPerDay")}
+                    </span>{" "}
                     {animal.litros_leche_dia} L
                   </span>
                   {animal.calidad_leche_grasa && (
                     <span className="text-xs">
-                      <span className="font-medium">Grasa:</span>{" "}
+                      <span className="font-medium">
+                        {t("caprinoInfo.fat")}
+                      </span>{" "}
                       {animal.calidad_leche_grasa}%
                     </span>
                   )}
                   {animal.calidad_leche_proteina && (
                     <span className="text-xs">
-                      <span className="font-medium">Proteína:</span>{" "}
+                      <span className="font-medium">
+                        {t("caprinoInfo.protein")}
+                      </span>{" "}
                       {animal.calidad_leche_proteina}%
                     </span>
                   )}
                   {animal.calidad_leche_celulas && (
                     <span className="text-xs">
-                      <span className="font-medium">Células:</span>{" "}
+                      <span className="font-medium">
+                        {t("caprinoInfo.cells")}
+                      </span>{" "}
                       {animal.calidad_leche_celulas}
                     </span>
                   )}
@@ -273,19 +284,23 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2 col-span-2 mt-1">
                 <Weight className="h-3 w-3 text-green-600" />
                 <span className="text-xs font-medium text-green-700">
-                  Desarrollo
+                  {t("caprinoInfo.development")}
                 </span>
               </div>
               <div className="flex items-center gap-2 col-span-2 pl-4 flex-wrap">
                 {animal.peso_destete && (
                   <span className="text-xs">
-                    <span className="font-medium">Peso destete:</span>{" "}
+                    <span className="font-medium">
+                      {t("caprinoInfo.weaningWeight")}
+                    </span>{" "}
                     {animal.peso_destete} kg
                   </span>
                 )}
                 {animal.ganancia_peso && (
                   <span className="text-xs">
-                    <span className="font-medium">Ganancia peso:</span>{" "}
+                    <span className="font-medium">
+                      {t("caprinoInfo.weightGain")}
+                    </span>{" "}
                     {animal.ganancia_peso} kg
                   </span>
                 )}
@@ -302,30 +317,38 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2 col-span-2 mt-1">
                 <Syringe className="h-3 w-3 text-red-600" />
                 <span className="text-xs font-medium text-red-700">
-                  Salud y Manejo
+                  {t("caprinoInfo.healthAndManagement")}
                 </span>
               </div>
               <div className="flex items-center gap-2 col-span-2 pl-4 flex-wrap">
                 {animal.desparasitado !== undefined && (
                   <span className="text-xs">
-                    <span className="font-medium">Desparasitado:</span>{" "}
+                    <span className="font-medium">
+                      {t("caprinoInfo.dewormed")}
+                    </span>{" "}
                     <Badge
                       variant={animal.desparasitado ? "default" : "secondary"}
                       className="text-xs"
                     >
-                      {animal.desparasitado ? "Sí" : "No"}
+                      {animal.desparasitado
+                        ? t("caprinoInfo.yes")
+                        : t("caprinoInfo.no")}
                     </Badge>
                   </span>
                 )}
                 {animal.vacunas && animal.vacunas !== "Sin vacunas" && (
                   <span className="text-xs">
-                    <span className="font-medium">Vacunas:</span>{" "}
+                    <span className="font-medium">
+                      {t("caprinoInfo.vaccines")}
+                    </span>{" "}
                     {animal.vacunas}
                   </span>
                 )}
                 {animal.tratamientos && (
                   <span className="text-xs">
-                    <span className="font-medium">Tratamientos:</span>{" "}
+                    <span className="font-medium">
+                      {t("caprinoInfo.treatments")}
+                    </span>{" "}
                     {animal.tratamientos}
                   </span>
                 )}
@@ -333,7 +356,9 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="flex items-center gap-2 col-span-2 pl-4 flex-wrap">
                 {animal.mastitis && (
                   <span className="text-xs">
-                    <span className="font-medium">Mastitis:</span>{" "}
+                    <span className="font-medium">
+                      {t("caprinoInfo.mastitis")}
+                    </span>{" "}
                     <Badge variant="destructive" className="text-xs">
                       {animal.mastitis}
                     </Badge>
@@ -341,7 +366,9 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 )}
                 {animal.pezunas && (
                   <span className="text-xs">
-                    <span className="font-medium">Pezuñas:</span>{" "}
+                    <span className="font-medium">
+                      {t("caprinoInfo.hooves")}
+                    </span>{" "}
                     {animal.pezunas}
                   </span>
                 )}
@@ -353,7 +380,9 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <div className="flex items-center gap-2 col-span-2">
               <Dna className="h-3 w-3 text-purple-600" />
               <span className="text-xs">
-                <span className="font-medium">Línea Genética:</span>{" "}
+                <span className="font-medium">
+                  {t("caprinoInfo.geneticLine")}
+                </span>{" "}
                 {animal.linea_genetica}
               </span>
             </div>
@@ -396,8 +425,8 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 {animal.razas.length === 1
                   ? animal.razas[0].nombre
                   : animal.razas.length > 1
-                    ? "Encaste"
-                    : "Sin raza"}
+                    ? t("labels.crossbreed")
+                    : t("labels.noBreed")}
               </p>
               {animal.nombre_animal && (
                 <p className="text-sm text-muted-foreground">
@@ -427,7 +456,7 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <Button
               variant="outline"
               size="icon"
-              title="Subir Foto"
+              title={t("tooltips.discardAnimal")}
               className="h-8 w-8 rounded-full"
               onClick={() => setDiscardDialogVisible(true)}
             >
@@ -436,7 +465,7 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <Button
               variant="outline"
               size="icon"
-              title="Subir Foto"
+              title={t("tooltips.uploadPhoto")}
               className="h-8 w-8 rounded-full"
               onClick={() => fileInputRef.current?.click()}
             >
@@ -475,14 +504,14 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           )}
 
           <AnimalParentInfo
-            title="Datos del Padre"
+            title={t("labels.fatherData")}
             nombre={animal.nombre_padre ?? undefined}
             arete={animal.arete_padre ?? undefined}
             razas={animal.razas_padre}
           />
 
           <AnimalParentInfo
-            title="Datos de la Madre"
+            title={t("labels.motherData")}
             nombre={animal.nombre_madre ?? undefined}
             arete={animal.arete_madre ?? undefined}
             razas={animal.razas_madre}
@@ -501,7 +530,7 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
           <div className="flex justify-center w-full space-x-2 mt-4">
             <Button className="w-full" variant="outline" onClick={onEdit}>
-              Editar
+              {t("buttons.edit")}
             </Button>
           </div>
         </CardContent>
@@ -517,12 +546,12 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
       <Modal
         open={deathDialogVisible}
         onOpenChange={setDeathDialogVisible}
-        title="Actualizar estado de vida"
-        description="Indique si el animal está vivo o ha fallecido."
+        title={t("deathModal.title")}
+        description={t("deathModal.description")}
         showCloseButton={false}
       >
         <div className="flex items-center justify-between py-4">
-          <Label htmlFor="death-status">¿El animal ha fallecido?</Label>
+          <Label htmlFor="death-status">{t("deathModal.hasDied")}</Label>
           <Switch
             id="death-status"
             checked={deathStatus}
@@ -535,12 +564,12 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
         {deathStatus && (
           <div className="space-y-2">
-            <Label htmlFor="death-reason">Razón de la muerte</Label>
+            <Label htmlFor="death-reason">{t("deathModal.deathReason")}</Label>
             <Input
               id="death-reason"
               value={deathReason}
               onChange={(e) => setDeathReason(e.target.value)}
-              placeholder="Ingrese la razón de la muerte"
+              placeholder={t("deathModal.deathReasonPlaceholder")}
             />
           </div>
         )}
@@ -551,36 +580,39 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               variant="outline"
               onClick={() => setDeathDialogVisible(false)}
             >
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
-            <Button onClick={handleDeathStatusUpdate}>Guardar</Button>
+            <Button onClick={handleDeathStatusUpdate}>
+              {t("buttons.save")}
+            </Button>
           </div>
         </div>
       </Modal>
 
       <Modal
-        title="Descartar Animal"
-        description="Esta acción marcará el animal como descartado. Asegúrese de
-              ingresar toda la información requerida."
+        title={t("discardModal.title")}
+        description={t("discardModal.description")}
         open={discardDialogVisible}
         onOpenChange={setDiscardDialogVisible}
         showCloseButton={false}
       >
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="discard-reason">Razón de descarte *</Label>
+            <Label htmlFor="discard-reason">
+              {t("discardModal.discardReason")}
+            </Label>
             <Input
               id="discard-reason"
               value={discardReason}
               onChange={(e) => setDiscardReason(e.target.value)}
-              placeholder="Ej: Venta, Muerte, Traslado, etc."
+              placeholder={t("discardModal.discardReasonPlaceholder")}
             />
           </div>
 
           <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
             <p className="text-sm text-yellow-800">
-              <strong>⚠️ Advertencia:</strong> Esta acción no se puede deshacer.
-              El animal será marcado como descartado en el sistema.
+              <strong>⚠️ {t("discardModal.warningLabel")}</strong>{" "}
+              {t("discardModal.warningText")}
             </p>
           </div>
         </div>
@@ -594,14 +626,14 @@ const CaprinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 setDiscardReason("");
               }}
             >
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
             <Button
               variant="destructive"
               onClick={handleDiscardAnimal}
               disabled={!discardReason}
             >
-              Descartar Animal
+              {t("buttons.discardAnimal")}
             </Button>
           </div>
         </div>

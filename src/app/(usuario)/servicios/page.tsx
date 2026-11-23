@@ -1,4 +1,5 @@
 "use client";
+
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import useGetServiciosActivos from "@/hooks/servicios/useGetServiciosActivos";
@@ -6,8 +7,10 @@ import { EmptyServices } from "@/components/servicios/EmptyServices";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import CardServiceUsers from "@/components/servicios/CardServiceUsers";
 import SkeletonCard from "@/components/generics/SkeletonCard";
+import { useTranslations } from "next-intl";
 
 const ServicesUser = () => {
+  const t = useTranslations("servicesUser");
   const { cliente } = useAuthStore();
   const paisName = cliente?.pais.nombre ?? "";
   const router = useRouter();
@@ -39,7 +42,7 @@ const ServicesUser = () => {
         id="id-servicios-empty-container"
         className="min-h-screen flex justify-center items-center bg-gradient-to-b from-background to-muted/20 p-4"
       >
-        <div id="id-servicios-empty-wrapper" className="max-w-7xl mx-auto ">
+        <div id="id-servicios-empty-wrapper" className="max-w-7xl mx-auto">
           <EmptyServices onRefresh={onRefresh} countryName={paisName} />
         </div>
       </div>
@@ -54,10 +57,11 @@ const ServicesUser = () => {
             id="id-servicios-title"
             className="text-2xl md:text-3xl font-bold text-primary mb-2"
           >
-            Nuestros servicios
+            {t("title")}
           </h1>
+
           <p className="text-muted-foreground text-sm md:text-base max-w-[90%] mx-auto">
-            Selecciona un servicio para agendar una cita
+            {t("description")}
           </p>
         </div>
 

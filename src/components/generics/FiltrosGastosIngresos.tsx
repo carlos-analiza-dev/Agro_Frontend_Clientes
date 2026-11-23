@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -15,7 +18,7 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon, X } from "lucide-react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { es, enUS } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { CategoriaGasto, MetodoPago } from "@/interfaces/enums/gastos.enums";
 import { Finca } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
@@ -52,6 +55,10 @@ export function FiltrosGastosIngresos({
   onClose,
   isGasto = true,
 }: FiltrosGastosProps) {
+  const t = useTranslations("filtrosGastosIngresos");
+  const locale = useLocale();
+  const dateLocale = locale === "en" ? enUS : es;
+
   const limpiarFiltros = () => {
     setFiltros({
       fincaId: undefined,
@@ -67,6 +74,16 @@ export function FiltrosGastosIngresos({
 
   const categoriasEnum = isGasto ? CategoriaGasto : CategoriaIngreso;
 
+  const getCategoriaLabel = (categoria: string) => {
+    const key = `categories.${categoria}`;
+    return t.has(key) ? t(key) : categoria.replace(/_/g, " ");
+  };
+
+  const getMetodoPagoLabel = (metodo: string) => {
+    const key = `paymentMethods.${metodo}`;
+    return t.has(key) ? t(key) : metodo.replace(/_/g, " ");
+  };
+
   const contarFiltrosActivos = () => {
     let count = 0;
     if (filtros.fincaId) count++;
@@ -80,6 +97,7 @@ export function FiltrosGastosIngresos({
   const fechaInicioDate = filtros.fechaInicio
     ? parseLocalDate(filtros.fechaInicio)
     : undefined;
+
   const fechaFinDate = filtros.fechaFin
     ? parseLocalDate(filtros.fechaFin)
     : undefined;
@@ -87,17 +105,17 @@ export function FiltrosGastosIngresos({
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Filtros</h3>
+        <h3 className="text-lg font-semibold">{t("title")}</h3>
         <div className="flex gap-2">
           {contarFiltrosActivos() > 0 && (
             <Button variant="ghost" size="sm" onClick={limpiarFiltros}>
               <X className="h-4 w-4 mr-1" />
-              Limpiar
+              {t("buttons.clear")}
             </Button>
           )}
           {onClose && (
             <Button variant="ghost" size="sm" onClick={onClose}>
-              Cerrar
+              {t("buttons.close")}
             </Button>
           )}
         </div>
@@ -105,7 +123,7 @@ export function FiltrosGastosIngresos({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label>Finca</Label>
+          <Label>{t("fields.farm")}</Label>
           <Select
             value={filtros.fincaId || "todos"}
             onValueChange={(value) =>
@@ -116,10 +134,12 @@ export function FiltrosGastosIngresos({
             }
           >
             <SelectTrigger>
-              <SelectValue placeholder="Todas las fincas" />
+              <SelectValue placeholder={t("placeholders.allFarms")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="todos">Todas las fincas</SelectItem>
+              <SelectItem value="todos">
+                {t("placeholders.allFarms")}
+              </SelectItem>
               {fincas?.map((finca) => (
                 <SelectItem key={finca.id} value={finca.id}>
                   {finca.nombre_finca}
@@ -130,7 +150,7 @@ export function FiltrosGastosIngresos({
         </div>
 
         <div className="space-y-2">
-          <Label>Especie</Label>
+          <Label>{t("fields.species")}</Label>
           <Select
             value={filtros.especieId || "todos"}
             onValueChange={(value) =>
@@ -141,10 +161,12 @@ export function FiltrosGastosIngresos({
             }
           >
             <SelectTrigger>
-              <SelectValue placeholder="Todas las especies" />
+              <SelectValue placeholder={t("placeholders.allSpecies")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="todos">Todas las especies</SelectItem>
+              <SelectItem value="todos">
+                {t("placeholders.allSpecies")}
+              </SelectItem>
               {especies?.map((especie) => (
                 <SelectItem key={especie.id} value={especie.id}>
                   {especie.nombre}
@@ -155,7 +177,7 @@ export function FiltrosGastosIngresos({
         </div>
 
         <div className="space-y-2">
-          <Label>Categoría</Label>
+          <Label>{t("fields.category")}</Label>
           <Select
             value={filtros.categoria || "todos"}
             onValueChange={(value) =>
@@ -166,13 +188,15 @@ export function FiltrosGastosIngresos({
             }
           >
             <SelectTrigger>
-              <SelectValue placeholder="Todas las categorías" />
+              <SelectValue placeholder={t("placeholders.allCategories")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="todos">Todas las categorías</SelectItem>
+              <SelectItem value="todos">
+                {t("placeholders.allCategories")}
+              </SelectItem>
               {Object.values(categoriasEnum).map((cat) => (
                 <SelectItem key={cat} value={cat}>
-                  {cat.replace(/_/g, " ")}
+                  {getCategoriaLabel(cat)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -180,7 +204,7 @@ export function FiltrosGastosIngresos({
         </div>
 
         <div className="space-y-2">
-          <Label>Método de pago</Label>
+          <Label>{t("fields.paymentMethod")}</Label>
           <Select
             value={filtros.metodo_pago || "todos"}
             onValueChange={(value) =>
@@ -191,13 +215,15 @@ export function FiltrosGastosIngresos({
             }
           >
             <SelectTrigger>
-              <SelectValue placeholder="Todos los métodos" />
+              <SelectValue placeholder={t("placeholders.allPaymentMethods")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="todos">Todos los métodos</SelectItem>
+              <SelectItem value="todos">
+                {t("placeholders.allPaymentMethods")}
+              </SelectItem>
               {Object.values(MetodoPago).map((metodo) => (
                 <SelectItem key={metodo} value={metodo}>
-                  {metodo.replace(/_/g, " ")}
+                  {getMetodoPagoLabel(metodo)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -205,7 +231,7 @@ export function FiltrosGastosIngresos({
         </div>
 
         <div className="space-y-2 sm:col-span-2">
-          <Label>Rango de fechas</Label>
+          <Label>{t("fields.dateRange")}</Label>
           <div className="flex gap-2">
             <Popover>
               <PopoverTrigger asChild>
@@ -221,11 +247,9 @@ export function FiltrosGastosIngresos({
                     ? format(
                         parseLocalDate(filtros.fechaInicio),
                         "dd/MM/yyyy",
-                        {
-                          locale: es,
-                        },
+                        { locale: dateLocale },
                       )
-                    : "Fecha desde"}
+                    : t("placeholders.dateFrom")}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
@@ -245,10 +269,11 @@ export function FiltrosGastosIngresos({
                       });
                     }
                   }}
-                  locale={es}
+                  locale={dateLocale}
                 />
               </PopoverContent>
             </Popover>
+
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -261,9 +286,9 @@ export function FiltrosGastosIngresos({
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {filtros.fechaFin
                     ? format(parseLocalDate(filtros.fechaFin), "dd/MM/yyyy", {
-                        locale: es,
+                        locale: dateLocale,
                       })
-                    : "Fecha hasta"}
+                    : t("placeholders.dateTo")}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
@@ -283,7 +308,7 @@ export function FiltrosGastosIngresos({
                       });
                     }
                   }}
-                  locale={es}
+                  locale={dateLocale}
                 />
               </PopoverContent>
             </Popover>

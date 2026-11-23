@@ -27,6 +27,7 @@ import { useAuthStore } from "@/providers/store/useAuthStore";
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
+import { useTranslations } from "next-intl";
 
 interface CargaMasivaModalProps {
   isOpen: boolean;
@@ -34,6 +35,7 @@ interface CargaMasivaModalProps {
 }
 
 const CargaMasivaModal = ({ isOpen, onClose }: CargaMasivaModalProps) => {
+  const t = useTranslations("cargaMasivaModal");
   const queryClient = useQueryClient();
   const { cliente, token } = useAuthStore();
 
@@ -44,9 +46,7 @@ const CargaMasivaModal = ({ isOpen, onClose }: CargaMasivaModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { data: fincasData } = useFincasPropietarios(cliente?.id ?? "");
-
   const { data: especiesData } = useGetEspecies();
-
   const { data: razasData } = useGetRazasByEspecie(especieId);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,9 +60,7 @@ const CargaMasivaModal = ({ isOpen, onClose }: CargaMasivaModalProps) => {
         !validTypes.includes(selectedFile.type) &&
         !selectedFile.name.match(/\.(xlsx|xls)$/)
       ) {
-        toast.error(
-          "Por favor, selecciona un archivo Excel válido (.xlsx o .xls)",
-        );
+        toast.error(t("errors.invalidFile"));
         return;
       }
       setFile(selectedFile);
@@ -108,7 +106,6 @@ const CargaMasivaModal = ({ isOpen, onClose }: CargaMasivaModalProps) => {
       ];
 
       const wb = XLSX.utils.book_new();
-
       const ws = XLSX.utils.json_to_sheet(exampleData);
 
       const colWidths = [
@@ -141,9 +138,9 @@ const CargaMasivaModal = ({ isOpen, onClose }: CargaMasivaModalProps) => {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
-      toast.success("Plantilla descargada exitosamente");
+      toast.success(t("messages.templateDownloaded"));
     } catch (error) {
-      toast.error("Error al generar la plantilla");
+      toast.error(t("errors.generateTemplate"));
     }
   };
 
@@ -151,12 +148,12 @@ const CargaMasivaModal = ({ isOpen, onClose }: CargaMasivaModalProps) => {
     e.preventDefault();
 
     if (!file) {
-      toast.error("Por favor, selecciona un archivo");
+      toast.error(t("errors.selectFile"));
       return;
     }
 
     if (!fincaId || !especieId || !razaId) {
-      toast.error("Por favor, selecciona finca, especie y raza");
+      toast.error(t("errors.selectFarmSpeciesBreed"));
       return;
     }
 
@@ -179,12 +176,14 @@ const CargaMasivaModal = ({ isOpen, onClose }: CargaMasivaModalProps) => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Error al cargar los animales");
+        throw new Error(errorData.message || t("errors.uploadAnimals"));
       }
 
       const result = await response.json();
 
-      toast.success(`✅ ${result.message}: ${result.total} animales cargados`);
+      toast.success(
+        `✅ ${result.message}: ${result.total} ${t("messages.animalsLoaded")}`,
+      );
 
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
 
@@ -192,7 +191,7 @@ const CargaMasivaModal = ({ isOpen, onClose }: CargaMasivaModalProps) => {
       resetForm();
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Error al cargar los animales",
+        error instanceof Error ? error.message : t("errors.uploadAnimals"),
       );
     } finally {
       setIsLoading(false);
@@ -215,13 +214,10 @@ const CargaMasivaModal = ({ isOpen, onClose }: CargaMasivaModalProps) => {
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Carga Masiva de Animales</DialogTitle>
+          <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription asChild>
             <div className="text-sm text-muted-foreground">
-              <p>
-                Sube un archivo Excel con los datos de los animales para
-                registrarlos masivamente.
-              </p>
+              <p>{t("description")}</p>
 
               <div className="mt-2 flex items-center gap-2">
                 <Button
@@ -232,22 +228,22 @@ const CargaMasivaModal = ({ isOpen, onClose }: CargaMasivaModalProps) => {
                   className="text-xs"
                 >
                   <Download className="h-3 w-3 mr-1" />
-                  Descargar plantilla
+                  {t("buttons.downloadTemplate")}
                 </Button>
                 <span className="text-xs text-muted-foreground">
-                  (Formato requerido)
+                  {t("requiredFormat")}
                 </span>
               </div>
 
               <div className="mt-2 text-xs text-muted-foreground bg-muted p-3 rounded-md">
-                <p className="font-medium mb-1">Estructura de la plantilla:</p>
+                <p className="font-medium mb-1">{t("templateStructure")}</p>
                 <ul className="list-disc pl-4 space-y-0.5">
-                  <li>nombre_animal (requerido)</li>
-                  <li>sexo (requerido: Macho/Hembra)</li>
-                  <li>fecha_nacimiento (requerido: YYYY-MM-DD)</li>
-                  <li>edad_promedio (opcional)</li>
-                  <li>nombre_padre (opcional)</li>
-                  <li>nombre_madre (opcional)</li>
+                  <li>{t("templateFields.animalName")}</li>
+                  <li>{t("templateFields.sex")}</li>
+                  <li>{t("templateFields.birthDate")}</li>
+                  <li>{t("templateFields.averageAge")}</li>
+                  <li>{t("templateFields.fatherName")}</li>
+                  <li>{t("templateFields.motherName")}</li>
                 </ul>
               </div>
             </div>
@@ -256,10 +252,10 @@ const CargaMasivaModal = ({ isOpen, onClose }: CargaMasivaModalProps) => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="finca">Finca *</Label>
+            <Label htmlFor="finca">{t("fields.farm")} *</Label>
             <Select value={fincaId} onValueChange={setFincaId} required>
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar finca" />
+                <SelectValue placeholder={t("placeholders.farm")} />
               </SelectTrigger>
               <SelectContent>
                 {fincasData?.data?.fincas.map((finca) => (
@@ -272,7 +268,7 @@ const CargaMasivaModal = ({ isOpen, onClose }: CargaMasivaModalProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="especie">Especie de animales *</Label>
+            <Label htmlFor="especie">{t("fields.species")} *</Label>
             <Select
               value={especieId}
               onValueChange={(value) => {
@@ -282,7 +278,7 @@ const CargaMasivaModal = ({ isOpen, onClose }: CargaMasivaModalProps) => {
               required
             >
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar especie" />
+                <SelectValue placeholder={t("placeholders.species")} />
               </SelectTrigger>
               <SelectContent>
                 {especiesData?.data?.map((especie) => (
@@ -295,10 +291,10 @@ const CargaMasivaModal = ({ isOpen, onClose }: CargaMasivaModalProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="raza">Raza de animales *</Label>
+            <Label htmlFor="raza">{t("fields.breed")} *</Label>
             <Select value={razaId} onValueChange={setRazaId} required>
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar raza" />
+                <SelectValue placeholder={t("placeholders.breed")} />
               </SelectTrigger>
               <SelectContent>
                 {razasData?.data?.map((raza) => (
@@ -311,7 +307,7 @@ const CargaMasivaModal = ({ isOpen, onClose }: CargaMasivaModalProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="file-upload">Archivo Excel *</Label>
+            <Label htmlFor="file-upload">{t("fields.excelFile")} *</Label>
             <div className="flex items-center gap-2">
               <Input
                 id="file-upload"
@@ -344,7 +340,7 @@ const CargaMasivaModal = ({ isOpen, onClose }: CargaMasivaModalProps) => {
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={handleClose}>
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
             <Button
               type="submit"
@@ -353,12 +349,12 @@ const CargaMasivaModal = ({ isOpen, onClose }: CargaMasivaModalProps) => {
               {isLoading ? (
                 <>
                   <span className="animate-spin mr-2">⏳</span>
-                  Cargando...
+                  {t("buttons.uploading")}
                 </>
               ) : (
                 <>
                   <Upload className="h-4 w-4 mr-2" />
-                  Cargar Animales
+                  {t("buttons.uploadAnimals")}
                 </>
               )}
             </Button>

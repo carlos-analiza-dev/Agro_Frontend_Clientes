@@ -1,4 +1,6 @@
 "use client";
+
+import { useTranslations, useLocale } from "next-intl";
 import { RentabilidadPorFinca } from "@/api/finanzas/rentabilidad/interface/rentabilidad.interface";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { COLORS_RENTABILIDAD } from "@/helpers/data/rentabilidad_colors";
@@ -12,7 +14,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import React, { useEffect, useState } from "react";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
 
 interface Props {
@@ -21,13 +22,19 @@ interface Props {
 }
 
 const CardFincas = ({ rentabilidadFincas = [], moneda }: Props) => {
+  const t = useTranslations("cardFincasRentabilidad");
+  const locale = useLocale();
+
   const isMobile = useMediaQuery("(max-width: 768px)");
+
+  const formatAmount = (value: number) =>
+    value.toLocaleString(locale === "en" ? "en-US" : "es-HN");
 
   return (
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-base sm:text-lg md:text-xl">
-          Rentabilidad por Finca
+          {t("title")}
         </CardTitle>
       </CardHeader>
 
@@ -62,13 +69,13 @@ const CardFincas = ({ rentabilidadFincas = [], moneda }: Props) => {
 
               <Tooltip
                 formatter={(value: number, name: string) => [
-                  `${moneda}${value.toLocaleString()}`,
+                  `${moneda}${formatAmount(value)}`,
                   name,
                 ]}
               />
 
               <Legend
-                layout={isMobile ? "horizontal" : "horizontal"}
+                layout="horizontal"
                 verticalAlign="bottom"
                 align="center"
                 wrapperStyle={{
@@ -79,21 +86,21 @@ const CardFincas = ({ rentabilidadFincas = [], moneda }: Props) => {
               <Bar
                 dataKey="ingresos"
                 fill={COLORS_RENTABILIDAD.ingresos}
-                name="Ingresos"
+                name={t("series.income")}
                 radius={[4, 4, 0, 0]}
               />
 
               <Bar
                 dataKey="gastos"
                 fill={COLORS_RENTABILIDAD.gastos}
-                name="Gastos"
+                name={t("series.expenses")}
                 radius={[4, 4, 0, 0]}
               />
 
               <Bar
                 dataKey="rentabilidad"
                 fill={COLORS_RENTABILIDAD.rentabilidad}
-                name="Rentabilidad"
+                name={t("series.profitability")}
                 radius={[4, 4, 0, 0]}
               />
             </BarChart>
@@ -117,7 +124,7 @@ const CardFincas = ({ rentabilidadFincas = [], moneda }: Props) => {
                   }`}
                 >
                   {moneda}
-                  {finca.rentabilidad.toLocaleString()}
+                  {formatAmount(finca.rentabilidad)}
                 </span>
               </div>
             ))}

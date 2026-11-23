@@ -1,8 +1,11 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,6 +38,8 @@ interface Props {
 }
 
 const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
+  const t = useTranslations("formGastos");
+
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id ?? "";
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -72,6 +77,16 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
   const isEditing = !!gasto;
   const selectedCategoria = watch("categoria");
   const isCompraAnimal = selectedCategoria === CategoriaGasto.COMPRA_ANIMAL;
+
+  const getCategoriaLabel = (categoria: CategoriaGasto) => {
+    const key = `categories.${categoria}`;
+    return t.has(key) ? t(key) : categoria.replace(/_/g, " ");
+  };
+
+  const getMetodoPagoLabel = (metodo: MetodoPago) => {
+    const key = `paymentMethods.${metodo}`;
+    return t.has(key) ? t(key) : metodo.replace(/_/g, " ");
+  };
 
   useEffect(() => {
     if (gasto) {
@@ -124,20 +139,18 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
         data.razaId = undefined;
       }
 
-      let response;
-
       if (isEditing && gasto) {
-        response = await EditarGasto(gasto.id, {
+        await EditarGasto(gasto.id, {
           ...data,
           monto: Number(data.monto),
         });
-        toast.success("Gasto actualizado correctamente");
+        toast.success(t("messages.updateSuccess"));
       } else {
-        response = await AgregarNuevoGasto({
+        await AgregarNuevoGasto({
           ...data,
           monto: Number(data.monto),
         });
-        toast.success("Gasto registrado correctamente");
+        toast.success(t("messages.createSuccess"));
       }
 
       reset();
@@ -160,10 +173,10 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al registrar el gasto";
+            : t("errors.registerExpense");
         setErrorMessage(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("errors.unexpected"));
       }
     }
   };
@@ -182,7 +195,9 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
         <Alert variant="destructive" className="mb-4">
           <AlertCircleIcon className="h-4 w-4" />
           <AlertTitle>
-            Error al {isEditing ? "actualizar" : "registrar"} el Gasto
+            {t("errors.title", {
+              action: isEditing ? t("actions.update") : t("actions.register"),
+            })}
           </AlertTitle>
           <AlertDescription className="whitespace-pre-line">
             {errorMessage}
@@ -193,7 +208,7 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="md:col-span-2">
           <Label htmlFor="categoria">
-            Categoría <span className="text-red-500">*</span>
+            {t("fields.category")} <span className="text-red-500">*</span>
           </Label>
           <Select
             value={watch("categoria")}
@@ -209,14 +224,14 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
             disabled={isSubmitting}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Seleccionar categoría" />
+              <SelectValue placeholder={t("placeholders.category")} />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Categorías</SelectLabel>
+                <SelectLabel>{t("selectLabels.categories")}</SelectLabel>
                 {Object.values(CategoriaGasto).map((categoria) => (
                   <SelectItem key={categoria} value={categoria}>
-                    {categoria.replace(/_/g, " ")}
+                    {getCategoriaLabel(categoria)}
                   </SelectItem>
                 ))}
               </SelectGroup>
@@ -231,7 +246,7 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
 
         <div className="md:col-span-2">
           <Label htmlFor="fincaId">
-            Finca <span className="text-red-500">*</span>
+            {t("fields.farm")} <span className="text-red-500">*</span>
           </Label>
           <Select
             value={watch("fincaId")}
@@ -239,11 +254,11 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
             disabled={isSubmitting}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Seleccionar finca" />
+              <SelectValue placeholder={t("placeholders.farm")} />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Fincas</SelectLabel>
+                <SelectLabel>{t("selectLabels.farms")}</SelectLabel>
                 {fincas?.data?.fincas?.map((finca) => (
                   <SelectItem key={finca.id} value={finca.id}>
                     {finca.nombre_finca}
@@ -263,7 +278,7 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
           <>
             <div>
               <Label htmlFor="especieId">
-                Especie <span className="text-red-500">*</span>
+                {t("fields.species")} <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={watch("especieId") || ""}
@@ -275,11 +290,11 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
                 disabled={isSubmitting}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar especie" />
+                  <SelectValue placeholder={t("placeholders.species")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Especies</SelectLabel>
+                    <SelectLabel>{t("selectLabels.species")}</SelectLabel>
                     {especies?.data?.map((especie) => (
                       <SelectItem key={especie.id} value={especie.id}>
                         {especie.nombre}
@@ -296,18 +311,18 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
             </div>
 
             <div>
-              <Label htmlFor="razaId">Raza</Label>
+              <Label htmlFor="razaId">{t("fields.breed")}</Label>
               <Select
                 value={watch("razaId") || ""}
                 onValueChange={(value) => setValue("razaId", value)}
                 disabled={isSubmitting || isLoadingRazas || !selectedEspecieId}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar raza" />
+                  <SelectValue placeholder={t("placeholders.breed")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Razas</SelectLabel>
+                    <SelectLabel>{t("selectLabels.breeds")}</SelectLabel>
                     {razas?.data?.map((raza) => (
                       <SelectItem key={raza.id} value={raza.id}>
                         {raza.nombre}
@@ -318,7 +333,7 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
               </Select>
               {!selectedEspecieId && isCompraAnimal && (
                 <p className="text-sm text-yellow-600 mt-1">
-                  * Selecciona una especie primero para ver las razas
+                  {t("messages.selectSpeciesFirst")}
                 </p>
               )}
             </div>
@@ -327,18 +342,18 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
 
         <div className="md:col-span-2">
           <Label htmlFor="concepto">
-            Concepto <span className="text-red-500">*</span>
+            {t("fields.concept")} <span className="text-red-500">*</span>
           </Label>
           <Input
             id="concepto"
             {...register("concepto", {
-              required: "El concepto es requerido",
+              required: t("validation.conceptRequired"),
               maxLength: {
                 value: 200,
-                message: "El concepto no puede exceder los 200 caracteres",
+                message: t("validation.conceptMaxLength"),
               },
             })}
-            placeholder="Ej: Compra de concentrado para ganado"
+            placeholder={t("placeholders.concept")}
             className={errors.concepto ? "border-red-500" : ""}
             disabled={isSubmitting}
           />
@@ -351,7 +366,7 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
 
         <div>
           <Label htmlFor="monto">
-            Monto <span className="text-red-500">*</span>
+            {t("fields.amount")} <span className="text-red-500">*</span>
           </Label>
           <Input
             id="monto"
@@ -359,10 +374,10 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
             step="0.01"
             min={1}
             {...register("monto", {
-              required: "El monto es requerido",
+              required: t("validation.amountRequired"),
               min: {
                 value: 0.01,
-                message: "El monto debe ser mayor a 0",
+                message: t("validation.amountMin"),
               },
             })}
             placeholder="0.00"
@@ -376,13 +391,13 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
 
         <div>
           <Label htmlFor="fecha_gasto">
-            Fecha del Gasto <span className="text-red-500">*</span>
+            {t("fields.expenseDate")} <span className="text-red-500">*</span>
           </Label>
           <Input
             id="fecha_gasto"
             type="date"
             {...register("fecha_gasto", {
-              required: "La fecha es requerida",
+              required: t("validation.dateRequired"),
             })}
             className={errors.fecha_gasto ? "border-red-500" : ""}
             disabled={isSubmitting}
@@ -396,7 +411,7 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
 
         <div className="md:col-span-2">
           <Label htmlFor="metodo_pago">
-            Método de Pago <span className="text-red-500">*</span>
+            {t("fields.paymentMethod")} <span className="text-red-500">*</span>
           </Label>
           <Select
             value={watch("metodo_pago")}
@@ -406,14 +421,14 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
             disabled={isSubmitting}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Seleccionar método de pago" />
+              <SelectValue placeholder={t("placeholders.paymentMethod")} />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Métodos de Pago</SelectLabel>
+                <SelectLabel>{t("selectLabels.paymentMethods")}</SelectLabel>
                 {Object.values(MetodoPago).map((metodo) => (
                   <SelectItem key={metodo} value={metodo}>
-                    {metodo.replace(/_/g, " ")}
+                    {getMetodoPagoLabel(metodo)}
                   </SelectItem>
                 ))}
               </SelectGroup>
@@ -427,16 +442,16 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
         </div>
 
         <div className="md:col-span-2">
-          <Label htmlFor="descripcion">Descripción</Label>
+          <Label htmlFor="descripcion">{t("fields.description")}</Label>
           <Textarea
             id="descripcion"
             {...register("descripcion", {
               maxLength: {
                 value: 500,
-                message: "La descripción no puede exceder los 500 caracteres",
+                message: t("validation.descriptionMaxLength"),
               },
             })}
-            placeholder="Detalles adicionales del gasto..."
+            placeholder={t("placeholders.description")}
             rows={3}
             disabled={isSubmitting}
           />
@@ -448,16 +463,16 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
         </div>
 
         <div className="md:col-span-2">
-          <Label htmlFor="notas">Notas adicionales</Label>
+          <Label htmlFor="notas">{t("fields.additionalNotes")}</Label>
           <Textarea
             id="notas"
             {...register("notas", {
               maxLength: {
                 value: 500,
-                message: "Las notas no pueden exceder los 500 caracteres",
+                message: t("validation.notesMaxLength"),
               },
             })}
-            placeholder="Notas adicionales..."
+            placeholder={t("placeholders.notes")}
             rows={2}
             disabled={isSubmitting}
           />
@@ -474,17 +489,17 @@ const FormGastos = ({ gasto, setOpenModal, onSuccess }: Props) => {
           onClick={() => setOpenModal(false)}
           disabled={isSubmitting}
         >
-          Cancelar
+          {t("buttons.cancel")}
         </Button>
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? (
             <span className="flex items-center gap-2">
-              {isEditing ? "Actualizando..." : "Guardando..."}
+              {isEditing ? t("buttons.updating") : t("buttons.saving")}
             </span>
           ) : isEditing ? (
-            "Actualizar Gasto"
+            t("buttons.updateExpense")
           ) : (
-            "Registrar Gasto"
+            t("buttons.registerExpense")
           )}
         </Button>
       </div>

@@ -1,3 +1,4 @@
+import { useTranslations, useLocale } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { COLORS_RENTABILIDAD } from "@/helpers/data/rentabilidad_colors";
 import {
@@ -22,7 +23,13 @@ const PieChartCategorias = ({
   tipo,
   moneda = "$",
 }: Props) => {
+  const t = useTranslations("pieChartCategorias");
+  const locale = useLocale();
+
   const filteredData = data.filter((c) => c.tipo === tipo);
+
+  const formatAmount = (value: number) =>
+    value.toLocaleString(locale === "en" ? "en-US" : "es-HN");
 
   return (
     <Card className="w-full">
@@ -42,10 +49,12 @@ const PieChartCategorias = ({
                 nameKey="categoria"
                 cx="50%"
                 cy="50%"
-                outerRadius={window.innerWidth < 640 ? 80 : 120}
+                outerRadius={120}
                 labelLine={false}
                 label={({ porcentaje }) =>
-                  window.innerWidth >= 640 ? `${porcentaje.toFixed(1)}%` : ""
+                  typeof window !== "undefined" && window.innerWidth >= 640
+                    ? `${porcentaje.toFixed(1)}%`
+                    : ""
                 }
               >
                 {filteredData.map((entry, index) => (
@@ -62,8 +71,8 @@ const PieChartCategorias = ({
 
               <Tooltip
                 formatter={(value: number) => [
-                  `${moneda}${value.toLocaleString()}`,
-                  "Monto",
+                  `${moneda}${formatAmount(value)}`,
+                  t("amount"),
                 ]}
               />
 
@@ -100,7 +109,7 @@ const PieChartCategorias = ({
 
               <div className="text-gray-600">
                 {moneda}
-                {item.monto.toLocaleString()}
+                {formatAmount(item.monto)}
               </div>
             </div>
           ))}

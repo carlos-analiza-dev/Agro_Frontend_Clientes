@@ -1,6 +1,7 @@
 "use client";
+
 import useGetAlimentacionAnimales from "@/hooks/alimentacion_animales/useGetAlimentacionAnimales";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
@@ -18,14 +19,16 @@ import TableAlimentacionAnimal from "./ui/TableAlimentacionAnimal";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import SummaryTotalsCard from "./ui/SummaryTotalsCard";
 import CardCostos from "./ui/CardCostos";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Modal from "@/components/generics/Modal";
 import FormAlimentacionAnimal from "./ui/FormAlimentacionAnimal";
 import { useRouter } from "next/navigation";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
+import { useTranslations } from "next-intl";
 
 const AlimentacionAnimal = () => {
+  const t = useTranslations("alimentacionAnimal");
   const { cliente } = useAuthStore();
 
   const [openModal, setOpenModal] = useState(false);
@@ -92,40 +95,40 @@ const AlimentacionAnimal = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl sm:text-3xl font-bold">Alimentación</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">{t("title")}</h1>
           <Button
             onClick={handleAddAlimentacion}
             className="gap-2"
-            size={isMobile ? "default" : "default"}
+            size="default"
           >
             <Plus className="h-4 w-4" />
-            {isMobile ? "Agregar" : "Agregar Alimentación"}
+            {isMobile ? t("buttons.add") : t("buttons.addFeeding")}
           </Button>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           <CardCostos
-            title="Costo Total General Diario"
+            title={t("costs.totalDaily")}
             moneda={moneda}
             number={costoTotalGeneral.toFixed(2)}
-            description="Total de todos los animales"
+            description={t("costs.allAnimals")}
             icon={CircleDollarSign}
             primary={true}
           />
 
           <CardCostos
-            title="Promedio por Animal"
+            title={t("costs.averagePerAnimal")}
             moneda={moneda}
             number={promedioPorAnimal}
-            description="Por animal/día"
+            description={t("costs.perAnimalDay")}
             icon={PiggyBank}
             primary={false}
           />
 
           <CardCostos
-            title="Total Animales"
+            title={t("costs.totalAnimals")}
             number={alimentacion?.length || 0}
-            description="Animales con registros"
+            description={t("costs.animalsWithRecords")}
             icon={Beef}
             primary={false}
           />
@@ -135,7 +138,7 @@ const AlimentacionAnimal = () => {
           <div className="block sm:hidden">
             <p className="text-sm font-medium mb-2 flex items-center gap-2">
               <Clock className="h-4 w-4" />
-              Acceso rápido
+              {t("quickAccess")}
             </p>
             <ScrollArea className="w-full whitespace-nowrap rounded-lg border">
               <div className="flex w-max space-x-2 p-2">
@@ -236,7 +239,7 @@ const AlimentacionAnimal = () => {
                     <div className="sm:text-right flex sm:block items-center justify-between mt-2 sm:mt-0">
                       <div>
                         <p className="text-xs text-muted-foreground sm:text-sm">
-                          Costo diario
+                          {t("dailyCost")}
                         </p>
                         <div className="flex items-center gap-2 sm:justify-end">
                           <p className="text-xl sm:text-2xl font-bold text-primary">
@@ -277,16 +280,13 @@ const AlimentacionAnimal = () => {
               <div className="bg-muted/50 p-4 rounded-full mb-4">
                 <AlertCircle className="h-12 w-12 text-muted-foreground" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">
-                No hay registros de alimentación
-              </h3>
+              <h3 className="text-lg font-semibold mb-2">{t("empty.title")}</h3>
               <p className="text-sm text-muted-foreground max-w-sm">
-                Comienza agregando alimentos a tus animales para ver su
-                información aquí.
+                {t("empty.description")}
               </p>
               <Button onClick={handleAddAlimentacion} className="mt-4 gap-2">
                 <Plus className="h-4 w-4" />
-                Agregar Primer Registro
+                {t("buttons.addFirstRecord")}
               </Button>
             </CardContent>
           </Card>
@@ -297,8 +297,8 @@ const AlimentacionAnimal = () => {
         <Modal
           open={openModal}
           onOpenChange={setOpenModal}
-          title="Agregar Alimentación"
-          description="Registra la alimentación diaria de tu animal"
+          title={t("modal.title")}
+          description={t("modal.description")}
           size="xl"
         >
           <FormAlimentacionAnimal

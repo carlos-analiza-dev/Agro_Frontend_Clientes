@@ -32,8 +32,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import FormAddPeso from "./ui/FormAddPeso";
 import { ResponseHistorialAnimal } from "@/api/peso-promedio-animal/interfaces/obtener-historial-pesos-animal.interface";
+import { useTranslations } from "next-intl";
 
 const AnimalHistorialPesoId = () => {
+  const t = useTranslations("AnimalHistorialPesoId");
   const { id } = useParams();
   const animalId = id?.toString() ?? "";
   const { data: historial, isLoading: cargando_historial } =
@@ -67,12 +69,12 @@ const AnimalHistorialPesoId = () => {
     const edadNum = parseInt(edad);
 
     if (isNaN(edadNum) || edadNum <= 0) {
-      setError("Por favor ingrese una edad válida (mayor a 0)");
+      setError(t("validation.invalidAge"));
       return;
     }
 
     if (edadNum > 600) {
-      setError("La edad ingresada es demasiado alta (máximo 600 meses)");
+      setError(t("validation.ageTooHigh"));
       return;
     }
 
@@ -89,9 +91,9 @@ const AnimalHistorialPesoId = () => {
 
       toast.success(
         <div>
-          <p className="font-semibold">¡Cálculo exitoso!</p>
+          <p className="font-semibold">{t("messages.calculationSuccess")}</p>
           <p className="text-sm">
-            Rango de peso para {res.raza} calculado correctamente
+            {t("messages.calculationSuccessDesc", { raza: res.raza })}
           </p>
         </div>,
         {
@@ -106,7 +108,7 @@ const AnimalHistorialPesoId = () => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al calcular el rango de peso";
+            : t("messages.calculationError");
 
         setError(errorMessage);
         toast.error(errorMessage, {
@@ -114,7 +116,7 @@ const AnimalHistorialPesoId = () => {
           style: { backgroundColor: "#fef2f2", color: "#991b1b" },
         });
       } else {
-        const errorMsg = "Ocurrió un error al procesar el rango de peso";
+        const errorMsg = t("messages.genericCalculationError");
         setError(errorMsg);
         toast.error(errorMsg);
       }
@@ -158,19 +160,19 @@ const AnimalHistorialPesoId = () => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-              Control de Peso
+              {t("header.title")}
             </h1>
-            <p className="text-sm text-gray-500 mt-1">
-              Gestione y monitoree el peso del animal a lo largo del tiempo
-            </p>
+            <p className="text-sm text-gray-500 mt-1">{t("header.subtitle")}</p>
           </div>
 
           {estadisticas && (
             <div className="flex gap-2">
               <Badge variant="outline" className="px-3 py-1">
-                <span className="text-xs text-gray-500 mr-1">Último:</span>
+                <span className="text-xs text-gray-500 mr-1">
+                  {t("badges.last")}
+                </span>
                 <span className="font-semibold">
-                  {estadisticas.pesoActual} Kg
+                  {t("units.kg", { value: estadisticas.pesoActual })}
                 </span>
               </Badge>
               {pesos && (
@@ -189,9 +191,11 @@ const AnimalHistorialPesoId = () => {
           className="space-y-4"
         >
           <TabsList className="grid w-full max-w-md grid-cols-2">
-            <TabsTrigger value="calculadora">Calculadora</TabsTrigger>
+            <TabsTrigger value="calculadora">
+              {t("tabs.calculator")}
+            </TabsTrigger>
             <TabsTrigger value="resultados" disabled={!pesos}>
-              Resultados
+              {t("tabs.results")}
             </TabsTrigger>
           </TabsList>
 
@@ -219,12 +223,10 @@ const AnimalHistorialPesoId = () => {
                         <Scale className="h-10 w-10 text-gray-400" />
                       </div>
                       <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                        Sin datos para mostrar
+                        {t("emptyState.title")}
                       </h3>
                       <p className="text-gray-500 max-w-md mx-auto">
-                        Ingrese la edad del animal y presione
-                        &quot;Calcular&quot; para ver el rango de peso estimado
-                        según su raza
+                        {t("emptyState.description")}
                       </p>
                     </CardContent>
                   </Card>
@@ -237,10 +239,10 @@ const AnimalHistorialPesoId = () => {
                         <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
                         <div className="text-center">
                           <p className="text-lg font-medium text-gray-700">
-                            Calculando rango de peso...
+                            {t("loading.title")}
                           </p>
                           <p className="text-sm text-gray-500">
-                            Esto tomará solo unos segundos
+                            {t("loading.description")}
                           </p>
                         </div>
                       </div>
@@ -277,35 +279,39 @@ const AnimalHistorialPesoId = () => {
                   <CardContent className="p-6">
                     <h3 className="font-semibold mb-4 flex items-center gap-2">
                       <TrendingUp className="h-5 w-5 text-blue-500" />
-                      Comparativa con el Historial
+                      {t("comparison.title")}
                     </h3>
 
                     {estadisticas ? (
                       <div className="space-y-4">
                         <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                           <span className="text-sm text-gray-600">
-                            Peso actual:
+                            {t("comparison.currentWeight")}
                           </span>
                           <span className="font-bold text-lg">
-                            {estadisticas.pesoActual} Kg
+                            {t("units.kg", {
+                              value: estadisticas.pesoActual,
+                            })}
                           </span>
                         </div>
 
                         <div className="space-y-2">
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-500">
-                              Rango esperado:
+                              {t("comparison.expectedRange")}
                             </span>
                             <span className="font-medium">
-                              {pesos.pesoMinimoEsperado} -{" "}
-                              {pesos.pesoMaximoEsperado} Kg
+                              {t("units.kgRange", {
+                                min: pesos.pesoMinimoEsperado,
+                                max: pesos.pesoMaximoEsperado,
+                              })}
                             </span>
                           </div>
                         </div>
                       </div>
                     ) : (
                       <p className="text-sm text-gray-500 text-center py-8">
-                        No hay historial de pesos para comparar
+                        {t("comparison.noHistory")}
                       </p>
                     )}
                   </CardContent>
@@ -334,18 +340,20 @@ const AnimalHistorialPesoId = () => {
         <div className="mt-8">
           <div className="flex justify-between items-center mb-4">
             <div>
-              <h2 className="text-xl font-bold">Historial de Pesos</h2>
+              <h2 className="text-xl font-bold">{t("history.title")}</h2>
               {estadisticas && (
                 <p className="text-sm text-gray-500">
-                  {estadisticas.totalRegistros} registros • Último:{" "}
-                  {estadisticas.pesoActual} Kg
+                  {t("history.summary", {
+                    count: estadisticas.totalRegistros,
+                    weight: estadisticas.pesoActual,
+                  })}
                 </p>
               )}
             </div>
             <Button onClick={handleOpenCreate}>
               <span className="flex items-center gap-2">
                 <span>+</span>
-                Agregar
+                {t("history.addButton")}
               </span>
             </Button>
           </div>
@@ -375,13 +383,13 @@ const AnimalHistorialPesoId = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>
               {modalMode === "create"
-                ? "Agregar nuevo peso"
-                : "Editar registro de peso"}
+                ? t("modal.addTitle")
+                : t("modal.editTitle")}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {modalMode === "create"
-                ? "Ingresa el peso actual del animal."
-                : "Modifica los datos del registro de peso."}
+                ? t("modal.addDescription")
+                : t("modal.editDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <FormAddPeso

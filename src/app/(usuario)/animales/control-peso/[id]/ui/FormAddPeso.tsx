@@ -1,3 +1,5 @@
+"use client";
+
 import { CrearPesoAnimal } from "@/api/peso-promedio-animal/accions/crear-peso-animal";
 import { EditarPesoAnimal } from "@/api/peso-promedio-animal/accions/editar-peso-animal";
 import { CrearPesoAnimalInterface } from "@/api/peso-promedio-animal/interfaces/crear-peso-animal.interface";
@@ -11,6 +13,7 @@ import { isAxiosError } from "axios";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 interface Props {
   animalId: string;
@@ -27,6 +30,8 @@ const FormAddPeso = ({
   registro,
   onSuccess,
 }: Props) => {
+  const t = useTranslations("formAddPeso");
+
   const {
     register,
     reset,
@@ -40,6 +45,7 @@ const FormAddPeso = ({
       observaciones: "",
     },
   });
+
   const queryClient = useQueryClient();
   const isEditing = !!registro;
 
@@ -72,10 +78,10 @@ const FormAddPeso = ({
 
       if (isEditing && registro) {
         response = await EditarPesoAnimal(registro.id, payload);
-        toast.success("Peso actualizado correctamente");
+        toast.success(t("messages.updateSuccess"));
       } else {
         response = await CrearPesoAnimal(payload);
-        toast.success("Peso agregado correctamente");
+        toast.success(t("messages.createSuccess"));
       }
 
       reset();
@@ -90,13 +96,12 @@ const FormAddPeso = ({
       if (isAxiosError(error)) {
         const errorMessage =
           error.response?.data?.message ||
-          (isEditing ? "Error al actualizar" : "Error al agregar");
+          (isEditing ? t("errors.update") : t("errors.create"));
+
         toast.error(errorMessage);
       } else {
         toast.error(
-          isEditing
-            ? "Error al actualizar el peso"
-            : "Error al agregar el peso",
+          isEditing ? t("errors.updateWeight") : t("errors.createWeight"),
         );
       }
     }
@@ -106,19 +111,23 @@ const FormAddPeso = ({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
         <Label htmlFor="peso">
-          Peso del Animal (Kg) <span className="text-red-500">*</span>
+          {t("fields.weight")} <span className="text-red-500">*</span>
         </Label>
+
         <Input
           id="peso"
           {...register("peso", {
-            required: "El peso es requerido",
-            min: { value: 0.1, message: "El peso debe ser mayor a 0" },
+            required: t("validation.weightRequired"),
+            min: {
+              value: 0.1,
+              message: t("validation.weightMin"),
+            },
             max: {
               value: 2000,
-              message: "El peso no puede ser mayor a 2000 kg",
+              message: t("validation.weightMax"),
             },
           })}
-          placeholder="Ej: 450.5"
+          placeholder={t("placeholders.weight")}
           type="number"
           step="0.1"
           min={0.1}
@@ -126,6 +135,7 @@ const FormAddPeso = ({
           className={errors.peso ? "border-red-500" : ""}
           disabled={isSubmitting}
         />
+
         {errors.peso && (
           <p className="text-sm text-red-500 mt-1">{errors.peso.message}</p>
         )}
@@ -133,18 +143,21 @@ const FormAddPeso = ({
 
       <div>
         <Label htmlFor="fecha">
-          Fecha de Registro <span className="text-red-500">*</span>
+          {t("fields.date")} <span className="text-red-500">*</span>
         </Label>
+
         <Input
           id="fecha"
           {...register("fecha", {
-            required: "La fecha es requerida",
+            required: t("validation.dateRequired"),
             validate: (value) => {
               const fecha = new Date(value);
               const hoy = new Date();
+
               if (fecha > hoy) {
-                return "La fecha no puede ser futura";
+                return t("validation.dateFuture");
               }
+
               return true;
             },
           })}
@@ -153,17 +166,19 @@ const FormAddPeso = ({
           className={errors.fecha ? "border-red-500" : ""}
           disabled={isSubmitting}
         />
+
         {errors.fecha && (
           <p className="text-sm text-red-500 mt-1">{errors.fecha.message}</p>
         )}
       </div>
 
       <div>
-        <Label htmlFor="observaciones">Observaciones</Label>
+        <Label htmlFor="observaciones">{t("fields.observations")}</Label>
+
         <Textarea
           id="observaciones"
           {...register("observaciones")}
-          placeholder="Observaciones adicionales (opcional)"
+          placeholder={t("placeholders.observations")}
           rows={3}
           disabled={isSubmitting}
         />
@@ -176,17 +191,18 @@ const FormAddPeso = ({
           onClick={() => setOpenModal(false)}
           disabled={isSubmitting}
         >
-          Cancelar
+          {t("buttons.cancel")}
         </Button>
+
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? (
             <span className="flex items-center gap-2">
-              {isEditing ? "Actualizando..." : "Guardando..."}
+              {isEditing ? t("buttons.updating") : t("buttons.saving")}
             </span>
           ) : isEditing ? (
-            "Actualizar Peso"
+            t("buttons.updateWeight")
           ) : (
-            "Guardar Peso"
+            t("buttons.saveWeight")
           )}
         </Button>
       </div>

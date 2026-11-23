@@ -6,7 +6,6 @@ import { isAxiosError } from "axios";
 import { Animal } from "@/api/animales/interfaces/response-animales.interface";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +26,7 @@ import ImageGallery from "@/components/generics/ImageGallery";
 import { descartarAnimal } from "@/api/animales/accions/update-animal";
 import Modal from "@/components/generics/Modal";
 import { format } from "date-fns";
+import { useTranslations } from "next-intl";
 
 interface Props {
   animal: Animal;
@@ -35,6 +35,7 @@ interface Props {
 }
 
 const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
+  const t = useTranslations("AnimalCard");
   const [deathDialogVisible, setDeathDialogVisible] = useState(false);
   const [deathStatus, setDeathStatus] = useState(animal.animal_muerte);
   const [deathReason, setDeathReason] = useState(animal.razon_muerte);
@@ -60,13 +61,13 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
         if (onUpdateProfileImage) {
           await onUpdateProfileImage(imageDataUrl, animal.id);
-          toast("Perfil de animal actualizado exitosamente");
+          toast(t("messages.profileImageUpdated"));
           queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
         }
       };
       reader.readAsDataURL(file);
     } catch (error) {
-      toast.error("No se pudo actualizar la imagen de perfil");
+      toast.error(t("messages.profileImageUpdateError"));
       setLocalImage(null);
     }
   };
@@ -80,14 +81,14 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const handleDeleteImage = async (imageId: string) => {
     try {
       await eliminarImagenAnimal(imageId);
-      toast("Foto de perfil del animal eliminada");
+      toast(t("messages.profileImageDeleted"));
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
       setGalleryVisible(false);
     } catch (error) {
       if (isAxiosError(error)) {
         toast.error(
           error.response?.data?.message ||
-            "Error al eliminar la foto de perfil del animal",
+            t("messages.profileImageDeleteError"),
         );
       }
     }
@@ -99,9 +100,7 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
         deathStatus &&
         (!deathReason || deathReason.trim() === "" || deathReason === "N/D")
       ) {
-        toast.error(
-          "Debe ingresar una razón de muerte válida (no puede estar vacía o ser 'N/D')",
-        );
+        toast.error(t("validation.deathReasonRequired"));
         return;
       }
 
@@ -114,8 +113,8 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
       toast(
         deathStatus
-          ? "Animal marcado como fallecido"
-          : "Animal marcado como vivo",
+          ? t("messages.markedAsDeceased")
+          : t("messages.markedAsAlive"),
       );
 
       queryClient.invalidateQueries({
@@ -129,11 +128,11 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar el estado";
+            : t("messages.updateStatusError");
 
         toast(errorMessage);
       } else {
-        toast("Contacte al administrador");
+        toast(t("messages.contactAdmin"));
       }
     }
   };
@@ -141,7 +140,7 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const handleDiscardAnimal = async () => {
     try {
       if (!discardReason || discardReason.trim() === "") {
-        toast.error("Debe ingresar una razón de descarte válida");
+        toast.error(t("validation.discardReasonRequired"));
         return;
       }
 
@@ -152,7 +151,7 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
         cantidad: 1,
       });
 
-      toast("Animal descartado exitosamente");
+      toast(t("messages.discardedSuccess"));
       queryClient.invalidateQueries({
         queryKey: ["animales-propietario", animal.propietario.id],
       });
@@ -165,11 +164,11 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al descartar el animal";
+            : t("messages.discardError");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Contacte al administrador");
+        toast.error(t("messages.contactAdmin"));
       }
     }
   };
@@ -202,8 +201,8 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 {animal.razas.length === 1
                   ? animal.razas[0].nombre
                   : animal.razas.length > 1
-                    ? "Encaste"
-                    : "Sin raza"}{" "}
+                    ? t("labels.crossbreed")
+                    : t("labels.noBreed")}{" "}
                 - {animal.sexo}
               </p>
               {animal.nombre_animal && (
@@ -235,7 +234,7 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <Button
               variant="outline"
               size="icon"
-              title="Descartar Animal"
+              title={t("tooltips.discardAnimal")}
               className="h-8 w-8 rounded-full"
               onClick={() => setDiscardDialogVisible(true)}
             >
@@ -245,7 +244,7 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <Button
               variant="outline"
               size="icon"
-              title="Subir Foto"
+              title={t("tooltips.uploadPhoto")}
               className="h-8 w-8 rounded-full"
               onClick={() => fileInputRef.current?.click()}
             >
@@ -284,14 +283,14 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           )}
 
           <AnimalParentInfo
-            title="Datos del Padre"
+            title={t("labels.fatherData")}
             nombre={animal.nombre_padre ?? undefined}
             arete={animal.arete_padre ?? undefined}
             razas={animal.razas_padre}
           />
 
           <AnimalParentInfo
-            title="Datos de la Madre"
+            title={t("labels.motherData")}
             nombre={animal.nombre_madre ?? undefined}
             arete={animal.arete_madre ?? undefined}
             razas={animal.razas_madre}
@@ -302,7 +301,11 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
           {animal.finca && (
             <AnimalFincaByPropietarion
-              fincaNombre={animal.finca ? animal.finca.nombre_finca : "N/D"}
+              fincaNombre={
+                animal.finca
+                  ? animal.finca.nombre_finca
+                  : t("labels.notAvailable")
+              }
               fincaAbreviatura={animal.finca.abreviatura}
               observaciones={animal.observaciones}
             />
@@ -310,7 +313,7 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
           <div className="flex justify-center w-full space-x-2 mt-4">
             <Button className="w-full bg-green-600" onClick={onEdit}>
-              Editar
+              {t("buttons.edit")}
             </Button>
           </div>
         </CardContent>
@@ -326,12 +329,12 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
       <Modal
         open={deathDialogVisible}
         onOpenChange={setDeathDialogVisible}
-        title="Actualizar estado de vida"
-        description="Indique si el animal está vivo o ha fallecido."
+        title={t("deathModal.title")}
+        description={t("deathModal.description")}
         showCloseButton={false}
       >
         <div className="flex items-center justify-between py-4">
-          <Label htmlFor="death-status">¿El animal ha fallecido?</Label>
+          <Label htmlFor="death-status">{t("deathModal.hasDied")}</Label>
           <Switch
             id="death-status"
             checked={deathStatus}
@@ -344,12 +347,12 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
         {deathStatus && (
           <div className="space-y-2">
-            <Label htmlFor="death-reason">Razón de la muerte</Label>
+            <Label htmlFor="death-reason">{t("deathModal.deathReason")}</Label>
             <Input
               id="death-reason"
               value={deathReason}
               onChange={(e) => setDeathReason(e.target.value)}
-              placeholder="Ingrese la razón de la muerte"
+              placeholder={t("deathModal.deathReasonPlaceholder")}
             />
           </div>
         )}
@@ -360,36 +363,39 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               variant="outline"
               onClick={() => setDeathDialogVisible(false)}
             >
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
-            <Button onClick={handleDeathStatusUpdate}>Guardar</Button>
+            <Button onClick={handleDeathStatusUpdate}>
+              {t("buttons.save")}
+            </Button>
           </div>
         </div>
       </Modal>
 
       <Modal
-        title="Descartar Animal"
-        description="Esta acción marcará al animal como descartado. Asegúrese de
-              ingresar toda la información requerida."
+        title={t("discardModal.title")}
+        description={t("discardModal.description")}
         open={discardDialogVisible}
         onOpenChange={setDiscardDialogVisible}
         showCloseButton={false}
       >
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="discard-reason">Razón de descarte *</Label>
+            <Label htmlFor="discard-reason">
+              {t("discardModal.discardReason")}
+            </Label>
             <Input
               id="discard-reason"
               value={discardReason}
               onChange={(e) => setDiscardReason(e.target.value)}
-              placeholder="Ej: Venta, Muerte, Traslado, etc."
+              placeholder={t("discardModal.discardReasonPlaceholder")}
             />
           </div>
 
           <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
             <p className="text-sm text-yellow-800">
-              <strong>⚠️ Advertencia:</strong> Esta acción no se puede deshacer.
-              El animal será marcado como descartado en el sistema.
+              <strong>⚠️ {t("discardModal.warningLabel")}</strong>{" "}
+              {t("discardModal.warningText")}
             </p>
           </div>
         </div>
@@ -403,14 +409,14 @@ const AnimalCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 setDiscardReason("");
               }}
             >
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
             <Button
               variant="destructive"
               onClick={handleDiscardAnimal}
               disabled={!discardReason}
             >
-              Descartar Animal
+              {t("buttons.discardAnimal")}
             </Button>
           </div>
         </div>

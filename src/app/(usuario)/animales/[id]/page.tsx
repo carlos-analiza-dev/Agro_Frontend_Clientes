@@ -1,12 +1,11 @@
 "use client";
+
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PawPrintIcon, RefreshCw, AlertCircle } from "lucide-react";
 import useAnimalById from "@/hooks/animales/useAnimalById";
 import { useParams } from "next/navigation";
 import FormEditAnimales from "@/components/animales/FormEditAnimales";
-import FormAddPorcino from "@/components/animales/FormAddPorcino";
-import FormAddPeces from "@/components/animales/FormAddPeces";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import FormEditEquino from "@/components/animales/FormEditEquino";
 import FormEditAvicola from "@/components/animales/FormEditAvicola";
@@ -14,8 +13,11 @@ import FormEditPeces from "@/components/animales/FormEditPeces";
 import FormEditCaprino from "@/components/animales/FormEditCaprino";
 import FormEditOvino from "@/components/animales/FormEditOvinos";
 import FormEditPorcino from "@/components/animales/FormEditPorcino";
+import { useTranslations } from "next-intl";
 
 const AnimalDetailsPage = () => {
+  const t = useTranslations("animalDetailsPage");
+
   const params = useParams();
   const animalId = params.id as string;
   const [activeTab, setActiveTab] = useState("animal");
@@ -46,7 +48,7 @@ const AnimalDetailsPage = () => {
     return (
       <div className="container mx-auto p-4 max-w-4xl">
         <div className="flex items-center justify-center h-64">
-          <p>No se encontró el animal</p>
+          <p>{t("notFound")}</p>
         </div>
       </div>
     );
@@ -62,7 +64,7 @@ const AnimalDetailsPage = () => {
     <div className="container mx-auto p-4 max-w-4xl">
       <div className="flex items-center mb-6">
         <PawPrintIcon className="h-5 w-5 md:h-8 md:w-8 mr-2" />
-        <h1 className="text-lg md:text-3xl font-bold">Editar Animal</h1>
+        <h1 className="text-lg md:text-3xl font-bold">{t("title")}</h1>
       </div>
 
       {tieneFormulario ? (
@@ -74,9 +76,9 @@ const AnimalDetailsPage = () => {
               className="w-full"
             >
               <TabsList className="grid grid-cols-3 mb-6">
-                <TabsTrigger value="animal">Datos Animal</TabsTrigger>
-                <TabsTrigger value="padre">Datos Padre</TabsTrigger>
-                <TabsTrigger value="madre">Datos Madre</TabsTrigger>
+                <TabsTrigger value="animal">{t("tabs.animal")}</TabsTrigger>
+                <TabsTrigger value="padre">{t("tabs.father")}</TabsTrigger>
+                <TabsTrigger value="madre">{t("tabs.mother")}</TabsTrigger>
               </TabsList>
 
               <FormEditCaprino
@@ -86,6 +88,7 @@ const AnimalDetailsPage = () => {
               />
             </Tabs>
           )}
+
           {especieNombre === "ovino" && (
             <Tabs
               value={activeTab}
@@ -93,9 +96,9 @@ const AnimalDetailsPage = () => {
               className="w-full"
             >
               <TabsList className="grid grid-cols-3 mb-6">
-                <TabsTrigger value="animal">Datos Animal</TabsTrigger>
-                <TabsTrigger value="padre">Datos Padre</TabsTrigger>
-                <TabsTrigger value="madre">Datos Madre</TabsTrigger>
+                <TabsTrigger value="animal">{t("tabs.animal")}</TabsTrigger>
+                <TabsTrigger value="padre">{t("tabs.father")}</TabsTrigger>
+                <TabsTrigger value="madre">{t("tabs.mother")}</TabsTrigger>
               </TabsList>
 
               <FormEditOvino
@@ -105,6 +108,7 @@ const AnimalDetailsPage = () => {
               />
             </Tabs>
           )}
+
           {especieNombre === "porcino" && (
             <FormEditPorcino animal={animal} animalId={animalId} />
           )}
@@ -112,6 +116,7 @@ const AnimalDetailsPage = () => {
           {especieNombre === "avicola" && (
             <FormEditAvicola animal={animal} animalId={animalId} />
           )}
+
           {especieNombre === "peces" && (
             <FormEditPeces animal={animal} animalId={animalId} />
           )}
@@ -123,9 +128,9 @@ const AnimalDetailsPage = () => {
               className="w-full"
             >
               <TabsList className="grid grid-cols-3 mb-6">
-                <TabsTrigger value="animal">Datos Animal</TabsTrigger>
-                <TabsTrigger value="padre">Datos Padre</TabsTrigger>
-                <TabsTrigger value="madre">Datos Madre</TabsTrigger>
+                <TabsTrigger value="animal">{t("tabs.animal")}</TabsTrigger>
+                <TabsTrigger value="padre">{t("tabs.father")}</TabsTrigger>
+                <TabsTrigger value="madre">{t("tabs.mother")}</TabsTrigger>
               </TabsList>
 
               <FormEditEquino
@@ -143,9 +148,9 @@ const AnimalDetailsPage = () => {
               className="w-full"
             >
               <TabsList className="grid grid-cols-3 mb-6">
-                <TabsTrigger value="animal">Datos Animal</TabsTrigger>
-                <TabsTrigger value="padre">Datos Padre</TabsTrigger>
-                <TabsTrigger value="madre">Datos Madre</TabsTrigger>
+                <TabsTrigger value="animal">{t("tabs.animal")}</TabsTrigger>
+                <TabsTrigger value="padre">{t("tabs.father")}</TabsTrigger>
+                <TabsTrigger value="madre">{t("tabs.mother")}</TabsTrigger>
               </TabsList>
 
               <FormEditAnimales
@@ -159,15 +164,15 @@ const AnimalDetailsPage = () => {
       ) : (
         <Alert variant="destructive" className="mb-6">
           <AlertCircle className="h-5 w-5" />
-          <AlertTitle>Formulario no disponible</AlertTitle>
+          <AlertTitle>{t("unavailable.title")}</AlertTitle>
           <AlertDescription>
-            No se encontró un formulario específico para la especie "
-            {animal.especie?.nombre || "No especificada"}". Esta especie no
-            tiene configurado un formulario de edición en el sistema.
+            {t("unavailable.description", {
+              species: animal.especie?.nombre || t("unavailable.unspecified"),
+            })}
+
             {especieNombre && (
               <div className="mt-2 text-sm text-muted-foreground">
-                Especies disponibles para edición: porcino, avicola, piscicola,
-                equino, caprino, ovino, bovino
+                {t("unavailable.availableSpecies")}
               </div>
             )}
           </AlertDescription>

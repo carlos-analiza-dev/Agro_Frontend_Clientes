@@ -1,4 +1,6 @@
 "use client";
+
+import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { CalendarIcon, DollarSign, Building2, PawPrint } from "lucide-react";
@@ -18,6 +20,18 @@ export function CardGastosMobile({
   isLoading,
   moneda = "L",
 }: CardGastosMobileProps) {
+  const t = useTranslations("cardGastosMobile");
+
+  const getCategoriaLabel = (categoria: string) => {
+    const key = `categories.${categoria}`;
+    return t.has(key) ? t(key) : categoria.replace(/_/g, " ");
+  };
+
+  const getMetodoPagoLabel = (metodo: string) => {
+    const key = `paymentMethods.${metodo}`;
+    return t.has(key) ? t(key) : metodo.replace(/_/g, " ");
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -41,9 +55,9 @@ export function CardGastosMobile({
           <DollarSign className="h-10 w-10 text-gray-400" />
         </div>
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          No hay gastos registrados
+          {t("empty.title")}
         </h3>
-        <p className="text-gray-600">Comienza registrando tu primer gasto</p>
+        <p className="text-gray-600">{t("empty.description")}</p>
       </div>
     );
   }
@@ -55,7 +69,7 @@ export function CardGastosMobile({
           <CardContent className="p-4">
             <div className="flex justify-between items-start mb-3">
               <Badge className={getCategoriaColor(gasto.categoria)}>
-                {gasto.categoria.replace(/_/g, " ")}
+                {getCategoriaLabel(gasto.categoria)}
               </Badge>
               <span className="text-sm text-gray-500 flex items-center gap-1">
                 <CalendarIcon className="h-3 w-3" />
@@ -74,7 +88,7 @@ export function CardGastosMobile({
 
             <div className="space-y-2 text-sm border-t pt-3">
               <div className="flex justify-between">
-                <span className="text-gray-600">Monto:</span>
+                <span className="text-gray-600">{t("labels.amount")}:</span>
                 <span className="font-bold text-red-600">
                   {moneda}{" "}
                   {gasto.monto.toLocaleString("es-HN", {
@@ -84,15 +98,17 @@ export function CardGastosMobile({
               </div>
 
               <div className="flex justify-between">
-                <span className="text-gray-600">Método de pago:</span>
-                <span>{gasto.metodo_pago.replace(/_/g, " ")}</span>
+                <span className="text-gray-600">
+                  {t("labels.paymentMethod")}:
+                </span>
+                <span>{getMetodoPagoLabel(gasto.metodo_pago)}</span>
               </div>
 
               {gasto.fincaNombre && (
                 <div className="flex justify-between">
                   <span className="text-gray-600 flex items-center gap-1">
                     <Building2 className="h-3 w-3" />
-                    Finca:
+                    {t("labels.farm")}:
                   </span>
                   <span>{gasto.fincaNombre}</span>
                 </div>
@@ -102,7 +118,7 @@ export function CardGastosMobile({
                 <div className="flex justify-between">
                   <span className="text-gray-600 flex items-center gap-1">
                     <PawPrint className="h-3 w-3" />
-                    Especie:
+                    {t("labels.species")}:
                   </span>
                   <span>{gasto.especieNombre}</span>
                 </div>
@@ -111,8 +127,8 @@ export function CardGastosMobile({
           </CardContent>
           <div className="flex justify-end mt-3 mb-3">
             <Link href={`/gastos/${gasto.id}`}>
-              <Button id="btn-edit-gasto" variant={"ghost"}>
-                Editar
+              <Button id="btn-edit-gasto" variant="ghost">
+                {t("buttons.edit")}
               </Button>
             </Link>
           </div>

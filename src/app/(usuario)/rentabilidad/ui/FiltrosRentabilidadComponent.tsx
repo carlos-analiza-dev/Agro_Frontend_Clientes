@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations, useLocale } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +27,7 @@ import {
 } from "@/components/ui/sheet";
 import { CalendarIcon, X, Filter, SlidersHorizontal } from "lucide-react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { es, enUS } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { FiltrosRentabilidad } from "@/api/finanzas/rentabilidad/interface/rentabilidad.interface";
 import { Finca } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
@@ -60,6 +61,10 @@ export function FiltrosRentabilidadComponent({
   especies,
   onClose,
 }: FiltrosRentabilidadProps) {
+  const t = useTranslations("filtrosRentabilidad");
+  const locale = useLocale();
+  const dateLocale = locale === "en" ? enUS : es;
+
   const [open, setOpen] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
 
@@ -82,10 +87,28 @@ export function FiltrosRentabilidadComponent({
 
   const filtrosActivos = contarFiltrosActivos();
 
+  const fechaInicioDate = filtros.fechaInicio
+    ? parseLocalDate(filtros.fechaInicio)
+    : undefined;
+
+  const fechaFinDate = filtros.fechaFin
+    ? parseLocalDate(filtros.fechaFin)
+    : undefined;
+
+  const nombreFinca = fincas?.find(
+    (f) => f.id === filtros.fincaId,
+  )?.nombre_finca;
+
+  const nombreEspecie = especies?.find(
+    (e) => e.id === filtros.especieId,
+  )?.nombre;
+
   const FilterContent = () => (
     <div className="space-y-6 pb-4">
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-gray-700">Finca</Label>
+        <Label className="text-sm font-medium text-gray-700">
+          {t("fields.farm")}
+        </Label>
         <Select
           value={filtros.fincaId || "todos"}
           onValueChange={(value) => {
@@ -96,10 +119,10 @@ export function FiltrosRentabilidadComponent({
           }}
         >
           <SelectTrigger className="w-full bg-white">
-            <SelectValue placeholder="Todas las fincas" />
+            <SelectValue placeholder={t("placeholders.allFarms")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="todos">Todas las fincas</SelectItem>
+            <SelectItem value="todos">{t("placeholders.allFarms")}</SelectItem>
             {fincas?.map((finca) => (
               <SelectItem key={finca.id} value={finca.id}>
                 {finca.nombre_finca}
@@ -110,7 +133,9 @@ export function FiltrosRentabilidadComponent({
       </div>
 
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-gray-700">Especie</Label>
+        <Label className="text-sm font-medium text-gray-700">
+          {t("fields.species")}
+        </Label>
         <Select
           value={filtros.especieId || "todos"}
           onValueChange={(value) => {
@@ -121,10 +146,12 @@ export function FiltrosRentabilidadComponent({
           }}
         >
           <SelectTrigger className="w-full bg-white">
-            <SelectValue placeholder="Todas las especies" />
+            <SelectValue placeholder={t("placeholders.allSpecies")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="todos">Todas las especies</SelectItem>
+            <SelectItem value="todos">
+              {t("placeholders.allSpecies")}
+            </SelectItem>
             {especies?.map((especie) => (
               <SelectItem key={especie.id} value={especie.id}>
                 {especie.nombre}
@@ -136,7 +163,7 @@ export function FiltrosRentabilidadComponent({
 
       <div className="space-y-2">
         <Label className="text-sm font-medium text-gray-700">
-          Rango de fechas
+          {t("fields.dateRange")}
         </Label>
         <div className="space-y-2">
           <Popover>
@@ -151,33 +178,22 @@ export function FiltrosRentabilidadComponent({
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {filtros.fechaInicio
                   ? format(parseLocalDate(filtros.fechaInicio), "dd/MM/yyyy", {
-                      locale: es,
+                      locale: dateLocale,
                     })
-                  : "Fecha desde"}
+                  : t("placeholders.dateFrom")}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
-                selected={
-                  filtros.fechaInicio
-                    ? parseLocalDate(filtros.fechaInicio)
-                    : undefined
-                }
+                selected={fechaInicioDate}
                 onSelect={(date) => {
-                  if (date) {
-                    setFiltros({
-                      ...filtros,
-                      fechaInicio: formatLocalDate(date),
-                    });
-                  } else {
-                    setFiltros({
-                      ...filtros,
-                      fechaInicio: undefined,
-                    });
-                  }
+                  setFiltros({
+                    ...filtros,
+                    fechaInicio: date ? formatLocalDate(date) : undefined,
+                  });
                 }}
-                locale={es}
+                locale={dateLocale}
               />
             </PopoverContent>
           </Popover>
@@ -194,33 +210,22 @@ export function FiltrosRentabilidadComponent({
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {filtros.fechaFin
                   ? format(parseLocalDate(filtros.fechaFin), "dd/MM/yyyy", {
-                      locale: es,
+                      locale: dateLocale,
                     })
-                  : "Fecha hasta"}
+                  : t("placeholders.dateTo")}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
-                selected={
-                  filtros.fechaFin
-                    ? parseLocalDate(filtros.fechaFin)
-                    : undefined
-                }
+                selected={fechaFinDate}
                 onSelect={(date) => {
-                  if (date) {
-                    setFiltros({
-                      ...filtros,
-                      fechaFin: formatLocalDate(date),
-                    });
-                  } else {
-                    setFiltros({
-                      ...filtros,
-                      fechaFin: undefined,
-                    });
-                  }
+                  setFiltros({
+                    ...filtros,
+                    fechaFin: date ? formatLocalDate(date) : undefined,
+                  });
                 }}
-                locale={es}
+                locale={dateLocale}
               />
             </PopoverContent>
           </Popover>
@@ -230,16 +235,16 @@ export function FiltrosRentabilidadComponent({
       {filtrosActivos > 0 && (
         <div className="pt-2">
           <Label className="text-sm font-medium mb-2 block text-gray-700">
-            Filtros activos:
+            {t("activeFilters")}
           </Label>
           <div className="flex flex-wrap gap-2">
             {filtros.fincaId && (
               <div className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                Finca:{" "}
-                {fincas?.find((f) => f.id === filtros.fincaId)?.nombre_finca}
+                {t("active.farm", { name: nombreFinca || "" })}
                 <button
                   onClick={() => setFiltros({ ...filtros, fincaId: undefined })}
                   className="hover:text-blue-900 ml-1"
+                  aria-label={t("removeFarm")}
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -247,13 +252,13 @@ export function FiltrosRentabilidadComponent({
             )}
             {filtros.especieId && (
               <div className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                Especie:{" "}
-                {especies?.find((e) => e.id === filtros.especieId)?.nombre}
+                {t("active.species", { name: nombreEspecie || "" })}
                 <button
                   onClick={() =>
                     setFiltros({ ...filtros, especieId: undefined })
                   }
                   className="hover:text-green-900 ml-1"
+                  aria-label={t("removeSpecies")}
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -261,12 +266,16 @@ export function FiltrosRentabilidadComponent({
             )}
             {(filtros.fechaInicio || filtros.fechaFin) && (
               <div className="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                📅{" "}
+                <CalendarIcon className="h-3 w-3" />
                 {filtros.fechaInicio &&
-                  format(parseLocalDate(filtros.fechaInicio), "dd/MM/yy")}
+                  format(parseLocalDate(filtros.fechaInicio), "dd/MM/yy", {
+                    locale: dateLocale,
+                  })}
                 {filtros.fechaInicio && filtros.fechaFin && " - "}
                 {filtros.fechaFin &&
-                  format(parseLocalDate(filtros.fechaFin), "dd/MM/yy")}
+                  format(parseLocalDate(filtros.fechaFin), "dd/MM/yy", {
+                    locale: dateLocale,
+                  })}
                 <button
                   onClick={() => {
                     setFiltros({
@@ -276,6 +285,7 @@ export function FiltrosRentabilidadComponent({
                     });
                   }}
                   className="hover:text-purple-900 ml-1"
+                  aria-label={t("removeDates")}
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -289,67 +299,65 @@ export function FiltrosRentabilidadComponent({
 
   if (isMobile) {
     return (
-      <>
-        <div className="fixed bottom-6 right-6 z-50">
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-              <Button className="rounded-full shadow-lg bg-blue-600 hover:bg-blue-700 text-white p-3 h-auto w-auto flex items-center gap-2">
-                <SlidersHorizontal className="h-5 w-5" />
-                <span className="text-sm font-medium">Filtros</span>
-                {filtrosActivos > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-md">
-                    {filtrosActivos}
-                  </span>
-                )}
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="bottom" className="p-0 rounded-t-2xl">
-              <div className="flex flex-col h-[90vh]">
-                <SheetHeader className="p-4 border-b sticky top-0 bg-white rounded-t-2xl">
-                  <div className="flex justify-between items-center">
-                    <SheetTitle className="text-left text-lg font-semibold">
-                      Filtros
-                    </SheetTitle>
-                    {filtrosActivos > 0 && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={limpiarFiltros}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        <X className="h-4 w-4 mr-1" />
-                        Limpiar
-                      </Button>
-                    )}
-                  </div>
-                </SheetHeader>
-
-                <div className="flex-1 overflow-y-auto p-4">
-                  <FilterContent />
+      <div className="fixed bottom-6 right-6 z-50">
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button className="rounded-full shadow-lg bg-blue-600 hover:bg-blue-700 text-white p-3 h-auto w-auto flex items-center gap-2">
+              <SlidersHorizontal className="h-5 w-5" />
+              <span className="text-sm font-medium">{t("title")}</span>
+              {filtrosActivos > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-md">
+                  {filtrosActivos}
+                </span>
+              )}
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="bottom" className="p-0 rounded-t-2xl">
+            <div className="flex flex-col h-[90vh]">
+              <SheetHeader className="p-4 border-b sticky top-0 bg-white rounded-t-2xl">
+                <div className="flex justify-between items-center">
+                  <SheetTitle className="text-left text-lg font-semibold">
+                    {t("title")}
+                  </SheetTitle>
+                  {filtrosActivos > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={limpiarFiltros}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <X className="h-4 w-4 mr-1" />
+                      {t("buttons.clear")}
+                    </Button>
+                  )}
                 </div>
+              </SheetHeader>
 
-                <SheetFooter className="p-4 border-t bg-white">
-                  <div className="flex gap-3 w-full">
-                    <Button
-                      variant="outline"
-                      onClick={() => setOpen(false)}
-                      className="flex-1"
-                    >
-                      Cancelar
-                    </Button>
-                    <Button
-                      onClick={() => setOpen(false)}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      Aplicar filtros
-                    </Button>
-                  </div>
-                </SheetFooter>
+              <div className="flex-1 overflow-y-auto p-4">
+                <FilterContent />
               </div>
-            </SheetContent>
-          </Sheet>
-        </div>
-      </>
+
+              <SheetFooter className="p-4 border-t bg-white">
+                <div className="flex gap-3 w-full">
+                  <Button
+                    variant="outline"
+                    onClick={() => setOpen(false)}
+                    className="flex-1"
+                  >
+                    {t("buttons.cancel")}
+                  </Button>
+                  <Button
+                    onClick={() => setOpen(false)}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    {t("buttons.apply")}
+                  </Button>
+                </div>
+              </SheetFooter>
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
     );
   }
 
@@ -358,24 +366,24 @@ export function FiltrosRentabilidadComponent({
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-2">
           <Filter className="h-4 w-4 text-gray-500" />
-          <h3 className="font-medium text-gray-700">Filtros</h3>
+          <h3 className="font-medium text-gray-700">{t("title")}</h3>
           {filtrosActivos > 0 && (
             <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">
-              {filtrosActivos} activo{filtrosActivos !== 1 ? "s" : ""}
+              {t("activeCount", { count: filtrosActivos })}
             </span>
           )}
         </div>
         {filtrosActivos > 0 && (
           <Button variant="ghost" size="sm" onClick={limpiarFiltros}>
             <X className="h-4 w-4 mr-1" />
-            Limpiar todo
+            {t("buttons.clearAll")}
           </Button>
         )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="space-y-2">
-          <Label className="text-sm font-medium">Finca</Label>
+          <Label className="text-sm font-medium">{t("fields.farm")}</Label>
           <Select
             value={filtros.fincaId || "todos"}
             onValueChange={(value) =>
@@ -386,10 +394,12 @@ export function FiltrosRentabilidadComponent({
             }
           >
             <SelectTrigger>
-              <SelectValue placeholder="Todas las fincas" />
+              <SelectValue placeholder={t("placeholders.allFarms")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="todos">Todas las fincas</SelectItem>
+              <SelectItem value="todos">
+                {t("placeholders.allFarms")}
+              </SelectItem>
               {fincas?.map((finca) => (
                 <SelectItem key={finca.id} value={finca.id}>
                   {finca.nombre_finca}
@@ -400,7 +410,7 @@ export function FiltrosRentabilidadComponent({
         </div>
 
         <div className="space-y-2">
-          <Label className="text-sm font-medium">Especie</Label>
+          <Label className="text-sm font-medium">{t("fields.species")}</Label>
           <Select
             value={filtros.especieId || "todos"}
             onValueChange={(value) =>
@@ -411,10 +421,12 @@ export function FiltrosRentabilidadComponent({
             }
           >
             <SelectTrigger>
-              <SelectValue placeholder="Todas las especies" />
+              <SelectValue placeholder={t("placeholders.allSpecies")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="todos">Todas las especies</SelectItem>
+              <SelectItem value="todos">
+                {t("placeholders.allSpecies")}
+              </SelectItem>
               {especies?.map((especie) => (
                 <SelectItem key={especie.id} value={especie.id}>
                   {especie.nombre}
@@ -425,7 +437,7 @@ export function FiltrosRentabilidadComponent({
         </div>
 
         <div className="space-y-2 col-span-1 sm:col-span-2">
-          <Label className="text-sm font-medium">Rango de fechas</Label>
+          <Label className="text-sm font-medium">{t("fields.dateRange")}</Label>
           <div className="flex gap-2">
             <Popover>
               <PopoverTrigger asChild>
@@ -442,34 +454,23 @@ export function FiltrosRentabilidadComponent({
                         parseLocalDate(filtros.fechaInicio),
                         "dd/MM/yyyy",
                         {
-                          locale: es,
+                          locale: dateLocale,
                         },
                       )
-                    : "Fecha desde"}
+                    : t("placeholders.dateFrom")}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
-                  selected={
-                    filtros.fechaInicio
-                      ? parseLocalDate(filtros.fechaInicio)
-                      : undefined
-                  }
+                  selected={fechaInicioDate}
                   onSelect={(date) => {
-                    if (date) {
-                      setFiltros({
-                        ...filtros,
-                        fechaInicio: formatLocalDate(date),
-                      });
-                    } else {
-                      setFiltros({
-                        ...filtros,
-                        fechaInicio: undefined,
-                      });
-                    }
+                    setFiltros({
+                      ...filtros,
+                      fechaInicio: date ? formatLocalDate(date) : undefined,
+                    });
                   }}
-                  locale={es}
+                  locale={dateLocale}
                 />
               </PopoverContent>
             </Popover>
@@ -486,33 +487,22 @@ export function FiltrosRentabilidadComponent({
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {filtros.fechaFin
                     ? format(parseLocalDate(filtros.fechaFin), "dd/MM/yyyy", {
-                        locale: es,
+                        locale: dateLocale,
                       })
-                    : "Fecha hasta"}
+                    : t("placeholders.dateTo")}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
-                  selected={
-                    filtros.fechaFin
-                      ? parseLocalDate(filtros.fechaFin)
-                      : undefined
-                  }
+                  selected={fechaFinDate}
                   onSelect={(date) => {
-                    if (date) {
-                      setFiltros({
-                        ...filtros,
-                        fechaFin: formatLocalDate(date),
-                      });
-                    } else {
-                      setFiltros({
-                        ...filtros,
-                        fechaFin: undefined,
-                      });
-                    }
+                    setFiltros({
+                      ...filtros,
+                      fechaFin: date ? formatLocalDate(date) : undefined,
+                    });
                   }}
-                  locale={es}
+                  locale={dateLocale}
                 />
               </PopoverContent>
             </Popover>
@@ -524,11 +514,11 @@ export function FiltrosRentabilidadComponent({
         <div className="flex flex-wrap gap-2 mt-4 pt-3 border-t">
           {filtros.fincaId && (
             <div className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full flex items-center gap-1">
-              Finca:{" "}
-              {fincas?.find((f) => f.id === filtros.fincaId)?.nombre_finca}
+              {t("active.farm", { name: nombreFinca || "" })}
               <button
                 onClick={() => setFiltros({ ...filtros, fincaId: undefined })}
                 className="hover:text-blue-900"
+                aria-label={t("removeFarm")}
               >
                 <X className="h-3 w-3" />
               </button>
@@ -536,11 +526,11 @@ export function FiltrosRentabilidadComponent({
           )}
           {filtros.especieId && (
             <div className="bg-green-50 text-green-700 text-xs px-2 py-1 rounded-full flex items-center gap-1">
-              Especie:{" "}
-              {especies?.find((e) => e.id === filtros.especieId)?.nombre}
+              {t("active.species", { name: nombreEspecie || "" })}
               <button
                 onClick={() => setFiltros({ ...filtros, especieId: undefined })}
                 className="hover:text-green-900"
+                aria-label={t("removeSpecies")}
               >
                 <X className="h-3 w-3" />
               </button>
@@ -548,12 +538,16 @@ export function FiltrosRentabilidadComponent({
           )}
           {(filtros.fechaInicio || filtros.fechaFin) && (
             <div className="bg-purple-50 text-purple-700 text-xs px-2 py-1 rounded-full flex items-center gap-1">
-              📅{" "}
+              <CalendarIcon className="h-3 w-3" />
               {filtros.fechaInicio &&
-                format(parseLocalDate(filtros.fechaInicio), "dd/MM/yy")}
+                format(parseLocalDate(filtros.fechaInicio), "dd/MM/yy", {
+                  locale: dateLocale,
+                })}
               {filtros.fechaInicio && filtros.fechaFin && " - "}
               {filtros.fechaFin &&
-                format(parseLocalDate(filtros.fechaFin), "dd/MM/yy")}
+                format(parseLocalDate(filtros.fechaFin), "dd/MM/yy", {
+                  locale: dateLocale,
+                })}
               <button
                 onClick={() => {
                   setFiltros({
@@ -563,6 +557,7 @@ export function FiltrosRentabilidadComponent({
                   });
                 }}
                 className="hover:text-purple-900"
+                aria-label={t("removeDates")}
               >
                 <X className="h-3 w-3" />
               </button>

@@ -1,4 +1,5 @@
 "use client";
+
 import SkeletonCard from "@/components/generics/SkeletonCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useGetSanidadAnimalById from "@/hooks/sanidad-animal/useGetSanidadAnimalById";
@@ -6,12 +7,16 @@ import { useParams, useRouter } from "next/navigation";
 import FormSanidad from "../ui/FormSanidad";
 import { ESPECIE_COLORS } from "@/helpers/data/colors/colors-espcies";
 import { tiposServiciosSanidadData } from "@/helpers/data/sanidad/tipos_servicios_sanidad";
+import { useTranslations } from "next-intl";
 
 const SanidadAnimalByIdPage = () => {
+  const t = useTranslations("sanidadAnimalByIdPage");
   const { id } = useParams();
   const sanidadId = id as string;
   const router = useRouter();
+
   const { data: sanidad, isLoading } = useGetSanidadAnimalById(sanidadId);
+
   const especie_animal =
     sanidad?.animal.especie.nombre.toLowerCase() ?? "bovino";
 
@@ -35,19 +40,18 @@ const SanidadAnimalByIdPage = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center gap-3 mb-6">
           <h1 className="text-2xl font-bold capitalize">
-            Editar Sanidad — {especie_animal}
+            {t("title", { species: especie_animal })}
           </h1>
         </div>
 
         <Card className="shadow-lg border-t-4 border-t-primary">
           <CardHeader className="pb-4">
-            <CardTitle className="text-lg">
-              Editando el evento sanitario
-            </CardTitle>
+            <CardTitle className="text-lg">{t("card.title")}</CardTitle>
             <p className="text-sm text-muted-foreground">
-              Completa los datos para editar el evento sanitario
+              {t("card.description")}
             </p>
           </CardHeader>
+
           <CardContent>
             <FormSanidad
               opciones_especie={opciones_servicios_especie}

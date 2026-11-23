@@ -54,6 +54,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { descartarAnimal } from "@/api/animales/accions/update-animal";
 import Modal from "@/components/generics/Modal";
+import { useTranslations } from "next-intl";
 
 interface Props {
   animal: Animal;
@@ -62,6 +63,7 @@ interface Props {
 }
 
 const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
+  const t = useTranslations("EquinoCard");
   const { cliente } = useAuthStore();
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const [deathDialogVisible, setDeathDialogVisible] = useState(false);
@@ -88,17 +90,16 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
         if (onUpdateProfileImage) {
           await onUpdateProfileImage(imageDataUrl, animal.id);
-          toast("Perfil de animal actualizado exitosamente");
+          toast(t("messages.profileImageUpdated"));
           queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
         }
       };
       reader.readAsDataURL(file);
     } catch (error) {
-      toast.error("No se pudo actualizar la imagen de perfil");
+      toast.error(t("messages.profileImageUpdateError"));
       setLocalImage(null);
     }
   };
-
   const openGallery = () => {
     if (animal.profileImages && animal.profileImages.length > 0) {
       setGalleryVisible(true);
@@ -108,14 +109,14 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const handleDeleteImage = async (imageId: string) => {
     try {
       await eliminarImagenAnimal(imageId);
-      toast("Foto de perfil del animal eliminada");
+      toast(t("messages.profileImageDeleted"));
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
       setGalleryVisible(false);
     } catch (error) {
       if (isAxiosError(error)) {
         toast.error(
           error.response?.data?.message ||
-            "Error al eliminar la foto de perfil del animal",
+            t("messages.profileImageDeleteError"),
         );
       }
     }
@@ -127,9 +128,7 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
         deathStatus &&
         (!deathReason || deathReason.trim() === "" || deathReason === "N/D")
       ) {
-        toast.error(
-          "Debe ingresar una razón de muerte válida (no puede estar vacía o ser 'N/D')",
-        );
+        toast.error(t("validation.deathReasonRequired"));
         return;
       }
 
@@ -142,8 +141,8 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
       toast(
         deathStatus
-          ? "Animal marcado como fallecido"
-          : "Animal marcado como vivo",
+          ? t("messages.markedAsDeceased")
+          : t("messages.markedAsAlive"),
       );
 
       queryClient.invalidateQueries({
@@ -157,11 +156,11 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar el estado";
+            : t("messages.updateStatusError");
 
         toast(errorMessage);
       } else {
-        toast("Contacte al administrador");
+        toast(t("messages.contactAdmin"));
       }
     }
   };
@@ -169,7 +168,7 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   const handleDiscardAnimal = async () => {
     try {
       if (!discardReason || discardReason.trim() === "") {
-        toast.error("Debe ingresar una razón de descarte válida");
+        toast.error(t("validation.discardReasonRequired"));
         return;
       }
 
@@ -180,7 +179,7 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
         cantidad: 1,
       });
 
-      toast("Animal descartado exitosamente");
+      toast(t("messages.discardedSuccess"));
       queryClient.invalidateQueries({
         queryKey: ["animales-propietario", animal.propietario.id],
       });
@@ -193,11 +192,11 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al descartar el animal";
+            : t("messages.discardError");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Contacte al administrador");
+        toast.error(t("messages.contactAdmin"));
       }
     }
   };
@@ -220,8 +219,9 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
   };
 
   const formatAlzada = () => {
-    if (!animal.alzada) return "N/A";
-    const unidad = animal.unidad_alzada === "manos" ? "manos" : "cm";
+    if (!animal.alzada) return t("labels.notAvailable");
+    const unidad =
+      animal.unidad_alzada === "manos" ? t("labels.hands") : t("labels.cm");
     return `${animal.alzada} ${unidad}`;
   };
 
@@ -260,7 +260,7 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     variant="destructive"
                     className="text-[8px] sm:text-[10px]"
                   >
-                    Fallecido
+                    {t("labels.deceased")}
                   </Badge>
                 )}
                 {animal.asegurado && (
@@ -269,7 +269,7 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     className="bg-blue-50 text-blue-700 border-blue-200 text-[8px] sm:text-[10px]"
                   >
                     <Shield className="h-2.5 w-2.5 mr-0.5" />
-                    Asegurado
+                    {t("labels.insured")}
                   </Badge>
                 )}
               </div>
@@ -278,8 +278,8 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                   {animal.razas.length === 1
                     ? animal.razas[0].nombre
                     : animal.razas.length > 1
-                      ? "Encaste"
-                      : "Sin raza"}{" "}
+                      ? t("labels.crossbreed")
+                      : t("labels.noBreed")}{" "}
                   • {animal.sexo}
                 </p>
                 {animal.color && (
@@ -295,7 +295,7 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     variant="secondary"
                     className="text-[8px] sm:text-[10px]"
                   >
-                    {animal.edad_promedio} años
+                    {t("labels.yearsOld", { count: animal.edad_promedio })}
                   </Badge>
                 )}
               </div>
@@ -327,7 +327,7 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <Button
               variant="outline"
               size="icon"
-              title="Descartar Animal"
+              title={t("tooltips.discardAnimal")}
               className="h-8 w-8 rounded-full"
               onClick={() => setDiscardDialogVisible(true)}
             >
@@ -336,7 +336,7 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <Button
               variant="outline"
               size="icon"
-              title="Subir Foto"
+              title={t("tooltips.uploadPhoto")}
               className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-white/80 hover:bg-white"
               onClick={() => fileInputRef.current?.click()}
             >
@@ -355,23 +355,35 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
         <CardContent className="p-3 sm:p-4 pt-3">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 mb-3">
-            <InfoBadge icon={Hash} label="ID" value={animal.identificador} />
+            <InfoBadge
+              icon={Hash}
+              label={t("labels.id")}
+              value={animal.identificador}
+            />
             <InfoBadge
               icon={Calendar}
-              label="Nacimiento"
+              label={t("labels.birthDate")}
               value={
                 animal.fecha_nacimiento
                   ? format(new Date(animal.fecha_nacimiento), "dd/MM/yyyy", {
                       locale: es,
                     })
-                  : "N/A"
+                  : t("labels.notAvailable")
               }
             />
-            <InfoBadge icon={Ruler} label="Alzada" value={formatAlzada()} />
+            <InfoBadge
+              icon={Ruler}
+              label={t("labels.height")}
+              value={formatAlzada()}
+            />
             <InfoBadge
               icon={Scale}
-              label="Peso"
-              value={animal.peso_actual ? `${animal.peso_actual} kg` : "N/A"}
+              label={t("labels.weight")}
+              value={
+                animal.peso_actual
+                  ? `${animal.peso_actual} kg`
+                  : t("labels.notAvailable")
+              }
             />
           </div>
 
@@ -381,13 +393,13 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <div className="flex items-center gap-2">
               <Trophy className="h-4 w-4 text-amber-600" />
               <h4 className="text-sm font-semibold text-slate-700">
-                Información Equina
+                {t("labels.equineInfo")}
               </h4>
               <Badge
                 variant="outline"
                 className="bg-slate-100 text-slate-600 border-slate-200 text-[8px] sm:text-[10px]"
               >
-                Detalles
+                {t("labels.details")}
               </Badge>
             </div>
 
@@ -395,32 +407,32 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="space-y-2">
                 <EquinoInfoItem
                   icon={Syringe}
-                  label="Desparasitado"
+                  label={t("labels.dewormed")}
                   value={
                     <Badge
                       variant={animal.desparasitado ? "default" : "secondary"}
                       className="text-[10px] sm:text-xs"
                     >
-                      {animal.desparasitado ? "Sí" : "No"}
+                      {animal.desparasitado ? t("labels.yes") : t("labels.no")}
                     </Badge>
                   }
                   show={animal.desparasitado !== undefined}
                 />
                 <EquinoInfoItem
                   icon={Syringe}
-                  label="Vacunas"
+                  label={t("labels.vaccines")}
                   value={animal.vacunas}
                   show={!!animal.vacunas && animal.vacunas !== "Sin vacunas"}
                 />
                 <EquinoInfoItem
                   icon={Stethoscope}
-                  label="Veterinario"
+                  label={t("labels.veterinarian")}
                   value={animal.veterinario}
                   show={!!animal.veterinario}
                 />
                 <EquinoInfoItem
                   icon={Activity}
-                  label="Condición Corporal"
+                  label={t("labels.bodyCondition")}
                   value={
                     <Badge
                       className={cn(
@@ -430,20 +442,20 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                     >
                       {animal.condicion_corporal
                         ?.replace(/_/g, " ")
-                        .toUpperCase() || "N/A"}
+                        .toUpperCase() || t("labels.notAvailable")}
                     </Badge>
                   }
                   show={!!animal.condicion_corporal}
                 />
                 <EquinoInfoItem
                   icon={Dumbbell}
-                  label="Nivel Entrenamiento"
+                  label={t("labels.trainingLevel")}
                   value={animal.nivel_entrenamiento}
                   show={!!animal.nivel_entrenamiento}
                 />
                 <EquinoInfoItem
                   icon={Dna}
-                  label="Uso"
+                  label={t("labels.use")}
                   value={animal.uso_equino}
                   show={!!animal.uso_equino}
                 />
@@ -452,37 +464,37 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               <div className="space-y-2">
                 <EquinoInfoItem
                   icon={BookOpen}
-                  label="Registro Genealógico"
+                  label={t("labels.genealogicalRecord")}
                   value={animal.registro_genealogico}
                   show={!!animal.registro_genealogico}
                 />
                 <EquinoInfoItem
                   icon={Microscope}
-                  label="Microchip"
+                  label={t("labels.microchip")}
                   value={animal.microchip}
                   show={!!animal.microchip}
                 />
                 <EquinoInfoItem
                   icon={Scissors}
-                  label="Odontología"
+                  label={t("labels.dentistry")}
                   value={animal.odontologia}
                   show={!!animal.odontologia}
                 />
                 <EquinoInfoItem
                   icon={AlertTriangle}
-                  label="Alergias"
+                  label={t("labels.allergies")}
                   value={animal.alergias}
                   show={!!animal.alergias}
                 />
                 <EquinoInfoItem
                   icon={Activity}
-                  label="Lesiones"
+                  label={t("labels.injuries")}
                   value={animal.lesiones}
                   show={!!animal.lesiones}
                 />
                 <EquinoInfoItem
                   icon={Award}
-                  label="Resultados Competencias"
+                  label={t("labels.competitionResults")}
                   value={
                     Array.isArray(animal.resultados_competencias)
                       ? animal.resultados_competencias.join(", ")
@@ -498,7 +510,7 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <div className="flex items-center gap-2 mb-1">
                   <Baby className="h-3.5 w-3.5 text-rose-600" />
                   <span className="text-xs font-medium text-rose-700">
-                    Historial Reproductivo
+                    {t("labels.reproductiveHistory")}
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-1">
@@ -527,14 +539,14 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <div className="grid grid-cols-2 gap-2">
                   <EquinoInfoItem
                     icon={Wallet}
-                    label="Valor Estimado"
-                    value={`${moneda} ${animal.valor_estimado?.toLocaleString() || "N/A"}`}
+                    label={t("labels.estimatedValue")}
+                    value={`${moneda} ${animal.valor_estimado?.toLocaleString() || t("labels.notAvailable")}`}
                     show={!!animal.valor_estimado}
                   />
                   <EquinoInfoItem
                     icon={TrendingUp}
-                    label="Precio Compra"
-                    value={`${moneda} ${animal.precio_compra?.toLocaleString() || "N/A"}`}
+                    label={t("labels.purchasePrice")}
+                    value={`${moneda} ${animal.precio_compra?.toLocaleString() || t("labels.notAvailable")}`}
                     show={!!animal.precio_compra}
                   />
                 </div>
@@ -546,13 +558,13 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <EquinoInfoItem
                 icon={User}
-                label="Propietario"
+                label={t("labels.owner")}
                 value={animal.propietario?.name}
                 show={!!animal.propietario?.name}
               />
               <EquinoInfoItem
                 icon={MapPin}
-                label="Ubicación"
+                label={t("labels.location")}
                 value={animal.finca?.nombre_finca}
                 show={!!animal.finca?.nombre_finca}
               />
@@ -561,13 +573,13 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
             <div className="grid grid-cols-2 gap-2">
               <EquinoInfoItem
                 icon={Tag}
-                label="Pureza"
+                label={t("labels.purity")}
                 value={animal.pureza}
                 show={!!animal.pureza}
               />
               <EquinoInfoItem
                 icon={Droplet}
-                label="Tipo Reproducción"
+                label={t("labels.reproductionType")}
                 value={animal.tipo_reproduccion}
                 show={!!animal.tipo_reproduccion}
               />
@@ -575,13 +587,15 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
-                <p className="text-[10px] font-medium text-blue-700">Padre</p>
+                <p className="text-[10px] font-medium text-blue-700">
+                  {t("labels.father")}
+                </p>
                 <p className="text-xs text-gray-700">
-                  {animal.nombre_padre || "N/A"}
+                  {animal.nombre_padre || t("labels.notAvailable")}
                 </p>
                 {animal.arete_padre && (
                   <p className="text-[10px] text-gray-500">
-                    ID: {animal.arete_padre}
+                    {t("labels.id")}: {animal.arete_padre}
                   </p>
                 )}
                 {animal.razas_padre.length > 0 && (
@@ -595,18 +609,20 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 )}
               </div>
               <div className="p-2 bg-pink-50 rounded-lg border border-pink-100">
-                <p className="text-[10px] font-medium text-pink-700">Madre</p>
+                <p className="text-[10px] font-medium text-pink-700">
+                  {t("labels.mother")}
+                </p>
                 <p className="text-xs text-gray-700">
-                  {animal.nombre_madre || "N/A"}
+                  {animal.nombre_madre || t("labels.notAvailable")}
                 </p>
                 {animal.arete_madre && (
                   <p className="text-[10px] text-gray-500">
-                    ID: {animal.arete_madre}
+                    {t("labels.id")}: {animal.arete_madre}
                   </p>
                 )}
                 {animal.numero_parto_madre && (
                   <p className="text-[10px] text-gray-500">
-                    Partos: {animal.numero_parto_madre}
+                    {t("labels.calvings")}: {animal.numero_parto_madre}
                   </p>
                 )}
                 {animal.razas_madre.length > 0 && (
@@ -626,7 +642,9 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 <div className="flex items-start gap-2">
                   <FileText className="h-3.5 w-3.5 text-gray-500 mt-0.5" />
                   <p className="text-xs text-gray-600">
-                    <span className="font-medium">Observaciones:</span>{" "}
+                    <span className="font-medium">
+                      {t("labels.observations")}
+                    </span>{" "}
                     {animal.observaciones}
                   </p>
                 </div>
@@ -642,7 +660,7 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               onClick={onEdit}
             >
               <PawPrint className="h-4 w-4 mr-2" />
-              Editar Equino
+              {t("buttons.editEquine")}
             </Button>
           </div>
         </CardContent>
@@ -658,12 +676,12 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
       <Modal
         open={deathDialogVisible}
         onOpenChange={setDeathDialogVisible}
-        title="Actualizar estado de vida"
-        description="Indique si el animal está vivo o ha fallecido."
+        title={t("deathModal.title")}
+        description={t("deathModal.description")}
         showCloseButton={false}
       >
         <div className="flex items-center justify-between py-4">
-          <Label htmlFor="death-status">¿El animal ha fallecido?</Label>
+          <Label htmlFor="death-status">{t("deathModal.hasDied")}</Label>
           <Switch
             id="death-status"
             checked={deathStatus}
@@ -676,12 +694,12 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
 
         {deathStatus && (
           <div className="space-y-2">
-            <Label htmlFor="death-reason">Razón de la muerte</Label>
+            <Label htmlFor="death-reason">{t("deathModal.deathReason")}</Label>
             <Input
               id="death-reason"
               value={deathReason}
               onChange={(e) => setDeathReason(e.target.value)}
-              placeholder="Ingrese la razón de la muerte"
+              placeholder={t("deathModal.deathReasonPlaceholder")}
             />
           </div>
         )}
@@ -692,36 +710,39 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
               variant="outline"
               onClick={() => setDeathDialogVisible(false)}
             >
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
-            <Button onClick={handleDeathStatusUpdate}>Guardar</Button>
+            <Button onClick={handleDeathStatusUpdate}>
+              {t("buttons.save")}
+            </Button>
           </div>
         </div>
       </Modal>
 
       <Modal
-        title="Descartar Animal"
-        description="Esta acción marcará al animal como descartado. Asegúrese de
-              ingresar toda la información requerida."
+        title={t("discardModal.title")}
+        description={t("discardModal.description")}
         open={discardDialogVisible}
         onOpenChange={setDiscardDialogVisible}
         showCloseButton={false}
       >
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="discard-reason">Razón de descarte *</Label>
+            <Label htmlFor="discard-reason">
+              {t("discardModal.discardReason")}
+            </Label>
             <Input
               id="discard-reason"
               value={discardReason}
               onChange={(e) => setDiscardReason(e.target.value)}
-              placeholder="Ej: Venta, Muerte, Traslado, etc."
+              placeholder={t("discardModal.discardReasonPlaceholder")}
             />
           </div>
 
           <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
             <p className="text-sm text-yellow-800">
-              <strong>⚠️ Advertencia:</strong> Esta acción no se puede deshacer.
-              El animal será marcado como descartado en el sistema.
+              <strong>⚠️ {t("discardModal.warningLabel")}</strong>{" "}
+              {t("discardModal.warningText")}
             </p>
           </div>
         </div>
@@ -735,14 +756,14 @@ const EquinoCard = ({ animal, onEdit, onUpdateProfileImage }: Props) => {
                 setDiscardReason("");
               }}
             >
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
             <Button
               variant="destructive"
               onClick={handleDiscardAnimal}
               disabled={!discardReason}
             >
-              Descartar Animal
+              {t("buttons.discardAnimal")}
             </Button>
           </div>
         </div>
