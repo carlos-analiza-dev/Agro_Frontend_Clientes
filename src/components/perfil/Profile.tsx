@@ -1,9 +1,11 @@
 "use client";
+
 import useGetAllImagesProfile from "@/hooks/perfil/useGetAllImagesProfile";
 import useGetImagePerfil from "@/hooks/perfil/useGetImagePerfil";
 import { useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { useState, useRef } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -30,6 +32,9 @@ interface Props {
 }
 
 const Profile = ({ user, height, onUpdateProfileImage }: Props) => {
+  const t = useTranslations("profile");
+  const locale = useLocale();
+
   const queryClient = useQueryClient();
 
   const [galleryVisible, setGalleryVisible] = useState(false);
@@ -40,7 +45,7 @@ const Profile = ({ user, height, onUpdateProfileImage }: Props) => {
   const { data: imagenes_user } = useGetAllImagesProfile();
   const { data: perfil } = useGetImagePerfil();
 
-  const imageUrl = perfil?.data?.url;
+  const imageUrl = localImage || perfil?.data?.url;
 
   const handleImagePick = () => {
     fileInputRef.current?.click();
@@ -53,12 +58,12 @@ const Profile = ({ user, height, onUpdateProfileImage }: Props) => {
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      toast.error("Por favor selecciona un archivo de imagen válido");
+      toast.error(t("messages.invalidImage"));
       return;
     }
 
     if (file.size > 1024 * 1024) {
-      toast.error("La imagen no debe exceder los 1MB");
+      toast.error(t("messages.imageTooLarge"));
       return;
     }
 
@@ -70,11 +75,11 @@ const Profile = ({ user, height, onUpdateProfileImage }: Props) => {
       if (onUpdateProfileImage) {
         try {
           await onUpdateProfileImage(selectedImage);
-          toast("Perfil actualizado exitosamente");
+          toast.success(t("messages.profileUpdated"));
           queryClient.invalidateQueries({ queryKey: ["perfil-users"] });
           queryClient.invalidateQueries({ queryKey: ["all-images-perfil"] });
         } catch (error) {
-          toast.error("No se pudo actualizar la imagen de perfil");
+          toast.error(t("messages.updateImageFailed"));
           setLocalImage(null);
         }
       }
@@ -91,15 +96,14 @@ const Profile = ({ user, height, onUpdateProfileImage }: Props) => {
   const handleDeleteImage = async (imageId: string) => {
     try {
       await eliminarImagen(imageId);
-      toast("Foto de perfil eliminada");
+      toast.success(t("messages.imageDeleted"));
       queryClient.invalidateQueries({ queryKey: ["perfil-users"] });
       queryClient.invalidateQueries({ queryKey: ["all-images-perfil"] });
       setGalleryVisible(false);
     } catch (error) {
       if (isAxiosError(error)) {
         toast.error(
-          error.response?.data?.message ||
-            "Error al eliminar la foto de perfil",
+          error.response?.data?.message || t("messages.deleteImageFailed"),
         );
       }
     }
@@ -120,7 +124,7 @@ const Profile = ({ user, height, onUpdateProfileImage }: Props) => {
             >
               <AvatarImage
                 src={imageUrl}
-                alt={user?.nombre}
+                alt={user?.nombre || t("avatarAlt")}
                 className="object-cover"
               />
 
@@ -134,6 +138,8 @@ const Profile = ({ user, height, onUpdateProfileImage }: Props) => {
               size="icon"
               className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80"
               onClick={handleImagePick}
+              aria-label={t("changePhoto")}
+              title={t("changePhoto")}
             >
               <Camera className="w-4 h-4 text-white" />
             </Button>
@@ -188,8 +194,10 @@ const Profile = ({ user, height, onUpdateProfileImage }: Props) => {
                 <Calendar className="w-5 h-5 text-primary" />
 
                 <span className="text-sm text-muted-foreground">
-                  Se unió en{" "}
-                  {new Date(user?.createdAt || "").toLocaleDateString()}
+                  {t("joinedOn")}{" "}
+                  {user?.createdAt
+                    ? new Date(user.createdAt).toLocaleDateString(locale)
+                    : ""}
                 </span>
               </div>
             </div>
@@ -201,11 +209,13 @@ const Profile = ({ user, height, onUpdateProfileImage }: Props) => {
         <AlertDialog open={galleryVisible} onOpenChange={setGalleryVisible}>
           <AlertDialogContent>
             <div className="flex justify-end">
-              <AlertDialogCancel>X</AlertDialogCancel>
+              <AlertDialogCancel aria-label={t("closeGallery")}>
+                X
+              </AlertDialogCancel>
             </div>
 
             <AlertDialogHeader>
-              <AlertDialogTitle>Galería de Imágenes</AlertDialogTitle>
+              <AlertDialogTitle>{t("galleryTitle")}</AlertDialogTitle>
 
               <AlertDialogDescription />
             </AlertDialogHeader>

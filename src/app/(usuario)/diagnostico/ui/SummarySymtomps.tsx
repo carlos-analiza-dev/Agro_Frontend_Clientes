@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 
@@ -7,14 +10,17 @@ interface Props {
 }
 
 const SummarySymtomps = ({ sintomasValue, eliminarSintoma }: Props) => {
+  const t = useTranslations("summarySymptoms");
+
   return (
     <div className="bg-muted/50 p-3 rounded-lg">
       <div className="flex items-center justify-between mb-2">
-        <p className="text-sm font-medium">Síntomas ingresados:</p>
+        <p className="text-sm font-medium">{t("title")}</p>
         <span className="text-xs text-muted-foreground">
-          {sintomasValue.length} síntoma(s)
+          {t("count", { count: sintomasValue.length })}
         </span>
       </div>
+
       <div className="flex flex-wrap gap-2">
         {sintomasValue.map((sintoma, index) => (
           <Badge
@@ -26,6 +32,8 @@ const SummarySymtomps = ({ sintomasValue, eliminarSintoma }: Props) => {
             <button
               type="button"
               onClick={() => eliminarSintoma(index)}
+              aria-label={t("removeSymptom", { symptom: sintoma })}
+              title={t("removeSymptom", { symptom: sintoma })}
               className="ml-1 hover:bg-destructive hover:text-destructive-foreground rounded-full p-0.5 transition-colors"
             >
               <X className="h-3 w-3" />

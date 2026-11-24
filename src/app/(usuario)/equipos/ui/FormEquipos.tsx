@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircleIcon } from "lucide-react";
+
 import { CrearEquipoInterface } from "@/api/equipos-maquinaria/interface/crear-equipo.interface";
 import { Equipo } from "@/api/equipos-maquinaria/interface/response-equipos.interface";
 import { EstadoMaquinaria } from "@/interfaces/enums/maquinaria/maquinaria.enums";
@@ -47,8 +50,11 @@ const formatearFecha = (fecha: string | Date | undefined): string => {
 };
 
 const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
+  const t = useTranslations("formEquipos");
+
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id ?? "";
+
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -123,10 +129,10 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
 
       if (isEditing && equipo) {
         await editarEquipo(equipo.id, dataToSend);
-        toast.success("Equipo actualizado correctamente");
+        toast.success(t("messages.updateSuccess"));
       } else {
         await ingresarEquipo(dataToSend);
-        toast.success("Equipo registrado correctamente");
+        toast.success(t("messages.createSuccess"));
       }
 
       reset();
@@ -139,14 +145,15 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
     } catch (error) {
       if (isAxiosError(error)) {
         const messages = error.response?.data?.message;
-        const errorMessage = Array.isArray(messages)
+        const apiErrorMessage = Array.isArray(messages)
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al registrar el equipo";
-        setErrorMessage(errorMessage);
+            : t("errors.registerEquipment");
+
+        setErrorMessage(apiErrorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("errors.unexpected"));
       }
     }
   };
@@ -165,7 +172,7 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
         <Alert variant="destructive" className="mb-4">
           <AlertCircleIcon className="h-4 w-4" />
           <AlertTitle>
-            Error al {isEditing ? "actualizar" : "registrar"} el Equipo
+            {isEditing ? t("errors.updateTitle") : t("errors.createTitle")}
           </AlertTitle>
           <AlertDescription className="whitespace-pre-line">
             {errorMessage}
@@ -176,18 +183,18 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="md:col-span-2">
           <Label htmlFor="nombre">
-            Nombre del Equipo <span className="text-red-500">*</span>
+            {t("fields.name")} <span className="text-red-500">*</span>
           </Label>
           <Input
             id="nombre"
             {...register("nombre", {
-              required: "El nombre del equipo es requerido",
+              required: t("validation.nameRequired"),
               maxLength: {
                 value: 150,
-                message: "El nombre no puede exceder los 150 caracteres",
+                message: t("validation.nameMaxLength"),
               },
             })}
-            placeholder="Ej: Tractor John Deere 5060E"
+            placeholder={t("placeholders.name")}
             className={errors.nombre ? "border-red-500" : ""}
             disabled={isSubmitting}
           />
@@ -198,7 +205,7 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
 
         <div>
           <Label htmlFor="tipo">
-            Tipo de Equipo <span className="text-red-500">*</span>
+            {t("fields.equipmentType")} <span className="text-red-500">*</span>
           </Label>
           <Select
             value={watch("tipo")}
@@ -206,11 +213,11 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
             disabled={isSubmitting}
           >
             <SelectTrigger className={errors.tipo ? "border-red-500" : ""}>
-              <SelectValue placeholder="Seleccionar tipo" />
+              <SelectValue placeholder={t("placeholders.equipmentType")} />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Tipos de Equipo</SelectLabel>
+                <SelectLabel>{t("groups.equipmentTypes")}</SelectLabel>
                 {TIPOS_EQUIPO.map((tipo) => (
                   <SelectItem key={tipo} value={tipo}>
                     {tipo}
@@ -226,7 +233,7 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
 
         <div>
           <Label htmlFor="fincaId">
-            Finca <span className="text-red-500">*</span>
+            {t("fields.farm")} <span className="text-red-500">*</span>
           </Label>
           <Select
             value={watch("fincaId")}
@@ -234,11 +241,11 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
             disabled={isSubmitting}
           >
             <SelectTrigger className={errors.fincaId ? "border-red-500" : ""}>
-              <SelectValue placeholder="Seleccionar finca" />
+              <SelectValue placeholder={t("placeholders.farm")} />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Fincas</SelectLabel>
+                <SelectLabel>{t("groups.farms")}</SelectLabel>
                 {fincas?.data?.fincas?.map((finca) => (
                   <SelectItem key={finca.id} value={finca.id}>
                     {finca.nombre_finca}
@@ -255,16 +262,16 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
         </div>
 
         <div>
-          <Label htmlFor="marca">Marca</Label>
+          <Label htmlFor="marca">{t("fields.brand")}</Label>
           <Input
             id="marca"
             {...register("marca", {
               maxLength: {
                 value: 100,
-                message: "La marca no puede exceder los 100 caracteres",
+                message: t("validation.brandMaxLength"),
               },
             })}
-            placeholder="Ej: John Deere"
+            placeholder={t("placeholders.brand")}
             className={errors.marca ? "border-red-500" : ""}
             disabled={isSubmitting}
           />
@@ -274,16 +281,16 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
         </div>
 
         <div>
-          <Label htmlFor="modelo">Modelo</Label>
+          <Label htmlFor="modelo">{t("fields.model")}</Label>
           <Input
             id="modelo"
             {...register("modelo", {
               maxLength: {
                 value: 100,
-                message: "El modelo no puede exceder los 100 caracteres",
+                message: t("validation.modelMaxLength"),
               },
             })}
-            placeholder="Ej: 5060E"
+            placeholder={t("placeholders.model")}
             className={errors.modelo ? "border-red-500" : ""}
             disabled={isSubmitting}
           />
@@ -293,17 +300,16 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
         </div>
 
         <div>
-          <Label htmlFor="numeroSerie">Número de Serie</Label>
+          <Label htmlFor="numeroSerie">{t("fields.serialNumber")}</Label>
           <Input
             id="numeroSerie"
             {...register("numeroSerie", {
               maxLength: {
                 value: 100,
-                message:
-                  "El número de serie no puede exceder los 100 caracteres",
+                message: t("validation.serialNumberMaxLength"),
               },
             })}
-            placeholder="Ej: JD5060E2024001"
+            placeholder={t("placeholders.serialNumber")}
             className={errors.numeroSerie ? "border-red-500" : ""}
             disabled={isSubmitting}
           />
@@ -316,7 +322,7 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
 
         <div>
           <Label htmlFor="estado">
-            Estado <span className="text-red-500">*</span>
+            {t("fields.status")} <span className="text-red-500">*</span>
           </Label>
           <Select
             value={watch("estado")}
@@ -324,17 +330,19 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
             disabled={isSubmitting}
           >
             <SelectTrigger className={errors.estado ? "border-red-500" : ""}>
-              <SelectValue placeholder="Seleccionar estado" />
+              <SelectValue placeholder={t("placeholders.status")} />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Estados</SelectLabel>
-                <SelectItem value={EstadoMaquinaria.ACTIVO}>Activo</SelectItem>
+                <SelectLabel>{t("groups.statuses")}</SelectLabel>
+                <SelectItem value={EstadoMaquinaria.ACTIVO}>
+                  {t("statuses.active")}
+                </SelectItem>
                 <SelectItem value={EstadoMaquinaria.MANTENIMIENTO}>
-                  Mantenimiento
+                  {t("statuses.maintenance")}
                 </SelectItem>
                 <SelectItem value={EstadoMaquinaria.INCACTIVO}>
-                  Inactivo
+                  {t("statuses.inactive")}
                 </SelectItem>
               </SelectGroup>
             </SelectContent>
@@ -345,7 +353,7 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
         </div>
 
         <div>
-          <Label htmlFor="fechaCompra">Fecha de Compra</Label>
+          <Label htmlFor="fechaCompra">{t("fields.purchaseDate")}</Label>
           <Input
             id="fechaCompra"
             type="date"
@@ -361,7 +369,9 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
         </div>
 
         <div>
-          <Label htmlFor="costoCompra">Costo de Compra ({moneda})</Label>
+          <Label htmlFor="costoCompra">
+            {t("fields.purchaseCost")} ({moneda})
+          </Label>
           <Input
             id="costoCompra"
             type="number"
@@ -370,7 +380,7 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
             {...register("costoCompra", {
               min: {
                 value: 0,
-                message: "El costo debe ser mayor o igual a 0",
+                message: t("validation.costMin"),
               },
               valueAsNumber: true,
             })}
@@ -386,7 +396,7 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
         </div>
 
         <div>
-          <Label htmlFor="horasUso">Horas de Uso (Horómetro)</Label>
+          <Label htmlFor="horasUso">{t("fields.usageHours")}</Label>
           <Input
             id="horasUso"
             type="number"
@@ -395,7 +405,7 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
             {...register("horasUso", {
               min: {
                 value: 0,
-                message: "Las horas deben ser mayores o iguales a 0",
+                message: t("validation.usageHoursMin"),
               },
               valueAsNumber: true,
             })}
@@ -411,7 +421,7 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
         </div>
 
         <div>
-          <Label htmlFor="vidaUtilHoras">Vida Útil (Horas)</Label>
+          <Label htmlFor="vidaUtilHoras">{t("fields.usefulLife")}</Label>
           <Input
             id="vidaUtilHoras"
             type="number"
@@ -420,11 +430,11 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
             {...register("vidaUtilHoras", {
               min: {
                 value: 0,
-                message: "La vida útil debe ser mayor o igual a 0",
+                message: t("validation.usefulLifeMin"),
               },
               valueAsNumber: true,
             })}
-            placeholder="Ej: 8000"
+            placeholder={t("placeholders.usefulLife")}
             className={errors.vidaUtilHoras ? "border-red-500" : ""}
             disabled={isSubmitting}
           />
@@ -434,7 +444,7 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
             </p>
           )}
           <p className="text-xs text-muted-foreground mt-1">
-            * Vida útil estimada del equipo en horas de operación
+            * {t("hints.usefulLife")}
           </p>
         </div>
       </div>
@@ -446,18 +456,18 @@ const FormEquipos = ({ equipo, onSuccess, moneda }: Props) => {
           onClick={() => onSuccess()}
           disabled={isSubmitting}
         >
-          Cancelar
+          {t("buttons.cancel")}
         </Button>
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? (
             <span className="flex items-center gap-2">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              {isEditing ? "Actualizando..." : "Guardando..."}
+              {isEditing ? t("buttons.updating") : t("buttons.saving")}
             </span>
           ) : isEditing ? (
-            "Actualizar Equipo"
+            t("buttons.updateEquipment")
           ) : (
-            "Registrar Equipo"
+            t("buttons.registerEquipment")
           )}
         </Button>
       </div>

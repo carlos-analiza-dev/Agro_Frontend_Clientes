@@ -1,4 +1,6 @@
 "use client";
+
+import { useTranslations } from "next-intl";
 import useGetConfigTrabajadores from "@/hooks/config-trabajadores/useGetConfigTrabajadores";
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,7 +10,6 @@ import {
   Search,
   Plus,
   DollarSign,
-  Clock,
   BadgeCheck,
   ChevronDown,
   Filter,
@@ -36,9 +37,12 @@ import ButtonAdd from "@/components/generics/ButtonAdd";
 import TitlePage from "@/components/generics/TitlePage";
 
 const ConfiguracionTrabajadoresPage = () => {
+  const t = useTranslations("configuracionTrabajadoresPage");
+
   const { cliente } = useAuthStore();
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const router = useRouter();
+
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [openAddConfig, setOpenAddConfig] = useState(false);
@@ -48,15 +52,16 @@ const ConfiguracionTrabajadoresPage = () => {
     null,
   );
   const [filterActivo, setFilterActivo] = useState<boolean | null>(null);
+
   const limit = 10;
   const isMobile = useMediaQuery("(max-width: 768px)");
+
   const { data: configuraciones, isLoading } = useGetConfigTrabajadores(
     limit,
     (currentPage - 1) * limit,
   );
 
   const configs = configuraciones?.configuraciones || [];
-
   const total = configuraciones?.total || 0;
   const totalPages = Math.ceil(total / limit);
 
@@ -101,15 +106,15 @@ const ConfiguracionTrabajadoresPage = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <TitlePage
             id_title="config-trabajadores-page-title"
-            title={`Configuración de Trabajadores`}
-            description="Gestiona los salarios, cargos y configuraciones de tus empleados"
+            title={t("title")}
+            description={t("description")}
             Icon={Users}
           />
 
           <ButtonAdd
             id="add-config-trabajador-btn"
             Icon={Plus}
-            title="Nuevo Trabajador"
+            title={t("buttons.newWorker")}
             action={() => handleAddConfig()}
             className="bg-green-600 hover:bg-green-700"
           />
@@ -120,7 +125,7 @@ const ConfiguracionTrabajadoresPage = () => {
           className="grid grid-cols-1 md:grid-cols-3 gap-4"
         >
           <StatCard
-            title="Total Trabajadores"
+            title={t("stats.totalWorkers")}
             value={total}
             icon={Users}
             gradientFrom="from-blue-50"
@@ -130,7 +135,7 @@ const ConfiguracionTrabajadoresPage = () => {
           />
 
           <StatCard
-            title="Salario Promedio Diario"
+            title={t("stats.averageDailySalary")}
             value={formatCurrency(
               configs.reduce((acc, c) => acc + Number(c.salarioDiario), 0) /
                 (configs.length || 1),
@@ -144,7 +149,7 @@ const ConfiguracionTrabajadoresPage = () => {
           />
 
           <StatCard
-            title="Trabajadores Activos"
+            title={t("stats.activeWorkers")}
             value={configs.filter((c) => c.activo).length}
             icon={BadgeCheck}
             gradientFrom="from-purple-50"
@@ -161,12 +166,13 @@ const ConfiguracionTrabajadoresPage = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   id="config-trabajadores-search"
-                  placeholder="Buscar por nombre, identificación o cargo..."
+                  placeholder={t("searchPlaceholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
                 />
               </div>
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -176,22 +182,23 @@ const ConfiguracionTrabajadoresPage = () => {
                   >
                     <Filter className="h-4 w-4" />
                     {filterActivo === null
-                      ? "Todos"
+                      ? t("filters.all")
                       : filterActivo
-                        ? "Activos"
-                        : "Inactivos"}
+                        ? t("filters.active")
+                        : t("filters.inactive")}
                     <ChevronDown className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
+
                 <DropdownMenuContent>
                   <DropdownMenuItem onClick={() => setFilterActivo(null)}>
-                    Todos
+                    {t("filters.all")}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setFilterActivo(true)}>
-                    Activos
+                    {t("filters.active")}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setFilterActivo(false)}>
-                    Inactivos
+                    {t("filters.inactive")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -213,7 +220,7 @@ const ConfiguracionTrabajadoresPage = () => {
             {filteredConfigs.length === 0 && (
               <div className="text-center py-12">
                 <Users className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                <p className="text-gray-500">No se encontraron trabajadores</p>
+                <p className="text-gray-500">{t("emptyState")}</p>
               </div>
             )}
 
@@ -230,6 +237,7 @@ const ConfiguracionTrabajadoresPage = () => {
           </CardContent>
         </Card>
       </div>
+
       <ModalConfig
         selectedTrabajador={selectedTrabajador}
         setSelectedTrabajador={setSelectedTrabajador}
@@ -239,15 +247,11 @@ const ConfiguracionTrabajadoresPage = () => {
       <Modal
         open={openAddConfig}
         onOpenChange={setOpenAddConfig}
-        title={
-          selectedConfig
-            ? "Editar Configuración a Trabajadores"
-            : "Agregar Configuración a Trabajadores"
-        }
+        title={selectedConfig ? t("modal.editTitle") : t("modal.createTitle")}
         description={
           selectedConfig
-            ? "Aqui podras editar las configuraciones salariales a tus trabajadores"
-            : "Aqui podras agregar configuraciones salariales a tus trabajadores"
+            ? t("modal.editDescription")
+            : t("modal.createDescription")
         }
         size="3xl"
         showCloseButton={false}

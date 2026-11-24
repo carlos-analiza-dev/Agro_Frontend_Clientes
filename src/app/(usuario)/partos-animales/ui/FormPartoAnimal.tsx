@@ -1,8 +1,11 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -46,6 +49,9 @@ const FormPartoAnimal = ({
   onSuccess,
   hembras,
 }: Props) => {
+  const t = useTranslations("formPartoAnimal");
+  const locale = useLocale();
+
   const [errorMessage, setIsErrorMessage] = useState<string>("");
   const [selectedHembra, setSelectedHembra] = useState<string>("");
   const [selectedServicio, setSelectedServicio] = useState<string>("");
@@ -124,6 +130,9 @@ const FormPartoAnimal = ({
     (animal) => animal.id === hembraId,
   );
 
+  const formatServiceDate = (date: string | Date) =>
+    new Date(date).toLocaleDateString(locale);
+
   useEffect(() => {
     if (crias.length !== numeroCrias) {
       setValue("numero_crias", crias.length);
@@ -187,13 +196,15 @@ const FormPartoAnimal = ({
   const onSubmit = async (data: CrearPartoInterface) => {
     try {
       if (!data.crias || data.crias.length === 0) {
-        setIsErrorMessage("Debe registrar al menos una cría");
+        setIsErrorMessage(t("validation.atLeastOneOffspring"));
         return;
       }
 
       for (let i = 0; i < data.crias.length; i++) {
         if (!data.crias[i].fecha_nacimiento) {
-          setIsErrorMessage(`La cría ${i + 1} debe tener fecha de nacimiento`);
+          setIsErrorMessage(
+            t("validation.offspringBirthDateRequired", { number: i + 1 }),
+          );
           return;
         }
       }
@@ -209,10 +220,10 @@ const FormPartoAnimal = ({
 
       if (isEditing && parto) {
         await EditarPartoAnimal(parto.id, payload);
-        toast.success("Parto actualizado correctamente");
+        toast.success(t("messages.updateSuccess"));
       } else {
         await CrearPartoAnimal(payload);
-        toast.success("Parto registrado correctamente");
+        toast.success(t("messages.createSuccess"));
       }
 
       reset();
@@ -235,11 +246,12 @@ const FormPartoAnimal = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al registrar el parto";
+            : t("errors.registrationFailed");
+
         setIsErrorMessage(errorMessage);
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("errors.unexpected"));
       }
     }
   };
@@ -264,7 +276,7 @@ const FormPartoAnimal = ({
         <Alert variant="destructive" className="mb-4">
           <AlertCircleIcon className="h-4 w-4" />
           <AlertTitle>
-            Error al {isEditing ? "actualizar" : "registrar"} el Parto
+            {t(isEditing ? "errors.updateTitle" : "errors.createTitle")}
           </AlertTitle>
           <AlertDescription className="whitespace-pre-line">
             {errorMessage}
@@ -276,7 +288,7 @@ const FormPartoAnimal = ({
         {!isEditing ? (
           <div className="md:col-span-2">
             <Label htmlFor="hembraSearch">
-              Hembra <span className="text-red-500">*</span>
+              {t("fields.female")} <span className="text-red-500">*</span>
             </Label>
 
             <div className="relative">
@@ -287,8 +299,13 @@ const FormPartoAnimal = ({
                   id="hembraSearch"
                   placeholder={
                     selectedHembraAnimal
-                      ? `${selectedHembraAnimal.identificador || selectedHembraAnimal.nombre_animal || "Animal"} seleccionado`
-                      : "Buscar hembra por identificador, nombre o especie..."
+                      ? t("placeholders.selectedAnimal", {
+                          animal:
+                            selectedHembraAnimal.identificador ||
+                            selectedHembraAnimal.nombre_animal ||
+                            t("fallbacks.animal"),
+                        })
+                      : t("placeholders.searchFemale")
                   }
                   value={searchHembraTerm}
                   onChange={(e) => {
@@ -302,10 +319,13 @@ const FormPartoAnimal = ({
                   )}
                   disabled={isSubmitting}
                 />
+
                 {selectedHembraAnimal && (
                   <button
                     type="button"
                     onClick={handleClearHembra}
+                    aria-label={t("buttons.clearFemale")}
+                    title={t("buttons.clearFemale")}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full"
                   >
                     <X className="h-4 w-4" />
@@ -337,18 +357,20 @@ const FormPartoAnimal = ({
                           className="h-10 w-10 rounded-full object-cover"
                           unoptimized
                         />
+
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate">
                             {animal.identificador ||
                               animal.nombre_animal ||
-                              "Sin identificar"}
+                              t("fallbacks.unidentified")}
                           </p>
                           <p className="text-xs text-gray-500">
                             {animal.especie?.nombre ||
-                              "Especie no especificada"}
+                              t("fallbacks.unspecifiedSpecies")}
                             {animal.sexo && ` • ${animal.sexo}`}
                           </p>
                         </div>
+
                         {hembraId === animal.id && (
                           <div className="h-2 w-2 rounded-full bg-blue-600 flex-shrink-0" />
                         )}
@@ -356,9 +378,9 @@ const FormPartoAnimal = ({
                     ))
                   ) : (
                     <div className="py-6 text-center text-sm">
-                      <p className="text-gray-500">No se encontraron hembras</p>
+                      <p className="text-gray-500">{t("search.noFemales")}</p>
                       <p className="text-xs text-gray-400 mt-1">
-                        Intenta con otro término de búsqueda
+                        {t("search.tryAnotherTerm")}
                       </p>
                     </div>
                   )}
@@ -385,11 +407,11 @@ const FormPartoAnimal = ({
                     <p className="text-sm font-medium">
                       {selectedHembraAnimal.identificador ||
                         selectedHembraAnimal.nombre_animal ||
-                        "Animal"}
+                        t("fallbacks.animal")}
                     </p>
                     <p className="text-xs text-gray-600">
                       {selectedHembraAnimal.especie?.nombre ||
-                        "Especie no especificada"}
+                        t("fallbacks.unspecifiedSpecies")}
                       {selectedHembraAnimal.sexo &&
                         ` • ${selectedHembraAnimal.sexo}`}
                     </p>
@@ -406,16 +428,16 @@ const FormPartoAnimal = ({
           </div>
         ) : (
           <div className="md:col-span-2">
-            <Label>Hembra</Label>
+            <Label>{t("fields.female")}</Label>
             <div className="p-2 border rounded-md bg-gray-50">
-              {parto?.hembra?.identificador || "No especificada"}
+              {parto?.hembra?.identificador || t("fallbacks.notSpecified")}
             </div>
           </div>
         )}
 
         {!isEditing ? (
           <div className="md:col-span-2">
-            <Label htmlFor="servicio_id">Servicio Asociado (opcional)</Label>
+            <Label htmlFor="servicio_id">{t("fields.associatedService")}</Label>
             <Select
               value={selectedServicio}
               onValueChange={(value) => {
@@ -425,48 +447,47 @@ const FormPartoAnimal = ({
               disabled={isSubmitting || !selectedHembra}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar servicio" />
+                <SelectValue placeholder={t("placeholders.selectService")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Servicios de la hembra</SelectLabel>
+                  <SelectLabel>{t("fields.femaleServices")}</SelectLabel>
                   {servicios_hembra && servicios_hembra.length > 0 ? (
                     servicios_hembra.map((servicio) => (
                       <SelectItem key={servicio.id} value={servicio.id}>
-                        {`${new Date(servicio.fecha_servicio).toLocaleDateString()} - ${servicio.tipo_servicio}`}
+                        {`${formatServiceDate(servicio.fecha_servicio)} - ${servicio.tipo_servicio}`}
                       </SelectItem>
                     ))
                   ) : (
                     <SelectItem value="no-servicios" disabled>
-                      No hay servicios registrados para esta hembra
+                      {t("messages.noServices")}
                     </SelectItem>
                   )}
                 </SelectGroup>
               </SelectContent>
             </Select>
+
             {!selectedHembra && (
               <p className="text-sm text-gray-500 mt-1">
-                * Seleccione una hembra primero para ver sus servicios
+                {t("messages.selectFemaleFirst")}
               </p>
             )}
           </div>
         ) : (
           <div>
-            <Label>Servicio Asociado </Label>
+            <Label>{t("fields.associatedService")}</Label>
             <div className="p-2 border rounded-md bg-gray-50">
               {parto?.servicio_asociado ? (
                 <>
                   <div>
-                    {new Date(
-                      parto.servicio_asociado.fecha_servicio,
-                    ).toLocaleDateString()}
+                    {formatServiceDate(parto.servicio_asociado.fecha_servicio)}
                   </div>
                   <div className="text-sm text-gray-500">
                     {parto.servicio_asociado.tipo_servicio}
                   </div>
                 </>
               ) : (
-                "No asociado"
+                t("fallbacks.notAssociated")
               )}
             </div>
           </div>
@@ -474,12 +495,12 @@ const FormPartoAnimal = ({
 
         <div>
           <Label htmlFor="fecha_parto">
-            Fecha del Parto <span className="text-red-500">*</span>
+            {t("fields.birthDate")} <span className="text-red-500">*</span>
           </Label>
           <Input
             id="fecha_parto"
             {...register("fecha_parto", {
-              required: "La fecha del parto es requerida",
+              required: t("validation.birthDateRequired"),
             })}
             type="datetime-local"
             className={errors.fecha_parto ? "border-red-500" : ""}
@@ -494,13 +515,13 @@ const FormPartoAnimal = ({
 
         <div>
           <Label htmlFor="numero_parto">
-            Número de Parto <span className="text-red-500">*</span>
+            {t("fields.birthNumber")} <span className="text-red-500">*</span>
           </Label>
           <Input
             id="numero_parto"
             {...register("numero_parto", {
-              required: "El número de parto es requerido",
-              min: { value: 1, message: "Mínimo 1" },
+              required: t("validation.birthNumberRequired"),
+              min: { value: 1, message: t("validation.minimumOne") },
             })}
             type="number"
             min={1}
@@ -516,7 +537,7 @@ const FormPartoAnimal = ({
 
         <div>
           <Label htmlFor="tipo_parto">
-            Tipo de Parto <span className="text-red-500">*</span>
+            {t("fields.birthType")} <span className="text-red-500">*</span>
           </Label>
           <Select
             value={tipoParto}
@@ -526,23 +547,31 @@ const FormPartoAnimal = ({
             disabled={isSubmitting}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Seleccionar tipo" />
+              <SelectValue placeholder={t("placeholders.selectType")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={TipoParto.NORMAL}>Normal</SelectItem>
-              <SelectItem value={TipoParto.DISTOCICO}>Distócico</SelectItem>
-              <SelectItem value={TipoParto.CESAREA}>Cesárea</SelectItem>
-              <SelectItem value={TipoParto.MUERTE_NATAL}>
-                Muerte Natal
+              <SelectItem value={TipoParto.NORMAL}>
+                {t("birthTypes.normal")}
               </SelectItem>
-              <SelectItem value={TipoParto.ABORTO}>Aborto</SelectItem>
+              <SelectItem value={TipoParto.DISTOCICO}>
+                {t("birthTypes.dystocic")}
+              </SelectItem>
+              <SelectItem value={TipoParto.CESAREA}>
+                {t("birthTypes.cesarean")}
+              </SelectItem>
+              <SelectItem value={TipoParto.MUERTE_NATAL}>
+                {t("birthTypes.stillbirth")}
+              </SelectItem>
+              <SelectItem value={TipoParto.ABORTO}>
+                {t("birthTypes.abortion")}
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div>
           <Label htmlFor="estado">
-            Estado <span className="text-red-500">*</span>
+            {t("fields.status")} <span className="text-red-500">*</span>
           </Label>
           <Select
             value={estadoParto}
@@ -550,16 +579,24 @@ const FormPartoAnimal = ({
             disabled={isSubmitting}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Seleccionar estado" />
+              <SelectValue placeholder={t("placeholders.selectStatus")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={EstadoParto.PROGRAMADO}>Programado</SelectItem>
-              <SelectItem value={EstadoParto.EN_PROGRESO}>
-                En progreso
+              <SelectItem value={EstadoParto.PROGRAMADO}>
+                {t("statuses.scheduled")}
               </SelectItem>
-              <SelectItem value={EstadoParto.COMPLETADO}>Completado</SelectItem>
-              <SelectItem value={EstadoParto.COMPLICADO}>Complicado</SelectItem>
-              <SelectItem value={EstadoParto.ABORTADO}>Abortado</SelectItem>
+              <SelectItem value={EstadoParto.EN_PROGRESO}>
+                {t("statuses.inProgress")}
+              </SelectItem>
+              <SelectItem value={EstadoParto.COMPLETADO}>
+                {t("statuses.completed")}
+              </SelectItem>
+              <SelectItem value={EstadoParto.COMPLICADO}>
+                {t("statuses.complicated")}
+              </SelectItem>
+              <SelectItem value={EstadoParto.ABORTADO}>
+                {t("statuses.aborted")}
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -569,7 +606,7 @@ const FormPartoAnimal = ({
         <div className="flex justify-between items-center mb-4">
           <Label className="text-lg font-semibold flex items-center gap-2">
             <Baby className="h-5 w-5" />
-            Registro de Crías
+            {t("offspring.title")}
           </Label>
           <Button
             type="button"
@@ -579,7 +616,7 @@ const FormPartoAnimal = ({
             disabled={isSubmitting}
           >
             <Plus className="h-4 w-4 mr-1" />
-            Agregar Cría
+            {t("buttons.addOffspring")}
           </Button>
         </div>
 
@@ -590,7 +627,9 @@ const FormPartoAnimal = ({
               className="border rounded-lg p-4 space-y-3 bg-gray-50"
             >
               <div className="flex justify-between items-center">
-                <h4 className="font-medium">Cría #{index + 1}</h4>
+                <h4 className="font-medium">
+                  {t("offspring.itemTitle", { number: index + 1 })}
+                </h4>
                 {fields.length > 1 && (
                   <Button
                     type="button"
@@ -599,6 +638,9 @@ const FormPartoAnimal = ({
                     onClick={() => remove(index)}
                     className="text-red-500 hover:text-red-700"
                     disabled={isSubmitting}
+                    aria-label={t("buttons.removeOffspring", {
+                      number: index + 1,
+                    })}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -607,7 +649,7 @@ const FormPartoAnimal = ({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <Label>Sexo</Label>
+                  <Label>{t("offspring.fields.sex")}</Label>
                   <Select
                     onValueChange={(value) =>
                       setValue(`crias.${index}.sexo`, value as SexoCria)
@@ -616,26 +658,33 @@ const FormPartoAnimal = ({
                     disabled={isSubmitting}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Seleccionar sexo" />
+                      <SelectValue placeholder={t("placeholders.selectSex")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={SexoCria.MACHO}>Macho</SelectItem>
-                      <SelectItem value={SexoCria.HEMBRA}>Hembra</SelectItem>
+                      <SelectItem value={SexoCria.MACHO}>
+                        {t("sex.male")}
+                      </SelectItem>
+                      <SelectItem value={SexoCria.HEMBRA}>
+                        {t("sex.female")}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <Label>Peso (kg)</Label>
+                  <Label>{t("offspring.fields.weight")}</Label>
                   <Input
                     {...register(`crias.${index}.peso`, {
-                      required: "El peso es requerido",
-                      min: { value: 0.1, message: "Mínimo 0.1 kg" },
+                      required: t("validation.weightRequired"),
+                      min: {
+                        value: 0.1,
+                        message: t("validation.minimumWeight"),
+                      },
                       valueAsNumber: true,
                     })}
                     type="number"
                     step="0.1"
-                    placeholder="Ej: 35.5"
+                    placeholder={t("placeholders.weightExample")}
                     disabled={isSubmitting}
                     className={
                       errors.crias?.[index]?.peso ? "border-red-500" : ""
@@ -649,7 +698,7 @@ const FormPartoAnimal = ({
                 </div>
 
                 <div>
-                  <Label>Estado</Label>
+                  <Label>{t("offspring.fields.status")}</Label>
                   <Select
                     onValueChange={(value) =>
                       setValue(`crias.${index}.estado`, value)
@@ -658,20 +707,26 @@ const FormPartoAnimal = ({
                     disabled={isSubmitting}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Seleccionar estado" />
+                      <SelectValue
+                        placeholder={t("placeholders.selectStatus")}
+                      />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="VIVA">Viva</SelectItem>
-                      <SelectItem value="MUERTA">Muerta</SelectItem>
+                      <SelectItem value="VIVA">
+                        {t("offspring.statuses.alive")}
+                      </SelectItem>
+                      <SelectItem value="MUERTA">
+                        {t("offspring.statuses.dead")}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <Label>Fecha de Nacimiento</Label>
+                  <Label>{t("offspring.fields.birthDate")}</Label>
                   <Input
                     {...register(`crias.${index}.fecha_nacimiento`, {
-                      required: "La fecha de nacimiento es requerida",
+                      required: t("validation.offspringDateRequired"),
                     })}
                     type="datetime-local"
                     disabled={isSubmitting}
@@ -689,19 +744,19 @@ const FormPartoAnimal = ({
                 </div>
 
                 <div>
-                  <Label>Identificador (Opcional)</Label>
+                  <Label>{t("offspring.fields.identifier")}</Label>
                   <Input
                     {...register(`crias.${index}.identificador`)}
-                    placeholder="Ej: CRIA-001"
+                    placeholder={t("placeholders.identifierExample")}
                     disabled={isSubmitting}
                   />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <Label>Observaciones (Opcional)</Label>
+                  <Label>{t("offspring.fields.observations")}</Label>
                   <Input
                     {...register(`crias.${index}.observaciones`)}
-                    placeholder="Observaciones sobre la cría..."
+                    placeholder={t("placeholders.offspringObservations")}
                     disabled={isSubmitting}
                   />
                 </div>
@@ -712,7 +767,7 @@ const FormPartoAnimal = ({
           {fields.length === 0 && (
             <div className="text-center py-8 border-2 border-dashed rounded-lg">
               <Baby className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-              <p className="text-gray-500">No hay crías registradas</p>
+              <p className="text-gray-500">{t("offspring.empty")}</p>
               <Button
                 type="button"
                 variant="outline"
@@ -721,7 +776,7 @@ const FormPartoAnimal = ({
                 className="mt-2"
               >
                 <Plus className="h-4 w-4 mr-1" />
-                Agregar cría
+                {t("buttons.addOffspring")}
               </Button>
             </div>
           )}
@@ -731,43 +786,47 @@ const FormPartoAnimal = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4">
         <div>
           <Label htmlFor="veterinario_responsable">
-            Veterinario Responsable
+            {t("fields.responsibleVeterinarian")}
           </Label>
           <Input
             id="veterinario_responsable"
             {...register("veterinario_responsable")}
-            placeholder="Nombre del veterinario"
+            placeholder={t("placeholders.veterinarianName")}
             disabled={isSubmitting}
           />
         </div>
 
         <div>
-          <Label htmlFor="complicaciones">Complicaciones</Label>
+          <Label htmlFor="complicaciones">{t("fields.complications")}</Label>
           <Input
             id="complicaciones"
             {...register("complicaciones")}
-            placeholder="Describir complicaciones si las hubo"
+            placeholder={t("placeholders.complications")}
             disabled={isSubmitting}
           />
         </div>
 
         <div className="md:col-span-2">
-          <Label htmlFor="atencion_veterinaria">Atención Veterinaria</Label>
+          <Label htmlFor="atencion_veterinaria">
+            {t("fields.veterinaryCare")}
+          </Label>
           <Textarea
             id="atencion_veterinaria"
             {...register("atencion_veterinaria")}
-            placeholder="Describir la atención veterinaria brindada..."
+            placeholder={t("placeholders.veterinaryCare")}
             rows={2}
             disabled={isSubmitting}
           />
         </div>
 
         <div className="md:col-span-2">
-          <Label htmlFor="observaciones">Observaciones Generales</Label>
+          <Label htmlFor="observaciones">
+            {t("fields.generalObservations")}
+          </Label>
           <Textarea
             id="observaciones"
             {...register("observaciones")}
-            placeholder="Observaciones adicionales sobre el parto..."
+            placeholder={t("placeholders.generalObservations")}
             rows={3}
             disabled={isSubmitting}
           />
@@ -776,11 +835,15 @@ const FormPartoAnimal = ({
 
       {crias.length > 0 && (
         <div className="bg-blue-50 rounded-lg p-3 text-sm">
-          <p className="font-medium text-blue-800">Resumen de crías:</p>
+          <p className="font-medium text-blue-800">
+            {t("offspring.summaryTitle")}
+          </p>
           <p className="text-blue-700">
-            Total: {crias.length} | Vivas:{" "}
-            {crias.filter((c) => c.estado === "VIVA").length} | Muertas:{" "}
-            {crias.filter((c) => c.estado === "MUERTA").length}
+            {t("offspring.summary", {
+              total: crias.length,
+              alive: crias.filter((c) => c.estado === "VIVA").length,
+              dead: crias.filter((c) => c.estado === "MUERTA").length,
+            })}
           </p>
         </div>
       )}
@@ -792,17 +855,17 @@ const FormPartoAnimal = ({
           onClick={() => setOpenModal(false)}
           disabled={isSubmitting}
         >
-          Cancelar
+          {t("buttons.cancel")}
         </Button>
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? (
             <span className="flex items-center gap-2">
-              {isEditing ? "Actualizando..." : "Guardando..."}
+              {isEditing ? t("buttons.updating") : t("buttons.saving")}
             </span>
           ) : isEditing ? (
-            "Actualizar Parto"
+            t("buttons.updateBirth")
           ) : (
-            "Registrar Parto"
+            t("buttons.registerBirth")
           )}
         </Button>
       </div>

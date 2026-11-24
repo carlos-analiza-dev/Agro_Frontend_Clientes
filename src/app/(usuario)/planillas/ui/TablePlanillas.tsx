@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -28,6 +29,7 @@ import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import ModalViewDetails from "./ModalViewDetails";
 import Modal from "@/components/generics/Modal";
 import { Input } from "@/components/ui/input";
@@ -57,8 +59,10 @@ interface Props {
 }
 
 const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
+  const t = useTranslations("tablePlanillas");
   const queryClient = useQueryClient();
   const isMobile = useMediaQuery("(max-width: 768px)");
+
   const [openViewDetails, setOpenViewDetails] = useState(false);
   const [openPagosModal, setOpenPagosModal] = useState(false);
   const [planillaId, setPlanillaId] = useState("");
@@ -80,29 +84,35 @@ const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
   const [anularMotivo, setAnularMotivo] = useState("");
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
 
+  const getErrorMessage = (error: unknown, fallback: string): string => {
+    if (isAxiosError(error)) {
+      const messages = error.response?.data?.message;
+
+      if (Array.isArray(messages)) {
+        return messages[0] ?? fallback;
+      }
+
+      if (typeof messages === "string") {
+        return messages;
+      }
+    }
+
+    return fallback;
+  };
+
   const generatePlanilla = async (id: string) => {
     setLoadingAction(`generar_${id}`);
+
     try {
       await GenerarPlanilla(id);
-      toast.success("Planilla Generada Exitosamente");
+      toast.success(t("messages.generateSuccess"));
+
       queryClient.invalidateQueries({ queryKey: ["planillas"] });
       queryClient.invalidateQueries({ queryKey: ["planilla-details"] });
-      queryClient.invalidateQueries({ queryKey: ["planilla-details"] });
     } catch (error) {
-      if (isAxiosError(error)) {
-        const messages = error.response?.data?.message;
-        const errorMessage = Array.isArray(messages)
-          ? messages[0]
-          : typeof messages === "string"
-            ? messages
-            : "Hubo un error al generar la planilla";
-
-        toast.error(errorMessage, {
-          icon: <AlertCircle className="h-5 w-5 text-red-500" />,
-        });
-      } else {
-        toast.error("Ocurrió un error al generar la planilla");
-      }
+      toast.error(getErrorMessage(error, t("errors.generate")), {
+        icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+      });
     } finally {
       setLoadingAction(null);
     }
@@ -110,27 +120,19 @@ const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
 
   const confirmarPlanilla = async (id: string) => {
     setLoadingAction(`confirmar_${id}`);
+
     try {
       await ConfirmarPlanilla(id);
-      toast.success("Planilla Confirmada Exitosamente");
+      toast.success(t("messages.confirmSuccess"));
+
       queryClient.invalidateQueries({ queryKey: ["planillas"] });
       queryClient.invalidateQueries({ queryKey: ["planilla-details"] });
+
       setConfirmModal({ ...confirmModal, open: false });
     } catch (error) {
-      if (isAxiosError(error)) {
-        const messages = error.response?.data?.message;
-        const errorMessage = Array.isArray(messages)
-          ? messages[0]
-          : typeof messages === "string"
-            ? messages
-            : "Hubo un error al confirmar la planilla";
-
-        toast.error(errorMessage, {
-          icon: <AlertCircle className="h-5 w-5 text-red-500" />,
-        });
-      } else {
-        toast.error("Ocurrió un error al confirmar la planilla");
-      }
+      toast.error(getErrorMessage(error, t("errors.confirm")), {
+        icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+      });
     } finally {
       setLoadingAction(null);
     }
@@ -143,33 +145,25 @@ const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
 
   const anularPlanilla = async (id: string, motivo: string) => {
     if (!motivo || motivo.trim() === "") {
-      toast.error("Debe proporcionar un motivo para anular la planilla");
+      toast.error(t("validation.cancellationReason"));
       return;
     }
 
     setLoadingAction(`anular_${id}`);
+
     try {
       await AnularPlanilla(id, motivo);
-      toast.success("Planilla Anulada Exitosamente");
+      toast.success(t("messages.cancelSuccess"));
+
       queryClient.invalidateQueries({ queryKey: ["planillas"] });
       queryClient.invalidateQueries({ queryKey: ["planilla-details"] });
+
       setConfirmModal({ ...confirmModal, open: false });
       setAnularMotivo("");
     } catch (error) {
-      if (isAxiosError(error)) {
-        const messages = error.response?.data?.message;
-        const errorMessage = Array.isArray(messages)
-          ? messages[0]
-          : typeof messages === "string"
-            ? messages
-            : "Hubo un error al anular la planilla";
-
-        toast.error(errorMessage, {
-          icon: <AlertCircle className="h-5 w-5 text-red-500" />,
-        });
-      } else {
-        toast.error("Ocurrió un error al anular la planilla");
-      }
+      toast.error(getErrorMessage(error, t("errors.cancel")), {
+        icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+      });
     } finally {
       setLoadingAction(null);
     }
@@ -191,6 +185,7 @@ const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
       planillaId,
       planillaNombre,
     });
+
     if (type === "anular") {
       setAnularMotivo("");
     }
@@ -200,17 +195,20 @@ const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
     switch (confirmModal.type) {
       case "confirmar":
         return {
-          title: "Confirmar Planilla",
-          description: `¿Estás seguro de que deseas confirmar la planilla "${confirmModal.planillaNombre}"? Una vez confirmada, podrás proceder al pago.`,
-          confirmText: "Confirmar",
-          confirmVariant: "default",
+          title: t("modals.confirm.title"),
+          description: t("modals.confirm.description", {
+            name: confirmModal.planillaNombre,
+          }),
+          confirmText: t("buttons.confirm"),
         };
+
       case "anular":
         return {
-          title: "Anular Planilla",
-          description: `¿Estás seguro de que deseas anular la planilla "${confirmModal.planillaNombre}"? Esta acción no se puede deshacer.`,
-          confirmText: "Anular",
-          confirmVariant: "destructive",
+          title: t("modals.cancel.title"),
+          description: t("modals.cancel.description", {
+            name: confirmModal.planillaNombre,
+          }),
+          confirmText: t("buttons.cancelPayroll"),
         };
     }
   };
@@ -234,9 +232,10 @@ const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
               openPagosModalHandler={openPagosModalHandler}
             />
           ))}
+
           {planillas.length === 0 && (
             <div className="text-center py-8 text-muted-foreground">
-              No hay planillas registradas
+              {t("empty")}
             </div>
           )}
         </div>
@@ -245,13 +244,17 @@ const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nombre</TableHead>
-                <TableHead>Período</TableHead>
-                <TableHead>Fecha Pago</TableHead>
-                <TableHead>Total Neto</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead className="text-center">Acciones</TableHead>
-                <TableHead className="text-right">Más</TableHead>
+                <TableHead>{t("columns.name")}</TableHead>
+                <TableHead>{t("columns.period")}</TableHead>
+                <TableHead>{t("columns.paymentDate")}</TableHead>
+                <TableHead>{t("columns.netTotal")}</TableHead>
+                <TableHead>{t("columns.status")}</TableHead>
+                <TableHead className="text-center">
+                  {t("columns.actions")}
+                </TableHead>
+                <TableHead className="text-right">
+                  {t("columns.more")}
+                </TableHead>
               </TableRow>
             </TableHeader>
 
@@ -259,6 +262,7 @@ const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
               {planillas.map((planilla: Planilla) => {
                 const estado = planilla.estado as EstadoPlanilla;
                 const actions = getAvailableActions(estado);
+
                 const isLoading =
                   loadingAction === `generar_${planilla.id}` ||
                   loadingAction === `confirmar_${planilla.id}` ||
@@ -270,7 +274,7 @@ const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
                       <div>
                         <p className="font-medium">{planilla.nombre}</p>
                         <p className="text-sm text-muted-foreground">
-                          {planilla.descripcion || "Sin descripción"}
+                          {planilla.descripcion || t("values.noDescription")}
                         </p>
                       </div>
                     </TableCell>
@@ -281,11 +285,12 @@ const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
                           {formatDate(planilla.fechaInicio)} -{" "}
                           {formatDate(planilla.fechaFin)}
                         </span>
+
                         <span className="text-xs text-muted-foreground capitalize">
                           {getPeriodoText(
                             planilla.tipoPeriodo as TipoPeriodoPago,
                           )}{" "}
-                          ({planilla.diasPeriodo} días)
+                          ({planilla.diasPeriodo} {t("values.days")})
                         </span>
                       </div>
                     </TableCell>
@@ -328,7 +333,7 @@ const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
                             ) : (
                               <RefreshCw className="h-4 w-4" />
                             )}
-                            Generar
+                            {t("buttons.generate")}
                           </Button>
                         )}
 
@@ -353,7 +358,7 @@ const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
                               ) : (
                                 <actions.primary.icon className="h-4 w-4" />
                               )}
-                              {actions.primary.label}
+                              {t("buttons.confirm")}
                             </Button>
                           )}
 
@@ -367,7 +372,7 @@ const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
                               className="gap-1 bg-green-600 hover:bg-green-700"
                             >
                               <CreditCard className="h-4 w-4" />
-                              {actions.primary.label}
+                              {t("buttons.pay")}
                             </Button>
                           )}
 
@@ -397,7 +402,7 @@ const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
                             ) : (
                               <secAction.icon className="h-4 w-4" />
                             )}
-                            {secAction.label}
+                            {t(`buttons.${secAction.action}`)}
                           </Button>
                         ))}
                       </div>
@@ -410,10 +415,12 @@ const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
                             variant="ghost"
                             size="sm"
                             disabled={isLoading}
+                            aria-label={t("actions.openMenu")}
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
+
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem
                             onClick={() =>
@@ -421,14 +428,15 @@ const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
                             }
                           >
                             <Eye className="h-4 w-4 mr-2" />
-                            Ver Detalles
+                            {t("actions.viewDetails")}
                           </DropdownMenuItem>
+
                           {actions.menu.includes("editar") && (
                             <DropdownMenuItem
                               onClick={() => handleEditPlanilla(planilla)}
                             >
                               <Edit className="h-4 w-4 mr-2" />
-                              Editar
+                              {t("actions.edit")}
                             </DropdownMenuItem>
                           )}
                         </DropdownMenuContent>
@@ -454,8 +462,9 @@ const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
             variant="outline"
             onClick={() => setConfirmModal({ ...confirmModal, open: false })}
           >
-            Cancelar
+            {t("buttons.cancel")}
           </Button>
+
           <Button
             onClick={() => confirmarPlanilla(confirmModal.planillaId)}
             className="bg-blue-600 hover:bg-blue-700"
@@ -480,23 +489,26 @@ const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
         <div className="space-y-4">
           <div>
             <Label htmlFor="motivo" className="text-sm font-medium">
-              Motivo de anulación *
+              {t("fields.cancellationReason")}
             </Label>
+
             <Input
               id="motivo"
-              placeholder="Ej: Error en cálculo de horas extras"
+              placeholder={t("placeholders.cancellationReason")}
               value={anularMotivo}
               onChange={(e) => setAnularMotivo(e.target.value)}
               className="mt-2"
             />
           </div>
+
           <div className="flex justify-end gap-3">
             <Button
               variant="outline"
               onClick={() => setConfirmModal({ ...confirmModal, open: false })}
             >
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
+
             <Button
               onClick={() =>
                 anularPlanilla(confirmModal.planillaId, anularMotivo)
@@ -519,7 +531,9 @@ const TablePlanillas = ({ planillas, handleEditPlanilla, moneda }: Props) => {
           moneda={moneda}
           onSuccess={() => {
             queryClient.invalidateQueries({ queryKey: ["planillas"] });
-            queryClient.invalidateQueries({ queryKey: ["planilla-details"] });
+            queryClient.invalidateQueries({
+              queryKey: ["planilla-details"],
+            });
           }}
         />
       )}

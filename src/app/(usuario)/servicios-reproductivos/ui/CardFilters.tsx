@@ -1,3 +1,5 @@
+"use client";
+
 import { Animal } from "@/api/animales/interfaces/response-animales.interface";
 import { Finca } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
 import { ResponseServicioReproductivoInterface } from "@/api/reproduccion/interfaces/response-servicio-repoductivo.interface";
@@ -21,6 +23,7 @@ import { ChevronDown, RefreshCw, Search, X } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface Props {
   filtros: FiltrosServicios;
@@ -51,6 +54,8 @@ const CardFilters = ({
   limpiarFiltros,
   isFetching,
 }: Props) => {
+  const t = useTranslations("cardFiltersServicios");
+
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -62,7 +67,6 @@ const CardFilters = ({
   // Filtrar hembras por término de búsqueda y finca
   const filteredHembras =
     hembras?.filter((animal) => {
-      // Filtrar por finca si está seleccionada
       if (filtros.finca_id && animal.finca?.id !== filtros.finca_id) {
         return false;
       }
@@ -102,19 +106,19 @@ const CardFilters = ({
   useEffect(() => {
     if (selectedAnimal) {
       setSearchTerm(
-        `${selectedAnimal.identificador || ""} - ${selectedAnimal.nombre_animal || "Sin nombre"}`,
+        `${selectedAnimal.identificador || ""} - ${selectedAnimal.nombre_animal || t("animal.noName")}`,
       );
     } else {
       setSearchTerm("");
     }
-  }, [selectedAnimal]);
+  }, [selectedAnimal, t]);
 
   const handleSelectAnimal = (animalId: string) => {
     handleFilterChange("hembra_id", animalId);
     const animal = hembras?.find((a) => a.id === animalId);
     if (animal) {
       setSearchTerm(
-        `${animal.identificador || ""} - ${animal.nombre_animal || "Sin nombre"}`,
+        `${animal.identificador || ""} - ${animal.nombre_animal || t("animal.noName")}`,
       );
     }
     setIsSearchOpen(false);
@@ -131,32 +135,41 @@ const CardFilters = ({
     ? hembras?.filter((h) => h.finca?.id === filtros.finca_id)
     : hembras;
 
+  const getEstadoLabel = (value: string, fallback: string) => {
+    const key = `statuses.${value.toLowerCase()}`;
+    return t.has(key) ? t(key) : fallback;
+  };
+
+  const getTipoLabel = (value: string, fallback: string) => {
+    const key = `serviceTypes.${value.toLowerCase()}`;
+    return t.has(key) ? t(key) : fallback;
+  };
+
   return (
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex items-center justify-between">
-          <span>Filtros</span>
+          <span>{t("title")}</span>
           <Badge variant="outline" className="ml-2">
-            {fincaSeleccionada?.nombre_finca || "Todas las fincas"}
+            {fincaSeleccionada?.nombre_finca || t("farms.all")}
           </Badge>
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="space-y-2">
-            <Label>Finca</Label>
+            <Label>{t("fields.farm")}</Label>
             <Select
               value={filtros.finca_id || ""}
               onValueChange={(value) => {
                 handleFilterChange("finca_id", value);
-                // Limpiar la hembra seleccionada cuando cambia la finca
                 handleFilterChange("hembra_id", undefined);
                 setSearchTerm("");
               }}
               disabled={fincasLoading}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar finca" />
+                <SelectValue placeholder={t("placeholders.selectFarm")} />
               </SelectTrigger>
               <SelectContent>
                 {fincas.map((finca) => (
@@ -169,15 +182,15 @@ const CardFilters = ({
           </div>
 
           <div className="space-y-2" ref={searchRef}>
-            <Label>Hembra</Label>
+            <Label>{t("fields.female")}</Label>
             <div className="relative">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50" />
                 <Input
                   placeholder={
                     selectedAnimal
-                      ? `${selectedAnimal.identificador || selectedAnimal.nombre_animal || "Animal"} seleccionado`
-                      : "Buscar hembra..."
+                      ? `${selectedAnimal.identificador || selectedAnimal.nombre_animal || t("animal.generic")} ${t("animal.selected")}`
+                      : t("placeholders.searchFemale")
                   }
                   value={searchTerm}
                   onChange={(e) => {
@@ -200,6 +213,7 @@ const CardFilters = ({
                   <button
                     type="button"
                     onClick={handleClearAnimal}
+                    aria-label={t("buttons.clearFemale")}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full"
                   >
                     <X className="h-4 w-4" />
@@ -226,7 +240,9 @@ const CardFilters = ({
                               ? animal.profileImages[0].url
                               : "/images/Image-not-found.png"
                           }
-                          alt={`animal-${animal.identificador}`}
+                          alt={t("animal.imageAlt", {
+                            identifier: animal.identificador || "",
+                          })}
                           width={40}
                           height={40}
                           className="h-10 w-10 rounded-full object-cover"
@@ -236,11 +252,11 @@ const CardFilters = ({
                           <p className="text-sm font-medium truncate">
                             {animal.identificador ||
                               animal.nombre_animal ||
-                              "Sin identificar"}
+                              t("animal.unidentified")}
                           </p>
                           <p className="text-xs text-gray-500">
                             {animal.especie?.nombre ||
-                              "Especie no especificada"}
+                              t("animal.unspecifiedSpecies")}
                             {animal.color && ` • ${animal.color}`}
                           </p>
                         </div>
@@ -253,13 +269,13 @@ const CardFilters = ({
                     <div className="py-6 text-center text-sm">
                       <p className="text-gray-500">
                         {filtros.finca_id
-                          ? "No se encontraron hembras en esta finca"
-                          : "No se encontraron hembras"}
+                          ? t("search.noFemalesInFarm")
+                          : t("search.noFemales")}
                       </p>
                       <p className="text-xs text-gray-400 mt-1">
                         {filtros.finca_id
-                          ? "Selecciona otra finca o cambia tu búsqueda"
-                          : "Selecciona una finca primero o cambia tu búsqueda"}
+                          ? t("search.changeFarmOrSearch")
+                          : t("search.selectFarmOrSearch")}
                       </p>
                     </div>
                   )}
@@ -277,7 +293,9 @@ const CardFilters = ({
                         ? selectedAnimal.profileImages[0].url
                         : "/images/Image-not-found.png"
                     }
-                    alt={`animal-${selectedAnimal.identificador}`}
+                    alt={t("animal.imageAlt", {
+                      identifier: selectedAnimal.identificador || "",
+                    })}
                     width={32}
                     height={32}
                     className="h-8 w-8 rounded-full object-cover"
@@ -287,11 +305,11 @@ const CardFilters = ({
                     <p className="text-sm font-medium">
                       {selectedAnimal.identificador ||
                         selectedAnimal.nombre_animal ||
-                        "Animal"}
+                        t("animal.generic")}
                     </p>
                     <p className="text-xs text-gray-600">
                       {selectedAnimal.especie?.nombre ||
-                        "Especie no especificada"}
+                        t("animal.unspecifiedSpecies")}
                       {selectedAnimal.color && ` • ${selectedAnimal.color}`}
                     </p>
                   </div>
@@ -303,13 +321,15 @@ const CardFilters = ({
               hembrasFiltradasPorFinca.length > 0 &&
               !selectedAnimal && (
                 <p className="text-xs text-muted-foreground">
-                  {hembrasFiltradasPorFinca.length} hembra(s) disponible(s)
+                  {t("animal.availableFemales", {
+                    count: hembrasFiltradasPorFinca.length,
+                  })}
                 </p>
               )}
           </div>
 
           <div className="space-y-2">
-            <Label>Estado</Label>
+            <Label>{t("fields.status")}</Label>
             <Select
               value={filtros.estado || "todos"}
               onValueChange={(value) =>
@@ -320,13 +340,13 @@ const CardFilters = ({
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Estado" />
+                <SelectValue placeholder={t("placeholders.status")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="todos">{t("options.all")}</SelectItem>
                 {estadoReproductivo.map((estado) => (
                   <SelectItem key={estado.id} value={estado.value}>
-                    {estado.label}
+                    {getEstadoLabel(estado.value, estado.label)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -336,12 +356,22 @@ const CardFilters = ({
           <div className="flex items-end space-x-2">
             <Button onClick={() => refetch()} className="flex-1">
               <Search className="h-4 w-4 mr-2" />
-              Buscar
+              {t("buttons.search")}
             </Button>
-            <Button variant="outline" onClick={limpiarFiltros} size="icon">
+            <Button
+              variant="outline"
+              onClick={limpiarFiltros}
+              size="icon"
+              aria-label={t("buttons.clearFilters")}
+            >
               <X className="h-4 w-4" />
             </Button>
-            <Button variant="outline" onClick={() => refetch()} size="icon">
+            <Button
+              variant="outline"
+              onClick={() => refetch()}
+              size="icon"
+              aria-label={t("buttons.refresh")}
+            >
               <RefreshCw
                 className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
               />
@@ -353,11 +383,11 @@ const CardFilters = ({
           <details className="group">
             <summary className="flex items-center gap-2 text-sm font-medium cursor-pointer list-none">
               <ChevronDown className="h-4 w-4 group-open:rotate-180 transition-transform" />
-              Filtros avanzados
+              {t("advancedFilters")}
             </summary>
             <div className="mt-4 grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label>Tipo</Label>
+                <Label>{t("fields.type")}</Label>
                 <Select
                   value={filtros.tipo_servicio || "todos"}
                   onValueChange={(value) =>
@@ -368,13 +398,13 @@ const CardFilters = ({
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Todos" />
+                    <SelectValue placeholder={t("options.all")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="todos">Todos</SelectItem>
+                    <SelectItem value="todos">{t("options.all")}</SelectItem>
                     {tipoReproduccionOptions.map((tipo) => (
                       <SelectItem key={tipo.value} value={tipo.value}>
-                        {tipo.label}
+                        {getTipoLabel(tipo.value, tipo.label)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -382,7 +412,7 @@ const CardFilters = ({
               </div>
 
               <div className="space-y-2">
-                <Label>Exitoso</Label>
+                <Label>{t("fields.successful")}</Label>
                 <Select
                   value={
                     filtros.exitoso === undefined
@@ -397,18 +427,18 @@ const CardFilters = ({
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Todos" />
+                    <SelectValue placeholder={t("options.all")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="todos">Todos</SelectItem>
-                    <SelectItem value="true">Sí</SelectItem>
-                    <SelectItem value="false">No</SelectItem>
+                    <SelectItem value="todos">{t("options.all")}</SelectItem>
+                    <SelectItem value="true">{t("options.yes")}</SelectItem>
+                    <SelectItem value="false">{t("options.no")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <Label>Fecha desde</Label>
+                <Label>{t("fields.dateFrom")}</Label>
                 <Input
                   type="date"
                   value={filtros.fecha_desde || ""}
@@ -419,7 +449,7 @@ const CardFilters = ({
               </div>
 
               <div className="space-y-2">
-                <Label>Fecha hasta</Label>
+                <Label>{t("fields.dateTo")}</Label>
                 <Input
                   type="date"
                   value={filtros.fecha_hasta || ""}

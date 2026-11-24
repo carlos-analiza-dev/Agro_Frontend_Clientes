@@ -1,5 +1,7 @@
 "use client";
+
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -31,19 +33,25 @@ import ButtonAdd from "@/components/generics/ButtonAdd";
 import TitlePage from "@/components/generics/TitlePage";
 
 const PartosAnimalesPage = () => {
+  const t = useTranslations("partosAnimalesPage");
+
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id ?? "";
   const router = useRouter();
+
   const [openModal, setOpenModal] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
+
   const [selectedParto, setSelectedParto] = useState<Parto | undefined>(
     undefined,
   );
+
   const handleEdit = (parto: Parto) => {
     setSelectedParto(parto);
     setOpenModal(true);
   };
+
   const [filtros, setFiltros] = useState({
     finca_id: "",
     hembra_id: "",
@@ -133,6 +141,7 @@ const PartosAnimalesPage = () => {
       limit: 10,
       page: 1,
     });
+
     if (isMobile) setShowFilters(false);
   };
 
@@ -165,6 +174,7 @@ const PartosAnimalesPage = () => {
 
   const handleClickNewRegister = () => {
     setSelectedParto(undefined);
+
     if (isMobile) {
       router.push("/partos-animales/crear-parto");
     } else {
@@ -182,15 +192,15 @@ const PartosAnimalesPage = () => {
         className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4"
       >
         <TitlePage
-          title={`Control de Partos - ${finca?.nombre_finca}`}
-          description="Monitorea los partos registrados en tus animales."
+          title={t("title", { farm: finca?.nombre_finca ?? "" })}
+          description={t("description")}
           Icon={PawPrint}
         />
 
         <ButtonAdd
           id="partos-nuevo-btn"
           Icon={Plus}
-          title="Nuevo Parto"
+          title={t("newBirth")}
           action={handleClickNewRegister}
           className="bg-green-600 hover:bg-green-700"
         />
@@ -215,12 +225,12 @@ const PartosAnimalesPage = () => {
             >
               <div className="flex items-center gap-2">
                 <Filter className="h-4 w-4" />
-                <span>Filtros</span>
+                <span>{t("filters")}</span>
               </div>
 
               {contarFiltrosActivos() > 0 && (
                 <Badge variant="secondary">
-                  {contarFiltrosActivos()} activos
+                  {t("activeFilters", { count: contarFiltrosActivos() })}
                 </Badge>
               )}
             </Button>
@@ -232,7 +242,7 @@ const PartosAnimalesPage = () => {
                 className="h-[90vh] rounded-t-xl"
               >
                 <SheetHeader className="mb-4">
-                  <SheetTitle className="text-left">Filtros</SheetTitle>
+                  <SheetTitle className="text-left">{t("filters")}</SheetTitle>
                 </SheetHeader>
 
                 <div className="overflow-y-auto h-full pb-20">
@@ -257,12 +267,15 @@ const PartosAnimalesPage = () => {
           id="partos-historial-header"
           className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3"
         >
-          <CardTitle>Historial de Partos</CardTitle>
+          <CardTitle>{t("historyTitle")}</CardTitle>
 
           {totalPartos > 0 && (
             <span className="text-xs sm:text-sm text-muted-foreground">
-              Mostrando {startIndex + 1} - {Math.min(endIndex, totalPartos)} de{" "}
-              {totalPartos} partos
+              {t("showingBirths", {
+                start: startIndex + 1,
+                end: Math.min(endIndex, totalPartos),
+                total: totalPartos,
+              })}
             </span>
           )}
         </CardHeader>
@@ -314,11 +327,9 @@ const PartosAnimalesPage = () => {
             setOpenModal(open);
           }
         }}
-        title={selectedParto ? "Editar Parto" : "Agregar Nuevo Parto"}
+        title={selectedParto ? t("editBirth") : t("addBirth")}
         description={
-          selectedParto
-            ? "Aquí podrás editar la información del parto"
-            : "Aquí podrás ingresar el parto de tu animal"
+          selectedParto ? t("editBirthDescription") : t("addBirthDescription")
         }
         size="2xl"
         height="xl"

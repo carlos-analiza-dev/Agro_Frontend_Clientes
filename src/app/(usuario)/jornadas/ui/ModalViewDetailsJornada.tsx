@@ -10,9 +10,6 @@ import {
   UserIcon,
   ClipboardListIcon,
   ClockIcon,
-  MoonIcon,
-  SunIcon,
-  StarIcon,
   AlertCircleIcon,
   CheckCircle2Icon,
   XCircleIcon,
@@ -23,6 +20,7 @@ import {
   BriefcaseIcon,
 } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   openViewDetails: boolean;
@@ -35,16 +33,36 @@ const ModalViewDetailsJornada = ({
   openViewDetails,
   setOpenViewDetails,
 }: Props) => {
+  const t = useTranslations("modalViewDetailsJornada");
+
   if (!selectedJornada) return null;
 
   const horasExtras = getHorasExtras(selectedJornada);
+
+  const getHoraExtraLabel = (type: string) => {
+    const normalizedType = type.toLowerCase();
+
+    if (normalizedType.includes("diurna")) {
+      return t("overtime.daytime");
+    }
+
+    if (normalizedType.includes("nocturna")) {
+      return t("overtime.nighttime");
+    }
+
+    if (normalizedType.includes("festiva")) {
+      return t("overtime.holiday");
+    }
+
+    return type;
+  };
 
   return (
     <Modal
       open={openViewDetails}
       onOpenChange={setOpenViewDetails}
-      title="Detalles de la Jornada"
-      description="Información detallada de la jornada laboral del trabajador"
+      title={t("title")}
+      description={t("description")}
       size="3xl"
       height="auto"
     >
@@ -56,14 +74,14 @@ const ModalViewDetailsJornada = ({
                 <>
                   <CheckCircle2Icon className="h-5 w-5 text-green-500" />
                   <Badge className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 hover:bg-green-100">
-                    Trabajó
+                    {t("status.worked")}
                   </Badge>
                 </>
               ) : (
                 <>
                   <XCircleIcon className="h-5 w-5 text-red-500" />
                   <Badge className="bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300 hover:bg-red-100">
-                    No Trabajó
+                    {t("status.notWorked")}
                   </Badge>
                 </>
               )}
@@ -75,7 +93,7 @@ const ModalViewDetailsJornada = ({
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
               <UserIcon className="h-5 w-5 text-blue-500" />
-              Información del Trabajador
+              {t("sections.workerInformation")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -83,7 +101,9 @@ const ModalViewDetailsJornada = ({
               <div className="flex items-start gap-3">
                 <UserIcon className="h-4 w-4 text-gray-400 mt-0.5" />
                 <div>
-                  <p className="text-sm text-gray-500">Nombre Completo</p>
+                  <p className="text-sm text-gray-500">
+                    {t("fields.fullName")}
+                  </p>
                   <p className="font-medium">
                     {selectedJornada.trabajador.nombre}
                   </p>
@@ -92,7 +112,9 @@ const ModalViewDetailsJornada = ({
               <div className="flex items-start gap-3">
                 <IdCardIcon className="h-4 w-4 text-gray-400 mt-0.5" />
                 <div>
-                  <p className="text-sm text-gray-500">Identificación</p>
+                  <p className="text-sm text-gray-500">
+                    {t("fields.identification")}
+                  </p>
                   <p className="font-medium">
                     {selectedJornada.trabajador.identificacion}
                   </p>
@@ -101,25 +123,27 @@ const ModalViewDetailsJornada = ({
               <div className="flex items-start gap-3">
                 <PhoneIcon className="h-4 w-4 text-gray-400 mt-0.5" />
                 <div>
-                  <p className="text-sm text-gray-500">Teléfono</p>
+                  <p className="text-sm text-gray-500">{t("fields.phone")}</p>
                   <p className="font-medium">
-                    {selectedJornada.trabajador.telefono || "No registrado"}
+                    {selectedJornada.trabajador.telefono || t("notRegistered")}
                   </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <MailIcon className="h-4 w-4 text-gray-400 mt-0.5" />
                 <div>
-                  <p className="text-sm text-gray-500">Email</p>
+                  <p className="text-sm text-gray-500">{t("fields.email")}</p>
                   <p className="font-medium">
-                    {selectedJornada.trabajador.email || "No registrado"}
+                    {selectedJornada.trabajador.email || t("notRegistered")}
                   </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <MapPinIcon className="h-4 w-4 text-gray-400 mt-0.5" />
                 <div>
-                  <p className="text-sm text-gray-500">Ubicación</p>
+                  <p className="text-sm text-gray-500">
+                    {t("fields.location")}
+                  </p>
                   <p className="font-medium">
                     {selectedJornada.trabajador.municipio?.nombre},{" "}
                     {selectedJornada.trabajador.departamento?.nombre},{" "}
@@ -130,7 +154,7 @@ const ModalViewDetailsJornada = ({
               <div className="flex items-start gap-3">
                 <BriefcaseIcon className="h-4 w-4 text-gray-400 mt-0.5" />
                 <div>
-                  <p className="text-sm text-gray-500">Rol</p>
+                  <p className="text-sm text-gray-500">{t("fields.role")}</p>
                   <p className="font-medium capitalize">
                     {selectedJornada.trabajador.rol}
                   </p>
@@ -144,7 +168,7 @@ const ModalViewDetailsJornada = ({
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
               <CalendarIcon className="h-5 w-5 text-green-500" />
-              Detalles de la Jornada
+              {t("sections.workdayDetails")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -152,7 +176,7 @@ const ModalViewDetailsJornada = ({
               <div className="flex items-start gap-3">
                 <CalendarIcon className="h-4 w-4 text-gray-400 mt-0.5" />
                 <div>
-                  <p className="text-sm text-gray-500">Fecha</p>
+                  <p className="text-sm text-gray-500">{t("fields.date")}</p>
                   <p className="font-medium">
                     {formatDate(selectedJornada.fecha)}
                   </p>
@@ -165,11 +189,11 @@ const ModalViewDetailsJornada = ({
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <ClipboardListIcon className="h-4 w-4 text-blue-500" />
-                <h3 className="font-semibold">Labor Realizada</h3>
+                <h3 className="font-semibold">{t("sections.workPerformed")}</h3>
               </div>
               <div className="bg-gray-50 dark:bg-gray-900 p-3 rounded-lg">
                 <p className="text-sm whitespace-pre-wrap">
-                  {selectedJornada.laborRealizada || "No especificada"}
+                  {selectedJornada.laborRealizada || t("notSpecified")}
                 </p>
               </div>
             </div>
@@ -180,7 +204,7 @@ const ModalViewDetailsJornada = ({
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <ClockIcon className="h-4 w-4 text-orange-500" />
-                    <h3 className="font-semibold">Horas Extras</h3>
+                    <h3 className="font-semibold">{t("sections.overtime")}</h3>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {horasExtras.map((hora, index) => (
@@ -191,11 +215,11 @@ const ModalViewDetailsJornada = ({
                         <div className="flex items-center gap-2">
                           <hora.icon className={`h-4 w-4 ${hora.color}`} />
                           <span className="text-sm font-medium">
-                            {hora.type}
+                            {getHoraExtraLabel(hora.type)}
                           </span>
                         </div>
                         <Badge variant="outline" className="font-mono">
-                          {hora.value} horas
+                          {hora.value} {t("units.hours")}
                         </Badge>
                       </div>
                     ))}
@@ -210,7 +234,9 @@ const ModalViewDetailsJornada = ({
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <AlertCircleIcon className="h-4 w-4 text-yellow-500" />
-                    <h3 className="font-semibold">Observaciones</h3>
+                    <h3 className="font-semibold">
+                      {t("sections.observations")}
+                    </h3>
                   </div>
                   <div className="bg-yellow-50 dark:bg-yellow-950/20 p-3 rounded-lg border border-yellow-200 dark:border-yellow-900">
                     <p className="text-sm whitespace-pre-wrap">

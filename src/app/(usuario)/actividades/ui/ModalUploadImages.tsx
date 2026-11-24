@@ -1,8 +1,11 @@
+"use client";
+
 import Modal from "@/components/generics/Modal";
 import { Button } from "@/components/ui/button";
 import { Loader, Upload, X } from "lucide-react";
 import Image from "next/image";
 import { ChangeEvent, RefObject } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   showUploadModal: boolean;
@@ -27,11 +30,13 @@ const ModalUploadImages = ({
   files,
   isUploading,
 }: Props) => {
+  const t = useTranslations("modalUploadImages");
+
   return (
     <Modal
       open={showUploadModal}
       onOpenChange={closeUploadModal}
-      title="Subir imágenes de la actividad"
+      title={t("title")}
       size="2xl"
       height="auto"
       showCloseButton={true}
@@ -47,14 +52,17 @@ const ModalUploadImages = ({
             className="hidden"
             id="image-upload"
           />
+
           <label
             htmlFor="image-upload"
             className="cursor-pointer flex flex-col items-center gap-2"
           >
             <Upload className="w-10 h-10 text-gray-400" />
-            <span className="text-sm text-gray-600">Haz clic aquí</span>
+
+            <span className="text-sm text-gray-600">{t("selectImages")}</span>
+
             <span className="text-xs text-gray-400">
-              Formatos: JPG, PNG, GIF (Máx 1MB por imagen)
+              {t("supportedFormats")}
             </span>
           </label>
         </div>
@@ -62,15 +70,16 @@ const ModalUploadImages = ({
         {previewUrls.length > 0 && (
           <div className="space-y-3">
             <h3 className="text-sm font-semibold">
-              Imágenes seleccionadas ({previewUrls.length})
+              {t("selectedImages", { count: previewUrls.length })}
             </h3>
+
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-96 overflow-y-auto p-2">
               {previewUrls.map((url, index) => (
                 <div key={index} className="relative group">
                   <div className="relative aspect-square rounded-lg overflow-hidden border">
                     <Image
                       src={url}
-                      alt={`Preview ${index + 1}`}
+                      alt={t("previewAlt", { number: index + 1 })}
                       fill
                       className="object-cover"
                       unoptimized
@@ -80,16 +89,18 @@ const ModalUploadImages = ({
                   <Button
                     variant="destructive"
                     size="icon"
-                    className="absolute top-1 right-1 h-6 w-6 
-                  opacity-100 sm:opacity-0 sm:group-hover:opacity-100 
-                  transition-opacity"
+                    aria-label={t("removeImage", { number: index + 1 })}
+                    title={t("removeImage", { number: index + 1 })}
+                    className="absolute top-1 right-1 h-6 w-6
+                    opacity-100 sm:opacity-0 sm:group-hover:opacity-100
+                    transition-opacity"
                     onClick={() => removeImage(index)}
                   >
                     <X className="w-3 h-3" />
                   </Button>
 
                   <div className="absolute bottom-1 left-1 bg-black/50 text-white text-xs px-1.5 py-0.5 rounded sm:hidden">
-                    Tap para eliminar
+                    {t("tapToRemove")}
                   </div>
                 </div>
               ))}
@@ -103,8 +114,9 @@ const ModalUploadImages = ({
             onClick={closeUploadModal}
             className="order-2 sm:order-1"
           >
-            Cancelar
+            {t("buttons.cancel")}
           </Button>
+
           <Button
             onClick={handleUploadImages}
             disabled={files.length === 0 || isUploading}
@@ -113,12 +125,12 @@ const ModalUploadImages = ({
             {isUploading ? (
               <>
                 <Loader className="w-4 h-4 animate-spin" />
-                Subiendo...
+                {t("buttons.uploading")}
               </>
             ) : (
               <>
                 <Upload className="w-4 h-4" />
-                Subir {files.length} imagen(es)
+                {t("buttons.upload", { count: files.length })}
               </>
             )}
           </Button>

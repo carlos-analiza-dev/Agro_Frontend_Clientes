@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,24 +44,21 @@ const FormSiembraInteligente = ({
   setAreaValue,
   setUnidadValue,
 }: Props) => {
+  const t = useTranslations("formSiembraInteligente");
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [unidadMedida, setUnidadMedida] = useState<string>("");
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors: formErrors },
-  } = useForm<SiembraInteligenteInterface>({
-    defaultValues: {
-      cultivo: "",
-      tipoTerreno: "",
-      clima: "",
-      area: undefined,
-      unidad: "",
-    },
-  });
+  const { register, handleSubmit, setValue, watch } =
+    useForm<SiembraInteligenteInterface>({
+      defaultValues: {
+        cultivo: "",
+        tipoTerreno: "",
+        clima: "",
+        area: undefined,
+        unidad: "",
+      },
+    });
 
   const cultivoValue = watch("cultivo");
   const tipoTerrenoValue = watch("tipoTerreno");
@@ -90,9 +90,7 @@ const FormSiembraInteligente = ({
       ObtenerConsultaSiembra(data),
     onSuccess: (response) => {
       setConsultaResultado(response.respuesta);
-      toast.success(
-        "Recomendación de densidad de siembra generada exitosamente",
-      );
+      toast.success(t("messages.success"));
       setErrors({});
       setIsPending(false);
     },
@@ -101,11 +99,13 @@ const FormSiembraInteligente = ({
         const messages = error.response?.data?.message;
         const errorMessage = Array.isArray(messages)
           ? messages[0]
-          : messages || "Error al generar recomendación";
+          : messages || t("errors.generateRecommendation");
+
         toast.error(errorMessage);
       } else {
-        toast.error("Error al conectar con el servicio de densidad de siembra");
+        toast.error(t("errors.connection"));
       }
+
       setIsPending(false);
     },
   });
@@ -114,23 +114,23 @@ const FormSiembraInteligente = ({
     const newErrors: Record<string, string> = {};
 
     if (!data.cultivo) {
-      newErrors.cultivo = "El cultivo es requerido";
+      newErrors.cultivo = t("validation.cropRequired");
     }
 
     if (!data.tipoTerreno) {
-      newErrors.tipoTerreno = "El tipo de terreno es requerido";
+      newErrors.tipoTerreno = t("validation.landTypeRequired");
     }
 
     if (!data.clima) {
-      newErrors.clima = "El clima es requerido";
+      newErrors.clima = t("validation.climateRequired");
     }
 
     if (!data.area || data.area <= 0) {
-      newErrors.area = "El área debe ser mayor a 0";
+      newErrors.area = t("validation.areaGreaterThanZero");
     }
 
     if (!data.unidad) {
-      newErrors.unidad = "La unidad de medida es requerida";
+      newErrors.unidad = t("validation.unitRequired");
     }
 
     setErrors(newErrors);
@@ -139,7 +139,7 @@ const FormSiembraInteligente = ({
 
   const onSubmit = (data: SiembraInteligenteInterface) => {
     if (!validateForm(data)) {
-      toast.error("Por favor completa todos los campos requeridos");
+      toast.error(t("validation.completeRequired"));
       return;
     }
 
@@ -149,6 +149,7 @@ const FormSiembraInteligente = ({
 
   const handleTipoTerrenoChange = (terrenoNombre: string) => {
     setValue("tipoTerreno", terrenoNombre);
+
     if (errors.tipoTerreno) {
       setErrors((prev) => ({ ...prev, tipoTerreno: "" }));
     }
@@ -156,6 +157,7 @@ const FormSiembraInteligente = ({
 
   const handleClimaChange = (climaNombre: string) => {
     setValue("clima", climaNombre);
+
     if (errors.clima) {
       setErrors((prev) => ({ ...prev, clima: "" }));
     }
@@ -164,23 +166,42 @@ const FormSiembraInteligente = ({
   const handleUnidadChange = (unidad: string) => {
     setUnidadMedida(unidad);
     setValue("unidad", unidad);
+
     if (errors.unidad) {
       setErrors((prev) => ({ ...prev, unidad: "" }));
     }
+  };
+
+  // Traduce las etiquetas por identificador, conservando los valores originales.
+  const getLandTypeLabel = (id: string, fallback: string) => {
+    const key = `landTypes.${id}`;
+    return t.has(key) ? t(key) : fallback;
+  };
+
+  const getClimateLabel = (id: string, fallback: string) => {
+    const key = `climateTypes.${id}`;
+    return t.has(key) ? t(key) : fallback;
+  };
+
+  const getUnitLabel = (value: string, fallback: string) => {
+    const key = `measurementUnits.${value}`;
+    return t.has(key) ? t(key) : fallback;
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="cultivo" className="font-bold">
-          Cultivo <span className="text-red-500">*</span>
+          {t("fields.crop")} <span className="text-red-500">*</span>
         </Label>
+
         <Input
           id="cultivo"
-          placeholder="Ej: Maíz, Frijol, Tomate, Café, etc."
+          placeholder={t("placeholders.crop")}
           className={errors.cultivo ? "border-red-500" : ""}
           {...register("cultivo")}
         />
+
         {errors.cultivo && (
           <p className="text-sm font-medium text-red-500">{errors.cultivo}</p>
         )}
@@ -188,8 +209,9 @@ const FormSiembraInteligente = ({
 
       <div className="space-y-2">
         <Label htmlFor="tipoTerreno" className="font-bold">
-          Tipo de Terreno <span className="text-red-500">*</span>
+          {t("fields.landType")} <span className="text-red-500">*</span>
         </Label>
+
         <Select
           onValueChange={handleTipoTerrenoChange}
           value={tipoTerrenoValue}
@@ -198,16 +220,18 @@ const FormSiembraInteligente = ({
             id="tipoTerreno"
             className={errors.tipoTerreno ? "border-red-500" : ""}
           >
-            <SelectValue placeholder="Selecciona el tipo de terreno" />
+            <SelectValue placeholder={t("placeholders.landType")} />
           </SelectTrigger>
+
           <SelectContent>
             {tiposTerreno.map((terreno) => (
               <SelectItem key={terreno.id} value={terreno.nombre}>
-                {terreno.nombre}
+                {getLandTypeLabel(terreno.id, terreno.nombre)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
+
         {errors.tipoTerreno && (
           <p className="text-sm font-medium text-red-500">
             {errors.tipoTerreno}
@@ -217,23 +241,26 @@ const FormSiembraInteligente = ({
 
       <div className="space-y-2">
         <Label htmlFor="clima" className="font-bold">
-          Clima <span className="text-red-500">*</span>
+          {t("fields.climate")} <span className="text-red-500">*</span>
         </Label>
+
         <Select onValueChange={handleClimaChange} value={climaValue}>
           <SelectTrigger
             id="clima"
             className={errors.clima ? "border-red-500" : ""}
           >
-            <SelectValue placeholder="Selecciona el clima de tu zona" />
+            <SelectValue placeholder={t("placeholders.climate")} />
           </SelectTrigger>
+
           <SelectContent>
             {tiposClima.map((clima) => (
               <SelectItem key={clima.id} value={clima.nombre}>
-                {clima.nombre}
+                {getClimateLabel(clima.id, clima.nombre)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
+
         {errors.clima && (
           <p className="text-sm font-medium text-red-500">{errors.clima}</p>
         )}
@@ -241,8 +268,9 @@ const FormSiembraInteligente = ({
 
       <div className="space-y-2">
         <Label className="font-bold">
-          Unidad de Medida <span className="text-red-500">*</span>
+          {t("fields.measurementUnit")} <span className="text-red-500">*</span>
         </Label>
+
         <div className="space-y-3">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {unidadesMedida.map((medida) => (
@@ -255,15 +283,17 @@ const FormSiembraInteligente = ({
                   onChange={() => handleUnidadChange(medida.value)}
                   className="h-4 w-4 text-green-600 focus:ring-green-500"
                 />
+
                 <label
                   htmlFor={medida.value}
                   className="text-sm font-medium leading-none cursor-pointer"
                 >
-                  {medida.label}
+                  {getUnitLabel(medida.value, medida.label)}
                 </label>
               </div>
             ))}
           </div>
+
           {errors.unidad && (
             <p className="text-sm font-medium text-red-500">{errors.unidad}</p>
           )}
@@ -272,26 +302,36 @@ const FormSiembraInteligente = ({
 
       <div className="space-y-2">
         <Label htmlFor="area" className="font-bold">
-          Área del Terreno <span className="text-red-500">*</span>
+          {t("fields.landArea")} <span className="text-red-500">*</span>
         </Label>
+
         <Input
           id="area"
           type="number"
           step="0.1"
           min={0.1}
-          placeholder={`Ej: 5.5 ${unidadMedida ? `(${unidadMedida})` : ""}`}
+          placeholder={t("placeholders.area", {
+            unit: unidadMedida ? `(${unidadMedida})` : "",
+          })}
           className={errors.area ? "border-red-500" : ""}
           {...register("area", {
             valueAsNumber: true,
           })}
         />
+
         {errors.area && (
           <p className="text-sm font-medium text-red-500">{errors.area}</p>
         )}
+
         {unidadMedida && (
           <p className="text-xs text-muted-foreground">
-            El área ingresada está en{" "}
-            {unidadesMedida.find((u) => u.value === unidadMedida)?.label}
+            {t("hints.areaUnit", {
+              unit: getUnitLabel(
+                unidadMedida,
+                unidadesMedida.find((u) => u.value === unidadMedida)?.label ||
+                  unidadMedida,
+              ),
+            })}
           </p>
         )}
       </div>
@@ -305,10 +345,10 @@ const FormSiembraInteligente = ({
         {mutation.isPending ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Calculando densidad óptima...
+            {t("buttons.calculating")}
           </>
         ) : (
-          "Calcular Densidad de Siembra"
+          t("buttons.calculate")
         )}
       </Button>
     </form>

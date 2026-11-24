@@ -1,5 +1,6 @@
 "use client";
-import { useState, useRef, use } from "react";
+
+import { useState, useRef } from "react";
 import {
   Card,
   CardContent,
@@ -47,6 +48,7 @@ import ModalUploadImages from "./ModalUploadImages";
 import ModalViewDetails from "./ModalViewDetails";
 import { Cliente } from "@/interfaces/auth/cliente";
 import { TipoCliente } from "@/interfaces/enums/clientes.enums";
+import { useTranslations } from "next-intl";
 
 interface Props {
   actividad: Actividade;
@@ -56,6 +58,8 @@ interface Props {
 }
 
 const TarjetaActividad = ({ actividad, isPropietario, cliente }: Props) => {
+  const t = useTranslations("tarjetaActividad");
+
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
@@ -80,13 +84,13 @@ const TarjetaActividad = ({ actividad, isPropietario, cliente }: Props) => {
     try {
       await eliminarActividad(actividadId);
       queryClient.invalidateQueries({ queryKey: ["actividades"] });
-      toast.success("Actividad Eliminada con Exito");
+      toast.success(t("messages.activityDeleted"));
     } catch (error) {
       if (isAxiosError(error)) {
         const errorMessage = error.response?.data?.message;
         toast.error(errorMessage);
       } else {
-        toast.error("Error al eliminar la actividad");
+        toast.error(t("errors.deleteActivity"));
       }
     }
   };
@@ -96,20 +100,20 @@ const TarjetaActividad = ({ actividad, isPropietario, cliente }: Props) => {
     nuevoEstado: EstadoActividad,
   ) => {
     if (!canChangeEstado(actividad.estado, nuevoEstado)) {
-      toast.error("Transición de estado no permitida");
+      toast.error(t("errors.invalidStatusTransition"));
       return;
     }
 
     try {
       await editarActividad(actividadId, { estado: nuevoEstado });
       queryClient.invalidateQueries({ queryKey: ["actividades"] });
-      toast.success("Actividad Actualizada con Exito");
+      toast.success(t("messages.activityUpdated"));
     } catch (error) {
       if (isAxiosError(error)) {
         const errorMessage = error.response?.data?.message;
         toast.error(errorMessage);
       } else {
-        toast.error("Error al actualizar la actividad");
+        toast.error(t("errors.updateActivity"));
       }
     }
   };
@@ -122,12 +126,12 @@ const TarjetaActividad = ({ actividad, isPropietario, cliente }: Props) => {
 
     const validFiles = filesArray.filter((file) => {
       if (!file.type.startsWith("image/")) {
-        toast.error(`${file.name} no es una imagen válida.`);
+        toast.error(t("errors.invalidImage", { name: file.name }));
         return false;
       }
 
       if (file.size > 1024 * 1024) {
-        toast.error(`La imagen ${file.name} es demasiado grande (máx. 1 MB).`);
+        toast.error(t("errors.imageTooLarge", { name: file.name }));
         return false;
       }
 
@@ -156,7 +160,7 @@ const TarjetaActividad = ({ actividad, isPropietario, cliente }: Props) => {
 
   const handleUploadImages = async () => {
     if (files.length === 0) {
-      toast.error("Selecciona al menos una imagen");
+      toast.error(t("errors.selectAtLeastOneImage"));
       return;
     }
 
@@ -178,7 +182,7 @@ const TarjetaActividad = ({ actividad, isPropietario, cliente }: Props) => {
       await uploadImagesActividad(base64Images, actividad.id);
 
       queryClient.invalidateQueries({ queryKey: ["actividades"] });
-      toast.success("Imágenes subidas correctamente");
+      toast.success(t("messages.imagesUploaded"));
 
       setFiles([]);
       setPreviewUrls([]);
@@ -187,7 +191,7 @@ const TarjetaActividad = ({ actividad, isPropietario, cliente }: Props) => {
         fileInputRef.current.value = "";
       }
     } catch (error) {
-      toast.error("Error al subir imágenes");
+      toast.error(t("errors.uploadImages"));
     } finally {
       setIsUploading(false);
     }
@@ -248,7 +252,8 @@ const TarjetaActividad = ({ actividad, isPropietario, cliente }: Props) => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  title="Subir Imagenes"
+                  title={t("buttons.uploadImages")}
+                  aria-label={t("buttons.uploadImages")}
                   onClick={() => setShowUploadModal(true)}
                 >
                   <ImagePlus className="w-4 h-4" />
@@ -286,7 +291,7 @@ const TarjetaActividad = ({ actividad, isPropietario, cliente }: Props) => {
             <User className="w-4 h-4" />
             <span>
               {cliente?.id === actividad.trabajador?.id
-                ? "Tú"
+                ? t("labels.you")
                 : actividad.trabajador?.nombre}
             </span>
           </div>
@@ -295,7 +300,7 @@ const TarjetaActividad = ({ actividad, isPropietario, cliente }: Props) => {
             <div className="flex items-center gap-2">
               <Image_Icon className="w-4 h-4" />
               <span className="text-sm text-gray-600">
-                {actividad.fotos.length} foto(s)
+                {t("labels.photoCount", { count: actividad.fotos.length })}
               </span>
               <Button
                 variant="link"
@@ -303,7 +308,7 @@ const TarjetaActividad = ({ actividad, isPropietario, cliente }: Props) => {
                 className="h-auto p-0"
                 onClick={() => openImageViewer(0)}
               >
-                Ver fotos
+                {t("buttons.viewPhotos")}
               </Button>
             </div>
           )}
@@ -311,19 +316,25 @@ const TarjetaActividad = ({ actividad, isPropietario, cliente }: Props) => {
 
         <CardFooter className="pt-0 flex justify-between">
           <div className="text-xs text-gray-400">
-            Creado: {formatDateOnly(actividad.createdAt)}
+            {t("labels.created")}: {formatDateOnly(actividad.createdAt)}
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button id="id-options-actividades" variant="ghost" size="sm">
+              <Button
+                id="id-options-actividades"
+                variant="ghost"
+                size="sm"
+                aria-label={t("buttons.moreOptions")}
+              >
                 <MoreVertical className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => handleViewDetails(actividad)}>
                 <Eye className="w-4 h-4 mr-2" />
-                Ver detalles
+                {t("buttons.viewDetails")}
               </DropdownMenuItem>
+
               {actividad.estado === EstadoActividad.PENDIENTE &&
                 !isPropietario && (
                   <DropdownMenuItem
@@ -335,7 +346,7 @@ const TarjetaActividad = ({ actividad, isPropietario, cliente }: Props) => {
                     }
                   >
                     <Loader className="w-4 h-4 mr-2" />
-                    Iniciar actividad
+                    {t("buttons.startActivity")}
                   </DropdownMenuItem>
                 )}
 
@@ -349,7 +360,7 @@ const TarjetaActividad = ({ actividad, isPropietario, cliente }: Props) => {
                   }
                 >
                   <CheckCircle2 className="w-4 h-4 mr-2" />
-                  Marcar como completada
+                  {t("buttons.markCompleted")}
                 </DropdownMenuItem>
               )}
 
@@ -365,7 +376,7 @@ const TarjetaActividad = ({ actividad, isPropietario, cliente }: Props) => {
                     }
                   >
                     <X className="w-4 h-4 mr-2" />
-                    Cancelar
+                    {t("buttons.cancel")}
                   </DropdownMenuItem>
                 )}
 
@@ -376,7 +387,7 @@ const TarjetaActividad = ({ actividad, isPropietario, cliente }: Props) => {
                     onClick={() => handleDeleteActividad(actividad.id)}
                   >
                     <Trash className="w-4 h-4 mr-2" />
-                    Eliminar
+                    {t("buttons.delete")}
                   </DropdownMenuItem>
                 )}
             </DropdownMenuContent>
@@ -405,6 +416,7 @@ const TarjetaActividad = ({ actividad, isPropietario, cliente }: Props) => {
         nextImage={nextImage}
         setCurrentImageIndex={setCurrentImageIndex}
       />
+
       <ModalViewDetails
         showViewDetails={showViewDetails}
         setShowViewDetails={setShowViewDetails}

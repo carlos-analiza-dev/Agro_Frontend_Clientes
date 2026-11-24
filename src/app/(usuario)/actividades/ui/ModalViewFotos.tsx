@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { Actividade } from "@/api/actividades/interfaces/response-actividades.interface";
 import Modal from "@/components/generics/Modal";
 import { Button } from "@/components/ui/button";
@@ -25,11 +28,13 @@ const ModalViewFotos = ({
   prevImage,
   setCurrentImageIndex,
 }: Props) => {
+  const t = useTranslations("modalViewFotos");
+
   return (
     <Modal
       open={showFotos}
       onOpenChange={setShowFotos}
-      title="Fotos de la actividad"
+      title={t("title")}
       size="4xl"
       height="lg"
       showCloseButton={true}
@@ -39,7 +44,7 @@ const ModalViewFotos = ({
           <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-gray-100">
             <Image
               src={actividad.fotos[currentImageIndex]?.url}
-              alt={`Foto ${currentImageIndex + 1}`}
+              alt={t("imageAlt", { number: currentImageIndex + 1 })}
               fill
               className="object-contain"
               unoptimized
@@ -57,6 +62,8 @@ const ModalViewFotos = ({
                 className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white"
                 onClick={prevImage}
                 disabled={currentImageIndex === 0}
+                aria-label={t("previousImage")}
+                title={t("previousImage")}
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
@@ -66,6 +73,8 @@ const ModalViewFotos = ({
                 className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white"
                 onClick={nextImage}
                 disabled={currentImageIndex === actividad.fotos.length - 1}
+                aria-label={t("nextImage")}
+                title={t("nextImage")}
               >
                 <ChevronRight className="w-4 h-4" />
               </Button>
@@ -76,6 +85,8 @@ const ModalViewFotos = ({
             {actividad.fotos.map((foto, index) => (
               <button
                 key={foto.id}
+                aria-label={t("thumbnailAlt", { number: index + 1 })}
+                aria-current={currentImageIndex === index ? "true" : undefined}
                 className={`relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${
                   currentImageIndex === index
                     ? "border-blue-500 ring-2 ring-blue-200"
@@ -85,7 +96,7 @@ const ModalViewFotos = ({
               >
                 <Image
                   src={foto.url}
-                  alt={`Miniatura ${index + 1}`}
+                  alt={t("thumbnailAlt", { number: index + 1 })}
                   fill
                   className="object-cover"
                   unoptimized
@@ -95,7 +106,10 @@ const ModalViewFotos = ({
           </div>
 
           <p className="text-center text-sm text-gray-500 mt-4">
-            {currentImageIndex + 1} de {actividad.fotos.length}
+            {t("imageCounter", {
+              current: currentImageIndex + 1,
+              total: actividad.fotos.length,
+            })}
           </p>
         </div>
       )}
@@ -103,9 +117,7 @@ const ModalViewFotos = ({
       {(!actividad.fotos || actividad.fotos.length === 0) && (
         <div className="text-center py-12">
           <Image_Icon className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-          <p className="text-gray-500">
-            No hay fotos disponibles para esta actividad
-          </p>
+          <p className="text-gray-500">{t("emptyState")}</p>
         </div>
       )}
     </Modal>

@@ -1,4 +1,5 @@
 "use client";
+
 import { CrearPlanillaInterface } from "@/api/planillas-trabajadores/interfaces/crear-planilla.interface";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,7 @@ import { Calendar, FileText, CalendarDays } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 import { TipoPeriodoPago } from "@/interfaces/enums/planillas.enums";
 import { CrearPlanilla } from "@/api/planillas-trabajadores/accions/crear-planilla";
 import { EditarPlanilla } from "@/api/planillas-trabajadores/accions/editar-planilla";
@@ -30,6 +32,7 @@ interface Props {
 }
 
 const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
+  const t = useTranslations("formPlanilla");
   const isEditing = !!planilla;
   const queryClient = useQueryClient();
 
@@ -143,13 +146,13 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
   const createMutation = useMutation({
     mutationFn: CrearPlanilla,
     onSuccess: () => {
-      toast.success("Planilla creada exitosamente");
+      toast.success(t("messages.createSuccess"));
       resetForm();
       queryClient.invalidateQueries({ queryKey: ["planillas"] });
       onSuccess();
     },
     onError: (error) => {
-      handleMutationError(error, "crear");
+      handleMutationError(error, "create");
     },
   });
 
@@ -157,12 +160,12 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
     mutationFn: ({ id, data }: { id: string; data: CrearPlanillaInterface }) =>
       EditarPlanilla(id, data),
     onSuccess: () => {
-      toast.success("Planilla actualizada exitosamente");
+      toast.success(t("messages.updateSuccess"));
       queryClient.invalidateQueries({ queryKey: ["planillas"] });
       onSuccess();
     },
     onError: (error) => {
-      handleMutationError(error, "actualizar");
+      handleMutationError(error, "update");
     },
   });
 
@@ -177,25 +180,26 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
       fechaFin: new Date().toISOString().split("T")[0],
       fechaPago: new Date().toISOString().split("T")[0],
     });
+
     setSelectedTipoPeriodo(TipoPeriodoPago.MENSUAL);
+
     if (setSelectedPlanilla) {
       setSelectedPlanilla(null);
     }
   };
 
-  const handleMutationError = (error: unknown, action: string) => {
+  const handleMutationError = (error: unknown, action: "create" | "update") => {
     if (isAxiosError(error)) {
       const messages = error.response?.data?.message;
       const errorMessage = Array.isArray(messages)
         ? messages[0]
         : typeof messages === "string"
           ? messages
-          : `Hubo un error al ${action} la planilla`;
+          : t(`errors.${action}`);
+
       toast.error(errorMessage);
     } else {
-      toast.error(
-        `Hubo un error al ${action} la planilla. Inténtalo de nuevo.`,
-      );
+      toast.error(t(`errors.${action}Unexpected`));
     }
   };
 
@@ -211,9 +215,11 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
 
   const handleCancel = () => {
     resetForm();
+
     if (setSelectedPlanilla) {
       setSelectedPlanilla(null);
     }
+
     onSuccess();
   };
 
@@ -223,32 +229,61 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
     setValue("tipoPeriodo", nuevoTipo);
   };
 
+  const getTipoPeriodoLabel = (tipo: TipoPeriodoPago) => {
+    switch (tipo) {
+      case TipoPeriodoPago.SEMANAL:
+        return t("periodTypes.weekly");
+      case TipoPeriodoPago.QUINCENAL:
+        return t("periodTypes.biweekly");
+      case TipoPeriodoPago.MENSUAL:
+        return t("periodTypes.monthly");
+      default:
+        return String(tipo);
+    }
+  };
+
+  const getPeriodDescription = () => {
+    if (tipoPeriodo === TipoPeriodoPago.SEMANAL) {
+      return t("periodDescriptions.weekly");
+    }
+
+    if (tipoPeriodo === TipoPeriodoPago.QUINCENAL) {
+      return t("periodDescriptions.biweekly");
+    }
+
+    return t("periodDescriptions.monthly");
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Información General
+            {t("sections.generalInformation")}
           </CardTitle>
         </CardHeader>
+
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="nombre">
-                Nombre de la Planilla <span className="text-red-500">*</span>
+                {t("fields.payrollName")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
+
               <Input
                 id="nombre"
-                placeholder="Ej: Planilla Mayo 2024"
+                placeholder={t("placeholders.payrollName")}
                 {...register("nombre", {
-                  required: "El nombre es requerido",
+                  required: t("validation.nameRequired"),
                   minLength: {
                     value: 3,
-                    message: "El nombre debe tener al menos 3 caracteres",
+                    message: t("validation.nameMinLength"),
                   },
                 })}
               />
+
               {errors.nombre && (
                 <p className="text-sm font-medium text-red-500">
                   {errors.nombre.message as string}
@@ -257,10 +292,11 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="descripcion">Descripción</Label>
+              <Label htmlFor="descripcion">{t("fields.description")}</Label>
+
               <Input
                 id="descripcion"
-                placeholder="Ej: Primera quincena de mayo"
+                placeholder={t("placeholders.description")}
                 {...register("descripcion")}
               />
             </div>
@@ -272,34 +308,40 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Calendar className="h-5 w-5" />
-            Configuración del Período
+            {t("sections.periodConfiguration")}
           </CardTitle>
         </CardHeader>
+
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="tipoPeriodo">
-                Tipo de Período <span className="text-red-500">*</span>
+                {t("fields.periodType")} <span className="text-red-500">*</span>
               </Label>
+
               <Select
                 value={selectedTipoPeriodo}
                 onValueChange={handleTipoPeriodoChange}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecciona el tipo de período" />
+                  <SelectValue placeholder={t("placeholders.periodType")} />
                 </SelectTrigger>
+
                 <SelectContent>
                   <SelectItem value={TipoPeriodoPago.SEMANAL}>
-                    Semanal (7 días)
+                    {t("periodTypes.weeklyOption")}
                   </SelectItem>
+
                   <SelectItem value={TipoPeriodoPago.QUINCENAL}>
-                    Quincenal (15 días)
+                    {t("periodTypes.biweeklyOption")}
                   </SelectItem>
+
                   <SelectItem value={TipoPeriodoPago.MENSUAL}>
-                    Mensual (30 días)
+                    {t("periodTypes.monthlyOption")}
                   </SelectItem>
                 </SelectContent>
               </Select>
+
               {errors.tipoPeriodo && (
                 <p className="text-sm font-medium text-red-500">
                   {errors.tipoPeriodo.message as string}
@@ -309,35 +351,39 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
 
             <div className="space-y-2">
               <Label htmlFor="diasPeriodo">
-                Días del Período <span className="text-red-500">*</span>
+                {t("fields.periodDays")} <span className="text-red-500">*</span>
               </Label>
+
               <div className="relative">
                 <CalendarDays className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+
                 <Input
                   id="diasPeriodo"
                   type="number"
                   className="pl-10"
                   {...register("diasPeriodo", {
-                    required: "Los días del período son requeridos",
+                    required: t("validation.periodDaysRequired"),
                     min: {
                       value: diasPeriodoMin,
-                      message: `Mínimo ${diasPeriodoMin} día${diasPeriodoMin > 1 ? "s" : ""}`,
+                      message: t("validation.minimumDays", {
+                        count: diasPeriodoMin,
+                      }),
                     },
                     max: {
                       value: diasPeriodoMax,
-                      message: `Máximo ${diasPeriodoMax} días`,
+                      message: t("validation.maximumDays", {
+                        count: diasPeriodoMax,
+                      }),
                     },
                     valueAsNumber: true,
                   })}
                 />
               </div>
+
               <p className="text-xs text-muted-foreground">
-                {tipoPeriodo === TipoPeriodoPago.SEMANAL
-                  ? "La semana tiene entre 1 y 7 días"
-                  : tipoPeriodo === TipoPeriodoPago.QUINCENAL
-                    ? "La quincena tiene entre 1 y 15 días"
-                    : "El mes tiene entre 1 y 31 días"}
+                {getPeriodDescription()}
               </p>
+
               {errors.diasPeriodo && (
                 <p className="text-sm font-medium text-red-500">
                   {errors.diasPeriodo.message as string}
@@ -347,19 +393,22 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
 
             <div className="space-y-2">
               <Label htmlFor="fechaInicio">
-                Fecha de Inicio <span className="text-red-500">*</span>
+                {t("fields.startDate")} <span className="text-red-500">*</span>
               </Label>
+
               <div className="relative">
                 <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+
                 <Input
                   id="fechaInicio"
                   type="date"
                   className="pl-10"
                   {...register("fechaInicio", {
-                    required: "La fecha de inicio es requerida",
+                    required: t("validation.startDateRequired"),
                   })}
                 />
               </div>
+
               {errors.fechaInicio && (
                 <p className="text-sm font-medium text-red-500">
                   {errors.fechaInicio.message as string}
@@ -369,24 +418,27 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
 
             <div className="space-y-2">
               <Label htmlFor="fechaFin">
-                Fecha de Fin <span className="text-red-500">*</span>
+                {t("fields.endDate")} <span className="text-red-500">*</span>
               </Label>
+
               <div className="relative">
                 <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+
                 <Input
                   id="fechaFin"
                   type="date"
                   className="pl-10"
                   disabled
                   {...register("fechaFin", {
-                    required: "La fecha de fin es requerida",
+                    required: t("validation.endDateRequired"),
                   })}
                 />
               </div>
+
               <p className="text-xs text-muted-foreground">
-                Calculada automáticamente según la fecha de inicio y los días
-                del período
+                {t("hints.automaticEndDate")}
               </p>
+
               {errors.fechaFin && (
                 <p className="text-sm font-medium text-red-500">
                   {errors.fechaFin.message as string}
@@ -396,19 +448,23 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
 
             <div className="space-y-2">
               <Label htmlFor="fechaPago">
-                Fecha de Pago <span className="text-red-500">*</span>
+                {t("fields.paymentDate")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
+
               <div className="relative">
                 <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+
                 <Input
                   id="fechaPago"
                   type="date"
                   className="pl-10"
                   {...register("fechaPago", {
-                    required: "La fecha de pago es requerida",
+                    required: t("validation.paymentDateRequired"),
                   })}
                 />
               </div>
+
               {errors.fechaPago && (
                 <p className="text-sm font-medium text-red-500">
                   {errors.fechaPago.message as string}
@@ -422,27 +478,33 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Período
+                    {t("summary.period")}
                   </p>
+
                   <p className="text-lg font-semibold text-blue-600">
-                    {watch("fechaInicio")} al {watch("fechaFin")}
+                    {watch("fechaInicio")} {t("summary.to")} {watch("fechaFin")}
                   </p>
+
                   <p className="text-xs text-gray-500">
-                    {watch("diasPeriodo")} días
+                    {t("summary.days", { count: watch("diasPeriodo") })}
                   </p>
                 </div>
+
                 <div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Tipo de Período
+                    {t("summary.periodType")}
                   </p>
+
                   <p className="text-lg font-semibold text-purple-600 capitalize">
-                    {watch("tipoPeriodo")}
+                    {getTipoPeriodoLabel(watch("tipoPeriodo"))}
                   </p>
                 </div>
+
                 <div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Fecha de Pago
+                    {t("summary.paymentDate")}
                   </p>
+
                   <p className="text-lg font-semibold text-green-600">
                     {watch("fechaPago")}
                   </p>
@@ -457,18 +519,21 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Información Adicional
+            {t("sections.additionalInformation")}
           </CardTitle>
         </CardHeader>
+
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="observaciones">Observaciones</Label>
+            <Label htmlFor="observaciones">{t("fields.observations")}</Label>
+
             <Textarea
               id="observaciones"
-              placeholder="Notas adicionales sobre la planilla..."
+              placeholder={t("placeholders.observations")}
               className="min-h-[100px]"
               {...register("observaciones")}
             />
+
             {errors.observaciones && (
               <p className="text-sm font-medium text-red-500">
                 {errors.observaciones.message as string}
@@ -486,8 +551,9 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
           disabled={isPending}
           className="w-full sm:w-auto"
         >
-          Cancelar
+          {t("buttons.cancel")}
         </Button>
+
         <Button
           type="button"
           variant="outline"
@@ -495,16 +561,17 @@ const FormPlanilla = ({ onSuccess, planilla, setSelectedPlanilla }: Props) => {
           disabled={isPending}
           className="w-full sm:w-auto"
         >
-          Limpiar
+          {t("buttons.clear")}
         </Button>
+
         <Button type="submit" disabled={isPending} className="w-full sm:w-auto">
           {isPending
             ? isEditing
-              ? "Actualizando..."
-              : "Creando..."
+              ? t("buttons.updating")
+              : t("buttons.creating")
             : isEditing
-              ? "Actualizar Planilla"
-              : "Crear Planilla"}
+              ? t("buttons.update")
+              : t("buttons.create")}
         </Button>
       </div>
     </form>

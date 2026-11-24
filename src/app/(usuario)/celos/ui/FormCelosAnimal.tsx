@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -32,6 +34,7 @@ import {
   DeteccionCelo,
   IntensidadCelosAnimal,
 } from "@/interfaces/enums/celos/celos-enums";
+import { useTranslations } from "next-intl";
 
 interface Props {
   celo?: Celo | null;
@@ -41,6 +44,8 @@ interface Props {
 }
 
 const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
+  const t = useTranslations("formCelosAnimal");
+
   const [errorMessage, setIsErrorMessage] = useState<string>("");
   const [searchAnimalTerm, setSearchAnimalTerm] = useState<string>("");
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
@@ -182,7 +187,7 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
     const animal = hembras?.find((a) => a.id === animalId);
     if (animal) {
       setSearchAnimalTerm(
-        `${animal.identificador || ""} - ${animal.nombre_animal || "Sin nombre"}`,
+        `${animal.identificador || ""} - ${animal.nombre_animal || t("animal.noName")}`,
       );
     }
     setIsSearchOpen(false);
@@ -200,21 +205,18 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
     try {
       const payload = {
         ...data,
-
         fechaInicio: data.fechaInicio
           ? new Date(data.fechaInicio).toISOString()
           : "",
         fechaFin: data.fechaFin ? new Date(data.fechaFin).toISOString() : "",
       };
 
-      let response;
-
       if (isEditing && celo) {
-        response = await ActualizarCeloAnimal(celo.id, payload);
-        toast.success("Celo actualizado correctamente");
+        await ActualizarCeloAnimal(celo.id, payload);
+        toast.success(t("messages.updateSuccess"));
       } else {
-        response = await CrearCeloAnimal(payload);
-        toast.success("Celo registrado correctamente");
+        await CrearCeloAnimal(payload);
+        toast.success(t("messages.createSuccess"));
       }
 
       reset();
@@ -234,10 +236,10 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear el celo del animal";
+            : t("errors.createFailed");
         setIsErrorMessage(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("errors.unexpected"));
       }
     }
   };
@@ -248,17 +250,20 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
         <Alert variant="destructive" className="mb-4">
           <AlertCircleIcon className="h-4 w-4" />
           <AlertTitle>
-            Error al {isEditing ? "actualizar" : "registrar"} el Celo
+            {t("errors.title", {
+              action: isEditing ? t("actions.update") : t("actions.register"),
+            })}
           </AlertTitle>
           <AlertDescription className="whitespace-pre-line">
             {errorMessage}
           </AlertDescription>
         </Alert>
       )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="md:col-span-2">
           <Label htmlFor="animalSearch">
-            Selecciona el animal en Celo <span className="text-red-500">*</span>
+            {t("fields.animalInHeat")} <span className="text-red-500">*</span>
           </Label>
 
           <div className="relative">
@@ -269,8 +274,13 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
                 id="animalSearch"
                 placeholder={
                   selectedAnimal
-                    ? `${selectedAnimal.identificador || selectedAnimal.nombre_animal || "Animal"} seleccionado`
-                    : "Buscar animal por identificador, nombre o especie..."
+                    ? t("placeholders.selectedAnimal", {
+                        animal:
+                          selectedAnimal.identificador ||
+                          selectedAnimal.nombre_animal ||
+                          t("animal.generic"),
+                      })
+                    : t("placeholders.searchAnimal")
                 }
                 value={searchAnimalTerm}
                 onChange={(e) => {
@@ -291,17 +301,21 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
                 )}
                 disabled={isSubmitting || isEditing}
               />
+
               {selectedAnimal && isEditing && (
                 <div className="absolute right-2 top-1/2 -translate-y-1/2">
                   <Badge variant="secondary" className="text-xs">
-                    Bloqueado
+                    {t("badges.locked")}
                   </Badge>
                 </div>
               )}
+
               {selectedAnimal && !isEditing && (
                 <button
                   type="button"
                   onClick={handleClearAnimal}
+                  aria-label={t("buttons.clearAnimal")}
+                  title={t("buttons.clearAnimal")}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full"
                 >
                   <X className="h-4 w-4" />
@@ -328,7 +342,9 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
                             ? animal.profileImages[0].url
                             : "/images/Image-not-found.png"
                         }
-                        alt={`animal-${animal.identificador}`}
+                        alt={t("animal.imageAlt", {
+                          identifier: animal.identificador || "",
+                        })}
                         width={40}
                         height={40}
                         className="h-10 w-10 rounded-full object-cover"
@@ -338,10 +354,11 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
                         <p className="text-sm font-medium truncate">
                           {animal.identificador ||
                             animal.nombre_animal ||
-                            "Sin identificar"}
+                            t("animal.unidentified")}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {animal.especie?.nombre || "Especie no especificada"}
+                          {animal.especie?.nombre ||
+                            t("animal.unspecifiedSpecies")}
                           {animal.sexo && ` • ${animal.sexo}`}
                         </p>
                       </div>
@@ -352,9 +369,11 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
                   ))
                 ) : (
                   <div className="py-6 text-center text-sm">
-                    <p className="text-gray-500">No se encontraron animales</p>
+                    <p className="text-gray-500">
+                      {t("messages.noAnimalsFound")}
+                    </p>
                     <p className="text-xs text-gray-400 mt-1">
-                      Intenta con otro término de búsqueda
+                      {t("messages.tryAnotherSearch")}
                     </p>
                   </div>
                 )}
@@ -372,7 +391,9 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
                       ? selectedAnimal.profileImages[0].url
                       : "/images/Image-not-found.png"
                   }
-                  alt={`animal-${selectedAnimal.identificador}`}
+                  alt={t("animal.imageAlt", {
+                    identifier: selectedAnimal.identificador || "",
+                  })}
                   width={32}
                   height={32}
                   className="h-8 w-8 rounded-full object-cover"
@@ -382,11 +403,11 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
                   <p className="text-sm font-medium">
                     {selectedAnimal.identificador ||
                       selectedAnimal.nombre_animal ||
-                      "Animal"}
+                      t("animal.generic")}
                   </p>
                   <p className="text-xs text-gray-600">
                     {selectedAnimal.especie?.nombre ||
-                      "Especie no especificada"}
+                      t("animal.unspecifiedSpecies")}
                     {selectedAnimal.sexo && ` • ${selectedAnimal.sexo}`}
                   </p>
                 </div>
@@ -403,12 +424,12 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
 
         <div>
           <Label htmlFor="fechaInicio">
-            Fecha de Inicio de celo <span className="text-red-500">*</span>
+            {t("fields.startDate")} <span className="text-red-500">*</span>
           </Label>
           <Input
             id="fechaInicio"
             {...register("fechaInicio", {
-              required: "La fecha de inicio es requerida",
+              required: t("validation.startDateRequired"),
             })}
             type="datetime-local"
             className={errors.fechaInicio ? "border-red-500" : ""}
@@ -422,7 +443,7 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
         </div>
 
         <div>
-          <Label htmlFor="fechaFin">Fecha de Fin de celo</Label>
+          <Label htmlFor="fechaFin">{t("fields.endDate")}</Label>
           <Input
             id="fechaFin"
             {...register("fechaFin")}
@@ -435,7 +456,7 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="intensidad">
-            Intensidad <span className="text-red-500">*</span>
+            {t("fields.intensity")} <span className="text-red-500">*</span>
           </Label>
           <Select
             defaultValue={celo?.intensidad || IntensidadCelosAnimal.MEDIO}
@@ -445,20 +466,23 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
             disabled={isSubmitting}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Seleccionar intensidad" />
+              <SelectValue placeholder={t("placeholders.selectIntensity")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="BAJO">Bajo</SelectItem>
-              <SelectItem value="MEDIO">Medio</SelectItem>
-              <SelectItem value="ALTO">Alto</SelectItem>
-              <SelectItem value="MUY_ALTO">Muy Alto</SelectItem>
+              <SelectItem value="BAJO">{t("intensities.low")}</SelectItem>
+              <SelectItem value="MEDIO">{t("intensities.medium")}</SelectItem>
+              <SelectItem value="ALTO">{t("intensities.high")}</SelectItem>
+              <SelectItem value="MUY_ALTO">
+                {t("intensities.veryHigh")}
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div>
           <Label htmlFor="metodo_deteccion">
-            Método de Detección <span className="text-red-500">*</span>
+            {t("fields.detectionMethod")}{" "}
+            <span className="text-red-500">*</span>
           </Label>
           <Select
             onValueChange={(value) =>
@@ -468,24 +492,34 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
             disabled={isSubmitting}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Seleccionar método" />
+              <SelectValue placeholder={t("placeholders.selectMethod")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="VISUAL">Visual</SelectItem>
-              <SelectItem value="PARCHE">Parche</SelectItem>
-              <SelectItem value="PODOMETRO">Podómetro</SelectItem>
-              <SelectItem value="COLLAR_ACTIVIDAD">
-                Collar de Actividad
+              <SelectItem value="VISUAL">
+                {t("detectionMethods.visual")}
               </SelectItem>
-              <SelectItem value="ULTRASONIDO">Ultrasonido</SelectItem>
-              <SelectItem value="MONTA_NATURAL">Monta Natural</SelectItem>
+              <SelectItem value="PARCHE">
+                {t("detectionMethods.patch")}
+              </SelectItem>
+              <SelectItem value="PODOMETRO">
+                {t("detectionMethods.pedometer")}
+              </SelectItem>
+              <SelectItem value="COLLAR_ACTIVIDAD">
+                {t("detectionMethods.activityCollar")}
+              </SelectItem>
+              <SelectItem value="ULTRASONIDO">
+                {t("detectionMethods.ultrasound")}
+              </SelectItem>
+              <SelectItem value="MONTA_NATURAL">
+                {t("detectionMethods.naturalMating")}
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
       <div className="space-y-3">
-        <Label>Signos Observados</Label>
+        <Label>{t("fields.observedSigns")}</Label>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="flex items-center space-x-2">
@@ -498,7 +532,7 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
               disabled={isSubmitting}
             />
             <Label htmlFor="monta_otros" className="text-sm font-normal">
-              Monta a otros
+              {t("signs.mountsOthers")}
             </Label>
           </div>
 
@@ -512,7 +546,7 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
               disabled={isSubmitting}
             />
             <Label htmlFor="acepta_monta" className="text-sm font-normal">
-              Acepta la monta
+              {t("signs.acceptsMounting")}
             </Label>
           </div>
 
@@ -526,7 +560,7 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
               disabled={isSubmitting}
             />
             <Label htmlFor="inquietud" className="text-sm font-normal">
-              Inquietud/Nerviosismo
+              {t("signs.restlessness")}
             </Label>
           </div>
 
@@ -540,13 +574,13 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
               disabled={isSubmitting}
             />
             <Label htmlFor="vulva_inflamada" className="text-sm font-normal">
-              Vulva inflamada
+              {t("signs.swollenVulva")}
             </Label>
           </div>
         </div>
 
         <div>
-          <Label htmlFor="secreciones">Secreciones</Label>
+          <Label htmlFor="secreciones">{t("fields.discharge")}</Label>
           <Select
             onValueChange={(value) =>
               setValue("signos_observados.secreciones", value)
@@ -555,24 +589,26 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
             disabled={isSubmitting}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Tipo de secreción" />
+              <SelectValue placeholder={t("placeholders.dischargeType")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ninguna">Ninguna</SelectItem>
-              <SelectItem value="clara">Clara</SelectItem>
-              <SelectItem value="turbia">Turbia</SelectItem>
-              <SelectItem value="sanguinolenta">Sanguinolenta</SelectItem>
-              <SelectItem value="viscosa">Viscosa</SelectItem>
+              <SelectItem value="ninguna">{t("discharges.none")}</SelectItem>
+              <SelectItem value="clara">{t("discharges.clear")}</SelectItem>
+              <SelectItem value="turbia">{t("discharges.cloudy")}</SelectItem>
+              <SelectItem value="sanguinolenta">
+                {t("discharges.bloody")}
+              </SelectItem>
+              <SelectItem value="viscosa">{t("discharges.viscous")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div>
-          <Label htmlFor="otros">Otros signos (separados por coma)</Label>
+          <Label htmlFor="otros">{t("fields.otherSigns")}</Label>
           <Input
             id="otros"
             type="text"
-            placeholder="Ej: brama, inquietud, etc."
+            placeholder={t("placeholders.otherSigns")}
             value={signosObservados?.otros?.join(", ") || ""}
             onChange={(e) => handleOtrosChange(e.target.value)}
             disabled={isSubmitting}
@@ -581,11 +617,11 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
       </div>
 
       <div>
-        <Label htmlFor="observaciones">Observaciones Generales</Label>
+        <Label htmlFor="observaciones">{t("fields.observations")}</Label>
         <Textarea
           id="observaciones"
           {...register("observaciones")}
-          placeholder="Observaciones adicionales sobre el celo..."
+          placeholder={t("placeholders.observations")}
           rows={3}
           disabled={isSubmitting}
         />
@@ -598,17 +634,17 @@ const FormCelosAnimal = ({ celo, setOpenModal, onSuccess, hembras }: Props) => {
           onClick={() => setOpenModal(false)}
           disabled={isSubmitting}
         >
-          Cancelar
+          {t("buttons.cancel")}
         </Button>
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? (
             <span className="flex items-center gap-2">
-              {isEditing ? "Actualizando..." : "Guardando..."}
+              {isEditing ? t("buttons.updating") : t("buttons.saving")}
             </span>
           ) : isEditing ? (
-            "Actualizar Celo"
+            t("buttons.update")
           ) : (
-            "Registrar Celo"
+            t("buttons.register")
           )}
         </Button>
       </div>

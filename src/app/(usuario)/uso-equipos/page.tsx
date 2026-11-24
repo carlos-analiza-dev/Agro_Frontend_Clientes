@@ -1,10 +1,16 @@
 "use client";
+
 import { useState } from "react";
-import { Forklift, WrenchIcon } from "lucide-react";
-import useGetUsoEquipos from "@/hooks/uso-equipos/useGetUsoEquipos";
-import useGetEquiposMaquinariaActivos from "@/hooks/equipos-maquinaria/useGetEquiposMaquinariaActivos";
-import useGetAllTrabajadores from "@/hooks/trabajadores/useGetAllTrabajadores";
+import { AlertCircleIcon, Forklift, WrenchIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+
+import { UsosEquipo } from "@/api/uso-equipos/interfaces/response-uso-equipos.interface";
 import Paginacion from "@/components/generics/Paginacion";
+import Modal from "@/components/generics/Modal";
+import ButtonAdd from "@/components/generics/ButtonAdd";
+import TitlePage from "@/components/generics/TitlePage";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,25 +20,28 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertCircleIcon } from "lucide-react";
-import { UsosEquipo } from "@/api/uso-equipos/interfaces/response-uso-equipos.interface";
-import TableUsoEquipos from "./ui/TableUsoEquipos";
-import FiltersUsoEquipos from "./ui/FiltersUsoEquipos";
-import Modal from "@/components/generics/Modal";
-import FormUsoEquipo from "./ui/FormUsoEquipo";
+
+import useGetUsoEquipos from "@/hooks/uso-equipos/useGetUsoEquipos";
+import useGetEquiposMaquinariaActivos from "@/hooks/equipos-maquinaria/useGetEquiposMaquinariaActivos";
+import useGetAllTrabajadores from "@/hooks/trabajadores/useGetAllTrabajadores";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
-import { useRouter } from "next/navigation";
-import ButtonAdd from "@/components/generics/ButtonAdd";
-import TitlePage from "@/components/generics/TitlePage";
+
+import TableUsoEquipos from "./ui/TableUsoEquipos";
+import FiltersUsoEquipos from "./ui/FiltersUsoEquipos";
+import FormUsoEquipo from "./ui/FormUsoEquipo";
 
 const UsoDeEquiposPage = () => {
+  const t = useTranslations("usoDeEquiposPage");
+
   const { cliente } = useAuthStore();
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const isMobile = useMediaQuery("(max-width: 768px)");
   const router = useRouter();
+
   const [selectedUso, setSelectedUso] = useState<UsosEquipo | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+
   const [filters, setFilters] = useState({
     offset: 0,
     limit: 10,
@@ -97,18 +106,21 @@ const UsoDeEquiposPage = () => {
         <Card className="border-red-200 bg-red-50">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <AlertCircleIcon className="h-12 w-12 text-red-500 mb-4" />
+
             <p className="text-lg font-medium text-red-600">
-              Error al cargar los usos de equipo
+              {t("errors.loadTitle")}
             </p>
+
             <p className="text-sm text-red-500 mt-2">
-              {error instanceof Error ? error.message : "Error desconocido"}
+              {error instanceof Error ? error.message : t("errors.unknown")}
             </p>
+
             <Button
               variant="outline"
               className="mt-4"
               onClick={() => window.location.reload()}
             >
-              Reintentar
+              {t("buttons.retry")}
             </Button>
           </CardContent>
         </Card>
@@ -120,15 +132,15 @@ const UsoDeEquiposPage = () => {
     <div className="container mx-auto p-4 md:p-6 space-y-6">
       <div className="md:flex justify-between items-center">
         <TitlePage
-          title={`Uso de Equipos`}
-          description="Registro de uso de equipos por operadores y actividades"
+          title={t("title")}
+          description={t("description")}
           Icon={Forklift}
         />
 
         <div id="id-add-uso-equipos">
           <ButtonAdd
             Icon={WrenchIcon}
-            title="Registrar Uso"
+            title={t("buttons.registerUsage")}
             action={() => handleAddUso()}
             className="bg-green-600 hover:bg-green-700"
           />
@@ -148,13 +160,15 @@ const UsoDeEquiposPage = () => {
 
       <Card id="id-container-uso-equipos">
         <CardHeader>
-          <CardTitle>Registros de Uso</CardTitle>
+          <CardTitle>{t("records.title")}</CardTitle>
 
           <CardDescription id="id-resumen-uso-equipos">
             {!isLoading && (
               <>
-                Mostrando {usosEquipo.length} de {data_uso?.total || 0}{" "}
-                registros
+                {t("records.showing", {
+                  showing: usosEquipo.length,
+                  total: data_uso?.total ?? 0,
+                })}
               </>
             )}
           </CardDescription>
@@ -172,13 +186,13 @@ const UsoDeEquiposPage = () => {
               <WrenchIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
 
               <p className="text-lg font-medium text-muted-foreground">
-                No hay registros de uso
+                {t("emptyState.title")}
               </p>
 
               <p className="text-sm text-muted-foreground mt-1">
                 {hasActiveFilters
-                  ? "No se encontraron registros con los filtros seleccionados"
-                  : "No hay registros de uso de equipos en el sistema"}
+                  ? t("emptyState.withFilters")
+                  : t("emptyState.withoutFilters")}
               </p>
             </div>
           ) : (
@@ -209,11 +223,11 @@ const UsoDeEquiposPage = () => {
       <Modal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        title={selectedUso ? "Editar Uso de Equipo" : "Registrar Uso de Equipo"}
+        title={selectedUso ? t("modal.editTitle") : t("modal.createTitle")}
         description={
           selectedUso
-            ? "Modifica los datos del registro de uso"
-            : "Ingresa los datos del uso del equipo"
+            ? t("modal.editDescription")
+            : t("modal.createDescription")
         }
         size="2xl"
         height="auto"

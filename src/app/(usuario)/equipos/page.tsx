@@ -27,8 +27,11 @@ import { useRouter } from "next/navigation";
 import ButtonAdd from "@/components/generics/ButtonAdd";
 import { Plus, Tractor } from "lucide-react";
 import TitlePage from "@/components/generics/TitlePage";
+import { useTranslations } from "next-intl";
 
 const EquiposPage = () => {
+  const t = useTranslations("equiposPage");
+
   const { cliente } = useAuthStore();
 
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
@@ -114,15 +117,15 @@ const EquiposPage = () => {
       >
         <TitlePage
           id_title="id-title-equipos"
-          title={`Equipos y Maquinaria`}
-          description="Registra y monitorea tus equipos y maquinaria"
+          title={t("title")}
+          description={t("description")}
           Icon={Tractor}
         />
 
         <ButtonAdd
           id="add-equipo-btn"
           Icon={Plus}
-          title="Agregar Equipo"
+          title={t("addEquipment")}
           action={() => handleAddEquipos()}
           className="bg-green-600 hover:bg-green-700"
         />
@@ -133,17 +136,20 @@ const EquiposPage = () => {
           id="id-resumen-equipos"
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
         >
-          <ResumemCard title="Equipos en esta página" total={equipos.length} />
+          <ResumemCard
+            title={t("summary.currentPage")}
+            total={equipos.length}
+          />
 
           <ResumemCard
-            title="Activos"
+            title={t("summary.active")}
             total={
               equipos.filter((e) => e.estado === EstadoMaquinaria.ACTIVO).length
             }
           />
 
           <ResumemCard
-            title="En Mantenimiento"
+            title={t("summary.maintenance")}
             total={
               equipos.filter((e) => e.estado === EstadoMaquinaria.MANTENIMIENTO)
                 .length
@@ -151,7 +157,7 @@ const EquiposPage = () => {
           />
 
           <ResumemCard
-            title="Inactivos"
+            title={t("summary.inactive")}
             total={
               equipos.filter((e) => e.estado === EstadoMaquinaria.INCACTIVO)
                 .length
@@ -172,15 +178,18 @@ const EquiposPage = () => {
 
       <Card id="id-table-equipos">
         <CardHeader>
-          <CardTitle>Equipos y Maquinaria</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
 
           {!isLoading && equipos.length > 0 && (
             <p
               id="id-pagination-info-equipos"
               className="text-sm text-muted-foreground"
             >
-              Mostrando {equipos.length} equipos (Página {currentPage} de{" "}
-              {totalPages})
+              {t("paginationInfo", {
+                count: equipos.length,
+                currentPage,
+                totalPages,
+              })}
             </p>
           )}
         </CardHeader>
@@ -190,10 +199,10 @@ const EquiposPage = () => {
             <SkeletonTable />
           ) : equipos.length === 0 ? (
             <div id="id-empty-equipos" className="text-center py-8">
-              <p className="text-muted-foreground">No se encontraron equipos</p>
+              <p className="text-muted-foreground">{t("emptyState.title")}</p>
 
               <p className="text-sm text-muted-foreground mt-1">
-                Prueba ajustando los filtros o agrega un nuevo equipo
+                {t("emptyState.description")}
               </p>
             </div>
           ) : (
@@ -225,11 +234,11 @@ const EquiposPage = () => {
       <Modal
         open={openModalEquipos}
         onOpenChange={setOpenModalEquipos}
-        title={selectedEquipo ? "Editar Equipo" : "Ingresar Nuevo Equipo"}
+        title={selectedEquipo ? t("modal.editTitle") : t("modal.createTitle")}
         description={
           selectedEquipo
-            ? "Aqui podras editar los equipos asignados en cada finca"
-            : "Aqui podras ingresar los equipos asignados en cada finca"
+            ? t("modal.editDescription")
+            : t("modal.createDescription")
         }
         size="2xl"
         height="auto"

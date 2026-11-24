@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import useGetMantenimientos from "@/hooks/mantenimientos/useGetMantenimientos";
 import { useAuthStore } from "@/providers/store/useAuthStore";
@@ -20,14 +21,19 @@ import ButtonAdd from "@/components/generics/ButtonAdd";
 import TitlePage from "@/components/generics/TitlePage";
 
 const MantenimientosPage = () => {
+  const t = useTranslations("mantenimientosPage");
+
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id ?? "";
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const isMobile = useMediaQuery("(max-width: 768px)");
   const router = useRouter();
+
   const [openModal, setOpenModal] = useState(false);
+
   const { data: fincas, isLoading: isLoadingFincas } =
     useFincasPropietarios(clienteId);
+
   const [selectedMantenimiento, setSelectedMantenimiento] =
     useState<Mantenimiento | null>(null);
 
@@ -49,12 +55,15 @@ const MantenimientosPage = () => {
     if (filters.tipoMantenimiento && filters.tipoMantenimiento.trim() !== "") {
       cleaned.tipoMantenimiento = filters.tipoMantenimiento;
     }
+
     if (filters.fechaInicio && filters.fechaInicio.trim() !== "") {
       cleaned.fechaInicio = filters.fechaInicio;
     }
+
     if (filters.fechaFin && filters.fechaFin.trim() !== "") {
       cleaned.fechaFin = filters.fechaFin;
     }
+
     if (filters.fincaId && filters.fincaId.trim() !== "") {
       cleaned.fincaId = filters.fincaId;
     }
@@ -123,18 +132,21 @@ const MantenimientosPage = () => {
         <Card className="border-red-200 bg-red-50">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <AlertCircleIcon className="h-12 w-12 text-red-500 mb-4" />
+
             <p className="text-lg font-medium text-red-600">
-              Error al cargar los mantenimientos
+              {t("errors.loadTitle")}
             </p>
+
             <p className="text-sm text-red-500 mt-2">
-              {error instanceof Error ? error.message : "Error desconocido"}
+              {error instanceof Error ? error.message : t("errors.unknown")}
             </p>
+
             <Button
               variant="outline"
               className="mt-4"
               onClick={() => window.location.reload()}
             >
-              Reintentar
+              {t("buttons.retry")}
             </Button>
           </CardContent>
         </Card>
@@ -146,15 +158,15 @@ const MantenimientosPage = () => {
     <div className="container mx-auto p-4 md:p-6 space-y-6">
       <div className="md:flex justify-between items-center">
         <TitlePage
-          title={`Mantenimientos`}
-          description="Gestiona y visualiza los mantenimientos de tus equipos"
+          title={t("title")}
+          description={t("description")}
           Icon={Cog}
         />
 
         <div id="id-add-mantenimiento">
           <ButtonAdd
             Icon={Plus}
-            title="Ingresar Mantenimiento"
+            title={t("buttons.addMaintenance")}
             action={() => handeAddMantenimiento()}
             className="bg-green-600 hover:bg-green-700"
           />
@@ -179,8 +191,10 @@ const MantenimientosPage = () => {
         <p className="text-sm text-muted-foreground">
           {!isLoading && (
             <>
-              Mostrando {mantenimientos.length} de {data?.total || 0}{" "}
-              mantenimientos
+              {t("showingRecords", {
+                showing: mantenimientos.length,
+                total: data?.total ?? 0,
+              })}
             </>
           )}
         </p>
@@ -199,13 +213,13 @@ const MantenimientosPage = () => {
                 <WrenchIcon className="h-12 w-12 text-muted-foreground mb-4" />
 
                 <p className="text-lg font-medium text-muted-foreground">
-                  No hay mantenimientos
+                  {t("emptyState.title")}
                 </p>
 
                 <p className="text-sm text-muted-foreground mt-1">
                   {hasActiveFilters
-                    ? "No se encontraron mantenimientos con los filtros seleccionados"
-                    : "No hay mantenimientos registrados en el sistema"}
+                    ? t("emptyState.withFilters")
+                    : t("emptyState.withoutFilters")}
                 </p>
               </CardContent>
             </Card>
@@ -239,14 +253,12 @@ const MantenimientosPage = () => {
         open={openModal}
         onOpenChange={setOpenModal}
         title={
-          selectedMantenimiento
-            ? "Editar Mantenimiento"
-            : "Ingresar Nuevo Mantenimiento"
+          selectedMantenimiento ? t("modal.editTitle") : t("modal.createTitle")
         }
         description={
           selectedMantenimiento
-            ? "Aqui podras editar los equipos y maquinas que se encuentran en mantenimiento"
-            : "Aqui podras ingresar los equipos y maquinas que se encuentran en mantenimiento"
+            ? t("modal.editDescription")
+            : t("modal.createDescription")
         }
         size="2xl"
         height="auto"

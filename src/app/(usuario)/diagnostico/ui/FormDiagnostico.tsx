@@ -1,3 +1,7 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import SummarySymtomps from "./SummarySymtomps";
 import { Loader2, Plus } from "lucide-react";
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
@@ -39,9 +43,9 @@ const FormDiagnostico = ({
   setRazaValue,
   setEdadValue,
 }: Props) => {
+  const t = useTranslations("formDiagnostico");
+
   const [selectedEspecieId, setSelectedEspecieId] = useState<string>("");
-  const [selectedEspecieNombre, setSelectedEspecieNombre] =
-    useState<string>("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [sintomasInput, setSintomasInput] = useState<string>("");
 
@@ -49,20 +53,15 @@ const FormDiagnostico = ({
   const { data: razas, isLoading: isLoadingRazas } =
     useGetRazasByEspecie(selectedEspecieId);
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors: formErrors },
-  } = useForm<ConsultarDiagnosticoInterface>({
-    defaultValues: {
-      especie: "",
-      raza: "",
-      edad: undefined,
-      sintomas: [],
-    },
-  });
+  const { register, handleSubmit, setValue, watch } =
+    useForm<ConsultarDiagnosticoInterface>({
+      defaultValues: {
+        especie: "",
+        raza: "",
+        edad: undefined,
+        sintomas: [],
+      },
+    });
 
   const especieValue = watch("especie");
   const razaValue = watch("raza");
@@ -96,7 +95,7 @@ const FormDiagnostico = ({
       ObtenerDiagnostico(data),
     onSuccess: (response) => {
       setDiagnosticoResultado(response.diagnostico);
-      toast.success("Diagnóstico generado exitosamente");
+      toast.success(t("messages.success"));
       setErrors({});
       setIsPending(false);
     },
@@ -105,10 +104,11 @@ const FormDiagnostico = ({
         const messages = error.response?.data?.message;
         const errorMessage = Array.isArray(messages)
           ? messages[0]
-          : messages || "Error al generar diagnóstico";
+          : messages || t("errors.generateDiagnosis");
+
         toast.error(errorMessage);
       } else {
-        toast.error("Error al conectar con el servicio de diagnóstico");
+        toast.error(t("errors.connection"));
       }
       setIsPending(false);
     },
@@ -118,21 +118,21 @@ const FormDiagnostico = ({
     const newErrors: Record<string, string> = {};
 
     if (!data.especie) {
-      newErrors.especie = "La especie es requerida";
+      newErrors.especie = t("validation.speciesRequired");
     }
 
     if (!data.raza) {
-      newErrors.raza = "La raza es requerida";
+      newErrors.raza = t("validation.breedRequired");
     }
 
     if (!data.edad || data.edad <= 0) {
-      newErrors.edad = "La edad debe ser mayor a 0";
+      newErrors.edad = t("validation.ageMin");
     } else if (data.edad > 360) {
-      newErrors.edad = "La edad no puede ser mayor a 360 meses";
+      newErrors.edad = t("validation.ageMax", { max: 360 });
     }
 
     if (!data.sintomas || data.sintomas.length === 0) {
-      newErrors.sintomas = "Los síntomas son requeridos";
+      newErrors.sintomas = t("validation.symptomsRequired");
     }
 
     setErrors(newErrors);
@@ -146,7 +146,7 @@ const FormDiagnostico = ({
     };
 
     if (!validateForm(formattedData)) {
-      toast.error("Por favor completa todos los campos requeridos");
+      toast.error(t("validation.completeRequired"));
       return;
     }
 
@@ -160,7 +160,6 @@ const FormDiagnostico = ({
     );
 
     setSelectedEspecieId(especieId);
-    setSelectedEspecieNombre(especieSeleccionada?.nombre || "");
     setValue("especie", especieSeleccionada?.nombre || "");
 
     if (errors.especie) {
@@ -170,6 +169,7 @@ const FormDiagnostico = ({
 
   const handleRazaChange = (razaNombre: string) => {
     setValue("raza", razaNombre);
+
     if (errors.raza) {
       setErrors((prev) => ({ ...prev, raza: "" }));
     }
@@ -189,7 +189,7 @@ const FormDiagnostico = ({
     if (nuevoSintoma.length === 0) return;
 
     if (sintomasValue.includes(nuevoSintoma)) {
-      toast.info("Este síntoma ya fue agregado");
+      toast.info(t("messages.duplicateSymptom"));
       setSintomasInput("");
       return;
     }
@@ -225,7 +225,7 @@ const FormDiagnostico = ({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="especie" className="font-bold">
-          Especie <span className="text-red-500">*</span>
+          {t("fields.species")} <span className="text-red-500">*</span>
         </Label>
         <Select
           onValueChange={handleEspecieChange}
@@ -236,7 +236,7 @@ const FormDiagnostico = ({
             id="especie"
             className={errors.especie ? "border-red-500" : ""}
           >
-            <SelectValue placeholder="Selecciona la especie" />
+            <SelectValue placeholder={t("placeholders.selectSpecies")} />
           </SelectTrigger>
           <SelectContent>
             {especies?.data.map((especie: ResponseEspecies) => (
@@ -253,7 +253,7 @@ const FormDiagnostico = ({
 
       <div className="space-y-2">
         <Label htmlFor="raza" className="font-bold">
-          Raza <span className="text-red-500">*</span>
+          {t("fields.breed")} <span className="text-red-500">*</span>
         </Label>
         <Select
           onValueChange={handleRazaChange}
@@ -267,10 +267,10 @@ const FormDiagnostico = ({
             <SelectValue
               placeholder={
                 isLoadingRazas
-                  ? "Cargando razas..."
+                  ? t("placeholders.loadingBreeds")
                   : !selectedEspecieId
-                    ? "Primero selecciona una especie"
-                    : "Selecciona la raza"
+                    ? t("placeholders.selectSpeciesFirst")
+                    : t("placeholders.selectBreed")
               }
             />
           </SelectTrigger>
@@ -289,7 +289,7 @@ const FormDiagnostico = ({
 
       <div className="space-y-2">
         <Label htmlFor="edad" className="font-bold">
-          Edad (meses) <span className="text-red-500">*</span>
+          {t("fields.age")} <span className="text-red-500">*</span>
         </Label>
         <Input
           id="edad"
@@ -297,7 +297,7 @@ const FormDiagnostico = ({
           step="0.1"
           min={0}
           max={30}
-          placeholder="Ej: 3"
+          placeholder={t("placeholders.ageExample")}
           className={errors.edad ? "border-red-500" : ""}
           {...register("edad", {
             valueAsNumber: true,
@@ -310,13 +310,13 @@ const FormDiagnostico = ({
 
       <div className="space-y-2">
         <Label htmlFor="sintomas" className="font-bold">
-          Síntomas <span className="text-red-500">*</span>
+          {t("fields.symptoms")} <span className="text-red-500">*</span>
         </Label>
 
         <div className="flex flex-col sm:flex-row gap-2">
           <Textarea
             id="sintomas"
-            placeholder="Escribe un síntoma y presiona Enter o haz clic en Agregar"
+            placeholder={t("placeholders.symptomInput")}
             className={`min-h-[80px] w-full sm:flex-1 ${
               errors.sintomas ? "border-red-500" : ""
             }`}
@@ -333,7 +333,7 @@ const FormDiagnostico = ({
               className="flex-1 sm:flex-none h-10"
             >
               <Plus className="h-4 w-4 mr-1" />
-              Agregar
+              {t("buttons.add")}
             </Button>
 
             {sintomasValue?.length > 0 && (
@@ -343,15 +343,13 @@ const FormDiagnostico = ({
                 onClick={limpiarSintomas}
                 className="flex-1 sm:flex-none h-10 text-red-500 hover:text-red-600"
               >
-                Limpiar
+                {t("buttons.clear")}
               </Button>
             )}
           </div>
         </div>
 
-        <p className="text-xs text-muted-foreground">
-          Escribe un síntoma y presiona Enter o haz clic en "Agregar"
-        </p>
+        <p className="text-xs text-muted-foreground">{t("hints.addSymptom")}</p>
 
         {errors.sintomas && (
           <p className="text-sm font-medium text-red-500">{errors.sintomas}</p>
@@ -374,10 +372,10 @@ const FormDiagnostico = ({
         {mutation.isPending ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Generando diagnóstico...
+            {t("buttons.generating")}
           </>
         ) : (
-          "Obtener Diagnóstico"
+          t("buttons.getDiagnosis")
         )}
       </Button>
     </form>

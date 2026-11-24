@@ -7021,5 +7021,2940 @@
       "expenses": "Expenses",
       "profitability": "Profitability"
     }
+  },
+  "configuracionTrabajadoresPage": {
+    "title": "Worker Settings",
+    "description": "Manage your employees' salaries, positions, and settings",
+    "buttons": {
+      "newWorker": "New Worker"
+    },
+    "stats": {
+      "totalWorkers": "Total Workers",
+      "averageDailySalary": "Average Daily Salary",
+      "activeWorkers": "Active Workers"
+    },
+    "searchPlaceholder": "Search by name, identification, or position...",
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "emptyState": "No workers found",
+    "modal": {
+      "editTitle": "Edit Worker Settings",
+      "createTitle": "Add Worker Settings",
+      "editDescription": "Here you can edit your workers' salary settings",
+      "createDescription": "Here you can add salary settings for your workers"
+    }
+  },
+  "tableConfigTrabajadores": {
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "actions": {
+      "view": "View worker details",
+      "edit": "Edit worker settings"
+    },
+    "fields": {
+      "position": "Position",
+      "dailySalary": "Daily Salary",
+      "workSchedule": "Work Schedule",
+      "daysPerWeek": "Days/Week",
+      "bonuses": "Bonuses",
+      "deductions": "Deductions"
+    },
+    "columns": {
+      "worker": "Worker",
+      "position": "Position",
+      "salary": "Salary",
+      "dailySalary": "Daily Salary",
+      "schedule": "Work Schedule",
+      "bonuses": "Bonuses",
+      "deductions": "Deductions",
+      "bonusesDeductions": "Bonuses/Deductions",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "values": {
+      "notSpecified": "Not specified",
+      "perDay": "/day",
+      "hoursPerWeek": "{count} hours/week",
+      "hoursShort": "{count}h",
+      "days": "{count} days",
+      "daysPerWeek": "{count} days/week"
+    }
+  },
+  "modalConfig": {
+    "title": "Employee Details",
+    "description": "Complete employee work configuration information",
+    "tabs": {
+      "general": "General",
+      "bonuses": "Bonuses",
+      "deductions": "Deductions",
+      "history": "History"
+    },
+    "sections": {
+      "personalInformation": "Personal Information",
+      "workConfiguration": "Work Configuration",
+      "overtimeFactors": "Overtime Factors",
+      "salaryBreakdown": "Salary Breakdown",
+      "contact": "Contact",
+      "fixedBonuses": "Fixed Bonuses",
+      "fixedDeductions": "Fixed Deductions",
+      "monthlyFinancialSummary": "Monthly Financial Summary",
+      "changeHistory": "Change History"
+    },
+    "fields": {
+      "fullName": "Full Name",
+      "identification": "Identification",
+      "position": "Position",
+      "status": "Status",
+      "hireDate": "Hire Date",
+      "dailySalary": "Daily Salary",
+      "daysPerWeek": "Days per Week",
+      "hoursPerWeek": "Hours per Week",
+      "hoursPerDay": "Hours per Day",
+      "daytimeOvertimeFactor": "Daytime Overtime Factor:",
+      "nighttimeOvertimeFactor": "Nighttime Overtime Factor:",
+      "holidayOvertimeFactor": "Holiday Overtime Factor:",
+      "regularHourlyRate": "Regular Hourly Rate:",
+      "daytimeOvertimeRate": "Daytime Overtime Rate:",
+      "nighttimeOvertimeRate": "Nighttime Overtime Rate:",
+      "holidayOvertimeRate": "Holiday Overtime Rate:",
+      "weeklySalary": "Weekly Salary:",
+      "baseMonthlySalary": "Base Monthly Salary:",
+      "monthlyTotal": "Monthly Total",
+      "totalBonuses": "Total Bonuses",
+      "totalDeductions": "Total Deductions",
+      "totalNetMonthly": "Total Net Monthly",
+      "terminationDate": "Termination Date",
+      "reason": "Reason"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "units": {
+      "days": "days",
+      "hours": "hours"
+    },
+    "descriptions": {
+      "monthlyFixedBonus": "Fixed monthly bonus",
+      "monthlyFixedDeduction": "Fixed monthly deduction"
+    },
+    "empty": {
+      "bonuses": "No bonuses registered",
+      "deductions": "No deductions registered"
+    },
+    "notSpecified": "Not specified",
+    "notRegistered": "Not registered"
+  },
+  "FormConfigTrabajadores": {
+    "sections": {
+      "laborInfo": "Employment Information",
+      "workSchedule": "Work Schedule",
+      "salaryConfig": "Salary Configuration",
+      "bonuses": "Fixed Bonuses",
+      "deductions": "Fixed Deductions",
+      "monthlySummary": "Monthly Summary"
+    },
+    "fields": {
+      "worker": "Worker",
+      "workerNotAssigned": "Not assigned",
+      "workerNotEditable": "The worker cannot be changed in edit mode",
+      "hireDate": "Hire Date",
+      "hireDateRequired": "Hire date is required",
+      "workerType": "Worker Type",
+      "workerTypePlaceholder": "Select a type",
+      "position": "Position",
+      "positionPlaceholder": "Ex: Milker, Cowboy, Foreman",
+      "restDay": "Rest Day",
+      "restDayPlaceholder": "Select rest day",
+      "restDayOptional": "Optional for part-time workers",
+      "restDayRequired": "Required for permanent and temporary workers",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive",
+      "workSchedule": "Work Schedule",
+      "entryTime": "Entry Time",
+      "exitTime": "Exit Time",
+      "timeFormat24h": "24h format (ex: 07:00)",
+      "timeFormat24hExample": "24h format (ex: 13:00)",
+      "typicalSchedules": "Typical field schedules: 06:00-12:00 or 07:00-13:00",
+      "workingDays": "Working Days",
+      "workingDaysCount": "{count} working days per week",
+      "dailySalary": "Daily Salary ({currency})",
+      "dailySalaryRequired": "Daily salary is required",
+      "dailySalaryMin": "Salary must be greater than 0",
+      "daysPerWeek": "Days per Week",
+      "daysRequired": "Working days are required",
+      "minOneDay": "Minimum 1 day",
+      "maxSevenDays": "Maximum 7 days",
+      "daysPerWeekPartial": "Days worked per week (may vary)",
+      "daysPerWeekPermanent": "6 days for permanent/temporary workers",
+      "weeklyHours": "Weekly Hours",
+      "hoursRequired": "Weekly hours are required",
+      "minOneHour": "Minimum 1 hour",
+      "maxEightyHours": "Maximum 80 hours",
+      "weeklyHoursHint": "Total hours per week",
+      "daytimeOTFactor": "Daytime OT Factor",
+      "daytimeOTRequired": "Daytime OT factor is required",
+      "minOnePointZero": "Minimum 1.0",
+      "maxThreePointZero": "Maximum 3.0",
+      "daytimeOTHint": "Overtime before 6:00 PM",
+      "nighttimeOTFactor": "Nighttime OT Factor",
+      "nighttimeOTRequired": "Nighttime OT factor is required",
+      "nighttimeOTHint": "Overtime after 6:00 PM",
+      "holidayOTFactor": "Holiday OT Factor",
+      "holidayOTRequired": "Holiday OT factor is required",
+      "holidayOTHint": "Overtime on Sundays or holidays"
+    },
+    "placeholders": {
+      "workerSearch": "Search worker by name, ID, email or phone...",
+      "bonusConcept": "Concept (Ex: Transport bonus)",
+      "deductionConcept": "Concept (Ex: Loan)",
+      "monthlyAmount": "Monthly amount"
+    },
+    "workerSearch": {
+      "loading": "Loading workers...",
+      "idLabel": "ID: {value}",
+      "noAvailable": "No workers available",
+      "allAssigned": "All workers already have a configuration"
+    },
+    "emptyStates": {
+      "bonuses": "No bonuses registered. Click \"Add\" to add one.",
+      "deductions": "No deductions registered. Click \"Add\" to add one."
+    },
+    "summary": {
+      "hoursPerDay": "Hours per Day",
+      "hoursPerDayValue": "{hours} hours",
+      "daysPerWeekSuffix": "{count} days/week",
+      "normalHourValue": "Normal Hour Value",
+      "perHour": "per hour",
+      "weeklySalary": "Weekly Salary",
+      "weeklySalaryDetail": "{count} days × {amount}",
+      "monthlySalary": "Monthly Salary",
+      "monthlyBase": "Monthly base",
+      "overtimeValues": "Overtime Values:",
+      "daytime": "Daytime:",
+      "nighttime": "Nighttime:",
+      "holiday": "Holiday:",
+      "perHourValue": "{amount}/hour",
+      "baseMonthlySalary": "Base Monthly Salary:",
+      "breakdown": "Breakdown:",
+      "breakdownDetail": "{daily}/day × {days} days/week × 4 weeks",
+      "totalBonuses": "Total Bonuses:",
+      "totalDeductions": "Total Deductions:",
+      "netMonthlyTotal": "Net Monthly Total:"
+    },
+    "buttons": {
+      "add": "Add",
+      "cancel": "Cancel",
+      "clear": "Clear",
+      "create": "Create Configuration",
+      "update": "Update Configuration",
+      "creating": "Creating...",
+      "updating": "Updating..."
+    },
+    "validation": {
+      "hireDateRequired": "Hire date is required",
+      "restDayRequired": "Permanent and temporary workers must have a rest day",
+      "scheduleRequired": "Permanent and temporary workers must have a defined schedule",
+      "conceptRequired": "Concept is required",
+      "amountRequired": "Amount is required",
+      "amountMin": "Amount must be greater than 0"
+    },
+    "messages": {
+      "createSuccess": "Configuration created successfully",
+      "updateSuccess": "Configuration updated successfully",
+      "actionCreate": "create",
+      "actionUpdate": "update",
+      "genericError": "There was an error trying to {action} the configuration",
+      "retryError": "There was an error trying to {action} the configuration. Please try again."
+    },
+    "tipoTrabajador": {
+      "permanente": "Permanent",
+      "permanenteDesc": "Works 6 days a week",
+      "temporal": "Temporary",
+      "temporalDesc": "Similar to permanent, without permanence",
+      "parcial": "Part-time",
+      "parcialDesc": "Does not work every day"
+    },
+    "diasSemana": {
+      "lunes": "Monday",
+      "martes": "Tuesday",
+      "miercoles": "Wednesday",
+      "jueves": "Thursday",
+      "viernes": "Friday",
+      "sabado": "Saturday",
+      "domingo": "Sunday"
+    }
+  },
+  "agregarConfiguracionPage": {
+    "title": "Add Configuration",
+    "card": {
+      "title": "Add a New Configuration",
+      "description": "Complete the information to add the configuration"
+    }
+  },
+  "editarConfiguracionTrabajadorPage": {
+    "title": "Edit Configuration",
+    "card": {
+      "title": "Editing Configuration",
+      "description": "Complete the information to edit the configuration"
+    }
+  },
+  "JornadasTrabajadoresPage": {
+    "header": {
+      "title": "Worker Shifts",
+      "description": "Daily attendance and overtime record",
+      "addButton": "Register Shift"
+    },
+    "stats": {
+      "totalRecords": "Total Records",
+      "workedDays": "Worked Days",
+      "totalOvertime": "Total Overtime"
+    },
+    "filters": {
+      "dateRange": "Date range",
+      "byMonth": "By month",
+      "searchPlaceholder": "Search by worker name...",
+      "startDatePlaceholder": "Start date",
+      "endDatePlaceholder": "End date",
+      "monthPlaceholder": "Select month",
+      "statusPlaceholder": "Status",
+      "statusAll": "All",
+      "statusWorked": "Worked",
+      "statusNotWorked": "Did not work",
+      "clearButton": "Clear",
+      "activeFilters": "Active filters:",
+      "badgeName": "Name",
+      "badgeFrom": "From",
+      "badgeTo": "To",
+      "badgeMonth": "Month"
+    },
+    "emptyState": {
+      "title": "No shifts found",
+      "description": "Try other filters or register a new shift"
+    },
+    "modal": {
+      "addTitle": "Add Shift",
+      "editTitle": "Edit Shift",
+      "description": "Here you will add the worker's daily shift"
+    },
+    "table": {
+  "noDataToExport": "No data to export",
+  "exportSuccess": "{count} shifts exported successfully",
+  "exportError": "Error exporting data",
+  "worked": "Worked",
+  "notWorked": "Did not work",
+  "columns": {
+    "worker": "Worker",
+    "date": "Date",
+    "status": "Status",
+    "overtime": "Overtime",
+    "workDone": "Work Done",
+    "actions": "Actions"
+  },
+  "labels": {
+    "date": "Date",
+    "status": "Status",
+    "overtime": "Overtime",
+    "workDone": "Work done",
+    "observations": "Observations"
+  },
+  "overtime": {
+    "daytime": "Daytime",
+    "nighttime": "Nighttime",
+    "holiday": "Holiday"
+  },
+  "abbreviations": {
+    "daytime": "D",
+    "nighttime": "N",
+    "holiday": "H"
+  },
+  "noOvertime": "No overtime",
+  "notSpecified": "Not specified"
+    }
+  },
+  "modalViewDetailsJornada": {
+    "title": "Workday Details",
+    "description": "Detailed information about the employee's workday",
+    "status": {
+      "worked": "Worked",
+      "notWorked": "Did Not Work"
+    },
+    "sections": {
+      "workerInformation": "Employee Information",
+      "workdayDetails": "Workday Details",
+      "workPerformed": "Work Performed",
+      "overtime": "Overtime",
+      "observations": "Notes"
+    },
+    "fields": {
+      "fullName": "Full Name",
+      "identification": "Identification",
+      "phone": "Phone",
+      "email": "Email",
+      "location": "Location",
+      "role": "Role",
+      "date": "Date"
+    },
+    "overtime": {
+      "daytime": "Daytime",
+      "nighttime": "Nighttime",
+      "holiday": "Holiday"
+    },
+    "units": {
+      "hours": "hours"
+    },
+    "notRegistered": "Not registered",
+    "notSpecified": "Not specified"
+  },
+   "formJornadaTrabajador": {
+    "sections": {
+      "workdayInformation": "Workday Information",
+      "overtime": "Overtime",
+      "workdayDetails": "Workday Details"
+    },
+    "fields": {
+      "worker": "Employee",
+      "date": "Date",
+      "worked": "Did the employee work?",
+      "daytimeOvertime": "Daytime Overtime",
+      "nighttimeOvertime": "Nighttime Overtime",
+      "holidayOvertime": "Holiday Overtime",
+      "workPerformed": "Work Performed",
+      "observations": "Observations"
+    },
+    "placeholders": {
+      "searchWorker": "Search employee by name, identification, email, or phone...",
+      "workPerformed": "Describe the activities performed during the workday...",
+      "observations": "Additional notes, incidents, etc."
+    },
+    "messages": {
+      "loadingWorkers": "Loading employees...",
+      "noWorkersFound": "No employees found",
+      "tryAnotherSearch": "Try another search term",
+      "workerCannotBeChanged": "The employee cannot be changed when editing",
+      "createSuccess": "Workday registered successfully",
+      "updateSuccess": "Workday updated successfully"
+    },
+    "values": {
+      "unassigned": "Unassigned",
+      "yesWorked": "Yes, worked",
+      "didNotWork": "Did not work"
+    },
+    "descriptions": {
+      "daytimeOvertime": "Overtime hours before 6:00 PM",
+      "nighttimeOvertime": "Overtime hours after 6:00 PM",
+      "holidayOvertime": "Overtime hours on Sundays or holidays"
+    },
+    "labels": {
+      "totalOvertime": "Total Overtime Hours"
+    },
+    "units": {
+      "hours": "hours"
+    },
+    "validation": {
+      "dateRequired": "The date is required",
+      "nonNegative": "Cannot be negative",
+      "maxHours": "Maximum 12 hours"
+    },
+    "errors": {
+      "create": "An error occurred while registering the workday",
+      "update": "An error occurred while updating the workday",
+      "createRetry": "An error occurred while registering the workday. Please try again.",
+      "updateRetry": "An error occurred while updating the workday. Please try again."
+    },
+    "actions": {
+      "clearWorker": "Remove selected employee"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "clear": "Clear",
+      "updating": "Updating...",
+      "registering": "Registering...",
+      "update": "Update Workday",
+      "register": "Register Workday"
+    }
+  },
+   "exportButton": {
+    "exportExcel": "Export to Excel"
+  },
+   "planillaTrabajadoresPage": {
+    "title": "Employee Payrolls",
+    "description": "Management of employee payrolls and payments",
+    "buttons": {
+      "newPayroll": "New Payroll",
+      "clear": "Clear"
+    },
+    "stats": {
+      "totalPayrolls": "Total Payrolls",
+      "paidPayrolls": "Paid Payrolls",
+      "netTotal": "Net Total",
+      "inProgress": "In Progress"
+    },
+    "filters": {
+      "dateRange": "Date Range",
+      "byMonth": "By Month",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "selectMonth": "Select Month",
+      "status": "Status",
+      "allStatuses": "All Statuses"
+    },
+    "activeFilters": {
+      "from": "From: {date}",
+      "to": "To: {date}",
+      "month": "Month: {month}",
+      "status": "Status: {status}"
+    },
+    "statuses": {
+      "BORRADOR": "Draft",
+      "CONFIRMADA": "Confirmed",
+      "PAGADA": "Paid"
+    },
+    "empty": {
+      "title": "No payrolls found",
+      "description": "Try different filters or create a new payroll"
+    },
+    "modal": {
+      "editTitle": "Edit Payroll",
+      "createTitle": "Add Payroll",
+      "editDescription": "You can edit payrolls here",
+      "createDescription": "You can add a new payroll here"
+    }
+  },
+  "tablePlanillas": {
+    "columns": {
+      "name": "Name",
+      "period": "Period",
+      "paymentDate": "Payment Date",
+      "netTotal": "Net Total",
+      "status": "Status",
+      "actions": "Actions",
+      "more": "More"
+    },
+    "buttons": {
+      "generate": "Generate",
+      "confirm": "Confirm",
+      "pay": "Pay",
+      "cancelPayroll": "Void Payroll",
+      "cancel": "Cancel",
+      "anular": "Void"
+    },
+    "actions": {
+      "openMenu": "Open options menu",
+      "viewDetails": "View Details",
+      "edit": "Edit"
+    },
+    "fields": {
+      "cancellationReason": "Cancellation Reason *"
+    },
+    "placeholders": {
+      "cancellationReason": "E.g.: Error in overtime calculation"
+    },
+    "values": {
+      "noDescription": "No description",
+      "days": "days"
+    },
+    "empty": "No payrolls registered",
+    "modals": {
+      "confirm": {
+        "title": "Confirm Payroll",
+        "description": "Are you sure you want to confirm the payroll \"{name}\"? Once confirmed, you can proceed with payment."
+      },
+      "cancel": {
+        "title": "Void Payroll",
+        "description": "Are you sure you want to void the payroll \"{name}\"? This action cannot be undone."
+      }
+    },
+    "messages": {
+      "generateSuccess": "Payroll generated successfully",
+      "confirmSuccess": "Payroll confirmed successfully",
+      "cancelSuccess": "Payroll voided successfully"
+    },
+    "validation": {
+      "cancellationReason": "You must provide a reason to void the payroll"
+    },
+    "errors": {
+      "generate": "An error occurred while generating the payroll",
+      "confirm": "An error occurred while confirming the payroll",
+      "cancel": "An error occurred while voiding the payroll"
+    }
+  },
+  "modalViewDetails": {
+    "title": "Payroll Details",
+    "loading": "Loading payroll information...",
+    "period": "Period: {start} to {end}",
+    "buttons": {
+      "exportDetail": "Export Details",
+      "exportExcel": "Export Excel"
+    },
+    "messages": {
+      "exportExcelSuccess": "Excel exported successfully",
+      "exportDetailSuccess": "Details exported successfully"
+    },
+    "errors": {
+      "loadInformation": "Could not load the information",
+      "loadDetails": "Error loading payroll details",
+      "exportExcel": "Error exporting the Excel file",
+      "exportDetail": "Error exporting the details"
+    },
+    "paymentStatus": {
+      "paid": "Paid",
+      "pending": "Pending"
+    },
+    "summary": {
+      "totalWorkers": "Total Employees",
+      "netTotal": "Net Total",
+      "payments": "Payments",
+      "pending": "Pending",
+      "status": "Status",
+      "paymentDate": "Payment"
+    },
+    "financialSummary": {
+      "title": "Financial Summary",
+      "baseSalaries": "Base Salaries",
+      "overtime": "Overtime",
+      "bonuses": "Bonuses",
+      "deductions": "Deductions",
+      "netTotal": "Net Total"
+    },
+    "workerDetails": {
+      "title": "Employee Details",
+      "columns": {
+        "worker": "Employee",
+        "days": "Days",
+        "baseSalary": "Base Salary",
+        "overtime": "Overtime",
+        "bonuses": "Bonuses",
+        "deductions": "Deductions",
+        "totalToPay": "Total to Pay",
+        "status": "Status"
+      },
+      "days": "days"
+    },
+    "workerCard": {
+      "days": "Days",
+      "baseSalary": "Base Salary",
+      "overtime": "Overtime",
+      "showLess": "Show fewer details",
+      "showMore": "Show more details",
+      "bonuses": "Bonuses:",
+      "deductions": "Deductions:",
+      "overtimeBreakdown": "Overtime Breakdown:",
+      "observations": "Notes:"
+    },
+    "overtime": {
+      "title": "Overtime Details",
+      "dailySalary": "Daily Salary",
+      "total": "Total Overtime",
+      "daytime": "Daytime",
+      "nighttime": "Nighttime",
+      "holiday": "Holiday",
+      "daytimeHours": "Daytime Hours",
+      "nighttimeHours": "Nighttime Hours",
+      "holidayHours": "Holiday Hours",
+      "shortDaytime": "D",
+      "shortNighttime": "N",
+      "shortHoliday": "H",
+      "hours": "hours"
+    },
+    "observations": {
+      "title": "Notes"
+    }
+  },
+  "modalRegistrarPagos": {
+    "title": "Register Payments",
+    "titleWithName": "Register Payments - {name}",
+    "pendingWorkers": "{count, plural, one {# worker pending payment} other {# workers pending payment}}",
+    "summary": {
+      "selectedTotal": "Selected Total to Pay"
+    },
+    "buttons": {
+      "selectAll": "Select All",
+      "cancel": "Cancel",
+      "registering": "Registering...",
+      "registerPayments": "Register Payments"
+    },
+    "workedDays": "{count, plural, one {# day worked} other {# days worked}}",
+    "paymentMethods": {
+      "cash": "Cash",
+      "transfer": "Bank Transfer",
+      "check": "Check"
+    },
+    "messages": {
+      "selectAtLeastOne": "Select at least one employee to pay",
+      "success": "Payments registered successfully",
+      "allPaid": "All employees have already been paid"
+    },
+    "errors": {
+      "registerPayments": "An error occurred while registering the payments",
+      "unexpected": "An unexpected error occurred while registering the payments"
+    }
+  },
+  "mobilePlanillaCard": {
+    "buttons": {
+      "moreOptions": "More options",
+      "viewDetails": "View Details",
+      "edit": "Edit",
+      "generate": "Generate"
+    },
+    "fields": {
+      "period": "Period:",
+      "paymentDate": "Payment Date:",
+      "netTotal": "Net Total:"
+    },
+    "days": "{count, plural, one {# day} other {# days}}",
+    "actions": {
+      "confirmar": "Confirm",
+      "pagar": "Pay",
+      "anular": "Cancel",
+      "editar": "Edit"
+    },
+    "periodTypes": {
+      "DIARIO": "Daily",
+      "SEMANAL": "Weekly",
+      "QUINCENAL": "Biweekly",
+      "MENSUAL": "Monthly"
+    }
+  },
+   "formPlanilla": {
+    "sections": {
+      "generalInformation": "General Information",
+      "periodConfiguration": "Period Configuration",
+      "additionalInformation": "Additional Information"
+    },
+    "fields": {
+      "payrollName": "Payroll Name",
+      "description": "Description",
+      "periodType": "Period Type",
+      "periodDays": "Period Days",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "paymentDate": "Payment Date",
+      "observations": "Notes"
+    },
+    "placeholders": {
+      "payrollName": "E.g.: May 2024 Payroll",
+      "description": "E.g.: First half of May",
+      "periodType": "Select the period type",
+      "observations": "Additional notes about the payroll..."
+    },
+    "periodTypes": {
+      "weekly": "Weekly",
+      "biweekly": "Biweekly",
+      "monthly": "Monthly",
+      "weeklyOption": "Weekly (7 days)",
+      "biweeklyOption": "Biweekly (15 days)",
+      "monthlyOption": "Monthly (30 days)"
+    },
+    "periodDescriptions": {
+      "weekly": "A week has between 1 and 7 days",
+      "biweekly": "A biweekly period has between 1 and 15 days",
+      "monthly": "A month has between 1 and 31 days"
+    },
+    "validation": {
+      "nameRequired": "Name is required",
+      "nameMinLength": "Name must contain at least 3 characters",
+      "periodDaysRequired": "Period days are required",
+      "minimumDays": "Minimum {count} day(s)",
+      "maximumDays": "Maximum {count} days",
+      "startDateRequired": "Start date is required",
+      "endDateRequired": "End date is required",
+      "paymentDateRequired": "Payment date is required"
+    },
+    "hints": {
+      "automaticEndDate": "Automatically calculated based on the start date and the number of days in the period"
+    },
+    "summary": {
+      "period": "Period",
+      "to": "to",
+      "days": "{count, plural, one {# day} other {# days}}",
+      "periodType": "Period Type",
+      "paymentDate": "Payment Date"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "clear": "Clear",
+      "creating": "Creating...",
+      "updating": "Updating...",
+      "create": "Create Payroll",
+      "update": "Update Payroll"
+    },
+    "messages": {
+      "createSuccess": "Payroll created successfully",
+      "updateSuccess": "Payroll updated successfully"
+    },
+    "errors": {
+      "create": "An error occurred while creating the payroll",
+      "update": "An error occurred while updating the payroll",
+      "createUnexpected": "An error occurred while creating the payroll. Please try again.",
+      "updateUnexpected": "An error occurred while updating the payroll. Please try again."
+    }
+  },
+  "crearPlanillaPage": {
+    "title": "Add Payroll",
+    "card": {
+      "title": "Add a New Payroll",
+      "description": "Complete the information to register the payroll"
+    }
+  },
+  "editarPlanillaPage": {
+    "title": "Edit Payroll",
+    "card": {
+      "title": "Editing Payroll",
+      "description": "Complete the information to edit the payroll"
+    }
+  },
+   "reportesPlanillasPage": {
+    "title": "Employee Payroll Reports",
+    "description": "View and analyze payments made to employees",
+    "filters": {
+      "startDate": "Start date",
+      "endDate": "End date",
+      "paymentMethod": "Payment method",
+      "selectPaymentMethod": "Select payment method",
+      "allMethods": "All methods",
+      "clear": "Clear filters"
+    },
+    "paymentMethods": {
+      "cash": "Cash",
+      "transfer": "Bank transfer",
+      "check": "Check"
+    }
+  },
+  "totalPagadoPlanilla": {
+    "title": "Total Payroll Payments",
+    "totalAmountDescription": "Total amount paid to employees",
+    "period": "Period",
+    "endDate": "End date",
+    "paymentMethod": "Payment method",
+    "quickSummary": {
+      "title": "Quick Summary",
+      "totalPaid": "Total paid:",
+      "appliedFilter": "Applied filter:",
+      "noPaymentMethodFilter": "No payment method filter",
+      "dateRange": "Date range:",
+      "noDateFilter": "No date filter"
+    },
+    "paymentMethods": {
+      "TODOS": "All",
+      "EFECTIVO": "Cash",
+      "TRANSFERENCIA": "Bank transfer",
+      "CHEQUE": "Check"
+    }
+  },
+   "resumenMetodosPago": {
+    "title": "Payment Methods",
+    "paymentsCount": "{count} payments ({percentage})",
+    "paymentMethods": {
+      "efectivo": "Cash",
+      "transferencia": "Bank transfer",
+      "cheque": "Check"
+    }
+  },
+  "resumenHorasExtra": {
+    "title": "Overtime Summary",
+    "metrics": {
+      "totalHours": "Total hours",
+      "hoursUnit": "h",
+      "totalAmount": "Total amount",
+      "workers": "Employees"
+    },
+    "chart": {
+      "daytimeHours": "Daytime hours",
+      "nighttimeHours": "Nighttime hours",
+      "holidayHours": "Holiday hours",
+      "hoursUnit": "hours",
+      "quantity": "Quantity"
+    }
+  },
+  "resumenEstadosPlanilla": {
+    "title": "Payroll Summary",
+    "payrollCount": "{count, plural, one {# payroll} other {# payrolls}}",
+    "statuses": {
+      "PAGADA": "Paid",
+      "BORRADOR": "Draft",
+      "ANULADA": "Cancelled",
+      "PENDIENTE": "Pending"
+    },
+    "chart": {
+      "netTotal": "Net total"
+    },
+    "totals": {
+      "salaries": "Salaries",
+      "overtime": "Overtime",
+      "bonuses": "Bonuses",
+      "deductions": "Deductions"
+    }
+  },
+  "actividadesPage": {
+    "title": "Daily Activities",
+    "description": "Manage and track your workers' activities",
+    "addActivity": "Add Activity",
+    "searchFilters": "Search Filters",
+    "hideFilters": "Hide",
+    "showFilters": "Show",
+    "emptyState": "There are no registered activities. Apply different filters or create a new activity.",
+    "showingActivities": "Showing {showing} of {total} activities",
+    "statuses": {
+      "all": "All",
+      "pendiente": "Pending",
+      "en_progreso": "In Progress",
+      "completada": "Completed",
+      "cancelada": "Cancelled"
+    }
+  },
+  "tarjetaActividad": {
+    "buttons": {
+      "uploadImages": "Upload Images",
+      "viewPhotos": "View Photos",
+      "moreOptions": "More options",
+      "viewDetails": "View Details",
+      "startActivity": "Start Activity",
+      "markCompleted": "Mark as Completed",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
+    "labels": {
+      "you": "You",
+      "photoCount": "{count, plural, one {# photo} other {# photos}}",
+      "created": "Created"
+    },
+    "messages": {
+      "activityDeleted": "Activity deleted successfully",
+      "activityUpdated": "Activity updated successfully",
+      "imagesUploaded": "Images uploaded successfully"
+    },
+    "errors": {
+      "deleteActivity": "Error deleting activity",
+      "updateActivity": "Error updating activity",
+      "invalidStatusTransition": "Invalid status transition",
+      "invalidImage": "{name} is not a valid image.",
+      "imageTooLarge": "Image {name} is too large (max. 1 MB).",
+      "selectAtLeastOneImage": "Select at least one image",
+      "uploadImages": "Error uploading images"
+    }
+  },
+  "modalViewFotos": {
+    "title": "Activity Photos",
+    "imageAlt": "Photo {number}",
+    "thumbnailAlt": "Thumbnail {number}",
+    "previousImage": "Previous image",
+    "nextImage": "Next image",
+    "imageCounter": "{current} of {total}",
+    "emptyState": "No photos are available for this activity"
+  },
+   "modalViewDetailsAcyividades": {
+    "title": "Activity Details",
+    "labels": {
+      "created": "Created",
+      "scheduledDate": "Scheduled Date",
+      "frequency": "Frequency",
+      "taskStatus": "Task Status",
+      "completed": "Completed",
+      "notCompleted": "Not completed yet",
+      "name": "Name",
+      "phone": "Phone",
+      "location": "Location",
+      "photoAlt": "Photo {number}",
+      "thumbnailAlt": "Thumbnail {number}",
+      "fullImageAlt": "Full-size image"
+    },
+    "sections": {
+      "description": "Description",
+      "ownerInformation": "Owner Information",
+      "farmInformation": "Farm Information",
+      "assignedWorker": "Assigned Worker",
+      "activityPhotos": "Activity Photos ({count})"
+    },
+    "activityTypes": {
+      "fumigacion": "Fumigation",
+      "limpieza": "Cleaning",
+      "riego": "Irrigation",
+      "cosecha": "Harvest",
+      "mantenimiento": "Maintenance"
+    },
+    "statuses": {
+      "pendiente": "Pending",
+      "en_proceso": "In Progress",
+      "completada": "Completed",
+      "cancelada": "Cancelled"
+    },
+    "frequencies": {
+      "diaria": "Daily",
+      "semanal": "Weekly",
+      "quincenal": "Biweekly",
+      "mensual": "Monthly",
+      "unica": "One-time"
+    },
+    "buttons": {
+      "previousImage": "Previous image",
+      "nextImage": "Next image",
+      "closeImage": "Close image"
+    },
+    "emptyState": "No photos are available for this activity"
+  },
+   "modalUploadImages": {
+    "title": "Upload Activity Images",
+    "selectImages": "Click here",
+    "supportedFormats": "Formats: JPG, PNG, GIF (Max. 1 MB per image)",
+    "selectedImages": "Selected images ({count})",
+    "previewAlt": "Preview {number}",
+    "removeImage": "Remove image {number}",
+    "tapToRemove": "Tap to remove",
+    "buttons": {
+      "cancel": "Cancel",
+      "uploading": "Uploading...",
+      "upload": "Upload {count} image(s)"
+    }
+  },
+  "modalActividad": {
+    "addTitle": "Add Activity",
+    "editTitle": "Edit Activity",
+    "description": "Here you can add or edit activities for your workers."
+  },
+  "formActividades": {
+    "fields": {
+      "worker": "Worker",
+      "farm": "Farm",
+      "date": "Date",
+      "activityType": "Activity Type",
+      "frequency": "Frequency",
+      "description": "Description"
+    },
+    "placeholders": {
+      "searchWorker": "Search worker by name, identification, email or phone...",
+      "selectFarm": "Select a farm",
+      "selectType": "Select a type",
+      "selectFrequency": "Select a frequency",
+      "description": "Describe the activity details..."
+    },
+    "labels": {
+      "unassigned": "Unassigned",
+      "identification": "ID",
+      "characterCount": "{count}/500 characters"
+    },
+    "search": {
+      "noWorkersFound": "No workers found",
+      "tryAnotherTerm": "Try another search term"
+    },
+    "empty": {
+      "noFarms": "No farms available"
+    },
+    "activityTypes": {
+      "fumigacion": "Fumigation",
+      "limpieza": "Cleaning",
+      "riego": "Irrigation",
+      "cosecha": "Harvest",
+      "mantenimiento": "Maintenance"
+    },
+    "frequencies": {
+      "diaria": "Daily",
+      "semanal": "Weekly",
+      "quincenal": "Biweekly",
+      "mensual": "Monthly",
+      "unica": "One-time"
+    },
+    "validation": {
+      "dateRequired": "The date is required",
+      "descriptionMaxLength": "The description cannot exceed 500 characters"
+    },
+    "buttons": {
+      "clearWorker": "Remove selected worker",
+      "create": "Create Activity",
+      "update": "Update Activity",
+      "creating": "Creating activity...",
+      "updating": "Updating activity..."
+    },
+    "messages": {
+      "createSuccess": "Activity created successfully",
+      "updateSuccess": "Activity updated successfully"
+    },
+    "errors": {
+      "create": "An error occurred while creating the activity",
+      "createUnexpected": "An error occurred while creating the activity. Please try again.",
+      "update": "An error occurred while updating the activity",
+      "updateUnexpected": "An error occurred while updating the activity. Please try again."
+    }
+  },
+  "filtrosActividades": {
+    "worker": "Worker",
+    "farm": "Farm",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "clearFilters": "Clear filters",
+    "placeholders": {
+      "myAssignment": "My assignment",
+      "allWorkers": "All workers",
+      "allFarms": "All farms"
+    }
+  },
+  "equiposPage": {
+    "title": "Equipment and Machinery",
+    "description": "Register and monitor your equipment and machinery",
+    "addEquipment": "Add Equipment",
+    "summary": {
+      "currentPage": "Equipment on this page",
+      "active": "Active",
+      "maintenance": "Under Maintenance",
+      "inactive": "Inactive"
+    },
+    "paginationInfo": "Showing {count} equipment items (Page {currentPage} of {totalPages})",
+    "emptyState": {
+      "title": "No equipment found",
+      "description": "Try adjusting the filters or add new equipment"
+    },
+    "modal": {
+      "editTitle": "Edit Equipment",
+      "createTitle": "Add New Equipment",
+      "editDescription": "Here you can edit the equipment assigned to each farm",
+      "createDescription": "Here you can add equipment assigned to each farm"
+    }
+  },
+   "tableEquipos": {
+    "notAvailable": "N/A",
+    "unassigned": "Unassigned",
+    "fields": {
+      "type": "Type",
+      "brandModel": "Brand/Model",
+      "cost": "Cost",
+      "farm": "Farm",
+      "usageHours": "Usage hours",
+      "usefulLife": "Useful life",
+      "status": "Status"
+    },
+    "columns": {
+      "code": "Code",
+      "name": "Name",
+      "type": "Type",
+      "brandModel": "Brand/Model",
+      "cost": "Cost",
+      "farm": "Farm",
+      "usageHours": "Usage hours",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "statuses": {
+      "active": "Active",
+      "maintenance": "Maintenance",
+      "inactive": "Inactive"
+    },
+    "units": {
+      "hours": "hrs"
+    },
+    "actions": {
+      "editEquipment": "Edit equipment"
+    }
+  },
+   "formEquipos": {
+    "fields": {
+      "name": "Equipment name",
+      "equipmentType": "Equipment type",
+      "farm": "Farm",
+      "brand": "Brand",
+      "model": "Model",
+      "serialNumber": "Serial number",
+      "status": "Status",
+      "purchaseDate": "Purchase date",
+      "purchaseCost": "Purchase cost",
+      "usageHours": "Usage hours (Hour meter)",
+      "usefulLife": "Useful life (Hours)"
+    },
+    "placeholders": {
+      "name": "E.g.: John Deere 5060E Tractor",
+      "equipmentType": "Select type",
+      "farm": "Select farm",
+      "brand": "E.g.: John Deere",
+      "model": "E.g.: 5060E",
+      "serialNumber": "E.g.: JD5060E2024001",
+      "status": "Select status",
+      "usefulLife": "E.g.: 8000"
+    },
+    "groups": {
+      "equipmentTypes": "Equipment types",
+      "farms": "Farms",
+      "statuses": "Statuses"
+    },
+    "statuses": {
+      "active": "Active",
+      "maintenance": "Maintenance",
+      "inactive": "Inactive"
+    },
+    "validation": {
+      "nameRequired": "Equipment name is required",
+      "nameMaxLength": "The name cannot exceed 150 characters",
+      "brandMaxLength": "The brand cannot exceed 100 characters",
+      "modelMaxLength": "The model cannot exceed 100 characters",
+      "serialNumberMaxLength": "The serial number cannot exceed 100 characters",
+      "costMin": "The cost must be greater than or equal to 0",
+      "usageHoursMin": "Usage hours must be greater than or equal to 0",
+      "usefulLifeMin": "Useful life must be greater than or equal to 0"
+    },
+    "hints": {
+      "usefulLife": "Estimated useful life of the equipment in operating hours"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "updating": "Updating...",
+      "saving": "Saving...",
+      "updateEquipment": "Update equipment",
+      "registerEquipment": "Register equipment"
+    },
+    "messages": {
+      "updateSuccess": "Equipment updated successfully",
+      "createSuccess": "Equipment registered successfully"
+    },
+    "errors": {
+      "updateTitle": "Error updating equipment",
+      "createTitle": "Error registering equipment",
+      "registerEquipment": "An error occurred while registering the equipment",
+      "unexpected": "Unexpected error. Please contact the administrator"
+    }
+  },
+  "cardFiltersEquipos": {
+    "title": "Filters",
+    "placeholders": {
+      "selectFarm": "Select farm",
+      "allStatuses": "All statuses"
+    },
+    "options": {
+      "allFarms": "All farms",
+      "allStatuses": "All"
+    },
+    "statuses": {
+      "active": "Active",
+      "maintenance": "Maintenance",
+      "inactive": "Inactive"
+    },
+    "pagination": {
+      "perPage": "{count} per page"
+    },
+    "buttons": {
+      "clearFilters": "Clear filters"
+    }
+  },
+   "ingresarEquipoPage": {
+    "title": "Register Equipment",
+    "card": {
+      "title": "Register New Equipment",
+      "description": "Complete the information to register the equipment"
+    }
+  },
+  "editarEquipoPage": {
+    "title": "Edit Equipment",
+    "card": {
+      "title": "Edit Equipment",
+      "description": "Complete the information to edit the equipment"
+    }
+  },
+  "mantenimientosPage": {
+    "title": "Maintenance",
+    "description": "Manage and view the maintenance records for your equipment",
+    "buttons": {
+      "addMaintenance": "Register Maintenance",
+      "retry": "Retry"
+    },
+    "showingRecords": "Showing {showing} of {total} maintenance records",
+    "emptyState": {
+      "title": "No maintenance records",
+      "withFilters": "No maintenance records were found with the selected filters",
+      "withoutFilters": "There are no maintenance records registered in the system"
+    },
+    "errors": {
+      "loadTitle": "Error loading maintenance records",
+      "unknown": "Unknown error"
+    },
+    "modal": {
+      "editTitle": "Edit Maintenance",
+      "createTitle": "Register New Maintenance",
+      "editDescription": "Here you can edit the equipment and machinery currently under maintenance",
+      "createDescription": "Here you can register equipment and machinery for maintenance"
+    }
+  },
+   "cardMantenimientos": {
+    "labels": {
+      "start": "Start",
+      "end": "End"
+    },
+    "buttons": {
+      "edit": "Edit maintenance"
+    },
+    "types": {
+      "preventivo": "Preventive",
+      "correctivo": "Corrective"
+    }
+  },
+  "formMantenimiento": {
+    "fields": {
+      "equipment": "Equipment",
+      "maintenanceType": "Maintenance type",
+      "cost": "Cost",
+      "startDate": "Start date and time",
+      "endDate": "End date and time",
+      "nextMaintenance": "Next maintenance",
+      "description": "Description"
+    },
+    "placeholders": {
+      "selectEquipment": "Select equipment",
+      "selectType": "Select type",
+      "description": "Describe the maintenance performed, replaced parts, observations, etc."
+    },
+    "groups": {
+      "activeEquipment": "Active equipment",
+      "maintenanceTypes": "Maintenance types"
+    },
+    "empty": {
+      "noActiveEquipment": "No active equipment available"
+    },
+    "maintenanceTypes": {
+      "preventivo": "Preventive",
+      "correctivo": "Corrective"
+    },
+    "validation": {
+      "equipmentRequired": "You must select equipment",
+      "costRequired": "Cost is required",
+      "costMin": "Cost must be greater than or equal to 0",
+      "startDateRequired": "Start date and time are required",
+      "endDateRequired": "End date and time are required",
+      "endDateAfterStart": "The end date must be greater than or equal to the start date",
+      "descriptionRequired": "Description is required",
+      "descriptionMaxLength": "Description cannot exceed 500 characters"
+    },
+    "hints": {
+      "nextPreventiveMaintenance": "* Suggested date for the next preventive maintenance"
+    },
+    "labels": {
+      "characterCount": "{count}/500 characters"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "updating": "Updating...",
+      "saving": "Saving...",
+      "update": "Update maintenance",
+      "register": "Register maintenance"
+    },
+    "messages": {
+      "updateSuccess": "Maintenance updated successfully",
+      "createSuccess": "Maintenance registered successfully"
+    },
+    "errors": {
+      "updateTitle": "Error updating maintenance",
+      "createTitle": "Error registering maintenance",
+      "registerMaintenance": "An error occurred while registering maintenance",
+      "unexpected": "Unexpected error. Please contact the administrator"
+    }
+  },
+  "cardFiltersMantenimientos": {
+    "title": "Filters",
+    "fields": {
+      "farm": "Farm",
+      "type": "Type",
+      "from": "From",
+      "to": "To"
+    },
+    "placeholders": {
+      "allFarms": "All farms",
+      "allTypes": "All types"
+    },
+    "options": {
+      "allFarms": "All farms",
+      "allTypes": "All types"
+    },
+    "loading": "Loading...",
+    "buttons": {
+      "clearFilters": "Clear filters"
+    },
+    "maintenanceTypes": {
+      "preventivo": "Preventive",
+      "correctivo": "Corrective"
+    }
+  },
+  "ingresarMantenimientoPage": {
+    "title": "Register Maintenance",
+    "card": {
+      "title": "Register New Maintenance",
+      "description": "Complete the information to register the maintenance"
+    }
+  },
+  "editarMantenimientoPage": {
+    "title": "Edit Maintenance",
+    "card": {
+      "title": "Edit Maintenance",
+      "description": "Complete the information to edit the maintenance"
+    }
+  },
+  "usoDeEquiposPage": {
+    "title": "Equipment Usage",
+    "description": "Record of equipment usage by operators and activities",
+    "buttons": {
+      "registerUsage": "Register Usage",
+      "retry": "Retry"
+    },
+    "records": {
+      "title": "Usage Records",
+      "showing": "Showing {showing} of {total} records"
+    },
+    "emptyState": {
+      "title": "No usage records found",
+      "withFilters": "No records were found with the selected filters",
+      "withoutFilters": "There are no equipment usage records in the system"
+    },
+    "errors": {
+      "loadTitle": "Error loading equipment usage records",
+      "unknown": "Unknown error"
+    },
+    "modal": {
+      "editTitle": "Edit Equipment Usage",
+      "createTitle": "Register Equipment Usage",
+      "editDescription": "Modify the usage record information",
+      "createDescription": "Enter the equipment usage information"
+    }
+  },
+   "tableUsoEquipos": {
+    "fields": {
+      "operator": "Operator",
+      "activity": "Activity",
+      "start": "Start",
+      "end": "End",
+      "hours": "Hours"
+    },
+    "columns": {
+      "equipment": "Equipment",
+      "operator": "Operator",
+      "activity": "Activity",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "hours": "Hours",
+      "actions": "Actions"
+    },
+    "values": {
+      "unassigned": "Unassigned"
+    },
+    "actions": {
+      "edit": "Edit equipment usage"
+    }
+  },
+   "formUsoEquipo": {
+    "fields": {
+      "equipment": "Equipment",
+      "operator": "Operator",
+      "activity": "Activity performed",
+      "startDateTime": "Start date and time",
+      "endDateTime": "End date and time",
+      "hoursWorked": "Hours worked"
+    },
+    "placeholders": {
+      "selectEquipment": "Select equipment",
+      "selectOperator": "Select operator",
+      "selectActivity": "Select activity"
+    },
+    "groups": {
+      "activeEquipment": "Active equipment",
+      "operators": "Operators",
+      "dailyActivities": "Daily activities"
+    },
+    "options": {
+      "noActivity": "No activity"
+    },
+    "empty": {
+      "noActiveEquipment": "No active equipment available",
+      "noActivitiesForDate": "There are no activities for this date"
+    },
+    "loading": {
+      "activities": "Loading activities..."
+    },
+    "hints": {
+      "selectOperatorFirst": "(Select an operator first)",
+      "selectStartDateFirst": "(Select the start date first)",
+      "automaticHours": "* Hours are calculated automatically based on the selected dates"
+    },
+    "validation": {
+      "equipmentRequired": "You must select equipment",
+      "operatorRequired": "You must select an operator",
+      "startDateRequired": "The start date and time are required",
+      "endDateRequired": "The end date and time are required",
+      "endDateAfterStart": "The end date must be later than the start date",
+      "hoursRequired": "Worked hours are required",
+      "hoursMin": "Hours must be greater than or equal to 0"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "updating": "Updating...",
+      "saving": "Saving...",
+      "update": "Update equipment usage",
+      "register": "Register equipment usage"
+    },
+    "messages": {
+      "updateSuccess": "Equipment usage updated successfully",
+      "createSuccess": "Equipment usage registered successfully"
+    },
+    "errors": {
+      "updateTitle": "Error updating equipment usage",
+      "createTitle": "Error registering equipment usage",
+      "registerUsage": "An error occurred while registering equipment usage",
+      "unexpected": "Unexpected error. Please contact the administrator"
+    }
+  },
+   "filtersUsoEquipos": {
+    "title": "Filters",
+    "fields": {
+      "equipment": "Equipment",
+      "operator": "Operator"
+    },
+    "placeholders": {
+      "allEquipment": "All equipment",
+      "allOperators": "All operators"
+    },
+    "options": {
+      "allEquipment": "All equipment",
+      "allOperators": "All operators"
+    },
+    "buttons": {
+      "clearFilters": "Clear filters"
+    }
+  },
+  "ingresarUsoPage": {
+    "title": "Register Equipment Usage",
+    "card": {
+      "title": "Register New Usage",
+      "description": "Complete the information to register equipment usage"
+    }
+  },
+  "editarUsoEquipoPage": {
+    "title": "Edit Usage",
+    "card": {
+      "title": "Edit Equipment Usage",
+      "description": "Complete the information to edit the equipment usage"
+    }
+  },
+  "diagnosticoAnimalPage": {
+    "title": "Veterinary Diagnosis",
+    "importantAlert": {
+      "title": "Important Information",
+      "description": "This tool provides recommendations based on artificial intelligence. The results are for guidance only and must be validated by a veterinary professional."
+    },
+    "patient": {
+      "title": "Patient Information",
+      "description": "Enter the animal's symptoms and information to obtain a preliminary diagnosis"
+    },
+    "preliminaryDiagnosis": "This is a preliminary diagnosis. Always consult a qualified veterinarian."
+  },
+  "summarySymptoms": {
+    "title": "Entered symptoms:",
+    "count": "{count, plural, =0 {0 symptoms} one {# symptom} other {# symptoms}}",
+    "removeSymptom": "Remove symptom: {symptom}"
+  },
+  "cardResults": {
+    "title": "Diagnosis Results",
+    "description": "Analysis based on the provided symptoms",
+    "loading": "Analyzing symptoms...",
+    "reportedSymptoms": "Reported symptoms:",
+    "patient": "Patient:",
+    "months": "months",
+    "empty": {
+      "title": "No diagnosis yet",
+      "description": "Complete the form with the animal's symptoms to obtain a preliminary analysis"
+    },
+    "warning": {
+      "title": "Important",
+      "description": "This diagnosis is generated by AI and must be verified by a veterinary professional. It does not replace an in-person consultation."
+    }
+  },
+   "formDiagnostico": {
+    "fields": {
+      "species": "Species",
+      "breed": "Breed",
+      "age": "Age (months)",
+      "symptoms": "Symptoms"
+    },
+    "placeholders": {
+      "selectSpecies": "Select a species",
+      "loadingBreeds": "Loading breeds...",
+      "selectSpeciesFirst": "Select a species first",
+      "selectBreed": "Select a breed",
+      "ageExample": "e.g. 3",
+      "symptomInput": "Enter a symptom and press Enter or click Add"
+    },
+    "buttons": {
+      "add": "Add",
+      "clear": "Clear",
+      "generating": "Generating diagnosis...",
+      "getDiagnosis": "Get Diagnosis"
+    },
+    "hints": {
+      "addSymptom": "Enter a symptom and press Enter or click \"Add\""
+    },
+    "validation": {
+      "speciesRequired": "Species is required",
+      "breedRequired": "Breed is required",
+      "ageMin": "Age must be greater than 0",
+      "ageMax": "Age cannot exceed {max} months",
+      "symptomsRequired": "Symptoms are required",
+      "completeRequired": "Please complete all required fields"
+    },
+    "messages": {
+      "success": "Diagnosis generated successfully",
+      "duplicateSymptom": "This symptom has already been added"
+    },
+    "errors": {
+      "generateDiagnosis": "Error generating diagnosis",
+      "connection": "Error connecting to the diagnosis service"
+    }
+  },
+  "agriculturaInteligentePage": {
+    "title": "Smart Agricultural Advisor",
+    "importantAlert": {
+      "title": "Important Information",
+      "description": "This tool provides recommendations based on artificial intelligence. The results are for guidance only and should be validated by an agricultural professional according to the specific conditions of your land."
+    },
+    "crop": {
+      "title": "Crop Information",
+      "description": "Enter information about the crop, soil, climate, and observed problems to obtain a diagnosis and personalized recommendations"
+    },
+    "recommendationNote": "Recommendations are based on agronomic analysis. Consult an agricultural engineer when making critical decisions."
+  },
+  "summaryProblemas": {
+    "title": "Reported problems ({count})",
+    "removeProblem": "Remove problem: {problem}"
+  },
+   "cardResultsAgricola": {
+    "loading": {
+      "title": "Analyzing your crop",
+      "description": "Processing your crop information...",
+      "wait": "This may take a few seconds"
+    },
+    "empty": {
+      "title": "Diagnosis Results",
+      "heading": "Waiting for agricultural consultation",
+      "description": "Complete the form to obtain a detailed diagnosis and personalized recommendations for your crop."
+    },
+    "results": {
+      "title": "Recommendations for Your Crop"
+    },
+    "fields": {
+      "crop": "Crop:",
+      "soil": "Soil:",
+      "climate": "Climate:",
+      "problems": "Problems:"
+    },
+    "aiAlert": {
+      "title": "Information Generated by Artificial Intelligence",
+      "description": "This consultation was automatically generated by our AI system. Although it provides useful information based on agronomic data, we always recommend consulting an",
+      "professional": "Agricultural Engineer or agricultural professional",
+      "closing": "before making important decisions about your crop."
+    },
+    "notifications": {
+      "aiGenerated": "🤖 AI-generated information - Consult an agricultural engineer before making critical decisions"
+    }
+  },
+  "formConsultaAgricola": {
+    "fields": {
+      "crop": "Crop",
+      "soilType": "Soil Type",
+      "climate": "Climate",
+      "observedProblems": "Observed Problems"
+    },
+    "placeholders": {
+      "crop": "E.g.: Corn, Tomato, Potato, Rose, etc.",
+      "soilType": "Select the soil type",
+      "climate": "Select the climate in your area",
+      "problem": "Describe an observed problem (yellow leaves, slow growth, spots, etc.) and press Enter or click Add"
+    },
+    "buttons": {
+      "add": "Add",
+      "clear": "Clear",
+      "generating": "Generating agricultural consultation...",
+      "getDiagnosis": "Get Agricultural Diagnosis"
+    },
+    "hints": {
+      "addProblems": "Add each problem individually by pressing Enter or clicking \"Add\""
+    },
+    "validation": {
+      "cropRequired": "Crop is required",
+      "soilRequired": "Soil type is required",
+      "climateRequired": "Climate is required",
+      "problemsRequired": "You must add at least one observed problem",
+      "completeRequired": "Please complete all required fields"
+    },
+    "messages": {
+      "success": "Agricultural consultation generated successfully",
+      "duplicateProblem": "This problem has already been added"
+    },
+    "errors": {
+      "generateConsultation": "Error generating agricultural consultation",
+      "connection": "Error connecting to the agricultural consultation service"
+    },
+    "soilTypes": {},
+    "climateTypes": {}
+  },
+   "siembraInteligentePage": {
+    "title": "Planting Density Calculator",
+    "importantAlert": {
+      "title": "Important Information",
+      "description": "This calculator provides recommendations based on artificial intelligence. The results are for guidance only and should be validated by an agricultural professional according to the specific conditions of your land."
+    },
+    "land": {
+      "title": "Land Information",
+      "description": "Enter information about the crop, land, and climate to obtain an optimal planting density recommendation"
+    },
+    "recommendationNote": "Recommendations are based on agronomic analysis. Consult an agricultural engineer when making critical decisions."
+  },
+  "cardResultsSiembra": {
+    "loading": {
+      "title": "Calculating Optimal Planting Density",
+      "description": "Analyzing the characteristics of your land...",
+      "wait": "This may take a few seconds"
+    },
+    "empty": {
+      "title": "Planting Density Recommendation",
+      "heading": "Waiting for land information",
+      "description": "Complete the form to get a personalized planting density recommendation for your crop."
+    },
+    "results": {
+      "title": "Planting Density Recommendation"
+    },
+    "fields": {
+      "crop": "Crop:",
+      "land": "Land:",
+      "climate": "Climate:",
+      "area": "Area:"
+    },
+    "units": {
+      "hectares": "Hectares (ha)",
+      "manzanas": "Manzanas (mz)",
+      "squareMeters": "Square meters (m²)",
+      "acres": "Acres (ac)"
+    },
+    "aiAlert": {
+      "title": "Recommendation Generated by Artificial Intelligence",
+      "description": "This recommendation was generated automatically. Optimal planting density may vary depending on specific land conditions. We recommend consulting an",
+      "professional": "Agricultural Engineer",
+      "closing": "to validate these values before planting."
+    },
+    "notifications": {
+      "aiRecommendation": "🤖 AI-generated recommendation - Consult an agricultural engineer to validate the planting density"
+    }
+  },
+   "formSiembraInteligente": {
+    "fields": {
+      "crop": "Crop",
+      "landType": "Land Type",
+      "climate": "Climate",
+      "measurementUnit": "Measurement Unit",
+      "landArea": "Land Area"
+    },
+    "placeholders": {
+      "crop": "E.g.: Corn, Beans, Tomato, Coffee, etc.",
+      "landType": "Select the land type",
+      "climate": "Select the climate in your area",
+      "area": "E.g.: 5.5 {unit}"
+    },
+    "hints": {
+      "areaUnit": "The entered area is in {unit}"
+    },
+    "buttons": {
+      "calculating": "Calculating optimal planting density...",
+      "calculate": "Calculate Planting Density"
+    },
+    "validation": {
+      "cropRequired": "Crop is required",
+      "landTypeRequired": "Land type is required",
+      "climateRequired": "Climate is required",
+      "areaGreaterThanZero": "Area must be greater than 0",
+      "unitRequired": "Measurement unit is required",
+      "completeRequired": "Please complete all required fields"
+    },
+    "messages": {
+      "success": "Planting density recommendation generated successfully"
+    },
+    "errors": {
+      "generateRecommendation": "Error generating recommendation",
+      "connection": "Error connecting to the planting density service"
+    },
+     "landTypes": {
+    "plano": "Flat",
+    "ligeramente_ondulado": "Slightly Rolling",
+    "ondulado": "Rolling",
+    "accidentado": "Rugged",
+    "terrazas": "Terraces",
+    "ladera": "Hillside"
+  },
+  "climateTypes": {
+    "tropical": "Tropical",
+    "subtropical": "Subtropical",
+    "templado": "Temperate",
+    "mediterraneo": "Mediterranean",
+    "continental": "Continental",
+    "arido": "Arid",
+    "semiarido": "Semi-arid",
+    "frio": "Cold"
+  },
+  "measurementUnits": {
+    "ha": "Hectare (ha)",
+    "mz": "Manzana (mz)",
+    "m2": "Square meters (m²)",
+    "ac": "Acres (ac)"
+  },
+    "soilTypes": {
+    "arcilloso": "Clay",
+    "arenoso": "Sandy",
+    "limoso": "Silty",
+    "franco": "Loam",
+    "franco-arcilloso": "Clay Loam",
+    "franco-arenoso": "Sandy Loam",
+    "organico": "Organic",
+    "calizo": "Calcareous"
+  }
+  },
+   "historialMedicoAnimalPage": {
+    "title": "Animal Medical History",
+    "description": "Manage and review your animals' clinical history",
+    "filters": {
+      "title": "Search Filters",
+      "farm": "Search Farm",
+      "animal": "Search Animal",
+      "startDate": "Start Date",
+      "endDate": "End Date"
+    },
+    "placeholders": {
+      "farm": "Enter the farm name...",
+      "animal": "Enter the animal identifier..."
+    },
+    "buttons": {
+      "clearFilters": "Clear Filters"
+    },
+    "pagination": {
+      "show": "Show:",
+      "perPage": "per page",
+      "itemsPerPage": "Number of histories per page",
+      "showing": "Showing {start}-{end} of {total} histories",
+      "firstPage": "First page",
+      "previousPage": "Previous page",
+      "nextPage": "Next page",
+      "lastPage": "Last page",
+      "goToPage": "Go to page {page}"
+    },
+    "summary": {
+      "totalHistories": "Total Histories",
+      "farmsAttended": "Farms Attended",
+      "animalsAttended": "Animals Attended"
+    },
+    "historyList": {
+      "title": "Clinical Histories",
+      "empty": "No histories were found with the selected filters"
+    },
+    "ariaLabels": {
+      "removeFarmFilter": "Remove farm filter",
+      "removeAnimalFilter": "Remove animal filter"
+    }
+  },
+   "cardHistorialClinico": {
+    "labels": {
+      "by": "By",
+      "procedure": "Procedure {number}",
+      "diagnosis": "Diagnosis",
+      "treatment": "Treatment",
+      "observations": "Observations",
+      "documents": "Documents",
+      "veterinarian": "Veterinarian",
+      "email": "Email",
+      "phone": "Phone",
+      "appointment": "Appointment"
+    },
+    "buttons": {
+      "downloadDocument": "Download document {name}"
+    }
+  },
+   "tratamientosPage": {
+    "title": "Animal Treatments",
+    "description": "Manage and review the treatments applied to your animals",
+    "pagination": {
+      "show": "Show",
+      "perPage": "per page",
+      "itemsPerPage": "Number of treatments per page",
+      "showing": "Showing {start}-{end} of {total} treatments",
+      "firstPage": "First page",
+      "previousPage": "Previous page",
+      "nextPage": "Next page",
+      "lastPage": "Last page",
+      "goToPage": "Go to page {page}"
+    },
+    "summary": {
+      "total": "Total Treatments",
+      "withDocuments": "With Documents",
+      "differentServices": "Different Services",
+      "recent": "Recent Treatments"
+    },
+    "list": {
+      "title": "Applied Treatments",
+      "empty": "No treatments were found with the selected filters"
+    },
+    "statuses": {
+      "recent": "Recent",
+      "followUp": "Under Follow-up",
+      "completed": "Completed"
+    }
+  },
+  "cardTratamientos": {
+    "labels": {
+      "updated": "Updated",
+      "diagnosis": "Diagnosis",
+      "appliedTreatment": "Applied Treatment",
+      "observations": "Observations",
+      "attachedDocuments": "Attached Documents"
+    },
+    "buttons": {
+      "downloadDocument": "Download document {name}"
+    }
+  },
+  "filtrosBusqueda": {
+    "title": "Search Filters",
+    "fields": {
+      "farm": "Search Farm",
+      "animal": "Search Animal",
+      "startDate": "Start Date",
+      "endDate": "End Date"
+    },
+    "placeholders": {
+      "farm": "Enter the farm name...",
+      "animal": "Enter the identifier..."
+    },
+    "buttons": {
+      "clearFilters": "Clear Filters",
+      "removeFarmFilter": "Remove farm filter",
+      "removeAnimalFilter": "Remove animal filter"
+    }
+  },
+  "celosAnimalPage": {
+    "title": "Heat Cycle Management",
+    "description": "Register and monitor your animals' heat cycles. Each record will be automatically evaluated to verify that the animal meets the minimum reproductive age for its species before proceeding with processes such as mating or insemination.",
+    "buttons": {
+      "filters": "Filters",
+      "newHeat": "New Heat Cycle"
+    },
+    "messages": {
+      "noRecords": "No heat cycle records found",
+      "loadError": "Error loading data. Please try again.",
+      "noData": "No data available to display."
+    },
+    "modal": {
+      "title": "Add New Heat Cycle",
+      "description": "Here you can add the heat cycle period for your cows"
+    }
+  },
+  "tableCelos": {
+    "columns": {
+      "animal": "Animal",
+      "speciesFarm": "Species/Farm",
+      "species": "Species",
+      "farm": "Farm",
+      "period": "Period",
+      "number": "No.",
+      "heatNumber": "Heat No.",
+      "intensity": "Intensity",
+      "status": "Status",
+      "start": "Start",
+      "end": "End",
+      "method": "Method",
+      "actions": "Actions"
+    },
+    "labels": {
+      "heatNumber": "No. {number}",
+      "start": "Start",
+      "end": "End",
+      "animal": "Animal",
+      "startDate": "Start date",
+      "intensity": "Intensity",
+      "method": "Method"
+    },
+    "statuses": {
+      "active": "Active",
+      "current": "Current"
+    },
+    "actions": {
+      "view": "View details",
+      "edit": "Edit heat cycle",
+      "delete": "Delete heat cycle"
+    },
+    "messages": {
+      "deleteSuccess": "Heat cycle deleted successfully",
+      "deleteError": "An error occurred while deleting the heat cycle",
+      "unexpectedError": "Unexpected error. Please contact the administrator"
+    },
+    "modals": {
+      "details": {
+        "title": "Heat Cycle Details",
+        "description": "Complete information about the heat cycle record"
+      },
+      "edit": {
+        "title": "Edit Heat Cycle",
+        "description": "Edit the heat cycle record details"
+      },
+      "delete": {
+        "title": "Confirm Deletion",
+        "description": "Are you sure you want to delete heat cycle No. {number} for animal {animal}?",
+        "warning": "Warning:",
+        "warningDescription": "This action cannot be undone. The heat cycle record will be permanently deleted."
+      }
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "deleting": "Deleting..."
+    }
+  },
+  "detailsCelo": {
+    "sections": {
+      "animalInformation": "Animal Information",
+      "heatInformation": "Heat Cycle Information",
+      "observedSigns": "Observed Signs",
+      "observations": "Observations"
+    },
+    "labels": {
+      "identifier": "Identifier",
+      "species": "Species",
+      "sex": "Sex",
+      "color": "Color",
+      "heatNumber": "Heat Cycle Number",
+      "intensity": "Intensity",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "detectionMethod": "Detection Method",
+      "discharge": "Discharge",
+      "otherSigns": "Other Signs"
+    },
+    "signs": {
+      "mountsOthers": "Mounts Other Animals",
+      "acceptsMounting": "Accepts Mounting",
+      "restlessness": "Restlessness",
+      "swollenVulva": "Swollen Vulva"
+    },
+    "statuses": {
+      "active": "Active"
+    },
+    "messages": {
+      "notSpecified": "Not specified",
+      "notRecorded": "Not recorded",
+      "noAdditionalInformation": "No additional information recorded"
+    }
+  },
+  "mobileFilters": {
+    "title": "Filters",
+    "description": "Filter heat records by different criteria",
+    "fields": {
+      "farm": "Farm",
+      "animal": "Animal",
+      "species": "Species",
+      "intensity": "Intensity",
+      "dates": "Dates",
+      "startDate": "Start date",
+      "endDate": "End date"
+    },
+    "placeholders": {
+      "farm": "Select farm",
+      "species": "Species",
+      "intensity": "Intensity",
+      "selectedAnimal": "{animal} selected",
+      "searchFemale": "Search female animal...",
+      "selectDate": "Select date"
+    },
+    "options": {
+      "allFarms": "All farms",
+      "all": "All"
+    },
+    "animal": {
+      "noName": "No name",
+      "generic": "Animal",
+      "unidentified": "Unidentified",
+      "unspecifiedSpecies": "Unspecified species"
+    },
+    "messages": {
+      "selectFarmFirst": "Select a farm first",
+      "noFemalesFound": "No female animals found",
+      "tryAnotherSearch": "Try another search term"
+    },
+    "intensities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "veryHigh": "Very high"
+    },
+    "buttons": {
+      "applyFilters": "Apply filters",
+      "clearFilters": "Clear filters"
+    },
+    "ariaLabels": {
+      "clearAnimal": "Clear selected animal"
+    }
+  },
+  "desktopFilters": {
+    "title": "Filters",
+    "description": "Filter heat records by different criteria",
+    "fields": {
+      "farm": "Farm",
+      "animal": "Animal",
+      "species": "Species",
+      "intensity": "Intensity",
+      "startDate": "Start date",
+      "endDate": "End date"
+    },
+    "placeholders": {
+      "farm": "Select farm",
+      "selectedAnimal": "{animal} selected",
+      "searchFemale": "Search female animal...",
+      "allSpecies": "All species",
+      "allIntensities": "All intensities",
+      "selectDate": "Select date"
+    },
+    "options": {
+      "allFarms": "All farms",
+      "allSpecies": "All species",
+      "all": "All"
+    },
+    "animal": {
+      "noName": "No name",
+      "generic": "Animal",
+      "unidentified": "Unidentified",
+      "unspecifiedSpecies": "Unspecified species",
+      "imageAlt": "Image of animal {identifier}"
+    },
+    "messages": {
+      "selectFarmFirst": "Select a farm first",
+      "noFemalesFound": "No female animals found",
+      "tryAnotherSearch": "Try another search term"
+    },
+    "intensities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "veryHigh": "Very high"
+    },
+    "buttons": {
+      "applyFilters": "Apply filters",
+      "clearFilters": "Clear filters",
+      "clearAnimal": "Clear selected animal",
+      "collapse": "Collapse filters",
+      "expand": "Expand filters"
+    }
+  },
+  "formCelosAnimal": {
+    "actions": {
+      "update": "updating",
+      "register": "registering"
+    },
+    "fields": {
+      "animalInHeat": "Select the animal in heat",
+      "startDate": "Heat start date",
+      "endDate": "Heat end date",
+      "intensity": "Intensity",
+      "detectionMethod": "Detection method",
+      "observedSigns": "Observed signs",
+      "discharge": "Discharge",
+      "otherSigns": "Other signs (comma-separated)",
+      "observations": "General observations"
+    },
+    "placeholders": {
+      "selectedAnimal": "{animal} selected",
+      "searchAnimal": "Search animal by ID, name, or species...",
+      "selectIntensity": "Select intensity",
+      "selectMethod": "Select method",
+      "dischargeType": "Discharge type",
+      "otherSigns": "E.g.: bellowing, restlessness, etc.",
+      "observations": "Additional observations about the heat..."
+    },
+    "animal": {
+      "noName": "No name",
+      "generic": "Animal",
+      "unidentified": "Unidentified",
+      "unspecifiedSpecies": "Unspecified species",
+      "imageAlt": "Image of animal {identifier}"
+    },
+    "badges": {
+      "locked": "Locked"
+    },
+    "intensities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "veryHigh": "Very high"
+    },
+    "detectionMethods": {
+      "visual": "Visual",
+      "patch": "Patch",
+      "pedometer": "Pedometer",
+      "activityCollar": "Activity collar",
+      "ultrasound": "Ultrasound",
+      "naturalMating": "Natural mating"
+    },
+    "signs": {
+      "mountsOthers": "Mounts other animals",
+      "acceptsMounting": "Accepts mounting",
+      "restlessness": "Restlessness/Nervousness",
+      "swollenVulva": "Swollen vulva"
+    },
+    "discharges": {
+      "none": "None",
+      "clear": "Clear",
+      "cloudy": "Cloudy",
+      "bloody": "Bloody",
+      "viscous": "Viscous"
+    },
+    "messages": {
+      "updateSuccess": "Heat record updated successfully",
+      "createSuccess": "Heat record registered successfully",
+      "noAnimalsFound": "No animals found",
+      "tryAnotherSearch": "Try another search term"
+    },
+    "errors": {
+      "title": "Error while {action} the heat record",
+      "createFailed": "An error occurred while creating the animal heat record",
+      "unexpected": "Unexpected error. Please contact the administrator"
+    },
+    "validation": {
+      "startDateRequired": "The start date is required"
+    },
+    "buttons": {
+      "clearAnimal": "Clear selected animal",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "updating": "Updating...",
+      "register": "Register heat",
+      "update": "Update heat"
+    }
+  },
+  "crearPeriodoCelo": {
+    "title": "New heat period",
+    "cardTitle": "Register animal heat",
+    "description": "Complete the information to register your animal's new heat period"
+  },
+   "serviciosReproductivosPage": {
+    "title": "Reproductive services",
+    "titleWithFarm": "Reproductive services - {farm}",
+    "description": "Register and monitor your animals' reproductive services. Each record will be automatically evaluated to verify that the animal meets the minimum reproductive age for its species before proceeding.",
+    "buttons": {
+      "filters": "Filters",
+      "newService": "New service",
+      "retry": "Retry"
+    },
+    "views": {
+      "table": "Table"
+    },
+    "errors": {
+      "loadTitle": "Loading error",
+      "loadDescription": "Unable to load services",
+      "updateStatus": "An error occurred while updating the status",
+      "unexpected": "Unexpected error. Please contact the administrator"
+    },
+    "emptyState": {
+      "noServices": "No services registered",
+      "inFarm": "in {farm}"
+    },
+    "summary": {
+      "totalServices": "Total services",
+      "successful": "Successful",
+      "successRate": "Success rate",
+      "scheduled": "Scheduled"
+    },
+    "modals": {
+      "addService": {
+        "title": "Add new reproductive service",
+        "description": "Here you can add reproductive services for your animals"
+      },
+      "serviceActions": {
+        "title": "Service actions",
+        "description": "Here you can perform actions on your reproductive service"
+      }
+    },
+    "tabs": {
+      "serviceStatus": "Service status",
+      "result": "Result"
+    },
+    "messages": {
+      "statusUpdated": "Service status successfully updated",
+      "alreadySuccessful": "This service has already been marked as successful and its status cannot be changed",
+      "cannotMarkFailed": "A service with FAILED status cannot be marked as successful",
+      "cannotMarkCancelled": "A service with CANCELLED status cannot be marked as successful",
+      "mustBeCompletedFirst": "To mark it as successful, change its status to COMPLETED first"
+    }
+  },
+  "vistaTarjetasServicios": {
+    "statuses": {
+      "successful": "Successful",
+      "unsuccessful": "Unsuccessful"
+    },
+    "labels": {
+      "serviceNumber": "Service No.: {number}",
+      "male": "Male",
+      "date": "Date",
+      "heat": "Heat",
+      "mounts": "Mounts"
+    },
+    "buttons": {
+      "status": "Status",
+      "edit": "Edit"
+    }
+  },
+  "vistaTablaServicios": {
+    "columns": {
+      "female": "Female",
+      "male": "Male",
+      "type": "Type",
+      "date": "Date",
+      "number": "No.",
+      "status": "Status",
+      "result": "Result",
+      "actions": "Actions"
+    },
+    "results": {
+      "successful": "Successful",
+      "unsuccessful": "Unsuccessful"
+    },
+    "actions": {
+      "edit": "Edit",
+      "details": "Details"
+    },
+    "modal": {
+      "title": "Edit service details",
+      "description": "Here you can edit the reproductive service details"
+    }
+  },
+  "mobileFiltersServicios": {
+    "title": "Filters",
+    "description": "Filter reproductive services",
+    "fields": {
+      "farm": "Farm",
+      "female": "Female",
+      "serviceType": "Service type",
+      "status": "Status",
+      "successful": "Successful",
+      "dateFrom": "Date from",
+      "dateTo": "Date to"
+    },
+    "placeholders": {
+      "farm": "Select farm",
+      "searchFemale": "Search female...",
+      "allTypes": "All types",
+      "allStatuses": "All statuses",
+      "selectDate": "Select"
+    },
+    "animal": {
+      "noName": "Unnamed",
+      "generic": "Animal",
+      "selected": "selected",
+      "unidentified": "Unidentified",
+      "unspecifiedSpecies": "Unspecified species",
+      "imageAlt": "Animal {identifier}",
+      "availableFemales": "{count, plural, =0 {No females available} one {# female available} other {# females available}}",
+      "noFemalesInFarm": "There are no females registered on this farm"
+    },
+    "search": {
+      "noFemalesInFarm": "No females found on this farm",
+      "noFemales": "No females found",
+      "changeFarmOrSearch": "Select another farm or change your search",
+      "selectFarmOrSearch": "Select a farm first or change your search"
+    },
+    "options": {
+      "all": "All",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "serviceTypes": {
+      "monta_natural": "Natural mating",
+      "inseminacion_artificial": "Artificial insemination",
+      "transferencia_embrionaria": "Embryo transfer"
+    },
+    "statuses": {
+      "programado": "Scheduled",
+      "realizado": "Completed",
+      "fallido": "Failed",
+      "cancelado": "Cancelled"
+    },
+    "buttons": {
+      "clearFemale": "Clear selected animal",
+      "applyFilters": "Apply filters",
+      "clearFilters": "Clear filters"
+    }
+  },
+   "cardTabResultado": {
+    "title": "Service Result",
+    "description": "Mark whether the service was successful or unsuccessful. This will affect the status of the associated heat cycle.",
+    "successfulService": "Successful Service",
+    "successfulDescription": "Mark as successful if the female became pregnant after this service",
+    "messages": {
+      "successful": "✅ This service is marked as successful. The associated heat cycle status will be updated to PREGNANT.",
+      "unsuccessful": "⚠️ This service is marked as unsuccessful. If it is confirmed that the female did not become pregnant, the associated heat cycle status will be updated to NOT_FERTILIZED."
+    },
+    "buttons": {
+      "close": "Close"
+    }
+  },
+  "cardTabEstado": {
+    "title": "Service Status",
+    "description": "Update the current status of the reproductive service",
+    "statuses": {
+      "programado": "Scheduled",
+      "realizado": "Completed",
+      "fallido": "Failed",
+      "cancelado": "Cancelled"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "updating": "Updating...",
+      "updateStatus": "Update Status"
+    }
+  },
+  "cardFiltersServicios": {
+    "title": "Filters",
+    "farms": {
+      "all": "All farms"
+    },
+    "fields": {
+      "farm": "Farm",
+      "female": "Female",
+      "status": "Status",
+      "type": "Type",
+      "successful": "Successful",
+      "dateFrom": "Start date",
+      "dateTo": "End date"
+    },
+    "placeholders": {
+      "selectFarm": "Select farm",
+      "searchFemale": "Search female...",
+      "status": "Status"
+    },
+    "animal": {
+      "noName": "Unnamed",
+      "generic": "Animal",
+      "selected": "selected",
+      "unidentified": "Unidentified",
+      "unspecifiedSpecies": "Unspecified species",
+      "imageAlt": "Image of animal {identifier}",
+      "availableFemales": "{count, plural, =0 {No females available} one {# female available} other {# females available}}"
+    },
+    "search": {
+      "noFemalesInFarm": "No females found on this farm",
+      "noFemales": "No females found",
+      "changeFarmOrSearch": "Select another farm or change your search",
+      "selectFarmOrSearch": "Select a farm first or change your search"
+    },
+    "statuses": {
+      "programado": "Scheduled",
+      "realizado": "Completed",
+      "fallido": "Failed",
+      "cancelado": "Cancelled"
+    },
+    "serviceTypes": {
+      "monta_natural": "Natural mating",
+      "inseminacion_artificial": "Artificial insemination",
+      "transferencia_embrionaria": "Embryo transfer"
+    },
+    "options": {
+      "all": "All",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "buttons": {
+      "clearFemale": "Clear selected female",
+      "search": "Search",
+      "clearFilters": "Clear filters",
+      "refresh": "Refresh results"
+    },
+    "advancedFilters": "Advanced filters"
+  },
+  "formServicioReproductivo": {
+    "actions": {
+      "update": "update",
+      "register": "register"
+    },
+    "errors": {
+      "service": "Error {action}ing service"
+    },
+    "fields": {
+      "serviceType": "Service type",
+      "serviceDate": "Service date",
+      "female": "Female",
+      "maleBelongsToFarm": "The male belongs to my farm",
+      "farmMale": "Farm male",
+      "externalMaleName": "External male name",
+      "associatedHeat": "Associated heat",
+      "activeHeats": "Active heat cycles",
+      "semenProvider": "Semen/embryo provider",
+      "responsibleTechnician": "Responsible technician",
+      "semenDose": "Semen dose",
+      "cost": "Cost",
+      "duration": "Duration (minutes)",
+      "weatherConditions": "Weather conditions",
+      "maleEvaluation": "Male evaluation",
+      "observations": "Observations"
+    },
+    "placeholders": {
+      "selectType": "Select type",
+      "searchFemale": "Search female by identifier, name, or species...",
+      "searchMale": "Search male by identifier, name, or species...",
+      "externalMaleNatural": "E.g.: Don José's bull - Brahman breed",
+      "externalMaleOther": "E.g.: Don José's bull (Brahman breed) - El Rosario Farm",
+      "loadingHeats": "Loading heat cycles...",
+      "selectFemaleFirst": "Select a female first",
+      "selectHeat": "Select heat cycle",
+      "providerName": "Provider name",
+      "technicianName": "Technician name",
+      "semenDose": "E.g.: 0.5 ml",
+      "duration": "E.g.: 30",
+      "selectCondition": "Select condition",
+      "selectEvaluation": "Select evaluation",
+      "observations": "Additional observations about the service..."
+    },
+    "animal": {
+      "generic": "Animal",
+      "unidentified": "Unidentified",
+      "unspecifiedSpecies": "Unspecified species",
+      "selected": "selected",
+      "imageAlt": "Image of animal {identifier}",
+      "heatOption": "Heat #{number} - Started: {date}"
+    },
+    "search": {
+      "noFemales": "No females found",
+      "noMales": "No males found",
+      "tryAnotherTerm": "Try another search term"
+    },
+    "serviceTypes": {
+      "naturalMating": "Natural mating",
+      "artificialInsemination": "Artificial insemination (IATF)",
+      "embryoTransfer": "Embryo transfer",
+      "inVitroFertilization": "In vitro fertilization (IVF)"
+    },
+    "weather": {
+      "sunny": "Sunny",
+      "cloudy": "Cloudy",
+      "rainy": "Rainy",
+      "windy": "Windy"
+    },
+    "evaluations": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "fair": "Fair",
+      "poor": "Poor"
+    },
+    "validation": {
+      "dateRequired": "The service date is required",
+      "maleRequired": "If you selected that the male belongs to your farm, you must select the male",
+      "externalMaleRequired": "If you selected that the male does not belong to your farm, you must enter the male's name",
+      "externalMaleNameRequired": "You must enter the external male's name"
+    },
+    "messages": {
+      "updateSuccess": "Service updated successfully",
+      "createSuccess": "Service registered successfully",
+      "registerError": "An error occurred while registering the service",
+      "unexpectedError": "Unexpected error. Please contact the administrator",
+      "maleDonor": "* The selected male will be used as the semen/embryo donor",
+      "externalMaleOrigin": "* Enter the male's full name and origin",
+      "noActiveHeats": "There are no active heat cycles for this female",
+      "selectAssociatedHeat": "* Select the heat cycle associated with this service",
+      "externalProvider": "* Enter the provider's name if the semen/embryos are from an external source"
+    },
+    "buttons": {
+      "clearFemale": "Clear selected female",
+      "clearMale": "Clear selected male",
+      "cancel": "Cancel",
+      "updating": "Updating...",
+      "saving": "Saving...",
+      "updateService": "Update service",
+      "registerService": "Register service"
+    }
+  },
+  "crearServicioReproductivo": {
+    "title": "New service",
+    "cardTitle": "Register animal service",
+    "description": "Complete the information to register a new service for your animal"
+  },
+  "editarServicioReproductivo": {
+    "title": "Edit service",
+    "cardTitle": "Edit animal service",
+    "description": "Complete the information to edit your animal's service"
+  },
+  "partosAnimalesPage": {
+    "title": "Birth records - {farm}",
+    "description": "Monitor the births recorded for your animals.",
+    "newBirth": "New birth",
+    "filters": "Filters",
+    "activeFilters": "{count, plural, =1 {# active} other {# active}}",
+    "historyTitle": "Birth history",
+    "showingBirths": "Showing {start} - {end} of {total} births",
+    "editBirth": "Edit birth",
+    "addBirth": "Add new birth",
+    "editBirthDescription": "Here you can edit the birth information",
+    "addBirthDescription": "Here you can register your animal's birth"
+  },
+   "infoPartoAnimal": {
+    "columns": {
+      "animal": "Animal",
+      "farm": "Farm",
+      "date": "Date",
+      "type": "Type",
+      "status": "Status",
+      "offspring": "Offspring",
+      "gestation": "Gestation",
+      "veterinarian": "Veterinarian",
+      "actions": "Actions"
+    },
+    "loading": "Loading birth records...",
+    "empty": {
+      "title": "No birth records are currently available",
+      "description": "You currently have no birth records available for your animals. Please register a birth."
+    },
+    "totalOffspring": "{count} total",
+    "pendingCount": "{count, plural, =1 {# pending} other {# pending}}",
+    "unregisteredOffspring": "{count, plural, =1 {# offspring not registered as an animal} other {# offspring not registered as animals}}",
+    "offspringNumber": "Offspring {number}",
+    "notAvailable": "Not available",
+    "registered": "Registered",
+    "pending": "Pending",
+    "register": "Register",
+    "gestationDays": "{count} days",
+    "edit": "Edit",
+    "dialog": {
+      "title": "Register offspring as an animal",
+      "description": "Complete the information to register this offspring as a new animal in the system.",
+      "fields": {
+        "identifier": "Identifier",
+        "sex": "Sex",
+        "farm": "Farm",
+        "birthWeight": "Birth weight",
+        "birthDate": "Date of birth"
+      },
+      "placeholders": {
+        "identifier": "Enter a unique identifier",
+        "sex": "Select the sex",
+        "farm": "Select the farm"
+      },
+      "sexOptions": {
+        "male": "Male",
+        "female": "Female"
+      },
+      "motherFarm": "The mother is at the farm: {farm}",
+      "buttons": {
+        "cancel": "Cancel",
+        "registering": "Registering...",
+        "registerAnimal": "Register animal"
+      }
+    },
+    "messages": {
+      "createSuccess": "Offspring successfully registered as an animal",
+      "alreadyRegistered": "This offspring has already been registered as an animal"
+    },
+    "errors": {
+      "createFailed": "An error occurred while registering the offspring",
+      "unexpected": "Unexpected error. Please contact the administrator",
+      "selectFarm": "You must select a farm",
+      "invalidFarm": "The selected farm is invalid"
+    },
+    "sex": {
+      "macho": "Male",
+      "hembra": "Female",
+      "nd": "N/A"
+    },
+    "birthTypes": {
+      "normal": "Normal",
+      "distocico": "Dystocic",
+      "cesarea": "Cesarean section"
+    },
+    "statuses": {
+      "pendiente": "Pending",
+      "completado": "Completed",
+      "completada": "Completed",
+      "complicado": "Complicated",
+      "registrado": "Registered"
+    }
+  },
+  "detailsParto": {
+    "totalOffspring": "Total offspring",
+    "liveOffspring": "Live offspring",
+    "deadOffspring": "Stillborn offspring",
+    "normalBirths": "Normal births",
+    "complicatedBirths": "Births with complications"
+  },
+   "cardMobilePartos": {
+    "loading": "Loading birth records...",
+    "empty": {
+      "title": "No birth records are currently available",
+      "description": "You currently have no birth records available for your animals. Please register a birth."
+    },
+    "birthDate": "Birth date",
+    "offspring": "Offspring",
+    "live": "live",
+    "dead": "dead",
+    "total": "Total",
+    "gestation": "Gestation",
+    "days": "{count} days",
+    "weeks": "{count} weeks",
+    "veterinarian": "Veterinarian",
+    "offspringDetails": "Offspring details:",
+    "observations": "Observations:",
+    "complications": "Complications",
+    "veterinaryCare": "Veterinary care",
+    "edit": "Edit",
+    "birthTypes": {
+      "normal": "Normal",
+      "distocico": "Dystocic",
+      "cesarea": "Cesarean section"
+    },
+    "statuses": {
+      "pendiente": "Pending",
+      "completado": "Completed",
+      "completada": "Completed",
+      "complicado": "Complicated",
+      "registrado": "Registered"
+    }
+  },
+  "filtersParto": {
+    "title": "Filters",
+    "activeFilters": "{count} active",
+    "clear": "Clear",
+    "fields": {
+      "farm": "Farm",
+      "female": "Female",
+      "status": "Status",
+      "birthType": "Birth type",
+      "dateRange": "Date range",
+      "itemsPerPage": "Items per page"
+    },
+    "placeholders": {
+      "farm": "Select farm",
+      "selectedAnimal": "{animal} selected",
+      "searchFemale": "Search female...",
+      "allStatuses": "All statuses",
+      "allBirthTypes": "All types",
+      "dateFrom": "From date",
+      "dateTo": "To date"
+    },
+    "animalFallbacks": {
+      "noName": "No name",
+      "animal": "Animal",
+      "unidentified": "Unidentified",
+      "unspecifiedSpecies": "Unspecified species"
+    },
+    "buttons": {
+      "clearFemale": "Remove selected female",
+      "applyFilters": "Apply filters"
+    },
+    "search": {
+      "noFemalesInFarm": "No females found on this farm",
+      "noFemales": "No females found",
+      "changeFarmOrSearch": "Select another farm or change your search",
+      "selectFarmOrSearch": "Select a farm first or change your search"
+    },
+    "availableFemales": "{count, plural, one {# female available} other {# females available}}",
+    "options": {
+      "allStatuses": "All statuses",
+      "allBirthTypes": "All types"
+    },
+    "statuses": {
+      "programmed": "Scheduled",
+      "inProgress": "In progress",
+      "completed": "Completed",
+      "complicated": "Complicated",
+      "aborted": "Aborted"
+    },
+    "birthTypes": {
+      "normal": "Normal",
+      "dystocic": "Dystocic",
+      "cesarean": "Cesarean section",
+      "stillbirth": "Stillbirth",
+      "abortion": "Abortion"
+    }
+  },
+  "formPartoAnimal": {
+    "fields": {
+      "female": "Female",
+      "associatedService": "Associated service (optional)",
+      "femaleServices": "Female's services",
+      "birthDate": "Birth date",
+      "birthNumber": "Birth number",
+      "birthType": "Birth type",
+      "status": "Status",
+      "responsibleVeterinarian": "Responsible veterinarian",
+      "complications": "Complications",
+      "veterinaryCare": "Veterinary care",
+      "generalObservations": "General observations"
+    },
+    "placeholders": {
+      "selectedAnimal": "{animal} selected",
+      "searchFemale": "Search female by ID, name, or species...",
+      "selectService": "Select service",
+      "selectType": "Select type",
+      "selectStatus": "Select status",
+      "selectSex": "Select sex",
+      "weightExample": "e.g. 35.5",
+      "identifierExample": "e.g. CALF-001",
+      "offspringObservations": "Observations about the offspring...",
+      "veterinarianName": "Veterinarian's name",
+      "complications": "Describe any complications",
+      "veterinaryCare": "Describe the veterinary care provided...",
+      "generalObservations": "Additional observations about the birth..."
+    },
+    "fallbacks": {
+      "animal": "Animal",
+      "unidentified": "Unidentified",
+      "unspecifiedSpecies": "Unspecified species",
+      "notSpecified": "Not specified",
+      "notAssociated": "Not associated"
+    },
+    "buttons": {
+      "clearFemale": "Remove selected female",
+      "addOffspring": "Add offspring",
+      "removeOffspring": "Remove offspring number {number}",
+      "cancel": "Cancel",
+      "updating": "Updating...",
+      "saving": "Saving...",
+      "updateBirth": "Update birth record",
+      "registerBirth": "Register birth"
+    },
+    "search": {
+      "noFemales": "No females found",
+      "tryAnotherTerm": "Try another search term"
+    },
+    "messages": {
+      "noServices": "No services registered for this female",
+      "selectFemaleFirst": "* Select a female first to view her services",
+      "createSuccess": "Birth record registered successfully",
+      "updateSuccess": "Birth record updated successfully"
+    },
+    "validation": {
+      "atLeastOneOffspring": "You must register at least one offspring",
+      "offspringBirthDateRequired": "Offspring number {number} must have a birth date",
+      "birthDateRequired": "Birth date is required",
+      "birthNumberRequired": "Birth number is required",
+      "minimumOne": "Minimum 1",
+      "weightRequired": "Weight is required",
+      "minimumWeight": "Minimum 0.1 kg",
+      "offspringDateRequired": "Offspring birth date is required"
+    },
+    "errors": {
+      "createTitle": "Error registering birth",
+      "updateTitle": "Error updating birth",
+      "registrationFailed": "An error occurred while registering the birth",
+      "unexpected": "Unexpected error. Please contact the administrator"
+    },
+    "birthTypes": {
+      "normal": "Normal",
+      "dystocic": "Dystocic",
+      "cesarean": "Cesarean section",
+      "stillbirth": "Stillbirth",
+      "abortion": "Abortion"
+    },
+    "statuses": {
+      "scheduled": "Scheduled",
+      "inProgress": "In progress",
+      "completed": "Completed",
+      "complicated": "Complicated",
+      "aborted": "Aborted"
+    },
+    "offspring": {
+      "title": "Offspring records",
+      "itemTitle": "Offspring #{number}",
+      "fields": {
+        "sex": "Sex",
+        "weight": "Weight (kg)",
+        "status": "Status",
+        "birthDate": "Birth date",
+        "identifier": "Identifier (optional)",
+        "observations": "Observations (optional)"
+      },
+      "statuses": {
+        "alive": "Alive",
+        "dead": "Dead"
+      },
+      "empty": "No offspring registered",
+      "summaryTitle": "Offspring summary:",
+      "summary": "Total: {total} | Alive: {alive} | Dead: {dead}"
+    },
+    "sex": {
+      "male": "Male",
+      "female": "Female"
+    }
+  },
+  "crearPartoPage": {
+    "title": "Register birth",
+    "cardTitle": "Register animal birth",
+    "description": "Complete the information to register your animal's new birth"
+  },
+   "editarPartoPage": {
+    "title": "Edit birth record",
+    "cardTitle": "Edit animal birth record",
+    "description": "Complete the information to edit your animal's birth record"
+  },
+  "profile": {
+    "avatarAlt": "Profile picture",
+    "changePhoto": "Change profile picture",
+    "joinedOn": "Joined on",
+    "galleryTitle": "Image gallery",
+    "closeGallery": "Close gallery",
+    "messages": {
+      "invalidImage": "Please select a valid image file",
+      "imageTooLarge": "The image must not exceed 1 MB",
+      "profileUpdated": "Profile updated successfully",
+      "updateImageFailed": "Could not update the profile picture",
+      "imageDeleted": "Profile picture deleted",
+      "deleteImageFailed": "Error deleting the profile picture"
+    }
+  },
+  "sessionExpiredModal": {
+    "title": "Session expired",
+    "description": "Your session has expired for security reasons. Please log in again to continue.",
+    "login": "Go to login",
+    "close": "Close"
+  },
+   "locationPermissionBanner": {
+    "blocked": {
+      "title": "This site needs access to your location to work",
+      "instructions": "How to enable location access"
+    },
+    "retry": "Retry",
+    "loading": "Getting your location...",
+    "instructions": {
+      "ios": {
+        "title": "Safari (iPhone/iPad):",
+        "option": "Option 1:",
+        "steps": [
+          "1. Tap 'aA' in the address bar",
+          "2. Website Settings",
+          "3. Location → Allow",
+          "4. Reload the page"
+        ],
+        "alternative": "If that doesn't work:",
+        "alternativeSteps": [
+          "1. Settings → Privacy & Security",
+          "2. Location Services → Safari Websites",
+          "3. Select 'While Using the App'",
+          "4. Return to Safari and reload the page"
+        ]
+      },
+      "safari": {
+        "title": "Safari (Mac):",
+        "steps": [
+          "1. Safari → Settings (or Preferences in older versions)",
+          "2. Websites → Location",
+          "3. Find this website in the list",
+          "4. Change the permission to 'Allow'",
+          "5. Reload the page"
+        ]
+      },
+      "firefox": "Firefox:\nClick the permissions icon at the top-left of the address bar → Allow Location",
+      "edge": "Edge:\nClick the site icon at the top-left of the address bar → Permissions → Location → Allow",
+      "opera": "Opera:\nClick the site lock icon at the top-left of the address bar → Location → Allow",
+      "chrome": "Chrome:\nClick the site settings icon at the top-left of the address bar → Location → Allow"
+    }
+  },
+  "adminLayout": {
+    "messages": {
+      "logoutSuccess": "Successfully logged out",
+      "logoutError": "An error occurred while logging out",
+      "expiredSessionError": "Error while logging out after session expiration"
+    }
   }
 }

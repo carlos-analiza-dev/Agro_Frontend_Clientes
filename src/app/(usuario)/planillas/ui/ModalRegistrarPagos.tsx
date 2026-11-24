@@ -1,9 +1,10 @@
-// components/planillas-trabajadores/ModalRegistrarPagos.tsx
 "use client";
+
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
+import { useTranslations } from "next-intl";
 import Modal from "@/components/generics/Modal";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -32,17 +33,21 @@ const ModalRegistrarPagos = ({
   moneda,
   onSuccess,
 }: Props) => {
+  const t = useTranslations("modalRegistrarPagos");
   const queryClient = useQueryClient();
   const { data: detalles, isLoading } = useGetDetailsPlanilla(planillaId);
+
   const [selectedPayments, setSelectedPayments] = useState<{
     [detalleId: string]: { selected: boolean; metodoPago: string };
   }>({});
+
   const [loading, setLoading] = useState(false);
 
   const handleSelectAll = (checked: boolean) => {
     if (!detalles?.planilla?.detalles) return;
 
     const newSelected: typeof selectedPayments = {};
+
     detalles.planilla.detalles.forEach((detalle: any) => {
       if (!detalle.pagado) {
         newSelected[detalle.id] = {
@@ -51,6 +56,7 @@ const ModalRegistrarPagos = ({
         };
       }
     });
+
     setSelectedPayments(newSelected);
   };
 
@@ -83,14 +89,15 @@ const ModalRegistrarPagos = ({
       }));
 
     if (pagos.length === 0) {
-      toast.error("Seleccione al menos un trabajador para pagar");
+      toast.error(t("messages.selectAtLeastOne"));
       return;
     }
 
     setLoading(true);
+
     try {
       await PagarPlanilla(planillaId, pagos);
-      toast.success("Pagos registrados exitosamente");
+      toast.success(t("messages.success"));
       onSuccess();
       setOpen(false);
       setSelectedPayments({});
@@ -101,10 +108,11 @@ const ModalRegistrarPagos = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al registrar los pagos";
+            : t("errors.registerPayments");
+
         toast.error(errorMessage);
       } else {
-        toast.error("Ocurrió un error al registrar los pagos");
+        toast.error(t("errors.unexpected"));
       }
     } finally {
       setLoading(false);
@@ -113,12 +121,15 @@ const ModalRegistrarPagos = ({
 
   const getTotalSeleccionado = () => {
     if (!detalles?.planilla?.detalles) return 0;
+
     let total = 0;
+
     detalles.planilla.detalles.forEach((detalle: any) => {
       if (selectedPayments[detalle.id]?.selected) {
         total += Number(detalle.totalAPagar);
       }
     });
+
     return total;
   };
 
@@ -127,12 +138,7 @@ const ModalRegistrarPagos = ({
 
   if (isLoading) {
     return (
-      <Modal
-        open={open}
-        onOpenChange={setOpen}
-        title="Registrar Pagos"
-        size="2xl"
-      >
+      <Modal open={open} onOpenChange={setOpen} title={t("title")} size="2xl">
         <div className="space-y-4">
           <Skeleton className="h-20 w-full" />
           <Skeleton className="h-40 w-full" />
@@ -145,33 +151,32 @@ const ModalRegistrarPagos = ({
     <Modal
       open={open}
       onOpenChange={setOpen}
-      title={`Registrar Pagos - ${planillaNombre}`}
-      description={`${trabajadoresPendientes} trabajadores pendientes de pago`}
+      title={t("titleWithName", { name: planillaNombre })}
+      description={t("pendingWorkers", { count: trabajadoresPendientes })}
       size="3xl"
     >
       <div className="space-y-6">
-        {/* Resumen */}
         <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-lg">
           <div className="flex justify-between items-center">
             <div>
               <p className="text-sm text-muted-foreground">
-                Total a Pagar Seleccionado
+                {t("summary.selectedTotal")}
               </p>
               <p className="text-2xl font-bold text-blue-600">
                 {formatCurrency(getTotalSeleccionado(), moneda)}
               </p>
             </div>
+
             <Button
               variant="outline"
               size="sm"
               onClick={() => handleSelectAll(true)}
             >
-              Seleccionar Todos
+              {t("buttons.selectAll")}
             </Button>
           </div>
         </div>
 
-        {/* Lista de trabajadores */}
         <div className="space-y-4 max-h-96 overflow-y-auto">
           {detalles?.planilla?.detalles?.map((detalle: any) => {
             if (detalle.pagado) return null;
@@ -187,6 +192,7 @@ const ModalRegistrarPagos = ({
                         handleSelectOne(detalle.id, checked as boolean)
                       }
                     />
+
                     <div>
                       <Label
                         htmlFor={detalle.id}
@@ -194,17 +200,20 @@ const ModalRegistrarPagos = ({
                       >
                         {detalle.trabajador.nombre}
                       </Label>
+
                       <p className="text-sm text-muted-foreground">
                         {detalle.trabajador.identificacion}
                       </p>
                     </div>
                   </div>
+
                   <div className="text-right">
                     <p className="font-semibold text-green-600">
                       {formatCurrency(detalle.totalAPagar, moneda)}
                     </p>
+
                     <p className="text-xs text-muted-foreground">
-                      {detalle.diasTrabajados} días trabajados
+                      {t("workedDays", { count: detalle.diasTrabajados })}
                     </p>
                   </div>
                 </div>
@@ -224,24 +233,28 @@ const ModalRegistrarPagos = ({
                           id={`efectivo-${detalle.id}`}
                         />
                         <Label htmlFor={`efectivo-${detalle.id}`}>
-                          Efectivo
+                          {t("paymentMethods.cash")}
                         </Label>
                       </div>
+
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem
                           value="transferencia"
                           id={`transferencia-${detalle.id}`}
                         />
                         <Label htmlFor={`transferencia-${detalle.id}`}>
-                          Transferencia
+                          {t("paymentMethods.transfer")}
                         </Label>
                       </div>
+
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem
                           value="cheque"
                           id={`cheque-${detalle.id}`}
                         />
-                        <Label htmlFor={`cheque-${detalle.id}`}>Cheque</Label>
+                        <Label htmlFor={`cheque-${detalle.id}`}>
+                          {t("paymentMethods.check")}
+                        </Label>
                       </div>
                     </RadioGroup>
                   </div>
@@ -253,25 +266,23 @@ const ModalRegistrarPagos = ({
           {trabajadoresPendientes === 0 && (
             <div className="text-center py-8">
               <AlertCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-              <p className="text-gray-500">
-                Todos los trabajadores ya están pagados
-              </p>
+              <p className="text-gray-500">{t("messages.allPaid")}</p>
             </div>
           )}
         </div>
 
-        {/* Botones de acción */}
         <div className="flex justify-end gap-3 pt-4 border-t">
           <Button variant="outline" onClick={() => setOpen(false)}>
-            Cancelar
+            {t("buttons.cancel")}
           </Button>
+
           <Button
             onClick={handleSubmit}
             disabled={loading || getTotalSeleccionado() === 0}
             className="bg-green-600 hover:bg-green-700"
           >
             <CreditCard className="h-4 w-4 mr-2" />
-            {loading ? "Registrando..." : "Registrar Pagos"}
+            {loading ? t("buttons.registering") : t("buttons.registerPayments")}
           </Button>
         </div>
       </div>

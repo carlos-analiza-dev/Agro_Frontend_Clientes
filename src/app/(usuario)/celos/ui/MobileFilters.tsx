@@ -1,3 +1,5 @@
+"use client";
+
 import { Animal } from "@/api/animales/interfaces/response-animales.interface";
 import { ResponseEspecies } from "@/api/especies/interfaces/response-especies.interface";
 import { ResponseFincasByPropietario } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
@@ -32,11 +34,12 @@ import {
 import { FiltrosCelos } from "@/interfaces/filtros/celos.filtros.interface";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS, es } from "date-fns/locale";
 import { CalendarIcon, Search, X } from "lucide-react";
 import { Dispatch, SetStateAction, useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
+import { useTranslations, useLocale } from "next-intl";
 
 interface Props {
   filtrosVisibles: boolean;
@@ -67,6 +70,10 @@ const MobileFilters = ({
   aplicarFiltros,
   limpiarFiltros,
 }: Props) => {
+  const t = useTranslations("mobileFilters");
+  const locale = useLocale();
+  const dateLocale = locale === "en" ? enUS : es;
+
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -110,19 +117,19 @@ const MobileFilters = ({
   useEffect(() => {
     if (selectedAnimal) {
       setSearchTerm(
-        `${selectedAnimal.identificador || ""} - ${selectedAnimal.nombre_animal || "Sin nombre"}`,
+        `${selectedAnimal.identificador || ""} - ${selectedAnimal.nombre_animal || t("animal.noName")}`,
       );
     } else {
       setSearchTerm("");
     }
-  }, [selectedAnimal]);
+  }, [selectedAnimal, t]);
 
   const handleSelectAnimal = (animalId: string) => {
     handleFilterChange("animalId", animalId);
     const animal = hembras?.find((a) => a.id === animalId);
     if (animal) {
       setSearchTerm(
-        `${animal.identificador || ""} - ${animal.nombre_animal || "Sin nombre"}`,
+        `${animal.identificador || ""} - ${animal.nombre_animal || t("animal.noName")}`,
       );
     }
     setIsSearchOpen(false);
@@ -138,25 +145,23 @@ const MobileFilters = ({
     <Sheet open={filtrosVisibles} onOpenChange={setFiltrosVisibles}>
       <SheetContent side="bottom" className="h-[90vh] rounded-t-xl">
         <SheetHeader className="mb-4">
-          <SheetTitle>Filtros</SheetTitle>
-          <SheetDescription>
-            Filtra los registros de celo por diferentes criterios
-          </SheetDescription>
+          <SheetTitle>{t("title")}</SheetTitle>
+          <SheetDescription>{t("description")}</SheetDescription>
         </SheetHeader>
 
         <div className="space-y-4 overflow-y-auto pb-20">
           <div className="space-y-2">
-            <Label htmlFor="fincaId-mobile">Finca</Label>
+            <Label htmlFor="fincaId-mobile">{t("fields.farm")}</Label>
             <Select
               value={tempFiltros.fincaId || "todas"}
               onValueChange={(value) => handleFilterChange("fincaId", value)}
               disabled={fincasLoading}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar finca" />
+                <SelectValue placeholder={t("placeholders.farm")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todas">Todas las fincas</SelectItem>
+                <SelectItem value="todas">{t("options.allFarms")}</SelectItem>
                 {fincas?.fincas.map((finca) => (
                   <SelectItem key={finca.id} value={finca.id}>
                     {finca.nombre_finca}
@@ -167,7 +172,7 @@ const MobileFilters = ({
           </div>
 
           <div className="space-y-2" ref={searchRef}>
-            <Label htmlFor="animalSearch-mobile">Animal</Label>
+            <Label htmlFor="animalSearch-mobile">{t("fields.animal")}</Label>
             <div className="relative">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50" />
@@ -175,8 +180,13 @@ const MobileFilters = ({
                   id="animalSearch-mobile"
                   placeholder={
                     selectedAnimal
-                      ? `${selectedAnimal.identificador || selectedAnimal.nombre_animal || "Animal"} seleccionado`
-                      : "Buscar hembra..."
+                      ? t("placeholders.selectedAnimal", {
+                          animal:
+                            selectedAnimal.identificador ||
+                            selectedAnimal.nombre_animal ||
+                            t("animal.generic"),
+                        })
+                      : t("placeholders.searchFemale")
                   }
                   value={searchTerm}
                   onChange={(e) => {
@@ -202,6 +212,8 @@ const MobileFilters = ({
                   <button
                     type="button"
                     onClick={handleClearAnimal}
+                    aria-label={t("ariaLabels.clearAnimal")}
+                    title={t("ariaLabels.clearAnimal")}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full"
                   >
                     <X className="h-4 w-4" />
@@ -211,7 +223,7 @@ const MobileFilters = ({
 
               {!tempFiltros.fincaId && (
                 <p className="text-xs text-muted-foreground mt-1">
-                  Selecciona una finca primero
+                  {t("messages.selectFarmFirst")}
                 </p>
               )}
 
@@ -244,11 +256,11 @@ const MobileFilters = ({
                           <p className="text-sm font-medium truncate">
                             {animal.identificador ||
                               animal.nombre_animal ||
-                              "Sin identificar"}
+                              t("animal.unidentified")}
                           </p>
                           <p className="text-xs text-gray-500">
                             {animal.especie?.nombre ||
-                              "Especie no especificada"}
+                              t("animal.unspecifiedSpecies")}
                             {animal.color && ` • ${animal.color}`}
                           </p>
                         </div>
@@ -259,9 +271,11 @@ const MobileFilters = ({
                     ))
                   ) : (
                     <div className="py-6 text-center text-sm">
-                      <p className="text-gray-500">No se encontraron hembras</p>
+                      <p className="text-gray-500">
+                        {t("messages.noFemalesFound")}
+                      </p>
                       <p className="text-xs text-gray-400 mt-1">
-                        Intenta con otro término de búsqueda
+                        {t("messages.tryAnotherSearch")}
                       </p>
                     </div>
                   )}
@@ -289,11 +303,11 @@ const MobileFilters = ({
                     <p className="text-sm font-medium">
                       {selectedAnimal.identificador ||
                         selectedAnimal.nombre_animal ||
-                        "Animal"}
+                        t("animal.generic")}
                     </p>
                     <p className="text-xs text-gray-600">
                       {selectedAnimal.especie?.nombre ||
-                        "Especie no especificada"}
+                        t("animal.unspecifiedSpecies")}
                       {selectedAnimal.color && ` • ${selectedAnimal.color}`}
                     </p>
                   </div>
@@ -304,17 +318,17 @@ const MobileFilters = ({
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label htmlFor="especie-mobile">Especie</Label>
+              <Label htmlFor="especie-mobile">{t("fields.species")}</Label>
               <Select
                 value={tempFiltros.especie || "todas"}
                 onValueChange={(value) => handleFilterChange("especie", value)}
                 disabled={especiesLoading}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Especie" />
+                  <SelectValue placeholder={t("placeholders.species")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="todas">Todas</SelectItem>
+                  <SelectItem value="todas">{t("options.all")}</SelectItem>
                   {especies?.map((especie) => (
                     <SelectItem key={especie.id} value={especie.nombre}>
                       {especie.nombre}
@@ -325,7 +339,7 @@ const MobileFilters = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="intensidad-mobile">Intensidad</Label>
+              <Label htmlFor="intensidad-mobile">{t("fields.intensity")}</Label>
               <Select
                 value={tempFiltros.intensidad || "todas"}
                 onValueChange={(value) =>
@@ -333,14 +347,18 @@ const MobileFilters = ({
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Intensidad" />
+                  <SelectValue placeholder={t("placeholders.intensity")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="todas">Todas</SelectItem>
-                  <SelectItem value="BAJO">Bajo</SelectItem>
-                  <SelectItem value="MEDIO">Medio</SelectItem>
-                  <SelectItem value="ALTO">Alto</SelectItem>
-                  <SelectItem value="MUY_ALTO">Muy Alto</SelectItem>
+                  <SelectItem value="todas">{t("options.all")}</SelectItem>
+                  <SelectItem value="BAJO">{t("intensities.low")}</SelectItem>
+                  <SelectItem value="MEDIO">
+                    {t("intensities.medium")}
+                  </SelectItem>
+                  <SelectItem value="ALTO">{t("intensities.high")}</SelectItem>
+                  <SelectItem value="MUY_ALTO">
+                    {t("intensities.veryHigh")}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -349,12 +367,12 @@ const MobileFilters = ({
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="fechas">
               <AccordionTrigger className="py-2">
-                <span className="text-sm font-medium">Fechas</span>
+                <span className="text-sm font-medium">{t("fields.dates")}</span>
               </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-4 pt-2">
                   <div className="space-y-2">
-                    <Label>Fecha Inicio</Label>
+                    <Label>{t("fields.startDate")}</Label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
@@ -370,8 +388,9 @@ const MobileFilters = ({
                               ? format(
                                   new Date(tempFiltros.fechaInicio),
                                   "dd/MM/yyyy",
+                                  { locale: dateLocale },
                                 )
-                              : "Seleccionar fecha"}
+                              : t("placeholders.selectDate")}
                           </span>
                         </Button>
                       </PopoverTrigger>
@@ -389,14 +408,14 @@ const MobileFilters = ({
                               date?.toISOString(),
                             )
                           }
-                          locale={es}
+                          locale={dateLocale}
                         />
                       </PopoverContent>
                     </Popover>
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Fecha Fin</Label>
+                    <Label>{t("fields.endDate")}</Label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
@@ -412,8 +431,9 @@ const MobileFilters = ({
                               ? format(
                                   new Date(tempFiltros.fechaFin),
                                   "dd/MM/yyyy",
+                                  { locale: dateLocale },
                                 )
-                              : "Seleccionar fecha"}
+                              : t("placeholders.selectDate")}
                           </span>
                         </Button>
                       </PopoverTrigger>
@@ -428,7 +448,7 @@ const MobileFilters = ({
                           onSelect={(date) =>
                             handleFilterChange("fechaFin", date?.toISOString())
                           }
-                          locale={es}
+                          locale={dateLocale}
                           initialFocus
                         />
                       </PopoverContent>
@@ -441,13 +461,15 @@ const MobileFilters = ({
 
           <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t flex gap-2">
             <Button onClick={aplicarFiltros} className="flex-1" size="lg">
-              Aplicar Filtros
+              {t("buttons.applyFilters")}
             </Button>
             <Button
               variant="outline"
               onClick={limpiarFiltros}
               size="lg"
               className="px-6"
+              aria-label={t("buttons.clearFilters")}
+              title={t("buttons.clearFilters")}
             >
               <X className="h-4 w-4" />
             </Button>

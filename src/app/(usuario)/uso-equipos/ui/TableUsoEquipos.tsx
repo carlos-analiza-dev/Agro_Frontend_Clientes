@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { UsosEquipo } from "@/api/uso-equipos/interfaces/response-uso-equipos.interface";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,6 +24,8 @@ interface Props {
 }
 
 const TableUsoEquipos = ({ usosEquipo, handleEdit, isMobile }: Props) => {
+  const t = useTranslations("tableUsoEquipos");
+
   if (isMobile) {
     return (
       <div className="space-y-4">
@@ -37,20 +42,26 @@ const TableUsoEquipos = ({ usosEquipo, handleEdit, isMobile }: Props) => {
                   </p>
                 </div>
               </div>
+
               <Button
                 onClick={() => handleEdit(uso)}
                 variant="ghost"
                 size="sm"
                 className="absolute top-3 right-3 h-8 w-8 p-0"
+                aria-label={t("actions.edit")}
+                title={t("actions.edit")}
               >
                 <Edit2Icon className="h-4 w-4" />
               </Button>
             </CardHeader>
+
             <CardContent className="space-y-3">
               <div className="flex justify-between items-start">
                 <span className="text-sm text-muted-foreground flex items-center gap-1">
-                  <User className="h-3.5 w-3.5" /> Operador
+                  <User className="h-3.5 w-3.5" />
+                  {t("fields.operator")}
                 </span>
+
                 <div className="text-right flex-1 ml-4">
                   {uso.operador ? (
                     <div>
@@ -63,7 +74,7 @@ const TableUsoEquipos = ({ usosEquipo, handleEdit, isMobile }: Props) => {
                     </div>
                   ) : (
                     <span className="text-sm text-muted-foreground">
-                      No asignado
+                      {t("values.unassigned")}
                     </span>
                   )}
                 </div>
@@ -71,8 +82,10 @@ const TableUsoEquipos = ({ usosEquipo, handleEdit, isMobile }: Props) => {
 
               <div className="flex justify-between items-start">
                 <span className="text-sm text-muted-foreground flex items-center gap-1">
-                  <Wrench className="h-3.5 w-3.5" /> Actividad
+                  <Wrench className="h-3.5 w-3.5" />
+                  {t("fields.activity")}
                 </span>
+
                 <div className="text-right flex-1 ml-4">
                   {uso.actividad ? (
                     <p className="text-sm break-words">
@@ -80,7 +93,7 @@ const TableUsoEquipos = ({ usosEquipo, handleEdit, isMobile }: Props) => {
                     </p>
                   ) : (
                     <span className="text-sm text-muted-foreground">
-                      No asignada
+                      {t("values.unassigned")}
                     </span>
                   )}
                 </div>
@@ -88,7 +101,8 @@ const TableUsoEquipos = ({ usosEquipo, handleEdit, isMobile }: Props) => {
 
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground flex items-center gap-1">
-                  <Calendar className="h-3.5 w-3.5" /> Inicio
+                  <Calendar className="h-3.5 w-3.5" />
+                  {t("fields.start")}
                 </span>
                 <span className="text-sm">
                   {formatDateTimeLocal(uso.fechaInicio)}
@@ -97,7 +111,8 @@ const TableUsoEquipos = ({ usosEquipo, handleEdit, isMobile }: Props) => {
 
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground flex items-center gap-1">
-                  <Calendar className="h-3.5 w-3.5" /> Fin
+                  <Calendar className="h-3.5 w-3.5" />
+                  {t("fields.end")}
                 </span>
                 <span className="text-sm">
                   {formatDateTimeLocal(uso.fechaFin)}
@@ -106,7 +121,8 @@ const TableUsoEquipos = ({ usosEquipo, handleEdit, isMobile }: Props) => {
 
               <div className="flex justify-between items-center pt-1">
                 <span className="text-sm text-muted-foreground flex items-center gap-1">
-                  <Clock className="h-3.5 w-3.5" /> Horas
+                  <Clock className="h-3.5 w-3.5" />
+                  {t("fields.hours")}
                 </span>
                 <Badge variant="outline" className="text-sm">
                   {formatHorasTrabajadas(uso.horasTrabajadas)}
@@ -124,15 +140,16 @@ const TableUsoEquipos = ({ usosEquipo, handleEdit, isMobile }: Props) => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Equipo</TableHead>
-            <TableHead>Operador</TableHead>
-            <TableHead>Actividad</TableHead>
-            <TableHead>Fecha Inicio</TableHead>
-            <TableHead>Fecha Fin</TableHead>
-            <TableHead>Horas</TableHead>
-            <TableHead className="text-right">Acciones</TableHead>
+            <TableHead>{t("columns.equipment")}</TableHead>
+            <TableHead>{t("columns.operator")}</TableHead>
+            <TableHead>{t("columns.activity")}</TableHead>
+            <TableHead>{t("columns.startDate")}</TableHead>
+            <TableHead>{t("columns.endDate")}</TableHead>
+            <TableHead>{t("columns.hours")}</TableHead>
+            <TableHead className="text-right">{t("columns.actions")}</TableHead>
           </TableRow>
         </TableHeader>
+
         <TableBody>
           {usosEquipo.map((uso) => (
             <TableRow key={uso.id}>
@@ -144,6 +161,7 @@ const TableUsoEquipos = ({ usosEquipo, handleEdit, isMobile }: Props) => {
                   </div>
                 </div>
               </TableCell>
+
               <TableCell>
                 {uso.operador ? (
                   <div>
@@ -153,25 +171,33 @@ const TableUsoEquipos = ({ usosEquipo, handleEdit, isMobile }: Props) => {
                     </div>
                   </div>
                 ) : (
-                  <span className="text-muted-foreground">No asignado</span>
+                  <span className="text-muted-foreground">
+                    {t("values.unassigned")}
+                  </span>
                 )}
               </TableCell>
+
               <TableCell>
                 {uso.actividad ? (
                   <div className="max-w-xs">
                     <p className="truncate">{uso.actividad.descripcion}</p>
                   </div>
                 ) : (
-                  <span className="text-muted-foreground">No asignada</span>
+                  <span className="text-muted-foreground">
+                    {t("values.unassigned")}
+                  </span>
                 )}
               </TableCell>
+
               <TableCell>{formatDateTimeLocal(uso.fechaInicio)}</TableCell>
               <TableCell>{formatDateTimeLocal(uso.fechaFin)}</TableCell>
+
               <TableCell>
                 <Badge variant="outline">
                   {formatHorasTrabajadas(uso.horasTrabajadas)}
                 </Badge>
               </TableCell>
+
               <TableCell className="text-right">
                 <div className="flex justify-end gap-2">
                   <Button
@@ -179,6 +205,8 @@ const TableUsoEquipos = ({ usosEquipo, handleEdit, isMobile }: Props) => {
                     variant="ghost"
                     size="icon"
                     onClick={() => handleEdit(uso)}
+                    aria-label={t("actions.edit")}
+                    title={t("actions.edit")}
                   >
                     <Edit2Icon className="h-4 w-4" />
                   </Button>

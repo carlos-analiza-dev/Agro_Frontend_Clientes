@@ -10,6 +10,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import React, { Dispatch, SetStateAction } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   setOpenModal: Dispatch<SetStateAction<boolean>>;
@@ -24,25 +25,23 @@ const CardTabResultado = ({
   isPending,
   handleExitosoChange,
 }: Props) => {
+  const t = useTranslations("cardTabResultado");
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Resultado del Servicio</CardTitle>
-        <CardDescription>
-          Marca si el servicio fue exitoso o no. Esto afectará el estado del
-          celo asociado.
-        </CardDescription>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
           <div className="flex items-center justify-between p-4 border rounded-lg">
             <div className="space-y-1">
               <Label htmlFor="exitoso" className="text-base font-medium">
-                Servicio Exitoso
+                {t("successfulService")}
               </Label>
               <p className="text-sm text-gray-500">
-                Marcar como exitoso si la hembra quedó preñada después de este
-                servicio
+                {t("successfulDescription")}
               </p>
             </div>
             <Switch
@@ -56,8 +55,7 @@ const CardTabResultado = ({
           {selectedServicio?.exitoso && (
             <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
               <p className="text-sm text-green-800">
-                ✅ Este servicio está marcado como exitoso. El estado del celo
-                asociado se actualizará a PREÑADO.
+                {t("messages.successful")}
               </p>
             </div>
           )}
@@ -67,16 +65,14 @@ const CardTabResultado = ({
             selectedServicio.estado !== "PROGRAMADO" && (
               <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <p className="text-sm text-yellow-800">
-                  ⚠️ Este servicio está marcado como no exitoso. Si se confirma
-                  que la hembra no quedó preñada, el estado del celo asociado se
-                  actualizará a NO_FECUNDADO.
+                  {t("messages.unsuccessful")}
                 </p>
               </div>
             )}
 
           <div className="flex justify-end gap-2 pt-4">
             <Button variant="outline" onClick={() => setOpenModal(false)}>
-              Cerrar
+              {t("buttons.close")}
             </Button>
           </div>
         </div>

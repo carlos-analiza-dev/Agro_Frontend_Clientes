@@ -13,6 +13,7 @@ import {
   CartesianGrid,
   Cell,
 } from "recharts";
+import { useLocale, useTranslations } from "next-intl";
 
 interface Props {
   resumen: ResponseEstadosPlanilla[] | undefined;
@@ -25,11 +26,26 @@ const ResumenEstadosPlanilla = ({
   cargando_resumen,
   moneda,
 }: Props) => {
+  const t = useTranslations("resumenEstadosPlanilla");
+  const locale = useLocale();
+
+  const getEstadoLabel = (estado: string) => {
+    const key = `statuses.${estado.toUpperCase()}`;
+    return t.has(key) ? t(key) : estado;
+  };
+
+  const formatNumber = (value: number) => {
+    return new Intl.NumberFormat(locale === "en" ? "en-US" : "es-HN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value);
+  };
+
   if (cargando_resumen) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Resumen de Planillas</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <Skeleton className="h-6 w-32" />
@@ -47,12 +63,13 @@ const ResumenEstadosPlanilla = ({
       ANULADA: "#ef4444",
       PENDIENTE: "#3b82f6",
     };
+
     return colors[estado] || "#8884d8";
   };
 
   const dataWithColors =
     resumen?.map((item) => ({
-      estado: item.estado.toUpperCase(),
+      estado: getEstadoLabel(item.estado),
       total: Number(item.totalNeto),
       color: getBarColor(item.estado.toUpperCase()),
     })) || [];
@@ -60,9 +77,7 @@ const ResumenEstadosPlanilla = ({
   return (
     <Card className="w-full rounded-2xl shadow-md">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold">
-          📊 Resumen de Planillas
-        </CardTitle>
+        <CardTitle className="text-lg font-semibold">📊 {t("title")}</CardTitle>
       </CardHeader>
 
       <CardContent className="space-y-6">
@@ -73,15 +88,15 @@ const ResumenEstadosPlanilla = ({
               className="p-4 rounded-xl border bg-muted/40 flex flex-col gap-1"
             >
               <span className="text-sm text-muted-foreground capitalize">
-                {item.estado}
+                {getEstadoLabel(item.estado)}
               </span>
 
               <span className="text-xl font-bold">
-                {moneda} {Number(item.totalNeto).toFixed(2)}
+                {moneda} {formatNumber(Number(item.totalNeto))}
               </span>
 
               <span className="text-xs text-muted-foreground">
-                {item.cantidad} planilla(s)
+                {t("payrollCount", { count: item.cantidad })}
               </span>
             </div>
           ))}
@@ -103,8 +118,8 @@ const ResumenEstadosPlanilla = ({
               />
               <Tooltip
                 formatter={(value: number) => [
-                  `${moneda} ${value.toFixed(2)}`,
-                  "Total Neto",
+                  `${moneda} ${formatNumber(value)}`,
+                  t("chart.netTotal"),
                 ]}
                 contentStyle={{
                   backgroundColor: "white",
@@ -123,42 +138,54 @@ const ResumenEstadosPlanilla = ({
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
           <div>
-            <p className="text-muted-foreground">Salarios</p>
+            <p className="text-muted-foreground">{t("totals.salaries")}</p>
             <p className="font-semibold">
               {moneda}{" "}
-              {resumen
-                ?.reduce((acc, cur) => acc + Number(cur.totalSalarios), 0)
-                .toFixed(2)}
+              {formatNumber(
+                resumen?.reduce(
+                  (acc, cur) => acc + Number(cur.totalSalarios),
+                  0,
+                ) ?? 0,
+              )}
             </p>
           </div>
 
           <div>
-            <p className="text-muted-foreground">Horas Extras</p>
+            <p className="text-muted-foreground">{t("totals.overtime")}</p>
             <p className="font-semibold">
               {moneda}{" "}
-              {resumen
-                ?.reduce((acc, cur) => acc + Number(cur.totalHorasExtras), 0)
-                .toFixed(2)}
+              {formatNumber(
+                resumen?.reduce(
+                  (acc, cur) => acc + Number(cur.totalHorasExtras),
+                  0,
+                ) ?? 0,
+              )}
             </p>
           </div>
 
           <div>
-            <p className="text-muted-foreground">Bonificaciones</p>
+            <p className="text-muted-foreground">{t("totals.bonuses")}</p>
             <p className="font-semibold">
               {moneda}{" "}
-              {resumen
-                ?.reduce((acc, cur) => acc + Number(cur.totalBonificaciones), 0)
-                .toFixed(2)}
+              {formatNumber(
+                resumen?.reduce(
+                  (acc, cur) => acc + Number(cur.totalBonificaciones),
+                  0,
+                ) ?? 0,
+              )}
             </p>
           </div>
 
           <div>
-            <p className="text-muted-foreground">Deducciones</p>
+            <p className="text-muted-foreground">{t("totals.deductions")}</p>
             <p className="font-semibold text-red-500">
               {moneda}{" "}
-              {resumen
-                ?.reduce((acc, cur) => acc + Number(cur.totalDeducciones), 0)
-                .toFixed(2)}
+              {formatNumber(
+                resumen?.reduce(
+                  (acc, cur) => acc + Number(cur.totalDeducciones),
+                  0,
+                ) ?? 0,
+              )}
             </p>
           </div>
         </div>

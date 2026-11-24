@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 
 import useGetActividadesTrabajadores from "@/hooks/actividades/useGetActividadesTrabajadores";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
@@ -8,7 +9,6 @@ import { useAuthStore } from "@/providers/store/useAuthStore";
 import { FiltrosActividades } from "@/interfaces/filtros/filters-actividades.interface";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { CalendarIcon, Contact, Filter, Plus } from "lucide-react";
@@ -35,8 +35,9 @@ import ButtonAdd from "@/components/generics/ButtonAdd";
 import TitlePage from "@/components/generics/TitlePage";
 
 const ActividadesPage = () => {
-  const { cliente } = useAuthStore();
+  const t = useTranslations("actividadesPage");
 
+  const { cliente } = useAuthStore();
   const router = useRouter();
 
   const isPropietario = cliente?.rol === TipoCliente.PROPIETARIO;
@@ -59,7 +60,6 @@ const ActividadesPage = () => {
   });
 
   const [estadoActivo, setEstadoActivo] = useState<string>("todos");
-
   const [filtrosAbiertos, setFiltrosAbiertos] = useState(false);
 
   const { data: actividadesData, isLoading } =
@@ -187,6 +187,11 @@ const ActividadesPage = () => {
     />
   );
 
+  const getEstadoLabel = (estado: string) => {
+    const key = `statuses.${estado.toLowerCase()}`;
+    return t.has(key) ? t(key) : estado;
+  };
+
   return (
     <div id="id-actividades-container" className="min-h-screen">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
@@ -194,8 +199,8 @@ const ActividadesPage = () => {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <TitlePage
               id_title="id-title-actividades"
-              title={`Actividades Diarias`}
-              description="Gestiona y da seguimiento a las actividades de tus trabajadores"
+              title={t("title")}
+              description={t("description")}
               Icon={Contact}
             />
 
@@ -204,7 +209,7 @@ const ActividadesPage = () => {
               <ButtonAdd
                 id="add-actividad-btn"
                 Icon={Plus}
-                title="Agregar Actividad"
+                title={t("addActivity")}
                 action={() => handleAddActividad()}
                 className="bg-green-600 hover:bg-green-700"
               />
@@ -220,7 +225,7 @@ const ActividadesPage = () => {
                 className="text-base sm:text-lg font-semibold flex items-center gap-2"
               >
                 <Filter className="w-4 h-4 sm:w-5 sm:h-5" />
-                Filtros de búsqueda
+                {t("searchFilters")}
               </CardTitle>
 
               {isMobile && (
@@ -230,7 +235,7 @@ const ActividadesPage = () => {
                   size="sm"
                   onClick={() => setFiltrosAbiertos(!filtrosAbiertos)}
                 >
-                  {filtrosAbiertos ? "Ocultar" : "Mostrar"}
+                  {filtrosAbiertos ? t("hideFilters") : t("showFilters")}
                 </Button>
               )}
             </div>
@@ -259,7 +264,7 @@ const ActividadesPage = () => {
                 value="todos"
                 className="text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2"
               >
-                Todos
+                {t("statuses.all")}
               </TabsTrigger>
 
               {estadosActividad.map((act) => (
@@ -269,7 +274,7 @@ const ActividadesPage = () => {
                   value={act.value}
                   className="text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2"
                 >
-                  {act.label}
+                  {getEstadoLabel(act.value)}
                 </TabsTrigger>
               ))}
             </TabsList>
@@ -289,8 +294,7 @@ const ActividadesPage = () => {
               <CalendarIcon className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
 
               <AlertDescription className="text-sm sm:text-base text-blue-700 dark:text-blue-300">
-                No hay actividades registradas. Aplica otros filtros o crea una
-                nueva actividad.
+                {t("emptyState")}
               </AlertDescription>
             </Alert>
           ) : (
@@ -327,8 +331,10 @@ const ActividadesPage = () => {
                 id="id-resumen-actividades"
                 className="mt-4 text-center text-xs sm:text-sm text-gray-500 dark:text-gray-400"
               >
-                Mostrando {actividadesData?.actividades?.length || 0} de{" "}
-                {actividadesData?.total || 0} actividades
+                {t("showingActivities", {
+                  showing: actividadesData?.actividades?.length || 0,
+                  total: actividadesData?.total || 0,
+                })}
               </div>
             </>
           )}

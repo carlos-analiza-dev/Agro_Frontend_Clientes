@@ -1,4 +1,6 @@
 "use client";
+
+import { useTranslations } from "next-intl";
 import { Configuraciones } from "@/api/configuraciones-trabajadores/interface/response-config-trabajadores.interface";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -44,8 +46,13 @@ const TableConfigTrabajadores = ({
   setSelectedTrabajador,
   handleEditConfig,
 }: Props) => {
+  const t = useTranslations("tableConfigTrabajadores");
+
   const isMobile = useMediaQuery("(max-width: 768px)");
   const isTablet = useMediaQuery("(min-width: 769px) and (max-width: 1024px)");
+
+  const getStatusLabel = (activo: boolean) =>
+    activo ? t("status.active") : t("status.inactive");
 
   if (isMobile) {
     return (
@@ -71,7 +78,7 @@ const TableConfigTrabajadores = ({
                       variant={config.activo ? "default" : "secondary"}
                       className="mt-1 text-xs"
                     >
-                      {config.activo ? "Activo" : "Inactivo"}
+                      {getStatusLabel(config.activo)}
                     </Badge>
                   </div>
                 </div>
@@ -81,6 +88,7 @@ const TableConfigTrabajadores = ({
                     size="icon"
                     className="h-8 w-8 hover:bg-blue-100 dark:hover:bg-blue-900/30"
                     onClick={() => setSelectedTrabajador(config)}
+                    aria-label={t("actions.view")}
                   >
                     <Eye className="h-4 w-4" />
                   </Button>
@@ -89,6 +97,7 @@ const TableConfigTrabajadores = ({
                     size="icon"
                     className="h-8 w-8 hover:bg-yellow-100 dark:hover:bg-yellow-900/30"
                     onClick={() => handleEditConfig(config)}
+                    aria-label={t("actions.edit")}
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
@@ -99,10 +108,12 @@ const TableConfigTrabajadores = ({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Briefcase className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm text-gray-600">Cargo:</span>
+                    <span className="text-sm text-gray-600">
+                      {t("fields.position")}:
+                    </span>
                   </div>
                   <span className="text-sm font-medium">
-                    {config.cargo || "No especificado"}
+                    {config.cargo || t("values.notSpecified")}
                   </span>
                 </div>
 
@@ -110,7 +121,7 @@ const TableConfigTrabajadores = ({
                   <div className="flex items-center gap-2">
                     <DollarSign className="h-4 w-4 text-gray-400" />
                     <span className="text-sm text-gray-600">
-                      Salario Diario:
+                      {t("fields.dailySalary")}:
                     </span>
                   </div>
                   <span className="text-sm font-semibold text-green-600">
@@ -121,27 +132,37 @@ const TableConfigTrabajadores = ({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm text-gray-600">Jornada:</span>
+                    <span className="text-sm text-gray-600">
+                      {t("fields.workSchedule")}:
+                    </span>
                   </div>
                   <span className="text-sm">
-                    {config.horasJornadaSemanal} horas/semana
+                    {t("values.hoursPerWeek", {
+                      count: config.horasJornadaSemanal,
+                    })}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <CalendarDays className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm text-gray-600">Días/Semana:</span>
+                    <span className="text-sm text-gray-600">
+                      {t("fields.daysPerWeek")}:
+                    </span>
                   </div>
                   <span className="text-sm">
-                    {config.diasTrabajadosSemanal || 5} días
+                    {t("values.days", {
+                      count: config.diasTrabajadosSemanal || 5,
+                    })}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Bonificaciones:</span>
+                  <span className="text-sm text-gray-600">
+                    {t("fields.bonuses")}:
+                  </span>
                   {config.bonificacionesFijas &&
-                  config.bonificacionesFijas?.length > 0 ? (
+                  config.bonificacionesFijas.length > 0 ? (
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger>
@@ -167,9 +188,11 @@ const TableConfigTrabajadores = ({
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Deducciones:</span>
+                  <span className="text-sm text-gray-600">
+                    {t("fields.deductions")}:
+                  </span>
                   {config.deduccionesFijas &&
-                  config.deduccionesFijas?.length > 0 ? (
+                  config.deduccionesFijas.length > 0 ? (
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger>
@@ -207,16 +230,26 @@ const TableConfigTrabajadores = ({
         <Table>
           <TableHeader>
             <TableRow className="bg-gray-50 dark:bg-gray-800/50">
-              <TableHead className="font-semibold">Trabajador</TableHead>
-              <TableHead className="font-semibold">Cargo</TableHead>
-              <TableHead className="font-semibold">Salario</TableHead>
-              <TableHead className="font-semibold">Jornada</TableHead>
-              <TableHead className="font-semibold text-center">
-                Bonif/Ded
+              <TableHead className="font-semibold">
+                {t("columns.worker")}
               </TableHead>
-              <TableHead className="font-semibold">Estado</TableHead>
+              <TableHead className="font-semibold">
+                {t("columns.position")}
+              </TableHead>
+              <TableHead className="font-semibold">
+                {t("columns.salary")}
+              </TableHead>
+              <TableHead className="font-semibold">
+                {t("columns.schedule")}
+              </TableHead>
+              <TableHead className="font-semibold text-center">
+                {t("columns.bonusesDeductions")}
+              </TableHead>
+              <TableHead className="font-semibold">
+                {t("columns.status")}
+              </TableHead>
               <TableHead className="font-semibold text-right">
-                Acciones
+                {t("columns.actions")}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -253,26 +286,28 @@ const TableConfigTrabajadores = ({
                   <p className="text-sm font-semibold text-green-600">
                     {formatCurrency(config.salarioDiario, moneda)}
                   </p>
-                  <p className="text-xs text-gray-500">/día</p>
+                  <p className="text-xs text-gray-500">{t("values.perDay")}</p>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3 text-gray-400" />
                     <span className="text-sm">
-                      {config.horasJornadaSemanal}h
+                      {t("values.hoursShort", {
+                        count: config.horasJornadaSemanal,
+                      })}
                     </span>
                   </div>
                 </TableCell>
                 <TableCell className="text-center">
                   <div className="flex items-center justify-center gap-1">
                     {config.bonificacionesFijas &&
-                      config.bonificacionesFijas?.length > 0 && (
+                      config.bonificacionesFijas.length > 0 && (
                         <Badge variant="secondary" className="text-xs">
                           +{config.bonificacionesFijas.length}
                         </Badge>
                       )}
                     {config.deduccionesFijas &&
-                      config.deduccionesFijas?.length > 0 && (
+                      config.deduccionesFijas.length > 0 && (
                         <Badge variant="destructive" className="text-xs">
                           -{config.deduccionesFijas.length}
                         </Badge>
@@ -288,7 +323,7 @@ const TableConfigTrabajadores = ({
                     variant={config.activo ? "default" : "secondary"}
                     className="text-xs"
                   >
-                    {config.activo ? "Activo" : "Inactivo"}
+                    {getStatusLabel(config.activo)}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">
@@ -299,6 +334,7 @@ const TableConfigTrabajadores = ({
                       size="icon"
                       className="h-8 w-8"
                       onClick={() => setSelectedTrabajador(config)}
+                      aria-label={t("actions.view")}
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
@@ -308,6 +344,7 @@ const TableConfigTrabajadores = ({
                       size="icon"
                       className="h-8 w-8"
                       onClick={() => handleEditConfig(config)}
+                      aria-label={t("actions.edit")}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -326,14 +363,30 @@ const TableConfigTrabajadores = ({
       <Table>
         <TableHeader>
           <TableRow className="bg-gray-50 dark:bg-gray-800/50">
-            <TableHead className="font-semibold">Trabajador</TableHead>
-            <TableHead className="font-semibold">Cargo</TableHead>
-            <TableHead className="font-semibold">Salario Diario</TableHead>
-            <TableHead className="font-semibold">Jornada</TableHead>
-            <TableHead className="font-semibold">Bonificaciones</TableHead>
-            <TableHead className="font-semibold">Deducciones</TableHead>
-            <TableHead className="font-semibold">Estado</TableHead>
-            <TableHead className="font-semibold text-right">Acciones</TableHead>
+            <TableHead className="font-semibold">
+              {t("columns.worker")}
+            </TableHead>
+            <TableHead className="font-semibold">
+              {t("columns.position")}
+            </TableHead>
+            <TableHead className="font-semibold">
+              {t("columns.dailySalary")}
+            </TableHead>
+            <TableHead className="font-semibold">
+              {t("columns.schedule")}
+            </TableHead>
+            <TableHead className="font-semibold">
+              {t("columns.bonuses")}
+            </TableHead>
+            <TableHead className="font-semibold">
+              {t("columns.deductions")}
+            </TableHead>
+            <TableHead className="font-semibold">
+              {t("columns.status")}
+            </TableHead>
+            <TableHead className="font-semibold text-right">
+              {t("columns.actions")}
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -370,24 +423,32 @@ const TableConfigTrabajadores = ({
                   <p className="font-semibold text-green-600 dark:text-green-400">
                     {formatCurrency(config.salarioDiario, moneda)}
                   </p>
-                  <p className="text-xs text-gray-500">/día</p>
+                  <p className="text-xs text-gray-500">{t("values.perDay")}</p>
                 </div>
               </TableCell>
               <TableCell>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4 text-gray-400" />
-                    <span>{config.horasJornadaSemanal} horas/semana</span>
+                    <span>
+                      {t("values.hoursPerWeek", {
+                        count: config.horasJornadaSemanal,
+                      })}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-gray-500">
                     <CalendarDays className="h-3 w-3" />
-                    <span>{config.diasTrabajadosSemanal || 5} días/semana</span>
+                    <span>
+                      {t("values.daysPerWeek", {
+                        count: config.diasTrabajadosSemanal || 5,
+                      })}
+                    </span>
                   </div>
                 </div>
               </TableCell>
               <TableCell>
                 {config.bonificacionesFijas &&
-                config.bonificacionesFijas?.length > 0 ? (
+                config.bonificacionesFijas.length > 0 ? (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
@@ -413,7 +474,7 @@ const TableConfigTrabajadores = ({
               </TableCell>
               <TableCell>
                 {config.deduccionesFijas &&
-                config.deduccionesFijas?.length > 0 ? (
+                config.deduccionesFijas.length > 0 ? (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
@@ -442,7 +503,7 @@ const TableConfigTrabajadores = ({
                   variant={config.activo ? "default" : "secondary"}
                   className="gap-1"
                 >
-                  {config.activo ? "Activo" : "Inactivo"}
+                  {getStatusLabel(config.activo)}
                 </Badge>
               </TableCell>
               <TableCell className="text-right">
@@ -453,6 +514,7 @@ const TableConfigTrabajadores = ({
                     size="icon"
                     className="h-8 w-8"
                     onClick={() => setSelectedTrabajador(config)}
+                    aria-label={t("actions.view")}
                   >
                     <Eye className="h-4 w-4" />
                   </Button>
@@ -462,6 +524,7 @@ const TableConfigTrabajadores = ({
                     size="icon"
                     className="h-8 w-8"
                     onClick={() => handleEditConfig(config)}
+                    aria-label={t("actions.edit")}
                   >
                     <Edit className="h-4 w-4" />
                   </Button>

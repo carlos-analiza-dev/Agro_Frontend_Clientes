@@ -34,8 +34,10 @@ import { generarOpcionesMeses } from "@/helpers/funciones/generarOpcionesMeses";
 import { useRouter } from "next/navigation";
 import ButtonAdd from "@/components/generics/ButtonAdd";
 import TitlePage from "@/components/generics/TitlePage";
+import { useTranslations } from "next-intl";
 
 const JornadasTrabajadoresPage = () => {
+  const t = useTranslations("JornadasTrabajadoresPage");
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchName, setSearchName] = useState("");
@@ -166,15 +168,15 @@ const JornadasTrabajadoresPage = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <TitlePage
             id_title="jornadas-trabajadores-page-title"
-            title={`Jornadas de Trabajadores`}
-            description="Registro diario de asistencia y horas extras"
+            title={t("header.title")}
+            description={t("header.description")}
             Icon={NotebookPen}
           />
 
           <ButtonAdd
             id="add-jornada-trabajador-btn"
             Icon={Calendar}
-            title="Registrar Jornada"
+            title={t("header.addButton")}
             action={() => handleAddJornada()}
             className="bg-green-600 hover:bg-green-700"
           />
@@ -185,7 +187,7 @@ const JornadasTrabajadoresPage = () => {
           className="grid grid-cols-1 md:grid-cols-3 gap-4"
         >
           <StatCard
-            title="Total Registros"
+            title={t("stats.totalRecords")}
             value={total}
             icon={Calendar}
             gradientFrom="from-blue-50"
@@ -195,7 +197,7 @@ const JornadasTrabajadoresPage = () => {
           />
 
           <StatCard
-            title="Días Trabajados"
+            title={t("stats.workedDays")}
             value={jornadas.filter((j: any) => j.trabajo).length}
             icon={CheckCircle2}
             gradientFrom="from-green-50"
@@ -205,7 +207,7 @@ const JornadasTrabajadoresPage = () => {
           />
 
           <StatCard
-            title="Total Horas Extras"
+            title={t("stats.totalOvertime")}
             value={jornadas
               .reduce(
                 (sum: number, j: any) => sum + getHorasExtrasTotales(j),
@@ -233,7 +235,7 @@ const JornadasTrabajadoresPage = () => {
                     setMesSeleccionado("");
                   }}
                 >
-                  Rango de fechas
+                  {t("filters.dateRange")}
                 </Button>
                 <Button
                   type="button"
@@ -245,7 +247,7 @@ const JornadasTrabajadoresPage = () => {
                     setFechaFin("");
                   }}
                 >
-                  Por mes
+                  {t("filters.byMonth")}
                 </Button>
               </div>
 
@@ -253,7 +255,7 @@ const JornadasTrabajadoresPage = () => {
                 <div className="relative md:col-span-4">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
-                    placeholder="Buscar por nombre del trabajador..."
+                    placeholder={t("filters.searchPlaceholder")}
                     value={searchName}
                     onChange={(e) => setSearchName(e.target.value)}
                     className="pl-10"
@@ -270,7 +272,7 @@ const JornadasTrabajadoresPage = () => {
                           value={fechaInicio}
                           onChange={(e) => setFechaInicio(e.target.value)}
                           className="pl-10"
-                          placeholder="Fecha inicio"
+                          placeholder={t("filters.startDatePlaceholder")}
                         />
                       </div>
                       <div className="relative">
@@ -280,7 +282,7 @@ const JornadasTrabajadoresPage = () => {
                           value={fechaFin}
                           onChange={(e) => setFechaFin(e.target.value)}
                           className="pl-10"
-                          placeholder="Fecha fin"
+                          placeholder={t("filters.endDatePlaceholder")}
                         />
                       </div>
                     </div>
@@ -295,7 +297,9 @@ const JornadasTrabajadoresPage = () => {
                     >
                       <SelectTrigger>
                         <Calendar className="h-4 w-4 mr-2" />
-                        <SelectValue placeholder="Seleccionar mes" />
+                        <SelectValue
+                          placeholder={t("filters.monthPlaceholder")}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {mesesOpciones.map((mes) => (
@@ -315,12 +319,20 @@ const JornadasTrabajadoresPage = () => {
                   >
                     <SelectTrigger>
                       <Filter className="h-4 w-4 mr-2" />
-                      <SelectValue placeholder="Estado" />
+                      <SelectValue
+                        placeholder={t("filters.statusPlaceholder")}
+                      />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="todos">Todos</SelectItem>
-                      <SelectItem value="trabajo">Trabajó</SelectItem>
-                      <SelectItem value="no-trabajo">No trabajó</SelectItem>
+                      <SelectItem value="todos">
+                        {t("filters.statusAll")}
+                      </SelectItem>
+                      <SelectItem value="trabajo">
+                        {t("filters.statusWorked")}
+                      </SelectItem>
+                      <SelectItem value="no-trabajo">
+                        {t("filters.statusNotWorked")}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -333,7 +345,7 @@ const JornadasTrabajadoresPage = () => {
                     className="w-full"
                   >
                     <X className="h-4 w-4 mr-2" />
-                    Limpiar
+                    {t("filters.clearButton")}
                   </Button>
                 </div>
               </div>
@@ -341,11 +353,11 @@ const JornadasTrabajadoresPage = () => {
               {tieneFiltrosActivos && (
                 <div className="flex flex-wrap gap-2 pt-2 border-t">
                   <span className="text-sm text-gray-500">
-                    Filtros activos:
+                    {t("filters.activeFilters")}
                   </span>
                   {searchName && (
                     <Badge variant="secondary" className="gap-1">
-                      Nombre: {searchName}
+                      {t("filters.badgeName")}: {searchName}
                       <X
                         className="h-3 w-3 cursor-pointer"
                         onClick={() => setSearchName("")}
@@ -354,7 +366,7 @@ const JornadasTrabajadoresPage = () => {
                   )}
                   {tipoFiltroFecha === "rango" && fechaInicio && (
                     <Badge variant="secondary" className="gap-1">
-                      Desde: {fechaInicio}
+                      {t("filters.badgeFrom")}: {fechaInicio}
                       <X
                         className="h-3 w-3 cursor-pointer"
                         onClick={() => setFechaInicio("")}
@@ -363,7 +375,7 @@ const JornadasTrabajadoresPage = () => {
                   )}
                   {tipoFiltroFecha === "rango" && fechaFin && (
                     <Badge variant="secondary" className="gap-1">
-                      Hasta: {fechaFin}
+                      {t("filters.badgeTo")}: {fechaFin}
                       <X
                         className="h-3 w-3 cursor-pointer"
                         onClick={() => setFechaFin("")}
@@ -372,7 +384,7 @@ const JornadasTrabajadoresPage = () => {
                   )}
                   {tipoFiltroFecha === "mes" && mesSeleccionado && (
                     <Badge variant="secondary" className="gap-1">
-                      Mes:{" "}
+                      {t("filters.badgeMonth")}:{" "}
                       {
                         mesesOpciones.find((m) => m.value === mesSeleccionado)
                           ?.label
@@ -385,7 +397,9 @@ const JornadasTrabajadoresPage = () => {
                   )}
                   {filterTrabajo !== "todos" && (
                     <Badge variant="secondary" className="gap-1">
-                      {filterTrabajo === "trabajo" ? "Trabajó" : "No trabajó"}
+                      {filterTrabajo === "trabajo"
+                        ? t("filters.statusWorked")
+                        : t("filters.statusNotWorked")}
                       <X
                         className="h-3 w-3 cursor-pointer"
                         onClick={() => setFilterTrabajo("todos")}
@@ -410,9 +424,9 @@ const JornadasTrabajadoresPage = () => {
             {jornadasFiltradas.length === 0 && (
               <div className="text-center py-12">
                 <Calendar className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                <p className="text-gray-500">No se encontraron jornadas</p>
+                <p className="text-gray-500">{t("emptyState.title")}</p>
                 <p className="text-sm text-gray-400 mt-1">
-                  Prueba con otros filtros o registra una nueva jornada
+                  {t("emptyState.description")}
                 </p>
               </div>
             )}
@@ -433,9 +447,10 @@ const JornadasTrabajadoresPage = () => {
           </CardContent>
         </Card>
       </div>
+
       <Modal
-        title={selectedJornada ? "Editar Jornada" : "Agregar Jornada"}
-        description="Aqui agregaras la jornada del trabajador diaria"
+        title={selectedJornada ? t("modal.editTitle") : t("modal.addTitle")}
+        description={t("modal.description")}
         open={openModalJornada}
         onOpenChange={(open) => {
           setOpenModalJornada(open);

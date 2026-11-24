@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -20,7 +21,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { CalendarIcon, Filter, X, Search } from "lucide-react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS, es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Finca } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
 import { Animal } from "@/api/animales/interfaces/response-animales.interface";
@@ -56,6 +57,10 @@ export const FiltersParto = ({
   isMobile = false,
   onApplyMobile,
 }: FiltersPartoProps) => {
+  const t = useTranslations("filtersParto");
+  const locale = useLocale();
+  const dateLocale = locale === "en" ? enUS : es;
+
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -103,12 +108,12 @@ export const FiltersParto = ({
   useEffect(() => {
     if (selectedAnimal) {
       setSearchTerm(
-        `${selectedAnimal.identificador || ""} - ${selectedAnimal.nombre_animal || "Sin nombre"}`,
+        `${selectedAnimal.identificador || ""} - ${selectedAnimal.nombre_animal || t("animalFallbacks.noName")}`,
       );
     } else {
       setSearchTerm("");
     }
-  }, [selectedAnimal]);
+  }, [selectedAnimal, t]);
 
   const handleSelectAnimal = (animalId: string) => {
     setFiltros({
@@ -116,12 +121,15 @@ export const FiltersParto = ({
       hembra_id: animalId,
       page: 1,
     });
+
     const animal = hembras?.find((a) => a.id === animalId);
+
     if (animal) {
       setSearchTerm(
-        `${animal.identificador || ""} - ${animal.nombre_animal || "Sin nombre"}`,
+        `${animal.identificador || ""} - ${animal.nombre_animal || t("animalFallbacks.noName")}`,
       );
     }
+
     setIsSearchOpen(false);
   };
 
@@ -154,23 +162,25 @@ export const FiltersParto = ({
         <div className="flex justify-between items-center">
           <CardTitle className="text-lg flex items-center gap-2">
             <Filter className="h-4 w-4" />
-            Filtros
+            {t("title")}
             {contarFiltrosActivos() > 0 && (
               <Badge variant="secondary" className="ml-2">
-                {contarFiltrosActivos()} activos
+                {t("activeFilters", { count: contarFiltrosActivos() })}
               </Badge>
             )}
           </CardTitle>
+
           <Button variant="ghost" size="sm" onClick={clearFilters}>
             <X className="h-4 w-4 mr-1" />
-            Limpiar
+            {t("clear")}
           </Button>
         </div>
       </CardHeader>
+
       <CardContent>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Finca</Label>
+            <Label className="text-sm font-medium">{t("fields.farm")}</Label>
             <Select
               value={filtros.finca_id}
               onValueChange={(value) => {
@@ -184,8 +194,9 @@ export const FiltersParto = ({
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar finca" />
+                <SelectValue placeholder={t("placeholders.farm")} />
               </SelectTrigger>
+
               <SelectContent>
                 {fincas?.data?.fincas?.map((f) => (
                   <SelectItem key={f.id} value={f.id}>
@@ -197,15 +208,22 @@ export const FiltersParto = ({
           </div>
 
           <div className="space-y-2" ref={searchRef}>
-            <Label className="text-sm font-medium">Hembra</Label>
+            <Label className="text-sm font-medium">{t("fields.female")}</Label>
+
             <div className="relative">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50" />
+
                 <Input
                   placeholder={
                     selectedAnimal
-                      ? `${selectedAnimal.identificador || selectedAnimal.nombre_animal || "Animal"} seleccionado`
-                      : "Buscar hembra..."
+                      ? t("placeholders.selectedAnimal", {
+                          animal:
+                            selectedAnimal.identificador ||
+                            selectedAnimal.nombre_animal ||
+                            t("animalFallbacks.animal"),
+                        })
+                      : t("placeholders.searchFemale")
                   }
                   value={searchTerm}
                   onChange={(e) => {
@@ -222,10 +240,13 @@ export const FiltersParto = ({
                     selectedAnimal && "bg-blue-50 border-blue-300",
                   )}
                 />
+
                 {selectedAnimal && (
                   <button
                     type="button"
                     onClick={handleClearAnimal}
+                    aria-label={t("buttons.clearFemale")}
+                    title={t("buttons.clearFemale")}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full"
                   >
                     <X className="h-4 w-4" />
@@ -258,18 +279,21 @@ export const FiltersParto = ({
                           className="h-10 w-10 rounded-full object-cover"
                           unoptimized
                         />
+
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate">
                             {animal.identificador ||
                               animal.nombre_animal ||
-                              "Sin identificar"}
+                              t("animalFallbacks.unidentified")}
                           </p>
+
                           <p className="text-xs text-gray-500">
                             {animal.especie?.nombre ||
-                              "Especie no especificada"}
+                              t("animalFallbacks.unspecifiedSpecies")}
                             {animal.color && ` • ${animal.color}`}
                           </p>
                         </div>
+
                         {filtros.hembra_id === animal.id && (
                           <div className="h-2 w-2 rounded-full bg-blue-600 flex-shrink-0" />
                         )}
@@ -279,13 +303,14 @@ export const FiltersParto = ({
                     <div className="py-6 text-center text-sm">
                       <p className="text-gray-500">
                         {filtros.finca_id
-                          ? "No se encontraron hembras en esta finca"
-                          : "No se encontraron hembras"}
+                          ? t("search.noFemalesInFarm")
+                          : t("search.noFemales")}
                       </p>
+
                       <p className="text-xs text-gray-400 mt-1">
                         {filtros.finca_id
-                          ? "Selecciona otra finca o cambia tu búsqueda"
-                          : "Selecciona una finca primero o cambia tu búsqueda"}
+                          ? t("search.changeFarmOrSearch")
+                          : t("search.selectFarmOrSearch")}
                       </p>
                     </div>
                   )}
@@ -309,15 +334,17 @@ export const FiltersParto = ({
                     className="h-8 w-8 rounded-full object-cover"
                     unoptimized
                   />
+
                   <div>
                     <p className="text-sm font-medium">
                       {selectedAnimal.identificador ||
                         selectedAnimal.nombre_animal ||
-                        "Animal"}
+                        t("animalFallbacks.animal")}
                     </p>
+
                     <p className="text-xs text-gray-600">
                       {selectedAnimal.especie?.nombre ||
-                        "Especie no especificada"}
+                        t("animalFallbacks.unspecifiedSpecies")}
                       {selectedAnimal.color && ` • ${selectedAnimal.color}`}
                     </p>
                   </div>
@@ -327,13 +354,14 @@ export const FiltersParto = ({
 
             {hembrasEnFinca && hembrasEnFinca.length > 0 && !selectedAnimal && (
               <p className="text-xs text-muted-foreground">
-                {hembrasEnFinca.length} hembra(s) disponible(s)
+                {t("availableFemales", { count: hembrasEnFinca.length })}
               </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Estado</Label>
+            <Label className="text-sm font-medium">{t("fields.status")}</Label>
+
             <Select
               value={filtros.estado || "todos"}
               onValueChange={(value) =>
@@ -345,29 +373,37 @@ export const FiltersParto = ({
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Todos los estados" />
+                <SelectValue placeholder={t("placeholders.allStatuses")} />
               </SelectTrigger>
+
               <SelectContent>
-                <SelectItem value="todos">Todos los estados</SelectItem>
+                <SelectItem value="todos">
+                  {t("options.allStatuses")}
+                </SelectItem>
                 <SelectItem value={EstadoParto.PROGRAMADO}>
-                  Programado
+                  {t("statuses.programmed")}
                 </SelectItem>
                 <SelectItem value={EstadoParto.EN_PROGRESO}>
-                  En progreso
+                  {t("statuses.inProgress")}
                 </SelectItem>
                 <SelectItem value={EstadoParto.COMPLETADO}>
-                  Completado
+                  {t("statuses.completed")}
                 </SelectItem>
                 <SelectItem value={EstadoParto.COMPLICADO}>
-                  Complicado
+                  {t("statuses.complicated")}
                 </SelectItem>
-                <SelectItem value={EstadoParto.ABORTADO}>Abortado</SelectItem>
+                <SelectItem value={EstadoParto.ABORTADO}>
+                  {t("statuses.aborted")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Tipo de parto</Label>
+            <Label className="text-sm font-medium">
+              {t("fields.birthType")}
+            </Label>
+
             <Select
               value={filtros.tipo_parto || "todos"}
               onValueChange={(value) =>
@@ -379,23 +415,37 @@ export const FiltersParto = ({
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Todos los tipos" />
+                <SelectValue placeholder={t("placeholders.allBirthTypes")} />
               </SelectTrigger>
+
               <SelectContent>
-                <SelectItem value="todos">Todos los tipos</SelectItem>
-                <SelectItem value={TipoParto.NORMAL}>Normal</SelectItem>
-                <SelectItem value={TipoParto.DISTOCICO}>Distócico</SelectItem>
-                <SelectItem value={TipoParto.CESAREA}>Cesárea</SelectItem>
-                <SelectItem value={TipoParto.MUERTE_NATAL}>
-                  Muerte Natal
+                <SelectItem value="todos">
+                  {t("options.allBirthTypes")}
                 </SelectItem>
-                <SelectItem value={TipoParto.ABORTO}>Aborto</SelectItem>
+                <SelectItem value={TipoParto.NORMAL}>
+                  {t("birthTypes.normal")}
+                </SelectItem>
+                <SelectItem value={TipoParto.DISTOCICO}>
+                  {t("birthTypes.dystocic")}
+                </SelectItem>
+                <SelectItem value={TipoParto.CESAREA}>
+                  {t("birthTypes.cesarean")}
+                </SelectItem>
+                <SelectItem value={TipoParto.MUERTE_NATAL}>
+                  {t("birthTypes.stillbirth")}
+                </SelectItem>
+                <SelectItem value={TipoParto.ABORTO}>
+                  {t("birthTypes.abortion")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2 sm:col-span-2 lg:col-span-2">
-            <Label className="text-sm font-medium">Rango de fechas</Label>
+            <Label className="text-sm font-medium">
+              {t("fields.dateRange")}
+            </Label>
+
             <div className="flex gap-2">
               <Popover>
                 <PopoverTrigger asChild>
@@ -409,11 +459,12 @@ export const FiltersParto = ({
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {filtros.fecha_desde
                       ? format(filtros.fecha_desde, "dd/MM/yyyy", {
-                          locale: es,
+                          locale: dateLocale,
                         })
-                      : "Fecha desde"}
+                      : t("placeholders.dateFrom")}
                   </Button>
                 </PopoverTrigger>
+
                 <PopoverContent className="w-auto p-0">
                   <Calendar
                     mode="single"
@@ -422,10 +473,11 @@ export const FiltersParto = ({
                       setFiltros({ ...filtros, fecha_desde: date, page: 1 })
                     }
                     initialFocus
-                    locale={es}
+                    locale={dateLocale}
                   />
                 </PopoverContent>
               </Popover>
+
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -438,11 +490,12 @@ export const FiltersParto = ({
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {filtros.fecha_hasta
                       ? format(filtros.fecha_hasta, "dd/MM/yyyy", {
-                          locale: es,
+                          locale: dateLocale,
                         })
-                      : "Fecha hasta"}
+                      : t("placeholders.dateTo")}
                   </Button>
                 </PopoverTrigger>
+
                 <PopoverContent className="w-auto p-0">
                   <Calendar
                     mode="single"
@@ -451,7 +504,7 @@ export const FiltersParto = ({
                       setFiltros({ ...filtros, fecha_hasta: date, page: 1 })
                     }
                     initialFocus
-                    locale={es}
+                    locale={dateLocale}
                   />
                 </PopoverContent>
               </Popover>
@@ -459,7 +512,10 @@ export const FiltersParto = ({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Items por página</Label>
+            <Label className="text-sm font-medium">
+              {t("fields.itemsPerPage")}
+            </Label>
+
             <Select
               value={filtros.limit.toString()}
               onValueChange={(value) =>
@@ -469,6 +525,7 @@ export const FiltersParto = ({
               <SelectTrigger>
                 <SelectValue placeholder="10" />
               </SelectTrigger>
+
               <SelectContent>
                 <SelectItem value="5">5</SelectItem>
                 <SelectItem value="10">10</SelectItem>
@@ -481,7 +538,7 @@ export const FiltersParto = ({
           {isMobile && onApplyMobile && (
             <div className="col-span-full flex gap-2 pt-2">
               <Button onClick={onApplyMobile} className="flex-1">
-                Aplicar filtros
+                {t("buttons.applyFilters")}
               </Button>
             </div>
           )}

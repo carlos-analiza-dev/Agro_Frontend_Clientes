@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   handleExportToExcel: () => void;
@@ -8,6 +9,8 @@ interface Props {
 }
 
 const ExportButton = ({ handleExportToExcel, isMobile, id }: Props) => {
+  const t = useTranslations("exportButton");
+
   return (
     <Button
       id={id}
@@ -16,7 +19,7 @@ const ExportButton = ({ handleExportToExcel, isMobile, id }: Props) => {
       size={isMobile ? "default" : "sm"}
     >
       <Download className="mr-2 h-4 w-4" />
-      Exportar Excel
+      {t("exportExcel")}
     </Button>
   );
 };

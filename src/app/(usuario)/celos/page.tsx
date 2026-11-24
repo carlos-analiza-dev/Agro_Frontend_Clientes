@@ -1,5 +1,7 @@
 "use client";
+
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Cog, Filter, Loader2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,6 +26,8 @@ import ButtonAdd from "@/components/generics/ButtonAdd";
 import TitlePage from "@/components/generics/TitlePage";
 
 const CelosAnimalPage = () => {
+  const t = useTranslations("celosAnimalPage");
+
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id ?? "";
   const router = useRouter();
@@ -46,8 +50,10 @@ const CelosAnimalPage = () => {
 
   const { data: fincas, isLoading: fincasLoading } =
     useFincasPropietarios(clienteId);
+
   const { data: animales, isLoading: animalesLoading } =
     useGetAnimalesPropietario();
+
   const hembras = animales?.filter(
     (animal) => animal.sexo === SexoAnimal.Hembra,
   );
@@ -98,6 +104,7 @@ const CelosAnimalPage = () => {
   const aplicarFiltros = () => {
     setFiltros({ ...tempFiltros, offset: 1 });
     refetch();
+
     if (isMobile) {
       setFiltrosVisibles(false);
     }
@@ -134,11 +141,8 @@ const CelosAnimalPage = () => {
         className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
       >
         <TitlePage
-          title={`Control de Celos`}
-          description="Registra y monitorea los celos de tus animales. Cada registro será
-            evaluado automáticamente para validar que el animal cumpla con la
-            edad mínima reproductiva de su especie antes de continuar con
-            procesos como monta o inseminación."
+          title={t("title")}
+          description={t("description")}
           Icon={Cog}
         />
 
@@ -150,13 +154,13 @@ const CelosAnimalPage = () => {
             className="flex-1 sm:flex-none md:hidden"
           >
             <Filter className="h-4 w-4 mr-2" />
-            Filtros
+            {t("buttons.filters")}
           </Button>
 
           <div id="celos-nuevo-btn">
             <ButtonAdd
               Icon={Plus}
-              title="Nuevo Celo"
+              title={t("buttons.newHeat")}
               action={handleCreateRegistro}
               className="bg-green-600 hover:bg-green-700"
             />
@@ -207,8 +211,8 @@ const CelosAnimalPage = () => {
             </div>
           ) : error ? (
             <MessageError
-              titulo="No se encontraron registros de celo"
-              descripcion="Error al cargar los datos. Por favor intenta de nuevo."
+              titulo={t("messages.noRecords")}
+              descripcion={t("messages.loadError")}
             />
           ) : (
             <>
@@ -224,8 +228,8 @@ const CelosAnimalPage = () => {
               {(!data?.celos || data.celos.length === 0) && (
                 <div className="p-8 text-center">
                   <MessageError
-                    titulo="No se encontraron registros de celo"
-                    descripcion="No hay datos disponibles para mostrar."
+                    titulo={t("messages.noRecords")}
+                    descripcion={t("messages.noData")}
                   />
                 </div>
               )}
@@ -251,8 +255,8 @@ const CelosAnimalPage = () => {
         <Modal
           open={openModal}
           onOpenChange={setOpenModal}
-          title="Agregar Nuevo Celo"
-          description="Aquí podrás agregar el período de celo de tus vacas"
+          title={t("modal.title")}
+          description={t("modal.description")}
           size="xl"
           height="lg"
         >

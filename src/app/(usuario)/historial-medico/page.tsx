@@ -1,4 +1,6 @@
 "use client";
+
+import { useTranslations } from "next-intl";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import useGetHistorialAnimal from "@/hooks/historial-clinico/useGetHistorialAnimal";
 import { useAuthStore } from "@/providers/store/useAuthStore";
@@ -26,6 +28,8 @@ import CardHistorial from "@/components/generics/CardHistorial";
 import TitlePage from "@/components/generics/TitlePage";
 
 const HistorialMedicoAnimalPage = () => {
+  const t = useTranslations("historialMedicoAnimalPage");
+
   const { cliente } = useAuthStore();
   const userId = cliente?.id || "";
 
@@ -185,8 +189,8 @@ const HistorialMedicoAnimalPage = () => {
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <TitlePage
-          title={`Historial Médico Animal`}
-          description="Gestiona y consulta el historial clínico de tus animales"
+          title={t("title")}
+          description={t("description")}
           Icon={FolderClock}
         />
       </div>
@@ -195,20 +199,22 @@ const HistorialMedicoAnimalPage = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <Filter className="h-5 w-5" />
-            Filtros de Búsqueda
+            {t("filters.title")}
           </CardTitle>
         </CardHeader>
+
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium flex items-center gap-2">
                 <Building className="h-4 w-4" />
-                Buscar Finca
+                {t("filters.farm")}
               </label>
+
               <div className="relative">
                 <Input
                   type="text"
-                  placeholder="Escribe el nombre de la finca..."
+                  placeholder={t("placeholders.farm")}
                   value={busquedaFinca}
                   onChange={(e) => setBusquedaFinca(e.target.value)}
                   className="pr-10"
@@ -226,6 +232,8 @@ const HistorialMedicoAnimalPage = () => {
                     size="sm"
                     onClick={() => handleFiltroChange("fincaNombre", "")}
                     className="h-6 w-6 p-0 hover:bg-blue-100"
+                    aria-label={t("ariaLabels.removeFarmFilter")}
+                    title={t("ariaLabels.removeFarmFilter")}
                   >
                     ×
                   </Button>
@@ -237,6 +245,7 @@ const HistorialMedicoAnimalPage = () => {
                   {fincasFiltradas.map((finca) => (
                     <button
                       key={finca.id}
+                      type="button"
                       className="w-full text-left px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
                       onClick={() => handleSeleccionarFinca(finca.nombre_finca)}
                     >
@@ -253,12 +262,13 @@ const HistorialMedicoAnimalPage = () => {
             <div className="space-y-2">
               <label className="text-sm font-medium flex items-center gap-2">
                 <Beef className="h-4 w-4" />
-                Buscar Animal
+                {t("filters.animal")}
               </label>
+
               <div className="relative">
                 <Input
                   type="text"
-                  placeholder="Escribe el identificador..."
+                  placeholder={t("placeholders.animal")}
                   value={busquedaAnimal}
                   onChange={(e) => setBusquedaAnimal(e.target.value)}
                   className="pr-10"
@@ -276,6 +286,8 @@ const HistorialMedicoAnimalPage = () => {
                     size="sm"
                     onClick={() => handleFiltroChange("identificador", "")}
                     className="h-6 w-6 p-0 hover:bg-green-100"
+                    aria-label={t("ariaLabels.removeAnimalFilter")}
+                    title={t("ariaLabels.removeAnimalFilter")}
                   >
                     ×
                   </Button>
@@ -287,6 +299,7 @@ const HistorialMedicoAnimalPage = () => {
                   {animalesFiltrados.map((animal) => (
                     <button
                       key={animal.id}
+                      type="button"
                       className="w-full text-left px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
                       onClick={() =>
                         handleSeleccionarAnimal(animal.identificador)
@@ -305,7 +318,7 @@ const HistorialMedicoAnimalPage = () => {
             <div className="space-y-2">
               <label className="text-sm font-medium flex items-center gap-2">
                 <CalendarIcon className="h-4 w-4" />
-                Fecha Inicio
+                {t("filters.startDate")}
               </label>
               <Input
                 type="date"
@@ -320,7 +333,7 @@ const HistorialMedicoAnimalPage = () => {
             <div className="space-y-2">
               <label className="text-sm font-medium flex items-center gap-2">
                 <CalendarIcon className="h-4 w-4" />
-                Fecha Fin
+                {t("filters.endDate")}
               </label>
               <Input
                 type="date"
@@ -337,7 +350,7 @@ const HistorialMedicoAnimalPage = () => {
               onClick={limpiarFiltros}
               className="flex items-center gap-2"
             >
-              Limpiar Filtros
+              {t("buttons.clearFilters")}
             </Button>
           </div>
         </CardContent>
@@ -349,22 +362,33 @@ const HistorialMedicoAnimalPage = () => {
       >
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">Mostrar:</span>
+            <span className="text-sm text-gray-600">
+              {t("pagination.show")}
+            </span>
+
             <select
               value={paginacion.limit}
               onChange={(e) => cambiarLimite(Number(e.target.value))}
               className="border rounded px-2 py-1 text-sm"
+              aria-label={t("pagination.itemsPerPage")}
             >
               <option value={5}>5</option>
               <option value={10}>10</option>
               <option value={25}>25</option>
               <option value={50}>50</option>
             </select>
-            <span className="text-sm text-gray-600">por página</span>
+
+            <span className="text-sm text-gray-600">
+              {t("pagination.perPage")}
+            </span>
           </div>
 
           <span className="text-sm text-gray-600">
-            Mostrando {inicioItem}-{finItem} de {totalHistoriales} historiales
+            {t("pagination.showing", {
+              start: inicioItem,
+              end: finItem,
+              total: totalHistoriales,
+            })}
           </span>
         </div>
 
@@ -375,6 +399,8 @@ const HistorialMedicoAnimalPage = () => {
             onClick={primeraPagina}
             disabled={paginaActual === 1}
             className="h-8 w-8 p-0"
+            aria-label={t("pagination.firstPage")}
+            title={t("pagination.firstPage")}
           >
             <ChevronsLeft className="h-4 w-4" />
           </Button>
@@ -385,6 +411,8 @@ const HistorialMedicoAnimalPage = () => {
             onClick={paginaAnterior}
             disabled={paginaActual === 1}
             className="h-8 w-8 p-0"
+            aria-label={t("pagination.previousPage")}
+            title={t("pagination.previousPage")}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -396,6 +424,8 @@ const HistorialMedicoAnimalPage = () => {
               size="sm"
               onClick={() => irAPagina(pagina)}
               className="h-8 w-8 p-0"
+              aria-label={t("pagination.goToPage", { page: pagina })}
+              aria-current={pagina === paginaActual ? "page" : undefined}
             >
               {pagina}
             </Button>
@@ -407,6 +437,8 @@ const HistorialMedicoAnimalPage = () => {
             onClick={paginaSiguiente}
             disabled={paginaActual === totalPaginas}
             className="h-8 w-8 p-0"
+            aria-label={t("pagination.nextPage")}
+            title={t("pagination.nextPage")}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -417,6 +449,8 @@ const HistorialMedicoAnimalPage = () => {
             onClick={ultimaPagina}
             disabled={paginaActual === totalPaginas}
             className="h-8 w-8 p-0"
+            aria-label={t("pagination.lastPage")}
+            title={t("pagination.lastPage")}
           >
             <ChevronsRight className="h-4 w-4" />
           </Button>
@@ -428,13 +462,13 @@ const HistorialMedicoAnimalPage = () => {
         className="grid grid-cols-1 md:grid-cols-3 gap-4"
       >
         <CardHistorial
-          titulo="Total Historiales"
+          titulo={t("summary.totalHistories")}
           total={totalHistoriales}
           colorIcon="text-blue-500"
         />
 
         <CardHistorial
-          titulo="Fincas Atendidas"
+          titulo={t("summary.farmsAttended")}
           total={
             new Set(historiales.map((h) => h.cita?.finca?.nombre_finca)).size
           }
@@ -442,7 +476,7 @@ const HistorialMedicoAnimalPage = () => {
         />
 
         <CardHistorial
-          titulo="Animales Atendidos"
+          titulo={t("summary.animalsAttended")}
           total={new Set(historiales.map((h) => h.animal?.identificador)).size}
           colorIcon="text-purple-500"
         />
@@ -450,13 +484,14 @@ const HistorialMedicoAnimalPage = () => {
 
       <Card id="id-listado-historial-clinico">
         <CardHeader>
-          <CardTitle>Historiales Clínicos</CardTitle>
+          <CardTitle>{t("historyList.title")}</CardTitle>
         </CardHeader>
+
         <CardContent>
           {historiales.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               <FileText className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-              <p>No se encontraron historiales con los filtros seleccionados</p>
+              <p>{t("historyList.empty")}</p>
             </div>
           ) : (
             <div className="space-y-6">
@@ -477,7 +512,11 @@ const HistorialMedicoAnimalPage = () => {
           className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-gray-50 rounded-lg"
         >
           <span className="text-sm text-gray-600">
-            Mostrando {inicioItem}-{finItem} de {totalHistoriales} historiales
+            {t("pagination.showing", {
+              start: inicioItem,
+              end: finItem,
+              total: totalHistoriales,
+            })}
           </span>
 
           <div className="flex items-center gap-1">
@@ -487,6 +526,8 @@ const HistorialMedicoAnimalPage = () => {
               onClick={primeraPagina}
               disabled={paginaActual === 1}
               className="h-8 w-8 p-0"
+              aria-label={t("pagination.firstPage")}
+              title={t("pagination.firstPage")}
             >
               <ChevronsLeft className="h-4 w-4" />
             </Button>
@@ -497,6 +538,8 @@ const HistorialMedicoAnimalPage = () => {
               onClick={paginaAnterior}
               disabled={paginaActual === 1}
               className="h-8 w-8 p-0"
+              aria-label={t("pagination.previousPage")}
+              title={t("pagination.previousPage")}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -508,6 +551,8 @@ const HistorialMedicoAnimalPage = () => {
                 size="sm"
                 onClick={() => irAPagina(pagina)}
                 className="h-8 w-8 p-0"
+                aria-label={t("pagination.goToPage", { page: pagina })}
+                aria-current={pagina === paginaActual ? "page" : undefined}
               >
                 {pagina}
               </Button>
@@ -519,6 +564,8 @@ const HistorialMedicoAnimalPage = () => {
               onClick={paginaSiguiente}
               disabled={paginaActual === totalPaginas}
               className="h-8 w-8 p-0"
+              aria-label={t("pagination.nextPage")}
+              title={t("pagination.nextPage")}
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -529,6 +576,8 @@ const HistorialMedicoAnimalPage = () => {
               onClick={ultimaPagina}
               disabled={paginaActual === totalPaginas}
               className="h-8 w-8 p-0"
+              aria-label={t("pagination.lastPage")}
+              title={t("pagination.lastPage")}
             >
               <ChevronsRight className="h-4 w-4" />
             </Button>

@@ -1,6 +1,9 @@
+"use client";
+
 import { Actividade } from "@/api/actividades/interfaces/response-actividades.interface";
 import Modal from "@/components/generics/Modal";
 import { Dispatch, SetStateAction, useState } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import {
   Calendar,
   Clock,
@@ -16,7 +19,6 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
 import { formatDate } from "@/helpers/funciones/formatDate";
 import { formatDateOnly } from "@/helpers/funciones/formatDateOnly";
 
@@ -31,6 +33,9 @@ const ModalViewDetails = ({
   setShowViewDetails,
   selectedActividad,
 }: Props) => {
+  const t = useTranslations("modalViewDetailsAcyividades");
+  const locale = useLocale();
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showFullImage, setShowFullImage] = useState(false);
 
@@ -77,31 +82,44 @@ const ModalViewDetails = ({
     pendiente: {
       color: "bg-yellow-100 text-yellow-800 border-yellow-200",
       icon: AlertCircle,
-      texto: "Pendiente",
     },
     en_proceso: {
       color: "bg-blue-100 text-blue-800 border-blue-200",
       icon: Clock,
-      texto: "En Proceso",
     },
     completada: {
       color: "bg-green-100 text-green-800 border-green-200",
       icon: CheckCircle,
-      texto: "Completada",
     },
     cancelada: {
       color: "bg-red-100 text-red-800 border-red-200",
       icon: XCircle,
-      texto: "Cancelada",
     },
   };
 
   const currentConfig =
     tipoConfig[tipo as keyof typeof tipoConfig] || tipoConfig.fumigacion;
+
   const currentEstadoConfig =
     estadoConfig[estado as keyof typeof estadoConfig] || estadoConfig.pendiente;
+
   const TipoIcon = currentConfig.icon;
   const EstadoIcon = currentEstadoConfig.icon;
+
+  const getTipoTexto = (value: string) => {
+    const key = `activityTypes.${value.toLowerCase()}`;
+    return t.has(key) ? t(key) : value;
+  };
+
+  const getEstadoTexto = (value: string) => {
+    const key = `statuses.${value.toLowerCase()}`;
+    return t.has(key) ? t(key) : value;
+  };
+
+  const getFrecuenciaTexto = (value: string) => {
+    const key = `frequencies.${value.toLowerCase()}`;
+    return t.has(key) ? t(key) : value;
+  };
 
   const handlePrevImage = () => {
     setCurrentImageIndex((prev) => (prev === 0 ? fotos.length - 1 : prev - 1));
@@ -111,22 +129,11 @@ const ModalViewDetails = ({
     setCurrentImageIndex((prev) => (prev === fotos.length - 1 ? 0 : prev + 1));
   };
 
-  const getFrecuenciaTexto = (frec: string) => {
-    const frecuencias = {
-      diaria: "Diaria",
-      semanal: "Semanal",
-      quincenal: "Quincenal",
-      mensual: "Mensual",
-      unica: "Única vez",
-    };
-    return frecuencias[frec as keyof typeof frecuencias] || frec;
-  };
-
   return (
     <Modal
       open={showViewDetails}
       onOpenChange={setShowViewDetails}
-      title="Detalles de la Actividad"
+      title={t("title")}
       size="4xl"
       height="lg"
       showCloseButton={true}
@@ -138,20 +145,22 @@ const ModalViewDetails = ({
               className={`${currentConfig.color} text-sm font-medium px-3 py-1`}
             >
               <TipoIcon className="w-4 h-4 mr-1" />
-              {tipo.charAt(0).toUpperCase() + tipo.slice(1)}
+              {getTipoTexto(tipo)}
             </Badge>
+
             <div className="flex items-center gap-2 mt-2">
               <Clock className="w-4 h-4 text-gray-400" />
               <span className="text-sm text-gray-600">
-                Creado: {formatDateOnly(createdAt)}
+                {t("labels.created")}: {formatDateOnly(createdAt)}
               </span>
             </div>
           </div>
+
           <Badge
             className={`${currentEstadoConfig.color} text-sm font-medium px-3 py-1`}
           >
             <EstadoIcon className="w-4 h-4 mr-1" />
-            {currentEstadoConfig.texto}
+            {getEstadoTexto(estado)}
           </Badge>
         </div>
 
@@ -161,17 +170,20 @@ const ModalViewDetails = ({
               <Calendar className="w-5 h-5 text-[#A0714C] mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-gray-500">
-                  Fecha programada
+                  {t("labels.scheduledDate")}
                 </p>
                 <p className="text-gray-900 font-semibold">
                   {formatDate(fecha)}
                 </p>
               </div>
             </div>
+
             <div className="flex items-start gap-3">
               <Clock className="w-5 h-5 text-[#A0714C] mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-gray-500">Frecuencia</p>
+                <p className="text-sm font-medium text-gray-500">
+                  {t("labels.frequency")}
+                </p>
                 <p className="text-gray-900">
                   {getFrecuenciaTexto(frecuencia)}
                 </p>
@@ -186,12 +198,15 @@ const ModalViewDetails = ({
               ) : (
                 <XCircle className="w-5 h-5 text-red-500 mt-0.5" />
               )}
+
               <div>
                 <p className="text-sm font-medium text-gray-500">
-                  Estado de tarea
+                  {t("labels.taskStatus")}
                 </p>
                 <p className="text-gray-900 font-semibold">
-                  {completada ? "Completada" : "No completada aún"}
+                  {completada
+                    ? t("labels.completed")
+                    : t("labels.notCompleted")}
                 </p>
               </div>
             </div>
@@ -202,8 +217,11 @@ const ModalViewDetails = ({
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <FileText className="w-5 h-5 text-[#A0714C]" />
-              <h3 className="font-semibold text-gray-900">Descripción</h3>
+              <h3 className="font-semibold text-gray-900">
+                {t("sections.description")}
+              </h3>
             </div>
+
             <p className="text-gray-700 bg-gray-50 p-4 rounded-lg leading-relaxed">
               {descripcion}
             </p>
@@ -214,18 +232,20 @@ const ModalViewDetails = ({
           <div className="space-y-3 bg-gradient-to-r from-gray-50 to-white p-4 rounded-lg">
             <h3 className="font-semibold text-gray-900 flex items-center gap-2">
               <User className="w-5 h-5 text-[#A0714C]" />
-              Información del Propietario
+              {t("sections.ownerInformation")}
             </h3>
+
             <div className="space-y-2">
               <p className="text-sm">
-                <span className="text-gray-500">Nombre:</span>{" "}
+                <span className="text-gray-500">{t("labels.name")}:</span>{" "}
                 <span className="font-medium text-gray-900">
                   {propietario.nombre}
                 </span>
               </p>
+
               <p className="text-sm flex items-center gap-2">
                 <Phone className="w-4 h-4 text-gray-400" />
-                <span className="text-gray-500">Teléfono:</span>{" "}
+                <span className="text-gray-500">{t("labels.phone")}:</span>{" "}
                 <span className="font-medium text-gray-900">
                   {propietario.telefono}
                 </span>
@@ -236,17 +256,19 @@ const ModalViewDetails = ({
           <div className="space-y-3 bg-gradient-to-r from-gray-50 to-white p-4 rounded-lg">
             <h3 className="font-semibold text-gray-900 flex items-center gap-2">
               <MapPin className="w-5 h-5 text-[#A0714C]" />
-              Información de la Finca
+              {t("sections.farmInformation")}
             </h3>
+
             <div className="space-y-2">
               <p className="text-sm">
-                <span className="text-gray-500">Nombre:</span>{" "}
+                <span className="text-gray-500">{t("labels.name")}:</span>{" "}
                 <span className="font-medium text-gray-900">
                   {finca.nombre_finca}
                 </span>
               </p>
+
               <p className="text-sm">
-                <span className="text-gray-500">Ubicación:</span>{" "}
+                <span className="text-gray-500">{t("labels.location")}:</span>{" "}
                 <span className="font-medium text-gray-900">
                   {finca.ubicacion}
                 </span>
@@ -258,8 +280,9 @@ const ModalViewDetails = ({
         <div className="bg-gradient-to-r from-gray-50 to-white p-4 rounded-lg">
           <h3 className="font-semibold text-gray-900 flex items-center gap-2 mb-3">
             <User className="w-5 h-5 text-[#A0714C]" />
-            Trabajador Asignado
+            {t("sections.assignedWorker")}
           </h3>
+
           <p className="text-gray-900 font-medium">{trabajador.nombre}</p>
         </div>
 
@@ -269,7 +292,7 @@ const ModalViewDetails = ({
               <div className="flex items-center gap-2">
                 <ImageIcon className="w-5 h-5 text-[#A0714C]" />
                 <h3 className="font-semibold text-gray-900">
-                  Fotos de la Actividad ({fotos.length})
+                  {t("sections.activityPhotos", { count: fotos.length })}
                 </h3>
               </div>
             </div>
@@ -278,7 +301,9 @@ const ModalViewDetails = ({
               <div className="relative h-96">
                 <img
                   src={fotos[currentImageIndex]?.url}
-                  alt={`Foto ${currentImageIndex + 1}`}
+                  alt={t("labels.photoAlt", {
+                    number: currentImageIndex + 1,
+                  })}
                   className="w-full h-full object-contain cursor-pointer"
                   onClick={() => setShowFullImage(true)}
                 />
@@ -287,12 +312,17 @@ const ModalViewDetails = ({
                   <>
                     <button
                       onClick={handlePrevImage}
+                      aria-label={t("buttons.previousImage")}
+                      title={t("buttons.previousImage")}
                       className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
+
                     <button
                       onClick={handleNextImage}
+                      aria-label={t("buttons.nextImage")}
+                      title={t("buttons.nextImage")}
                       className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all"
                     >
                       <ChevronRight className="w-5 h-5" />
@@ -307,6 +337,12 @@ const ModalViewDetails = ({
                     <button
                       key={foto.id}
                       onClick={() => setCurrentImageIndex(idx)}
+                      aria-label={t("labels.thumbnailAlt", {
+                        number: idx + 1,
+                      })}
+                      aria-current={
+                        currentImageIndex === idx ? "true" : undefined
+                      }
                       className={`relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${
                         currentImageIndex === idx
                           ? "border-[#A0714C] ring-2 ring-[#A0714C]/20"
@@ -315,7 +351,9 @@ const ModalViewDetails = ({
                     >
                       <img
                         src={foto.url}
-                        alt={`Miniatura ${idx + 1}`}
+                        alt={t("labels.thumbnailAlt", {
+                          number: idx + 1,
+                        })}
                         className="w-full h-full object-cover"
                       />
                     </button>
@@ -329,13 +367,11 @@ const ModalViewDetails = ({
         {(!fotos || fotos.length === 0) && (
           <div className="text-center py-12 bg-gray-50 rounded-lg">
             <ImageIcon className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500">
-              No hay fotos disponibles para esta actividad
-            </p>
+            <p className="text-gray-500">{t("emptyState")}</p>
           </div>
         )}
 
-        {showFullImage && fotos[currentImageIndex] && (
+        {showFullImage && fotos?.[currentImageIndex] && (
           <div
             className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
             onClick={() => setShowFullImage(false)}
@@ -343,25 +379,34 @@ const ModalViewDetails = ({
             <div className="relative max-w-7xl w-full">
               <img
                 src={fotos[currentImageIndex].url}
-                alt="Vista completa"
+                alt={t("labels.fullImageAlt")}
                 className="w-full h-auto max-h-[90vh] object-contain"
               />
+
               <button
                 onClick={() => setShowFullImage(false)}
+                aria-label={t("buttons.closeImage")}
+                title={t("buttons.closeImage")}
                 className="absolute top-4 right-4 text-white bg-black/50 hover:bg-black/70 p-2 rounded-full transition-all"
               >
                 <XCircle className="w-6 h-6" />
               </button>
+
               {fotos.length > 1 && (
                 <>
                   <button
                     onClick={handlePrevImage}
+                    aria-label={t("buttons.previousImage")}
+                    title={t("buttons.previousImage")}
                     className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all"
                   >
                     <ChevronLeft className="w-6 h-6" />
                   </button>
+
                   <button
                     onClick={handleNextImage}
+                    aria-label={t("buttons.nextImage")}
+                    title={t("buttons.nextImage")}
                     className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all"
                   >
                     <ChevronRight className="w-6 h-6" />

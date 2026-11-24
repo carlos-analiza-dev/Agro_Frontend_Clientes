@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -40,23 +41,20 @@ const FormConsultaAgricola = ({
   setClimaValue,
   setProblemasValue,
 }: Props) => {
+  const t = useTranslations("formConsultaAgricola");
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [problemasInput, setProblemasInput] = useState<string>("");
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors: formErrors },
-  } = useForm<ConsultaAgricolaInterface>({
-    defaultValues: {
-      cultivo: "",
-      tipoSuelo: "",
-      clima: "",
-      problemas: [],
-    },
-  });
+  const { register, handleSubmit, setValue, watch } =
+    useForm<ConsultaAgricolaInterface>({
+      defaultValues: {
+        cultivo: "",
+        tipoSuelo: "",
+        clima: "",
+        problemas: [],
+      },
+    });
 
   const cultivoValue = watch("cultivo");
   const tipoSueloValue = watch("tipoSuelo");
@@ -84,7 +82,7 @@ const FormConsultaAgricola = ({
       ObtenerConsultaAgricola(data),
     onSuccess: (response) => {
       setConsultaResultado(response.respuesta);
-      toast.success("Consulta agrícola generada exitosamente");
+      toast.success(t("messages.success"));
       setErrors({});
       setIsPending(false);
     },
@@ -93,11 +91,13 @@ const FormConsultaAgricola = ({
         const messages = error.response?.data?.message;
         const errorMessage = Array.isArray(messages)
           ? messages[0]
-          : messages || "Error al generar consulta agrícola";
+          : messages || t("errors.generateConsultation");
+
         toast.error(errorMessage);
       } else {
-        toast.error("Error al conectar con el servicio de consulta agrícola");
+        toast.error(t("errors.connection"));
       }
+
       setIsPending(false);
     },
   });
@@ -106,19 +106,19 @@ const FormConsultaAgricola = ({
     const newErrors: Record<string, string> = {};
 
     if (!data.cultivo) {
-      newErrors.cultivo = "El cultivo es requerido";
+      newErrors.cultivo = t("validation.cropRequired");
     }
 
     if (!data.tipoSuelo) {
-      newErrors.tipoSuelo = "El tipo de suelo es requerido";
+      newErrors.tipoSuelo = t("validation.soilRequired");
     }
 
     if (!data.clima) {
-      newErrors.clima = "El clima es requerido";
+      newErrors.clima = t("validation.climateRequired");
     }
 
     if (!data.problemas || data.problemas.length === 0) {
-      newErrors.problemas = "Debes agregar al menos un problema observado";
+      newErrors.problemas = t("validation.problemsRequired");
     }
 
     setErrors(newErrors);
@@ -132,7 +132,7 @@ const FormConsultaAgricola = ({
     };
 
     if (!validateForm(formattedData)) {
-      toast.error("Por favor completa todos los campos requeridos");
+      toast.error(t("validation.completeRequired"));
       return;
     }
 
@@ -142,6 +142,7 @@ const FormConsultaAgricola = ({
 
   const handleTipoSueloChange = (sueloNombre: string) => {
     setValue("tipoSuelo", sueloNombre);
+
     if (errors.tipoSuelo) {
       setErrors((prev) => ({ ...prev, tipoSuelo: "" }));
     }
@@ -149,6 +150,7 @@ const FormConsultaAgricola = ({
 
   const handleClimaChange = (climaNombre: string) => {
     setValue("clima", climaNombre);
+
     if (errors.clima) {
       setErrors((prev) => ({ ...prev, clima: "" }));
     }
@@ -168,7 +170,7 @@ const FormConsultaAgricola = ({
     if (nuevoProblema.length === 0) return;
 
     if (problemasValue.includes(nuevoProblema)) {
-      toast.info("Este problema ya fue agregado");
+      toast.info(t("messages.duplicateProblem"));
       setProblemasInput("");
       return;
     }
@@ -200,18 +202,31 @@ const FormConsultaAgricola = ({
     setProblemasInput("");
   };
 
+  // Traduce las etiquetas mediante el ID, conservando el valor original.
+  const getSoilLabel = (id: string | number, fallback: string) => {
+    const key = `soilTypes.${id}`;
+    return t.has(key) ? t(key) : fallback;
+  };
+
+  const getClimateLabel = (id: string | number, fallback: string) => {
+    const key = `climateTypes.${id}`;
+    return t.has(key) ? t(key) : fallback;
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="cultivo" className="font-bold">
-          Cultivo <span className="text-red-500">*</span>
+          {t("fields.crop")} <span className="text-red-500">*</span>
         </Label>
+
         <Input
           id="cultivo"
-          placeholder="Ej: Maíz, Tomate, Papa, Rosa, etc."
+          placeholder={t("placeholders.crop")}
           className={errors.cultivo ? "border-red-500" : ""}
           {...register("cultivo")}
         />
+
         {errors.cultivo && (
           <p className="text-sm font-medium text-red-500">{errors.cultivo}</p>
         )}
@@ -219,23 +234,26 @@ const FormConsultaAgricola = ({
 
       <div className="space-y-2">
         <Label htmlFor="tipoSuelo" className="font-bold">
-          Tipo de Suelo <span className="text-red-500">*</span>
+          {t("fields.soilType")} <span className="text-red-500">*</span>
         </Label>
+
         <Select onValueChange={handleTipoSueloChange} value={tipoSueloValue}>
           <SelectTrigger
             id="tipoSuelo"
             className={errors.tipoSuelo ? "border-red-500" : ""}
           >
-            <SelectValue placeholder="Selecciona el tipo de suelo" />
+            <SelectValue placeholder={t("placeholders.soilType")} />
           </SelectTrigger>
+
           <SelectContent>
             {tiposSuelos.map((suelo) => (
               <SelectItem key={suelo.id} value={suelo.value}>
-                {suelo.value}
+                {getSoilLabel(suelo.id, suelo.value)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
+
         {errors.tipoSuelo && (
           <p className="text-sm font-medium text-red-500">{errors.tipoSuelo}</p>
         )}
@@ -243,23 +261,26 @@ const FormConsultaAgricola = ({
 
       <div className="space-y-2">
         <Label htmlFor="clima" className="font-bold">
-          Clima <span className="text-red-500">*</span>
+          {t("fields.climate")} <span className="text-red-500">*</span>
         </Label>
+
         <Select onValueChange={handleClimaChange} value={climaValue}>
           <SelectTrigger
             id="clima"
             className={errors.clima ? "border-red-500" : ""}
           >
-            <SelectValue placeholder="Selecciona el clima de tu zona" />
+            <SelectValue placeholder={t("placeholders.climate")} />
           </SelectTrigger>
+
           <SelectContent>
             {tiposClima.map((clima) => (
               <SelectItem key={clima.id} value={clima.nombre}>
-                {clima.nombre}
+                {getClimateLabel(clima.id, clima.nombre)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
+
         {errors.clima && (
           <p className="text-sm font-medium text-red-500">{errors.clima}</p>
         )}
@@ -267,13 +288,13 @@ const FormConsultaAgricola = ({
 
       <div className="space-y-2">
         <Label htmlFor="problemas" className="font-bold">
-          Problemas Observados <span className="text-red-500">*</span>
+          {t("fields.observedProblems")} <span className="text-red-500">*</span>
         </Label>
 
         <div className="flex flex-col sm:flex-row gap-2">
           <Textarea
             id="problemas"
-            placeholder="Escribe un problema observado (hojas amarillas, crecimiento lento, manchas, etc.) y presiona Enter o haz clic en Agregar"
+            placeholder={t("placeholders.problem")}
             className={`min-h-[80px] w-full sm:flex-1 ${
               errors.problemas ? "border-red-500" : ""
             }`}
@@ -290,7 +311,7 @@ const FormConsultaAgricola = ({
               className="flex-1 sm:flex-none h-10"
             >
               <Plus className="h-4 w-4 mr-1" />
-              Agregar
+              {t("buttons.add")}
             </Button>
 
             {problemasValue?.length > 0 && (
@@ -300,15 +321,14 @@ const FormConsultaAgricola = ({
                 onClick={limpiarProblemas}
                 className="flex-1 sm:flex-none h-10 text-red-500 hover:text-red-600"
               >
-                Limpiar
+                {t("buttons.clear")}
               </Button>
             )}
           </div>
         </div>
 
         <p className="text-xs text-muted-foreground">
-          Agrega cada problema individualmente presionando Enter o haciendo clic
-          en "Agregar"
+          {t("hints.addProblems")}
         </p>
 
         {errors.problemas && (
@@ -332,10 +352,10 @@ const FormConsultaAgricola = ({
         {mutation.isPending ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Generando consulta agrícola...
+            {t("buttons.generating")}
           </>
         ) : (
-          "Obtener Diagnóstico Agrícola"
+          t("buttons.getDiagnosis")
         )}
       </Button>
     </form>

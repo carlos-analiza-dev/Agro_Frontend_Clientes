@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { Historial } from "@/api/historial-clinico/interface/response-historial-veterinario.interface";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +14,8 @@ interface Props {
 }
 
 const CardHistorialClinico = ({ historial }: Props) => {
+  const t = useTranslations("cardHistorialClinico");
+
   const descargarDocumento = (url: string, nombre: string) => {
     const link = document.createElement("a");
     link.href = url;
@@ -18,6 +23,7 @@ const CardHistorialClinico = ({ historial }: Props) => {
     link.target = "_blank";
     link.click();
   };
+
   return (
     <Card className="hover:shadow-lg transition-shadow">
       <CardContent className="pt-6">
@@ -32,20 +38,23 @@ const CardHistorialClinico = ({ historial }: Props) => {
                 {historial.animal?.razas?.[0]?.nombre}
               </Badge>
             </div>
+
             <h3 className="font-semibold text-lg">
               {historial.cita?.subServicio?.nombre}
             </h3>
+
             <p className="text-sm text-gray-600">
               {historial.cita?.finca?.nombre_finca}
             </p>
           </div>
+
           <div className="text-right">
             <p className="text-sm text-gray-500 flex items-center gap-1">
               <Clock className="h-3 w-3" />
               {formatDate(historial.createdAt)}
             </p>
             <p className="text-xs text-gray-400">
-              Por: {historial.veterinario?.name}
+              {t("labels.by")}: {historial.veterinario?.name}
             </p>
           </div>
         </div>
@@ -63,8 +72,10 @@ const CardHistorialClinico = ({ historial }: Props) => {
             <div key={detalle.id} className="border-l-4 border-blue-500 pl-4">
               <div className="flex justify-between items-start mb-2">
                 <h4 className="font-medium">
-                  {detalle.subServicio?.nombre || `Procedimiento ${index + 1}`}
+                  {detalle.subServicio?.nombre ||
+                    t("labels.procedure", { number: index + 1 })}
                 </h4>
+
                 <Badge variant="outline" className="text-xs">
                   {formatDate(detalle.createdAt)}
                 </Badge>
@@ -73,7 +84,7 @@ const CardHistorialClinico = ({ historial }: Props) => {
               {detalle.diagnostico && (
                 <div className="mb-2">
                   <p className="text-sm font-medium text-gray-700">
-                    Diagnóstico:
+                    {t("labels.diagnosis")}:
                   </p>
                   <p className="text-sm text-gray-600">{detalle.diagnostico}</p>
                 </div>
@@ -82,7 +93,7 @@ const CardHistorialClinico = ({ historial }: Props) => {
               {detalle.tratamiento && (
                 <div className="mb-2">
                   <p className="text-sm font-medium text-gray-700">
-                    Tratamiento:
+                    {t("labels.treatment")}:
                   </p>
                   <p className="text-sm text-gray-600">{detalle.tratamiento}</p>
                 </div>
@@ -91,7 +102,7 @@ const CardHistorialClinico = ({ historial }: Props) => {
               {detalle.observaciones && (
                 <div className="mb-2">
                   <p className="text-sm font-medium text-gray-700">
-                    Observaciones:
+                    {t("labels.observations")}:
                   </p>
                   <p className="text-sm text-gray-600">
                     {detalle.observaciones}
@@ -102,8 +113,9 @@ const CardHistorialClinico = ({ historial }: Props) => {
               {detalle.documentos && detalle.documentos.length > 0 && (
                 <div className="mt-2">
                   <p className="text-sm font-medium text-gray-700 mb-1">
-                    Documentos:
+                    {t("labels.documents")}:
                   </p>
+
                   <div className="flex flex-wrap gap-2">
                     {detalle.documentos.map((doc) => (
                       <Button
@@ -113,6 +125,9 @@ const CardHistorialClinico = ({ historial }: Props) => {
                         size="sm"
                         className="flex items-center gap-1"
                         onClick={() => descargarDocumento(doc.url, doc.nombre)}
+                        aria-label={t("buttons.downloadDocument", {
+                          name: doc.nombre,
+                        })}
                       >
                         <Download className="h-3 w-3" />
                         {doc.nombre}
@@ -130,18 +145,23 @@ const CardHistorialClinico = ({ historial }: Props) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
           <div>
             <p>
-              <strong>Veterinario:</strong> {historial.veterinario?.name}
+              <strong>{t("labels.veterinarian")}:</strong>{" "}
+              {historial.veterinario?.name}
             </p>
             <p>
-              <strong>Email:</strong> {historial.veterinario?.email}
+              <strong>{t("labels.email")}:</strong>{" "}
+              {historial.veterinario?.email}
             </p>
           </div>
+
           <div>
             <p>
-              <strong>Teléfono:</strong> {historial.veterinario?.telefono}
+              <strong>{t("labels.phone")}:</strong>{" "}
+              {historial.veterinario?.telefono}
             </p>
             <p>
-              <strong>Cita:</strong> {historial.cita?.codigo}
+              <strong>{t("labels.appointment")}:</strong>{" "}
+              {historial.cita?.codigo}
             </p>
           </div>
         </div>

@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { EstadoMaquinaria } from "@/interfaces/enums/maquinaria/maquinaria.enums";
 import { Dispatch, SetStateAction } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   filters: { fincaId: string; estado: string; offset: number; limit: number };
@@ -33,11 +34,27 @@ const CardFilters = ({
   handleLimitChange,
   handleClearFilters,
 }: Props) => {
+  const t = useTranslations("cardFiltersEquipos");
+
+  const getEstadoLabel = (estado: EstadoMaquinaria) => {
+    switch (estado) {
+      case EstadoMaquinaria.ACTIVO:
+        return t("statuses.active");
+      case EstadoMaquinaria.MANTENIMIENTO:
+        return t("statuses.maintenance");
+      case EstadoMaquinaria.INCACTIVO:
+        return t("statuses.inactive");
+      default:
+        return estado;
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Filtros</CardTitle>
+        <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
+
       <CardContent className="flex flex-col md:flex-row gap-4">
         <Select
           value={filters.fincaId || "todas"}
@@ -50,10 +67,10 @@ const CardFilters = ({
           }
         >
           <SelectTrigger className="w-full md:w-[250px]">
-            <SelectValue placeholder="Seleccionar finca" />
+            <SelectValue placeholder={t("placeholders.selectFarm")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="todas">Todas las fincas</SelectItem>
+            <SelectItem value="todas">{t("options.allFarms")}</SelectItem>
             {fincas?.map((finca) => (
               <SelectItem key={finca.id} value={finca.id}>
                 {finca.nombre_finca}
@@ -73,15 +90,13 @@ const CardFilters = ({
           }
         >
           <SelectTrigger className="w-full md:w-[200px]">
-            <SelectValue placeholder="Todos los estados" />
+            <SelectValue placeholder={t("placeholders.allStatuses")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="todos">Todos</SelectItem>
+            <SelectItem value="todos">{t("options.allStatuses")}</SelectItem>
             {Object.values(EstadoMaquinaria).map((estado) => (
               <SelectItem key={estado} value={estado}>
-                {estado === EstadoMaquinaria.ACTIVO && "Activo"}
-                {estado === EstadoMaquinaria.MANTENIMIENTO && "Mantenimiento"}
-                {estado === EstadoMaquinaria.INCACTIVO && "Inactivo"}
+                {getEstadoLabel(estado)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -95,16 +110,16 @@ const CardFilters = ({
             <SelectValue placeholder="10" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="5">5 por página</SelectItem>
-            <SelectItem value="10">10 por página</SelectItem>
-            <SelectItem value="15">15 por página</SelectItem>
-            <SelectItem value="20">20 por página</SelectItem>
-            <SelectItem value="50">50 por página</SelectItem>
+            {[5, 10, 15, 20, 50].map((limit) => (
+              <SelectItem key={limit} value={limit.toString()}>
+                {t("pagination.perPage", { count: limit })}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
 
         <Button variant="outline" onClick={handleClearFilters}>
-          Limpiar filtros
+          {t("buttons.clearFilters")}
         </Button>
       </CardContent>
     </Card>

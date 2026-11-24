@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { Equipo } from "@/api/equipos-maquinaria/interface/response-equipos.interface";
 import { Trabajador } from "@/api/trabajadores/interface/response-trabajadores.interface";
 import { Button } from "@/components/ui/button";
@@ -33,16 +34,18 @@ const FiltersUsoEquipos = ({
   clearFilters,
   hasActiveFilters,
 }: Props) => {
+  const t = useTranslations("filtersUsoEquipos");
+
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg">Filtros</CardTitle>
+        <CardTitle className="text-lg">{t("title")}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">
-              Equipo
+              {t("fields.equipment")}
             </label>
             <Select
               value={filters.equipoId || "todos"}
@@ -51,10 +54,12 @@ const FiltersUsoEquipos = ({
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Todos los equipos" />
+                <SelectValue placeholder={t("placeholders.allEquipment")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos">Todos los equipos</SelectItem>
+                <SelectItem value="todos">
+                  {t("options.allEquipment")}
+                </SelectItem>
                 {equiposActivos?.map((equipo) => (
                   <SelectItem key={equipo.id} value={equipo.id}>
                     {equipo.nombre} - {equipo.marca} {equipo.modelo}
@@ -66,7 +71,7 @@ const FiltersUsoEquipos = ({
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">
-              Operador
+              {t("fields.operator")}
             </label>
             <Select
               value={filters.operadorId || "todos"}
@@ -75,10 +80,12 @@ const FiltersUsoEquipos = ({
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Todos los operadores" />
+                <SelectValue placeholder={t("placeholders.allOperators")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos">Todos los operadores</SelectItem>
+                <SelectItem value="todos">
+                  {t("options.allOperators")}
+                </SelectItem>
                 {trabajadores?.map((trabajador) => (
                   <SelectItem key={trabajador.id} value={trabajador.id}>
                     {trabajador.nombre}
@@ -96,7 +103,7 @@ const FiltersUsoEquipos = ({
               className="w-full gap-2"
             >
               <SearchIcon className="h-4 w-4" />
-              Limpiar filtros
+              {t("buttons.clearFilters")}
             </Button>
           </div>
         </div>

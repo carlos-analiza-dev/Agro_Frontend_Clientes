@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,6 +52,8 @@ export const FiltrosBusqueda = ({
   handleSeleccionarAnimal,
   limpiarFiltros,
 }: FiltrosBusquedaProps) => {
+  const t = useTranslations("filtrosBusqueda");
+
   const [busquedaFinca, setBusquedaFinca] = useState("");
   const [busquedaAnimal, setBusquedaAnimal] = useState("");
 
@@ -59,7 +62,7 @@ export const FiltrosBusqueda = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <Filter className="h-5 w-5" />
-          Filtros de Búsqueda
+          {t("title")}
         </CardTitle>
       </CardHeader>
 
@@ -68,12 +71,13 @@ export const FiltrosBusqueda = ({
           <div className="space-y-2 relative">
             <label className="text-sm font-medium flex items-center gap-2">
               <Building className="h-4 w-4" />
-              Buscar Finca
+              {t("fields.farm")}
             </label>
+
             <div className="relative">
               <Input
                 type="text"
-                placeholder="Escribe el nombre de la finca..."
+                placeholder={t("placeholders.farm")}
                 value={busquedaFinca}
                 onChange={(e) => setBusquedaFinca(e.target.value)}
                 className="pr-10"
@@ -86,11 +90,14 @@ export const FiltrosBusqueda = ({
                 <span className="text-sm text-blue-700">
                   {filtros.fincaNombre}
                 </span>
+
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => handleFiltroChange("fincaNombre", "")}
                   className="h-6 w-6 p-0 hover:bg-blue-100"
+                  aria-label={t("buttons.removeFarmFilter")}
+                  title={t("buttons.removeFarmFilter")}
                 >
                   ×
                 </Button>
@@ -101,6 +108,7 @@ export const FiltrosBusqueda = ({
               <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
                 {fincasFiltradas.map((finca) => (
                   <button
+                    type="button"
                     key={finca.id}
                     className="w-full text-left px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
                     onClick={() => handleSeleccionarFinca(finca.nombre_finca)}
@@ -118,12 +126,13 @@ export const FiltrosBusqueda = ({
           <div className="space-y-2 relative">
             <label className="text-sm font-medium flex items-center gap-2">
               <Beef className="h-4 w-4" />
-              Buscar Animal
+              {t("fields.animal")}
             </label>
+
             <div className="relative">
               <Input
                 type="text"
-                placeholder="Escribe el identificador..."
+                placeholder={t("placeholders.animal")}
                 value={busquedaAnimal}
                 onChange={(e) => setBusquedaAnimal(e.target.value)}
                 className="pr-10"
@@ -136,11 +145,14 @@ export const FiltrosBusqueda = ({
                 <span className="text-sm text-green-700">
                   {filtros.identificador}
                 </span>
+
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => handleFiltroChange("identificador", "")}
                   className="h-6 w-6 p-0 hover:bg-green-100"
+                  aria-label={t("buttons.removeAnimalFilter")}
+                  title={t("buttons.removeAnimalFilter")}
                 >
                   ×
                 </Button>
@@ -151,6 +163,7 @@ export const FiltrosBusqueda = ({
               <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
                 {animalesFiltrados.map((animal) => (
                   <button
+                    type="button"
                     key={animal.id}
                     className="w-full text-left px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
                     onClick={() =>
@@ -170,8 +183,9 @@ export const FiltrosBusqueda = ({
           <div className="space-y-2">
             <label className="text-sm font-medium flex items-center gap-2">
               <CalendarIcon className="h-4 w-4" />
-              Fecha Inicio
+              {t("fields.startDate")}
             </label>
+
             <Input
               type="date"
               value={filtros.fechaInicio}
@@ -184,8 +198,9 @@ export const FiltrosBusqueda = ({
           <div className="space-y-2">
             <label className="text-sm font-medium flex items-center gap-2">
               <CalendarIcon className="h-4 w-4" />
-              Fecha Fin
+              {t("fields.endDate")}
             </label>
+
             <Input
               type="date"
               value={filtros.fechaFin}
@@ -200,7 +215,7 @@ export const FiltrosBusqueda = ({
             onClick={limpiarFiltros}
             className="flex items-center gap-2"
           >
-            Limpiar Filtros
+            {t("buttons.clearFilters")}
           </Button>
         </div>
       </CardContent>

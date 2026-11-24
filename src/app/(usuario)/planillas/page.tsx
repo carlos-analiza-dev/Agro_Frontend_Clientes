@@ -1,13 +1,11 @@
 "use client";
 
 import useGetPlanillas from "@/hooks/planillas/useGetPlanillas";
-
 import React, { useState } from "react";
-
+import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
 import {
   Calendar,
   DollarSign,
@@ -18,7 +16,6 @@ import {
   Filter,
   BookOpenText,
 } from "lucide-react";
-
 import {
   Select,
   SelectContent,
@@ -26,7 +23,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import { Badge } from "@/components/ui/badge";
 import Paginacion from "@/components/generics/Paginacion";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
@@ -46,6 +42,7 @@ import ButtonAdd from "@/components/generics/ButtonAdd";
 import TitlePage from "@/components/generics/TitlePage";
 
 const PlanillaTrabajadoresPage = () => {
+  const t = useTranslations("planillaTrabajadoresPage");
   const { cliente } = useAuthStore();
   const router = useRouter();
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
@@ -168,15 +165,15 @@ const PlanillaTrabajadoresPage = () => {
           className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
         >
           <TitlePage
-            title={`Planillas de Trabajadores`}
-            description="Gestión de nóminas y pagos de trabajadores"
+            title={t("title")}
+            description={t("description")}
             Icon={BookOpenText}
           />
 
           <ButtonAdd
             id="add-planilla-btn"
             Icon={Plus}
-            title="Nueva Planilla"
+            title={t("buttons.newPayroll")}
             action={() => handleAddPlanilla()}
             className="bg-green-600 hover:bg-green-700"
           />
@@ -187,7 +184,7 @@ const PlanillaTrabajadoresPage = () => {
           className="grid grid-cols-1 md:grid-cols-4 gap-4"
         >
           <StatCard
-            title="Total Planillas"
+            title={t("stats.totalPayrolls")}
             value={total}
             icon={FileText}
             gradientFrom="from-blue-50"
@@ -197,7 +194,7 @@ const PlanillaTrabajadoresPage = () => {
           />
 
           <StatCard
-            title="Planillas Pagadas"
+            title={t("stats.paidPayrolls")}
             value={
               planillas.filter((p: any) => p.estado === EstadoPlanilla.PAGADA)
                 .length
@@ -210,7 +207,7 @@ const PlanillaTrabajadoresPage = () => {
           />
 
           <StatCard
-            title="Total Neto"
+            title={t("stats.netTotal")}
             value={formatCurrency(totalNetoPagadas, moneda)}
             icon={DollarSign}
             gradientFrom="from-purple-50"
@@ -220,7 +217,7 @@ const PlanillaTrabajadoresPage = () => {
           />
 
           <StatCard
-            title="En Proceso"
+            title={t("stats.inProgress")}
             value={
               planillas.filter(
                 (p: any) =>
@@ -249,7 +246,7 @@ const PlanillaTrabajadoresPage = () => {
                     setMesSeleccionado("");
                   }}
                 >
-                  Rango de fechas
+                  {t("filters.dateRange")}
                 </Button>
 
                 <Button
@@ -262,7 +259,7 @@ const PlanillaTrabajadoresPage = () => {
                     setFechaFin("");
                   }}
                 >
-                  Por mes
+                  {t("filters.byMonth")}
                 </Button>
               </div>
 
@@ -278,7 +275,7 @@ const PlanillaTrabajadoresPage = () => {
                           value={fechaInicio}
                           onChange={(e) => setFechaInicio(e.target.value)}
                           className="pl-10"
-                          placeholder="Fecha inicio"
+                          placeholder={t("filters.startDate")}
                         />
                       </div>
 
@@ -290,7 +287,7 @@ const PlanillaTrabajadoresPage = () => {
                           value={fechaFin}
                           onChange={(e) => setFechaFin(e.target.value)}
                           className="pl-10"
-                          placeholder="Fecha fin"
+                          placeholder={t("filters.endDate")}
                         />
                       </div>
                     </div>
@@ -305,7 +302,7 @@ const PlanillaTrabajadoresPage = () => {
                     >
                       <SelectTrigger>
                         <Calendar className="h-4 w-4 mr-2" />
-                        <SelectValue placeholder="Seleccionar mes" />
+                        <SelectValue placeholder={t("filters.selectMonth")} />
                       </SelectTrigger>
 
                       <SelectContent>
@@ -326,13 +323,17 @@ const PlanillaTrabajadoresPage = () => {
                   >
                     <SelectTrigger>
                       <Filter className="h-4 w-4 mr-2" />
-                      <SelectValue placeholder="Estado" />
+                      <SelectValue placeholder={t("filters.status")} />
                     </SelectTrigger>
 
                     <SelectContent>
                       {estadosPlanilla.map((estado) => (
                         <SelectItem key={estado.value} value={estado.value}>
-                          {estado.label}
+                          {estado.value === "todos"
+                            ? t("filters.allStatuses")
+                            : t.has(`statuses.${estado.value}`)
+                              ? t(`statuses.${estado.value}`)
+                              : estado.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -347,7 +348,7 @@ const PlanillaTrabajadoresPage = () => {
                     className="w-full"
                   >
                     <X className="h-4 w-4 mr-2" />
-                    Limpiar
+                    {t("buttons.clear")}
                   </Button>
                 </div>
               </div>
@@ -356,7 +357,7 @@ const PlanillaTrabajadoresPage = () => {
                 <div className="flex flex-wrap gap-2 pt-2 border-t">
                   {tipoFiltroFecha === "rango" && fechaInicio && (
                     <Badge variant="secondary" className="gap-1">
-                      Desde: {fechaInicio}
+                      {t("activeFilters.from", { date: fechaInicio })}
                       <X
                         className="h-3 w-3 cursor-pointer"
                         onClick={() => setFechaInicio("")}
@@ -366,7 +367,7 @@ const PlanillaTrabajadoresPage = () => {
 
                   {tipoFiltroFecha === "rango" && fechaFin && (
                     <Badge variant="secondary" className="gap-1">
-                      Hasta: {fechaFin}
+                      {t("activeFilters.to", { date: fechaFin })}
                       <X
                         className="h-3 w-3 cursor-pointer"
                         onClick={() => setFechaFin("")}
@@ -376,11 +377,11 @@ const PlanillaTrabajadoresPage = () => {
 
                   {tipoFiltroFecha === "mes" && mesSeleccionado && (
                     <Badge variant="secondary" className="gap-1">
-                      Mes:{" "}
-                      {
-                        mesesOpciones.find((m) => m.value === mesSeleccionado)
-                          ?.label
-                      }
+                      {t("activeFilters.month", {
+                        month:
+                          mesesOpciones.find((m) => m.value === mesSeleccionado)
+                            ?.label ?? mesSeleccionado,
+                      })}
                       <X
                         className="h-3 w-3 cursor-pointer"
                         onClick={() => setMesSeleccionado("")}
@@ -390,12 +391,13 @@ const PlanillaTrabajadoresPage = () => {
 
                   {estadoSeleccionado !== "todos" && (
                     <Badge variant="secondary" className="gap-1">
-                      Estado:{" "}
-                      {
-                        estadosPlanilla.find(
-                          (e) => e.value === estadoSeleccionado,
-                        )?.label
-                      }
+                      {t("activeFilters.status", {
+                        status: t.has(`statuses.${estadoSeleccionado}`)
+                          ? t(`statuses.${estadoSeleccionado}`)
+                          : (estadosPlanilla.find(
+                              (e) => e.value === estadoSeleccionado,
+                            )?.label ?? estadoSeleccionado),
+                      })}
                       <X
                         className="h-3 w-3 cursor-pointer"
                         onClick={() => setEstadoSeleccionado("todos")}
@@ -422,10 +424,10 @@ const PlanillaTrabajadoresPage = () => {
               <div className="text-center py-12">
                 <FileText className="h-12 w-12 mx-auto text-gray-400 mb-4" />
 
-                <p className="text-gray-500">No se encontraron planillas</p>
+                <p className="text-gray-500">{t("empty.title")}</p>
 
                 <p className="text-sm text-gray-400 mt-1">
-                  Prueba con otros filtros o crea una nueva planilla
+                  {t("empty.description")}
                 </p>
               </div>
             )}
@@ -447,11 +449,11 @@ const PlanillaTrabajadoresPage = () => {
       <Modal
         open={openAddModal}
         onOpenChange={setOpenAddModal}
-        title={selectedPlanilla ? "Editar Planilla" : "Agregar Planilla"}
+        title={selectedPlanilla ? t("modal.editTitle") : t("modal.createTitle")}
         description={
           selectedPlanilla
-            ? "Aqui podras editar las planillas"
-            : "Aqui podras agregar una nueva planilla"
+            ? t("modal.editDescription")
+            : t("modal.createDescription")
         }
         size="3xl"
         showCloseButton={false}

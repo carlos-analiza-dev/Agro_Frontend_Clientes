@@ -1,6 +1,7 @@
 "use client";
 
 import useUserLocation from "@/hooks/location/useUserLocation";
+import { useTranslations } from "next-intl";
 
 interface LocationPermissionBannerProps {
   onAllow?: () => void;
@@ -9,6 +10,8 @@ interface LocationPermissionBannerProps {
 export const LocationPermissionBanner: React.FC<
   LocationPermissionBannerProps
 > = ({ onAllow }) => {
+  const t = useTranslations("locationPermissionBanner");
+
   const { error, permissionStatus, retryLocation, location, loading } =
     useUserLocation();
 
@@ -21,50 +24,59 @@ export const LocationPermissionBanner: React.FC<
 
     if (/iPhone|iPad|iPod/.test(userAgent)) {
       return (
-        "Safari (iPhone/iPad):\n" +
-        "Opción 1:\n" +
-        "1. Toca 'aA' en la barra de direcciones\n" +
-        "2. Configuración del sitio web\n" +
-        "3. Ubicación → Permitir\n" +
-        "4. Recarga la página\n\n" +
-        "Si no funciona:\n" +
-        "1. Configuración → Privacidad y seguridad\n" +
-        "2. Localización → Sitios web de Safari\n" +
-        "3. Selecciona 'Mientras se usa la app'\n" +
-        "4. Regresa a Safari y recarga la página"
+        t("instructions.ios.title") +
+        "\n" +
+        t("instructions.ios.option") +
+        "\n" +
+        t("instructions.ios.steps.0") +
+        "\n" +
+        t("instructions.ios.steps.1") +
+        "\n" +
+        t("instructions.ios.steps.2") +
+        "\n" +
+        t("instructions.ios.steps.3") +
+        "\n\n" +
+        t("instructions.ios.alternative") +
+        "\n" +
+        t("instructions.ios.alternativeSteps.0") +
+        "\n" +
+        t("instructions.ios.alternativeSteps.1") +
+        "\n" +
+        t("instructions.ios.alternativeSteps.2") +
+        "\n" +
+        t("instructions.ios.alternativeSteps.3")
       );
     }
 
     if (/Safari/.test(userAgent) && !/Chrome/.test(userAgent)) {
       return (
-        "Safari (Mac):\n" +
-        "1. Safari → Configuración (o Preferencias en versiones antiguas)\n" +
-        "2. Sitios web → Ubicación\n" +
-        "3. Busca este sitio en la lista\n" +
-        "4. Cambia el permiso a 'Permitir'\n" +
-        "5. Recarga la página"
+        t("instructions.safari.title") +
+        "\n" +
+        t("instructions.safari.steps.0") +
+        "\n" +
+        t("instructions.safari.steps.1") +
+        "\n" +
+        t("instructions.safari.steps.2") +
+        "\n" +
+        t("instructions.safari.steps.3") +
+        "\n" +
+        t("instructions.safari.steps.4")
       );
     }
 
     if (/Firefox/.test(userAgent)) {
-      return "Firefox:\nHaz clic en el ícono de permisos, en la parte superior izquierda de la URL → Permitir ubicación";
+      return t("instructions.firefox");
     }
 
     if (/Edg/.test(userAgent)) {
-      return "Edge:\nHaz clic en el ícono del sitio, en la parte superior izquierda de la URL → Permisos → Ubicación → Permitir";
+      return t("instructions.edge");
     }
 
     if (/OPR/.test(userAgent)) {
-      return (
-        "Opera:\n" +
-        "Haz clic en el ícono de candado del sitio, parte superior izquierda de la URL → Ubicación → Permitir"
-      );
+      return t("instructions.opera");
     }
 
-    return (
-      "Chrome:\n" +
-      "Haz clic en el ícono de configuración del sitio, parte superior izquierda de la URL → Ubicación → Permitir"
-    );
+    return t("instructions.chrome");
   };
 
   if (permissionStatus.isBlocked) {
@@ -86,17 +98,20 @@ export const LocationPermissionBanner: React.FC<
               />
             </svg>
           </div>
+
           <div className="flex-1">
             <h3 className="text-sm font-semibold text-red-800">
-              El sitio necesita acceder a tu ubicacion para funcionar
+              {t("blocked.title")}
             </h3>
+
             <p className="text-sm text-red-600 mt-1">{error}</p>
+
             <button
               onClick={() => {
                 alert(getLocationInstructions());
               }}
             >
-              Cómo habilitar la ubicación →
+              {t("blocked.instructions")} →
             </button>
           </div>
         </div>
@@ -111,11 +126,12 @@ export const LocationPermissionBanner: React.FC<
           <div className="flex-1">
             <p className="text-sm text-yellow-800">{error}</p>
           </div>
+
           <button
             onClick={retryLocation}
             className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-md text-sm hover:bg-yellow-200 transition-colors"
           >
-            Reintentar
+            {t("retry")}
           </button>
         </div>
       </div>
@@ -126,8 +142,8 @@ export const LocationPermissionBanner: React.FC<
     return (
       <div className="fixed bottom-4 right-4 z-50 bg-blue-50 border border-blue-200 rounded-lg p-4 shadow-lg">
         <div className="flex items-center gap-3">
-          <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
-          <p className="text-sm text-blue-800">Obteniendo ubicación...</p>
+          <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent" />
+          <p className="text-sm text-blue-800">{t("loading")}</p>
         </div>
       </div>
     );

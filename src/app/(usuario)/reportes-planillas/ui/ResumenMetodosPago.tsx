@@ -12,6 +12,7 @@ import {
   Legend,
 } from "recharts";
 import { CreditCard, DollarSign } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 
 interface Props {
   metodos: ResponseResumenMetodosPagos[] | undefined;
@@ -20,26 +21,27 @@ interface Props {
 }
 
 const ResumenMetodosPago = ({ metodos, cargando, moneda }: Props) => {
+  const t = useTranslations("resumenMetodosPago");
+  const locale = useLocale();
+
   const getMetodoColor = (metodo: string) => {
     const colors: Record<string, string> = {
       efectivo: "#10b981",
       transferencia: "#3b82f6",
       cheque: "#f59e0b",
     };
+
     return colors[metodo] || "#8884d8";
   };
 
   const getMetodoLabel = (metodo: string) => {
-    const labels: Record<string, string> = {
-      efectivo: "Efectivo",
-      transferencia: "Transferencia",
-      cheque: "Cheque",
-    };
-    return labels[metodo] || metodo;
+    const key = `paymentMethods.${metodo.toLowerCase()}`;
+
+    return t.has(key) ? t(key) : metodo;
   };
 
   const formatearMoneda = (monto: number) => {
-    return new Intl.NumberFormat("es-HN", {
+    return new Intl.NumberFormat(locale === "en" ? "en-US" : "es-HN", {
       style: "currency",
       currency: "HNL",
     }).format(monto);
@@ -72,9 +74,10 @@ const ResumenMetodosPago = ({ metodos, cargando, moneda }: Props) => {
       <CardHeader>
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
           <CreditCard className="h-5 w-5" />
-          Métodos de Pago
+          {t("title")}
         </CardTitle>
       </CardHeader>
+
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {datosGraficos.map((item) => (
@@ -83,9 +86,14 @@ const ResumenMetodosPago = ({ metodos, cargando, moneda }: Props) => {
                 <DollarSign className="h-4 w-4" />
                 <span className="text-sm">{item.name}</span>
               </div>
+
               <p className="text-xl font-bold">{formatearMoneda(item.value)}</p>
+
               <p className="text-xs text-muted-foreground mt-1">
-                {item.cantidad} pagos ({item.porcentaje})
+                {t("paymentsCount", {
+                  count: item.cantidad,
+                  percentage: item.porcentaje,
+                })}
               </p>
             </div>
           ))}
@@ -99,7 +107,7 @@ const ResumenMetodosPago = ({ metodos, cargando, moneda }: Props) => {
                 cx="50%"
                 cy="50%"
                 label={({ name, percent }) =>
-                  `${name}: ${(percent * 100).toFixed(0)}%`
+                  `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`
                 }
                 outerRadius={100}
                 dataKey="value"
@@ -108,7 +116,9 @@ const ResumenMetodosPago = ({ metodos, cargando, moneda }: Props) => {
                   <Cell key={index} fill={entry.color} />
                 ))}
               </Pie>
+
               <Tooltip formatter={(value: number) => formatearMoneda(value)} />
+
               <Legend />
             </PieChart>
           </ResponsiveContainer>

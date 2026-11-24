@@ -1,10 +1,11 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { Filter, Plus, AlertCircle, Dna } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -38,14 +39,18 @@ import ButtonAdd from "@/components/generics/ButtonAdd";
 import TitlePage from "@/components/generics/TitlePage";
 
 const ServiciosReproductivosPage = () => {
+  const t = useTranslations("serviciosReproductivosPage");
+
   const { cliente } = useAuthStore();
   const clienteId = cliente?.id ?? "";
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const router = useRouter();
+
   const [openModal, setOpenModal] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
   const isTablet = useMediaQuery("(min-width: 769px) and (max-width: 1024px)");
   const isDesktop = useMediaQuery("(min-width: 1025px)");
+
   const [selectedServicio, setSelectedServicio] = useState<Servicio | null>(
     null,
   );
@@ -58,7 +63,7 @@ const ServiciosReproductivosPage = () => {
     mutationFn: (data: Partial<CreateServiciosReproductivo>) =>
       EditarServicioReproductivoEstados(selectedServicio?.id || "", data),
     onSuccess: () => {
-      toast.success("Estado del servicio actualizado exitosamente");
+      toast.success(t("messages.statusUpdated"));
       queryClient.invalidateQueries({ queryKey: ["servicios-reproductivos"] });
       setOpenModalStatus(false);
       setSelectedServicio(null);
@@ -71,11 +76,11 @@ const ServiciosReproductivosPage = () => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar el estado";
+            : t("errors.updateStatus");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("errors.unexpected"));
       }
     },
   });
@@ -96,9 +101,7 @@ const ServiciosReproductivosPage = () => {
     if (!selectedServicio || !selectedEstado) return;
 
     if (selectedServicio.exitoso) {
-      toast.warn(
-        "Este servicio ya fue marcado como exitoso y su estado no puede modificarse",
-      );
+      toast.warn(t("messages.alreadySuccessful"));
       return;
     }
 
@@ -111,16 +114,12 @@ const ServiciosReproductivosPage = () => {
     if (!selectedServicio) return;
 
     if (checked && selectedServicio.estado === EstadoServicio.FALLIDO) {
-      toast.warning(
-        "No se puede marcar como exitoso un servicio que está en estado FALLIDO",
-      );
+      toast.warning(t("messages.cannotMarkFailed"));
       return;
     }
 
     if (checked && selectedServicio.estado === EstadoServicio.CANCELADO) {
-      toast.warning(
-        "No se puede marcar como exitoso un servicio que está en estado CANCELADO",
-      );
+      toast.warning(t("messages.cannotMarkCancelled"));
       return;
     }
 
@@ -129,9 +128,7 @@ const ServiciosReproductivosPage = () => {
       selectedServicio.estado !== EstadoServicio.REALIZADO &&
       selectedServicio.estado === EstadoServicio.PROGRAMADO
     ) {
-      toast.info(
-        "Para marcar como exitoso, primero cambia el estado a REALIZADO",
-      );
+      toast.info(t("messages.mustBeCompletedFirst"));
       return;
     }
 
@@ -280,13 +277,14 @@ const ServiciosReproductivosPage = () => {
       >
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <TitlePage
-            title={`Servicios Reproductivos - ${
-              fincaSeleccionada && fincaSeleccionada.nombre_finca.toLowerCase()
-            }`}
-            description="Registra y monitorea los servicios reproductivos de tus animales.
-              Cada registro será evaluado automáticamente para validar que el
-              animal cumpla con la edad mínima reproductiva de su especie antes
-              de continuar con el proceso."
+            title={
+              fincaSeleccionada
+                ? t("titleWithFarm", {
+                    farm: fincaSeleccionada.nombre_finca.toLowerCase(),
+                  })
+                : t("title")
+            }
+            description={t("description")}
             Icon={Dna}
           />
 
@@ -299,7 +297,7 @@ const ServiciosReproductivosPage = () => {
                 className="flex-1 sm:flex-none"
               >
                 <Filter className="h-4 w-4 mr-2" />
-                Filtros
+                {t("buttons.filters")}
               </Button>
             )}
 
@@ -311,15 +309,16 @@ const ServiciosReproductivosPage = () => {
                   className="mr-2"
                 >
                   <TabsList>
-                    <TabsTrigger value="tabla">Tabla</TabsTrigger>
+                    <TabsTrigger value="tabla">{t("views.table")}</TabsTrigger>
                   </TabsList>
                 </Tabs>
               </div>
             )}
+
             <ButtonAdd
               id="servicios-reproductivos-nuevo"
               Icon={Plus}
-              title="Nuevo Servicio"
+              title={t("buttons.newService")}
               action={() => handleClickAdd()}
               className="bg-green-600 hover:bg-green-700"
             />
@@ -363,20 +362,24 @@ const ServiciosReproductivosPage = () => {
             {error ? (
               <div className="text-center py-12">
                 <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Error al cargar</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                  {t("errors.loadTitle")}
+                </h3>
                 <p className="text-muted-foreground mb-4">
-                  No se pudieron cargar los servicios
+                  {t("errors.loadDescription")}
                 </p>
-                <Button onClick={() => refetch()}>Reintentar</Button>
+                <Button onClick={() => refetch()}>{t("buttons.retry")}</Button>
               </div>
             ) : servicios.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-muted-foreground">
-                  No hay servicios registrados
+                  {t("emptyState.noServices")}
                 </p>
                 {filtros.finca_id && (
                   <p className="text-sm text-muted-foreground mt-2">
-                    en {fincaSeleccionada?.nombre_finca}
+                    {t("emptyState.inFarm", {
+                      farm: fincaSeleccionada?.nombre_finca ?? "",
+                    })}
                   </p>
                 )}
               </div>
@@ -404,17 +407,17 @@ const ServiciosReproductivosPage = () => {
             className="grid grid-cols-2 md:grid-cols-4 gap-4"
           >
             <SummaryCard
-              title="Total Servicios"
+              title={t("summary.totalServices")}
               numero={data?.total?.toString() ?? "0"}
             />
 
             <SummaryCard
-              title="Exitosos"
+              title={t("summary.successful")}
               numero={servicios.filter((s) => s.exitoso).length.toString()}
             />
 
             <SummaryCard
-              title="Tasa Éxito"
+              title={t("summary.successRate")}
               numero={`${Math.round(
                 (servicios.filter((s) => s.exitoso).length / servicios.length) *
                   100,
@@ -422,7 +425,7 @@ const ServiciosReproductivosPage = () => {
             />
 
             <SummaryCard
-              title="Programados"
+              title={t("summary.scheduled")}
               numero={servicios
                 .filter((s) => s.estado === "PROGRAMADO")
                 .length.toString()}
@@ -430,11 +433,12 @@ const ServiciosReproductivosPage = () => {
           </div>
         )}
       </div>
+
       <Modal
         open={openModal}
         onOpenChange={setOpenModal}
-        title="Agregar Nuevo Servicio Reproductivo"
-        description="Aqui podras agregar servicios reproductivos para tus animales"
+        title={t("modals.addService.title")}
+        description={t("modals.addService.description")}
         size="xl"
         height="lg"
       >
@@ -448,16 +452,16 @@ const ServiciosReproductivosPage = () => {
       </Modal>
 
       <Modal
-        title="Acciones del Servicio"
-        description="Aquí ejecutarás acciones sobre tu servicio reproductivo"
+        title={t("modals.serviceActions.title")}
+        description={t("modals.serviceActions.description")}
         open={openModalStatus}
         onOpenChange={setOpenModalStatus}
         size="2xl"
       >
         <Tabs defaultValue="estado">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="estado">Estado del Servicio</TabsTrigger>
-            <TabsTrigger value="resultado">Resultado</TabsTrigger>
+            <TabsTrigger value="estado">{t("tabs.serviceStatus")}</TabsTrigger>
+            <TabsTrigger value="resultado">{t("tabs.result")}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="estado">

@@ -1,7 +1,9 @@
 "use client";
+
 import Modal from "@/components/generics/Modal";
 import useGetDetailsPlanilla from "@/hooks/planillas/useGetDetailsPlanilla";
 import { Dispatch, SetStateAction, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -58,6 +60,8 @@ const ModalViewDetails = ({
   planillaId,
   moneda,
 }: Props) => {
+  const t = useTranslations("modalViewDetails");
+
   const { data: detalles, isLoading } = useGetDetailsPlanilla(planillaId);
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [expandedWorker, setExpandedWorker] = useState<string | null>(null);
@@ -70,9 +74,9 @@ const ModalViewDetails = ({
         detalles.planilla,
         `Planilla_${detalles.planilla.nombre}`,
       );
-      toast.success("Excel exportado exitosamente");
-    } catch (error) {
-      toast.error("Error al exportar el Excel");
+      toast.success(t("messages.exportExcelSuccess"));
+    } catch {
+      toast.error(t("errors.exportExcel"));
     }
   };
 
@@ -84,9 +88,9 @@ const ModalViewDetails = ({
         detalles.planilla,
         `Detalle_${detalles.planilla.nombre}`,
       );
-      toast.success("Detalle exportado exitosamente");
-    } catch (error) {
-      toast.error("Error al exportar el detalle");
+      toast.success(t("messages.exportDetailSuccess"));
+    } catch {
+      toast.error(t("errors.exportDetail"));
     }
   };
 
@@ -103,8 +107,8 @@ const ModalViewDetails = ({
       <Modal
         open={openViewDetails}
         onOpenChange={setOpenViewDetails}
-        title="Detalles de Planilla"
-        description="Cargando información de la planilla..."
+        title={t("title")}
+        description={t("loading")}
         size="4xl"
         height="auto"
       >
@@ -121,16 +125,14 @@ const ModalViewDetails = ({
       <Modal
         open={openViewDetails}
         onOpenChange={setOpenViewDetails}
-        title="Detalles de Planilla"
-        description="No se pudo cargar la información"
+        title={t("title")}
+        description={t("errors.loadInformation")}
         size="3xl"
         height="auto"
       >
         <div className="text-center py-8">
           <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <p className="text-gray-500">
-            Error al cargar los detalles de la planilla
-          </p>
+          <p className="text-gray-500">{t("errors.loadDetails")}</p>
         </div>
       </Modal>
     );
@@ -151,6 +153,7 @@ const ModalViewDetails = ({
                   {getInitials(detalle.trabajador.nombre)}
                 </AvatarFallback>
               </Avatar>
+
               <div className="flex-1">
                 <p className="font-semibold text-base">
                   {detalle.trabajador.nombre}
@@ -160,19 +163,21 @@ const ModalViewDetails = ({
                 </p>
               </div>
             </div>
+
             <div className="text-right">
               <p className="font-bold text-purple-600 text-lg">
                 {formatCurrency(detalle.totalAPagar, moneda)}
               </p>
+
               {detalle.pagado ? (
                 <Badge variant="outline" className="gap-1 text-xs">
                   <CheckCircle className="h-3 w-3" />
-                  Pagado
+                  {t("paymentStatus.paid")}
                 </Badge>
               ) : (
                 <Badge variant="destructive" className="gap-1 text-xs">
                   <Clock className="h-3 w-3" />
-                  Pendiente
+                  {t("paymentStatus.pending")}
                 </Badge>
               )}
             </div>
@@ -182,19 +187,27 @@ const ModalViewDetails = ({
 
           <div className="grid grid-cols-3 gap-2 mb-3">
             <div className="text-center">
-              <p className="text-xs text-muted-foreground">Días</p>
+              <p className="text-xs text-muted-foreground">
+                {t("workerCard.days")}
+              </p>
               <p className="font-semibold text-base">
                 {detalle.diasTrabajados}
               </p>
             </div>
+
             <div className="text-center">
-              <p className="text-xs text-muted-foreground">Salario Base</p>
+              <p className="text-xs text-muted-foreground">
+                {t("workerCard.baseSalary")}
+              </p>
               <p className="font-semibold text-sm">
                 {formatCurrency(detalle.salarioBase, moneda)}
               </p>
             </div>
+
             <div className="text-center">
-              <p className="text-xs text-muted-foreground">Horas Extras</p>
+              <p className="text-xs text-muted-foreground">
+                {t("workerCard.overtime")}
+              </p>
               <p className="font-semibold text-sm text-green-600">
                 {formatCurrency(detalle.totalHorasExtras, moneda)}
               </p>
@@ -210,31 +223,33 @@ const ModalViewDetails = ({
                 {isExpanded ? (
                   <>
                     <ChevronUp className="h-4 w-4" />
-                    Ver menos detalles
+                    {t("workerCard.showLess")}
                   </>
                 ) : (
                   <>
                     <ChevronDown className="h-4 w-4" />
-                    Ver más detalles
+                    {t("workerCard.showMore")}
                   </>
                 )}
               </Button>
             </CollapsibleTrigger>
+
             <CollapsibleContent className="mt-3 space-y-3">
               <Separator />
 
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">
-                    Bonificaciones:
+                    {t("workerCard.bonuses")}
                   </span>
                   <span className="text-sm font-medium text-blue-600">
                     {formatCurrency(detalle.bonificaciones, moneda)}
                   </span>
                 </div>
+
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">
-                    Deducciones:
+                    {t("workerCard.deductions")}
                   </span>
                   <span className="text-sm font-medium text-red-600">
                     {formatCurrency(detalle.deducciones, moneda)}
@@ -249,12 +264,15 @@ const ModalViewDetails = ({
                 detalle.horasExtraFestivas > 0) && (
                 <div className="space-y-2">
                   <p className="text-sm font-medium">
-                    Desglose de Horas Extras:
+                    {t("workerCard.overtimeBreakdown")}
                   </p>
+
                   <div className="grid grid-cols-3 gap-2 text-center">
                     {detalle.horasExtraDiurnas > 0 && (
                       <div className="p-2 bg-green-50 dark:bg-green-950/20 rounded">
-                        <p className="text-xs text-muted-foreground">Diurnas</p>
+                        <p className="text-xs text-muted-foreground">
+                          {t("overtime.daytime")}
+                        </p>
                         <p className="font-medium">
                           {detalle.horasExtraDiurnas}h
                         </p>
@@ -264,10 +282,11 @@ const ModalViewDetails = ({
                         </p>
                       </div>
                     )}
+
                     {detalle.horasExtraNocturnas > 0 && (
                       <div className="p-2 bg-orange-50 dark:bg-orange-950/20 rounded">
                         <p className="text-xs text-muted-foreground">
-                          Nocturnas
+                          {t("overtime.nighttime")}
                         </p>
                         <p className="font-medium">
                           {detalle.horasExtraNocturnas}h
@@ -281,10 +300,11 @@ const ModalViewDetails = ({
                         </p>
                       </div>
                     )}
+
                     {detalle.horasExtraFestivas > 0 && (
                       <div className="p-2 bg-red-50 dark:bg-red-950/20 rounded">
                         <p className="text-xs text-muted-foreground">
-                          Festivas
+                          {t("overtime.holiday")}
                         </p>
                         <p className="font-medium">
                           {detalle.horasExtraFestivas}h
@@ -305,7 +325,7 @@ const ModalViewDetails = ({
               {detalle.observaciones && (
                 <div className="p-2 bg-muted/30 rounded">
                   <p className="text-xs text-muted-foreground">
-                    Observaciones:
+                    {t("workerCard.observations")}
                   </p>
                   <p className="text-sm">{detalle.observaciones}</p>
                 </div>
@@ -321,8 +341,11 @@ const ModalViewDetails = ({
     <Modal
       open={openViewDetails}
       onOpenChange={setOpenViewDetails}
-      title="Detalles de Planilla"
-      description={`Período: ${planilla.fechaInicio} al ${planilla.fechaFin}`}
+      title={t("title")}
+      description={t("period", {
+        start: planilla.fechaInicio,
+        end: planilla.fechaFin,
+      })}
       size={isMobile ? "full" : "3xl"}
       height="auto"
     >
@@ -330,12 +353,14 @@ const ModalViewDetails = ({
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div>
             <h3 className="text-lg md:text-xl font-bold">{planilla.nombre}</h3>
+
             {planilla.descripcion && (
               <p className="text-xs md:text-sm text-muted-foreground">
                 {planilla.descripcion}
               </p>
             )}
           </div>
+
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
@@ -344,8 +369,9 @@ const ModalViewDetails = ({
               className="gap-1"
             >
               <FileText className="h-4 w-4" />
-              {!isMobile && "Exportar Detalle"}
+              {!isMobile && t("buttons.exportDetail")}
             </Button>
+
             <Button
               variant="default"
               size={isMobile ? "default" : "sm"}
@@ -353,7 +379,7 @@ const ModalViewDetails = ({
               className="gap-1"
             >
               <FileSpreadsheet className="h-4 w-4" />
-              {!isMobile && "Exportar Excel"}
+              {!isMobile && t("buttons.exportExcel")}
             </Button>
           </div>
         </div>
@@ -364,7 +390,7 @@ const ModalViewDetails = ({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs md:text-sm text-muted-foreground">
-                    Total Trabajadores
+                    {t("summary.totalWorkers")}
                   </p>
                   <p className="text-xl md:text-2xl font-bold">
                     {resumen.totalTrabajadores}
@@ -380,7 +406,7 @@ const ModalViewDetails = ({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs md:text-sm text-muted-foreground">
-                    Total Neto
+                    {t("summary.netTotal")}
                   </p>
                   <p className="text-lg md:text-2xl font-bold text-green-600">
                     {formatCurrency(planilla.totalNeto, moneda)}
@@ -396,25 +422,28 @@ const ModalViewDetails = ({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs md:text-sm text-muted-foreground">
-                    Pagos
+                    {t("summary.payments")}
                   </p>
                   <p className="text-xl md:text-2xl font-bold">
                     {resumen.totalPagados}/{resumen.totalTrabajadores}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Pendientes: {resumen.totalPendientes}
+                    {t("summary.pending")}: {resumen.totalPendientes}
                   </p>
                 </div>
+
                 <div className="flex flex-col gap-1">
                   <Badge variant="outline" className="text-[10px] md:text-xs">
-                    {formatCurrency(resumen.montoTotalPagado, moneda)} pagado
+                    {formatCurrency(resumen.montoTotalPagado, moneda)}{" "}
+                    {t("paymentStatus.paid").toLowerCase()}
                   </Badge>
+
                   <Badge
                     variant="destructive"
                     className="text-[10px] md:text-xs"
                   >
                     {formatCurrency(resumen.montoTotalPendiente, moneda)}{" "}
-                    pendiente
+                    {t("paymentStatus.pending").toLowerCase()}
                   </Badge>
                 </div>
               </div>
@@ -426,7 +455,7 @@ const ModalViewDetails = ({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs md:text-sm text-muted-foreground">
-                    Estado
+                    {t("summary.status")}
                   </p>
                   <div className="mt-1">
                     {getEstadoBadgePlanilla(planilla.estado)}
@@ -434,8 +463,9 @@ const ModalViewDetails = ({
                 </div>
                 <Calendar className="h-6 w-6 md:h-8 md:w-8 text-purple-500" />
               </div>
+
               <p className="text-[10px] md:text-xs text-muted-foreground mt-2">
-                Pago: {planilla.fechaPago}
+                {t("summary.paymentDate")}: {planilla.fechaPago}
               </p>
             </CardContent>
           </Card>
@@ -444,49 +474,54 @@ const ModalViewDetails = ({
         <Card>
           <CardHeader className="p-3 md:p-6">
             <CardTitle className="text-base md:text-lg">
-              Resumen Financiero
+              {t("financialSummary.title")}
             </CardTitle>
           </CardHeader>
+
           <CardContent className="p-3 md:p-6 pt-0">
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
               <div>
                 <p className="text-xs md:text-sm text-muted-foreground">
-                  Salarios Base
+                  {t("financialSummary.baseSalaries")}
                 </p>
                 <p className="text-sm md:text-lg font-semibold">
                   {formatCurrency(planilla.totalSalarios, moneda)}
                 </p>
               </div>
+
               <div>
                 <p className="text-xs md:text-sm text-muted-foreground flex items-center gap-1">
                   <TrendingUp className="h-3 w-3 text-green-500" />
-                  Horas Extras
+                  {t("financialSummary.overtime")}
                 </p>
                 <p className="text-sm md:text-lg font-semibold text-green-600">
                   {formatCurrency(planilla.totalHorasExtras, moneda)}
                 </p>
               </div>
+
               <div>
                 <p className="text-xs md:text-sm text-muted-foreground flex items-center gap-1">
                   <TrendingUp className="h-3 w-3 text-blue-500" />
-                  Bonificaciones
+                  {t("financialSummary.bonuses")}
                 </p>
                 <p className="text-sm md:text-lg font-semibold text-blue-600">
                   {formatCurrency(planilla.totalBonificaciones, moneda)}
                 </p>
               </div>
+
               <div>
                 <p className="text-xs md:text-sm text-muted-foreground flex items-center gap-1">
                   <TrendingDown className="h-3 w-3 text-red-500" />
-                  Deducciones
+                  {t("financialSummary.deductions")}
                 </p>
                 <p className="text-sm md:text-lg font-semibold text-red-600">
                   {formatCurrency(planilla.totalDeducciones, moneda)}
                 </p>
               </div>
+
               <div className="col-span-2 md:col-span-1 border-t md:border-t-0 md:border-l pt-2 md:pt-0 md:pl-4">
                 <p className="text-xs md:text-sm text-muted-foreground">
-                  Total Neto
+                  {t("financialSummary.netTotal")}
                 </p>
                 <p className="text-base md:text-xl font-bold text-purple-600">
                   {formatCurrency(planilla.totalNeto, moneda)}
@@ -499,9 +534,10 @@ const ModalViewDetails = ({
         <Card>
           <CardHeader className="p-3 md:p-6">
             <CardTitle className="text-base md:text-lg">
-              Detalle por Trabajador
+              {t("workerDetails.title")}
             </CardTitle>
           </CardHeader>
+
           <CardContent className="p-3 md:p-6 pt-0">
             {isMobile ? (
               <div className="space-y-3">
@@ -514,16 +550,27 @@ const ModalViewDetails = ({
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-muted/50">
-                      <TableHead>Trabajador</TableHead>
-                      <TableHead>Días</TableHead>
-                      <TableHead>Salario Base</TableHead>
-                      <TableHead>Horas Extras</TableHead>
-                      <TableHead>Bonif.</TableHead>
-                      <TableHead>Deducc.</TableHead>
-                      <TableHead>Total a Pagar</TableHead>
-                      <TableHead>Estado</TableHead>
+                      <TableHead>{t("workerDetails.columns.worker")}</TableHead>
+                      <TableHead>{t("workerDetails.columns.days")}</TableHead>
+                      <TableHead>
+                        {t("workerDetails.columns.baseSalary")}
+                      </TableHead>
+                      <TableHead>
+                        {t("workerDetails.columns.overtime")}
+                      </TableHead>
+                      <TableHead>
+                        {t("workerDetails.columns.bonuses")}
+                      </TableHead>
+                      <TableHead>
+                        {t("workerDetails.columns.deductions")}
+                      </TableHead>
+                      <TableHead>
+                        {t("workerDetails.columns.totalToPay")}
+                      </TableHead>
+                      <TableHead>{t("workerDetails.columns.status")}</TableHead>
                     </TableRow>
                   </TableHeader>
+
                   <TableBody>
                     {planilla.detalles?.map((detalle: any) => (
                       <TableRow key={detalle.id} className="hover:bg-muted/30">
@@ -534,6 +581,7 @@ const ModalViewDetails = ({
                                 {getInitials(detalle.trabajador.nombre)}
                               </AvatarFallback>
                             </Avatar>
+
                             <div>
                               <p className="font-medium text-sm">
                                 {detalle.trabajador.nombre}
@@ -544,59 +592,67 @@ const ModalViewDetails = ({
                             </div>
                           </div>
                         </TableCell>
+
                         <TableCell>
                           <div className="text-center">
                             <span className="font-medium">
                               {detalle.diasTrabajados}
                             </span>
                             <p className="text-xs text-muted-foreground">
-                              días
+                              {t("workerDetails.days")}
                             </p>
                           </div>
                         </TableCell>
+
                         <TableCell>
                           {formatCurrency(detalle.salarioBase, moneda)}
                         </TableCell>
+
                         <TableCell>
                           <div>
                             <span className="text-green-600 font-medium">
                               {formatCurrency(detalle.totalHorasExtras, moneda)}
                             </span>
+
                             <div className="text-xs text-muted-foreground">
                               {detalle.horasExtraDiurnas > 0 &&
-                                `${detalle.horasExtraDiurnas}h D `}
+                                `${detalle.horasExtraDiurnas}h ${t("overtime.shortDaytime")} `}
                               {detalle.horasExtraNocturnas > 0 &&
-                                `${detalle.horasExtraNocturnas}h N `}
+                                `${detalle.horasExtraNocturnas}h ${t("overtime.shortNighttime")} `}
                               {detalle.horasExtraFestivas > 0 &&
-                                `${detalle.horasExtraFestivas}h F`}
+                                `${detalle.horasExtraFestivas}h ${t("overtime.shortHoliday")}`}
                             </div>
                           </div>
                         </TableCell>
+
                         <TableCell>
                           <span className="text-blue-600">
                             {formatCurrency(detalle.bonificaciones, moneda)}
                           </span>
                         </TableCell>
+
                         <TableCell>
                           <span className="text-red-600">
                             {formatCurrency(detalle.deducciones, moneda)}
                           </span>
                         </TableCell>
+
                         <TableCell>
                           <span className="font-bold text-purple-600">
                             {formatCurrency(detalle.totalAPagar, moneda)}
                           </span>
                         </TableCell>
+
                         <TableCell>
                           {detalle.pagado ? (
                             <Badge variant="outline" className="gap-1">
                               <CheckCircle className="h-3 w-3" />
-                              Pagado
+                              {t("paymentStatus.paid")}
                             </Badge>
                           ) : (
                             <Badge variant="destructive" className="gap-1">
                               <Clock className="h-3 w-3" />
-                              Pendiente
+                              {t("paymentStatus.pending")}
                             </Badge>
                           )}
                         </TableCell>
@@ -619,9 +675,10 @@ const ModalViewDetails = ({
             <Card>
               <CardHeader className="p-3 md:p-6">
                 <CardTitle className="text-base md:text-lg">
-                  Detalle de Horas Extras
+                  {t("overtime.title")}
                 </CardTitle>
               </CardHeader>
+
               <CardContent className="p-3 md:p-6 pt-0">
                 <div className="space-y-4">
                   {planilla.detalles?.map(
@@ -639,23 +696,26 @@ const ModalViewDetails = ({
                                 {detalle.trabajador.nombre}
                               </p>
                               <p className="text-sm text-muted-foreground">
-                                Salario diario:{" "}
+                                {t("overtime.dailySalary")}:{" "}
                                 {formatCurrency(detalle.salarioDiario, moneda)}
                               </p>
                             </div>
+
                             <Badge variant="outline">
-                              Total extras:{" "}
+                              {t("overtime.total")}:{" "}
                               {formatCurrency(detalle.totalHorasExtras, moneda)}
                             </Badge>
                           </div>
+
                           <div className="grid grid-cols-3 gap-4 text-sm">
                             {detalle.horasExtraDiurnas > 0 && (
                               <div className="text-center p-2 bg-muted/30 rounded">
                                 <p className="text-muted-foreground">
-                                  Horas Diurnas
+                                  {t("overtime.daytimeHours")}
                                 </p>
                                 <p className="font-medium">
-                                  {detalle.horasExtraDiurnas} horas
+                                  {detalle.horasExtraDiurnas}{" "}
+                                  {t("overtime.hours")}
                                 </p>
                                 <p className="text-xs text-green-600">
                                   {formatCurrency(
@@ -666,13 +726,15 @@ const ModalViewDetails = ({
                                 </p>
                               </div>
                             )}
+
                             {detalle.horasExtraNocturnas > 0 && (
                               <div className="text-center p-2 bg-muted/30 rounded">
                                 <p className="text-muted-foreground">
-                                  Horas Nocturnas
+                                  {t("overtime.nighttimeHours")}
                                 </p>
                                 <p className="font-medium">
-                                  {detalle.horasExtraNocturnas} horas
+                                  {detalle.horasExtraNocturnas}{" "}
+                                  {t("overtime.hours")}
                                 </p>
                                 <p className="text-xs text-orange-600">
                                   {formatCurrency(
@@ -683,13 +745,15 @@ const ModalViewDetails = ({
                                 </p>
                               </div>
                             )}
+
                             {detalle.horasExtraFestivas > 0 && (
                               <div className="text-center p-2 bg-muted/30 rounded">
                                 <p className="text-muted-foreground">
-                                  Horas Festivas
+                                  {t("overtime.holidayHours")}
                                 </p>
                                 <p className="font-medium">
-                                  {detalle.horasExtraFestivas} horas
+                                  {detalle.horasExtraFestivas}{" "}
+                                  {t("overtime.hours")}
                                 </p>
                                 <p className="text-xs text-red-600">
                                   {formatCurrency(
@@ -713,9 +777,10 @@ const ModalViewDetails = ({
           <Card>
             <CardHeader className="p-3 md:p-6">
               <CardTitle className="text-base md:text-lg">
-                Observaciones
+                {t("observations.title")}
               </CardTitle>
             </CardHeader>
+
             <CardContent className="p-3 md:p-6 pt-0">
               <p className="text-xs md:text-sm text-muted-foreground">
                 {planilla.observaciones}

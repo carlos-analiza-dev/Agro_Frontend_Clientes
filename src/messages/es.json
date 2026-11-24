@@ -7022,6 +7022,2926 @@
       "expenses": "Gastos",
       "profitability": "Rentabilidad"
     }
+  },
+   "configuracionTrabajadoresPage": {
+    "title": "Configuración de Trabajadores",
+    "description": "Gestiona los salarios, cargos y configuraciones de tus empleados",
+    "buttons": {
+      "newWorker": "Nuevo Trabajador"
+    },
+    "stats": {
+      "totalWorkers": "Total Trabajadores",
+      "averageDailySalary": "Salario Promedio Diario",
+      "activeWorkers": "Trabajadores Activos"
+    },
+    "searchPlaceholder": "Buscar por nombre, identificación o cargo...",
+    "filters": {
+      "all": "Todos",
+      "active": "Activos",
+      "inactive": "Inactivos"
+    },
+    "emptyState": "No se encontraron trabajadores",
+    "modal": {
+      "editTitle": "Editar Configuración a Trabajadores",
+      "createTitle": "Agregar Configuración a Trabajadores",
+      "editDescription": "Aquí podrás editar las configuraciones salariales de tus trabajadores",
+      "createDescription": "Aquí podrás agregar configuraciones salariales a tus trabajadores"
+    }
+  },
+  "tableConfigTrabajadores": {
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+    "actions": {
+      "view": "Ver detalles del trabajador",
+      "edit": "Editar configuración del trabajador"
+    },
+    "fields": {
+      "position": "Cargo",
+      "dailySalary": "Salario Diario",
+      "workSchedule": "Jornada",
+      "daysPerWeek": "Días/Semana",
+      "bonuses": "Bonificaciones",
+      "deductions": "Deducciones"
+    },
+    "columns": {
+      "worker": "Trabajador",
+      "position": "Cargo",
+      "salary": "Salario",
+      "dailySalary": "Salario Diario",
+      "schedule": "Jornada",
+      "bonuses": "Bonificaciones",
+      "deductions": "Deducciones",
+      "bonusesDeductions": "Bonif/Ded",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "values": {
+      "notSpecified": "No especificado",
+      "perDay": "/día",
+      "hoursPerWeek": "{count} horas/semana",
+      "hoursShort": "{count}h",
+      "days": "{count} días",
+      "daysPerWeek": "{count} días/semana"
+    }
+  },
+   "modalConfig": {
+    "title": "Detalle del Trabajador",
+    "description": "Información completa de configuración laboral",
+    "tabs": {
+      "general": "General",
+      "bonuses": "Bonificaciones",
+      "deductions": "Deducciones",
+      "history": "Historial"
+    },
+    "sections": {
+      "personalInformation": "Información Personal",
+      "workConfiguration": "Configuración Laboral",
+      "overtimeFactors": "Factores de Hora Extra",
+      "salaryBreakdown": "Desglose Salarial",
+      "contact": "Contacto",
+      "fixedBonuses": "Bonificaciones Fijas",
+      "fixedDeductions": "Deducciones Fijas",
+      "monthlyFinancialSummary": "Resumen Financiero Mensual",
+      "changeHistory": "Historial de Cambios"
+    },
+    "fields": {
+      "fullName": "Nombre Completo",
+      "identification": "Identificación",
+      "position": "Cargo",
+      "status": "Estado",
+      "hireDate": "Fecha de Contratación",
+      "dailySalary": "Salario Diario",
+      "daysPerWeek": "Días por Semana",
+      "hoursPerWeek": "Horas por Semana",
+      "hoursPerDay": "Horas por Día",
+      "daytimeOvertimeFactor": "Factor Hora Extra Diurna:",
+      "nighttimeOvertimeFactor": "Factor Hora Extra Nocturna:",
+      "holidayOvertimeFactor": "Factor Hora Extra Festiva:",
+      "regularHourlyRate": "Valor Hora Normal:",
+      "daytimeOvertimeRate": "Valor Hora Extra Diurna:",
+      "nighttimeOvertimeRate": "Valor Hora Extra Nocturna:",
+      "holidayOvertimeRate": "Valor Hora Extra Festiva:",
+      "weeklySalary": "Salario Semanal:",
+      "baseMonthlySalary": "Salario Mensual Base:",
+      "monthlyTotal": "Total mensual",
+      "totalBonuses": "Total Bonificaciones",
+      "totalDeductions": "Total Deducciones",
+      "totalNetMonthly": "Total Neto Mensual",
+      "terminationDate": "Fecha de Baja",
+      "reason": "Motivo"
+    },
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+    "units": {
+      "days": "días",
+      "hours": "horas"
+    },
+    "descriptions": {
+      "monthlyFixedBonus": "Bonificación fija mensual",
+      "monthlyFixedDeduction": "Deducción fija mensual"
+    },
+    "empty": {
+      "bonuses": "No hay bonificaciones registradas",
+      "deductions": "No hay deducciones registradas"
+    },
+    "notSpecified": "No especificado",
+    "notRegistered": "No registrado"
+  },
+ "FormConfigTrabajadores": {
+    "sections": {
+      "laborInfo": "Información Laboral",
+      "workSchedule": "Horario de Trabajo",
+      "salaryConfig": "Configuración Salarial",
+      "bonuses": "Bonificaciones Fijas",
+      "deductions": "Deducciones Fijas",
+      "monthlySummary": "Resumen Mensual"
+    },
+    "fields": {
+      "worker": "Trabajador",
+      "workerNotAssigned": "No asignado",
+      "workerNotEditable": "El trabajador no se puede modificar en edición",
+      "hireDate": "Fecha de Contratación",
+      "hireDateRequired": "La fecha de contratación es requerida",
+      "workerType": "Tipo de Trabajador",
+      "workerTypePlaceholder": "Selecciona un tipo",
+      "position": "Cargo",
+      "positionPlaceholder": "Ej: Ordeñador, Vaquero, Capataz",
+      "restDay": "Día de Descanso",
+      "restDayPlaceholder": "Selecciona día de descanso",
+      "restDayOptional": "Opcional para trabajadores parciales",
+      "restDayRequired": "Obligatorio para trabajadores permanentes y temporales",
+      "status": "Estado",
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "workSchedule": "Horario de Trabajo",
+      "entryTime": "Hora de Entrada",
+      "exitTime": "Hora de Salida",
+      "timeFormat24h": "Formato 24h (ej: 07:00)",
+      "timeFormat24hExample": "Formato 24h (ej: 13:00)",
+      "typicalSchedules": "Horarios típicos de campo: 06:00-12:00 o 07:00-13:00",
+      "workingDays": "Días Laborales",
+      "workingDaysCount": "{count} días laborales a la semana",
+      "dailySalary": "Salario Diario ({currency})",
+      "dailySalaryRequired": "El salario diario es requerido",
+      "dailySalaryMin": "El salario debe ser mayor a 0",
+      "daysPerWeek": "Días por Semana",
+      "daysRequired": "Los días trabajados son requeridos",
+      "minOneDay": "Mínimo 1 día",
+      "maxSevenDays": "Máximo 7 días",
+      "daysPerWeekPartial": "Días que trabaja a la semana (puede ser variable)",
+      "daysPerWeekPermanent": "6 días para trabajadores permanentes/temporales",
+      "weeklyHours": "Horas Semanales",
+      "hoursRequired": "Las horas semanales son requeridas",
+      "minOneHour": "Mínimo 1 hora",
+      "maxEightyHours": "Máximo 80 horas",
+      "weeklyHoursHint": "Total de horas a la semana",
+      "daytimeOTFactor": "Factor Hora Extra Diurnas",
+      "daytimeOTRequired": "El factor de hora extra diurnas es requerido",
+      "minOnePointZero": "Mínimo 1.0",
+      "maxThreePointZero": "Máximo 3.0",
+      "daytimeOTHint": "Horas extras antes de las 6:00 PM",
+      "nighttimeOTFactor": "Factor Hora Extra Nocturnas",
+      "nighttimeOTRequired": "El factor de hora extra nocturnas es requerido",
+      "nighttimeOTHint": "Horas extras después de las 6:00 PM",
+      "holidayOTFactor": "Factor Hora Extra Festivas",
+      "holidayOTRequired": "El factor de hora extra festivas es requerido",
+      "holidayOTHint": "Horas extras en domingos o días festivos"
+    },
+    "placeholders": {
+      "workerSearch": "Buscar trabajador por nombre, identificación, email o teléfono...",
+      "bonusConcept": "Concepto (Ej: Bono transporte)",
+      "deductionConcept": "Concepto (Ej: Préstamo)",
+      "monthlyAmount": "Monto mensual"
+    },
+    "workerSearch": {
+      "loading": "Cargando trabajadores...",
+      "idLabel": "ID: {value}",
+      "noAvailable": "No hay trabajadores disponibles",
+      "allAssigned": "Todos los trabajadores ya tienen configuración"
+    },
+    "emptyStates": {
+      "bonuses": "No hay bonificaciones registradas. Click en \"Agregar\" para añadir.",
+      "deductions": "No hay deducciones registradas. Click en \"Agregar\" para añadir."
+    },
+    "summary": {
+      "hoursPerDay": "Horas por Día",
+      "hoursPerDayValue": "{hours} horas",
+      "daysPerWeekSuffix": "{count} días/semana",
+      "normalHourValue": "Valor Hora Normal",
+      "perHour": "por hora",
+      "weeklySalary": "Salario Semanal",
+      "weeklySalaryDetail": "{count} días × {amount}",
+      "monthlySalary": "Salario Mensual",
+      "monthlyBase": "Base mensual",
+      "overtimeValues": "Valores de Horas Extras:",
+      "daytime": "Diurnas:",
+      "nighttime": "Nocturnas:",
+      "holiday": "Festivas:",
+      "perHourValue": "{amount}/hora",
+      "baseMonthlySalary": "Salario Base Mensual:",
+      "breakdown": "Desglose:",
+      "breakdownDetail": "{daily}/día × {days} días/semana × 4 semanas",
+      "totalBonuses": "Total Bonificaciones:",
+      "totalDeductions": "Total Deducciones:",
+      "netMonthlyTotal": "Total Neto Mensual:"
+    },
+    "buttons": {
+      "add": "Agregar",
+      "cancel": "Cancelar",
+      "clear": "Limpiar",
+      "create": "Crear Configuración",
+      "update": "Actualizar Configuración",
+      "creating": "Creando...",
+      "updating": "Actualizando..."
+    },
+    "validation": {
+      "hireDateRequired": "La fecha de contratación es requerida",
+      "restDayRequired": "Los trabajadores permanentes y temporales deben tener un día de descanso",
+      "scheduleRequired": "Los trabajadores permanentes y temporales deben tener horario definido",
+      "conceptRequired": "El concepto es requerido",
+      "amountRequired": "El monto es requerido",
+      "amountMin": "Monto debe ser mayor a 0"
+    },
+    "messages": {
+      "createSuccess": "Configuración creada exitosamente",
+      "updateSuccess": "Configuración actualizada exitosamente",
+      "actionCreate": "crear",
+      "actionUpdate": "actualizar",
+      "genericError": "Hubo un error al {action} la configuración",
+      "retryError": "Hubo un error al {action} la configuración. Inténtalo de nuevo."
+    },
+    "tipoTrabajador": {
+      "permanente": "Permanente",
+      "permanenteDesc": "Cumple horario 6 días a la semana",
+      "temporal": "Temporal",
+      "temporalDesc": "Similar al permanente, sin permanencia",
+      "parcial": "Parcial",
+      "parcialDesc": "No trabaja todos los días"
+    },
+    "diasSemana": {
+      "lunes": "Lunes",
+      "martes": "Martes",
+      "miercoles": "Miércoles",
+      "jueves": "Jueves",
+      "viernes": "Viernes",
+      "sabado": "Sábado",
+      "domingo": "Domingo"
+    }
+  },
+  "agregarConfiguracionPage": {
+    "title": "Ingresar Configuración",
+    "card": {
+      "title": "Ingresa una nueva configuración",
+      "description": "Completa los datos para ingresar la configuración"
+    }
+  },
+  "editarConfiguracionTrabajadorPage": {
+    "title": "Editar Configuración",
+    "card": {
+      "title": "Editando la configuración",
+      "description": "Completa los datos para editar la configuración"
+    }
+  },
+  "JornadasTrabajadoresPage": {
+    "header": {
+      "title": "Jornadas de Trabajadores",
+      "description": "Registro diario de asistencia y horas extras",
+      "addButton": "Registrar Jornada"
+    },
+    "stats": {
+      "totalRecords": "Total Registros",
+      "workedDays": "Días Trabajados",
+      "totalOvertime": "Total Horas Extras"
+    },
+    "filters": {
+      "dateRange": "Rango de fechas",
+      "byMonth": "Por mes",
+      "searchPlaceholder": "Buscar por nombre del trabajador...",
+      "startDatePlaceholder": "Fecha inicio",
+      "endDatePlaceholder": "Fecha fin",
+      "monthPlaceholder": "Seleccionar mes",
+      "statusPlaceholder": "Estado",
+      "statusAll": "Todos",
+      "statusWorked": "Trabajó",
+      "statusNotWorked": "No trabajó",
+      "clearButton": "Limpiar",
+      "activeFilters": "Filtros activos:",
+      "badgeName": "Nombre",
+      "badgeFrom": "Desde",
+      "badgeTo": "Hasta",
+      "badgeMonth": "Mes"
+    },
+    "emptyState": {
+      "title": "No se encontraron jornadas",
+      "description": "Prueba con otros filtros o registra una nueva jornada"
+    },
+    "modal": {
+      "addTitle": "Agregar Jornada",
+      "editTitle": "Editar Jornada",
+      "description": "Aqui agregaras la jornada del trabajador diaria"
+    },
+    "table": {
+  "noDataToExport": "No hay datos para exportar",
+  "exportSuccess": "{count} jornadas exportadas exitosamente",
+  "exportError": "Error al exportar los datos",
+  "worked": "Trabajó",
+  "notWorked": "No trabajó",
+  "columns": {
+    "worker": "Trabajador",
+    "date": "Fecha",
+    "status": "Estado",
+    "overtime": "Horas Extras",
+    "workDone": "Labor Realizada",
+    "actions": "Acciones"
+  },
+  "labels": {
+    "date": "Fecha",
+    "status": "Estado",
+    "overtime": "Horas Extras",
+    "workDone": "Labor realizada",
+    "observations": "Observaciones"
+  },
+  "overtime": {
+    "daytime": "Diurnas",
+    "nighttime": "Nocturnas",
+    "holiday": "Festivas"
+  },
+  "abbreviations": {
+    "daytime": "D",
+    "nighttime": "N",
+    "holiday": "F"
+  },
+  "noOvertime": "Sin horas extras",
+  "notSpecified": "No especificada"
+  }
+  },
+   "modalViewDetailsJornada": {
+    "title": "Detalles de la Jornada",
+    "description": "Información detallada de la jornada laboral del trabajador",
+    "status": {
+      "worked": "Trabajó",
+      "notWorked": "No Trabajó"
+    },
+    "sections": {
+      "workerInformation": "Información del Trabajador",
+      "workdayDetails": "Detalles de la Jornada",
+      "workPerformed": "Labor Realizada",
+      "overtime": "Horas Extras",
+      "observations": "Observaciones"
+    },
+    "fields": {
+      "fullName": "Nombre Completo",
+      "identification": "Identificación",
+      "phone": "Teléfono",
+      "email": "Email",
+      "location": "Ubicación",
+      "role": "Rol",
+      "date": "Fecha"
+    },
+    "overtime": {
+      "daytime": "Diurna",
+      "nighttime": "Nocturna",
+      "holiday": "Festiva"
+    },
+    "units": {
+      "hours": "horas"
+    },
+    "notRegistered": "No registrado",
+    "notSpecified": "No especificada"
+  },
+   "formJornadaTrabajador": {
+    "sections": {
+      "workdayInformation": "Información de la Jornada",
+      "overtime": "Horas Extras",
+      "workdayDetails": "Detalles de la Jornada"
+    },
+    "fields": {
+      "worker": "Trabajador",
+      "date": "Fecha",
+      "worked": "¿Trabajó?",
+      "daytimeOvertime": "Horas Extras Diurnas",
+      "nighttimeOvertime": "Horas Extras Nocturnas",
+      "holidayOvertime": "Horas Extras Festivas",
+      "workPerformed": "Labor Realizada",
+      "observations": "Observaciones"
+    },
+    "placeholders": {
+      "searchWorker": "Buscar trabajador por nombre, identificación, email o teléfono...",
+      "workPerformed": "Describa las actividades realizadas durante la jornada...",
+      "observations": "Notas adicionales, incidencias, etc."
+    },
+    "messages": {
+      "loadingWorkers": "Cargando trabajadores...",
+      "noWorkersFound": "No se encontraron trabajadores",
+      "tryAnotherSearch": "Intenta con otro término de búsqueda",
+      "workerCannotBeChanged": "El trabajador no se puede modificar en edición",
+      "createSuccess": "Jornada registrada exitosamente",
+      "updateSuccess": "Jornada actualizada exitosamente"
+    },
+    "values": {
+      "unassigned": "No asignado",
+      "yesWorked": "Sí, trabajó",
+      "didNotWork": "No trabajó"
+    },
+    "descriptions": {
+      "daytimeOvertime": "Horas extras antes de las 6:00 PM",
+      "nighttimeOvertime": "Horas extras después de las 6:00 PM",
+      "holidayOvertime": "Horas extras en domingos o días festivos"
+    },
+    "labels": {
+      "totalOvertime": "Total de Horas Extras"
+    },
+    "units": {
+      "hours": "horas"
+    },
+    "validation": {
+      "dateRequired": "La fecha es requerida",
+      "nonNegative": "No puede ser negativo",
+      "maxHours": "Máximo 12 horas"
+    },
+    "errors": {
+      "create": "Hubo un error al registrar la jornada",
+      "update": "Hubo un error al actualizar la jornada",
+      "createRetry": "Hubo un error al registrar la jornada. Inténtalo de nuevo.",
+      "updateRetry": "Hubo un error al actualizar la jornada. Inténtalo de nuevo."
+    },
+    "actions": {
+      "clearWorker": "Quitar trabajador seleccionado"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "clear": "Limpiar",
+      "updating": "Actualizando...",
+      "registering": "Registrando...",
+      "update": "Actualizar Jornada",
+      "register": "Registrar Jornada"
+    }
+  },
+   "exportButton": {
+    "exportExcel": "Exportar Excel"
+  },
+  "planillaTrabajadoresPage": {
+    "title": "Planillas de Trabajadores",
+    "description": "Gestión de nóminas y pagos de trabajadores",
+    "buttons": {
+      "newPayroll": "Nueva Planilla",
+      "clear": "Limpiar"
+    },
+    "stats": {
+      "totalPayrolls": "Total Planillas",
+      "paidPayrolls": "Planillas Pagadas",
+      "netTotal": "Total Neto",
+      "inProgress": "En Proceso"
+    },
+    "filters": {
+      "dateRange": "Rango de fechas",
+      "byMonth": "Por mes",
+      "startDate": "Fecha inicio",
+      "endDate": "Fecha fin",
+      "selectMonth": "Seleccionar mes",
+      "status": "Estado",
+      "allStatuses": "Todos los estados"
+    },
+    "activeFilters": {
+      "from": "Desde: {date}",
+      "to": "Hasta: {date}",
+      "month": "Mes: {month}",
+      "status": "Estado: {status}"
+    },
+    "statuses": {
+      "BORRADOR": "Borrador",
+      "CONFIRMADA": "Confirmada",
+      "PAGADA": "Pagada"
+    },
+    "empty": {
+      "title": "No se encontraron planillas",
+      "description": "Prueba con otros filtros o crea una nueva planilla"
+    },
+    "modal": {
+      "editTitle": "Editar Planilla",
+      "createTitle": "Agregar Planilla",
+      "editDescription": "Aquí podrás editar las planillas",
+      "createDescription": "Aquí podrás agregar una nueva planilla"
+    }
+  },
+  "tablePlanillas": {
+    "columns": {
+      "name": "Nombre",
+      "period": "Período",
+      "paymentDate": "Fecha de pago",
+      "netTotal": "Total neto",
+      "status": "Estado",
+      "actions": "Acciones",
+      "more": "Más"
+    },
+    "buttons": {
+      "generate": "Generar",
+      "confirm": "Confirmar",
+      "pay": "Pagar",
+      "cancelPayroll": "Anular",
+      "cancel": "Cancelar",
+      "anular": "Anular"
+    },
+    "actions": {
+      "openMenu": "Abrir menú de opciones",
+      "viewDetails": "Ver detalles",
+      "edit": "Editar"
+    },
+    "fields": {
+      "cancellationReason": "Motivo de anulación *"
+    },
+    "placeholders": {
+      "cancellationReason": "Ej: Error en cálculo de horas extras"
+    },
+    "values": {
+      "noDescription": "Sin descripción",
+      "days": "días"
+    },
+    "empty": "No hay planillas registradas",
+    "modals": {
+      "confirm": {
+        "title": "Confirmar planilla",
+        "description": "¿Estás seguro de que deseas confirmar la planilla \"{name}\"? Una vez confirmada, podrás proceder al pago."
+      },
+      "cancel": {
+        "title": "Anular planilla",
+        "description": "¿Estás seguro de que deseas anular la planilla \"{name}\"? Esta acción no se puede deshacer."
+      }
+    },
+    "messages": {
+      "generateSuccess": "Planilla generada exitosamente",
+      "confirmSuccess": "Planilla confirmada exitosamente",
+      "cancelSuccess": "Planilla anulada exitosamente"
+    },
+    "validation": {
+      "cancellationReason": "Debe proporcionar un motivo para anular la planilla"
+    },
+    "errors": {
+      "generate": "Hubo un error al generar la planilla",
+      "confirm": "Hubo un error al confirmar la planilla",
+      "cancel": "Hubo un error al anular la planilla"
+    }
+  },
+  "modalViewDetails": {
+    "title": "Detalles de Planilla",
+    "loading": "Cargando información de la planilla...",
+    "period": "Período: {start} al {end}",
+    "buttons": {
+      "exportDetail": "Exportar Detalle",
+      "exportExcel": "Exportar Excel"
+    },
+    "messages": {
+      "exportExcelSuccess": "Excel exportado exitosamente",
+      "exportDetailSuccess": "Detalle exportado exitosamente"
+    },
+    "errors": {
+      "loadInformation": "No se pudo cargar la información",
+      "loadDetails": "Error al cargar los detalles de la planilla",
+      "exportExcel": "Error al exportar el Excel",
+      "exportDetail": "Error al exportar el detalle"
+    },
+    "paymentStatus": {
+      "paid": "Pagado",
+      "pending": "Pendiente"
+    },
+    "summary": {
+      "totalWorkers": "Total Trabajadores",
+      "netTotal": "Total Neto",
+      "payments": "Pagos",
+      "pending": "Pendientes",
+      "status": "Estado",
+      "paymentDate": "Pago"
+    },
+    "financialSummary": {
+      "title": "Resumen Financiero",
+      "baseSalaries": "Salarios Base",
+      "overtime": "Horas Extras",
+      "bonuses": "Bonificaciones",
+      "deductions": "Deducciones",
+      "netTotal": "Total Neto"
+    },
+    "workerDetails": {
+      "title": "Detalle por Trabajador",
+      "columns": {
+        "worker": "Trabajador",
+        "days": "Días",
+        "baseSalary": "Salario Base",
+        "overtime": "Horas Extras",
+        "bonuses": "Bonif.",
+        "deductions": "Deducc.",
+        "totalToPay": "Total a Pagar",
+        "status": "Estado"
+      },
+      "days": "días"
+    },
+    "workerCard": {
+      "days": "Días",
+      "baseSalary": "Salario Base",
+      "overtime": "Horas Extras",
+      "showLess": "Ver menos detalles",
+      "showMore": "Ver más detalles",
+      "bonuses": "Bonificaciones:",
+      "deductions": "Deducciones:",
+      "overtimeBreakdown": "Desglose de Horas Extras:",
+      "observations": "Observaciones:"
+    },
+    "overtime": {
+      "title": "Detalle de Horas Extras",
+      "dailySalary": "Salario diario",
+      "total": "Total extras",
+      "daytime": "Diurnas",
+      "nighttime": "Nocturnas",
+      "holiday": "Festivas",
+      "daytimeHours": "Horas Diurnas",
+      "nighttimeHours": "Horas Nocturnas",
+      "holidayHours": "Horas Festivas",
+      "shortDaytime": "D",
+      "shortNighttime": "N",
+      "shortHoliday": "F",
+      "hours": "horas"
+    },
+    "observations": {
+      "title": "Observaciones"
+    }
+  },
+  "modalRegistrarPagos": {
+    "title": "Registrar Pagos",
+    "titleWithName": "Registrar Pagos - {name}",
+    "pendingWorkers": "{count, plural, one {# trabajador pendiente de pago} other {# trabajadores pendientes de pago}}",
+    "summary": {
+      "selectedTotal": "Total a Pagar Seleccionado"
+    },
+    "buttons": {
+      "selectAll": "Seleccionar Todos",
+      "cancel": "Cancelar",
+      "registering": "Registrando...",
+      "registerPayments": "Registrar Pagos"
+    },
+    "workedDays": "{count, plural, one {# día trabajado} other {# días trabajados}}",
+    "paymentMethods": {
+      "cash": "Efectivo",
+      "transfer": "Transferencia",
+      "check": "Cheque"
+    },
+    "messages": {
+      "selectAtLeastOne": "Seleccione al menos un trabajador para pagar",
+      "success": "Pagos registrados exitosamente",
+      "allPaid": "Todos los trabajadores ya están pagados"
+    },
+    "errors": {
+      "registerPayments": "Hubo un error al registrar los pagos",
+      "unexpected": "Ocurrió un error al registrar los pagos"
+    }
+  },
+  "mobilePlanillaCard": {
+    "buttons": {
+      "moreOptions": "Más opciones",
+      "viewDetails": "Ver Detalles",
+      "edit": "Editar",
+      "generate": "Generar"
+    },
+    "fields": {
+      "period": "Período:",
+      "paymentDate": "Fecha Pago:",
+      "netTotal": "Total Neto:"
+    },
+    "days": "{count, plural, one {# día} other {# días}}",
+    "actions": {
+      "confirmar": "Confirmar",
+      "pagar": "Pagar",
+      "anular": "Anular",
+      "editar": "Editar"
+    },
+    "periodTypes": {
+      "DIARIO": "Diario",
+      "SEMANAL": "Semanal",
+      "QUINCENAL": "Quincenal",
+      "MENSUAL": "Mensual"
+    }
+  },
+  "formPlanilla": {
+    "sections": {
+      "generalInformation": "Información General",
+      "periodConfiguration": "Configuración del Período",
+      "additionalInformation": "Información Adicional"
+    },
+    "fields": {
+      "payrollName": "Nombre de la Planilla",
+      "description": "Descripción",
+      "periodType": "Tipo de Período",
+      "periodDays": "Días del Período",
+      "startDate": "Fecha de Inicio",
+      "endDate": "Fecha de Fin",
+      "paymentDate": "Fecha de Pago",
+      "observations": "Observaciones"
+    },
+    "placeholders": {
+      "payrollName": "Ej: Planilla Mayo 2024",
+      "description": "Ej: Primera quincena de mayo",
+      "periodType": "Selecciona el tipo de período",
+      "observations": "Notas adicionales sobre la planilla..."
+    },
+    "periodTypes": {
+      "weekly": "Semanal",
+      "biweekly": "Quincenal",
+      "monthly": "Mensual",
+      "weeklyOption": "Semanal (7 días)",
+      "biweeklyOption": "Quincenal (15 días)",
+      "monthlyOption": "Mensual (30 días)"
+    },
+    "periodDescriptions": {
+      "weekly": "La semana tiene entre 1 y 7 días",
+      "biweekly": "La quincena tiene entre 1 y 15 días",
+      "monthly": "El mes tiene entre 1 y 31 días"
+    },
+    "validation": {
+      "nameRequired": "El nombre es requerido",
+      "nameMinLength": "El nombre debe tener al menos 3 caracteres",
+      "periodDaysRequired": "Los días del período son requeridos",
+      "minimumDays": "Mínimo {count} día(s)",
+      "maximumDays": "Máximo {count} días",
+      "startDateRequired": "La fecha de inicio es requerida",
+      "endDateRequired": "La fecha de fin es requerida",
+      "paymentDateRequired": "La fecha de pago es requerida"
+    },
+    "hints": {
+      "automaticEndDate": "Calculada automáticamente según la fecha de inicio y los días del período"
+    },
+    "summary": {
+      "period": "Período",
+      "to": "al",
+      "days": "{count, plural, one {# día} other {# días}}",
+      "periodType": "Tipo de Período",
+      "paymentDate": "Fecha de Pago"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "clear": "Limpiar",
+      "creating": "Creando...",
+      "updating": "Actualizando...",
+      "create": "Crear Planilla",
+      "update": "Actualizar Planilla"
+    },
+    "messages": {
+      "createSuccess": "Planilla creada exitosamente",
+      "updateSuccess": "Planilla actualizada exitosamente"
+    },
+    "errors": {
+      "create": "Hubo un error al crear la planilla",
+      "update": "Hubo un error al actualizar la planilla",
+      "createUnexpected": "Hubo un error al crear la planilla. Inténtalo de nuevo.",
+      "updateUnexpected": "Hubo un error al actualizar la planilla. Inténtalo de nuevo."
+    }
+  },
+  "crearPlanillaPage": {
+    "title": "Ingresar Planilla",
+    "card": {
+      "title": "Ingresa una nueva Planilla",
+      "description": "Completa los datos para ingresar la Planilla"
+    }
+  },
+  "editarPlanillaPage": {
+    "title": "Editar Planilla",
+    "card": {
+      "title": "Editando la Planilla",
+      "description": "Completa los datos para editar la planilla"
+    }
+  },
+  "reportesPlanillasPage": {
+    "title": "Reportes de Planillas de Trabajadores",
+    "description": "Visualiza y analiza los pagos realizados a trabajadores",
+    "filters": {
+      "startDate": "Fecha de inicio",
+      "endDate": "Fecha de fin",
+      "paymentMethod": "Método de pago",
+      "selectPaymentMethod": "Seleccionar método de pago",
+      "allMethods": "Todos los métodos",
+      "clear": "Limpiar filtros"
+    },
+    "paymentMethods": {
+      "cash": "Efectivo",
+      "transfer": "Transferencia",
+      "check": "Cheque"
+    }
+  },
+   "totalPagadoPlanilla": {
+    "title": "Total pagado en planillas",
+    "totalAmountDescription": "Monto total pagado a trabajadores",
+    "period": "Período",
+    "endDate": "Fecha de fin",
+    "paymentMethod": "Método de pago",
+    "quickSummary": {
+      "title": "Resumen rápido",
+      "totalPaid": "Total pagado:",
+      "appliedFilter": "Filtro aplicado:",
+      "noPaymentMethodFilter": "Sin filtrar por método",
+      "dateRange": "Rango de fechas:",
+      "noDateFilter": "Sin filtro de fecha"
+    },
+    "paymentMethods": {
+      "TODOS": "Todos",
+      "EFECTIVO": "Efectivo",
+      "TRANSFERENCIA": "Transferencia",
+      "CHEQUE": "Cheque"
+    }
+  },
+  "resumenMetodosPago": {
+    "title": "Métodos de pago",
+    "paymentsCount": "{count} pagos ({percentage})",
+    "paymentMethods": {
+      "efectivo": "Efectivo",
+      "transferencia": "Transferencia",
+      "cheque": "Cheque"
+    }
+  },
+  "resumenHorasExtra": {
+    "title": "Resumen de horas extras",
+    "metrics": {
+      "totalHours": "Total de horas",
+      "hoursUnit": "h",
+      "totalAmount": "Monto total",
+      "workers": "Trabajadores"
+    },
+    "chart": {
+      "daytimeHours": "Horas diurnas",
+      "nighttimeHours": "Horas nocturnas",
+      "holidayHours": "Horas festivas",
+      "hoursUnit": "horas",
+      "quantity": "Cantidad"
+    }
+  },
+  "resumenEstadosPlanilla": {
+    "title": "Resumen de planillas",
+    "payrollCount": "{count, plural, one {# planilla} other {# planillas}}",
+    "statuses": {
+      "PAGADA": "Pagada",
+      "BORRADOR": "Borrador",
+      "ANULADA": "Anulada",
+      "PENDIENTE": "Pendiente"
+    },
+    "chart": {
+      "netTotal": "Total neto"
+    },
+    "totals": {
+      "salaries": "Salarios",
+      "overtime": "Horas extras",
+      "bonuses": "Bonificaciones",
+      "deductions": "Deducciones"
+    }
+  },
+   "actividadesPage": {
+    "title": "Actividades Diarias",
+    "description": "Gestiona y da seguimiento a las actividades de tus trabajadores",
+    "addActivity": "Agregar Actividad",
+    "searchFilters": "Filtros de búsqueda",
+    "hideFilters": "Ocultar",
+    "showFilters": "Mostrar",
+    "emptyState": "No hay actividades registradas. Aplica otros filtros o crea una nueva actividad.",
+    "showingActivities": "Mostrando {showing} de {total} actividades",
+    "statuses": {
+      "all": "Todos",
+      "pendiente": "Pendiente",
+      "en_progreso": "En progreso",
+      "completada": "Completada",
+      "cancelada": "Cancelada"
+    }
+  },
+  "tarjetaActividad": {
+    "buttons": {
+      "uploadImages": "Subir imágenes",
+      "viewPhotos": "Ver fotos",
+      "moreOptions": "Más opciones",
+      "viewDetails": "Ver detalles",
+      "startActivity": "Iniciar actividad",
+      "markCompleted": "Marcar como completada",
+      "cancel": "Cancelar",
+      "delete": "Eliminar"
+    },
+    "labels": {
+      "you": "Tú",
+      "photoCount": "{count, plural, one {# foto} other {# fotos}}",
+      "created": "Creado"
+    },
+    "messages": {
+      "activityDeleted": "Actividad eliminada con éxito",
+      "activityUpdated": "Actividad actualizada con éxito",
+      "imagesUploaded": "Imágenes subidas correctamente"
+    },
+    "errors": {
+      "deleteActivity": "Error al eliminar la actividad",
+      "updateActivity": "Error al actualizar la actividad",
+      "invalidStatusTransition": "Transición de estado no permitida",
+      "invalidImage": "{name} no es una imagen válida.",
+      "imageTooLarge": "La imagen {name} es demasiado grande (máx. 1 MB).",
+      "selectAtLeastOneImage": "Selecciona al menos una imagen",
+      "uploadImages": "Error al subir imágenes"
+    }
+  },
+   "modalViewFotos": {
+    "title": "Fotos de la actividad",
+    "imageAlt": "Foto {number}",
+    "thumbnailAlt": "Miniatura {number}",
+    "previousImage": "Imagen anterior",
+    "nextImage": "Imagen siguiente",
+    "imageCounter": "{current} de {total}",
+    "emptyState": "No hay fotos disponibles para esta actividad"
+  },
+   "modalViewDetailsAcyividades": {
+     "title": "Detalles de la Actividad",
+    "labels": {
+      "created": "Creado",
+      "scheduledDate": "Fecha programada",
+      "frequency": "Frecuencia",
+      "taskStatus": "Estado de tarea",
+      "completed": "Completada",
+      "notCompleted": "No completada aún",
+      "name": "Nombre",
+      "phone": "Teléfono",
+      "location": "Ubicación",
+      "photoAlt": "Foto {number}",
+      "thumbnailAlt": "Miniatura {number}",
+      "fullImageAlt": "Imagen en tamaño completo"
+    },
+    "sections": {
+      "description": "Descripción",
+      "ownerInformation": "Información del Propietario",
+      "farmInformation": "Información de la Finca",
+      "assignedWorker": "Trabajador Asignado",
+      "activityPhotos": "Fotos de la Actividad ({count})"
+    },
+    "activityTypes": {
+      "fumigacion": "Fumigación",
+      "limpieza": "Limpieza",
+      "riego": "Riego",
+      "cosecha": "Cosecha",
+      "mantenimiento": "Mantenimiento"
+    },
+    "statuses": {
+      "pendiente": "Pendiente",
+      "en_proceso": "En Proceso",
+      "completada": "Completada",
+      "cancelada": "Cancelada"
+    },
+    "frequencies": {
+      "diaria": "Diaria",
+      "semanal": "Semanal",
+      "quincenal": "Quincenal",
+      "mensual": "Mensual",
+      "unica": "Única vez"
+    },
+    "buttons": {
+      "previousImage": "Imagen anterior",
+      "nextImage": "Imagen siguiente",
+      "closeImage": "Cerrar imagen"
+    },
+    "emptyState": "No hay fotos disponibles para esta actividad"
+  },
+  "modalUploadImages": {
+    "title": "Subir imágenes de la actividad",
+    "selectImages": "Haz clic aquí",
+    "supportedFormats": "Formatos: JPG, PNG, GIF (Máx. 1 MB por imagen)",
+    "selectedImages": "Imágenes seleccionadas ({count})",
+    "previewAlt": "Vista previa {number}",
+    "removeImage": "Eliminar imagen {number}",
+    "tapToRemove": "Toca para eliminar",
+    "buttons": {
+      "cancel": "Cancelar",
+      "uploading": "Subiendo...",
+      "upload": "Subir {count} imagen(es)"
+    }
+  },
+  "modalActividad": {
+    "addTitle": "Agregar Actividad",
+    "editTitle": "Editar Actividad",
+    "description": "Aquí podrás agregar o editar las actividades de tus trabajadores."
+  },
+   "formActividades": {
+    "fields": {
+      "worker": "Trabajador",
+      "farm": "Finca",
+      "date": "Fecha",
+      "activityType": "Tipo de Actividad",
+      "frequency": "Frecuencia",
+      "description": "Descripción"
+    },
+    "placeholders": {
+      "searchWorker": "Buscar trabajador por nombre, identificación, email o teléfono...",
+      "selectFarm": "Selecciona una finca",
+      "selectType": "Selecciona un tipo",
+      "selectFrequency": "Selecciona una frecuencia",
+      "description": "Describe los detalles de la actividad..."
+    },
+    "labels": {
+      "unassigned": "No asignado",
+      "identification": "ID",
+      "characterCount": "{count}/500 caracteres"
+    },
+    "search": {
+      "noWorkersFound": "No se encontraron trabajadores",
+      "tryAnotherTerm": "Intenta con otro término de búsqueda"
+    },
+    "empty": {
+      "noFarms": "No hay fincas disponibles"
+    },
+    "activityTypes": {
+      "fumigacion": "Fumigación",
+      "limpieza": "Limpieza",
+      "riego": "Riego",
+      "cosecha": "Cosecha",
+      "mantenimiento": "Mantenimiento"
+    },
+    "frequencies": {
+      "diaria": "Diaria",
+      "semanal": "Semanal",
+      "quincenal": "Quincenal",
+      "mensual": "Mensual",
+      "unica": "Única vez"
+    },
+    "validation": {
+      "dateRequired": "La fecha es obligatoria",
+      "descriptionMaxLength": "La descripción no puede tener más de 500 caracteres"
+    },
+    "buttons": {
+      "clearWorker": "Quitar trabajador seleccionado",
+      "create": "Crear Actividad",
+      "update": "Actualizar Actividad",
+      "creating": "Creando actividad...",
+      "updating": "Actualizando actividad..."
+    },
+    "messages": {
+      "createSuccess": "Actividad creada exitosamente",
+      "updateSuccess": "Actividad actualizada exitosamente"
+    },
+    "errors": {
+      "create": "Hubo un error al crear la actividad",
+      "createUnexpected": "Hubo un error al crear la actividad. Inténtalo de nuevo.",
+      "update": "Hubo un error al actualizar la actividad",
+      "updateUnexpected": "Hubo un error al actualizar la actividad. Inténtalo de nuevo."
+    }
+  },
+   "filtrosActividades": {
+    "worker": "Trabajador",
+    "farm": "Finca",
+    "startDate": "Fecha desde",
+    "endDate": "Fecha hasta",
+    "clearFilters": "Limpiar filtros",
+    "placeholders": {
+      "myAssignment": "Mi asignación",
+      "allWorkers": "Todos los trabajadores",
+      "allFarms": "Todas las fincas"
+    }
+  },
+  "equiposPage": {
+    "title": "Equipos y Maquinaria",
+    "description": "Registra y monitorea tus equipos y maquinaria",
+    "addEquipment": "Agregar Equipo",
+    "summary": {
+      "currentPage": "Equipos en esta página",
+      "active": "Activos",
+      "maintenance": "En Mantenimiento",
+      "inactive": "Inactivos"
+    },
+    "paginationInfo": "Mostrando {count} equipos (Página {currentPage} de {totalPages})",
+    "emptyState": {
+      "title": "No se encontraron equipos",
+      "description": "Prueba ajustando los filtros o agrega un nuevo equipo"
+    },
+    "modal": {
+      "editTitle": "Editar Equipo",
+      "createTitle": "Ingresar Nuevo Equipo",
+      "editDescription": "Aquí podrás editar los equipos asignados en cada finca",
+      "createDescription": "Aquí podrás ingresar los equipos asignados en cada finca"
+    }
+  },
+  "tableEquipos": {
+    "notAvailable": "N/A",
+    "unassigned": "Sin asignar",
+    "fields": {
+      "type": "Tipo",
+      "brandModel": "Marca/Modelo",
+      "cost": "Costo",
+      "farm": "Finca",
+      "usageHours": "Horas de uso",
+      "usefulLife": "Vida útil",
+      "status": "Estado"
+    },
+    "columns": {
+      "code": "Código",
+      "name": "Nombre",
+      "type": "Tipo",
+      "brandModel": "Marca/Modelo",
+      "cost": "Costo",
+      "farm": "Finca",
+      "usageHours": "Horas de uso",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "statuses": {
+      "active": "Activo",
+      "maintenance": "Mantenimiento",
+      "inactive": "Inactivo"
+    },
+    "units": {
+      "hours": "hrs"
+    },
+    "actions": {
+      "editEquipment": "Editar equipo"
+    }
+  },
+   "formEquipos": {
+    "fields": {
+      "name": "Nombre del equipo",
+      "equipmentType": "Tipo de equipo",
+      "farm": "Finca",
+      "brand": "Marca",
+      "model": "Modelo",
+      "serialNumber": "Número de serie",
+      "status": "Estado",
+      "purchaseDate": "Fecha de compra",
+      "purchaseCost": "Costo de compra",
+      "usageHours": "Horas de uso (Horómetro)",
+      "usefulLife": "Vida útil (Horas)"
+    },
+    "placeholders": {
+      "name": "Ej: Tractor John Deere 5060E",
+      "equipmentType": "Seleccionar tipo",
+      "farm": "Seleccionar finca",
+      "brand": "Ej: John Deere",
+      "model": "Ej: 5060E",
+      "serialNumber": "Ej: JD5060E2024001",
+      "status": "Seleccionar estado",
+      "usefulLife": "Ej: 8000"
+    },
+    "groups": {
+      "equipmentTypes": "Tipos de equipo",
+      "farms": "Fincas",
+      "statuses": "Estados"
+    },
+    "statuses": {
+      "active": "Activo",
+      "maintenance": "Mantenimiento",
+      "inactive": "Inactivo"
+    },
+    "validation": {
+      "nameRequired": "El nombre del equipo es requerido",
+      "nameMaxLength": "El nombre no puede exceder los 150 caracteres",
+      "brandMaxLength": "La marca no puede exceder los 100 caracteres",
+      "modelMaxLength": "El modelo no puede exceder los 100 caracteres",
+      "serialNumberMaxLength": "El número de serie no puede exceder los 100 caracteres",
+      "costMin": "El costo debe ser mayor o igual a 0",
+      "usageHoursMin": "Las horas deben ser mayores o iguales a 0",
+      "usefulLifeMin": "La vida útil debe ser mayor o igual a 0"
+    },
+    "hints": {
+      "usefulLife": "Vida útil estimada del equipo en horas de operación"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "updating": "Actualizando...",
+      "saving": "Guardando...",
+      "updateEquipment": "Actualizar equipo",
+      "registerEquipment": "Registrar equipo"
+    },
+    "messages": {
+      "updateSuccess": "Equipo actualizado correctamente",
+      "createSuccess": "Equipo registrado correctamente"
+    },
+    "errors": {
+      "updateTitle": "Error al actualizar el equipo",
+      "createTitle": "Error al registrar el equipo",
+      "registerEquipment": "Hubo un error al registrar el equipo",
+      "unexpected": "Error inesperado. Contacte al administrador"
+    }
+  },
+  "cardFiltersEquipos": {
+    "title": "Filtros",
+    "placeholders": {
+      "selectFarm": "Seleccionar finca",
+      "allStatuses": "Todos los estados"
+    },
+    "options": {
+      "allFarms": "Todas las fincas",
+      "allStatuses": "Todos"
+    },
+    "statuses": {
+      "active": "Activo",
+      "maintenance": "Mantenimiento",
+      "inactive": "Inactivo"
+    },
+    "pagination": {
+      "perPage": "{count} por página"
+    },
+    "buttons": {
+      "clearFilters": "Limpiar filtros"
+    }
+  },
+  "ingresarEquipoPage": {
+    "title": "Ingresar Equipo",
+    "card": {
+      "title": "Ingresa un nuevo equipo",
+      "description": "Completa los datos para ingresar el equipo"
+    }
+  },
+   "editarEquipoPage": {
+    "title": "Editar Equipo",
+    "card": {
+      "title": "Edita un equipo",
+      "description": "Completa los datos para editar el equipo"
+    }
+  },
+   "mantenimientosPage": {
+    "title": "Mantenimientos",
+    "description": "Gestiona y visualiza los mantenimientos de tus equipos",
+    "buttons": {
+      "addMaintenance": "Ingresar Mantenimiento",
+      "retry": "Reintentar"
+    },
+    "showingRecords": "Mostrando {showing} de {total} mantenimientos",
+    "emptyState": {
+      "title": "No hay mantenimientos",
+      "withFilters": "No se encontraron mantenimientos con los filtros seleccionados",
+      "withoutFilters": "No hay mantenimientos registrados en el sistema"
+    },
+    "errors": {
+      "loadTitle": "Error al cargar los mantenimientos",
+      "unknown": "Error desconocido"
+    },
+    "modal": {
+      "editTitle": "Editar Mantenimiento",
+      "createTitle": "Ingresar Nuevo Mantenimiento",
+      "editDescription": "Aquí podrás editar los equipos y máquinas que se encuentran en mantenimiento",
+      "createDescription": "Aquí podrás ingresar los equipos y máquinas que se encuentran en mantenimiento"
+    }
+  },
+   "cardMantenimientos": {
+    "labels": {
+      "start": "Inicio",
+      "end": "Final"
+    },
+    "buttons": {
+      "edit": "Editar mantenimiento"
+    },
+    "types": {
+      "preventivo": "Preventivo",
+      "correctivo": "Correctivo"
+    }
+  },
+  "formMantenimiento": {
+    "fields": {
+      "equipment": "Equipo",
+      "maintenanceType": "Tipo de mantenimiento",
+      "cost": "Costo",
+      "startDate": "Fecha y hora de inicio",
+      "endDate": "Fecha y hora de finalización",
+      "nextMaintenance": "Próximo mantenimiento",
+      "description": "Descripción"
+    },
+    "placeholders": {
+      "selectEquipment": "Seleccionar equipo",
+      "selectType": "Seleccionar tipo",
+      "description": "Describa el mantenimiento realizado, piezas cambiadas, observaciones, etc."
+    },
+    "groups": {
+      "activeEquipment": "Equipos activos",
+      "maintenanceTypes": "Tipos de mantenimiento"
+    },
+    "empty": {
+      "noActiveEquipment": "No hay equipos activos disponibles"
+    },
+    "maintenanceTypes": {
+      "preventivo": "Preventivo",
+      "correctivo": "Correctivo"
+    },
+    "validation": {
+      "equipmentRequired": "Debe seleccionar un equipo",
+      "costRequired": "El costo es requerido",
+      "costMin": "El costo debe ser mayor o igual a 0",
+      "startDateRequired": "La fecha y hora de inicio es requerida",
+      "endDateRequired": "La fecha y hora de finalización es requerida",
+      "endDateAfterStart": "La fecha final debe ser mayor o igual a la fecha de inicio",
+      "descriptionRequired": "La descripción es requerida",
+      "descriptionMaxLength": "La descripción no puede exceder los 500 caracteres"
+    },
+    "hints": {
+      "nextPreventiveMaintenance": "* Fecha sugerida para el próximo mantenimiento preventivo"
+    },
+    "labels": {
+      "characterCount": "{count}/500 caracteres"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "updating": "Actualizando...",
+      "saving": "Guardando...",
+      "update": "Actualizar mantenimiento",
+      "register": "Registrar mantenimiento"
+    },
+    "messages": {
+      "updateSuccess": "Mantenimiento actualizado correctamente",
+      "createSuccess": "Mantenimiento registrado correctamente"
+    },
+    "errors": {
+      "updateTitle": "Error al actualizar el mantenimiento",
+      "createTitle": "Error al registrar el mantenimiento",
+      "registerMaintenance": "Hubo un error al registrar el mantenimiento",
+      "unexpected": "Error inesperado. Contacte al administrador"
+    }
+  },
+  "cardFiltersMantenimientos": {
+    "title": "Filtros",
+    "fields": {
+      "farm": "Finca",
+      "type": "Tipo",
+      "from": "Desde",
+      "to": "Hasta"
+    },
+    "placeholders": {
+      "allFarms": "Todas las fincas",
+      "allTypes": "Todos los tipos"
+    },
+    "options": {
+      "allFarms": "Todas las fincas",
+      "allTypes": "Todos los tipos"
+    },
+    "loading": "Cargando...",
+    "buttons": {
+      "clearFilters": "Limpiar filtros"
+    },
+    "maintenanceTypes": {
+      "preventivo": "Preventivo",
+      "correctivo": "Correctivo"
+    }
+  },
+  "ingresarMantenimientoPage": {
+    "title": "Ingresar Mantenimiento",
+    "card": {
+      "title": "Ingresa un nuevo mantenimiento",
+      "description": "Completa los datos para ingresar el mantenimiento"
+    }
+  },
+  "editarMantenimientoPage": {
+    "title": "Editar Mantenimiento",
+    "card": {
+      "title": "Editar mantenimiento",
+      "description": "Completa los datos para editar el mantenimiento"
+    }
+  },
+   "usoDeEquiposPage": {
+    "title": "Uso de Equipos",
+    "description": "Registro de uso de equipos por operadores y actividades",
+    "buttons": {
+      "registerUsage": "Registrar Uso",
+      "retry": "Reintentar"
+    },
+    "records": {
+      "title": "Registros de Uso",
+      "showing": "Mostrando {showing} de {total} registros"
+    },
+    "emptyState": {
+      "title": "No hay registros de uso",
+      "withFilters": "No se encontraron registros con los filtros seleccionados",
+      "withoutFilters": "No hay registros de uso de equipos en el sistema"
+    },
+    "errors": {
+      "loadTitle": "Error al cargar los usos de equipo",
+      "unknown": "Error desconocido"
+    },
+    "modal": {
+      "editTitle": "Editar Uso de Equipo",
+      "createTitle": "Registrar Uso de Equipo",
+      "editDescription": "Modifica los datos del registro de uso",
+      "createDescription": "Ingresa los datos del uso del equipo"
+    }
+  },
+  "tableUsoEquipos": {
+    "fields": {
+      "operator": "Operador",
+      "activity": "Actividad",
+      "start": "Inicio",
+      "end": "Fin",
+      "hours": "Horas"
+    },
+    "columns": {
+      "equipment": "Equipo",
+      "operator": "Operador",
+      "activity": "Actividad",
+      "startDate": "Fecha Inicio",
+      "endDate": "Fecha Fin",
+      "hours": "Horas",
+      "actions": "Acciones"
+    },
+    "values": {
+      "unassigned": "No asignado"
+    },
+    "actions": {
+      "edit": "Editar uso de equipo"
+    }
+  },
+  "formUsoEquipo": {
+    "fields": {
+      "equipment": "Equipo",
+      "operator": "Operador",
+      "activity": "Actividad realizada",
+      "startDateTime": "Fecha y hora de inicio",
+      "endDateTime": "Fecha y hora de fin",
+      "hoursWorked": "Horas trabajadas"
+    },
+    "placeholders": {
+      "selectEquipment": "Seleccionar equipo",
+      "selectOperator": "Seleccionar operador",
+      "selectActivity": "Seleccionar actividad"
+    },
+    "groups": {
+      "activeEquipment": "Equipos activos",
+      "operators": "Operadores",
+      "dailyActivities": "Actividades del día"
+    },
+    "options": {
+      "noActivity": "Ninguna actividad"
+    },
+    "empty": {
+      "noActiveEquipment": "No hay equipos activos disponibles",
+      "noActivitiesForDate": "No hay actividades para esta fecha"
+    },
+    "loading": {
+      "activities": "Cargando actividades..."
+    },
+    "hints": {
+      "selectOperatorFirst": "(Seleccione un operador primero)",
+      "selectStartDateFirst": "(Seleccione la fecha de inicio primero)",
+      "automaticHours": "* Las horas se calculan automáticamente según las fechas seleccionadas"
+    },
+    "validation": {
+      "equipmentRequired": "Debe seleccionar un equipo",
+      "operatorRequired": "Debe seleccionar un operador",
+      "startDateRequired": "La fecha y hora de inicio son obligatorias",
+      "endDateRequired": "La fecha y hora de fin son obligatorias",
+      "endDateAfterStart": "La fecha de fin debe ser posterior a la fecha de inicio",
+      "hoursRequired": "Las horas trabajadas son obligatorias",
+      "hoursMin": "Las horas deben ser mayores o iguales a 0"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "updating": "Actualizando...",
+      "saving": "Guardando...",
+      "update": "Actualizar uso de equipo",
+      "register": "Registrar uso de equipo"
+    },
+    "messages": {
+      "updateSuccess": "Uso de equipo actualizado correctamente",
+      "createSuccess": "Uso de equipo registrado correctamente"
+    },
+    "errors": {
+      "updateTitle": "Error al actualizar el uso de equipo",
+      "createTitle": "Error al registrar el uso de equipo",
+      "registerUsage": "Hubo un error al registrar el uso del equipo",
+      "unexpected": "Error inesperado. Contacte al administrador"
+    }
+  },
+  "filtersUsoEquipos": {
+    "title": "Filtros",
+    "fields": {
+      "equipment": "Equipo",
+      "operator": "Operador"
+    },
+    "placeholders": {
+      "allEquipment": "Todos los equipos",
+      "allOperators": "Todos los operadores"
+    },
+    "options": {
+      "allEquipment": "Todos los equipos",
+      "allOperators": "Todos los operadores"
+    },
+    "buttons": {
+      "clearFilters": "Limpiar filtros"
+    }
+  },
+  "ingresarUsoPage": {
+    "title": "Ingresar Uso",
+    "card": {
+      "title": "Ingresa un nuevo uso",
+      "description": "Completa los datos para ingresar el uso"
+    }
+  },
+  "editarUsoEquipoPage": {
+    "title": "Editar Uso",
+    "card": {
+      "title": "Editar uso de equipo",
+      "description": "Completa los datos para editar el uso"
+    }
+  },
+  "diagnosticoAnimalPage": {
+    "title": "Diagnóstico Veterinario",
+    "importantAlert": {
+      "title": "Información importante",
+      "description": "Esta calculadora proporciona recomendaciones basadas en inteligencia artificial. Los resultados son orientativos y deben ser validados por un profesional del sector veterinario."
+    },
+    "patient": {
+      "title": "Datos del Paciente",
+      "description": "Ingresa los síntomas y datos del animal para obtener un diagnóstico preliminar"
+    },
+    "preliminaryDiagnosis": "Este es un diagnóstico preliminar. Siempre consulta con un veterinario profesional."
+  },
+  "summarySymptoms": {
+    "title": "Síntomas ingresados:",
+    "count": "{count, plural, =0 {0 síntomas} one {# síntoma} other {# síntomas}}",
+    "removeSymptom": "Eliminar síntoma: {symptom}"
+  },
+  "cardResults": {
+    "title": "Resultado del Diagnóstico",
+    "description": "Análisis basado en los síntomas proporcionados",
+    "loading": "Analizando síntomas...",
+    "reportedSymptoms": "Síntomas reportados:",
+    "patient": "Paciente:",
+    "months": "meses",
+    "empty": {
+      "title": "Sin diagnóstico aún",
+      "description": "Completa el formulario con los síntomas del animal para obtener un análisis preliminar"
+    },
+    "warning": {
+      "title": "Importante",
+      "description": "Este diagnóstico es generado por IA y debe ser verificado por un profesional veterinario. No sustituye una consulta presencial."
+    }
+  },
+   "formDiagnostico": {
+    "fields": {
+      "species": "Especie",
+      "breed": "Raza",
+      "age": "Edad (meses)",
+      "symptoms": "Síntomas"
+    },
+    "placeholders": {
+      "selectSpecies": "Selecciona la especie",
+      "loadingBreeds": "Cargando razas...",
+      "selectSpeciesFirst": "Primero selecciona una especie",
+      "selectBreed": "Selecciona la raza",
+      "ageExample": "Ej: 3",
+      "symptomInput": "Escribe un síntoma y presiona Enter o haz clic en Agregar"
+    },
+    "buttons": {
+      "add": "Agregar",
+      "clear": "Limpiar",
+      "generating": "Generando diagnóstico...",
+      "getDiagnosis": "Obtener Diagnóstico"
+    },
+    "hints": {
+      "addSymptom": "Escribe un síntoma y presiona Enter o haz clic en \"Agregar\""
+    },
+    "validation": {
+      "speciesRequired": "La especie es requerida",
+      "breedRequired": "La raza es requerida",
+      "ageMin": "La edad debe ser mayor a 0",
+      "ageMax": "La edad no puede ser mayor a {max} meses",
+      "symptomsRequired": "Los síntomas son requeridos",
+      "completeRequired": "Por favor completa todos los campos requeridos"
+    },
+    "messages": {
+      "success": "Diagnóstico generado exitosamente",
+      "duplicateSymptom": "Este síntoma ya fue agregado"
+    },
+    "errors": {
+      "generateDiagnosis": "Error al generar diagnóstico",
+      "connection": "Error al conectar con el servicio de diagnóstico"
+    }
+  },
+   "agriculturaInteligentePage": {
+    "title": "Consultor Agrícola Inteligente",
+    "importantAlert": {
+      "title": "Información importante",
+      "description": "Esta calculadora proporciona recomendaciones basadas en inteligencia artificial. Los resultados son orientativos y deben ser validados por un profesional del sector agrícola según las condiciones específicas de tu terreno."
+    },
+    "crop": {
+      "title": "Datos del Cultivo",
+      "description": "Ingresa la información del cultivo, suelo, clima y problemas observados para obtener un diagnóstico y recomendaciones personalizadas"
+    },
+    "recommendationNote": "Recomendaciones basadas en análisis agronómico. Consulta con un ingeniero agrónomo para decisiones críticas."
+  },
+   "summaryProblemas": {
+    "title": "Problemas reportados ({count})",
+    "removeProblem": "Eliminar problema: {problem}"
+  },
+   "cardResultsAgricola": {
+    "loading": {
+      "title": "Analizando tu cultivo",
+      "description": "Procesando la información de tu cultivo...",
+      "wait": "Esto puede tomar unos segundos"
+    },
+    "empty": {
+      "title": "Resultados del Diagnóstico",
+      "heading": "Esperando consulta agrícola",
+      "description": "Completa el formulario para obtener un diagnóstico detallado y recomendaciones personalizadas para tu cultivo."
+    },
+    "results": {
+      "title": "Recomendaciones para tu Cultivo"
+    },
+    "fields": {
+      "crop": "Cultivo:",
+      "soil": "Suelo:",
+      "climate": "Clima:",
+      "problems": "Problemas:"
+    },
+    "aiAlert": {
+      "title": "Información generada por Inteligencia Artificial",
+      "description": "Esta consulta ha sido generada automáticamente por nuestro sistema de IA. Si bien proporciona información útil basada en datos agronómicos, siempre es recomendable consultar con un",
+      "professional": "Ingeniero Agrónomo o profesional del campo",
+      "closing": "para tomar decisiones importantes sobre tu cultivo."
+    },
+    "notifications": {
+      "aiGenerated": "🤖 Información generada por IA - Consulta con un ingeniero agrónomo para decisiones críticas"
+    }
+  },
+  "formConsultaAgricola": {
+    "fields": {
+      "crop": "Cultivo",
+      "soilType": "Tipo de suelo",
+      "climate": "Clima",
+      "observedProblems": "Problemas observados"
+    },
+    "placeholders": {
+      "crop": "Ej: Maíz, Tomate, Papa, Rosa, etc.",
+      "soilType": "Selecciona el tipo de suelo",
+      "climate": "Selecciona el clima de tu zona",
+      "problem": "Escribe un problema observado (hojas amarillas, crecimiento lento, manchas, etc.) y presiona Enter o haz clic en Agregar"
+    },
+    "buttons": {
+      "add": "Agregar",
+      "clear": "Limpiar",
+      "generating": "Generando consulta agrícola...",
+      "getDiagnosis": "Obtener Diagnóstico Agrícola"
+    },
+    "hints": {
+      "addProblems": "Agrega cada problema individualmente presionando Enter o haciendo clic en \"Agregar\""
+    },
+    "validation": {
+      "cropRequired": "El cultivo es requerido",
+      "soilRequired": "El tipo de suelo es requerido",
+      "climateRequired": "El clima es requerido",
+      "problemsRequired": "Debes agregar al menos un problema observado",
+      "completeRequired": "Por favor completa todos los campos requeridos"
+    },
+    "messages": {
+      "success": "Consulta agrícola generada exitosamente",
+      "duplicateProblem": "Este problema ya fue agregado"
+    },
+    "errors": {
+      "generateConsultation": "Error al generar consulta agrícola",
+      "connection": "Error al conectar con el servicio de consulta agrícola"
+    },
+    "soilTypes": {},
+    "climateTypes": {}
+  },
+  "siembraInteligentePage": {
+    "title": "Calculadora de Densidad de Siembra",
+    "importantAlert": {
+      "title": "Información importante",
+      "description": "Esta calculadora proporciona recomendaciones basadas en inteligencia artificial. Los resultados son orientativos y deben ser validados por un profesional del sector agrícola según las condiciones específicas de tu terreno."
+    },
+    "land": {
+      "title": "Datos del Terreno",
+      "description": "Ingresa la información del cultivo, terreno y clima para obtener una recomendación óptima de densidad de siembra"
+    },
+    "recommendationNote": "Recomendaciones basadas en análisis agronómico. Consulta con un ingeniero agrónomo para decisiones críticas."
+  },
+   "cardResultsSiembra": {
+    "loading": {
+      "title": "Calculando densidad óptima",
+      "description": "Analizando las características de tu terreno...",
+      "wait": "Esto puede tomar unos segundos"
+    },
+    "empty": {
+      "title": "Recomendación de Densidad de Siembra",
+      "heading": "Esperando datos del terreno",
+      "description": "Completa el formulario para obtener una recomendación personalizada de densidad de siembra para tu cultivo."
+    },
+    "results": {
+      "title": "Recomendación de Densidad de Siembra"
+    },
+    "fields": {
+      "crop": "Cultivo:",
+      "land": "Terreno:",
+      "climate": "Clima:",
+      "area": "Área:"
+    },
+    "units": {
+      "hectares": "Hectáreas (ha)",
+      "manzanas": "Manzanas (mz)",
+      "squareMeters": "Metros cuadrados (m²)",
+      "acres": "Acres (ac)"
+    },
+    "aiAlert": {
+      "title": "Recomendación generada por Inteligencia Artificial",
+      "description": "Esta recomendación ha sido generada automáticamente. La densidad de siembra óptima puede variar según condiciones específicas del terreno. Se recomienda consultar con un",
+      "professional": "Ingeniero Agrónomo",
+      "closing": "para validar estos valores antes de la siembra."
+    },
+    "notifications": {
+      "aiRecommendation": "🤖 Recomendación generada por IA - Consulta con un ingeniero agrónomo para validar la densidad de siembra"
+    }
+  },
+    "formSiembraInteligente": {
+    "fields": {
+      "crop": "Cultivo",
+      "landType": "Tipo de terreno",
+      "climate": "Clima",
+      "measurementUnit": "Unidad de medida",
+      "landArea": "Área del terreno"
+    },
+    "placeholders": {
+      "crop": "Ej: Maíz, Frijol, Tomate, Café, etc.",
+      "landType": "Selecciona el tipo de terreno",
+      "climate": "Selecciona el clima de tu zona",
+      "area": "Ej: 5.5 {unit}"
+    },
+    "hints": {
+      "areaUnit": "El área ingresada está en {unit}"
+    },
+    "buttons": {
+      "calculating": "Calculando densidad óptima...",
+      "calculate": "Calcular Densidad de Siembra"
+    },
+    "validation": {
+      "cropRequired": "El cultivo es requerido",
+      "landTypeRequired": "El tipo de terreno es requerido",
+      "climateRequired": "El clima es requerido",
+      "areaGreaterThanZero": "El área debe ser mayor a 0",
+      "unitRequired": "La unidad de medida es requerida",
+      "completeRequired": "Por favor completa todos los campos requeridos"
+    },
+    "messages": {
+      "success": "Recomendación de densidad de siembra generada exitosamente"
+    },
+    "errors": {
+      "generateRecommendation": "Error al generar recomendación",
+      "connection": "Error al conectar con el servicio de densidad de siembra"
+    },
+    "landTypes": {
+    "plano": "Plano",
+    "ligeramente_ondulado": "Ligeramente ondulado",
+    "ondulado": "Ondulado",
+    "accidentado": "Accidentado",
+    "terrazas": "Terrazas",
+    "ladera": "Ladera"
+  },
+  "climateTypes": {
+    "tropical": "Tropical",
+    "subtropical": "Subtropical",
+    "templado": "Templado",
+    "mediterraneo": "Mediterráneo",
+    "continental": "Continental",
+    "arido": "Árido",
+    "semiarido": "Semiárido",
+    "frio": "Frío"
+  },
+  "measurementUnits": {
+    "ha": "Hectárea (ha)",
+    "mz": "Manzana (mz)",
+    "m2": "Metros cuadrados (m²)",
+    "ac": "Acres (ac)"
+  },
+    "soilTypes": {
+    "arcilloso": "Arcilloso",
+    "arenoso": "Arenoso",
+    "limoso": "Limoso",
+    "franco": "Franco",
+    "franco-arcilloso": "Franco-arcilloso",
+    "franco-arenoso": "Franco-arenoso",
+    "organico": "Orgánico",
+    "calizo": "Calizo"
+  }
+  },
+  "historialMedicoAnimalPage": {
+    "title": "Historial Médico Animal",
+    "description": "Gestiona y consulta el historial clínico de tus animales",
+    "filters": {
+      "title": "Filtros de búsqueda",
+      "farm": "Buscar finca",
+      "animal": "Buscar animal",
+      "startDate": "Fecha de inicio",
+      "endDate": "Fecha de fin"
+    },
+    "placeholders": {
+      "farm": "Escribe el nombre de la finca...",
+      "animal": "Escribe el identificador..."
+    },
+    "buttons": {
+      "clearFilters": "Limpiar filtros"
+    },
+    "pagination": {
+      "show": "Mostrar:",
+      "perPage": "por página",
+      "itemsPerPage": "Cantidad de historiales por página",
+      "showing": "Mostrando {start}-{end} de {total} historiales",
+      "firstPage": "Primera página",
+      "previousPage": "Página anterior",
+      "nextPage": "Página siguiente",
+      "lastPage": "Última página",
+      "goToPage": "Ir a la página {page}"
+    },
+    "summary": {
+      "totalHistories": "Total de historiales",
+      "farmsAttended": "Fincas atendidas",
+      "animalsAttended": "Animales atendidos"
+    },
+    "historyList": {
+      "title": "Historiales clínicos",
+      "empty": "No se encontraron historiales con los filtros seleccionados"
+    },
+    "ariaLabels": {
+      "removeFarmFilter": "Quitar filtro de finca",
+      "removeAnimalFilter": "Quitar filtro de animal"
+    }
+  },
+   "cardHistorialClinico": {
+    "labels": {
+      "by": "Por",
+      "procedure": "Procedimiento {number}",
+      "diagnosis": "Diagnóstico",
+      "treatment": "Tratamiento",
+      "observations": "Observaciones",
+      "documents": "Documentos",
+      "veterinarian": "Veterinario",
+      "email": "Correo electrónico",
+      "phone": "Teléfono",
+      "appointment": "Cita"
+    },
+    "buttons": {
+      "downloadDocument": "Descargar documento {name}"
+    }
+  },
+   "tratamientosPage": {
+    "title": "Tratamientos de Animales",
+    "description": "Gestiona y consulta los tratamientos aplicados a tus animales",
+    "pagination": {
+      "show": "Mostrar",
+      "perPage": "por página",
+      "itemsPerPage": "Cantidad de tratamientos por página",
+      "showing": "Mostrando {start}-{end} de {total} tratamientos",
+      "firstPage": "Primera página",
+      "previousPage": "Página anterior",
+      "nextPage": "Página siguiente",
+      "lastPage": "Última página",
+      "goToPage": "Ir a la página {page}"
+    },
+    "summary": {
+      "total": "Total Tratamientos",
+      "withDocuments": "Con Documentos",
+      "differentServices": "Servicios Diferentes",
+      "recent": "Tratamientos Recientes"
+    },
+    "list": {
+      "title": "Tratamientos Aplicados",
+      "empty": "No se encontraron tratamientos con los filtros seleccionados"
+    },
+    "statuses": {
+      "recent": "Reciente",
+      "followUp": "En seguimiento",
+      "completed": "Completado"
+    }
+  },
+  "cardTratamientos": {
+    "labels": {
+      "updated": "Actualizado",
+      "diagnosis": "Diagnóstico",
+      "appliedTreatment": "Tratamiento Aplicado",
+      "observations": "Observaciones",
+      "attachedDocuments": "Documentos Adjuntos"
+    },
+    "buttons": {
+      "downloadDocument": "Descargar documento {name}"
+    }
+  },
+   "filtrosBusqueda": {
+    "title": "Filtros de Búsqueda",
+    "fields": {
+      "farm": "Buscar Finca",
+      "animal": "Buscar Animal",
+      "startDate": "Fecha Inicio",
+      "endDate": "Fecha Fin"
+    },
+    "placeholders": {
+      "farm": "Escribe el nombre de la finca...",
+      "animal": "Escribe el identificador..."
+    },
+    "buttons": {
+      "clearFilters": "Limpiar Filtros",
+      "removeFarmFilter": "Quitar filtro de finca",
+      "removeAnimalFilter": "Quitar filtro de animal"
+    }
+  },
+  "celosAnimalPage": {
+    "title": "Control de Celos",
+    "description": "Registra y monitorea los celos de tus animales. Cada registro será evaluado automáticamente para validar que el animal cumpla con la edad mínima reproductiva de su especie antes de continuar con procesos como monta o inseminación.",
+    "buttons": {
+      "filters": "Filtros",
+      "newHeat": "Nuevo Celo"
+    },
+    "messages": {
+      "noRecords": "No se encontraron registros de celo",
+      "loadError": "Error al cargar los datos. Por favor intenta de nuevo.",
+      "noData": "No hay datos disponibles para mostrar."
+    },
+    "modal": {
+      "title": "Agregar Nuevo Celo",
+      "description": "Aquí podrás agregar el período de celo de tus vacas"
+    }
+  },
+   "tableCelos": {
+    "columns": {
+      "animal": "Animal",
+      "speciesFarm": "Especie/Finca",
+      "species": "Especie",
+      "farm": "Finca",
+      "period": "Período",
+      "number": "N°",
+      "heatNumber": "N° Celo",
+      "intensity": "Intensidad",
+      "status": "Estado",
+      "start": "Inicio",
+      "end": "Fin",
+      "method": "Método",
+      "actions": "Acciones"
+    },
+    "labels": {
+      "heatNumber": "N° {number}",
+      "start": "Inicio",
+      "end": "Fin",
+      "animal": "Animal",
+      "startDate": "Fecha de inicio",
+      "intensity": "Intensidad",
+      "method": "Método"
+    },
+    "statuses": {
+      "active": "Activo",
+      "current": "Actual"
+    },
+    "actions": {
+      "view": "Ver detalles",
+      "edit": "Editar celo",
+      "delete": "Eliminar celo"
+    },
+    "messages": {
+      "deleteSuccess": "Celo eliminado correctamente",
+      "deleteError": "Hubo un error al eliminar el celo",
+      "unexpectedError": "Error inesperado. Contacte al administrador"
+    },
+    "modals": {
+      "details": {
+        "title": "Detalles del Celo",
+        "description": "Información completa del registro de celo"
+      },
+      "edit": {
+        "title": "Editar Celo",
+        "description": "Edita los datos del registro de celo"
+      },
+      "delete": {
+        "title": "Confirmar Eliminación",
+        "description": "¿Estás seguro de que deseas eliminar el celo N° {number} del animal {animal}?",
+        "warning": "Advertencia:",
+        "warningDescription": "Esta acción no se puede deshacer. Se eliminará permanentemente el registro de celo."
+      }
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "deleting": "Eliminando..."
+    }
+  },
+   "detailsCelo": {
+    "sections": {
+      "animalInformation": "Información del Animal",
+      "heatInformation": "Datos del Celo",
+      "observedSigns": "Signos Observados",
+      "observations": "Observaciones"
+    },
+    "labels": {
+      "identifier": "Identificador",
+      "species": "Especie",
+      "sex": "Sexo",
+      "color": "Color",
+      "heatNumber": "Número de Celo",
+      "intensity": "Intensidad",
+      "startDate": "Fecha de Inicio",
+      "endDate": "Fecha de Fin",
+      "detectionMethod": "Método de Detección",
+      "discharge": "Secreciones",
+      "otherSigns": "Otros signos"
+    },
+    "signs": {
+      "mountsOthers": "Monta a otros",
+      "acceptsMounting": "Acepta monta",
+      "restlessness": "Inquietud",
+      "swollenVulva": "Vulva inflamada"
+    },
+    "statuses": {
+      "active": "Activo"
+    },
+    "messages": {
+      "notSpecified": "No especificado",
+      "notRecorded": "No registrado",
+      "noAdditionalInformation": "No hay información adicional registrada"
+    }
+  },
+  "mobileFilters": {
+    "title": "Filtros",
+    "description": "Filtra los registros de celo por diferentes criterios",
+    "fields": {
+      "farm": "Finca",
+      "animal": "Animal",
+      "species": "Especie",
+      "intensity": "Intensidad",
+      "dates": "Fechas",
+      "startDate": "Fecha de inicio",
+      "endDate": "Fecha de fin"
+    },
+    "placeholders": {
+      "farm": "Seleccionar finca",
+      "species": "Especie",
+      "intensity": "Intensidad",
+      "selectedAnimal": "{animal} seleccionado",
+      "searchFemale": "Buscar hembra...",
+      "selectDate": "Seleccionar fecha"
+    },
+    "options": {
+      "allFarms": "Todas las fincas",
+      "all": "Todas"
+    },
+    "animal": {
+      "noName": "Sin nombre",
+      "generic": "Animal",
+      "unidentified": "Sin identificar",
+      "unspecifiedSpecies": "Especie no especificada"
+    },
+    "messages": {
+      "selectFarmFirst": "Selecciona una finca primero",
+      "noFemalesFound": "No se encontraron hembras",
+      "tryAnotherSearch": "Intenta con otro término de búsqueda"
+    },
+    "intensities": {
+      "low": "Bajo",
+      "medium": "Medio",
+      "high": "Alto",
+      "veryHigh": "Muy alto"
+    },
+    "buttons": {
+      "applyFilters": "Aplicar filtros",
+      "clearFilters": "Limpiar filtros"
+    },
+    "ariaLabels": {
+      "clearAnimal": "Limpiar animal seleccionado"
+    }
+  },
+  "desktopFilters": {
+    "title": "Filtros",
+    "description": "Filtra los registros de celo por diferentes criterios",
+    "fields": {
+      "farm": "Finca",
+      "animal": "Animal",
+      "species": "Especie",
+      "intensity": "Intensidad",
+      "startDate": "Fecha de inicio",
+      "endDate": "Fecha de fin"
+    },
+    "placeholders": {
+      "farm": "Seleccionar finca",
+      "selectedAnimal": "{animal} seleccionado",
+      "searchFemale": "Buscar hembra...",
+      "allSpecies": "Todas las especies",
+      "allIntensities": "Todas las intensidades",
+      "selectDate": "Seleccionar fecha"
+    },
+    "options": {
+      "allFarms": "Todas las fincas",
+      "allSpecies": "Todas las especies",
+      "all": "Todas"
+    },
+    "animal": {
+      "noName": "Sin nombre",
+      "generic": "Animal",
+      "unidentified": "Sin identificar",
+      "unspecifiedSpecies": "Especie no especificada",
+      "imageAlt": "Imagen del animal {identifier}"
+    },
+    "messages": {
+      "selectFarmFirst": "Selecciona una finca primero",
+      "noFemalesFound": "No se encontraron hembras",
+      "tryAnotherSearch": "Intenta con otro término de búsqueda"
+    },
+    "intensities": {
+      "low": "Bajo",
+      "medium": "Medio",
+      "high": "Alto",
+      "veryHigh": "Muy alto"
+    },
+    "buttons": {
+      "applyFilters": "Aplicar filtros",
+      "clearFilters": "Limpiar filtros",
+      "clearAnimal": "Limpiar animal seleccionado",
+      "collapse": "Contraer filtros",
+      "expand": "Expandir filtros"
+    }
+  },
+  "formCelosAnimal": {
+    "actions": {
+      "update": "actualizar",
+      "register": "registrar"
+    },
+    "fields": {
+      "animalInHeat": "Selecciona el animal en celo",
+      "startDate": "Fecha de inicio del celo",
+      "endDate": "Fecha de fin del celo",
+      "intensity": "Intensidad",
+      "detectionMethod": "Método de detección",
+      "observedSigns": "Signos observados",
+      "discharge": "Secreciones",
+      "otherSigns": "Otros signos (separados por coma)",
+      "observations": "Observaciones generales"
+    },
+    "placeholders": {
+      "selectedAnimal": "{animal} seleccionado",
+      "searchAnimal": "Buscar animal por identificador, nombre o especie...",
+      "selectIntensity": "Seleccionar intensidad",
+      "selectMethod": "Seleccionar método",
+      "dischargeType": "Tipo de secreción",
+      "otherSigns": "Ej.: brama, inquietud, etc.",
+      "observations": "Observaciones adicionales sobre el celo..."
+    },
+    "animal": {
+      "noName": "Sin nombre",
+      "generic": "Animal",
+      "unidentified": "Sin identificar",
+      "unspecifiedSpecies": "Especie no especificada",
+      "imageAlt": "Imagen del animal {identifier}"
+    },
+    "badges": {
+      "locked": "Bloqueado"
+    },
+    "intensities": {
+      "low": "Bajo",
+      "medium": "Medio",
+      "high": "Alto",
+      "veryHigh": "Muy alto"
+    },
+    "detectionMethods": {
+      "visual": "Visual",
+      "patch": "Parche",
+      "pedometer": "Podómetro",
+      "activityCollar": "Collar de actividad",
+      "ultrasound": "Ultrasonido",
+      "naturalMating": "Monta natural"
+    },
+    "signs": {
+      "mountsOthers": "Monta a otros",
+      "acceptsMounting": "Acepta la monta",
+      "restlessness": "Inquietud/Nerviosismo",
+      "swollenVulva": "Vulva inflamada"
+    },
+    "discharges": {
+      "none": "Ninguna",
+      "clear": "Clara",
+      "cloudy": "Turbia",
+      "bloody": "Sanguinolenta",
+      "viscous": "Viscosa"
+    },
+    "messages": {
+      "updateSuccess": "Celo actualizado correctamente",
+      "createSuccess": "Celo registrado correctamente",
+      "noAnimalsFound": "No se encontraron animales",
+      "tryAnotherSearch": "Intenta con otro término de búsqueda"
+    },
+    "errors": {
+      "title": "Error al {action} el celo",
+      "createFailed": "Hubo un error al crear el celo del animal",
+      "unexpected": "Error inesperado. Contacte al administrador"
+    },
+    "validation": {
+      "startDateRequired": "La fecha de inicio es requerida"
+    },
+    "buttons": {
+      "clearAnimal": "Limpiar animal seleccionado",
+      "cancel": "Cancelar",
+      "saving": "Guardando...",
+      "updating": "Actualizando...",
+      "register": "Registrar celo",
+      "update": "Actualizar celo"
+    }
+  },
+  "crearPeriodoCelo": {
+    "title": "Nuevo celo",
+    "cardTitle": "Registrar celo del animal",
+    "description": "Completa los datos para registrar el nuevo celo de tu animal"
+  },
+    "serviciosReproductivosPage": {
+    "title": "Servicios reproductivos",
+    "titleWithFarm": "Servicios reproductivos - {farm}",
+    "description": "Registra y monitorea los servicios reproductivos de tus animales. Cada registro será evaluado automáticamente para validar que el animal cumpla con la edad mínima reproductiva de su especie antes de continuar con el proceso.",
+    "buttons": {
+      "filters": "Filtros",
+      "newService": "Nuevo servicio",
+      "retry": "Reintentar"
+    },
+    "views": {
+      "table": "Tabla"
+    },
+    "errors": {
+      "loadTitle": "Error al cargar",
+      "loadDescription": "No se pudieron cargar los servicios",
+      "updateStatus": "Hubo un error al actualizar el estado",
+      "unexpected": "Error inesperado. Contacte al administrador"
+    },
+    "emptyState": {
+      "noServices": "No hay servicios registrados",
+      "inFarm": "en {farm}"
+    },
+    "summary": {
+      "totalServices": "Total servicios",
+      "successful": "Exitosos",
+      "successRate": "Tasa de éxito",
+      "scheduled": "Programados"
+    },
+    "modals": {
+      "addService": {
+        "title": "Agregar nuevo servicio reproductivo",
+        "description": "Aquí podrás agregar servicios reproductivos para tus animales"
+      },
+      "serviceActions": {
+        "title": "Acciones del servicio",
+        "description": "Aquí ejecutarás acciones sobre tu servicio reproductivo"
+      }
+    },
+    "tabs": {
+      "serviceStatus": "Estado del servicio",
+      "result": "Resultado"
+    },
+    "messages": {
+      "statusUpdated": "Estado del servicio actualizado exitosamente",
+      "alreadySuccessful": "Este servicio ya fue marcado como exitoso y su estado no puede modificarse",
+      "cannotMarkFailed": "No se puede marcar como exitoso un servicio que está en estado FALLIDO",
+      "cannotMarkCancelled": "No se puede marcar como exitoso un servicio que está en estado CANCELADO",
+      "mustBeCompletedFirst": "Para marcar como exitoso, primero cambia el estado a REALIZADO"
+    }
+  },
+   "vistaTarjetasServicios": {
+    "statuses": {
+      "successful": "Exitoso",
+      "unsuccessful": "No exitoso"
+    },
+    "labels": {
+      "serviceNumber": "N° Servicio: {number}",
+      "male": "Macho",
+      "date": "Fecha",
+      "heat": "Celo",
+      "mounts": "Montas"
+    },
+    "buttons": {
+      "status": "Estados",
+      "edit": "Editar"
+    }
+  },
+  "vistaTablaServicios": {
+    "columns": {
+      "female": "Hembra",
+      "male": "Macho",
+      "type": "Tipo",
+      "date": "Fecha",
+      "number": "N°",
+      "status": "Estado",
+      "result": "Resultado",
+      "actions": "Acciones"
+    },
+    "results": {
+      "successful": "Exitoso",
+      "unsuccessful": "No exitoso"
+    },
+    "actions": {
+      "edit": "Editar",
+      "details": "Detalles"
+    },
+    "modal": {
+      "title": "Editar datos del servicio",
+      "description": "Aquí podrás editar datos del servicio reproductivo"
+    }
+  },
+   "mobileFiltersServicios": {
+    "title": "Filtros",
+    "description": "Filtra los servicios reproductivos",
+    "fields": {
+      "farm": "Finca",
+      "female": "Hembra",
+      "serviceType": "Tipo de servicio",
+      "status": "Estado",
+      "successful": "Exitoso",
+      "dateFrom": "Fecha desde",
+      "dateTo": "Fecha hasta"
+    },
+    "placeholders": {
+      "farm": "Seleccionar finca",
+      "searchFemale": "Buscar hembra...",
+      "allTypes": "Todos los tipos",
+      "allStatuses": "Todos los estados",
+      "selectDate": "Seleccionar"
+    },
+    "animal": {
+      "noName": "Sin nombre",
+      "generic": "Animal",
+      "selected": "seleccionado",
+      "unidentified": "Sin identificar",
+      "unspecifiedSpecies": "Especie no especificada",
+      "imageAlt": "Animal {identifier}",
+      "availableFemales": "{count, plural, =0 {No hay hembras disponibles} one {# hembra disponible} other {# hembras disponibles}}",
+      "noFemalesInFarm": "No hay hembras registradas en esta finca"
+    },
+    "search": {
+      "noFemalesInFarm": "No se encontraron hembras en esta finca",
+      "noFemales": "No se encontraron hembras",
+      "changeFarmOrSearch": "Selecciona otra finca o cambia tu búsqueda",
+      "selectFarmOrSearch": "Selecciona una finca primero o cambia tu búsqueda"
+    },
+    "options": {
+      "all": "Todos",
+      "yes": "Sí",
+      "no": "No"
+    },
+    "serviceTypes": {
+      "monta_natural": "Monta natural",
+      "inseminacion_artificial": "Inseminación artificial",
+      "transferencia_embrionaria": "Transferencia embrionaria"
+    },
+    "statuses": {
+      "programado": "Programado",
+      "realizado": "Realizado",
+      "fallido": "Fallido",
+      "cancelado": "Cancelado"
+    },
+    "buttons": {
+      "clearFemale": "Quitar animal seleccionado",
+      "applyFilters": "Aplicar filtros",
+      "clearFilters": "Limpiar filtros"
+    }
+  },
+   "cardTabResultado": {
+    "title": "Resultado del Servicio",
+    "description": "Marca si el servicio fue exitoso o no. Esto afectará el estado del celo asociado.",
+    "successfulService": "Servicio Exitoso",
+    "successfulDescription": "Marcar como exitoso si la hembra quedó preñada después de este servicio",
+    "messages": {
+      "successful": "✅ Este servicio está marcado como exitoso. El estado del celo asociado se actualizará a PREÑADO.",
+      "unsuccessful": "⚠️ Este servicio está marcado como no exitoso. Si se confirma que la hembra no quedó preñada, el estado del celo asociado se actualizará a NO_FECUNDADO."
+    },
+    "buttons": {
+      "close": "Cerrar"
+    }
+  },
+   "cardTabEstado": {
+    "title": "Estado del Servicio",
+    "description": "Actualiza el estado actual del servicio reproductivo",
+    "statuses": {
+      "programado": "Programado",
+      "realizado": "Realizado",
+      "fallido": "Fallido",
+      "cancelado": "Cancelado"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "updating": "Actualizando...",
+      "updateStatus": "Actualizar Estado"
+    }
+  },
+   "cardFiltersServicios": {
+    "title": "Filtros",
+    "farms": {
+      "all": "Todas las fincas"
+    },
+    "fields": {
+      "farm": "Finca",
+      "female": "Hembra",
+      "status": "Estado",
+      "type": "Tipo",
+      "successful": "Exitoso",
+      "dateFrom": "Fecha desde",
+      "dateTo": "Fecha hasta"
+    },
+    "placeholders": {
+      "selectFarm": "Seleccionar finca",
+      "searchFemale": "Buscar hembra...",
+      "status": "Estado"
+    },
+    "animal": {
+      "noName": "Sin nombre",
+      "generic": "Animal",
+      "selected": "seleccionado",
+      "unidentified": "Sin identificar",
+      "unspecifiedSpecies": "Especie no especificada",
+      "imageAlt": "Imagen del animal {identifier}",
+      "availableFemales": "{count, plural, =0 {No hay hembras disponibles} one {# hembra disponible} other {# hembras disponibles}}"
+    },
+    "search": {
+      "noFemalesInFarm": "No se encontraron hembras en esta finca",
+      "noFemales": "No se encontraron hembras",
+      "changeFarmOrSearch": "Selecciona otra finca o cambia tu búsqueda",
+      "selectFarmOrSearch": "Selecciona una finca primero o cambia tu búsqueda"
+    },
+    "statuses": {
+      "programado": "Programado",
+      "realizado": "Realizado",
+      "fallido": "Fallido",
+      "cancelado": "Cancelado"
+    },
+    "serviceTypes": {
+      "monta_natural": "Monta natural",
+      "inseminacion_artificial": "Inseminación artificial",
+      "transferencia_embrionaria": "Transferencia embrionaria"
+    },
+    "options": {
+      "all": "Todos",
+      "yes": "Sí",
+      "no": "No"
+    },
+    "buttons": {
+      "clearFemale": "Limpiar hembra seleccionada",
+      "search": "Buscar",
+      "clearFilters": "Limpiar filtros",
+      "refresh": "Actualizar resultados"
+    },
+    "advancedFilters": "Filtros avanzados"
+  },
+   "formServicioReproductivo": {
+    "actions": {
+      "update": "actualizar",
+      "register": "registrar"
+    },
+    "errors": {
+      "service": "Error al {action} el servicio"
+    },
+    "fields": {
+      "serviceType": "Tipo de servicio",
+      "serviceDate": "Fecha del servicio",
+      "female": "Hembra",
+      "maleBelongsToFarm": "El macho pertenece a mi finca",
+      "farmMale": "Macho de la finca",
+      "externalMaleName": "Nombre del macho externo",
+      "associatedHeat": "Celo asociado",
+      "activeHeats": "Celos activos",
+      "semenProvider": "Proveedor de semen/embriones",
+      "responsibleTechnician": "Técnico responsable",
+      "semenDose": "Dosis de semen",
+      "cost": "Costo",
+      "duration": "Duración (minutos)",
+      "weatherConditions": "Condiciones climáticas",
+      "maleEvaluation": "Evaluación del macho",
+      "observations": "Observaciones"
+    },
+    "placeholders": {
+      "selectType": "Seleccionar tipo",
+      "searchFemale": "Buscar hembra por identificador, nombre o especie...",
+      "searchMale": "Buscar macho por identificador, nombre o especie...",
+      "externalMaleNatural": "Ej: Toro de Don José - Raza Brahman",
+      "externalMaleOther": "Ej: Toro Don José (Raza Brahman) - Finca El Rosario",
+      "loadingHeats": "Cargando celos...",
+      "selectFemaleFirst": "Seleccione una hembra primero",
+      "selectHeat": "Seleccionar celo",
+      "providerName": "Nombre del proveedor",
+      "technicianName": "Nombre del técnico",
+      "semenDose": "Ej: 0.5 ml",
+      "duration": "Ej: 30",
+      "selectCondition": "Seleccionar condición",
+      "selectEvaluation": "Seleccionar evaluación",
+      "observations": "Observaciones adicionales sobre el servicio..."
+    },
+    "animal": {
+      "generic": "Animal",
+      "unidentified": "Sin identificar",
+      "unspecifiedSpecies": "Especie no especificada",
+      "selected": "seleccionado",
+      "imageAlt": "Imagen del animal {identifier}",
+      "heatOption": "Celo #{number} - Inicio: {date}"
+    },
+    "search": {
+      "noFemales": "No se encontraron hembras",
+      "noMales": "No se encontraron machos",
+      "tryAnotherTerm": "Intenta con otro término de búsqueda"
+    },
+    "serviceTypes": {
+      "naturalMating": "Monta natural",
+      "artificialInsemination": "Inseminación artificial (IATF)",
+      "embryoTransfer": "Transferencia de embriones",
+      "inVitroFertilization": "Fecundación in vitro (FIV)"
+    },
+    "weather": {
+      "sunny": "Soleado",
+      "cloudy": "Nublado",
+      "rainy": "Lluvioso",
+      "windy": "Ventoso"
+    },
+    "evaluations": {
+      "excellent": "Excelente",
+      "good": "Bueno",
+      "fair": "Regular",
+      "poor": "Malo"
+    },
+    "validation": {
+      "dateRequired": "La fecha del servicio es requerida",
+      "maleRequired": "Si seleccionaste que el macho pertenece a tu finca, es obligatorio que selecciones el macho",
+      "externalMaleRequired": "Si seleccionaste que el macho no pertenece a tu finca, es obligatorio que selecciones el nombre del macho",
+      "externalMaleNameRequired": "Debe ingresar el nombre del macho externo"
+    },
+    "messages": {
+      "updateSuccess": "Servicio actualizado correctamente",
+      "createSuccess": "Servicio registrado correctamente",
+      "registerError": "Hubo un error al registrar el servicio",
+      "unexpectedError": "Error inesperado. Contacte al administrador",
+      "maleDonor": "* El macho seleccionado será utilizado como donante de semen/embriones",
+      "externalMaleOrigin": "* Ingrese el nombre completo del macho y su procedencia",
+      "noActiveHeats": "No hay celos activos para esta hembra",
+      "selectAssociatedHeat": "* Seleccione el celo al que pertenece este servicio",
+      "externalProvider": "* Ingrese el nombre del proveedor si el semen/embriones son externos"
+    },
+    "buttons": {
+      "clearFemale": "Limpiar hembra seleccionada",
+      "clearMale": "Limpiar macho seleccionado",
+      "cancel": "Cancelar",
+      "updating": "Actualizando...",
+      "saving": "Guardando...",
+      "updateService": "Actualizar servicio",
+      "registerService": "Registrar servicio"
+    }
+  },
+  "crearServicioReproductivo": {
+    "title": "Nuevo servicio",
+    "cardTitle": "Registrar servicio del animal",
+    "description": "Completa los datos para registrar el nuevo servicio de tu animal"
+  },
+   "editarServicioReproductivo": {
+    "title": "Editar servicio",
+    "cardTitle": "Editar servicio del animal",
+    "description": "Completa los datos para editar el servicio de tu animal"
+  },
+  "partosAnimalesPage": {
+    "title": "Control de partos - {farm}",
+    "description": "Monitorea los partos registrados en tus animales.",
+    "newBirth": "Nuevo parto",
+    "filters": "Filtros",
+    "activeFilters": "{count, plural, =1 {# activo} other {# activos}}",
+    "historyTitle": "Historial de partos",
+    "showingBirths": "Mostrando {start} - {end} de {total} partos",
+    "editBirth": "Editar parto",
+    "addBirth": "Agregar nuevo parto",
+    "editBirthDescription": "Aquí podrás editar la información del parto",
+    "addBirthDescription": "Aquí podrás ingresar el parto de tu animal"
+  },
+    "infoPartoAnimal": {
+    "columns": {
+      "animal": "Animal",
+      "farm": "Finca",
+      "date": "Fecha",
+      "type": "Tipo",
+      "status": "Estado",
+      "offspring": "Crías",
+      "gestation": "Gestación",
+      "veterinarian": "Veterinario",
+      "actions": "Acciones"
+    },
+    "loading": "Cargando partos...",
+    "empty": {
+      "title": "No se encontraron partos disponibles en este momento",
+      "description": "En este momento no cuentas con partos disponibles de tus animales, por favor ingresa un parto"
+    },
+    "totalOffspring": "{count} total",
+    "pendingCount": "{count, plural, =1 {# pendiente} other {# pendientes}}",
+    "unregisteredOffspring": "{count, plural, =1 {# cría sin registrar como animal} other {# crías sin registrar como animal}}",
+    "offspringNumber": "Cría {number}",
+    "notAvailable": "No disponible",
+    "registered": "Registrada",
+    "pending": "Pendiente",
+    "register": "Registrar",
+    "gestationDays": "{count} días",
+    "edit": "Editar",
+    "dialog": {
+      "title": "Registrar cría como animal",
+      "description": "Completa la información para registrar esta cría como un nuevo animal en el sistema.",
+      "fields": {
+        "identifier": "Identificador",
+        "sex": "Sexo",
+        "farm": "Finca",
+        "birthWeight": "Peso al nacer",
+        "birthDate": "Fecha de nacimiento"
+      },
+      "placeholders": {
+        "identifier": "Ingresa un identificador único",
+        "sex": "Selecciona el sexo",
+        "farm": "Selecciona la finca"
+      },
+      "sexOptions": {
+        "male": "Macho",
+        "female": "Hembra"
+      },
+      "motherFarm": "La madre está en la finca: {farm}",
+      "buttons": {
+        "cancel": "Cancelar",
+        "registering": "Registrando...",
+        "registerAnimal": "Registrar animal"
+      }
+    },
+    "messages": {
+      "createSuccess": "Cría registrada como animal exitosamente",
+      "alreadyRegistered": "Esta cría ya ha sido registrada como animal"
+    },
+    "errors": {
+      "createFailed": "Hubo un error al registrar la cría",
+      "unexpected": "Error inesperado. Contacte al administrador",
+      "selectFarm": "Debes seleccionar una finca",
+      "invalidFarm": "La finca seleccionada no es válida"
+    },
+    "sex": {
+      "macho": "Macho",
+      "hembra": "Hembra",
+      "nd": "N/D"
+    },
+    "birthTypes": {
+      "normal": "Normal",
+      "distocico": "Distócico",
+      "cesarea": "Cesárea"
+    },
+    "statuses": {
+      "pendiente": "Pendiente",
+      "completado": "Completado",
+      "completada": "Completada",
+      "complicado": "Complicado",
+      "registrado": "Registrado"
+    }
+  },
+  "detailsParto": {
+    "totalOffspring": "Total de crías",
+    "liveOffspring": "Crías vivas",
+    "deadOffspring": "Crías muertas",
+    "normalBirths": "Partos normales",
+    "complicatedBirths": "Partos con complicaciones"
+  },
+  "cardMobilePartos": {
+    "loading": "Cargando partos...",
+    "empty": {
+      "title": "No se encontraron partos disponibles en este momento",
+      "description": "En este momento no cuentas con partos disponibles de tus animales, por favor ingresa un parto"
+    },
+    "birthDate": "Fecha del parto",
+    "offspring": "Crías",
+    "live": "vivas",
+    "dead": "muertas",
+    "total": "Total",
+    "gestation": "Gestación",
+    "days": "{count} días",
+    "weeks": "{count} semanas",
+    "veterinarian": "Veterinario",
+    "offspringDetails": "Detalle de crías:",
+    "observations": "Observaciones:",
+    "complications": "Complicaciones",
+    "veterinaryCare": "Atención",
+    "edit": "Editar",
+    "birthTypes": {
+      "normal": "Normal",
+      "distocico": "Distócico",
+      "cesarea": "Cesárea"
+    },
+    "statuses": {
+      "pendiente": "Pendiente",
+      "completado": "Completado",
+      "completada": "Completada",
+      "complicado": "Complicado",
+      "registrado": "Registrado"
+    }
+  },
+  "filtersParto": {
+    "title": "Filtros",
+    "activeFilters": "{count} activos",
+    "clear": "Limpiar",
+    "fields": {
+      "farm": "Finca",
+      "female": "Hembra",
+      "status": "Estado",
+      "birthType": "Tipo de parto",
+      "dateRange": "Rango de fechas",
+      "itemsPerPage": "Elementos por página"
+    },
+    "placeholders": {
+      "farm": "Seleccionar finca",
+      "selectedAnimal": "{animal} seleccionado",
+      "searchFemale": "Buscar hembra...",
+      "allStatuses": "Todos los estados",
+      "allBirthTypes": "Todos los tipos",
+      "dateFrom": "Fecha desde",
+      "dateTo": "Fecha hasta"
+    },
+    "animalFallbacks": {
+      "noName": "Sin nombre",
+      "animal": "Animal",
+      "unidentified": "Sin identificar",
+      "unspecifiedSpecies": "Especie no especificada"
+    },
+    "buttons": {
+      "clearFemale": "Quitar hembra seleccionada",
+      "applyFilters": "Aplicar filtros"
+    },
+    "search": {
+      "noFemalesInFarm": "No se encontraron hembras en esta finca",
+      "noFemales": "No se encontraron hembras",
+      "changeFarmOrSearch": "Selecciona otra finca o cambia tu búsqueda",
+      "selectFarmOrSearch": "Selecciona una finca primero o cambia tu búsqueda"
+    },
+    "availableFemales": "{count, plural, one {# hembra disponible} other {# hembras disponibles}}",
+    "options": {
+      "allStatuses": "Todos los estados",
+      "allBirthTypes": "Todos los tipos"
+    },
+    "statuses": {
+      "programmed": "Programado",
+      "inProgress": "En progreso",
+      "completed": "Completado",
+      "complicated": "Complicado",
+      "aborted": "Abortado"
+    },
+    "birthTypes": {
+      "normal": "Normal",
+      "dystocic": "Distócico",
+      "cesarean": "Cesárea",
+      "stillbirth": "Muerte natal",
+      "abortion": "Aborto"
+    }
+  },
+   "formPartoAnimal": {
+    "fields": {
+      "female": "Hembra",
+      "associatedService": "Servicio asociado (opcional)",
+      "femaleServices": "Servicios de la hembra",
+      "birthDate": "Fecha del parto",
+      "birthNumber": "Número de parto",
+      "birthType": "Tipo de parto",
+      "status": "Estado",
+      "responsibleVeterinarian": "Veterinario responsable",
+      "complications": "Complicaciones",
+      "veterinaryCare": "Atención veterinaria",
+      "generalObservations": "Observaciones generales"
+    },
+    "placeholders": {
+      "selectedAnimal": "{animal} seleccionado",
+      "searchFemale": "Buscar hembra por identificador, nombre o especie...",
+      "selectService": "Seleccionar servicio",
+      "selectType": "Seleccionar tipo",
+      "selectStatus": "Seleccionar estado",
+      "selectSex": "Seleccionar sexo",
+      "weightExample": "Ej: 35.5",
+      "identifierExample": "Ej: CRIA-001",
+      "offspringObservations": "Observaciones sobre la cría...",
+      "veterinarianName": "Nombre del veterinario",
+      "complications": "Describir complicaciones si las hubo",
+      "veterinaryCare": "Describir la atención veterinaria brindada...",
+      "generalObservations": "Observaciones adicionales sobre el parto..."
+    },
+    "fallbacks": {
+      "animal": "Animal",
+      "unidentified": "Sin identificar",
+      "unspecifiedSpecies": "Especie no especificada",
+      "notSpecified": "No especificada",
+      "notAssociated": "No asociado"
+    },
+    "buttons": {
+      "clearFemale": "Quitar hembra seleccionada",
+      "addOffspring": "Agregar cría",
+      "removeOffspring": "Eliminar cría número {number}",
+      "cancel": "Cancelar",
+      "updating": "Actualizando...",
+      "saving": "Guardando...",
+      "updateBirth": "Actualizar parto",
+      "registerBirth": "Registrar parto"
+    },
+    "search": {
+      "noFemales": "No se encontraron hembras",
+      "tryAnotherTerm": "Intenta con otro término de búsqueda"
+    },
+    "messages": {
+      "noServices": "No hay servicios registrados para esta hembra",
+      "selectFemaleFirst": "* Seleccione una hembra primero para ver sus servicios",
+      "createSuccess": "Parto registrado correctamente",
+      "updateSuccess": "Parto actualizado correctamente"
+    },
+    "validation": {
+      "atLeastOneOffspring": "Debe registrar al menos una cría",
+      "offspringBirthDateRequired": "La cría número {number} debe tener fecha de nacimiento",
+      "birthDateRequired": "La fecha del parto es requerida",
+      "birthNumberRequired": "El número de parto es requerido",
+      "minimumOne": "Mínimo 1",
+      "weightRequired": "El peso es requerido",
+      "minimumWeight": "Mínimo 0.1 kg",
+      "offspringDateRequired": "La fecha de nacimiento es requerida"
+    },
+    "errors": {
+      "createTitle": "Error al registrar el parto",
+      "updateTitle": "Error al actualizar el parto",
+      "registrationFailed": "Hubo un error al registrar el parto",
+      "unexpected": "Error inesperado. Contacte al administrador"
+    },
+    "birthTypes": {
+      "normal": "Normal",
+      "dystocic": "Distócico",
+      "cesarean": "Cesárea",
+      "stillbirth": "Muerte natal",
+      "abortion": "Aborto"
+    },
+    "statuses": {
+      "scheduled": "Programado",
+      "inProgress": "En progreso",
+      "completed": "Completado",
+      "complicated": "Complicado",
+      "aborted": "Abortado"
+    },
+    "offspring": {
+      "title": "Registro de crías",
+      "itemTitle": "Cría #{number}",
+      "fields": {
+        "sex": "Sexo",
+        "weight": "Peso (kg)",
+        "status": "Estado",
+        "birthDate": "Fecha de nacimiento",
+        "identifier": "Identificador (opcional)",
+        "observations": "Observaciones (opcional)"
+      },
+      "statuses": {
+        "alive": "Viva",
+        "dead": "Muerta"
+      },
+      "empty": "No hay crías registradas",
+      "summaryTitle": "Resumen de crías:",
+      "summary": "Total: {total} | Vivas: {alive} | Muertas: {dead}"
+    },
+    "sex": {
+      "male": "Macho",
+      "female": "Hembra"
+    }
+  },
+  "crearPartoPage": {
+    "title": "Ingresar parto",
+    "cardTitle": "Registrar parto del animal",
+    "description": "Completa los datos para registrar el nuevo parto de tu animal"
+  },
+   "editarPartoPage": {
+    "title": "Editar parto",
+    "cardTitle": "Editar parto del animal",
+    "description": "Completa los datos para editar el parto de tu animal"
+  },
+   "sessionExpiredModal": {
+    "title": "Sesión expirada",
+    "description": "Tu sesión ha expirado por seguridad. Por favor, inicia sesión nuevamente para continuar.",
+    "login": "Ir a iniciar sesión",
+    "close": "Cerrar"
+  },
+   "locationPermissionBanner": {
+    "blocked": {
+      "title": "El sitio necesita acceder a tu ubicación para funcionar",
+      "instructions": "Cómo habilitar la ubicación"
+    },
+    "retry": "Reintentar",
+    "loading": "Obteniendo ubicación...",
+    "instructions": {
+      "ios": {
+        "title": "Safari (iPhone/iPad):",
+        "option": "Opción 1:",
+        "steps": [
+          "1. Toca 'aA' en la barra de direcciones",
+          "2. Configuración del sitio web",
+          "3. Ubicación → Permitir",
+          "4. Recarga la página"
+        ],
+        "alternative": "Si no funciona:",
+        "alternativeSteps": [
+          "1. Configuración → Privacidad y seguridad",
+          "2. Localización → Sitios web de Safari",
+          "3. Selecciona 'Mientras se usa la app'",
+          "4. Regresa a Safari y recarga la página"
+        ]
+      },
+      "safari": {
+        "title": "Safari (Mac):",
+        "steps": [
+          "1. Safari → Configuración (o Preferencias en versiones antiguas)",
+          "2. Sitios web → Ubicación",
+          "3. Busca este sitio en la lista",
+          "4. Cambia el permiso a 'Permitir'",
+          "5. Recarga la página"
+        ]
+      },
+      "firefox": "Firefox:\nHaz clic en el ícono de permisos, en la parte superior izquierda de la URL → Permitir ubicación",
+      "edge": "Edge:\nHaz clic en el ícono del sitio, en la parte superior izquierda de la URL → Permisos → Ubicación → Permitir",
+      "opera": "Opera:\nHaz clic en el ícono de candado del sitio, parte superior izquierda de la URL → Ubicación → Permitir",
+      "chrome": "Chrome:\nHaz clic en el ícono de configuración del sitio, parte superior izquierda de la URL → Ubicación → Permitir"
+    }
+  },
+  "adminLayout": {
+    "messages": {
+      "logoutSuccess": "Sesión cerrada correctamente",
+      "logoutError": "Ocurrió un error al cerrar la sesión",
+      "expiredSessionError": "Error al cerrar la sesión expirada"
+    }
   }
 }
 

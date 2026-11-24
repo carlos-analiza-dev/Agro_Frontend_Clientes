@@ -12,6 +12,7 @@ import {
   Legend,
 } from "recharts";
 import { Clock, TrendingUp, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   resumen_horas: ResponseResumenHoras | undefined;
@@ -24,6 +25,8 @@ const ResumenHorasExtra = ({
   cargando_horas,
   moneda,
 }: Props) => {
+  const t = useTranslations("resumenHorasExtra");
+
   const formatearNumero = (value: string | number | null | undefined) => {
     if (value === null || value === undefined) return 0;
     return typeof value === "string" ? parseFloat(value) : value;
@@ -31,17 +34,17 @@ const ResumenHorasExtra = ({
 
   const datosHoras = [
     {
-      name: "Horas Diurnas",
+      name: t("chart.daytimeHours"),
       value: formatearNumero(resumen_horas?.totalHorasDiurnas),
       color: "#f59e0b",
     },
     {
-      name: "Horas Nocturnas",
+      name: t("chart.nighttimeHours"),
       value: formatearNumero(resumen_horas?.totalHorasNocturnas),
       color: "#3b82f6",
     },
     {
-      name: "Horas Festivas",
+      name: t("chart.holidayHours"),
       value: formatearNumero(resumen_horas?.totalHorasFestivas),
       color: "#ef4444",
     },
@@ -70,9 +73,7 @@ const ResumenHorasExtra = ({
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold">
-          ⏰ Resumen de Horas Extras
-        </CardTitle>
+        <CardTitle className="text-lg font-semibold">⏰ {t("title")}</CardTitle>
       </CardHeader>
 
       <CardContent className="space-y-6">
@@ -80,15 +81,17 @@ const ResumenHorasExtra = ({
           <div className="p-4 rounded-xl border bg-muted/40">
             <div className="flex items-center gap-2 text-muted-foreground mb-1">
               <Clock className="h-4 w-4" />
-              <span className="text-sm">Total Horas</span>
+              <span className="text-sm">{t("metrics.totalHours")}</span>
             </div>
-            <p className="text-2xl font-bold">{totalHoras} h</p>
+            <p className="text-2xl font-bold">
+              {totalHoras} {t("metrics.hoursUnit")}
+            </p>
           </div>
 
           <div className="p-4 rounded-xl border bg-muted/40">
             <div className="flex items-center gap-2 text-muted-foreground mb-1">
               <TrendingUp className="h-4 w-4" />
-              <span className="text-sm">Monto Total</span>
+              <span className="text-sm">{t("metrics.totalAmount")}</span>
             </div>
             <p className="text-2xl font-bold">
               {moneda}
@@ -99,7 +102,7 @@ const ResumenHorasExtra = ({
           <div className="p-4 rounded-xl border bg-muted/40">
             <div className="flex items-center gap-2 text-muted-foreground mb-1">
               <Users className="h-4 w-4" />
-              <span className="text-sm">Trabajadores</span>
+              <span className="text-sm">{t("metrics.workers")}</span>
             </div>
             <p className="text-2xl font-bold">{trabajadores}</p>
           </div>
@@ -114,7 +117,7 @@ const ResumenHorasExtra = ({
                   cx="50%"
                   cy="50%"
                   label={({ name, percent }) =>
-                    `${name}: ${(percent * 100).toFixed(0)}%`
+                    `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`
                   }
                   outerRadius={100}
                   dataKey="value"
@@ -123,9 +126,14 @@ const ResumenHorasExtra = ({
                     <Cell key={index} fill={entry.color} />
                   ))}
                 </Pie>
+
                 <Tooltip
-                  formatter={(value: number) => [`${value} horas`, "Cantidad"]}
+                  formatter={(value: number) => [
+                    `${value} ${t("chart.hoursUnit")}`,
+                    t("chart.quantity"),
+                  ]}
                 />
+
                 <Legend />
               </PieChart>
             </ResponsiveContainer>

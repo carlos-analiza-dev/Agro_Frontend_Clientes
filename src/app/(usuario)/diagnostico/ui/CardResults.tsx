@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -10,7 +13,6 @@ import {
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AlertCircle, Loader2, PawPrint, Stethoscope } from "lucide-react";
-import React from "react";
 
 interface Props {
   diagnosticoResultado: string | null;
@@ -29,23 +31,23 @@ const CardResults = ({
   razaValue,
   edadValue,
 }: Props) => {
+  const t = useTranslations("cardResults");
+
   return (
     <Card className="shadow-lg lg:sticky lg:top-6 h-fit">
       <CardHeader className="bg-primary/5 border-b">
         <CardTitle className="flex items-center gap-2">
           <PawPrint className="h-5 w-5" />
-          Resultado del Diagnóstico
+          {t("title")}
         </CardTitle>
-        <CardDescription>
-          Análisis basado en los síntomas proporcionados
-        </CardDescription>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
 
       <CardContent className="p-0">
         {isPending ? (
           <div className="flex flex-col items-center justify-center py-16 px-4 h-[500px]">
             <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-            <p className="text-muted-foreground">Analizando síntomas...</p>
+            <p className="text-muted-foreground">{t("loading")}</p>
           </div>
         ) : diagnosticoResultado ? (
           <ScrollArea className="h-[500px] lg:h-[600px] w-full p-6">
@@ -53,7 +55,7 @@ const CardResults = ({
               {Array.isArray(sintomasValue) && sintomasValue.length > 0 && (
                 <div className="bg-muted/50 p-3 rounded-lg">
                   <p className="text-sm font-medium mb-2">
-                    Síntomas reportados:
+                    {t("reportedSymptoms")}
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {sintomasValue.map((s, i) => (
@@ -66,9 +68,9 @@ const CardResults = ({
               )}
 
               <div className="bg-primary/5 p-3 rounded-lg">
-                <p className="text-sm font-medium mb-1">Paciente:</p>
+                <p className="text-sm font-medium mb-1">{t("patient")}</p>
                 <p className="text-sm">
-                  {especieValue} - {razaValue} ({edadValue} meses)
+                  {especieValue} - {razaValue} ({edadValue} {t("months")})
                 </p>
               </div>
 
@@ -115,10 +117,9 @@ const CardResults = ({
             <div className="bg-muted/50 p-4 rounded-full mb-4">
               <Stethoscope className="h-12 w-12 text-muted-foreground" />
             </div>
-            <h3 className="font-semibold mb-2">Sin diagnóstico aún</h3>
+            <h3 className="font-semibold mb-2">{t("empty.title")}</h3>
             <p className="text-sm text-muted-foreground max-w-sm">
-              Completa el formulario con los síntomas del animal para obtener un
-              análisis preliminar
+              {t("empty.description")}
             </p>
           </div>
         )}
@@ -128,10 +129,9 @@ const CardResults = ({
         <CardFooter className="border-t bg-amber-50/50 dark:bg-amber-950/20">
           <Alert className="border-amber-200">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Importante</AlertTitle>
+            <AlertTitle>{t("warning.title")}</AlertTitle>
             <AlertDescription className="text-xs">
-              Este diagnóstico es generado por IA y debe ser verificado por un
-              profesional veterinario. No sustituye una consulta presencial.
+              {t("warning.description")}
             </AlertDescription>
           </Alert>
         </CardFooter>

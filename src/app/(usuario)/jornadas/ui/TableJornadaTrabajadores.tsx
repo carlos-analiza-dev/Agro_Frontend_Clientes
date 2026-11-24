@@ -11,8 +11,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getInitials } from "@/helpers/funciones/getInitials";
-import { Calendar, Download, Eye, Sun, Moon, Star, Edit } from "lucide-react";
-import getTrabajoBadge from "./getTrabajoBadge";
+import { Calendar, Eye, Sun, Moon, Star, Edit } from "lucide-react";
 import getHoraExtraIcon from "./getHoraExtraIcon";
 import {
   Tooltip,
@@ -29,6 +28,8 @@ import { exportJornadasWithSummary } from "@/helpers/funciones/exportJornadaToEx
 import { useState } from "react";
 import ExportButton from "./ExportButton";
 import ModalViewDetailsJornada from "./ModalViewDetailsJornada";
+import { useTranslations } from "next-intl";
+import { useGetTrabajoBadge } from "./getTrabajoBadge";
 
 interface Props {
   jornadasFiltradas: Jornada[];
@@ -39,6 +40,8 @@ const TableJornadaTrabajadores = ({
   jornadasFiltradas,
   handleEditJornada,
 }: Props) => {
+  const t = useTranslations("JornadasTrabajadoresPage");
+  const getTrabajoBadge = useGetTrabajoBadge();
   const [openViewDetails, setOpenViewDetails] = useState(false);
   const [selectedJornada, setSelectedJornada] = useState<Jornada | null>(null);
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -52,25 +55,30 @@ const TableJornadaTrabajadores = ({
     );
   };
 
+  const handleViewDetails = (jornada: Jornada) => {
+    setOpenViewDetails(true);
+    setSelectedJornada(jornada);
+  };
+
   const getHoraExtraDetails = (jornada: Jornada) => {
     const horas = [];
     if (Number(jornada.horasExtrasDiurnas) > 0) {
       horas.push({
-        tipo: "Diurnas",
+        tipo: t("table.overtime.daytime"),
         valor: jornada.horasExtrasDiurnas,
         icon: Sun,
       });
     }
     if (Number(jornada.horasExtrasNocturnas) > 0) {
       horas.push({
-        tipo: "Nocturnas",
+        tipo: t("table.overtime.nighttime"),
         valor: jornada.horasExtrasNocturnas,
         icon: Moon,
       });
     }
     if (Number(jornada.horasExtrasFestivas) > 0) {
       horas.push({
-        tipo: "Festivas",
+        tipo: t("table.overtime.holiday"),
         valor: jornada.horasExtrasFestivas,
         icon: Star,
       });
@@ -80,23 +88,18 @@ const TableJornadaTrabajadores = ({
 
   const handleExportToExcel = () => {
     if (jornadasFiltradas.length === 0) {
-      toast.warning("No hay datos para exportar");
+      toast.warning(t("table.noDataToExport"));
       return;
     }
 
     try {
       exportJornadasWithSummary(jornadasFiltradas, "jornadas_trabajadores");
       toast.success(
-        `Exportadas ${jornadasFiltradas.length} jornadas exitosamente`,
+        t("table.exportSuccess", { count: jornadasFiltradas.length }),
       );
     } catch (error) {
-      toast.error("Error al exportar los datos");
+      toast.error(t("table.exportError"));
     }
-  };
-
-  const handleViewDetails = (jornada: Jornada) => {
-    setOpenViewDetails(true);
-    setSelectedJornada(jornada);
   };
 
   if (isMobile) {
@@ -154,7 +157,9 @@ const TableJornadaTrabajadores = ({
 
                 <div className="grid grid-cols-2 gap-3 mb-3">
                   <div className="space-y-1">
-                    <p className="text-xs text-gray-500">Fecha</p>
+                    <p className="text-xs text-gray-500">
+                      {t("table.labels.date")}
+                    </p>
                     <div className="flex items-center gap-1">
                       <Calendar className="h-3 w-3 text-gray-400" />
                       <span className="text-sm font-medium">
@@ -163,14 +168,18 @@ const TableJornadaTrabajadores = ({
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-xs text-gray-500">Estado</p>
+                    <p className="text-xs text-gray-500">
+                      {t("table.labels.status")}
+                    </p>
                     <div>{getTrabajoBadge(jornada.trabajo)}</div>
                   </div>
                 </div>
 
                 {totalHorasExtras > 0 ? (
                   <div className="mb-3">
-                    <p className="text-xs text-gray-500 mb-2">Horas Extras</p>
+                    <p className="text-xs text-gray-500 mb-2">
+                      {t("table.labels.overtime")}
+                    </p>
                     <div className="flex flex-wrap gap-2">
                       {horasExtras.map((hora, idx) => (
                         <Badge key={idx} variant="outline" className="gap-1">
@@ -182,15 +191,19 @@ const TableJornadaTrabajadores = ({
                   </div>
                 ) : (
                   <div className="mb-3">
-                    <p className="text-xs text-gray-500 mb-1">Horas Extras</p>
-                    <p className="text-sm text-gray-400">Sin horas extras</p>
+                    <p className="text-xs text-gray-500 mb-1">
+                      {t("table.labels.overtime")}
+                    </p>
+                    <p className="text-sm text-gray-400">
+                      {t("table.noOvertime")}
+                    </p>
                   </div>
                 )}
 
                 {jornada.laborRealizada && (
                   <div className="mb-2">
                     <p className="text-xs text-gray-500 mb-1">
-                      Labor realizada
+                      {t("table.labels.workDone")}
                     </p>
                     <p className="text-sm text-gray-700 dark:text-gray-300">
                       {jornada.laborRealizada}
@@ -200,7 +213,9 @@ const TableJornadaTrabajadores = ({
 
                 {jornada.observaciones && (
                   <div>
-                    <p className="text-xs text-gray-500 mb-1">Observaciones</p>
+                    <p className="text-xs text-gray-500 mb-1">
+                      {t("table.labels.observations")}
+                    </p>
                     <p className="text-sm text-gray-600 dark:text-gray-400 italic">
                       {jornada.observaciones}
                     </p>
@@ -232,12 +247,20 @@ const TableJornadaTrabajadores = ({
         <Table>
           <TableHeader>
             <TableRow className="bg-gray-50 dark:bg-gray-800/50">
-              <TableHead className="font-semibold">Trabajador</TableHead>
-              <TableHead className="font-semibold">Fecha</TableHead>
-              <TableHead className="font-semibold">Estado</TableHead>
-              <TableHead className="font-semibold">Horas Extras</TableHead>
+              <TableHead className="font-semibold">
+                {t("table.columns.worker")}
+              </TableHead>
+              <TableHead className="font-semibold">
+                {t("table.columns.date")}
+              </TableHead>
+              <TableHead className="font-semibold">
+                {t("table.columns.status")}
+              </TableHead>
+              <TableHead className="font-semibold">
+                {t("table.columns.overtime")}
+              </TableHead>
               <TableHead className="font-semibold text-right">
-                Acciones
+                {t("table.columns.actions")}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -281,17 +304,20 @@ const TableJornadaTrabajadores = ({
                       <div className="flex flex-wrap gap-1">
                         {Number(jornada.horasExtrasDiurnas) > 0 && (
                           <Badge variant="outline" className="text-xs">
-                            D: {jornada.horasExtrasDiurnas}h
+                            {t("table.abbreviations.daytime")}:{" "}
+                            {jornada.horasExtrasDiurnas}h
                           </Badge>
                         )}
                         {Number(jornada.horasExtrasNocturnas) > 0 && (
                           <Badge variant="outline" className="text-xs">
-                            N: {jornada.horasExtrasNocturnas}h
+                            {t("table.abbreviations.nighttime")}:{" "}
+                            {jornada.horasExtrasNocturnas}h
                           </Badge>
                         )}
                         {Number(jornada.horasExtrasFestivas) > 0 && (
                           <Badge variant="outline" className="text-xs">
-                            F: {jornada.horasExtrasFestivas}h
+                            {t("table.abbreviations.holiday")}:{" "}
+                            {jornada.horasExtrasFestivas}h
                           </Badge>
                         )}
                       </div>
@@ -347,14 +373,24 @@ const TableJornadaTrabajadores = ({
       <Table>
         <TableHeader>
           <TableRow className="bg-gray-50 dark:bg-gray-800/50">
-            <TableHead className="font-semibold">Trabajador</TableHead>
-            <TableHead className="font-semibold">Fecha</TableHead>
-            <TableHead className="font-semibold">Estado</TableHead>
-            <TableHead className="font-semibold text-center">
-              Horas Extras
+            <TableHead className="font-semibold">
+              {t("table.columns.worker")}
             </TableHead>
-            <TableHead className="font-semibold">Labor Realizada</TableHead>
-            <TableHead className="font-semibold text-right">Acciones</TableHead>
+            <TableHead className="font-semibold">
+              {t("table.columns.date")}
+            </TableHead>
+            <TableHead className="font-semibold">
+              {t("table.columns.status")}
+            </TableHead>
+            <TableHead className="font-semibold text-center">
+              {t("table.columns.overtime")}
+            </TableHead>
+            <TableHead className="font-semibold">
+              {t("table.columns.workDone")}
+            </TableHead>
+            <TableHead className="font-semibold text-right">
+              {t("table.columns.actions")}
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -395,7 +431,9 @@ const TableJornadaTrabajadores = ({
                     <div className="flex items-center justify-between gap-2 text-sm">
                       <div className="flex items-center gap-1">
                         {getHoraExtraIcon("diurnas")}
-                        <span className="text-gray-600">Diurnas:</span>
+                        <span className="text-gray-600">
+                          {t("table.overtime.daytime")}:
+                        </span>
                       </div>
                       <span className="font-medium">
                         {jornada.horasExtrasDiurnas}h
@@ -406,7 +444,9 @@ const TableJornadaTrabajadores = ({
                     <div className="flex items-center justify-between gap-2 text-sm">
                       <div className="flex items-center gap-1">
                         {getHoraExtraIcon("nocturnas")}
-                        <span className="text-gray-600">Nocturnas:</span>
+                        <span className="text-gray-600">
+                          {t("table.overtime.nighttime")}:
+                        </span>
                       </div>
                       <span className="font-medium">
                         {jornada.horasExtrasNocturnas}h
@@ -417,7 +457,9 @@ const TableJornadaTrabajadores = ({
                     <div className="flex items-center justify-between gap-2 text-sm">
                       <div className="flex items-center gap-1">
                         {getHoraExtraIcon("festivas")}
-                        <span className="text-gray-600">Festivas:</span>
+                        <span className="text-gray-600">
+                          {t("table.overtime.holiday")}:
+                        </span>
                       </div>
                       <span className="font-medium">
                         {jornada.horasExtrasFestivas}h
@@ -426,7 +468,7 @@ const TableJornadaTrabajadores = ({
                   )}
                   {getHorasExtrasTotales(jornada) === 0 && (
                     <span className="text-gray-400 text-sm">
-                      Sin horas extras
+                      {t("table.noOvertime")}
                     </span>
                   )}
                 </div>
@@ -436,7 +478,7 @@ const TableJornadaTrabajadores = ({
                   <Tooltip>
                     <TooltipTrigger>
                       <p className="text-sm text-gray-700 dark:text-gray-300 max-w-xs truncate">
-                        {jornada.laborRealizada || "No especificada"}
+                        {jornada.laborRealizada || t("table.notSpecified")}
                       </p>
                     </TooltipTrigger>
                     {jornada.laborRealizada && (

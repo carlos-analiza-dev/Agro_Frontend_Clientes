@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -7,6 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { AlertTriangle } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface SessionExpiredModalProps {
   isOpen: boolean;
@@ -17,6 +20,8 @@ export const SessionExpiredModal = ({
   isOpen,
   onClose,
 }: SessionExpiredModalProps) => {
+  const t = useTranslations("sessionExpiredModal");
+
   const handleRedirectToLogin = () => {
     onClose();
     window.location.href = "/";
@@ -28,20 +33,19 @@ export const SessionExpiredModal = ({
         <DialogHeader>
           <div className="flex items-center gap-2">
             <AlertTriangle className="h-6 w-6 text-yellow-600" />
-            <DialogTitle>Sesión Expirada</DialogTitle>
+            <DialogTitle>{t("title")}</DialogTitle>
           </div>
-          <DialogDescription>
-            Tu sesión ha expirado por seguridad. Por favor, inicia sesión
-            nuevamente para continuar.
-          </DialogDescription>
+
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-3 mt-4">
           <Button onClick={handleRedirectToLogin} className="w-full">
-            Ir a Iniciar Sesión
+            {t("login")}
           </Button>
+
           <Button variant="outline" onClick={onClose} className="w-full">
-            Cerrar
+            {t("close")}
           </Button>
         </div>
       </DialogContent>

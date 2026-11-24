@@ -4,11 +4,13 @@ import { IngresarUsoEquipoInterface } from "@/api/uso-equipos/interfaces/crear-u
 import useGetActividadesByTrabajador from "@/hooks/actividades/useGetActividadesByTrabajador";
 import useGetEquiposMaquinariaActivos from "@/hooks/equipos-maquinaria/useGetEquiposMaquinariaActivos";
 import useGetAllTrabajadores from "@/hooks/trabajadores/useGetAllTrabajadores";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, type ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,6 +25,7 @@ import {
 } from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircleIcon } from "lucide-react";
+
 import { UsosEquipo } from "@/api/uso-equipos/interfaces/response-uso-equipos.interface";
 import {
   formatearFechaParaEnviar,
@@ -39,6 +42,8 @@ interface Props {
 }
 
 const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
+  const t = useTranslations("formUsoEquipo");
+
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [selectedOperadorId, setSelectedOperadorId] = useState<string>("");
   const [fechaActividad, setFechaActividad] = useState<string>("");
@@ -46,8 +51,10 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
 
   const { data: equiposActivos, isLoading: isLoadingEquipos } =
     useGetEquiposMaquinariaActivos();
+
   const { data: trabajadores, isLoading: isLoadingTrabajadores } =
     useGetAllTrabajadores();
+
   const { data: actividades, isLoading: isLoadingActividades } =
     useGetActividadesByTrabajador(selectedOperadorId, fechaActividad);
 
@@ -83,13 +90,17 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
       if (inicio < fin) {
         const diffHoras = (fin.getTime() - inicio.getTime()) / (1000 * 60 * 60);
         const horas = Math.round(diffHoras * 10) / 10;
+
         setHorasCalculadas(horas);
         setValue("horasTrabajadas", horas);
+
         return horas;
       }
     }
+
     setHorasCalculadas(0);
     setValue("horasTrabajadas", 0);
+
     return 0;
   }, [fechaInicio, fechaFin, setValue]);
 
@@ -124,6 +135,7 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
         fechaFin: "",
         horasTrabajadas: 0,
       });
+
       setSelectedOperadorId("");
       setFechaActividad("");
       setHorasCalculadas(0);
@@ -145,23 +157,25 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
 
   const validateFechas = () => {
     if (!fechaInicio || !fechaFin) return true;
+
     const inicio = new Date(fechaInicio);
     const fin = new Date(fechaFin);
 
     if (inicio >= fin) {
-      return "La fecha de fin debe ser posterior a la fecha de inicio";
+      return t("validation.endDateAfterStart");
     }
+
     return true;
   };
 
-  const handleFechaInicioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFechaInicioChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setValue("fechaInicio", value);
 
     setTimeout(() => calcularHorasTrabajadas(), 0);
   };
 
-  const handleFechaFinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFechaFinChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setValue("fechaFin", value);
 
@@ -179,13 +193,14 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
 
       if (isEditing && usoEquipo) {
         await editarUso(usoEquipo.id, dataToSend);
-        toast.success("Uso de equipo actualizado correctamente");
+        toast.success(t("messages.updateSuccess"));
       } else {
         await ingresarUso(dataToSend);
-        toast.success("Uso de equipo registrado correctamente");
+        toast.success(t("messages.createSuccess"));
       }
 
       reset();
+
       queryClient.invalidateQueries({ queryKey: ["uso-equipos"] });
       queryClient.invalidateQueries({ queryKey: ["equipos-activos"] });
 
@@ -196,14 +211,16 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
     } catch (error) {
       if (isAxiosError(error)) {
         const messages = error.response?.data?.message;
-        const errorMessage = Array.isArray(messages)
+
+        const apiErrorMessage = Array.isArray(messages)
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al registrar el uso del equipo";
-        setErrorMessage(errorMessage);
+            : t("errors.registerUsage");
+
+        setErrorMessage(apiErrorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("errors.unexpected"));
       }
     }
   };
@@ -222,7 +239,7 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
         <Alert variant="destructive" className="mb-4">
           <AlertCircleIcon className="h-4 w-4" />
           <AlertTitle>
-            Error al {isEditing ? "actualizar" : "registrar"} el Uso de Equipo
+            {isEditing ? t("errors.updateTitle") : t("errors.createTitle")}
           </AlertTitle>
           <AlertDescription className="whitespace-pre-line">
             {errorMessage}
@@ -233,7 +250,7 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="md:col-span-2">
           <Label htmlFor="equipoId">
-            Equipo <span className="text-red-500">*</span>
+            {t("fields.equipment")} <span className="text-red-500">*</span>
           </Label>
 
           {!isEditing ? (
@@ -245,14 +262,16 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
               <SelectTrigger
                 className={errors.equipoId ? "border-red-500" : ""}
               >
-                <SelectValue placeholder="Seleccionar equipo" />
+                <SelectValue placeholder={t("placeholders.selectEquipment")} />
               </SelectTrigger>
+
               <SelectContent className="max-h-80">
                 <SelectGroup>
-                  <SelectLabel>Equipos Activos</SelectLabel>
+                  <SelectLabel>{t("groups.activeEquipment")}</SelectLabel>
+
                   {equiposActivos && equiposActivos.length === 0 ? (
                     <div className="px-2 py-4 text-center text-sm text-muted-foreground">
-                      No hay equipos activos disponibles
+                      {t("empty.noActiveEquipment")}
                     </div>
                   ) : (
                     equiposActivos?.map((equipo) => (
@@ -284,9 +303,10 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
           <input
             type="hidden"
             {...register("equipoId", {
-              required: "Debe seleccionar un equipo",
+              required: t("validation.equipmentRequired"),
             })}
           />
+
           {errors.equipoId && (
             <p className="text-sm text-red-500 mt-1">
               {errors.equipoId.message}
@@ -296,7 +316,7 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
 
         <div>
           <Label htmlFor="operadorId">
-            Operador <span className="text-red-500">*</span>
+            {t("fields.operator")} <span className="text-red-500">*</span>
           </Label>
 
           {!isEditing ? (
@@ -311,11 +331,13 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
               <SelectTrigger
                 className={errors.operadorId ? "border-red-500" : ""}
               >
-                <SelectValue placeholder="Seleccionar operador" />
+                <SelectValue placeholder={t("placeholders.selectOperator")} />
               </SelectTrigger>
+
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Operadores</SelectLabel>
+                  <SelectLabel>{t("groups.operators")}</SelectLabel>
+
                   {trabajadores?.map((trabajador) => (
                     <SelectItem key={trabajador.id} value={trabajador.id}>
                       <div className="flex flex-col items-start">
@@ -330,7 +352,6 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
               </SelectContent>
             </Select>
           ) : (
-            // En modo edición, mostrar un div con la información del operador
             <div className="w-full p-2 border rounded-md bg-muted/50">
               <div className="font-medium">{usoEquipo?.operador?.nombre}</div>
               <div className="text-sm text-muted-foreground">
@@ -342,10 +363,11 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
           <input
             type="hidden"
             {...register("operadorId", {
-              required: "Debe seleccionar un operador",
+              required: t("validation.operatorRequired"),
             })}
             value={watch("operadorId")}
           />
+
           {errors.operadorId && (
             <p className="text-sm text-red-500 mt-1">
               {errors.operadorId.message}
@@ -355,18 +377,19 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
 
         <div>
           <Label htmlFor="actividadId">
-            Actividad Realizada
+            {t("fields.activity")}
             {!watch("operadorId") && (
               <span className="text-xs text-muted-foreground ml-2">
-                (Seleccione un operador primero)
+                {t("hints.selectOperatorFirst")}
               </span>
             )}
             {watch("operadorId") && !fechaActividad && (
               <span className="text-xs text-muted-foreground ml-2">
-                (Seleccione fecha de inicio primero)
+                {t("hints.selectStartDateFirst")}
               </span>
             )}
           </Label>
+
           <Select
             value={watch("actividadId") || "ninguna"}
             onValueChange={(value) =>
@@ -377,19 +400,24 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
             <SelectTrigger
               className={errors.actividadId ? "border-red-500" : ""}
             >
-              <SelectValue placeholder="Seleccionar actividad" />
+              <SelectValue placeholder={t("placeholders.selectActivity")} />
             </SelectTrigger>
+
             <SelectContent className="max-h-80">
               <SelectGroup>
-                <SelectLabel>Actividades del día</SelectLabel>
-                <SelectItem value="ninguna">Ninguna actividad</SelectItem>
+                <SelectLabel>{t("groups.dailyActivities")}</SelectLabel>
+
+                <SelectItem value="ninguna">
+                  {t("options.noActivity")}
+                </SelectItem>
+
                 {isLoadingActividades ? (
                   <div className="px-2 py-4 text-center text-sm text-muted-foreground">
-                    Cargando actividades...
+                    {t("loading.activities")}
                   </div>
                 ) : actividades && actividades.length === 0 ? (
                   <div className="px-2 py-4 text-center text-sm text-muted-foreground">
-                    No hay actividades para esta fecha
+                    {t("empty.noActivitiesForDate")}
                   </div>
                 ) : (
                   actividades?.map((actividad) => (
@@ -412,18 +440,20 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
 
         <div>
           <Label htmlFor="fechaInicio">
-            Fecha y Hora de Inicio <span className="text-red-500">*</span>
+            {t("fields.startDateTime")} <span className="text-red-500">*</span>
           </Label>
+
           <Input
             id="fechaInicio"
             type="datetime-local"
             {...register("fechaInicio", {
-              required: "La fecha y hora de inicio es requerida",
+              required: t("validation.startDateRequired"),
             })}
             onChange={handleFechaInicioChange}
             className={errors.fechaInicio ? "border-red-500" : ""}
             disabled={isSubmitting}
           />
+
           {errors.fechaInicio && (
             <p className="text-sm text-red-500 mt-1">
               {errors.fechaInicio.message}
@@ -433,19 +463,21 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
 
         <div>
           <Label htmlFor="fechaFin">
-            Fecha y Hora de Fin <span className="text-red-500">*</span>
+            {t("fields.endDateTime")} <span className="text-red-500">*</span>
           </Label>
+
           <Input
             id="fechaFin"
             type="datetime-local"
             {...register("fechaFin", {
-              required: "La fecha y hora de fin es requerida",
+              required: t("validation.endDateRequired"),
               validate: validateFechas,
             })}
             onChange={handleFechaFinChange}
             className={errors.fechaFin ? "border-red-500" : ""}
             disabled={isSubmitting}
           />
+
           {errors.fechaFin && (
             <p className="text-sm text-red-500 mt-1">
               {errors.fechaFin.message}
@@ -455,8 +487,9 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
 
         <div>
           <Label htmlFor="horasTrabajadas">
-            Horas Trabajadas <span className="text-red-500">*</span>
+            {t("fields.hoursWorked")} <span className="text-red-500">*</span>
           </Label>
+
           <Input
             id="horasTrabajadas"
             type="number"
@@ -464,10 +497,10 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
             min="0"
             value={horasCalculadas}
             {...register("horasTrabajadas", {
-              required: "Las horas trabajadas son requeridas",
+              required: t("validation.hoursRequired"),
               min: {
                 value: 0,
-                message: "Las horas deben ser mayor o igual a 0",
+                message: t("validation.hoursMin"),
               },
               valueAsNumber: true,
             })}
@@ -475,9 +508,11 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
             className={errors.horasTrabajadas ? "border-red-500" : ""}
             disabled={true}
           />
+
           <p className="text-xs text-muted-foreground mt-1">
-            * Se calcula automáticamente según las fechas seleccionadas
+            {t("hints.automaticHours")}
           </p>
+
           {errors.horasTrabajadas && (
             <p className="text-sm text-red-500 mt-1">
               {errors.horasTrabajadas.message}
@@ -493,18 +528,19 @@ const FormUsoEquipo = ({ usoEquipo, onSuccess, moneda = "Lps" }: Props) => {
           onClick={() => onSuccess()}
           disabled={isSubmitting}
         >
-          Cancelar
+          {t("buttons.cancel")}
         </Button>
+
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? (
             <span className="flex items-center gap-2">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              {isEditing ? "Actualizando..." : "Guardando..."}
+              {isEditing ? t("buttons.updating") : t("buttons.saving")}
             </span>
           ) : isEditing ? (
-            "Actualizar Uso de Equipo"
+            t("buttons.update")
           ) : (
-            "Registrar Uso de Equipo"
+            t("buttons.register")
           )}
         </Button>
       </div>

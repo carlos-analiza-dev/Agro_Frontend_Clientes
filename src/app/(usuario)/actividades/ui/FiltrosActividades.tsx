@@ -17,6 +17,7 @@ import { Trabajador } from "@/api/trabajadores/interface/response-trabajadores.i
 import { Finca } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
 import { useEffect } from "react";
 import { TipoCliente } from "@/interfaces/enums/clientes.enums";
+import { useTranslations } from "next-intl";
 
 interface Props {
   trabajadores: Trabajador[];
@@ -45,6 +46,8 @@ const FiltrosActividadesComponent = ({
   trabajadorId,
   rol,
 }: Props) => {
+  const t = useTranslations("filtrosActividades");
+
   useEffect(() => {
     if (
       rol === TipoCliente.TRABAJADOR &&
@@ -65,11 +68,13 @@ const FiltrosActividadesComponent = ({
 
   return (
     <div
-      className={`grid gap-4 ${isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"}`}
+      className={`grid gap-4 ${
+        isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
+      }`}
     >
       {rol === TipoCliente.PROPIETARIO && (
         <div className="space-y-2">
-          <Label className="text-sm">Trabajador</Label>
+          <Label className="text-sm">{t("worker")}</Label>
           {isLoadingTrabajadores ? (
             <Skeleton className="h-10 w-full" />
           ) : (
@@ -85,12 +90,16 @@ const FiltrosActividadesComponent = ({
               <SelectTrigger className="w-full">
                 <SelectValue
                   placeholder={
-                    !isPropietario ? "Mi asignación" : "Todos los trabajadores"
+                    !isPropietario
+                      ? t("placeholders.myAssignment")
+                      : t("placeholders.allWorkers")
                   }
                 />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos">Todos los trabajadores</SelectItem>
+                <SelectItem value="todos">
+                  {t("placeholders.allWorkers")}
+                </SelectItem>
                 {trabajadores.map((trabajador) => (
                   <SelectItem key={trabajador.id} value={trabajador.id}>
                     {trabajador.nombre}
@@ -103,7 +112,7 @@ const FiltrosActividadesComponent = ({
       )}
 
       <div className="space-y-2">
-        <Label className="text-sm">Finca</Label>
+        <Label className="text-sm">{t("farm")}</Label>
         {isLoadingFincas ? (
           <Skeleton className="h-10 w-full" />
         ) : (
@@ -116,13 +125,15 @@ const FiltrosActividadesComponent = ({
             }
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Todas las fincas" />
+              <SelectValue placeholder={t("placeholders.allFarms")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="todas">Todas las fincas</SelectItem>
+              <SelectItem value="todas">
+                {t("placeholders.allFarms")}
+              </SelectItem>
               {fincas.map((finca) => (
                 <SelectItem key={finca.id} value={finca.id}>
-                  {finca.nombre_finca || finca.nombre_finca}
+                  {finca.nombre_finca}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -131,7 +142,7 @@ const FiltrosActividadesComponent = ({
       </div>
 
       <div className="space-y-2">
-        <Label className="text-sm">Fecha desde</Label>
+        <Label className="text-sm">{t("startDate")}</Label>
         <Input
           type="date"
           value={filtrosActuales.fechaInicio || ""}
@@ -145,7 +156,7 @@ const FiltrosActividadesComponent = ({
       </div>
 
       <div className="space-y-2">
-        <Label className="text-sm">Fecha hasta</Label>
+        <Label className="text-sm">{t("endDate")}</Label>
         <Input
           type="date"
           value={filtrosActuales.fechaFin || ""}
@@ -159,16 +170,18 @@ const FiltrosActividadesComponent = ({
       </div>
 
       <div
-        className={`${isMobile ? "col-span-1" : "md:col-span-2 lg:col-span-1"} flex items-end`}
+        className={`${
+          isMobile ? "col-span-1" : "md:col-span-2 lg:col-span-1"
+        } flex items-end`}
       >
         <Button
           variant="outline"
           onClick={onLimpiarFiltros}
           className="gap-2 w-full sm:w-auto"
-          size={isMobile ? "default" : "default"}
+          size="default"
         >
           <X className="w-4 h-4" />
-          Limpiar filtros
+          {t("clearFilters")}
         </Button>
       </div>
     </div>

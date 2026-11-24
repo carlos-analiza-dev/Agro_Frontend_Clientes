@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/providers/store/useAuthStore";
@@ -15,17 +16,21 @@ import { publicRoutes } from "@/helpers/data/publics-routes";
 import { TipoCliente } from "@/interfaces/enums/clientes.enums";
 import useGetPermisosByClientePaquete from "@/hooks/permisos/useGetPermisosByClientePaquete";
 import useGetPermisosByCliente from "@/hooks/permisos/useGetPermisosByCliente";
+import { useTranslations } from "next-intl";
 
 export default function AdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const t = useTranslations("adminLayout");
+
   const { logout, cliente, token } = useAuthStore();
   const { limpiarFavoritos } = useFavoritos();
   const { clearCart } = useCartStore();
   const router = useRouter();
   const pathname = usePathname();
+
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showSessionModal, setShowSessionModal] = useState(false);
@@ -37,9 +42,12 @@ export default function AdminLayout({
 
   const { data: permisosPaquete, isLoading: isLoadingPaquete } =
     useGetPermisosByClientePaquete(paqueteId);
+
   const { data: permisosCliente, isLoading: isLoadingCliente } =
     useGetPermisosByCliente(clienteId);
+
   const permisos = esPropietario ? permisosPaquete : permisosCliente;
+
   const isLoadingPermisos = esPropietario ? isLoadingPaquete : isLoadingCliente;
 
   useEffect(() => {
@@ -54,6 +62,7 @@ export default function AdminLayout({
         setShowSessionModal(true);
         return true;
       }
+
       return false;
     };
 
@@ -121,6 +130,7 @@ export default function AdminLayout({
             pathname.startsWith(permiso.permiso.url + "/")
           );
         }
+
         return false;
       });
 
@@ -128,6 +138,7 @@ export default function AdminLayout({
     };
 
     const hasPermission = hasPermissionForCurrentRoute();
+
     if (hasPermission === null) return;
 
     if (!hasPermission) {
@@ -147,17 +158,19 @@ export default function AdminLayout({
     try {
       setMobileSidebarOpen(false);
       setLoading(true);
+
       await logout();
       limpiarFavoritos();
       clearCart();
+
       localStorage.removeItem("user_location");
 
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       router.push("/");
-      toast.success("Sesión cerrada correctamente");
+      toast.success(t("messages.logoutSuccess"));
     } catch (error) {
-      toast.error("Ocurrió un error al cerrar la sesión");
+      toast.error(t("messages.logoutError"));
       router.push("/");
     } finally {
       setLoading(false);
@@ -167,11 +180,12 @@ export default function AdminLayout({
   const handleSessionExpired = async () => {
     setShowSessionModal(false);
     setLoading(true);
+
     try {
       await logout();
       router.push("/");
     } catch (error) {
-      toast.error("Error al cerrar sesión expirada");
+      toast.error(t("messages.expiredSessionError"));
     } finally {
       setLoading(false);
     }
@@ -179,6 +193,7 @@ export default function AdminLayout({
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
+
     return () => {
       document.body.style.overflow = "auto";
     };
@@ -191,20 +206,24 @@ export default function AdminLayout({
   return (
     <div className="flex h-screen bg-gray-50">
       <SidebarAdmin handleLogout={handleLogout} />
+
       <ShetContentComp
         setMobileSidebarOpen={setMobileSidebarOpen}
         handleLogout={handleLogout}
         mobileSidebarOpen={mobileSidebarOpen}
       />
+
       <div className="flex flex-1 flex-col overflow-hidden">
         <NavBar
           setMobileSidebarOpen={setMobileSidebarOpen}
           handleLogout={handleLogout}
         />
+
         <main className="flex-1 overflow-y-auto bg-gray-50 md:p-6">
           {children}
         </main>
       </div>
+
       <SessionExpiredModal
         isOpen={showSessionModal}
         onClose={handleSessionExpired}

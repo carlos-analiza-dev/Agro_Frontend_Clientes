@@ -1,3 +1,5 @@
+"use client";
+
 import { CrearActividadInterface } from "@/api/actividades/interfaces/crear-actividad.interface";
 import { crearActividad } from "@/api/actividades/accions/crear-actividad";
 import { editarActividad } from "@/api/actividades/accions/editar-actividad";
@@ -32,6 +34,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Actividade } from "@/api/actividades/interfaces/response-actividades.interface";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface Props {
   cliente: Cliente | undefined;
@@ -40,13 +43,15 @@ interface Props {
 }
 
 const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
+  const t = useTranslations("formActividades");
+
   const propietarioId = cliente?.id ?? "";
   const queryClient = useQueryClient();
   const isEditing = !!actividad;
+
   const [isDataLoaded, setIsDataLoaded] = useState(false);
-  const [searchTrabajadorTerm, setSearchTrabajadorTerm] = useState<string>("");
-  const [isTrabajadorSearchOpen, setIsTrabajadorSearchOpen] =
-    useState<boolean>(false);
+  const [searchTrabajadorTerm, setSearchTrabajadorTerm] = useState("");
+  const [isTrabajadorSearchOpen, setIsTrabajadorSearchOpen] = useState(false);
 
   const {
     register,
@@ -68,6 +73,7 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
 
   const { data: trabajadores, isLoading: cargandoTrabajadores } =
     useGetAllTrabajadores();
+
   const { data: fincas, isLoading: cargandoFincas } =
     useFincasPropietarios(propietarioId);
 
@@ -79,6 +85,7 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
   const filteredTrabajadores =
     trabajadores?.filter((trabajador: any) => {
       const searchTerm = searchTrabajadorTerm.toLowerCase().trim();
+
       if (!searchTerm) return true;
 
       const nombre = trabajador.nombre?.toLowerCase() || "";
@@ -97,6 +104,16 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
   const selectedTrabajador = trabajadores?.find(
     (trabajador: any) => trabajador.id === currentTrabajadorId,
   );
+
+  const getOptionLabel = (
+    group: "activityTypes" | "frequencies",
+    value: string,
+    fallback: string,
+  ) => {
+    const key = `${group}.${value}`;
+
+    return t.has(key) ? t(key) : fallback;
+  };
 
   useEffect(() => {
     if (actividad && fincas && trabajadores && !isDataLoaded) {
@@ -120,7 +137,7 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
   const createMutation = useMutation({
     mutationFn: crearActividad,
     onSuccess: () => {
-      toast.success("Actividad creada exitosamente");
+      toast.success(t("messages.createSuccess"));
       resetForm();
       queryClient.invalidateQueries({ queryKey: ["actividades"] });
       onSuccess?.();
@@ -132,10 +149,11 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear la actividad";
+            : t("errors.create");
+
         toast.error(errorMessage);
       } else {
-        toast.error("Hubo un error al crear la actividad. Inténtalo de nuevo.");
+        toast.error(t("errors.createUnexpected"));
       }
     },
   });
@@ -149,7 +167,7 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
       data: Partial<CrearActividadInterface>;
     }) => editarActividad(id, data),
     onSuccess: () => {
-      toast.success("Actividad actualizada exitosamente");
+      toast.success(t("messages.updateSuccess"));
       queryClient.invalidateQueries({ queryKey: ["actividades"] });
       onSuccess?.();
     },
@@ -160,12 +178,11 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar la actividad";
+            : t("errors.update");
+
         toast.error(errorMessage);
       } else {
-        toast.error(
-          "Hubo un error al actualizar la actividad. Inténtalo de nuevo.",
-        );
+        toast.error(t("errors.updateUnexpected"));
       }
     },
   });
@@ -179,6 +196,7 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
       frecuencia: FrecuenciaActividad.DIARIA,
       descripcion: "",
     });
+
     setSearchTrabajadorTerm("");
     setIsTrabajadorSearchOpen(false);
   };
@@ -229,25 +247,27 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="trabajadorSearch">
-            Trabajador <span className="text-red-500">*</span>
+            {t("fields.worker")} <span className="text-red-500">*</span>
           </Label>
+
           {isEditing ? (
             <div className="flex items-center h-10 px-3 border rounded-md bg-gray-50">
               <span className="text-sm">
-                {actividad?.trabajador?.nombre || "No asignado"}
+                {actividad?.trabajador?.nombre || t("labels.unassigned")}
               </span>
             </div>
           ) : (
             <div className="relative">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50" />
+
                 <input
                   type="text"
                   id="trabajadorSearch"
                   placeholder={
                     selectedTrabajador
                       ? `${selectedTrabajador.nombre}`
-                      : "Buscar trabajador por nombre, identificación, email o teléfono..."
+                      : t("placeholders.searchWorker")
                   }
                   value={searchTrabajadorTerm}
                   onChange={(e) => {
@@ -261,10 +281,13 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
                     errors.trabajadorId && "border-red-500",
                   )}
                 />
+
                 {selectedTrabajador && (
                   <button
                     type="button"
                     onClick={handleClearTrabajador}
+                    aria-label={t("buttons.clearWorker")}
+                    title={t("buttons.clearWorker")}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full"
                   >
                     <X className="h-4 w-4" />
@@ -288,15 +311,19 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
                           <p className="text-sm font-medium truncate">
                             {trabajador.nombre}
                           </p>
+
                           <div className="flex items-center gap-2 text-xs text-gray-500 flex-wrap">
                             {trabajador.identificacion && (
                               <span className="truncate">
-                                ID: {trabajador.identificacion}
+                                {t("labels.identification")}:{" "}
+                                {trabajador.identificacion}
                               </span>
                             )}
+
                             {trabajador.telefono && (
                               <span>• {trabajador.telefono}</span>
                             )}
+
                             {trabajador.email && (
                               <span className="truncate">
                                 • {trabajador.email}
@@ -304,6 +331,7 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
                             )}
                           </div>
                         </div>
+
                         {currentTrabajadorId === trabajador.id && (
                           <div className="h-2 w-2 rounded-full bg-blue-600 flex-shrink-0" />
                         )}
@@ -312,10 +340,10 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
                   ) : (
                     <div className="py-6 text-center text-sm">
                       <p className="text-gray-500">
-                        No se encontraron trabajadores
+                        {t("search.noWorkersFound")}
                       </p>
                       <p className="text-xs text-gray-400 mt-1">
-                        Intenta con otro término de búsqueda
+                        {t("search.tryAnotherTerm")}
                       </p>
                     </div>
                   )}
@@ -331,15 +359,19 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
                   <p className="text-sm font-medium">
                     {selectedTrabajador.nombre}
                   </p>
+
                   <div className="flex items-center gap-2 text-xs text-gray-600 flex-wrap">
                     {selectedTrabajador.identificacion && (
                       <span className="truncate">
-                        ID: {selectedTrabajador.identificacion}
+                        {t("labels.identification")}:{" "}
+                        {selectedTrabajador.identificacion}
                       </span>
                     )}
+
                     {selectedTrabajador.telefono && (
                       <span>• {selectedTrabajador.telefono}</span>
                     )}
+
                     {selectedTrabajador.email && (
                       <span className="truncate">
                         • {selectedTrabajador.email}
@@ -360,15 +392,17 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
 
         <div className="space-y-2">
           <Label htmlFor="fincaId">
-            Finca <span className="text-red-500">*</span>
+            {t("fields.farm")} <span className="text-red-500">*</span>
           </Label>
+
           <Select
             value={currentFincaId || ""}
             onValueChange={(value) => setValue("fincaId", value)}
           >
             <SelectTrigger className={errors.fincaId ? "border-red-500" : ""}>
-              <SelectValue placeholder="Selecciona una finca" />
+              <SelectValue placeholder={t("placeholders.selectFarm")} />
             </SelectTrigger>
+
             <SelectContent>
               {fincas && fincas.data?.fincas?.length > 0 ? (
                 fincas.data.fincas.map((finca: any) => (
@@ -378,11 +412,12 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
                 ))
               ) : (
                 <SelectItem value="no-fincas" disabled>
-                  No hay fincas disponibles
+                  {t("empty.noFarms")}
                 </SelectItem>
               )}
             </SelectContent>
           </Select>
+
           {errors.fincaId && (
             <p className="text-sm font-medium text-red-500">
               {errors.fincaId.message as string}
@@ -392,15 +427,18 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
 
         <div className="space-y-2">
           <Label htmlFor="fecha">
-            Fecha <span className="text-red-500">*</span>
+            {t("fields.date")} <span className="text-red-500">*</span>
           </Label>
+
           <Input
+            id="fecha"
             type="date"
             {...register("fecha", {
-              required: "La fecha es obligatoria",
+              required: t("validation.dateRequired"),
             })}
             className={errors.fecha ? "border-red-500" : ""}
           />
+
           {errors.fecha && (
             <p className="text-sm font-medium text-red-500">
               {errors.fecha.message as string}
@@ -410,23 +448,26 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
 
         <div className="space-y-2">
           <Label htmlFor="tipo">
-            Tipo de Actividad <span className="text-red-500">*</span>
+            {t("fields.activityType")} <span className="text-red-500">*</span>
           </Label>
+
           <Select
             value={currentTipo || ""}
             onValueChange={(value) => setValue("tipo", value as TipoActividad)}
           >
             <SelectTrigger className={errors.tipo ? "border-red-500" : ""}>
-              <SelectValue placeholder="Selecciona un tipo" />
+              <SelectValue placeholder={t("placeholders.selectType")} />
             </SelectTrigger>
+
             <SelectContent>
               {tiposActividad.map((tipo) => (
                 <SelectItem key={tipo.value} value={tipo.value}>
-                  {tipo.label}
+                  {getOptionLabel("activityTypes", tipo.value, tipo.label)}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
+
           {errors.tipo && (
             <p className="text-sm font-medium text-red-500">
               {errors.tipo.message as string}
@@ -435,7 +476,8 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="frecuencia">Frecuencia</Label>
+          <Label htmlFor="frecuencia">{t("fields.frequency")}</Label>
+
           <Select
             value={currentFrecuencia || ""}
             onValueChange={(value) =>
@@ -443,12 +485,17 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
             }
           >
             <SelectTrigger>
-              <SelectValue placeholder="Selecciona una frecuencia" />
+              <SelectValue placeholder={t("placeholders.selectFrequency")} />
             </SelectTrigger>
+
             <SelectContent>
               {frecuenciasActividad.map((frecuencia) => (
                 <SelectItem key={frecuencia.value} value={frecuencia.value}>
-                  {frecuencia.label}
+                  {getOptionLabel(
+                    "frequencies",
+                    frecuencia.value,
+                    frecuencia.label,
+                  )}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -456,25 +503,30 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
         </div>
 
         <div className="col-span-1 md:col-span-2 space-y-2">
-          <Label htmlFor="descripcion">Descripción</Label>
+          <Label htmlFor="descripcion">{t("fields.description")}</Label>
+
           <Textarea
             id="descripcion"
-            placeholder="Describe los detalles de la actividad..."
+            placeholder={t("placeholders.description")}
             className="min-h-[100px] resize-y"
             {...register("descripcion", {
               maxLength: {
                 value: 500,
-                message: "La descripción no puede tener más de 500 caracteres",
+                message: t("validation.descriptionMaxLength"),
               },
             })}
           />
+
           {errors.descripcion && (
             <p className="text-sm font-medium text-red-500">
               {errors.descripcion.message as string}
             </p>
           )}
+
           <p className="text-xs text-muted-foreground text-right">
-            {watch("descripcion")?.length || 0}/500 caracteres
+            {t("labels.characterCount", {
+              count: watch("descripcion")?.length || 0,
+            })}
           </p>
         </div>
       </div>
@@ -484,10 +536,10 @@ const FormActividades = ({ cliente, onSuccess, actividad }: Props) => {
           {isPending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {isEditing ? "Actualizando actividad..." : "Creando actividad..."}
+              {isEditing ? t("buttons.updating") : t("buttons.creating")}
             </>
           ) : (
-            <>{isEditing ? "Actualizar Actividad" : "Crear Actividad"}</>
+            <>{isEditing ? t("buttons.update") : t("buttons.create")}</>
           )}
         </Button>
       </div>

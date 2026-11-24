@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { estadoReproductivo } from "@/helpers/data/estadoServicioReproductivo";
 import { Dispatch, SetStateAction } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   selectedEstado: string;
@@ -26,47 +27,57 @@ const CardTabEstado = ({
   handleActualizarEstado,
   isPending,
 }: Props) => {
+  const t = useTranslations("cardTabEstado");
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Estado del Servicio</CardTitle>
-        <CardDescription>
-          Actualiza el estado actual del servicio reproductivo
-        </CardDescription>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {estadoReproductivo.map((estado) => (
-              <div
-                key={estado.id}
-                className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <Switch
-                  id={estado.label}
-                  checked={selectedEstado === estado.value}
-                  onCheckedChange={(checked) =>
-                    handleEstadoChange(estado.value, checked)
-                  }
-                />
-                <Label htmlFor={estado.label} className="flex-1 cursor-pointer">
-                  <div>
-                    <p className="font-medium">{estado.label}</p>
-                  </div>
-                </Label>
-              </div>
-            ))}
+            {estadoReproductivo.map((estado) => {
+              const translationKey = `statuses.${estado.value.toLowerCase()}`;
+              const estadoLabel = t.has(translationKey)
+                ? t(translationKey)
+                : estado.label;
+
+              return (
+                <div
+                  key={estado.id}
+                  className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <Switch
+                    id={estado.label}
+                    checked={selectedEstado === estado.value}
+                    onCheckedChange={(checked) =>
+                      handleEstadoChange(estado.value, checked)
+                    }
+                  />
+                  <Label
+                    htmlFor={estado.label}
+                    className="flex-1 cursor-pointer"
+                  >
+                    <div>
+                      <p className="font-medium">{estadoLabel}</p>
+                    </div>
+                  </Label>
+                </div>
+              );
+            })}
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
             <Button variant="outline" onClick={() => setOpenModal(false)}>
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
             <Button
               onClick={handleActualizarEstado}
               disabled={isPending || !selectedEstado}
             >
-              {isPending ? "Actualizando..." : "Actualizar Estado"}
+              {isPending ? t("buttons.updating") : t("buttons.updateStatus")}
             </Button>
           </div>
         </div>

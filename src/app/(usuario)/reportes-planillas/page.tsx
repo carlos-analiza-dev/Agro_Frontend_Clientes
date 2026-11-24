@@ -25,8 +25,11 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import TitlePage from "@/components/generics/TitlePage";
+import { useTranslations } from "next-intl";
 
 const ReportesPlanillasPage = () => {
+  const t = useTranslations("reportesPlanillasPage");
+
   const { cliente } = useAuthStore();
   const moneda = getSimboloMoneda(cliente);
 
@@ -77,8 +80,8 @@ const ReportesPlanillasPage = () => {
         >
           <TitlePage
             id_title="id-title-reportes-planillas"
-            title={`Reportes Planillas de Trabajadores`}
-            description="Visualiza y analiza los pagos realizados a trabajadores"
+            title={t("title")}
+            description={t("description")}
             Icon={ChartNoAxesCombined}
           />
         </div>
@@ -95,7 +98,7 @@ const ReportesPlanillasPage = () => {
                   className="space-y-2"
                 >
                   <Label htmlFor="fechaInicio" className="text-sm font-medium">
-                    Fecha Inicio
+                    {t("filters.startDate")}
                   </Label>
 
                   <div className="relative">
@@ -113,7 +116,7 @@ const ReportesPlanillasPage = () => {
 
                 <div id="id-filtro-fecha-fin-planillas" className="space-y-2">
                   <Label htmlFor="fechaFin" className="text-sm font-medium">
-                    Fecha Fin
+                    {t("filters.endDate")}
                   </Label>
 
                   <div className="relative">
@@ -131,7 +134,7 @@ const ReportesPlanillasPage = () => {
 
                 <div id="id-filtro-metodo-pago-planillas" className="space-y-2">
                   <Label htmlFor="metodoPago" className="text-sm font-medium">
-                    Método de Pago
+                    {t("filters.paymentMethod")}
                   </Label>
 
                   <Select
@@ -145,22 +148,26 @@ const ReportesPlanillasPage = () => {
                     }}
                   >
                     <SelectTrigger id="metodoPago" className="h-11">
-                      <SelectValue placeholder="Seleccionar método de pago" />
+                      <SelectValue
+                        placeholder={t("filters.selectPaymentMethod")}
+                      />
                     </SelectTrigger>
 
                     <SelectContent>
-                      <SelectItem value="todos">Todos los métodos</SelectItem>
+                      <SelectItem value="todos">
+                        {t("filters.allMethods")}
+                      </SelectItem>
 
                       <SelectItem value={MetodoPago.EFECTIVO}>
-                        💵 Efectivo
+                        💵 {t("paymentMethods.cash")}
                       </SelectItem>
 
                       <SelectItem value={MetodoPago.TRANSFERENCIA}>
-                        🏦 Transferencia
+                        🏦 {t("paymentMethods.transfer")}
                       </SelectItem>
 
                       <SelectItem value={MetodoPago.CHEQUE}>
-                        📝 Cheque
+                        📝 {t("paymentMethods.check")}
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -180,7 +187,7 @@ const ReportesPlanillasPage = () => {
                     className="gap-2"
                   >
                     <FilterX className="h-4 w-4" />
-                    Limpiar Filtros
+                    {t("filters.clear")}
                   </Button>
                 </div>
               )}

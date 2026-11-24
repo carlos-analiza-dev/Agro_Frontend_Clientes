@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Stethoscope, Activity, AlertTriangle } from "lucide-react";
 
 import {
@@ -16,6 +17,8 @@ import FormDiagnostico from "./ui/FormDiagnostico";
 import AlertaInteligente from "@/components/consultas-inteligentes/AlertaInteligente";
 
 const DiagnosticoAnimalPage = () => {
+  const t = useTranslations("diagnosticoAnimalPage");
+
   const [diagnosticoResultado, setDiagnosticoResultado] = useState<
     string | null
   >(null);
@@ -32,16 +35,14 @@ const DiagnosticoAnimalPage = () => {
           <Stethoscope className="h-6 w-6 text-green-600" />
         </div>
 
-        <h1 className="text-lg md:text-3xl font-bold">
-          Diagnóstico Veterinario
-        </h1>
+        <h1 className="text-lg md:text-3xl font-bold">{t("title")}</h1>
       </div>
+
       <AlertaInteligente
-        title="Información importante"
-        description="Esta calculadora proporciona recomendaciones basadas en inteligencia
-          artificial. Los resultados son orientativos y deben ser validados por
-          un profesional del sector veterinario."
+        title={t("importantAlert.title")}
+        description={t("importantAlert.description")}
       />
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card
           id="id-form-diagnostico"
@@ -50,13 +51,10 @@ const DiagnosticoAnimalPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Activity className="h-5 w-5" />
-              Datos del Paciente
+              {t("patient.title")}
             </CardTitle>
 
-            <CardDescription>
-              Ingresa los síntomas y datos del animal para obtener un
-              diagnóstico preliminar
-            </CardDescription>
+            <CardDescription>{t("patient.description")}</CardDescription>
           </CardHeader>
 
           <CardContent>
@@ -73,8 +71,7 @@ const DiagnosticoAnimalPage = () => {
           <CardFooter className="bg-muted/50 border-t">
             <p className="text-xs text-muted-foreground flex items-center gap-2">
               <AlertTriangle className="h-4 w-4" />
-              Este es un diagnóstico preliminar. Siempre consulta con un
-              veterinario profesional.
+              {t("preliminaryDiagnosis")}
             </p>
           </CardFooter>
         </Card>

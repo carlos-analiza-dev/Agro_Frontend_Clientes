@@ -1,19 +1,14 @@
 "use client";
+
 import useGetAnimalesPropietario from "@/hooks/animales/useGetAnimalesPropietario";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import useGetTratamientosAnimales from "@/hooks/historial-clinico/useGetTratamientosAnimales";
 import { useAuthStore } from "@/providers/store/useAuthStore";
-import React, { useState } from "react";
+import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-  Search,
-  Filter,
-  Building,
-  Beef,
-  Calendar as CalendarIcon,
-  Download,
   Clock,
   ChevronLeft,
   ChevronRight,
@@ -28,6 +23,8 @@ import { FiltrosBusqueda } from "@/components/generics/FiltrosBusqueda";
 import TitlePage from "@/components/generics/TitlePage";
 
 const TratamientosPage = () => {
+  const t = useTranslations("tratamientosPage");
+
   const { cliente } = useAuthStore();
   const userId = cliente?.id || "";
 
@@ -64,7 +61,7 @@ const TratamientosPage = () => {
 
   const paginaActual = Math.floor(paginacion.offset / paginacion.limit) + 1;
   const totalPaginas = Math.ceil(totalTratamientos / paginacion.limit);
-  const inicioItem = paginacion.offset + 1;
+  const inicioItem = totalTratamientos === 0 ? 0 : paginacion.offset + 1;
   const finItem = Math.min(
     paginacion.offset + paginacion.limit,
     totalTratamientos,
@@ -176,19 +173,19 @@ const TratamientosPage = () => {
 
     if (diferenciaDias <= 7) {
       return {
-        texto: "Reciente",
+        texto: t("statuses.recent"),
         color: "bg-green-100 text-green-800",
         icono: CheckCircle,
       };
     } else if (diferenciaDias <= 30) {
       return {
-        texto: "En seguimiento",
+        texto: t("statuses.followUp"),
         color: "bg-blue-100 text-blue-800",
         icono: Clock,
       };
     } else {
       return {
-        texto: "Completado",
+        texto: t("statuses.completed"),
         color: "bg-gray-100 text-gray-800",
         icono: CheckCircle,
       };
@@ -218,11 +215,12 @@ const TratamientosPage = () => {
         className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
       >
         <TitlePage
-          title={`Tratamientos Animales`}
-          description="Gestiona y consulta los tratamientos aplicados a tus animales"
+          title={t("title")}
+          description={t("description")}
           Icon={Pill}
         />
       </div>
+
       <div id="tratamientos-filtros">
         <FiltrosBusqueda
           filtros={filtros}
@@ -241,22 +239,33 @@ const TratamientosPage = () => {
       >
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">Mostrar:</span>
+            <span className="text-sm text-gray-600">
+              {t("pagination.show")}:
+            </span>
+
             <select
               value={paginacion.limit}
               onChange={(e) => cambiarLimite(Number(e.target.value))}
               className="border rounded px-2 py-1 text-sm"
+              aria-label={t("pagination.itemsPerPage")}
             >
               <option value={5}>5</option>
               <option value={10}>10</option>
               <option value={25}>25</option>
               <option value={50}>50</option>
             </select>
-            <span className="text-sm text-gray-600">por página</span>
+
+            <span className="text-sm text-gray-600">
+              {t("pagination.perPage")}
+            </span>
           </div>
 
           <span className="text-sm text-gray-600">
-            Mostrando {inicioItem}-{finItem} de {totalTratamientos} tratamientos
+            {t("pagination.showing", {
+              start: inicioItem,
+              end: finItem,
+              total: totalTratamientos,
+            })}
           </span>
         </div>
 
@@ -265,8 +274,10 @@ const TratamientosPage = () => {
             variant="outline"
             size="sm"
             onClick={primeraPagina}
-            disabled={paginaActual === 1}
+            disabled={paginaActual === 1 || totalPaginas === 0}
             className="h-8 w-8 p-0"
+            aria-label={t("pagination.firstPage")}
+            title={t("pagination.firstPage")}
           >
             <ChevronsLeft className="h-4 w-4" />
           </Button>
@@ -277,6 +288,8 @@ const TratamientosPage = () => {
             onClick={paginaAnterior}
             disabled={paginaActual === 1}
             className="h-8 w-8 p-0"
+            aria-label={t("pagination.previousPage")}
+            title={t("pagination.previousPage")}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -288,6 +301,8 @@ const TratamientosPage = () => {
               size="sm"
               onClick={() => irAPagina(pagina)}
               className="h-8 w-8 p-0"
+              aria-label={t("pagination.goToPage", { page: pagina })}
+              aria-current={pagina === paginaActual ? "page" : undefined}
             >
               {pagina}
             </Button>
@@ -297,8 +312,10 @@ const TratamientosPage = () => {
             variant="outline"
             size="sm"
             onClick={paginaSiguiente}
-            disabled={paginaActual === totalPaginas}
+            disabled={paginaActual === totalPaginas || totalPaginas === 0}
             className="h-8 w-8 p-0"
+            aria-label={t("pagination.nextPage")}
+            title={t("pagination.nextPage")}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -307,8 +324,10 @@ const TratamientosPage = () => {
             variant="outline"
             size="sm"
             onClick={ultimaPagina}
-            disabled={paginaActual === totalPaginas}
+            disabled={paginaActual === totalPaginas || totalPaginas === 0}
             className="h-8 w-8 p-0"
+            aria-label={t("pagination.lastPage")}
+            title={t("pagination.lastPage")}
           >
             <ChevronsRight className="h-4 w-4" />
           </Button>
@@ -321,29 +340,31 @@ const TratamientosPage = () => {
       >
         <CardHistorial
           id="tratamientos-total"
-          titulo="Total Tratamientos"
+          titulo={t("summary.total")}
           total={totalTratamientos}
           colorIcon="text-blue-500"
         />
+
         <CardHistorial
           id="tratamientos-documentos"
-          titulo="Con Documentos"
+          titulo={t("summary.withDocuments")}
           total={
             tratamientos.filter((t) => t.documentos && t.documentos.length > 0)
               .length
           }
           colorIcon="text-green-500"
         />
+
         <CardHistorial
           id="tratamientos-servicios"
-          titulo=" Servicios Diferentes"
+          titulo={t("summary.differentServices")}
           total={new Set(tratamientos.map((t) => t.subServicio?.nombre)).size}
           colorIcon="text-purple-500"
         />
 
         <CardHistorial
           id="tratamientos-recientes"
-          titulo="    Tratamientos Recientes"
+          titulo={t("summary.recent")}
           total={
             tratamientos.filter((t) => {
               const fecha = new Date(t.createdAt);
@@ -360,15 +381,14 @@ const TratamientosPage = () => {
 
       <Card id="tratamientos-lista">
         <CardHeader>
-          <CardTitle>Tratamientos Aplicados</CardTitle>
+          <CardTitle>{t("list.title")}</CardTitle>
         </CardHeader>
+
         <CardContent>
           {tratamientos.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               <Pill className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-              <p>
-                No se encontraron tratamientos con los filtros seleccionados
-              </p>
+              <p>{t("list.empty")}</p>
             </div>
           ) : (
             <div className="space-y-6">
@@ -396,7 +416,11 @@ const TratamientosPage = () => {
           className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-gray-50 rounded-lg"
         >
           <span className="text-sm text-gray-600">
-            Mostrando {inicioItem}-{finItem} de {totalTratamientos} tratamientos
+            {t("pagination.showing", {
+              start: inicioItem,
+              end: finItem,
+              total: totalTratamientos,
+            })}
           </span>
 
           <div className="flex items-center gap-1">
@@ -404,8 +428,10 @@ const TratamientosPage = () => {
               variant="outline"
               size="sm"
               onClick={primeraPagina}
-              disabled={paginaActual === 1}
+              disabled={paginaActual === 1 || totalPaginas === 0}
               className="h-8 w-8 p-0"
+              aria-label={t("pagination.firstPage")}
+              title={t("pagination.firstPage")}
             >
               <ChevronsLeft className="h-4 w-4" />
             </Button>
@@ -416,6 +442,8 @@ const TratamientosPage = () => {
               onClick={paginaAnterior}
               disabled={paginaActual === 1}
               className="h-8 w-8 p-0"
+              aria-label={t("pagination.previousPage")}
+              title={t("pagination.previousPage")}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -427,6 +455,8 @@ const TratamientosPage = () => {
                 size="sm"
                 onClick={() => irAPagina(pagina)}
                 className="h-8 w-8 p-0"
+                aria-label={t("pagination.goToPage", { page: pagina })}
+                aria-current={pagina === paginaActual ? "page" : undefined}
               >
                 {pagina}
               </Button>
@@ -436,8 +466,10 @@ const TratamientosPage = () => {
               variant="outline"
               size="sm"
               onClick={paginaSiguiente}
-              disabled={paginaActual === totalPaginas}
+              disabled={paginaActual === totalPaginas || totalPaginas === 0}
               className="h-8 w-8 p-0"
+              aria-label={t("pagination.nextPage")}
+              title={t("pagination.nextPage")}
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -446,8 +478,10 @@ const TratamientosPage = () => {
               variant="outline"
               size="sm"
               onClick={ultimaPagina}
-              disabled={paginaActual === totalPaginas}
+              disabled={paginaActual === totalPaginas || totalPaginas === 0}
               className="h-8 w-8 p-0"
+              aria-label={t("pagination.lastPage")}
+              title={t("pagination.lastPage")}
             >
               <ChevronsRight className="h-4 w-4" />
             </Button>

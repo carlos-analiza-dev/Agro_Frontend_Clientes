@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { Label } from "@/components/ui/label";
 import RenderIntensidadBadge from "./RenderIntensidadBadge";
 import { format } from "date-fns";
@@ -9,43 +10,50 @@ interface Props {
 }
 
 const DetailsCelo = ({ selectedCelo }: Props) => {
+  const t = useTranslations("detailsCelo");
+
   return (
     <div className="space-y-4 sm:space-y-6">
       <div>
         <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 border-b pb-2">
-          Información del Animal
+          {t("sections.animalInformation")}
         </h3>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div className="bg-gray-50 p-3 rounded-lg">
             <Label className="text-xs sm:text-sm text-muted-foreground block mb-1">
-              Identificador
+              {t("labels.identifier")}
             </Label>
             <p className="font-medium text-sm sm:text-base break-words">
               {selectedCelo.animal.identificador}
             </p>
           </div>
+
           <div className="bg-gray-50 p-3 rounded-lg">
             <Label className="text-xs sm:text-sm text-muted-foreground block mb-1">
-              Especie
+              {t("labels.species")}
             </Label>
             <p className="font-medium text-sm sm:text-base">
               {selectedCelo.animal.especie.nombre}
             </p>
           </div>
+
           <div className="bg-gray-50 p-3 rounded-lg">
             <Label className="text-xs sm:text-sm text-muted-foreground block mb-1">
-              Sexo
+              {t("labels.sex")}
             </Label>
             <p className="font-medium text-sm sm:text-base capitalize">
               {selectedCelo.animal.sexo.toLowerCase()}
             </p>
           </div>
+
           <div className="bg-gray-50 p-3 rounded-lg">
             <Label className="text-xs sm:text-sm text-muted-foreground block mb-1">
-              Color
+              {t("labels.color")}
             </Label>
             <p className="font-medium text-sm sm:text-base capitalize">
-              {selectedCelo.animal.color?.toLowerCase() || "No especificado"}
+              {selectedCelo.animal.color?.toLowerCase() ||
+                t("messages.notSpecified")}
             </p>
           </div>
         </div>
@@ -53,36 +61,40 @@ const DetailsCelo = ({ selectedCelo }: Props) => {
 
       <div>
         <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 border-b pb-2">
-          Datos del Celo
+          {t("sections.heatInformation")}
         </h3>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div className="bg-gray-50 p-3 rounded-lg">
             <Label className="text-xs sm:text-sm text-muted-foreground block mb-1">
-              Número de Celo
+              {t("labels.heatNumber")}
             </Label>
             <p className="font-medium text-sm sm:text-base">
               #{selectedCelo.numeroCelo}
             </p>
           </div>
+
           <div className="bg-gray-50 p-3 rounded-lg">
             <Label className="text-xs sm:text-sm text-muted-foreground block mb-1">
-              Intensidad
+              {t("labels.intensity")}
             </Label>
             <div className="mt-1">
               <RenderIntensidadBadge intensidad={selectedCelo.intensidad} />
             </div>
           </div>
+
           <div className="bg-gray-50 p-3 rounded-lg">
             <Label className="text-xs sm:text-sm text-muted-foreground block mb-1">
-              Fecha Inicio
+              {t("labels.startDate")}
             </Label>
             <p className="font-medium text-sm sm:text-base">
               {format(new Date(selectedCelo.fechaInicio), "dd/MM/yyyy HH:mm")}
             </p>
           </div>
+
           <div className="bg-gray-50 p-3 rounded-lg">
             <Label className="text-xs sm:text-sm text-muted-foreground block mb-1">
-              Fecha Fin
+              {t("labels.endDate")}
             </Label>
             <p className="font-medium text-sm sm:text-base">
               {selectedCelo.fechaFin ? (
@@ -90,14 +102,15 @@ const DetailsCelo = ({ selectedCelo }: Props) => {
               ) : (
                 <span className="inline-flex items-center gap-1">
                   <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                  Activo
+                  {t("statuses.active")}
                 </span>
               )}
             </p>
           </div>
+
           <div className="bg-gray-50 p-3 rounded-lg sm:col-span-2">
             <Label className="text-xs sm:text-sm text-muted-foreground block mb-1">
-              Método de Detección
+              {t("labels.detectionMethod")}
             </Label>
             <p className="font-medium text-sm sm:text-base">
               {selectedCelo.metodo_deteccion}
@@ -108,7 +121,7 @@ const DetailsCelo = ({ selectedCelo }: Props) => {
 
       <div>
         <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 border-b pb-2">
-          Signos Observados
+          {t("sections.observedSigns")}
         </h3>
 
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 mb-4">
@@ -121,8 +134,11 @@ const DetailsCelo = ({ selectedCelo }: Props) => {
                   : "bg-red-500",
               )}
             />
-            <span className="text-xs sm:text-sm truncate">Monta a otros</span>
+            <span className="text-xs sm:text-sm truncate">
+              {t("signs.mountsOthers")}
+            </span>
           </div>
+
           <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg">
             <div
               className={cn(
@@ -132,8 +148,11 @@ const DetailsCelo = ({ selectedCelo }: Props) => {
                   : "bg-red-500",
               )}
             />
-            <span className="text-xs sm:text-sm truncate">Acepta monta</span>
+            <span className="text-xs sm:text-sm truncate">
+              {t("signs.acceptsMounting")}
+            </span>
           </div>
+
           <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg">
             <div
               className={cn(
@@ -143,8 +162,11 @@ const DetailsCelo = ({ selectedCelo }: Props) => {
                   : "bg-red-500",
               )}
             />
-            <span className="text-xs sm:text-sm truncate">Inquietud</span>
+            <span className="text-xs sm:text-sm truncate">
+              {t("signs.restlessness")}
+            </span>
           </div>
+
           <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg">
             <div
               className={cn(
@@ -154,17 +176,20 @@ const DetailsCelo = ({ selectedCelo }: Props) => {
                   : "bg-red-500",
               )}
             />
-            <span className="text-xs sm:text-sm truncate">Vulva inflamada</span>
+            <span className="text-xs sm:text-sm truncate">
+              {t("signs.swollenVulva")}
+            </span>
           </div>
         </div>
 
         <div className="mb-4">
           <Label className="text-xs sm:text-sm text-muted-foreground block mb-2">
-            Secreciones
+            {t("labels.discharge")}
           </Label>
           <div className="bg-gray-50 p-3 rounded-lg">
             <p className="text-sm sm:text-base">
-              {selectedCelo.signos_observados.secreciones || "No registrado"}
+              {selectedCelo.signos_observados.secreciones ||
+                t("messages.notRecorded")}
             </p>
           </div>
         </div>
@@ -172,7 +197,7 @@ const DetailsCelo = ({ selectedCelo }: Props) => {
         {selectedCelo.signos_observados.otros?.length > 0 && (
           <div>
             <Label className="text-xs sm:text-sm text-muted-foreground block mb-2">
-              Otros signos
+              {t("labels.otherSigns")}
             </Label>
             <div className="flex flex-wrap gap-2">
               {selectedCelo.signos_observados.otros.map(
@@ -193,7 +218,7 @@ const DetailsCelo = ({ selectedCelo }: Props) => {
       {selectedCelo.observaciones && selectedCelo.observaciones !== "N/A" && (
         <div>
           <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 border-b pb-2">
-            Observaciones
+            {t("sections.observations")}
           </h3>
           <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
             <p className="text-sm sm:text-base text-gray-700 whitespace-pre-wrap break-words">
@@ -206,7 +231,7 @@ const DetailsCelo = ({ selectedCelo }: Props) => {
       {(!selectedCelo.observaciones || selectedCelo.observaciones === "N/A") &&
         !selectedCelo.signos_observados.otros?.length && (
           <div className="text-center py-4 text-gray-500 text-sm">
-            No hay información adicional registrada
+            {t("messages.noAdditionalInformation")}
           </div>
         )}
     </div>

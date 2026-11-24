@@ -52,6 +52,7 @@ import {
 import useGetAllTrabajadores from "@/hooks/trabajadores/useGetAllTrabajadores";
 import { formatHora } from "@/helpers/funciones/formatHora";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface Props {
   onSuccess: () => void;
@@ -66,6 +67,7 @@ const FormConfigTrabajadores = ({
   moneda,
   setSelectedConfig,
 }: Props) => {
+  const t = useTranslations("FormConfigTrabajadores");
   const isEditing = !!configuracion;
   const queryClient = useQueryClient();
   const { data: trabajadores, isLoading: loadingTrabajadores } =
@@ -302,13 +304,13 @@ const FormConfigTrabajadores = ({
   const createMutation = useMutation({
     mutationFn: CreateConfigTrabajador,
     onSuccess: () => {
-      toast.success("Configuración creada exitosamente");
+      toast.success(t("messages.createSuccess"));
       resetForm();
       queryClient.invalidateQueries({ queryKey: ["config-trabajadores"] });
       onSuccess();
     },
     onError: (error) => {
-      handleMutationError(error, "crear");
+      handleMutationError(error, "create");
     },
   });
 
@@ -321,12 +323,12 @@ const FormConfigTrabajadores = ({
       data: CrearConfigTrabajadorInterface;
     }) => EditarConfigTrabajador(id, data),
     onSuccess: () => {
-      toast.success("Configuración actualizada exitosamente");
+      toast.success(t("messages.updateSuccess"));
       queryClient.invalidateQueries({ queryKey: ["config-trabajadores"] });
       onSuccess();
     },
     onError: (error) => {
-      handleMutationError(error, "actualizar");
+      handleMutationError(error, "update");
     },
   });
 
@@ -354,19 +356,22 @@ const FormConfigTrabajadores = ({
     setIsTrabajadorSearchOpen(false);
   };
 
-  const handleMutationError = (error: unknown, action: string) => {
+  const handleMutationError = (error: unknown, action: "create" | "update") => {
+    const actionLabel =
+      action === "create"
+        ? t("messages.actionCreate")
+        : t("messages.actionUpdate");
+
     if (isAxiosError(error)) {
       const messages = error.response?.data?.message;
       const errorMessage = Array.isArray(messages)
         ? messages[0]
         : typeof messages === "string"
           ? messages
-          : `Hubo un error al ${action} la configuración`;
+          : t("messages.genericError", { action: actionLabel });
       toast.error(errorMessage);
     } else {
-      toast.error(
-        `Hubo un error al ${action} la configuración. Inténtalo de nuevo.`,
-      );
+      toast.error(t("messages.retryError", { action: actionLabel }));
     }
   };
 
@@ -385,15 +390,11 @@ const FormConfigTrabajadores = ({
   const onSubmit = (data: CrearConfigTrabajadorInterface) => {
     if (data.tipoTrabajador !== TipoTrabajador.PARCIAL) {
       if (!data.diaDescanso) {
-        toast.error(
-          "Los trabajadores permanentes y temporales deben tener un día de descanso",
-        );
+        toast.error(t("validation.restDayRequired"));
         return;
       }
       if (!data.horaEntrada || !data.horaSalida) {
-        toast.error(
-          "Los trabajadores permanentes y temporales deben tener horario definido",
-        );
+        toast.error(t("validation.scheduleRequired"));
         return;
       }
     }
@@ -439,7 +440,7 @@ const FormConfigTrabajadores = ({
         <CardHeader className="p-4 md:p-6">
           <CardTitle className="text-base md:text-lg flex items-center gap-2">
             <Briefcase className="h-5 w-5" />
-            Información Laboral
+            {t("sections.laborInfo")}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-4 md:p-6 pt-0 space-y-4">
@@ -449,12 +450,14 @@ const FormConfigTrabajadores = ({
                 htmlFor="trabajadorSearch"
                 className="text-sm md:text-base"
               >
-                Trabajador <span className="text-red-500">*</span>
+                {t("fields.worker")} <span className="text-red-500">*</span>
               </Label>
+
               {isEditing ? (
                 <div className="flex items-center h-10 px-3 border rounded-md bg-gray-50">
                   <span className="text-sm">
-                    {configuracion?.trabajador?.nombre || "No asignado"}
+                    {configuracion?.trabajador?.nombre ||
+                      t("fields.workerNotAssigned")}
                   </span>
                 </div>
               ) : (
@@ -467,7 +470,7 @@ const FormConfigTrabajadores = ({
                       placeholder={
                         selectedTrabajador
                           ? `${selectedTrabajador.nombre}`
-                          : "Buscar trabajador por nombre, identificación, email o teléfono..."
+                          : t("placeholders.workerSearch")
                       }
                       value={searchTrabajadorTerm}
                       onChange={(e) => {
@@ -497,7 +500,7 @@ const FormConfigTrabajadores = ({
                     <div className="absolute z-50 w-full mt-1 border rounded-md shadow-lg max-h-60 overflow-y-auto bg-white">
                       {loadingTrabajadores ? (
                         <div className="py-6 text-center text-sm text-gray-500">
-                          Cargando trabajadores...
+                          {t("workerSearch.loading")}
                         </div>
                       ) : trabajadoresDisponibles.length > 0 ? (
                         trabajadoresDisponibles.map((trabajador: any) => (
@@ -540,10 +543,10 @@ const FormConfigTrabajadores = ({
                       ) : (
                         <div className="py-6 text-center text-sm">
                           <p className="text-gray-500">
-                            No hay trabajadores disponibles
+                            {t("workerSearch.noAvailable")}
                           </p>
                           <p className="text-xs text-gray-400 mt-1">
-                            Todos los trabajadores ya tienen configuración
+                            {t("workerSearch.allAssigned")}
                           </p>
                         </div>
                       )}
@@ -586,7 +589,7 @@ const FormConfigTrabajadores = ({
               )}
               {isEditing && (
                 <p className="text-xs text-muted-foreground">
-                  El trabajador no se puede modificar en edición
+                  {t("fields.workerNotEditable")}
                 </p>
               )}
             </div>
@@ -596,7 +599,7 @@ const FormConfigTrabajadores = ({
                 htmlFor="fechaContratacion"
                 className="text-sm md:text-base"
               >
-                Fecha de Contratación <span className="text-red-500">*</span>
+                {t("fields.hireDate")} <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
                 <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -605,7 +608,7 @@ const FormConfigTrabajadores = ({
                   type="date"
                   className="pl-10 w-full"
                   {...register("fechaContratacion", {
-                    required: "La fecha de contratación es requerida",
+                    required: t("validation.hireDateRequired"),
                   })}
                 />
               </div>
@@ -618,7 +621,7 @@ const FormConfigTrabajadores = ({
 
             <div className="space-y-2">
               <Label htmlFor="tipoTrabajador" className="text-sm md:text-base">
-                Tipo de Trabajador <span className="text-red-500">*</span>
+                {t("fields.workerType")} <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={watch("tipoTrabajador")}
@@ -627,21 +630,27 @@ const FormConfigTrabajadores = ({
                 }
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecciona un tipo" />
+                  <SelectValue
+                    placeholder={t("fields.workerTypePlaceholder")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
-                  {tipoTrabajadorOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      <div className="flex flex-col">
-                        <span>{option.label}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {option.description}
-                        </span>
-                      </div>
-                    </SelectItem>
-                  ))}
+                  {tipoTrabajadorOptions.map((option) => {
+                    const key = option.value.toLowerCase();
+                    return (
+                      <SelectItem key={option.value} value={option.value}>
+                        <div className="flex flex-col">
+                          <span>{t(`tipoTrabajador.${key}`)}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {t(`tipoTrabajador.${key}Desc`)}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
+
               {errors.tipoTrabajador && (
                 <p className="text-sm font-medium text-red-500">
                   {errors.tipoTrabajador.message as string}
@@ -651,11 +660,11 @@ const FormConfigTrabajadores = ({
 
             <div className="space-y-2">
               <Label htmlFor="cargo" className="text-sm md:text-base">
-                Cargo
+                {t("fields.position")}
               </Label>
               <Input
                 id="cargo"
-                placeholder="Ej: Ordeñador, Vaquero, Capataz"
+                placeholder={t("fields.positionPlaceholder")}
                 className="w-full"
                 {...register("cargo")}
               />
@@ -667,7 +676,7 @@ const FormConfigTrabajadores = ({
                 className="flex items-center gap-2 text-sm md:text-base"
               >
                 <CalendarOff className="h-4 w-4" />
-                Día de Descanso
+                {t("fields.restDay")}
                 {(tipoTrabajador === TipoTrabajador.PERMANENTE ||
                   tipoTrabajador === TipoTrabajador.TEMPORAL) && (
                   <span className="text-red-500">*</span>
@@ -680,25 +689,34 @@ const FormConfigTrabajadores = ({
                 }
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecciona día de descanso" />
+                  <SelectValue placeholder={t("fields.restDayPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  {diasSemanaOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
+                  {diasSemanaOptions.map((option) => {
+                    const key = option.value
+                      .toLowerCase()
+                      .normalize("NFD")
+                      .replace(/[\u0300-\u036f]/g, "");
+
+                    return (
+                      <SelectItem key={option.value} value={option.value}>
+                        {t(`diasSemana.${key}`)}
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
                 {tipoTrabajador === TipoTrabajador.PARCIAL
-                  ? "Opcional para trabajadores parciales"
-                  : "Obligatorio para trabajadores permanentes y temporales"}
+                  ? t("fields.restDayOptional")
+                  : t("fields.restDayRequired")}
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm md:text-base">Estado</Label>
+              <Label className="text-sm md:text-base">
+                {t("fields.status")}
+              </Label>
               <div className="flex items-center space-x-2 pt-2">
                 <Switch
                   id="activo"
@@ -706,7 +724,7 @@ const FormConfigTrabajadores = ({
                   onCheckedChange={(checked) => setValue("activo", checked)}
                 />
                 <Label htmlFor="activo" className="cursor-pointer">
-                  {watch("activo") ? "Activo" : "Inactivo"}
+                  {watch("activo") ? t("fields.active") : t("fields.inactive")}
                 </Label>
               </div>
             </div>
@@ -715,7 +733,7 @@ const FormConfigTrabajadores = ({
           <div className="border-t pt-4 mt-2">
             <Label className="text-sm md:text-base font-semibold mb-3 block">
               <Clock className="h-4 w-4 inline mr-2" />
-              Horario de Trabajo
+              {t("sections.workSchedule")}
               {(tipoTrabajador === TipoTrabajador.PERMANENTE ||
                 tipoTrabajador === TipoTrabajador.TEMPORAL) && (
                 <span className="text-red-500 ml-1">*</span>
@@ -728,7 +746,7 @@ const FormConfigTrabajadores = ({
                   className="flex items-center gap-2"
                 >
                   <DoorOpen className="h-3 w-3" />
-                  Hora de Entrada
+                  {t("fields.entryTime")}
                 </Label>
                 <Input
                   id="horaEntrada"
@@ -738,13 +756,13 @@ const FormConfigTrabajadores = ({
                   {...register("horaEntrada")}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Formato 24h (ej: 07:00)
+                  {t("fields.timeFormat24h")}
                 </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="horaSalida" className="flex items-center gap-2">
                   <DoorClosed className="h-3 w-3" />
-                  Hora de Salida
+                  {t("fields.exitTime")}
                 </Label>
                 <Input
                   id="horaSalida"
@@ -754,12 +772,12 @@ const FormConfigTrabajadores = ({
                   {...register("horaSalida")}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Formato 24h (ej: 13:00)
+                  {t("fields.timeFormat24h")}
                 </p>
               </div>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Horarios típicos de campo: 06:00-12:00 o 07:00-13:00
+              {t("fields.typicalSchedules")}
             </p>
           </div>
 
@@ -770,25 +788,29 @@ const FormConfigTrabajadores = ({
               <div className="border-t pt-4 mt-2">
                 <Label className="text-sm md:text-base font-semibold mb-3 flex items-center gap-2">
                   <CheckSquare className="h-4 w-4" />
-                  Días Laborales
+                  {t("fields.workingDays")}
                 </Label>
                 <div className="flex flex-wrap gap-2">
                   {diasLaborales.map((dia) => {
-                    const diaObj = diasSemanaOptions.find(
-                      (d) => d.value === dia,
-                    );
+                    const key = dia
+                      .toLowerCase()
+                      .normalize("NFD")
+                      .replace(/[\u0300-\u036f]/g, "");
+
                     return (
                       <span
                         key={dia}
                         className="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded-full text-sm"
                       >
-                        {diaObj?.label || dia}
+                        {t(`diasSemana.${key}`)}
                       </span>
                     );
                   })}
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  {diasLaborales.length} días laborales a la semana
+                  {t("fields.workingDaysCount", {
+                    count: diasLaborales.length,
+                  })}
                 </p>
               </div>
             )}
@@ -799,14 +821,14 @@ const FormConfigTrabajadores = ({
         <CardHeader className="p-4 md:p-6">
           <CardTitle className="text-base md:text-lg flex items-center gap-2">
             <DollarSign className="h-5 w-5" />
-            Configuración Salarial
+            {t("sections.salaryConfig")}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-4 md:p-6 pt-0 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="salarioDiario" className="text-sm md:text-base">
-                Salario Diario ({moneda}){" "}
+                {t("fields.dailySalary", { currency: moneda })}{" "}
                 <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
@@ -818,10 +840,10 @@ const FormConfigTrabajadores = ({
                   className="pl-10 w-full"
                   placeholder="0.00"
                   {...register("salarioDiario", {
-                    required: "El salario diario es requerido",
+                    required: t("fields.dailySalaryRequired"),
                     min: {
                       value: 0.01,
-                      message: "El salario debe ser mayor a 0",
+                      message: t("fields.dailySalaryMin"),
                     },
                     valueAsNumber: true,
                   })}
@@ -839,7 +861,8 @@ const FormConfigTrabajadores = ({
                 htmlFor="diasTrabajadosSemanal"
                 className="text-sm md:text-base"
               >
-                Días por Semana <span className="text-red-500">*</span>
+                {t("fields.daysPerWeek")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
                 <CalendarDays className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -850,17 +873,17 @@ const FormConfigTrabajadores = ({
                   className="pl-10 w-full"
                   placeholder="6"
                   {...register("diasTrabajadosSemanal", {
-                    required: "Los días trabajados son requeridos",
-                    min: { value: 1, message: "Mínimo 1 día" },
-                    max: { value: 7, message: "Máximo 7 días" },
+                    required: t("fields.daysRequired"),
+                    min: { value: 1, message: t("fields.minOneDay") },
+                    max: { value: 7, message: t("fields.maxSevenDays") },
                     valueAsNumber: true,
                   })}
                 />
               </div>
               <p className="text-xs text-muted-foreground">
                 {tipoTrabajador === TipoTrabajador.PARCIAL
-                  ? "Días que trabaja a la semana (puede ser variable)"
-                  : "6 días para trabajadores permanentes/temporales"}
+                  ? t("fields.daysPerWeekPartial")
+                  : t("fields.daysPerWeekPermanent")}
               </p>
               {errors.diasTrabajadosSemanal && (
                 <p className="text-sm font-medium text-red-500">
@@ -874,7 +897,8 @@ const FormConfigTrabajadores = ({
                 htmlFor="horasJornadaSemanal"
                 className="text-sm md:text-base"
               >
-                Horas Semanales <span className="text-red-500">*</span>
+                {t("fields.weeklyHours")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
                 <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -885,15 +909,15 @@ const FormConfigTrabajadores = ({
                   className="pl-10 w-full"
                   placeholder="36"
                   {...register("horasJornadaSemanal", {
-                    required: "Las horas semanales son requeridas",
-                    min: { value: 1, message: "Mínimo 1 hora" },
-                    max: { value: 80, message: "Máximo 80 horas" },
+                    required: t("fields.hoursRequired"),
+                    min: { value: 1, message: t("fields.minOneHour") },
+                    max: { value: 80, message: t("fields.maxEightyHours") },
                     valueAsNumber: true,
                   })}
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                Total de horas a la semana
+                {t("fields.weeklyHoursHint")}
               </p>
               {errors.horasJornadaSemanal && (
                 <p className="text-sm font-medium text-red-500">
@@ -910,7 +934,7 @@ const FormConfigTrabajadores = ({
                 className="flex items-center gap-2 text-sm md:text-base"
               >
                 <Sun className="h-4 w-4 text-yellow-500" />
-                Factor Hora Extra Diurnas
+                {t("fields.daytimeOTFactor")}
               </Label>
               <div className="relative">
                 <TrendingUp className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -920,15 +944,15 @@ const FormConfigTrabajadores = ({
                   step="0.1"
                   className="pl-10 w-full"
                   {...register("factorHoraExtraDiurnas", {
-                    required: "El factor de hora extra diurnas es requerido",
-                    min: { value: 1, message: "Mínimo 1.0" },
-                    max: { value: 3, message: "Máximo 3.0" },
+                    required: t("fields.daytimeOTRequired"),
+                    min: { value: 1, message: t("fields.minOnePointZero") },
+                    max: { value: 3, message: t("fields.maxThreePointZero") },
                     valueAsNumber: true,
                   })}
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                Horas extras antes de las 6:00 PM
+                {t("fields.daytimeOTHint")}
               </p>
               {errors.factorHoraExtraDiurnas && (
                 <p className="text-sm font-medium text-red-500">
@@ -943,7 +967,7 @@ const FormConfigTrabajadores = ({
                 className="flex items-center gap-2 text-sm md:text-base"
               >
                 <Moon className="h-4 w-4 text-blue-500" />
-                Factor Hora Extra Nocturnas
+                {t("fields.nighttimeOTFactor")}
               </Label>
               <div className="relative">
                 <TrendingUp className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -953,15 +977,15 @@ const FormConfigTrabajadores = ({
                   step="0.1"
                   className="pl-10 w-full"
                   {...register("factorHoraExtraNocturnas", {
-                    required: "El factor de hora extra nocturnas es requerido",
-                    min: { value: 1, message: "Mínimo 1.0" },
-                    max: { value: 3, message: "Máximo 3.0" },
+                    required: t("fields.nighttimeOTRequired"),
+                    min: { value: 1, message: t("fields.minOnePointZero") },
+                    max: { value: 3, message: t("fields.maxThreePointZero") },
                     valueAsNumber: true,
                   })}
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                Horas extras después de las 6:00 PM
+                {t("fields.nighttimeOTHint")}
               </p>
               {errors.factorHoraExtraNocturnas && (
                 <p className="text-sm font-medium text-red-500">
@@ -976,7 +1000,7 @@ const FormConfigTrabajadores = ({
                 className="flex items-center gap-2 text-sm md:text-base"
               >
                 <Star className="h-4 w-4 text-purple-500" />
-                Factor Hora Extra Festivas
+                {t("fields.holidayOTFactor")}
               </Label>
               <div className="relative">
                 <TrendingUp className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -986,15 +1010,15 @@ const FormConfigTrabajadores = ({
                   step="0.1"
                   className="pl-10 w-full"
                   {...register("factorHoraExtraFestivas", {
-                    required: "El factor de hora extra festivas es requerido",
-                    min: { value: 1, message: "Mínimo 1.0" },
-                    max: { value: 3, message: "Máximo 3.0" },
+                    required: t("fields.holidayOTRequired"),
+                    min: { value: 1, message: t("fields.minOnePointZero") },
+                    max: { value: 3, message: t("fields.maxThreePointZero") },
                     valueAsNumber: true,
                   })}
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                Horas extras en domingos o días festivos
+                {t("fields.holidayOTHint")}
               </p>
               {errors.factorHoraExtraFestivas && (
                 <p className="text-sm font-medium text-red-500">
@@ -1011,59 +1035,71 @@ const FormConfigTrabajadores = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Horas por Día
+                      {t("summary.hoursPerDay")}
                     </p>
                     <p className="text-xl font-bold text-blue-600">
-                      {horasPorDia.toFixed(1)} horas
+                      {t("summary.hoursPerDayValue", {
+                        hours: horasPorDia.toFixed(1),
+                      })}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {diasTrabajadosSemanal} días/semana
+                      {t("summary.daysPerWeekSuffix", {
+                        count: diasTrabajadosSemanal,
+                      })}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Valor Hora Normal
+                      {t("summary.normalHourValue")}
                     </p>
                     <p className="text-xl font-bold text-blue-600">
                       {formatCurrency(valorHoraNormal, moneda)}
                     </p>
-                    <p className="text-xs text-gray-500">por hora</p>
+                    <p className="text-xs text-gray-500">
+                      {t("summary.perHour")}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Salario Semanal
+                      {t("summary.weeklySalary")}
                     </p>
                     <p className="text-xl font-bold text-purple-600">
                       {formatCurrency(salarioSemanal, moneda)}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {diasTrabajadosSemanal} días ×{" "}
-                      {formatCurrency(salarioDiario, moneda)}
+                      {t("summary.weeklySalaryDetail", {
+                        count: diasTrabajadosSemanal,
+                        amount: formatCurrency(salarioDiario, moneda),
+                      })}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Salario Mensual
+                      {t("summary.monthlySalary")}
                     </p>
                     <p className="text-xl font-bold text-green-600">
                       {formatCurrency(salarioMensual, moneda)}
                     </p>
-                    <p className="text-xs text-gray-500">Base mensual</p>
+                    <p className="text-xs text-gray-500">
+                      {t("summary.monthlyBase")}
+                    </p>
                   </div>
                 </div>
 
                 <div className="border-t mt-4 pt-4">
                   <p className="text-sm font-semibold mb-2">
-                    Valores de Horas Extras:
+                    {t("summary.overtimeValues")}
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 p-2 bg-white/50 dark:bg-black/20 rounded">
                       <div className="flex items-center gap-2">
                         <Sun className="h-4 w-4 text-yellow-500" />
-                        <span className="text-sm">Diurnas:</span>
+                        <span className="text-sm">{t("summary.daytime")}</span>
                       </div>
                       <span className="font-semibold text-yellow-600">
-                        {formatCurrency(valorHoraExtraDiurna, moneda)}/hora
+                        {t("summary.perHourValue", {
+                          amount: formatCurrency(valorHoraExtraDiurna, moneda),
+                        })}
                       </span>
                       <span className="text-xs text-gray-500">
                         ({factorHoraExtraDiurnas}x)
@@ -1072,10 +1108,17 @@ const FormConfigTrabajadores = ({
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 p-2 bg-white/50 dark:bg-black/20 rounded">
                       <div className="flex items-center gap-2">
                         <Moon className="h-4 w-4 text-blue-500" />
-                        <span className="text-sm">Nocturnas:</span>
+                        <span className="text-sm">
+                          {t("summary.nighttime")}
+                        </span>
                       </div>
                       <span className="font-semibold text-blue-600">
-                        {formatCurrency(valorHoraExtraNocturna, moneda)}/hora
+                        {t("summary.perHourValue", {
+                          amount: formatCurrency(
+                            valorHoraExtraNocturna,
+                            moneda,
+                          ),
+                        })}
                       </span>
                       <span className="text-xs text-gray-500">
                         ({factorHoraExtraNocturnas}x)
@@ -1084,10 +1127,12 @@ const FormConfigTrabajadores = ({
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 p-2 bg-white/50 dark:bg-black/20 rounded">
                       <div className="flex items-center gap-2">
                         <Star className="h-4 w-4 text-purple-500" />
-                        <span className="text-sm">Festivas:</span>
+                        <span className="text-sm">{t("summary.holiday")}</span>
                       </div>
                       <span className="font-semibold text-purple-600">
-                        {formatCurrency(valorHoraExtraFestiva, moneda)}/hora
+                        {t("summary.perHourValue", {
+                          amount: formatCurrency(valorHoraExtraFestiva, moneda),
+                        })}
                       </span>
                       <span className="text-xs text-gray-500">
                         ({factorHoraExtraFestivas}x)
@@ -1104,7 +1149,7 @@ const FormConfigTrabajadores = ({
         <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 md:p-6">
           <CardTitle className="text-base md:text-lg flex items-center gap-2">
             <Plus className="h-5 w-5 text-green-600" />
-            Bonificaciones Fijas
+            {t("sections.bonuses")}
           </CardTitle>
           <Button
             type="button"
@@ -1115,13 +1160,13 @@ const FormConfigTrabajadores = ({
             }
             className="gap-1 w-full sm:w-auto"
           >
-            <Plus className="h-4 w-4" /> Agregar
+            <Plus className="h-4 w-4" /> {t("buttons.add")}
           </Button>
         </CardHeader>
         <CardContent className="p-4 md:p-6 pt-0">
           {bonificacionesFields.length === 0 ? (
             <p className="text-gray-500 text-center py-4">
-              No hay bonificaciones registradas. Click en "Agregar" para añadir.
+              {t("emptyStates.bonuses")}
             </p>
           ) : (
             <div className="space-y-3">
@@ -1132,10 +1177,9 @@ const FormConfigTrabajadores = ({
                 >
                   <div className="flex-1 w-full">
                     <Input
-                      placeholder="Concepto (Ej: Bono transporte)"
-                      className="w-full"
+                      placeholder={t("placeholders.bonusConcept")}
                       {...register(`bonificacionesFijas.${index}.concepto`, {
-                        required: "El concepto es requerido",
+                        required: t("validation.conceptRequired"),
                       })}
                     />
                   </div>
@@ -1146,14 +1190,14 @@ const FormConfigTrabajadores = ({
                         type="number"
                         step="0.01"
                         className="pl-10 w-full"
-                        placeholder="Monto mensual"
+                        placeholder={t("placeholders.monthlyAmount")}
                         {...register(
                           `bonificacionesFijas.${index}.montoMensual`,
                           {
-                            required: "El monto es requerido",
+                            required: t("validation.amountRequired"),
                             min: {
                               value: 0.01,
-                              message: "Monto debe ser mayor a 0",
+                              message: t("validation.amountMin"),
                             },
                             valueAsNumber: true,
                           },
@@ -1181,7 +1225,7 @@ const FormConfigTrabajadores = ({
         <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 md:p-6">
           <CardTitle className="text-base md:text-lg flex items-center gap-2">
             <Trash2 className="h-5 w-5 text-red-600" />
-            Deducciones Fijas
+            {t("sections.deductions")}
           </CardTitle>
           <Button
             type="button"
@@ -1190,13 +1234,13 @@ const FormConfigTrabajadores = ({
             onClick={() => appendDeduccion({ concepto: "", montoMensual: 0 })}
             className="gap-1 w-full sm:w-auto"
           >
-            <Plus className="h-4 w-4" /> Agregar
+            <Plus className="h-4 w-4" /> {t("buttons.add")}
           </Button>
         </CardHeader>
         <CardContent className="p-4 md:p-6 pt-0">
           {deduccionesFields.length === 0 ? (
             <p className="text-gray-500 text-center py-4">
-              No hay deducciones registradas. Click en "Agregar" para añadir.
+              {t("emptyStates.deductions")}
             </p>
           ) : (
             <div className="space-y-3">
@@ -1207,11 +1251,11 @@ const FormConfigTrabajadores = ({
                 >
                   <div className="flex-1 w-full">
                     <Input
-                      placeholder="Concepto (Ej: Préstamo)"
-                      className="w-full"
+                      placeholder={t("placeholders.deductionConcept")}
                       {...register(`deduccionesFijas.${index}.concepto`, {
-                        required: "El concepto es requerido",
+                        required: t("validation.conceptRequired"),
                       })}
+                      className="w-full"
                     />
                   </div>
                   <div className="w-full sm:w-40">
@@ -1221,12 +1265,12 @@ const FormConfigTrabajadores = ({
                         type="number"
                         step="0.01"
                         className="pl-10 w-full"
-                        placeholder="Monto mensual"
+                        placeholder={t("placeholders.monthlyAmount")}
                         {...register(`deduccionesFijas.${index}.montoMensual`, {
-                          required: "El monto es requerido",
+                          required: t("validation.amountRequired"),
                           min: {
                             value: 0.01,
-                            message: "Monto debe ser mayor a 0",
+                            message: t("validation.amountMin"),
                           },
                           valueAsNumber: true,
                         })}
@@ -1255,27 +1299,31 @@ const FormConfigTrabajadores = ({
         <Card>
           <CardHeader className="p-4 md:p-6">
             <CardTitle className="text-base md:text-lg">
-              Resumen Mensual
+              {t("sections.monthlySummary")}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4 md:p-6 pt-0">
             <div className="space-y-3">
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                <span className="text-gray-600">Salario Base Mensual:</span>
+                <span className="text-gray-600">
+                  {t("summary.baseMonthlySalary")}
+                </span>
                 <span className="font-semibold">
                   {formatCurrency(salarioMensual, moneda)}
                 </span>
               </div>
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 text-sm text-gray-500">
-                <span>Desglose:</span>
+                <span>{t("summary.breakdown")}</span>
                 <span>
-                  {formatCurrency(salarioDiario, moneda)}/día ×{" "}
-                  {diasTrabajadosSemanal} días/semana × 4 semanas
+                  {t("summary.breakdownDetail", {
+                    daily: formatCurrency(salarioDiario, moneda),
+                    days: diasTrabajadosSemanal,
+                  })}
                 </span>
               </div>
               {bonificacionesFields.length > 0 && (
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 text-green-600">
-                  <span>Total Bonificaciones:</span>
+                  <span>{t("summary.totalBonuses")}</span>
                   <span className="font-semibold">
                     {formatCurrency(totalBonificaciones, moneda)}
                   </span>
@@ -1283,7 +1331,7 @@ const FormConfigTrabajadores = ({
               )}
               {deduccionesFields.length > 0 && (
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 text-red-600">
-                  <span>Total Deducciones:</span>
+                  <span>{t("summary.totalDeductions")}</span>
                   <span className="font-semibold">
                     {formatCurrency(totalDeducciones, moneda)}
                   </span>
@@ -1291,7 +1339,7 @@ const FormConfigTrabajadores = ({
               )}
               <div className="border-t pt-3">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 text-lg font-bold">
-                  <span>Total Neto Mensual:</span>
+                  <span>{t("summary.netMonthlyTotal")}</span>
                   <span className="text-blue-600">
                     {formatCurrency(totalNetoMensual, moneda)}
                   </span>
@@ -1311,7 +1359,7 @@ const FormConfigTrabajadores = ({
             disabled={isPending}
             className="w-full sm:w-auto order-3 sm:order-1"
           >
-            Cancelar
+            {t("buttons.cancel")}
           </Button>
           <Button
             type="button"
@@ -1320,7 +1368,7 @@ const FormConfigTrabajadores = ({
             disabled={isPending}
             className="w-full sm:w-auto order-2"
           >
-            Limpiar
+            {t("buttons.clear")}
           </Button>
           <Button
             type="submit"
@@ -1329,11 +1377,11 @@ const FormConfigTrabajadores = ({
           >
             {isPending
               ? isEditing
-                ? "Actualizando..."
-                : "Creando..."
+                ? t("buttons.updating")
+                : t("buttons.creating")
               : isEditing
-                ? "Actualizar Configuración"
-                : "Crear Configuración"}
+                ? t("buttons.update")
+                : t("buttons.create")}
           </Button>
         </div>
       </div>

@@ -5,7 +5,6 @@ import { Sheet, SheetContent } from "../ui/sheet";
 import Link from "next/link";
 import { LogOut, Sparkles, Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { navItems } from "@/helpers/data/sidebar/sidebarData";
 import {
   Accordion,
   AccordionContent,
@@ -19,6 +18,7 @@ import useGetPermisosByCliente from "@/hooks/permisos/useGetPermisosByCliente";
 import SidebarSkeleton from "../SideBars/SidebarSkeleton";
 import { cn } from "@/lib/utils";
 import { useNavItemsWithEspecies } from "@/hooks/fincas/useNavItemsWithEspecies";
+import { useTranslations } from "next-intl";
 
 interface Props {
   setMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -82,42 +82,52 @@ const MobileSidebarSection = ({
   </AccordionItem>
 );
 
-const MobileLogoutButton = ({ onClick }: { onClick: () => Promise<void> }) => (
-  <button
-    onClick={onClick}
-    className={cn(
-      "flex w-full items-center rounded-xl px-4 py-3 text-sm font-medium",
-      "text-gray-500 hover:text-red-600 hover:bg-red-50/80",
-    )}
-  >
-    <LogOut className="mr-3 h-5 w-5" />
-    Cerrar sesión
-  </button>
-);
+const MobileLogoutButton = ({ onClick }: { onClick: () => Promise<void> }) => {
+  const t = useTranslations("sidebar");
 
-const MobileSidebarLogo = () => (
-  <div className="flex h-16 flex-shrink-0 items-center px-6 border-b border-gray-100/50 bg-gradient-to-r from-white via-green-50/20 to-white">
-    <div className="flex items-center gap-3">
-      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-green-600 to-green-700 shadow-[0_4px_16px_rgba(34,197,94,0.2)]">
-        <Sparkles className="h-4 w-4 text-white" />
-      </div>
-      <div>
-        <h1 className="text-lg font-bold bg-gradient-to-r from-green-700 to-green-600 bg-clip-text text-transparent leading-none">
-          Agroservicio
-        </h1>
-        <span className="text-[10px] text-gray-400 font-medium tracking-wider uppercase">
-          Panel de control
-        </span>
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "flex w-full items-center rounded-xl px-4 py-3 text-sm font-medium",
+        "text-gray-500 hover:text-red-600 hover:bg-red-50/80",
+      )}
+    >
+      <LogOut className="mr-3 h-5 w-5" />
+      {t("logout")}
+    </button>
+  );
+};
+
+const MobileSidebarLogo = () => {
+  const t = useTranslations("sidebar");
+
+  return (
+    <div className="flex h-16 flex-shrink-0 items-center px-6 border-b border-gray-100/50 bg-gradient-to-r from-white via-green-50/20 to-white">
+      <div className="flex items-center gap-3">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-green-600 to-green-700 shadow-[0_4px_16px_rgba(34,197,94,0.2)]">
+          <Sparkles className="h-4 w-4 text-white" />
+        </div>
+
+        <div>
+          <h1 className="text-lg font-bold bg-gradient-to-r from-green-700 to-green-600 bg-clip-text text-transparent leading-none">
+            Agroservicio
+          </h1>
+          <span className="text-[10px] text-gray-400 font-medium tracking-wider uppercase">
+            {t("logo.subtitle")}
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const SheetContentComp = ({
   setMobileSidebarOpen,
   handleLogout,
   mobileSidebarOpen,
 }: Props) => {
+  const t = useTranslations("sidebar");
   const pathname = usePathname();
   const { cliente } = useAuthStore();
 
@@ -135,6 +145,41 @@ const SheetContentComp = ({
   } = useGetPermisosByCliente(clienteId);
 
   const { navItems, isLoading: isLoadingEspecies } = useNavItemsWithEspecies();
+
+  const getCategoryTranslation = (category: string) => {
+    const categoryKeys: Record<string, string> = {
+      Panel: "categories.panel",
+      Finca: "categories.farm",
+      Animales: "categories.animals",
+      "Sanidad Animal": "categories.animalHealth",
+      "Solicitudes El Sembrador": "categories.serviceRequests",
+      Pedidos: "categories.orders",
+      Finanzas: "categories.finances",
+      "Gestión de Nómina": "categories.payroll",
+      Actividades: "categories.activities",
+      Operaciones: "categories.operations",
+      "Consulta Inteligente": "categories.smartConsultation",
+      "Salud Animal": "categories.animalCare",
+      Reproducción: "categories.reproduction",
+      Paquetes: "categories.packages",
+      Cuenta: "categories.account",
+    };
+
+    const key = categoryKeys[category];
+
+    return key ? t(key) : category;
+  };
+
+  const getItemTranslation = (href: string, name: string) => {
+    const key = href
+      .replace(/^\/+/, "")
+      .replaceAll("/", "_")
+      .replaceAll("-", "_");
+
+    const translationKey = `items.${key}`;
+
+    return t.has(translationKey) ? t(translationKey) : name;
+  };
 
   const permisos = esPropietario ? permisosPaquete : permisosCliente;
 
@@ -199,16 +244,17 @@ const SheetContentComp = ({
               {filteredNavItems.map((section) => (
                 <MobileSidebarSection
                   key={section.category}
-                  category={section.category}
+                  category={getCategoryTranslation(section.category)}
                 >
                   {section.items.map((item) => {
                     const isActive = isItemActive(item.href);
+
                     return (
                       <MobileSidebarItem
                         key={item.name}
                         href={item.href}
                         icon={item.icon}
-                        name={item.name}
+                        name={getItemTranslation(item.href, item.name)}
                         isActive={isActive}
                         onClick={() => setMobileSidebarOpen(false)}
                       />
@@ -224,11 +270,13 @@ const SheetContentComp = ({
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-50/80 mx-auto mb-3">
                     <Menu className="h-6 w-6 text-gray-300" />
                   </div>
+
                   <p className="text-sm font-medium text-gray-600">
-                    No tienes permisos asignados
+                    {t("permissions.none")}
                   </p>
+
                   <p className="text-xs text-gray-400 mt-1">
-                    Contacta al administrador
+                    {t("permissions.contactAdmin")}
                   </p>
                 </div>
               </div>

@@ -1,7 +1,8 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Ruler, ThermometerSun, Info, LandPlot } from "lucide-react";
+import { Ruler, ThermometerSun, LandPlot } from "lucide-react";
 
 import {
   Card,
@@ -11,12 +12,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import CardResultsSiembra from "./ui/CardResultsSiembra";
 import FormSiembraInteligente from "./ui/FormSiembraInteligente";
 import AlertaInteligente from "@/components/consultas-inteligentes/AlertaInteligente";
 
 const SiembraInteligentePage = () => {
+  const t = useTranslations("siembraInteligentePage");
+
   const [consultaResultado, setConsultaResultado] = useState<string | null>(
     null,
   );
@@ -33,16 +35,12 @@ const SiembraInteligentePage = () => {
         <div className="bg-green-500/10 p-3 rounded-full">
           <Ruler className="h-6 w-6 text-green-600" />
         </div>
-        <h1 className="text-lg md:text-3xl font-bold">
-          Calculadora de Densidad de Siembra
-        </h1>
+        <h1 className="text-lg md:text-3xl font-bold">{t("title")}</h1>
       </div>
+
       <AlertaInteligente
-        title="Información importante"
-        description="Esta calculadora proporciona recomendaciones basadas en inteligencia
-          artificial. Los resultados son orientativos y deben ser validados por
-          un profesional del sector agrícola según las condiciones específicas
-          de tu terreno."
+        title={t("importantAlert.title")}
+        description={t("importantAlert.description")}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -53,13 +51,11 @@ const SiembraInteligentePage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <LandPlot className="h-5 w-5" />
-              Datos del Terreno
+              {t("land.title")}
             </CardTitle>
-            <CardDescription>
-              Ingresa la información del cultivo, terreno y clima para obtener
-              una recomendación óptima de densidad de siembra
-            </CardDescription>
+            <CardDescription>{t("land.description")}</CardDescription>
           </CardHeader>
+
           <CardContent>
             <FormSiembraInteligente
               setConsultaResultado={setConsultaResultado}
@@ -71,11 +67,11 @@ const SiembraInteligentePage = () => {
               setUnidadValue={setUnidadValue}
             />
           </CardContent>
+
           <CardFooter className="bg-muted/50 border-t">
             <p className="text-xs text-muted-foreground flex items-center gap-2">
               <ThermometerSun className="h-4 w-4" />
-              Recomendaciones basadas en análisis agronómico. Consulta con un
-              ingeniero agrónomo para decisiones críticas.
+              {t("recommendationNote")}
             </p>
           </CardFooter>
         </Card>

@@ -1,5 +1,8 @@
+"use client";
+
 import Modal from "@/components/generics/Modal";
 import React, { Dispatch, SetStateAction } from "react";
+import { useTranslations } from "next-intl";
 import FormActividades from "./FormActividades";
 import { Cliente } from "@/interfaces/auth/cliente";
 import { Actividade } from "@/api/actividades/interfaces/response-actividades.interface";
@@ -19,12 +22,14 @@ const ModalActividad = ({
   onSuccess,
   actividad,
 }: Props) => {
+  const t = useTranslations("modalActividad");
+
   return (
     <Modal
       open={openModal}
       onOpenChange={setOpenModal}
-      title="Agregar Actividad"
-      description="Aqui podras agregar las actividades a tus trabajadores"
+      title={actividad ? t("editTitle") : t("addTitle")}
+      description={t("description")}
       size="2xl"
       height="auto"
     >

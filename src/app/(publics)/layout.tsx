@@ -1,3 +1,4 @@
+import AuthRedirect from "@/components/auth/AuthRedirect";
 import { LocationPermissionBanner } from "@/components/location/LocationPermissionBanner";
 import type { Metadata } from "next";
 
@@ -49,8 +50,10 @@ export default function RootLayout({
 }) {
   return (
     <>
-      {children}
-      <LocationPermissionBanner />
+      <AuthRedirect>
+        {children}
+        <LocationPermissionBanner />
+      </AuthRedirect>
     </>
   );
 }

@@ -1,3 +1,5 @@
+"use client";
+
 import { Parto } from "@/api/reproduccion/interfaces/response-partos.interface";
 import { MessageError } from "@/components/generics/MessageError";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +14,8 @@ import {
 import { getEstadoBadge } from "@/helpers/funciones/obtenerEstadoParto";
 import { getTipoPartoLabel } from "@/helpers/funciones/tipoParto";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS, es } from "date-fns/locale";
+import { useLocale, useTranslations } from "next-intl";
 import {
   Droplets,
   Pencil,
@@ -67,10 +70,15 @@ const InfoPartoAnimal = ({
   handleRefresh,
   handleEdit,
 }: Props) => {
+  const t = useTranslations("infoPartoAnimal");
+  const locale = useLocale();
+  const dateLocale = locale === "en" ? enUS : es;
+
   const queryClient = useQueryClient();
   const { cliente } = useAuthStore();
 
   const { data: fincasData } = useFincasPropietarios(cliente?.id ?? "");
+
   const fincasItems =
     fincasData?.data?.fincas?.map((finca) => ({
       label: finca.nombre_finca,
@@ -87,19 +95,30 @@ const InfoPartoAnimal = ({
     fecha_nacimiento: string;
     peso: number;
   } | null>(null);
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [fincaId, setFincaId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const formatearFecha = (fecha: string | Date) => {
     const fechaObj = new Date(fecha);
-    return format(fechaObj, "dd/MM/yyyy", { locale: es });
+    return format(fechaObj, "dd/MM/yyyy", { locale: dateLocale });
+  };
+
+  const getTranslatedLabel = (category: string, label: string) => {
+    const key = `${category}.${label
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "_")}`;
+
+    return t.has(key) ? t(key) : label;
   };
 
   const mutationCrearAnimal = useMutation({
     mutationFn: (data: CreateAnimalFromCriaData) => ingresarCria(data),
     onSuccess: () => {
-      toast.success("Cría registrada como animal exitosamente");
+      toast.success(t("messages.createSuccess"));
       queryClient.invalidateQueries({ queryKey: ["partos"] });
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
       setDialogOpen(false);
@@ -114,10 +133,11 @@ const InfoPartoAnimal = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al registrar la cría";
+            : t("errors.createFailed");
+
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("errors.unexpected"));
       }
     },
     onSettled: () => {
@@ -127,7 +147,7 @@ const InfoPartoAnimal = ({
 
   const handleRegistrarCria = (cria: any, parto: Parto, index: number) => {
     if (cria.identificador && cria.identificador.includes("ANIMAL-")) {
-      toast.info("Esta cría ya ha sido registrada como animal");
+      toast.info(t("messages.alreadyRegistered"));
       return;
     }
 
@@ -150,14 +170,16 @@ const InfoPartoAnimal = ({
 
   const handleConfirmarRegistro = () => {
     if (!selectedCria) return;
+
     if (!fincaId) {
-      toast.error("Debes seleccionar una finca");
+      toast.error(t("errors.selectFarm"));
       return;
     }
 
     const fincaSeleccionada = fincasItems.find((f) => f.value === fincaId);
+
     if (!fincaSeleccionada) {
-      toast.error("La finca seleccionada no es válida");
+      toast.error(t("errors.invalidFarm"));
       return;
     }
 
@@ -180,15 +202,15 @@ const InfoPartoAnimal = ({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Animal</TableHead>
-            <TableHead>Finca</TableHead>
-            <TableHead>Fecha</TableHead>
-            <TableHead>Tipo</TableHead>
-            <TableHead>Estado</TableHead>
-            <TableHead>Crías</TableHead>
-            <TableHead>Gestación</TableHead>
-            <TableHead>Veterinario</TableHead>
-            <TableHead>Acciones</TableHead>
+            <TableHead>{t("columns.animal")}</TableHead>
+            <TableHead>{t("columns.farm")}</TableHead>
+            <TableHead>{t("columns.date")}</TableHead>
+            <TableHead>{t("columns.type")}</TableHead>
+            <TableHead>{t("columns.status")}</TableHead>
+            <TableHead>{t("columns.offspring")}</TableHead>
+            <TableHead>{t("columns.gestation")}</TableHead>
+            <TableHead>{t("columns.veterinarian")}</TableHead>
+            <TableHead>{t("columns.actions")}</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -198,7 +220,7 @@ const InfoPartoAnimal = ({
               <TableCell colSpan={9} className="text-center py-8">
                 <div className="flex justify-center items-center gap-2">
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-green-600"></div>
-                  <span>Cargando partos...</span>
+                  <span>{t("loading")}</span>
                 </div>
               </TableCell>
             </TableRow>
@@ -211,8 +233,8 @@ const InfoPartoAnimal = ({
                 className="text-center py-8 text-muted-foreground"
               >
                 <MessageError
-                  titulo="No se encontraron partos disponibles en este momento"
-                  descripcion="En este momento no cuentas con partos disponibles de tus animales, por favor ingresa un parto"
+                  titulo={t("empty.title")}
+                  descripcion={t("empty.description")}
                   onPress={() => handleRefresh()}
                 />
               </TableCell>
@@ -241,13 +263,16 @@ const InfoPartoAnimal = ({
 
                 <TableCell>
                   <Badge variant="outline">
-                    {getTipoPartoLabel(parto.tipo_parto)}
+                    {getTranslatedLabel(
+                      "birthTypes",
+                      getTipoPartoLabel(parto.tipo_parto),
+                    )}
                   </Badge>
                 </TableCell>
 
                 <TableCell>
                   <Badge variant={estadoBadge.variant}>
-                    {estadoBadge.label}
+                    {getTranslatedLabel("statuses", estadoBadge.label)}
                   </Badge>
                 </TableCell>
 
@@ -263,7 +288,11 @@ const InfoPartoAnimal = ({
                         {parto.numero_crias_muertas}
                       </span>
                       <span className="text-xs text-muted-foreground ml-1">
-                        ({parto.numero_crias} total)
+                        (
+                        {t("totalOffspring", {
+                          count: parto.numero_crias,
+                        })}
+                        )
                       </span>
                     </div>
 
@@ -277,14 +306,17 @@ const InfoPartoAnimal = ({
                                 variant="outline"
                                 className="text-yellow-600 border-yellow-400 text-xs"
                               >
-                                {criasSinRegistrar.length} pendiente(s)
+                                {t("pendingCount", {
+                                  count: criasSinRegistrar.length,
+                                })}
                               </Badge>
                             </div>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="text-xs">
-                              {criasSinRegistrar.length} cría(s) sin registrar
-                              como animal
+                              {t("unregisteredOffspring", {
+                                count: criasSinRegistrar.length,
+                              })}
                             </p>
                           </TooltipContent>
                         </Tooltip>
@@ -298,6 +330,7 @@ const InfoPartoAnimal = ({
                         const isRegistered =
                           cria.identificador &&
                           cria.identificador.includes("ANIMAL-");
+
                         return (
                           <div
                             key={index}
@@ -305,29 +338,38 @@ const InfoPartoAnimal = ({
                           >
                             <div className="flex items-center gap-2">
                               <span>
-                                Cría {index + 1}: {cria.sexo || "N/D"}
+                                {t("offspringNumber", {
+                                  number: index + 1,
+                                })}
+                                :{" "}
+                                {cria.sexo
+                                  ? getTranslatedLabel("sex", cria.sexo)
+                                  : t("notAvailable")}
                               </span>
+
                               {cria.peso && (
                                 <span className="text-muted-foreground">
                                   {cria.peso}kg
                                 </span>
                               )}
+
                               {isRegistered ? (
                                 <Badge
                                   variant="outline"
                                   className="text-green-600 border-green-400 text-[10px]"
                                 >
-                                  ✓ Registrada
+                                  ✓ {t("registered")}
                                 </Badge>
                               ) : (
                                 <Badge
                                   variant="outline"
                                   className="text-yellow-600 border-yellow-400 text-[10px]"
                                 >
-                                  Pendiente
+                                  {t("pending")}
                                 </Badge>
                               )}
                             </div>
+
                             {!isRegistered && (
                               <Button
                                 variant="ghost"
@@ -338,7 +380,7 @@ const InfoPartoAnimal = ({
                                 }
                               >
                                 <Plus className="h-3 w-3 mr-1" />
-                                Registrar
+                                {t("register")}
                               </Button>
                             )}
                           </div>
@@ -351,7 +393,11 @@ const InfoPartoAnimal = ({
                 <TableCell>
                   <div className="flex items-center gap-1">
                     <Scissors className="h-3 w-3 text-gray-500" />
-                    <span>{parto.dias_gestacion} días</span>
+                    <span>
+                      {t("gestationDays", {
+                        count: parto.dias_gestacion,
+                      })}
+                    </span>
                   </div>
                 </TableCell>
 
@@ -367,15 +413,16 @@ const InfoPartoAnimal = ({
                     <span className="text-muted-foreground">—</span>
                   )}
                 </TableCell>
+
                 <TableCell>
                   <Button
                     id="partos-edit-btn"
                     onClick={() => handleEdit(parto)}
-                    variant={"ghost"}
+                    variant="ghost"
                     className="flex items-center gap-1"
                   >
                     <Pencil className="h-3 w-3 text-gray-500" />
-                    <span>Editar</span>
+                    <span>{t("edit")}</span>
                   </Button>
                 </TableCell>
               </TableRow>
@@ -387,16 +434,15 @@ const InfoPartoAnimal = ({
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Registrar Cría como Animal</DialogTitle>
-            <DialogDescription>
-              Completa la información para registrar esta cría como un nuevo
-              animal en el sistema.
-            </DialogDescription>
+            <DialogTitle>{t("dialog.title")}</DialogTitle>
+            <DialogDescription>{t("dialog.description")}</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="identificador">Identificador</Label>
+              <Label htmlFor="identificador">
+                {t("dialog.fields.identifier")}
+              </Label>
               <Input
                 id="identificador"
                 value={selectedCria?.identificador || ""}
@@ -408,12 +454,12 @@ const InfoPartoAnimal = ({
                     });
                   }
                 }}
-                placeholder="Ingresa un identificador único"
+                placeholder={t("dialog.placeholders.identifier")}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="sexo">Sexo</Label>
+              <Label htmlFor="sexo">{t("dialog.fields.sex")}</Label>
               <Select
                 value={selectedCria?.sexo || ""}
                 onValueChange={(value) => {
@@ -426,20 +472,24 @@ const InfoPartoAnimal = ({
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecciona el sexo" />
+                  <SelectValue placeholder={t("dialog.placeholders.sex")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="MACHO">Macho</SelectItem>
-                  <SelectItem value="HEMBRA">Hembra</SelectItem>
+                  <SelectItem value="MACHO">
+                    {t("dialog.sexOptions.male")}
+                  </SelectItem>
+                  <SelectItem value="HEMBRA">
+                    {t("dialog.sexOptions.female")}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="finca">Finca</Label>
+              <Label htmlFor="finca">{t("dialog.fields.farm")}</Label>
               <Select value={fincaId} onValueChange={setFincaId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecciona la finca" />
+                  <SelectValue placeholder={t("dialog.placeholders.farm")} />
                 </SelectTrigger>
                 <SelectContent>
                   {fincasItems.map((finca) => (
@@ -449,19 +499,23 @@ const InfoPartoAnimal = ({
                   ))}
                 </SelectContent>
               </Select>
+
               {selectedCria?.fincaMadreId && (
                 <p className="text-xs text-muted-foreground mt-1">
-                  💡 La madre está en la finca:{" "}
-                  {fincasItems.find(
-                    (f) => f.value === selectedCria.fincaMadreId,
-                  )?.label || "No disponible"}
+                  💡{" "}
+                  {t("dialog.motherFarm", {
+                    farm:
+                      fincasItems.find(
+                        (f) => f.value === selectedCria.fincaMadreId,
+                      )?.label || t("notAvailable"),
+                  })}
                 </p>
               )}
             </div>
 
             {selectedCria?.peso !== undefined && selectedCria.peso > 0 && (
               <div className="space-y-2">
-                <Label>Peso al nacer</Label>
+                <Label>{t("dialog.fields.birthWeight")}</Label>
                 <p className="text-sm text-muted-foreground">
                   {selectedCria.peso} kg
                 </p>
@@ -470,7 +524,7 @@ const InfoPartoAnimal = ({
 
             {selectedCria?.fecha_nacimiento && (
               <div className="space-y-2">
-                <Label>Fecha de nacimiento</Label>
+                <Label>{t("dialog.fields.birthDate")}</Label>
                 <p className="text-sm text-muted-foreground">
                   {formatearFecha(selectedCria.fecha_nacimiento)}
                 </p>
@@ -487,8 +541,9 @@ const InfoPartoAnimal = ({
                 setFincaId("");
               }}
             >
-              Cancelar
+              {t("dialog.buttons.cancel")}
             </Button>
+
             <Button
               onClick={handleConfirmarRegistro}
               disabled={
@@ -499,10 +554,10 @@ const InfoPartoAnimal = ({
               {isSubmitting ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Registrando...
+                  {t("dialog.buttons.registering")}
                 </>
               ) : (
-                "Registrar Animal"
+                t("dialog.buttons.registerAnimal")
               )}
             </Button>
           </DialogFooter>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
+import { useTranslations } from "next-intl";
 import { Sprout, Leaf, ThermometerSun } from "lucide-react";
 
 import {
@@ -18,6 +18,8 @@ import CardResults from "./ui/CardResults";
 import AlertaInteligente from "@/components/consultas-inteligentes/AlertaInteligente";
 
 const AgriculturaInteligentePage = () => {
+  const t = useTranslations("agriculturaInteligentePage");
+
   const [consultaResultado, setConsultaResultado] = useState<string | null>(
     null,
   );
@@ -37,17 +39,12 @@ const AgriculturaInteligentePage = () => {
           <Sprout className="h-6 w-6 text-green-600" />
         </div>
 
-        <h1 className="text-lg md:text-3xl font-bold">
-          Consultor Agrícola Inteligente
-        </h1>
+        <h1 className="text-lg md:text-3xl font-bold">{t("title")}</h1>
       </div>
 
       <AlertaInteligente
-        title="Información importante"
-        description="Esta calculadora proporciona recomendaciones basadas en inteligencia
-          artificial. Los resultados son orientativos y deben ser validados por
-          un profesional del sector agrícola según las condiciones específicas
-          de tu terreno."
+        title={t("importantAlert.title")}
+        description={t("importantAlert.description")}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -58,14 +55,10 @@ const AgriculturaInteligentePage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Leaf className="h-5 w-5" />
-              Datos del Cultivo
+              {t("crop.title")}
             </CardTitle>
 
-            <CardDescription>
-              Ingresa la información del cultivo, suelo, clima y problemas
-              observados para obtener un diagnóstico y recomendaciones
-              personalizadas
-            </CardDescription>
+            <CardDescription>{t("crop.description")}</CardDescription>
           </CardHeader>
 
           <CardContent>
@@ -82,8 +75,7 @@ const AgriculturaInteligentePage = () => {
           <CardFooter className="bg-muted/50 border-t">
             <p className="text-xs text-muted-foreground flex items-center gap-2">
               <ThermometerSun className="h-4 w-4" />
-              Recomendaciones basadas en análisis agronómico. Consulta con un
-              ingeniero agrónomo para decisiones críticas.
+              {t("recommendationNote")}
             </p>
           </CardFooter>
         </Card>

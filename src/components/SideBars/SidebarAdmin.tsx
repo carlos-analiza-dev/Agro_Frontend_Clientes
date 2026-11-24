@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LogOut, Sparkles, Menu } from "lucide-react";
@@ -249,7 +250,7 @@ const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
 
     setTourOpen(false);
 
-    toast.success("¡Has completado el tour completo!");
+    toast.success(t("tour.completed"));
   };
 
   if (isLoadingPermisos || isErrorPermisos || isLoadingEspecies) {
@@ -270,6 +271,7 @@ const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
               >
                 {section.items.map((item) => {
                   const isActive = isItemActive(item.href);
+
                   return (
                     <SidebarItem
                       key={item.name}
@@ -290,11 +292,13 @@ const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-50/80 mx-auto mb-3">
                   <Menu className="h-6 w-6 text-gray-300" />
                 </div>
+
                 <p className="text-sm font-medium text-gray-600">
-                  No tienes permisos asignados
+                  {t("permissions.none")}
                 </p>
+
                 <p className="text-xs text-gray-400 mt-1">
-                  Contacta al administrador
+                  {t("permissions.contactAdmin")}
                 </p>
               </div>
             </div>
@@ -323,14 +327,13 @@ const SidebarAdmin: React.FC<Props> = ({ handleLogout }) => {
           </div>
         </div>
       </div>
+
       <TourGuide
         steps={currentTourSteps}
         open={tourOpen}
         onClose={() => setTourOpen(false)}
         onFinish={handleTourFinish}
-        onEmpty={() =>
-          toast.info("No hay elementos visibles para la guía en esta página")
-        }
+        onEmpty={() => toast.info(t("tour.noVisibleElements"))}
       />
     </aside>
   );

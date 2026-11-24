@@ -1,3 +1,5 @@
+"use client";
+
 import { CrearMantenimientoInterface } from "@/api/mantenimientos/interface/ingresar-mantenimiento.interface";
 import useGetEquiposMaquinariaActivos from "@/hooks/equipos-maquinaria/useGetEquiposMaquinariaActivos";
 import { useEffect, useState } from "react";
@@ -5,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,6 +40,8 @@ interface Props {
 }
 
 const FormMantenimiento = ({ mantenimiento, onSuccess, moneda }: Props) => {
+  const t = useTranslations("formMantenimiento");
+
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const { data: equipos, isLoading: isLoadingEquipos } =
@@ -76,6 +81,7 @@ const FormMantenimiento = ({ mantenimiento, onSuccess, moneda }: Props) => {
       const fechaInicioFormateada = formatearFechaParaInput(
         mantenimiento.fecha_inicio,
       );
+
       const fechaFinalFormateada = formatearFechaParaInput(
         mantenimiento.fecha_final,
       );
@@ -104,10 +110,17 @@ const FormMantenimiento = ({ mantenimiento, onSuccess, moneda }: Props) => {
 
   const validateFechaFinal = (value: string) => {
     if (!fechaInicio || !value) return true;
+
     return (
       new Date(value) >= new Date(fechaInicio) ||
-      "La fecha final debe ser mayor o igual a la fecha de inicio"
+      t("validation.endDateAfterStart")
     );
+  };
+
+  const getTipoLabel = (tipo: { value: string; label: string }) => {
+    const key = `maintenanceTypes.${tipo.value.toLowerCase()}`;
+
+    return t.has(key) ? t(key) : tipo.label;
   };
 
   const onSubmit = async (data: CrearMantenimientoInterface) => {
@@ -124,16 +137,18 @@ const FormMantenimiento = ({ mantenimiento, onSuccess, moneda }: Props) => {
 
       if (isEditing && mantenimiento) {
         await editarMantenimiento(mantenimiento.id, dataToSend);
-        toast.success("Mantenimiento actualizado correctamente");
+        toast.success(t("messages.updateSuccess"));
       } else {
         await ingresarMantenimiento(dataToSend);
-        toast.success("Mantenimiento registrado correctamente");
+        toast.success(t("messages.createSuccess"));
       }
 
       reset();
+
       queryClient.invalidateQueries({ queryKey: ["mantenimientos"] });
       queryClient.invalidateQueries({ queryKey: ["equipos-activos"] });
       queryClient.invalidateQueries({ queryKey: ["equipos-maquinaria"] });
+
       if (onSuccess) {
         onSuccess();
         setErrorMessage("");
@@ -141,14 +156,16 @@ const FormMantenimiento = ({ mantenimiento, onSuccess, moneda }: Props) => {
     } catch (error) {
       if (isAxiosError(error)) {
         const messages = error.response?.data?.message;
+
         const errorMessage = Array.isArray(messages)
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al registrar el mantenimiento";
+            : t("errors.registerMaintenance");
+
         setErrorMessage(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("errors.unexpected"));
       }
     }
   };
@@ -167,7 +184,7 @@ const FormMantenimiento = ({ mantenimiento, onSuccess, moneda }: Props) => {
         <Alert variant="destructive" className="mb-4">
           <AlertCircleIcon className="h-4 w-4" />
           <AlertTitle>
-            Error al {isEditing ? "actualizar" : "registrar"} el Mantenimiento
+            {isEditing ? t("errors.updateTitle") : t("errors.createTitle")}
           </AlertTitle>
           <AlertDescription className="whitespace-pre-line">
             {errorMessage}
@@ -178,7 +195,7 @@ const FormMantenimiento = ({ mantenimiento, onSuccess, moneda }: Props) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="md:col-span-2">
           <Label htmlFor="equipo">
-            Equipo <span className="text-red-500">*</span>
+            {t("fields.equipment")} <span className="text-red-500">*</span>
           </Label>
 
           {!isEditing ? (
@@ -191,14 +208,18 @@ const FormMantenimiento = ({ mantenimiento, onSuccess, moneda }: Props) => {
                 <SelectTrigger
                   className={errors.equipoId ? "border-red-500" : ""}
                 >
-                  <SelectValue placeholder="Seleccionar equipo" />
+                  <SelectValue
+                    placeholder={t("placeholders.selectEquipment")}
+                  />
                 </SelectTrigger>
+
                 <SelectContent className="max-h-80">
                   <SelectGroup>
-                    <SelectLabel>Equipos Activos</SelectLabel>
+                    <SelectLabel>{t("groups.activeEquipment")}</SelectLabel>
+
                     {equipos && equipos.length === 0 ? (
                       <div className="px-2 py-4 text-center text-sm text-muted-foreground">
-                        No hay equipos activos disponibles
+                        {t("empty.noActiveEquipment")}
                       </div>
                     ) : (
                       equipos?.map((equipo: Equipo) => (
@@ -236,9 +257,10 @@ const FormMantenimiento = ({ mantenimiento, onSuccess, moneda }: Props) => {
           <input
             type="hidden"
             {...register("equipoId", {
-              required: "Debe seleccionar un equipo",
+              required: t("validation.equipmentRequired"),
             })}
           />
+
           {errors.equipoId && (
             <p className="text-sm text-red-500 mt-1">
               {errors.equipoId.message}
@@ -248,27 +270,32 @@ const FormMantenimiento = ({ mantenimiento, onSuccess, moneda }: Props) => {
 
         <div>
           <Label htmlFor="tipo">
-            Tipo de Mantenimiento <span className="text-red-500">*</span>
+            {t("fields.maintenanceType")}{" "}
+            <span className="text-red-500">*</span>
           </Label>
+
           <Select
             value={watch("tipo")}
             onValueChange={(value) => setValue("tipo", value)}
             disabled={isSubmitting}
           >
             <SelectTrigger className={errors.tipo ? "border-red-500" : ""}>
-              <SelectValue placeholder="Seleccionar tipo" />
+              <SelectValue placeholder={t("placeholders.selectType")} />
             </SelectTrigger>
+
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Tipos de Mantenimiento</SelectLabel>
+                <SelectLabel>{t("groups.maintenanceTypes")}</SelectLabel>
+
                 {tiposMamtenimientoData.map((tipo) => (
                   <SelectItem key={tipo.id} value={tipo.value}>
-                    {tipo.label}
+                    {getTipoLabel(tipo)}
                   </SelectItem>
                 ))}
               </SelectGroup>
             </SelectContent>
           </Select>
+
           {errors.tipo && (
             <p className="text-sm text-red-500 mt-1">{errors.tipo.message}</p>
           )}
@@ -276,18 +303,20 @@ const FormMantenimiento = ({ mantenimiento, onSuccess, moneda }: Props) => {
 
         <div>
           <Label htmlFor="costo">
-            Costo ({moneda}) <span className="text-red-500">*</span>
+            {t("fields.cost")} ({moneda}){" "}
+            <span className="text-red-500">*</span>
           </Label>
+
           <Input
             id="costo"
             type="number"
             step="0.01"
             min="0"
             {...register("costo", {
-              required: "El costo es requerido",
+              required: t("validation.costRequired"),
               min: {
                 value: 0,
-                message: "El costo debe ser mayor o igual a 0",
+                message: t("validation.costMin"),
               },
               valueAsNumber: true,
             })}
@@ -295,6 +324,7 @@ const FormMantenimiento = ({ mantenimiento, onSuccess, moneda }: Props) => {
             className={errors.costo ? "border-red-500" : ""}
             disabled={isSubmitting}
           />
+
           {errors.costo && (
             <p className="text-sm text-red-500 mt-1">{errors.costo.message}</p>
           )}
@@ -302,17 +332,19 @@ const FormMantenimiento = ({ mantenimiento, onSuccess, moneda }: Props) => {
 
         <div>
           <Label htmlFor="fecha_inicio">
-            Fecha y Hora de Inicio <span className="text-red-500">*</span>
+            {t("fields.startDate")} <span className="text-red-500">*</span>
           </Label>
+
           <Input
             id="fecha_inicio"
             type="datetime-local"
             {...register("fecha_inicio", {
-              required: "La fecha y hora de inicio es requerida",
+              required: t("validation.startDateRequired"),
             })}
             className={errors.fecha_inicio ? "border-red-500" : ""}
             disabled={isSubmitting}
           />
+
           {errors.fecha_inicio && (
             <p className="text-sm text-red-500 mt-1">
               {errors.fecha_inicio.message}
@@ -322,18 +354,20 @@ const FormMantenimiento = ({ mantenimiento, onSuccess, moneda }: Props) => {
 
         <div>
           <Label htmlFor="fecha_final">
-            Fecha y Hora de Finalización <span className="text-red-500">*</span>
+            {t("fields.endDate")} <span className="text-red-500">*</span>
           </Label>
+
           <Input
             id="fecha_final"
             type="datetime-local"
             {...register("fecha_final", {
-              required: "La fecha y hora de finalización es requerida",
+              required: t("validation.endDateRequired"),
               validate: validateFechaFinal,
             })}
             className={errors.fecha_final ? "border-red-500" : ""}
             disabled={isSubmitting}
           />
+
           {errors.fecha_final && (
             <p className="text-sm text-red-500 mt-1">
               {errors.fecha_final.message}
@@ -343,44 +377,53 @@ const FormMantenimiento = ({ mantenimiento, onSuccess, moneda }: Props) => {
 
         {tipoMantenimiento === "PREVENTIVO" && (
           <div>
-            <Label htmlFor="proximoMantenimiento">Próximo Mantenimiento</Label>
+            <Label htmlFor="proximoMantenimiento">
+              {t("fields.nextMaintenance")}
+            </Label>
+
             <Input
               id="proximoMantenimiento"
               type="date"
               {...register("proximoMantenimiento")}
               disabled={isSubmitting}
             />
+
             <p className="text-xs text-muted-foreground mt-1">
-              * Fecha sugerida para el próximo mantenimiento preventivo
+              {t("hints.nextPreventiveMaintenance")}
             </p>
           </div>
         )}
 
         <div className="md:col-span-2">
           <Label htmlFor="descripcion">
-            Descripción <span className="text-red-500">*</span>
+            {t("fields.description")} <span className="text-red-500">*</span>
           </Label>
+
           <Textarea
             id="descripcion"
             {...register("descripcion", {
-              required: "La descripción es requerida",
+              required: t("validation.descriptionRequired"),
               maxLength: {
                 value: 500,
-                message: "La descripción no puede exceder los 500 caracteres",
+                message: t("validation.descriptionMaxLength"),
               },
             })}
-            placeholder="Describa el mantenimiento realizado, piezas cambiadas, observaciones, etc."
+            placeholder={t("placeholders.description")}
             rows={4}
             className={errors.descripcion ? "border-red-500" : ""}
             disabled={isSubmitting}
           />
+
           {errors.descripcion && (
             <p className="text-sm text-red-500 mt-1">
               {errors.descripcion.message}
             </p>
           )}
+
           <p className="text-xs text-muted-foreground mt-1">
-            {watch("descripcion")?.length || 0}/500 caracteres
+            {t("labels.characterCount", {
+              count: watch("descripcion")?.length || 0,
+            })}
           </p>
         </div>
       </div>
@@ -392,18 +435,19 @@ const FormMantenimiento = ({ mantenimiento, onSuccess, moneda }: Props) => {
           onClick={() => onSuccess()}
           disabled={isSubmitting}
         >
-          Cancelar
+          {t("buttons.cancel")}
         </Button>
+
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? (
             <span className="flex items-center gap-2">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              {isEditing ? "Actualizando..." : "Guardando..."}
+              {isEditing ? t("buttons.updating") : t("buttons.saving")}
             </span>
           ) : isEditing ? (
-            "Actualizar Mantenimiento"
+            t("buttons.update")
           ) : (
-            "Registrar Mantenimiento"
+            t("buttons.register")
           )}
         </Button>
       </div>

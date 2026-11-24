@@ -1,8 +1,11 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -48,6 +51,8 @@ const FormServicioReproductivo = ({
   machos,
   moneda,
 }: Props) => {
+  const t = useTranslations("formServicioReproductivo");
+
   const [errorMessage, setIsErrorMessage] = useState<string>("");
   const [selectedHembra, setSelectedHembra] = useState<string>("");
   const [machoPerteneceFinca, setMachoPerteneceFinca] = useState<boolean>(true);
@@ -139,6 +144,28 @@ const FormServicioReproductivo = ({
   );
   const selectedMachoAnimal = machos?.find((animal) => animal.id === machoId);
 
+  const getAnimalName = (animal: Animal | undefined) =>
+    animal?.identificador || animal?.nombre_animal || t("animal.generic");
+
+  const getAnimalSpecies = (animal: Animal) =>
+    animal.especie?.nombre || t("animal.unspecifiedSpecies");
+
+  const getAnimalIdentifier = (animal: Animal) =>
+    animal.identificador || animal.nombre_animal || t("animal.unidentified");
+
+  const getServiceTypeLabel = (value: TipoServicio) => {
+    const labels: Record<string, string> = {
+      [TipoServicio.MONTA_NATURAL]: "serviceTypes.naturalMating",
+      [TipoServicio.INSEMINACION_ARTIFICIAL]:
+        "serviceTypes.artificialInsemination",
+      [TipoServicio.TRANSFERENCIA_EMBRIONES]: "serviceTypes.embryoTransfer",
+      [TipoServicio.FERTILIZACION_INVITRO]: "serviceTypes.inVitroFertilization",
+    };
+
+    const key = labels[value];
+    return key ? t(key) : value;
+  };
+
   useEffect(() => {
     if (isMontaNatural) {
       setMostrarSeccionMacho(true);
@@ -147,7 +174,7 @@ const FormServicioReproductivo = ({
     } else {
       setMostrarSeccionMacho(false);
     }
-  }, [tipoServicio]);
+  }, [tipoServicio, isMontaNatural, isIATF, isTransferencia, isFIV]);
 
   useEffect(() => {
     if (servicio) {
@@ -228,9 +255,7 @@ const FormServicioReproductivo = ({
           payload.macho_pertenece_finca === true &&
           payload.macho_id === undefined
         ) {
-          setIsErrorMessage(
-            "Si seleccionaste que el macho pertenece a tu finca, es obligatorio que selecciones el macho",
-          );
+          setIsErrorMessage(t("validation.maleRequired"));
           return;
         }
 
@@ -238,17 +263,15 @@ const FormServicioReproductivo = ({
           payload.macho_pertenece_finca === false &&
           payload.macho_externo_nombre === ""
         ) {
-          setIsErrorMessage(
-            "Si seleccionaste que el macho no pertenece a tu finca, es obligatorio que selecciones el nombre del macho",
-          );
+          setIsErrorMessage(t("validation.externalMaleRequired"));
           return;
         }
 
         response = await EditarServicioReproductivo(servicio.id, payload);
-        toast.success("Servicio actualizado correctamente");
+        toast.success(t("messages.updateSuccess"));
       } else {
         response = await CrearServicioReproductivo(payload);
-        toast.success("Servicio registrado correctamente");
+        toast.success(t("messages.createSuccess"));
       }
 
       reset();
@@ -269,11 +292,12 @@ const FormServicioReproductivo = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al registrar el servicio";
+            : t("messages.registerError");
+
         setIsErrorMessage(errorMessage);
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("messages.unexpectedError"));
       }
     }
   };
@@ -284,7 +308,9 @@ const FormServicioReproductivo = ({
         <Alert variant="destructive" className="mb-4">
           <AlertCircleIcon className="h-4 w-4" />
           <AlertTitle>
-            Error al {isEditing ? "actualizar" : "registrar"} el Servicio
+            {t("errors.service", {
+              action: t(isEditing ? "actions.update" : "actions.register"),
+            })}
           </AlertTitle>
           <AlertDescription className="whitespace-pre-line">
             {errorMessage}
@@ -295,43 +321,36 @@ const FormServicioReproductivo = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="tipo_servicio">
-            Tipo de Servicio <span className="text-red-500">*</span>
+            {t("fields.serviceType")} <span className="text-red-500">*</span>
           </Label>
           <Select
+            value={tipoServicio}
             onValueChange={(value) =>
               setValue("tipo_servicio", value as TipoServicio)
             }
-            defaultValue={servicio?.tipo_servicio}
             disabled={isSubmitting}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Seleccionar tipo" />
+              <SelectValue placeholder={t("placeholders.selectType")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={TipoServicio.MONTA_NATURAL}>
-                Monta Natural
-              </SelectItem>
-              <SelectItem value={TipoServicio.INSEMINACION_ARTIFICIAL}>
-                Inseminación Artificial (IATF)
-              </SelectItem>
-              <SelectItem value={TipoServicio.TRANSFERENCIA_EMBRIONES}>
-                Transferencia de Embriones
-              </SelectItem>
-              <SelectItem value={TipoServicio.FERTILIZACION_INVITRO}>
-                Fecundación in vitro (FIV)
-              </SelectItem>
+              {Object.values(TipoServicio).map((tipo) => (
+                <SelectItem key={tipo} value={tipo}>
+                  {getServiceTypeLabel(tipo)}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
 
         <div>
           <Label htmlFor="fecha_servicio">
-            Fecha del Servicio <span className="text-red-500">*</span>
+            {t("fields.serviceDate")} <span className="text-red-500">*</span>
           </Label>
           <Input
             id="fecha_servicio"
             {...register("fecha_servicio", {
-              required: "La fecha del servicio es requerida",
+              required: t("validation.dateRequired"),
             })}
             type="datetime-local"
             className={errors.fecha_servicio ? "border-red-500" : ""}
@@ -346,7 +365,7 @@ const FormServicioReproductivo = ({
 
         <div className="md:col-span-2">
           <Label htmlFor="hembraSearch">
-            Hembra <span className="text-red-500">*</span>
+            {t("fields.female")} <span className="text-red-500">*</span>
           </Label>
 
           <div className="relative">
@@ -357,8 +376,8 @@ const FormServicioReproductivo = ({
                 id="hembraSearch"
                 placeholder={
                   selectedHembraAnimal
-                    ? `${selectedHembraAnimal.identificador || selectedHembraAnimal.nombre_animal || "Animal"} seleccionado`
-                    : "Buscar hembra por identificador, nombre o especie..."
+                    ? `${getAnimalName(selectedHembraAnimal)} ${t("animal.selected")}`
+                    : t("placeholders.searchFemale")
                 }
                 value={searchHembraTerm}
                 onChange={(e) => {
@@ -376,6 +395,7 @@ const FormServicioReproductivo = ({
                 <button
                   type="button"
                   onClick={handleClearHembra}
+                  aria-label={t("buttons.clearFemale")}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full"
                 >
                   <X className="h-4 w-4" />
@@ -401,7 +421,9 @@ const FormServicioReproductivo = ({
                             ? animal.profileImages[0].url
                             : "/images/Image-not-found.png"
                         }
-                        alt={`animal-${animal.identificador}`}
+                        alt={t("animal.imageAlt", {
+                          identifier: animal.identificador || "",
+                        })}
                         width={40}
                         height={40}
                         className="h-10 w-10 rounded-full object-cover"
@@ -409,12 +431,10 @@ const FormServicioReproductivo = ({
                       />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">
-                          {animal.identificador ||
-                            animal.nombre_animal ||
-                            "Sin identificar"}
+                          {getAnimalIdentifier(animal)}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {animal.especie?.nombre || "Especie no especificada"}
+                          {getAnimalSpecies(animal)}
                           {animal.sexo && ` • ${animal.sexo}`}
                         </p>
                       </div>
@@ -425,9 +445,9 @@ const FormServicioReproductivo = ({
                   ))
                 ) : (
                   <div className="py-6 text-center text-sm">
-                    <p className="text-gray-500">No se encontraron hembras</p>
+                    <p className="text-gray-500">{t("search.noFemales")}</p>
                     <p className="text-xs text-gray-400 mt-1">
-                      Intenta con otro término de búsqueda
+                      {t("search.tryAnotherTerm")}
                     </p>
                   </div>
                 )}
@@ -444,7 +464,9 @@ const FormServicioReproductivo = ({
                       ? selectedHembraAnimal.profileImages[0].url
                       : "/images/Image-not-found.png"
                   }
-                  alt={`animal-${selectedHembraAnimal.identificador}`}
+                  alt={t("animal.imageAlt", {
+                    identifier: selectedHembraAnimal.identificador || "",
+                  })}
                   width={32}
                   height={32}
                   className="h-8 w-8 rounded-full object-cover"
@@ -452,13 +474,10 @@ const FormServicioReproductivo = ({
                 />
                 <div>
                   <p className="text-sm font-medium">
-                    {selectedHembraAnimal.identificador ||
-                      selectedHembraAnimal.nombre_animal ||
-                      "Animal"}
+                    {getAnimalName(selectedHembraAnimal)}
                   </p>
                   <p className="text-xs text-gray-600">
-                    {selectedHembraAnimal.especie?.nombre ||
-                      "Especie no especificada"}
+                    {getAnimalSpecies(selectedHembraAnimal)}
                     {selectedHembraAnimal.sexo &&
                       ` • ${selectedHembraAnimal.sexo}`}
                   </p>
@@ -476,7 +495,9 @@ const FormServicioReproductivo = ({
                       ? selectedHembraAnimal.profileImages[0].url
                       : "/images/Image-not-found.png"
                   }
-                  alt={`animal-${selectedHembraAnimal.identificador}`}
+                  alt={t("animal.imageAlt", {
+                    identifier: selectedHembraAnimal.identificador || "",
+                  })}
                   width={32}
                   height={32}
                   className="h-8 w-8 rounded-full object-cover"
@@ -484,13 +505,10 @@ const FormServicioReproductivo = ({
                 />
                 <div>
                   <p className="text-sm font-medium">
-                    {selectedHembraAnimal.identificador ||
-                      selectedHembraAnimal.nombre_animal ||
-                      "Animal"}
+                    {getAnimalName(selectedHembraAnimal)}
                   </p>
                   <p className="text-xs text-gray-600">
-                    {selectedHembraAnimal.especie?.nombre ||
-                      "Especie no especificada"}
+                    {getAnimalSpecies(selectedHembraAnimal)}
                     {selectedHembraAnimal.sexo &&
                       ` • ${selectedHembraAnimal.sexo}`}
                   </p>
@@ -530,14 +548,14 @@ const FormServicioReproductivo = ({
               htmlFor="macho_pertenece_finca"
               className="text-sm font-normal"
             >
-              El macho pertenece a mi finca
+              {t("fields.maleBelongsToFarm")}
             </Label>
           </div>
 
           {machoPerteneceFincaValue ? (
             <div>
               <Label htmlFor="machoSearch">
-                Macho de la Finca <span className="text-red-500">*</span>
+                {t("fields.farmMale")} <span className="text-red-500">*</span>
               </Label>
 
               <div className="relative">
@@ -548,8 +566,8 @@ const FormServicioReproductivo = ({
                     id="machoSearch"
                     placeholder={
                       selectedMachoAnimal
-                        ? `${selectedMachoAnimal.identificador || selectedMachoAnimal.nombre_animal || "Animal"} seleccionado`
-                        : "Buscar macho por identificador, nombre o especie..."
+                        ? `${getAnimalName(selectedMachoAnimal)} ${t("animal.selected")}`
+                        : t("placeholders.searchMale")
                     }
                     value={searchMachoTerm}
                     onChange={(e) => {
@@ -567,6 +585,7 @@ const FormServicioReproductivo = ({
                     <button
                       type="button"
                       onClick={handleClearMacho}
+                      aria-label={t("buttons.clearMale")}
                       className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full"
                     >
                       <X className="h-4 w-4" />
@@ -592,7 +611,9 @@ const FormServicioReproductivo = ({
                                 ? animal.profileImages[0].url
                                 : "/images/Image-not-found.png"
                             }
-                            alt={`animal-${animal.identificador}`}
+                            alt={t("animal.imageAlt", {
+                              identifier: animal.identificador || "",
+                            })}
                             width={40}
                             height={40}
                             className="h-10 w-10 rounded-full object-cover"
@@ -600,13 +621,10 @@ const FormServicioReproductivo = ({
                           />
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium truncate">
-                              {animal.identificador ||
-                                animal.nombre_animal ||
-                                "Sin identificar"}
+                              {getAnimalIdentifier(animal)}
                             </p>
                             <p className="text-xs text-gray-500">
-                              {animal.especie?.nombre ||
-                                "Especie no especificada"}
+                              {getAnimalSpecies(animal)}
                               {animal.sexo && ` • ${animal.sexo}`}
                             </p>
                           </div>
@@ -617,11 +635,9 @@ const FormServicioReproductivo = ({
                       ))
                     ) : (
                       <div className="py-6 text-center text-sm">
-                        <p className="text-gray-500">
-                          No se encontraron machos
-                        </p>
+                        <p className="text-gray-500">{t("search.noMales")}</p>
                         <p className="text-xs text-gray-400 mt-1">
-                          Intenta con otro término de búsqueda
+                          {t("search.tryAnotherTerm")}
                         </p>
                       </div>
                     )}
@@ -638,7 +654,9 @@ const FormServicioReproductivo = ({
                           ? selectedMachoAnimal.profileImages[0].url
                           : "/images/Image-not-found.png"
                       }
-                      alt={`animal-${selectedMachoAnimal.identificador}`}
+                      alt={t("animal.imageAlt", {
+                        identifier: selectedMachoAnimal.identificador || "",
+                      })}
                       width={32}
                       height={32}
                       className="h-8 w-8 rounded-full object-cover"
@@ -646,13 +664,10 @@ const FormServicioReproductivo = ({
                     />
                     <div>
                       <p className="text-sm font-medium">
-                        {selectedMachoAnimal.identificador ||
-                          selectedMachoAnimal.nombre_animal ||
-                          "Animal"}
+                        {getAnimalName(selectedMachoAnimal)}
                       </p>
                       <p className="text-xs text-gray-600">
-                        {selectedMachoAnimal.especie?.nombre ||
-                          "Especie no especificada"}
+                        {getAnimalSpecies(selectedMachoAnimal)}
                         {selectedMachoAnimal.sexo &&
                           ` • ${selectedMachoAnimal.sexo}`}
                       </p>
@@ -668,31 +683,31 @@ const FormServicioReproductivo = ({
               )}
               {!isMontaNatural && (
                 <p className="text-sm text-blue-500 mt-1">
-                  * El macho seleccionado será utilizado como donante de
-                  semen/embriones
+                  {t("messages.maleDonor")}
                 </p>
               )}
             </div>
           ) : (
             <div>
               <Label htmlFor="macho_externo_nombre">
-                Nombre del Macho Externo <span className="text-red-500">*</span>
+                {t("fields.externalMaleName")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="macho_externo_nombre"
                 {...register("macho_externo_nombre", {
-                  required: "Debe ingresar el nombre del macho externo",
+                  required: t("validation.externalMaleNameRequired"),
                 })}
                 placeholder={
                   isMontaNatural
-                    ? "Ej: Toro de Don José - Raza Brahman"
-                    : "Ej: Toro Don José (Raza Brahman) - Finca El Rosario"
+                    ? t("placeholders.externalMaleNatural")
+                    : t("placeholders.externalMaleOther")
                 }
                 disabled={isSubmitting}
                 className={errors.macho_externo_nombre ? "border-red-500" : ""}
               />
               <p className="text-sm text-gray-500 mt-1">
-                * Ingrese el nombre completo del macho y su procedencia
+                {t("messages.externalMaleOrigin")}
               </p>
               {errors.macho_externo_nombre && (
                 <p className="text-sm text-red-500 mt-1">
@@ -706,8 +721,9 @@ const FormServicioReproductivo = ({
 
       {!servicio && (
         <div>
-          <Label htmlFor="celo_id">Celo Asociado</Label>
+          <Label htmlFor="celo_id">{t("fields.associatedHeat")}</Label>
           <Select
+            value={watch("celo_id") || ""}
             onValueChange={(value) => setValue("celo_id", value)}
             disabled={isSubmitting || !selectedHembra || isLoadingCelos}
           >
@@ -715,32 +731,35 @@ const FormServicioReproductivo = ({
               <SelectValue
                 placeholder={
                   isLoadingCelos
-                    ? "Cargando celos..."
+                    ? t("placeholders.loadingHeats")
                     : !selectedHembra
-                      ? "Seleccione una hembra primero"
-                      : "Seleccionar celo"
+                      ? t("placeholders.selectFemaleFirst")
+                      : t("placeholders.selectHeat")
                 }
               />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Celos Activos</SelectLabel>
+                <SelectLabel>{t("fields.activeHeats")}</SelectLabel>
                 {celosActivos && celosActivos.length > 0 ? (
                   celosActivos.map((celo: Celo) => (
                     <SelectItem key={celo.id} value={celo.id}>
-                      {`Celo #${celo.numeroCelo} - Inicio: ${new Date(celo.fechaInicio).toLocaleDateString()}`}
+                      {t("animal.heatOption", {
+                        number: celo.numeroCelo,
+                        date: new Date(celo.fechaInicio).toLocaleDateString(),
+                      })}
                     </SelectItem>
                   ))
                 ) : (
                   <SelectItem value="no-celos" disabled>
-                    No hay celos activos para esta hembra
+                    {t("messages.noActiveHeats")}
                   </SelectItem>
                 )}
               </SelectGroup>
             </SelectContent>
           </Select>
           <p className="text-sm text-gray-500 mt-1">
-            * Seleccione el celo al que pertenece este servicio
+            {t("messages.selectAssociatedHeat")}
           </p>
         </div>
       )}
@@ -748,27 +767,26 @@ const FormServicioReproductivo = ({
       {(isIATF || isTransferencia || isFIV) && (
         <>
           <div>
-            <Label htmlFor="proveedor_semen">
-              Proveedor de Semen/Embriones
-            </Label>
+            <Label htmlFor="proveedor_semen">{t("fields.semenProvider")}</Label>
             <Input
               id="proveedor_semen"
               {...register("proveedor_semen")}
-              placeholder="Nombre del proveedor"
+              placeholder={t("placeholders.providerName")}
               disabled={isSubmitting}
             />
             <p className="text-sm text-gray-500 mt-1">
-              * Ingrese el nombre del proveedor si el semen/embriones son
-              externos
+              {t("messages.externalProvider")}
             </p>
           </div>
 
           <div>
-            <Label htmlFor="tecnico_responsable">Técnico Responsable</Label>
+            <Label htmlFor="tecnico_responsable">
+              {t("fields.responsibleTechnician")}
+            </Label>
             <Input
               id="tecnico_responsable"
               {...register("tecnico_responsable")}
-              placeholder="Nombre del técnico"
+              placeholder={t("placeholders.technicianName")}
               disabled={isSubmitting}
             />
           </div>
@@ -777,11 +795,11 @@ const FormServicioReproductivo = ({
 
       {isIATF && (
         <div>
-          <Label htmlFor="dosis_semen">Dosis de Semen</Label>
+          <Label htmlFor="dosis_semen">{t("fields.semenDose")}</Label>
           <Input
             id="dosis_semen"
             {...register("dosis_semen")}
-            placeholder="Ej: 0.5 ml"
+            placeholder={t("placeholders.semenDose")}
             disabled={isSubmitting}
           />
         </div>
@@ -789,7 +807,9 @@ const FormServicioReproductivo = ({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="costo">Costo ({moneda})</Label>
+          <Label htmlFor="costo">
+            {t("fields.cost")} ({moneda})
+          </Label>
           <Input
             id="costo"
             {...register("metadata.costo", { valueAsNumber: true })}
@@ -799,12 +819,12 @@ const FormServicioReproductivo = ({
           />
         </div>
         <div>
-          <Label htmlFor="duracion_minutos">Duración (minutos)</Label>
+          <Label htmlFor="duracion_minutos">{t("fields.duration")}</Label>
           <Input
             id="duracion_minutos"
             {...register("metadata.duracion_minutos", { valueAsNumber: true })}
             type="number"
-            placeholder="Ej: 30"
+            placeholder={t("placeholders.duration")}
             disabled={isSubmitting}
           />
         </div>
@@ -812,53 +832,57 @@ const FormServicioReproductivo = ({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="condiciones_climaticas">Condiciones Climáticas</Label>
+          <Label htmlFor="condiciones_climaticas">
+            {t("fields.weatherConditions")}
+          </Label>
           <Select
+            value={watch("metadata.condiciones_climaticas") || ""}
             onValueChange={(value) =>
               setValue("metadata.condiciones_climaticas", value)
             }
-            defaultValue={servicio?.metadata?.condiciones_climaticas}
             disabled={isSubmitting}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Seleccionar condición" />
+              <SelectValue placeholder={t("placeholders.selectCondition")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="soleado">Soleado</SelectItem>
-              <SelectItem value="nublado">Nublado</SelectItem>
-              <SelectItem value="lluvioso">Lluvioso</SelectItem>
-              <SelectItem value="ventoso">Ventoso</SelectItem>
+              <SelectItem value="soleado">{t("weather.sunny")}</SelectItem>
+              <SelectItem value="nublado">{t("weather.cloudy")}</SelectItem>
+              <SelectItem value="lluvioso">{t("weather.rainy")}</SelectItem>
+              <SelectItem value="ventoso">{t("weather.windy")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div>
-          <Label htmlFor="evaluacion_macho">Evaluación del Macho</Label>
+          <Label htmlFor="evaluacion_macho">{t("fields.maleEvaluation")}</Label>
           <Select
+            value={watch("metadata.evaluacion_macho") || ""}
             onValueChange={(value) =>
               setValue("metadata.evaluacion_macho", value)
             }
-            defaultValue={servicio?.metadata?.evaluacion_macho}
             disabled={isSubmitting}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Seleccionar evaluación" />
+              <SelectValue placeholder={t("placeholders.selectEvaluation")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="excelente">Excelente</SelectItem>
-              <SelectItem value="bueno">Bueno</SelectItem>
-              <SelectItem value="regular">Regular</SelectItem>
-              <SelectItem value="malo">Malo</SelectItem>
+              <SelectItem value="excelente">
+                {t("evaluations.excellent")}
+              </SelectItem>
+              <SelectItem value="bueno">{t("evaluations.good")}</SelectItem>
+              <SelectItem value="regular">{t("evaluations.fair")}</SelectItem>
+              <SelectItem value="malo">{t("evaluations.poor")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
       <div>
-        <Label htmlFor="observaciones">Observaciones</Label>
+        <Label htmlFor="observaciones">{t("fields.observations")}</Label>
         <Textarea
           id="observaciones"
           {...register("observaciones")}
-          placeholder="Observaciones adicionales sobre el servicio..."
+          placeholder={t("placeholders.observations")}
           rows={3}
           disabled={isSubmitting}
         />
@@ -871,18 +895,14 @@ const FormServicioReproductivo = ({
           onClick={() => setOpenModal(false)}
           disabled={isSubmitting}
         >
-          Cancelar
+          {t("buttons.cancel")}
         </Button>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? (
-            <span className="flex items-center gap-2">
-              {isEditing ? "Actualizando..." : "Guardando..."}
-            </span>
-          ) : isEditing ? (
-            "Actualizar Servicio"
-          ) : (
-            "Registrar Servicio"
-          )}
+          {isSubmitting
+            ? t(isEditing ? "buttons.updating" : "buttons.saving")
+            : t(
+                isEditing ? "buttons.updateService" : "buttons.registerService",
+              )}
         </Button>
       </div>
     </form>

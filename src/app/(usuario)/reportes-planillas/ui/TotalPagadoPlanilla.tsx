@@ -10,6 +10,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate } from "@/helpers/funciones/formatDate";
 import { getMetodoPagoIcon } from "@/helpers/funciones/planilla/planilla";
+import { useTranslations } from "next-intl";
 
 interface Props {
   total_pagadas: ResponseTotalPagadoPlanilla | undefined;
@@ -18,6 +19,14 @@ interface Props {
 }
 
 const TotalPagadoPlanilla = ({ total_pagadas, cargando, moneda }: Props) => {
+  const t = useTranslations("totalPagadoPlanilla");
+
+  const getMetodoPagoLabel = (metodo: string) => {
+    const key = `paymentMethods.${metodo}`;
+
+    return t.has(key) ? t(key) : metodo;
+  };
+
   if (cargando) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -39,15 +48,19 @@ const TotalPagadoPlanilla = ({ total_pagadas, cargando, moneda }: Props) => {
     );
   }
 
+  const metodoPago = total_pagadas?.metodoPago || "TODOS";
+  const metodoPagoLabel = getMetodoPagoLabel(metodoPago);
+
   return (
     <div className="space-y-6">
       <Card className="shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-200 dark:border-green-800">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
             <DollarSign className="h-4 w-4 text-green-600 dark:text-green-400" />
-            Total Pagado en Planillas
+            {t("title")}
           </CardTitle>
         </CardHeader>
+
         <CardContent>
           <div className="space-y-4">
             <div>
@@ -56,7 +69,7 @@ const TotalPagadoPlanilla = ({ total_pagadas, cargando, moneda }: Props) => {
                 {total_pagadas?.totalPagado || 0}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                Monto total pagado a trabajadores
+                {t("totalAmountDescription")}
               </p>
             </div>
 
@@ -64,10 +77,10 @@ const TotalPagadoPlanilla = ({ total_pagadas, cargando, moneda }: Props) => {
               <div className="flex items-center gap-2 text-sm">
                 <Calendar className="h-4 w-4 text-green-600" />
                 <div>
-                  <p className="text-xs text-muted-foreground">Período</p>
-                  {total_pagadas && total_pagadas?.fechaInicio !== "TODAS" && (
+                  <p className="text-xs text-muted-foreground">{t("period")}</p>
+                  {total_pagadas && total_pagadas.fechaInicio !== "TODAS" && (
                     <p className="font-medium text-sm">
-                      {formatDate(total_pagadas?.fechaInicio)}
+                      {formatDate(total_pagadas.fechaInicio)}
                     </p>
                   )}
                 </div>
@@ -76,10 +89,12 @@ const TotalPagadoPlanilla = ({ total_pagadas, cargando, moneda }: Props) => {
               <div className="flex items-center gap-2 text-sm">
                 <CalendarRange className="h-4 w-4 text-green-600" />
                 <div>
-                  <p className="text-xs text-muted-foreground">Fecha fin</p>
-                  {total_pagadas && total_pagadas?.fechaFin !== "TODAS" && (
+                  <p className="text-xs text-muted-foreground">
+                    {t("endDate")}
+                  </p>
+                  {total_pagadas && total_pagadas.fechaFin !== "TODAS" && (
                     <p className="font-medium text-sm">
-                      {formatDate(total_pagadas?.fechaFin || "TODAS")}
+                      {formatDate(total_pagadas.fechaFin || "TODAS")}
                     </p>
                   )}
                 </div>
@@ -89,12 +104,12 @@ const TotalPagadoPlanilla = ({ total_pagadas, cargando, moneda }: Props) => {
             <div className="flex items-center gap-2 pt-1 border-t border-green-200 dark:border-green-800">
               <Wallet className="h-4 w-4 text-green-600" />
               <div>
-                <p className="text-xs text-muted-foreground">Método de pago</p>
+                <p className="text-xs text-muted-foreground">
+                  {t("paymentMethod")}
+                </p>
                 <p className="font-medium">
-                  <span className="mr-1">
-                    {getMetodoPagoIcon(total_pagadas?.metodoPago || "TODOS")}
-                  </span>
-                  {total_pagadas?.metodoPago || "TODOS"}
+                  <span className="mr-1">{getMetodoPagoIcon(metodoPago)}</span>
+                  {metodoPagoLabel}
                 </p>
               </div>
             </div>
@@ -106,31 +121,40 @@ const TotalPagadoPlanilla = ({ total_pagadas, cargando, moneda }: Props) => {
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-blue-600" />
-            Resumen Rápido
+            {t("quickSummary.title")}
           </CardTitle>
         </CardHeader>
+
         <CardContent>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Total pagado:</span>
+              <span className="text-muted-foreground">
+                {t("quickSummary.totalPaid")}
+              </span>
               <span className="font-bold text-blue-700 dark:text-blue-400">
                 {moneda}
                 {total_pagadas?.totalPagado || 0}
               </span>
             </div>
+
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Filtro aplicado:</span>
+              <span className="text-muted-foreground">
+                {t("quickSummary.appliedFilter")}
+              </span>
               <span className="font-medium">
                 {total_pagadas?.metodoPago !== "TODOS"
-                  ? total_pagadas?.metodoPago
-                  : "Sin filtrar por método"}
+                  ? metodoPagoLabel
+                  : t("quickSummary.noPaymentMethodFilter")}
               </span>
             </div>
+
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Rango de fechas:</span>
+              <span className="text-muted-foreground">
+                {t("quickSummary.dateRange")}
+              </span>
               <span className="font-medium text-xs">
                 {total_pagadas?.fechaInicio === "TODAS"
-                  ? "Sin filtro de fecha"
+                  ? t("quickSummary.noDateFilter")
                   : `${total_pagadas?.fechaInicio} → ${total_pagadas?.fechaFin}`}
               </span>
             </div>

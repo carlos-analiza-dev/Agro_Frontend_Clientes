@@ -1,3 +1,5 @@
+"use client";
+
 import { Finca } from "@/api/fincas/interfaces/response-fincasByPropietario.interface";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { tiposMamtenimientoData } from "@/helpers/data/mantenimientos/dataTiposMantenimientos";
 import { XCircleIcon } from "lucide-react";
-import React from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   filters: {
@@ -37,17 +39,27 @@ const CardFilters = ({
   hasActiveFilters,
   fincas,
 }: Props) => {
+  const t = useTranslations("cardFiltersMantenimientos");
+
+  const getTipoLabel = (value: string, fallback: string) => {
+    const key = `maintenanceTypes.${value.toLowerCase()}`;
+
+    return t.has(key) ? t(key) : fallback;
+  };
+
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg">Filtros</CardTitle>
+        <CardTitle className="text-lg">{t("title")}</CardTitle>
       </CardHeader>
+
       <CardContent>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">
-              Finca
+              {t("fields.farm")}
             </label>
+
             <Select
               value={filters.fincaId || "todas"}
               onValueChange={(value) =>
@@ -55,13 +67,15 @@ const CardFilters = ({
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Todas las fincas" />
+                <SelectValue placeholder={t("placeholders.allFarms")} />
               </SelectTrigger>
+
               <SelectContent>
-                <SelectItem value="todas">Todas las fincas</SelectItem>
+                <SelectItem value="todas">{t("options.allFarms")}</SelectItem>
+
                 {isLoadingFincas ? (
                   <SelectItem value="loading" disabled>
-                    Cargando...
+                    {t("loading")}
                   </SelectItem>
                 ) : (
                   fincas?.map((f: Finca) => (
@@ -76,8 +90,9 @@ const CardFilters = ({
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">
-              Tipo
+              {t("fields.type")}
             </label>
+
             <Select
               value={filters.tipoMantenimiento || "todos"}
               onValueChange={(value) =>
@@ -88,13 +103,15 @@ const CardFilters = ({
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Todos los tipos" />
+                <SelectValue placeholder={t("placeholders.allTypes")} />
               </SelectTrigger>
+
               <SelectContent>
-                <SelectItem value="todos">Todos los tipos</SelectItem>
+                <SelectItem value="todos">{t("options.allTypes")}</SelectItem>
+
                 {tiposMamtenimientoData.map((tipo) => (
                   <SelectItem key={tipo.id} value={tipo.value}>
-                    {tipo.label}
+                    {getTipoLabel(tipo.value, tipo.label)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -103,8 +120,9 @@ const CardFilters = ({
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">
-              Desde
+              {t("fields.from")}
             </label>
+
             <Input
               type="date"
               value={filters.fechaInicio}
@@ -117,8 +135,9 @@ const CardFilters = ({
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">
-              Hasta
+              {t("fields.to")}
             </label>
+
             <Input
               type="date"
               value={filters.fechaFin}
@@ -135,7 +154,7 @@ const CardFilters = ({
               className="w-full gap-2"
             >
               <XCircleIcon className="h-4 w-4" />
-              Limpiar filtros
+              {t("buttons.clearFilters")}
             </Button>
           </div>
         </div>

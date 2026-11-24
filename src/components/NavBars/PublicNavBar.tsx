@@ -319,7 +319,6 @@ const UserActionsDesktop = ({
         <Leaf className="h-3.5 w-3.5 mr-1.5" />
         {t("register")}
       </Button>
-      <LanguageSwitcher className="hidden sm:flex" />
     </div>
   );
 };
@@ -569,6 +568,7 @@ const PublicNavBar = () => {
             </nav>
 
             <div className="flex items-center gap-1 sm:gap-2">
+              <LanguageSwitcher className="hidden sm:flex" />
               <CountrySelector
                 selectedCountry={selectedCountry}
                 hasSelectedCountry={hasSelectedCountry}

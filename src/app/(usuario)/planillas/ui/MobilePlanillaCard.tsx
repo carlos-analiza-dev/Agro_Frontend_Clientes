@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   getAvailableActions,
@@ -54,12 +57,28 @@ export const MobilePlanillaCard = ({
   openConfirmModal,
   openPagosModalHandler,
 }: Props) => {
+  const t = useTranslations("mobilePlanillaCard");
+
   const estado = planilla.estado as EstadoPlanilla;
   const actions = getAvailableActions(estado);
+
   const isLoading =
     loadingAction === `generar_${planilla.id}` ||
     loadingAction === `confirmar_${planilla.id}` ||
     loadingAction === `anular_${planilla.id}`;
+
+  const getActionLabel = (action: string, fallback: string) => {
+    const key = `actions.${action}`;
+    return t.has(key) ? t(key) : fallback;
+  };
+
+  const getPeriodLabel = () => {
+    const periodo = getPeriodoText(planilla.tipoPeriodo as TipoPeriodoPago);
+
+    const key = `periodTypes.${planilla.tipoPeriodo}`;
+
+    return t.has(key) ? t(key) : periodo;
+  };
 
   return (
     <Card className="mb-3">
@@ -70,29 +89,38 @@ export const MobilePlanillaCard = ({
               <h3 className="font-semibold text-base">{planilla.nombre}</h3>
               {getEstadoBadgePlanilla(planilla.estado)}
             </div>
+
             {planilla.descripcion && (
               <p className="text-sm text-muted-foreground mt-1">
                 {planilla.descripcion}
               </p>
             )}
           </div>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" disabled={isLoading}>
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={isLoading}
+                aria-label={t("buttons.moreOptions")}
+              >
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
+
             <DropdownMenuContent align="end">
               <DropdownMenuItem
                 onClick={() => handleViewDetailsPlanilla(planilla.id)}
               >
                 <Eye className="h-4 w-4 mr-2" />
-                Ver Detalles
+                {t("buttons.viewDetails")}
               </DropdownMenuItem>
+
               {actions.menu.includes("editar") && (
                 <DropdownMenuItem onClick={() => handleEditPlanilla(planilla)}>
                   <Edit className="h-4 w-4 mr-2" />
-                  Editar
+                  {t("buttons.edit")}
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
@@ -103,20 +131,26 @@ export const MobilePlanillaCard = ({
 
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Período:</span>
+            <span className="text-sm text-muted-foreground">
+              {t("fields.period")}
+            </span>
+
             <span className="text-sm text-right">
               {formatDate(planilla.fechaInicio)} -{" "}
               {formatDate(planilla.fechaFin)}
               <br />
               <span className="text-xs text-muted-foreground capitalize">
-                {getPeriodoText(planilla.tipoPeriodo as TipoPeriodoPago)} (
-                {planilla.diasPeriodo} días)
+                {getPeriodLabel()} ({t("days", { count: planilla.diasPeriodo })}
+                )
               </span>
             </span>
           </div>
 
           <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Fecha Pago:</span>
+            <span className="text-sm text-muted-foreground">
+              {t("fields.paymentDate")}
+            </span>
+
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3 text-muted-foreground" />
               <span className="text-sm">{formatDate(planilla.fechaPago)}</span>
@@ -124,7 +158,10 @@ export const MobilePlanillaCard = ({
           </div>
 
           <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Total Neto:</span>
+            <span className="text-sm text-muted-foreground">
+              {t("fields.netTotal")}
+            </span>
+
             <span className="font-semibold text-green-600 dark:text-green-400 text-lg">
               {formatCurrency(planilla.totalNeto, moneda)}
             </span>
@@ -147,7 +184,7 @@ export const MobilePlanillaCard = ({
               ) : (
                 <RefreshCw className="h-4 w-4" />
               )}
-              Generar
+              {t("buttons.generate")}
             </Button>
           )}
 
@@ -166,7 +203,7 @@ export const MobilePlanillaCard = ({
               ) : (
                 <actions.primary.icon className="h-4 w-4" />
               )}
-              {actions.primary.label}
+              {getActionLabel(actions.primary.action, actions.primary.label)}
             </Button>
           )}
 
@@ -179,7 +216,7 @@ export const MobilePlanillaCard = ({
               className="flex-1 gap-1 bg-green-600 hover:bg-green-700"
             >
               <CreditCard className="h-4 w-4" />
-              {actions.primary.label}
+              {getActionLabel(actions.primary.action, actions.primary.label)}
             </Button>
           )}
 
@@ -206,7 +243,7 @@ export const MobilePlanillaCard = ({
               ) : (
                 <secAction.icon className="h-4 w-4" />
               )}
-              {secAction.label}
+              {getActionLabel(secAction.action, secAction.label)}
             </Button>
           ))}
         </div>

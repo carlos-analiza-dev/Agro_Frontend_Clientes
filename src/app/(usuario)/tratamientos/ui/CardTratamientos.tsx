@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { Tratamiento } from "@/api/historial-clinico/interface/response-tratamientos-animal.interface";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,6 +24,8 @@ interface Props {
 }
 
 const CardTratamientos = ({ estado, tratamiento, IconoEstado }: Props) => {
+  const t = useTranslations("cardTratamientos");
+
   const descargarDocumento = (url: string, nombre: string) => {
     const link = document.createElement("a");
     link.href = url;
@@ -39,24 +44,29 @@ const CardTratamientos = ({ estado, tratamiento, IconoEstado }: Props) => {
                 <IconoEstado className="h-3 w-3 mr-1" />
                 {estado.texto}
               </Badge>
+
               <Badge variant="secondary">
                 {tratamiento.subServicio?.nombre}
               </Badge>
             </div>
+
             <h3 className="font-semibold text-lg">
               {tratamiento.subServicio?.codigo}
             </h3>
+
             <p className="text-sm text-gray-600">
               {tratamiento.subServicio?.descripcion}
             </p>
           </div>
+
           <div className="text-right">
             <p className="text-sm text-gray-500 flex items-center gap-1">
               <Clock className="h-3 w-3" />
               {formatDate(tratamiento.createdAt)}
             </p>
+
             <p className="text-xs text-gray-400">
-              Actualizado: {formatDate(tratamiento.updatedAt)}
+              {t("labels.updated")}: {formatDate(tratamiento.updatedAt)}
             </p>
           </div>
         </div>
@@ -65,8 +75,9 @@ const CardTratamientos = ({ estado, tratamiento, IconoEstado }: Props) => {
           {tratamiento.diagnostico && (
             <div>
               <p className="text-sm font-medium text-gray-700 mb-1">
-                Diagnóstico:
+                {t("labels.diagnosis")}:
               </p>
+
               <p className="text-sm text-gray-600 bg-red-50 p-3 rounded-lg">
                 {tratamiento.diagnostico}
               </p>
@@ -76,8 +87,9 @@ const CardTratamientos = ({ estado, tratamiento, IconoEstado }: Props) => {
           {tratamiento.tratamiento && (
             <div>
               <p className="text-sm font-medium text-gray-700 mb-1">
-                Tratamiento Aplicado:
+                {t("labels.appliedTreatment")}:
               </p>
+
               <p className="text-sm text-gray-600 bg-green-50 p-3 rounded-lg">
                 {tratamiento.tratamiento}
               </p>
@@ -88,8 +100,9 @@ const CardTratamientos = ({ estado, tratamiento, IconoEstado }: Props) => {
         {tratamiento.observaciones && (
           <div className="mb-4">
             <p className="text-sm font-medium text-gray-700 mb-1">
-              Observaciones:
+              {t("labels.observations")}:
             </p>
+
             <p className="text-sm text-gray-600 bg-yellow-50 p-3 rounded-lg">
               {tratamiento.observaciones}
             </p>
@@ -99,8 +112,9 @@ const CardTratamientos = ({ estado, tratamiento, IconoEstado }: Props) => {
         {tratamiento.documentos && tratamiento.documentos.length > 0 && (
           <div className="mt-4">
             <p className="text-sm font-medium text-gray-700 mb-2">
-              Documentos Adjuntos:
+              {t("labels.attachedDocuments")}:
             </p>
+
             <div className="flex flex-wrap gap-2">
               {tratamiento.documentos.map((doc) => (
                 <Button
@@ -110,6 +124,9 @@ const CardTratamientos = ({ estado, tratamiento, IconoEstado }: Props) => {
                   size="sm"
                   className="flex items-center gap-1"
                   onClick={() => descargarDocumento(doc.url, doc.nombre)}
+                  aria-label={t("buttons.downloadDocument", {
+                    name: doc.nombre,
+                  })}
                 >
                   <Download className="h-3 w-3" />
                   {doc.nombre}

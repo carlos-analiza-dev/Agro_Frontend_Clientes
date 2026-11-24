@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Dispatch, SetStateAction, useMemo } from "react";
 import { useMediaQuery } from "@/hooks/media_query/useMediaQuery";
+import { useTranslations } from "next-intl";
 
 interface Props {
   selectedTrabajador: Configuraciones | null;
@@ -26,6 +27,7 @@ const ModalConfig = ({
   setSelectedTrabajador,
   moneda,
 }: Props) => {
+  const t = useTranslations("modalConfig");
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const valoresCalculados = useMemo(() => {
@@ -97,8 +99,8 @@ const ModalConfig = ({
     <Modal
       open={!!selectedTrabajador}
       onOpenChange={() => setSelectedTrabajador(null)}
-      title="Detalle del Trabajador"
-      description="Información completa de configuración laboral"
+      title={t("title")}
+      description={t("description")}
       size="2xl"
       height="auto"
     >
@@ -111,13 +113,13 @@ const ModalConfig = ({
               value="general"
               className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
             >
-              General
+              {t("tabs.general")}
             </TabsTrigger>
             <TabsTrigger
               value="bonificaciones"
               className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
             >
-              Bonificaciones
+              {t("tabs.bonuses")}
             </TabsTrigger>
             {!isMobile && (
               <>
@@ -125,13 +127,13 @@ const ModalConfig = ({
                   value="deducciones"
                   className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
-                  Deducciones
+                  {t("tabs.deductions")}
                 </TabsTrigger>
                 <TabsTrigger
                   value="historial"
                   className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
-                  Historial
+                  {t("tabs.history")}
                 </TabsTrigger>
               </>
             )}
@@ -144,13 +146,13 @@ const ModalConfig = ({
                   value="deducciones"
                   className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
-                  Deducciones
+                  {t("tabs.deductions")}
                 </TabsTrigger>
                 <TabsTrigger
                   value="historial"
                   className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
-                  Historial
+                  {t("tabs.history")}
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -159,14 +161,14 @@ const ModalConfig = ({
           <TabsContent value="general" className="space-y-6 mt-2">
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                Información Personal
+                {t("sections.personalInformation")}
               </h3>
               <div
                 className={`grid ${isMobile ? "grid-cols-1 gap-4" : "grid-cols-2 gap-4"}`}
               >
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-500">
-                    Nombre Completo
+                    {t("fields.fullName")}
                   </label>
                   <p className="text-gray-900 dark:text-gray-100 font-medium">
                     {selectedTrabajador.trabajador.nombre}
@@ -174,7 +176,7 @@ const ModalConfig = ({
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-500">
-                    Identificación
+                    {t("fields.identification")}
                   </label>
                   <p className="text-gray-900 dark:text-gray-100">
                     {selectedTrabajador.trabajador.identificacion}
@@ -182,15 +184,15 @@ const ModalConfig = ({
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-500">
-                    Cargo
+                    {t("fields.position")}
                   </label>
                   <p className="text-gray-900 dark:text-gray-100">
-                    {selectedTrabajador.cargo || "No especificado"}
+                    {selectedTrabajador.cargo || t("notSpecified")}
                   </p>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-500">
-                    Estado
+                    {t("fields.status")}
                   </label>
                   <div>
                     <span
@@ -200,7 +202,9 @@ const ModalConfig = ({
                           : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
                       }`}
                     >
-                      {selectedTrabajador.activo ? "Activo" : "Inactivo"}
+                      {selectedTrabajador.activo
+                        ? t("status.active")
+                        : t("status.inactive")}
                     </span>
                   </div>
                 </div>
@@ -211,19 +215,23 @@ const ModalConfig = ({
 
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                Configuración Laboral
+                {t("sections.workConfiguration")}
               </h3>
               <div
                 className={`grid ${isMobile ? "grid-cols-1 gap-4" : "grid-cols-2 gap-4"}`}
               >
                 <div className="space-y-1">
-                  <p className="text-xs text-gray-500">Fecha Contratación</p>
+                  <p className="text-xs text-gray-500">
+                    {t("fields.hireDate")}
+                  </p>
                   <p className="text-sm font-medium">
                     {selectedTrabajador.fechaContratacion}
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs text-gray-500">Salario Diario</p>
+                  <p className="text-xs text-gray-500">
+                    {t("fields.dailySalary")}
+                  </p>
                   <p className="text-sm font-medium text-green-600">
                     {formatCurrency(selectedTrabajador.salarioDiario, moneda)}
                   </p>
@@ -231,25 +239,34 @@ const ModalConfig = ({
                 <div className="space-y-1">
                   <div className="flex items-center gap-1">
                     <CalendarDays className="h-3 w-3 text-gray-400" />
-                    <p className="text-xs text-gray-500">Días por Semana</p>
+                    <p className="text-xs text-gray-500">
+                      {t("fields.daysPerWeek")}
+                    </p>
                   </div>
                   <p className="text-sm font-medium">
-                    {selectedTrabajador.diasTrabajadosSemanal || 5} días
+                    {selectedTrabajador.diasTrabajadosSemanal || 5}{" "}
+                    {t("units.days")}
                   </p>
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3 text-gray-400" />
-                    <p className="text-xs text-gray-500">Horas por Semana</p>
+                    <p className="text-xs text-gray-500">
+                      {t("fields.hoursPerWeek")}
+                    </p>
                   </div>
                   <p className="text-sm font-medium">
-                    {selectedTrabajador.horasJornadaSemanal || 40} horas
+                    {selectedTrabajador.horasJornadaSemanal || 40}{" "}
+                    {t("units.hours")}
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs text-gray-500">Horas por Día</p>
+                  <p className="text-xs text-gray-500">
+                    {t("fields.hoursPerDay")}
+                  </p>
                   <p className="text-sm font-medium">
-                    {valoresCalculados.horasPorDia.toFixed(1)} horas
+                    {valoresCalculados.horasPorDia.toFixed(1)}{" "}
+                    {t("units.hours")}
                   </p>
                 </div>
               </div>
@@ -259,12 +276,12 @@ const ModalConfig = ({
 
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                Factores de Hora Extra
+                {t("sections.overtimeFactors")}
               </h3>
               <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20 p-4 rounded-lg space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">
-                    Factor Hora Extra Diurna:
+                    {t("fields.daytimeOvertimeFactor")}
                   </span>
                   <span className="font-semibold text-orange-600">
                     {selectedTrabajador.factorHoraExtraDiurnas || 1.5}x
@@ -272,7 +289,7 @@ const ModalConfig = ({
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">
-                    Factor Hora Extra Nocturna:
+                    {t("fields.nighttimeOvertimeFactor")}
                   </span>
                   <span className="font-semibold text-red-600">
                     {selectedTrabajador.factorHoraExtraNocturnas || 1.75}x
@@ -280,7 +297,7 @@ const ModalConfig = ({
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">
-                    Factor Hora Extra Festiva:
+                    {t("fields.holidayOvertimeFactor")}
                   </span>
                   <span className="font-semibold text-purple-600">
                     {selectedTrabajador.factorHoraExtraFestivas || 2}x
@@ -293,12 +310,12 @@ const ModalConfig = ({
 
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                Desglose Salarial
+                {t("sections.salaryBreakdown")}
               </h3>
               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 p-4 rounded-lg space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">
-                    Valor Hora Normal:
+                    {t("fields.regularHourlyRate")}
                   </span>
                   <span className="font-semibold text-blue-600">
                     {formatCurrency(valoresCalculados.valorHoraNormal, moneda)}
@@ -306,7 +323,7 @@ const ModalConfig = ({
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">
-                    Valor Hora Extra Diurna:
+                    {t("fields.daytimeOvertimeRate")}
                   </span>
                   <span className="font-semibold text-orange-600">
                     {formatCurrency(
@@ -317,7 +334,7 @@ const ModalConfig = ({
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">
-                    Valor Hora Extra Nocturna:
+                    {t("fields.nighttimeOvertimeRate")}
                   </span>
                   <span className="font-semibold text-red-600">
                     {formatCurrency(
@@ -328,7 +345,7 @@ const ModalConfig = ({
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">
-                    Valor Hora Extra Festiva:
+                    {t("fields.holidayOvertimeRate")}
                   </span>
                   <span className="font-semibold text-purple-600">
                     {formatCurrency(
@@ -339,7 +356,7 @@ const ModalConfig = ({
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">
-                    Salario Semanal:
+                    {t("fields.weeklySalary")}
                   </span>
                   <span className="font-semibold text-purple-600">
                     {formatCurrency(valoresCalculados.salarioSemanal, moneda)}
@@ -347,7 +364,7 @@ const ModalConfig = ({
                 </div>
                 <div className="flex justify-between items-center pt-2 border-t">
                   <span className="text-sm font-medium">
-                    Salario Mensual Base:
+                    {t("fields.baseMonthlySalary")}
                   </span>
                   <span className="text-lg font-bold text-blue-600">
                     {formatCurrency(valoresCalculados.salarioMensual, moneda)}
@@ -360,7 +377,7 @@ const ModalConfig = ({
 
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                Contacto
+                {t("sections.contact")}
               </h3>
               <div
                 className={`space-y-3 ${!isMobile && "grid grid-cols-2 gap-4"}`}
@@ -374,7 +391,7 @@ const ModalConfig = ({
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-gray-400" />
                   <span className="text-sm">
-                    {selectedTrabajador.trabajador.email || "No registrado"}
+                    {selectedTrabajador.trabajador.email || t("notRegistered")}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 col-span-2">
@@ -390,9 +407,11 @@ const ModalConfig = ({
           <TabsContent value="bonificaciones" className="mt-4">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Bonificaciones Fijas</CardTitle>
+                <CardTitle className="text-lg">
+                  {t("sections.fixedBonuses")}
+                </CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  Total mensual:{" "}
+                  {t("fields.monthlyTotal")}:{" "}
                   {formatCurrency(
                     valoresCalculados.totalBonificaciones,
                     moneda,
@@ -412,7 +431,7 @@ const ModalConfig = ({
                           <div>
                             <p className="font-medium">{bono.concepto}</p>
                             <p className="text-sm text-gray-500">
-                              Bonificación fija mensual
+                              {t("descriptions.monthlyFixedBonus")}
                             </p>
                           </div>
                           <p className="text-lg font-semibold text-green-600">
@@ -424,7 +443,7 @@ const ModalConfig = ({
                   </div>
                 ) : (
                   <p className="text-gray-500 text-center py-8">
-                    No hay bonificaciones registradas
+                    {t("empty.bonuses")}
                   </p>
                 )}
               </CardContent>
@@ -434,9 +453,11 @@ const ModalConfig = ({
           <TabsContent value="deducciones" className="mt-4">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Deducciones Fijas</CardTitle>
+                <CardTitle className="text-lg">
+                  {t("sections.fixedDeductions")}
+                </CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  Total mensual:{" "}
+                  {t("fields.monthlyTotal")}:{" "}
                   {formatCurrency(valoresCalculados.totalDeducciones, moneda)}
                 </p>
               </CardHeader>
@@ -453,7 +474,7 @@ const ModalConfig = ({
                           <div>
                             <p className="font-medium">{deduccion.concepto}</p>
                             <p className="text-sm text-gray-500">
-                              Deducción fija mensual
+                              {t("descriptions.monthlyFixedDeduction")}
                             </p>
                           </div>
                           <p className="text-lg font-semibold text-red-600">
@@ -465,7 +486,7 @@ const ModalConfig = ({
                   </div>
                 ) : (
                   <p className="text-gray-500 text-center py-8">
-                    No hay deducciones registradas
+                    {t("empty.deductions")}
                   </p>
                 )}
               </CardContent>
@@ -476,19 +497,21 @@ const ModalConfig = ({
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">
-                  Resumen Financiero Mensual
+                  {t("sections.monthlyFinancialSummary")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Salario Base Mensual:</span>
+                    <span className="text-gray-600">
+                      {t("fields.baseMonthlySalary")}:
+                    </span>
                     <span className="font-semibold">
                       {formatCurrency(valoresCalculados.salarioMensual, moneda)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center text-green-600">
-                    <span>Total Bonificaciones:</span>
+                    <span>{t("fields.totalBonuses")}:</span>
                     <span className="font-semibold">
                       {formatCurrency(
                         valoresCalculados.totalBonificaciones,
@@ -497,7 +520,7 @@ const ModalConfig = ({
                     </span>
                   </div>
                   <div className="flex justify-between items-center text-red-600">
-                    <span>Total Deducciones:</span>
+                    <span>{t("fields.totalDeductions")}:</span>
                     <span className="font-semibold">
                       {formatCurrency(
                         valoresCalculados.totalDeducciones,
@@ -507,7 +530,7 @@ const ModalConfig = ({
                   </div>
                   <div className="border-t pt-3">
                     <div className="flex justify-between items-center text-lg font-bold">
-                      <span>Total Neto Mensual:</span>
+                      <span>{t("fields.totalNetMonthly")}:</span>
                       <span className="text-blue-600">
                         {formatCurrency(
                           valoresCalculados.totalNetoMensual,
@@ -522,12 +545,12 @@ const ModalConfig = ({
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-500">
-                    Historial de Cambios
+                    {t("sections.changeHistory")}
                   </label>
                   <div className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
                     <Calendar className="h-5 w-5 text-blue-500" />
                     <div>
-                      <p className="font-medium">Fecha de Contratación</p>
+                      <p className="font-medium">{t("fields.hireDate")}</p>
                       <p className="text-sm text-gray-500">
                         {selectedTrabajador.fechaContratacion}
                       </p>
@@ -537,12 +560,14 @@ const ModalConfig = ({
                     <div className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
                       <Calendar className="h-5 w-5 text-red-500" />
                       <div>
-                        <p className="font-medium">Fecha de Baja</p>
+                        <p className="font-medium">
+                          {t("fields.terminationDate")}
+                        </p>
                         <p className="text-sm text-gray-500">
                           {selectedTrabajador.fechaBaja}
                         </p>
                         <p className="text-sm text-gray-500">
-                          Motivo: {selectedTrabajador.motivoBaja}
+                          {t("fields.reason")}: {selectedTrabajador.motivoBaja}
                         </p>
                       </div>
                     </div>

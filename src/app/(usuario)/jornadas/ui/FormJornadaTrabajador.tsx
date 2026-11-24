@@ -1,4 +1,5 @@
 "use client";
+
 import { CrearJornadaInterface } from "@/api/jornadas-trabajador/interface/crear-jornada.interface";
 import { Jornada } from "@/api/jornadas-trabajador/interface/response-jornadas.interface";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ import { CreateJornadaTrabajador } from "@/api/jornadas-trabajador/accions/crear
 import { EditarJornadaTrabajador } from "@/api/jornadas-trabajador/accions/editar-jornada";
 import useGetAllTrabajadores from "@/hooks/trabajadores/useGetAllTrabajadores";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface Props {
   onSuccess: () => void;
@@ -40,10 +42,14 @@ const FormJornadaTrabajador = ({
   jornada,
   setSelectedJornada,
 }: Props) => {
+  const t = useTranslations("formJornadaTrabajador");
+
   const isEditing = !!jornada;
   const queryClient = useQueryClient();
+
   const { data: trabajadores, isLoading: loadingTrabajadores } =
     useGetAllTrabajadores();
+
   const [searchTrabajadorTerm, setSearchTrabajadorTerm] = useState<string>("");
   const [isTrabajadorSearchOpen, setIsTrabajadorSearchOpen] =
     useState<boolean>(false);
@@ -103,6 +109,7 @@ const FormJornadaTrabajador = ({
       (Number(horasExtrasDiurnas) || 0) +
       (Number(horasExtrasNocturnas) || 0) +
       (Number(horasExtrasFestivas) || 0);
+
     setTotalHorasExtras(total);
   }, [horasExtrasDiurnas, horasExtrasNocturnas, horasExtrasFestivas]);
 
@@ -124,13 +131,13 @@ const FormJornadaTrabajador = ({
   const createMutation = useMutation({
     mutationFn: CreateJornadaTrabajador,
     onSuccess: () => {
-      toast.success("Jornada registrada exitosamente");
+      toast.success(t("messages.createSuccess"));
       resetForm();
       queryClient.invalidateQueries({ queryKey: ["jornadas"] });
       onSuccess();
     },
     onError: (error) => {
-      handleMutationError(error, "registrar");
+      handleMutationError(error, "create");
     },
   });
 
@@ -138,12 +145,12 @@ const FormJornadaTrabajador = ({
     mutationFn: ({ id, data }: { id: string; data: CrearJornadaInterface }) =>
       EditarJornadaTrabajador(id, data),
     onSuccess: () => {
-      toast.success("Jornada actualizada exitosamente");
+      toast.success(t("messages.updateSuccess"));
       queryClient.invalidateQueries({ queryKey: ["jornadas"] });
       onSuccess();
     },
     onError: (error) => {
-      handleMutationError(error, "actualizar");
+      handleMutationError(error, "update");
     },
   });
 
@@ -158,21 +165,24 @@ const FormJornadaTrabajador = ({
       horasExtrasFestivas: 0,
       observaciones: "",
     });
+
     setSearchTrabajadorTerm("");
     setIsTrabajadorSearchOpen(false);
   };
 
-  const handleMutationError = (error: unknown, action: string) => {
+  const handleMutationError = (error: unknown, action: "create" | "update") => {
     if (isAxiosError(error)) {
       const messages = error.response?.data?.message;
+
       const errorMessage = Array.isArray(messages)
         ? messages[0]
         : typeof messages === "string"
           ? messages
-          : `Hubo un error al ${action} la jornada`;
+          : t(`errors.${action}`);
+
       toast.error(errorMessage);
     } else {
-      toast.error(`Hubo un error al ${action} la jornada. Inténtalo de nuevo.`);
+      toast.error(t(`errors.${action}Retry`));
     }
   };
 
@@ -201,9 +211,11 @@ const FormJornadaTrabajador = ({
 
   const handleCancel = () => {
     resetForm();
+
     if (setSelectedJornada) {
       setSelectedJornada(null);
     }
+
     onSuccess();
   };
 
@@ -213,32 +225,35 @@ const FormJornadaTrabajador = ({
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Briefcase className="h-5 w-5" />
-            Información de la Jornada
+            {t("sections.workdayInformation")}
           </CardTitle>
         </CardHeader>
+
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="trabajadorSearch">
-                Trabajador <span className="text-red-500">*</span>
+                {t("fields.worker")} <span className="text-red-500">*</span>
               </Label>
+
               {isEditing ? (
                 <div className="flex items-center h-10 px-3 border rounded-md bg-gray-50">
                   <span className="text-sm">
-                    {jornada?.trabajador?.nombre || "No asignado"}
+                    {jornada?.trabajador?.nombre || t("values.unassigned")}
                   </span>
                 </div>
               ) : (
                 <div className="relative">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50" />
+
                     <input
                       type="text"
                       id="trabajadorSearch"
                       placeholder={
                         selectedTrabajador
                           ? `${selectedTrabajador.nombre}`
-                          : "Buscar trabajador por nombre, identificación, email o teléfono..."
+                          : t("placeholders.searchWorker")
                       }
                       value={searchTrabajadorTerm}
                       onChange={(e) => {
@@ -253,10 +268,12 @@ const FormJornadaTrabajador = ({
                       )}
                       disabled={loadingTrabajadores}
                     />
+
                     {selectedTrabajador && (
                       <button
                         type="button"
                         onClick={handleClearTrabajador}
+                        aria-label={t("actions.clearWorker")}
                         className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full"
                       >
                         <X className="h-4 w-4" />
@@ -268,7 +285,7 @@ const FormJornadaTrabajador = ({
                     <div className="absolute z-50 w-full mt-1 border rounded-md shadow-lg max-h-60 overflow-y-auto bg-white">
                       {loadingTrabajadores ? (
                         <div className="py-6 text-center text-sm text-gray-500">
-                          Cargando trabajadores...
+                          {t("messages.loadingWorkers")}
                         </div>
                       ) : filteredTrabajadores.length > 0 ? (
                         filteredTrabajadores.map((trabajador: any) => (
@@ -284,19 +301,23 @@ const FormJornadaTrabajador = ({
                             )}
                           >
                             <User className="h-4 w-4 text-gray-400 flex-shrink-0" />
+
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium truncate">
                                 {trabajador.nombre}
                               </p>
+
                               <div className="flex items-center gap-2 text-xs text-gray-500 flex-wrap">
                                 {trabajador.identificacion && (
                                   <span className="truncate">
                                     ID: {trabajador.identificacion}
                                   </span>
                                 )}
+
                                 {trabajador.telefono && (
                                   <span>• {trabajador.telefono}</span>
                                 )}
+
                                 {trabajador.email && (
                                   <span className="truncate">
                                     • {trabajador.email}
@@ -304,6 +325,7 @@ const FormJornadaTrabajador = ({
                                 )}
                               </div>
                             </div>
+
                             {currentTrabajadorId === trabajador.id && (
                               <div className="h-2 w-2 rounded-full bg-blue-600 flex-shrink-0" />
                             )}
@@ -312,10 +334,10 @@ const FormJornadaTrabajador = ({
                       ) : (
                         <div className="py-6 text-center text-sm">
                           <p className="text-gray-500">
-                            No se encontraron trabajadores
+                            {t("messages.noWorkersFound")}
                           </p>
                           <p className="text-xs text-gray-400 mt-1">
-                            Intenta con otro término de búsqueda
+                            {t("messages.tryAnotherSearch")}
                           </p>
                         </div>
                       )}
@@ -328,19 +350,23 @@ const FormJornadaTrabajador = ({
                 <div className="mt-2 p-2 bg-blue-50 rounded-md border border-blue-200">
                   <div className="flex items-center gap-3">
                     <User className="h-4 w-4 text-blue-600 flex-shrink-0" />
+
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium">
                         {selectedTrabajador.nombre}
                       </p>
+
                       <div className="flex items-center gap-2 text-xs text-gray-600 flex-wrap">
                         {selectedTrabajador.identificacion && (
                           <span className="truncate">
                             ID: {selectedTrabajador.identificacion}
                           </span>
                         )}
+
                         {selectedTrabajador.telefono && (
                           <span>• {selectedTrabajador.telefono}</span>
                         )}
+
                         {selectedTrabajador.email && (
                           <span className="truncate">
                             • {selectedTrabajador.email}
@@ -357,28 +383,32 @@ const FormJornadaTrabajador = ({
                   {errors.trabajadorId.message as string}
                 </p>
               )}
+
               {isEditing && (
                 <p className="text-xs text-muted-foreground">
-                  El trabajador no se puede modificar en edición
+                  {t("messages.workerCannotBeChanged")}
                 </p>
               )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="fecha">
-                Fecha <span className="text-red-500">*</span>
+                {t("fields.date")} <span className="text-red-500">*</span>
               </Label>
+
               <div className="relative">
                 <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+
                 <Input
                   id="fecha"
                   type="date"
                   className="pl-10"
                   {...register("fecha", {
-                    required: "La fecha es requerida",
+                    required: t("validation.dateRequired"),
                   })}
                 />
               </div>
+
               {errors.fecha && (
                 <p className="text-sm font-medium text-red-500">
                   {errors.fecha.message as string}
@@ -387,15 +417,17 @@ const FormJornadaTrabajador = ({
             </div>
 
             <div className="space-y-2">
-              <Label>¿Trabajó?</Label>
+              <Label>{t("fields.worked")}</Label>
+
               <div className="flex items-center space-x-2 pt-2">
                 <Switch
                   id="trabajo"
                   checked={trabajo}
                   onCheckedChange={(checked) => setValue("trabajo", checked)}
                 />
+
                 <Label htmlFor="trabajo" className="cursor-pointer">
-                  {trabajo ? "Sí, trabajó" : "No trabajó"}
+                  {trabajo ? t("values.yesWorked") : t("values.didNotWork")}
                 </Label>
               </div>
             </div>
@@ -407,9 +439,10 @@ const FormJornadaTrabajador = ({
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Clock className="h-5 w-5" />
-            Horas Extras
+            {t("sections.overtime")}
           </CardTitle>
         </CardHeader>
+
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
@@ -418,8 +451,9 @@ const FormJornadaTrabajador = ({
                 className="flex items-center gap-2"
               >
                 <Sun className="h-4 w-4 text-yellow-500" />
-                Horas Extras Diurnas
+                {t("fields.daytimeOvertime")}
               </Label>
+
               <Input
                 id="horasExtrasDiurnas"
                 type="number"
@@ -428,14 +462,16 @@ const FormJornadaTrabajador = ({
                 max="12"
                 placeholder="0"
                 {...register("horasExtrasDiurnas", {
-                  min: { value: 0, message: "No puede ser negativo" },
-                  max: { value: 12, message: "Máximo 12 horas" },
+                  min: { value: 0, message: t("validation.nonNegative") },
+                  max: { value: 12, message: t("validation.maxHours") },
                   valueAsNumber: true,
                 })}
               />
+
               <p className="text-xs text-muted-foreground">
-                Horas extras antes de las 6:00 PM
+                {t("descriptions.daytimeOvertime")}
               </p>
+
               {errors.horasExtrasDiurnas && (
                 <p className="text-sm font-medium text-red-500">
                   {errors.horasExtrasDiurnas.message as string}
@@ -449,8 +485,9 @@ const FormJornadaTrabajador = ({
                 className="flex items-center gap-2"
               >
                 <Moon className="h-4 w-4 text-blue-500" />
-                Horas Extras Nocturnas
+                {t("fields.nighttimeOvertime")}
               </Label>
+
               <Input
                 id="horasExtrasNocturnas"
                 type="number"
@@ -459,14 +496,16 @@ const FormJornadaTrabajador = ({
                 max="12"
                 placeholder="0"
                 {...register("horasExtrasNocturnas", {
-                  min: { value: 0, message: "No puede ser negativo" },
-                  max: { value: 12, message: "Máximo 12 horas" },
+                  min: { value: 0, message: t("validation.nonNegative") },
+                  max: { value: 12, message: t("validation.maxHours") },
                   valueAsNumber: true,
                 })}
               />
+
               <p className="text-xs text-muted-foreground">
-                Horas extras después de las 6:00 PM
+                {t("descriptions.nighttimeOvertime")}
               </p>
+
               {errors.horasExtrasNocturnas && (
                 <p className="text-sm font-medium text-red-500">
                   {errors.horasExtrasNocturnas.message as string}
@@ -480,8 +519,9 @@ const FormJornadaTrabajador = ({
                 className="flex items-center gap-2"
               >
                 <Star className="h-4 w-4 text-purple-500" />
-                Horas Extras Festivas
+                {t("fields.holidayOvertime")}
               </Label>
+
               <Input
                 id="horasExtrasFestivas"
                 type="number"
@@ -490,14 +530,16 @@ const FormJornadaTrabajador = ({
                 max="12"
                 placeholder="0"
                 {...register("horasExtrasFestivas", {
-                  min: { value: 0, message: "No puede ser negativo" },
-                  max: { value: 12, message: "Máximo 12 horas" },
+                  min: { value: 0, message: t("validation.nonNegative") },
+                  max: { value: 12, message: t("validation.maxHours") },
                   valueAsNumber: true,
                 })}
               />
+
               <p className="text-xs text-muted-foreground">
-                Horas extras en domingos o días festivos
+                {t("descriptions.holidayOvertime")}
               </p>
+
               {errors.horasExtrasFestivas && (
                 <p className="text-sm font-medium text-red-500">
                   {errors.horasExtrasFestivas.message as string}
@@ -510,10 +552,11 @@ const FormJornadaTrabajador = ({
             <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/20 p-4 rounded-lg">
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Total de Horas Extras:
+                  {t("labels.totalOvertime")}:
                 </span>
+
                 <span className="text-2xl font-bold text-orange-600">
-                  {totalHorasExtras.toFixed(1)} horas
+                  {totalHorasExtras.toFixed(1)} {t("units.hours")}
                 </span>
               </div>
             </div>
@@ -525,18 +568,21 @@ const FormJornadaTrabajador = ({
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Detalles de la Jornada
+            {t("sections.workdayDetails")}
           </CardTitle>
         </CardHeader>
+
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="laborRealizada">Labor Realizada</Label>
+            <Label htmlFor="laborRealizada">{t("fields.workPerformed")}</Label>
+
             <Textarea
               id="laborRealizada"
-              placeholder="Describa las actividades realizadas durante la jornada..."
+              placeholder={t("placeholders.workPerformed")}
               className="min-h-[100px]"
               {...register("laborRealizada")}
             />
+
             {errors.laborRealizada && (
               <p className="text-sm font-medium text-red-500">
                 {errors.laborRealizada.message as string}
@@ -545,13 +591,15 @@ const FormJornadaTrabajador = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="observaciones">Observaciones</Label>
+            <Label htmlFor="observaciones">{t("fields.observations")}</Label>
+
             <Textarea
               id="observaciones"
-              placeholder="Notas adicionales, incidencias, etc."
+              placeholder={t("placeholders.observations")}
               className="min-h-[80px]"
               {...register("observaciones")}
             />
+
             {errors.observaciones && (
               <p className="text-sm font-medium text-red-500">
                 {errors.observaciones.message as string}
@@ -569,8 +617,9 @@ const FormJornadaTrabajador = ({
           disabled={isPending}
           className="w-full sm:w-auto"
         >
-          Cancelar
+          {t("buttons.cancel")}
         </Button>
+
         <Button
           type="button"
           variant="outline"
@@ -578,16 +627,17 @@ const FormJornadaTrabajador = ({
           disabled={isPending}
           className="w-full sm:w-auto"
         >
-          Limpiar
+          {t("buttons.clear")}
         </Button>
+
         <Button className="w-full sm:w-auto" type="submit" disabled={isPending}>
           {isPending
             ? isEditing
-              ? "Actualizando..."
-              : "Registrando..."
+              ? t("buttons.updating")
+              : t("buttons.registering")
             : isEditing
-              ? "Actualizar Jornada"
-              : "Registrar Jornada"}
+              ? t("buttons.update")
+              : t("buttons.register")}
         </Button>
       </div>
     </form>
