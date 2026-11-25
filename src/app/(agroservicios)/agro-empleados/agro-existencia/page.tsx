@@ -1,4 +1,5 @@
 "use client";
+
 import TableExistencia from "@/components/agroservicio/existencias/TableExistencia";
 import SkeletonTable from "@/components/generics/SkeletonTable";
 import TitlePage from "@/components/generics/TitlePage";
@@ -18,14 +19,18 @@ import useGetSucursalByEmpleado from "@/hooks/agroservicios/sucursales/useGetSuc
 import { useAuthEmpleadoStore } from "@/providers/store/useAuthEmpleados";
 import { Filter, Search, Warehouse } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 
 const ExistenciaProductosPage = () => {
+  const t = useTranslations("existenciaProductosPage");
+
   const { empleado } = useAuthEmpleadoStore();
   const propietarioId = empleado?.agroservicio.propietario.id ?? "";
   const [selectedProducto, setSelectedProducto] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const productoId = selectedProducto === "all" ? "" : selectedProducto;
   const { data: sucursal } = useGetSucursalByEmpleado();
+
   const { data: existencia_productos, isLoading } = useGetExistenciaProductos(
     propietarioId,
     { producto: productoId, sucursal: sucursal?.id },
@@ -71,7 +76,6 @@ const ExistenciaProductosPage = () => {
 
   const handleClearFilters = () => {
     setSelectedProducto("all");
-
     setSearchTerm("");
   };
 
@@ -103,14 +107,14 @@ const ExistenciaProductosPage = () => {
       className="container mx-auto p-4 md:p-6 space-y-6"
     >
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <TitlePage Icon={Warehouse} title="Existencia de Productos" />
+        <TitlePage Icon={Warehouse} title={t("title")} />
         {!isLoading && totalRegistros > 0 && (
           <div className="text-sm bg-primary/10 px-4 py-2 rounded-full">
-            Total:{" "}
+            {t("summary.total")}:{" "}
             <span className="font-bold text-primary">
               {totalExistencia.toFixed(2)}
             </span>{" "}
-            unidades
+            {t("summary.units")}
           </div>
         )}
       </div>
@@ -121,7 +125,7 @@ const ExistenciaProductosPage = () => {
             <div id="buscador-existencia" className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar producto o sucursal..."
+                placeholder={t("filters.search")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-9"
@@ -133,10 +137,10 @@ const ExistenciaProductosPage = () => {
               onValueChange={setSelectedProducto}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Filtrar por producto" />
+                <SelectValue placeholder={t("filters.product")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos los productos</SelectItem>
+                <SelectItem value="all">{t("filters.allProducts")}</SelectItem>
                 {productosUnicos.map((producto) => (
                   <SelectItem key={producto.id} value={producto.id}>
                     {producto.nombre}
@@ -152,7 +156,7 @@ const ExistenciaProductosPage = () => {
               className="w-full md:w-auto"
             >
               <Filter className="h-4 w-4 mr-2" />
-              Limpiar filtros
+              {t("filters.clear")}
             </Button>
           </div>
         </CardContent>

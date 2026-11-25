@@ -22,8 +22,10 @@ import TableTraslados from "@/components/agroservicio/traslados/TableTraslados";
 import { useAuthEmpleadoStore } from "@/providers/store/useAuthEmpleados";
 import useGetSucursalByEmpleado from "@/hooks/agroservicios/sucursales/useGetSucursalByEmpleado";
 import TitlePage from "@/components/generics/TitlePage";
+import { useTranslations } from "next-intl";
 
 const LotesTrasladosPage = () => {
+  const t = useTranslations("lotesTrasladosPage");
   const { empleado } = useAuthEmpleadoStore();
   const propietarioId = empleado?.agroservicio.propietario.id ?? "";
   const moneda = empleado?.pais.simbolo_moneda ?? "$";
@@ -104,8 +106,8 @@ const LotesTrasladosPage = () => {
       <div className="md:flex justify-between items-center gap-4">
         <TitlePage
           Icon={ArrowLeftRight}
-          title="Traslados de Inventario"
-          description="Historial de transferencias de productos entre sucursales"
+          title={t("title")}
+          description={t("description")}
         />
       </div>
 
@@ -113,7 +115,7 @@ const LotesTrasladosPage = () => {
         <div id="buscador-traslados" className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="Buscar por nombre o código de producto..."
+            placeholder={t("search.placeholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-9"
@@ -128,7 +130,7 @@ const LotesTrasladosPage = () => {
           onClick={() => setMostrarFiltros(!mostrarFiltros)}
         >
           <Filter className="h-4 w-4 mr-2" />
-          Filtros
+          {t("buttons.filters")}
         </Button>
       </form>
 
@@ -137,7 +139,9 @@ const LotesTrasladosPage = () => {
           <CardContent className="p-4 sm:p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-semibold">Fecha Inicio</Label>
+                <Label className="text-sm font-semibold">
+                  {t("filters.startDate")}
+                </Label>
                 <Input
                   type="date"
                   value={fechaInicio}
@@ -146,7 +150,9 @@ const LotesTrasladosPage = () => {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-semibold">Fecha Fin</Label>
+                <Label className="text-sm font-semibold">
+                  {t("filters.endDate")}
+                </Label>
                 <Input
                   type="date"
                   value={fechaFin}
@@ -157,9 +163,11 @@ const LotesTrasladosPage = () => {
 
             <div className="flex justify-end gap-2 mt-4">
               <Button variant="outline" onClick={handleLimpiarFiltros}>
-                Limpiar filtros
+                {t("buttons.clearFilters")}
               </Button>
-              <Button onClick={handleAplicarFiltros}>Aplicar filtros</Button>
+              <Button onClick={handleAplicarFiltros}>
+                {t("buttons.applyFilters")}
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -170,21 +178,21 @@ const LotesTrasladosPage = () => {
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
       >
         <CardDetails
-          title="Total Traslados"
+          title={t("statistics.totalTransfers")}
           total={totalItems}
           Icon={Truck}
           color="blue"
         />
 
         <CardDetails
-          title="Productos Transferidos"
+          title={t("statistics.transferredProducts")}
           total={totalProductosTransferidos}
           Icon={Package}
           color="green"
         />
 
         <CardDetails
-          title="Sucursales Involucradas"
+          title={t("statistics.involvedBranches")}
           total={sucursalesUnicas.size}
           Icon={Building}
           color="purple"
@@ -193,7 +201,7 @@ const LotesTrasladosPage = () => {
 
       <Card id="historial-traslados">
         <CardHeader>
-          <CardTitle className="text-xl">Historial de Traslados</CardTitle>
+          <CardTitle className="text-xl">{t("history.title")}</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -205,10 +213,7 @@ const LotesTrasladosPage = () => {
           ) : filteredMovimientos.length === 0 ? (
             <Alert>
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                No se encontraron traslados de inventario con los filtros
-                seleccionados.
-              </AlertDescription>
+              <AlertDescription>{t("empty.description")}</AlertDescription>
             </Alert>
           ) : (
             <div className="overflow-x-auto">
@@ -232,7 +237,10 @@ const LotesTrasladosPage = () => {
       </Card>
 
       <div className="text-center text-sm text-gray-500">
-        Mostrando {filteredMovimientos.length} de {totalItems} traslados
+        {t("pagination.showing", {
+          shown: filteredMovimientos.length,
+          total: totalItems,
+        })}
       </div>
     </div>
   );

@@ -18,6 +18,7 @@ import {
   EditarDescuentoCliente,
   EditarEmpleadoDescuentoCliente,
 } from "@/api/agroservicio/descuentos/accions/editar-descuento";
+import { useTranslations } from "next-intl";
 
 interface Props {
   editDescuento: ResponseDescuentosAgroInterface | null;
@@ -32,6 +33,8 @@ const FormDescuentosAgro = ({
   onSuccess,
   isPropietario,
 }: Props) => {
+  const t = useTranslations("formDescuentosAgro");
+
   const {
     reset,
     handleSubmit,
@@ -63,7 +66,7 @@ const FormDescuentosAgro = ({
         queryKey: ["descuentos-agro"],
       });
 
-      toast.success("Descuento creado exitosamente");
+      toast.success(t("messages.createSuccess"));
       onSuccess?.();
     },
 
@@ -75,11 +78,11 @@ const FormDescuentosAgro = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear el descuento";
+            : t("messages.createError");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Hubo un error al crear el descuento.");
+        toast.error(t("messages.createError"));
       }
     },
   });
@@ -95,7 +98,7 @@ const FormDescuentosAgro = ({
         queryKey: ["descuentos-agro"],
       });
 
-      toast.success("Descuento actualizado exitosamente");
+      toast.success(t("messages.updateSuccess"));
       onSuccess?.();
     },
 
@@ -107,20 +110,26 @@ const FormDescuentosAgro = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar el descuento";
+            : t("messages.updateError");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Hubo un error al actualizar el descuento.");
+        toast.error(t("messages.updateError"));
       }
     },
   });
 
   const onSubmit = (data: CreateDescuentoAgro) => {
     if (isEdit && editDescuento) {
-      mutationEditar.mutate({ ...data, porcentaje: Number(data.porcentaje) });
+      mutationEditar.mutate({
+        ...data,
+        porcentaje: Number(data.porcentaje),
+      });
     } else {
-      mutationCrear.mutate({ ...data, porcentaje: Number(data.porcentaje) });
+      mutationCrear.mutate({
+        ...data,
+        porcentaje: Number(data.porcentaje),
+      });
     }
   };
 
@@ -135,12 +144,10 @@ const FormDescuentosAgro = ({
           </div>
           <div>
             <CardTitle className="text-xl font-semibold text-gray-800">
-              {isEdit ? "Editar Descuento" : "Nuevo Descuento"}
+              {isEdit ? t("titles.edit") : t("titles.create")}
             </CardTitle>
             <p className="text-sm text-gray-500 mt-0.5">
-              {isEdit
-                ? "Actualiza la información del descuento"
-                : "Registra un nuevo descuento para tus clientes"}
+              {isEdit ? t("descriptions.edit") : t("descriptions.create")}
             </p>
           </div>
         </div>
@@ -152,28 +159,29 @@ const FormDescuentosAgro = ({
             <div className="bg-blue-50/50 rounded-lg p-4 border border-blue-100">
               <h3 className="text-sm font-semibold text-blue-700 flex items-center gap-2">
                 <span className="w-1 h-4 bg-blue-500 rounded-full"></span>
-                Información del Descuento
+                {t("sections.discountInformation")}
               </h3>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="nombre" className="font-semibold text-gray-700">
-                Nombre del Descuento <span className="text-red-500">*</span>
+                {t("fields.discountName")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
 
               <Input
                 id="nombre"
-                placeholder="Ej. Descuento por Cliente Frecuente"
+                placeholder={t("placeholders.discountName")}
                 className="transition-all duration-200 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 {...register("nombre", {
-                  required: "El nombre del descuento es requerido",
+                  required: t("validation.nameRequired"),
                   minLength: {
                     value: 3,
-                    message: "Mínimo 3 caracteres",
+                    message: t("validation.nameMinLength"),
                   },
                   maxLength: {
                     value: 100,
-                    message: "Máximo 100 caracteres",
+                    message: t("validation.nameMaxLength"),
                   },
                 })}
                 disabled={isLoading}
@@ -192,7 +200,7 @@ const FormDescuentosAgro = ({
                 htmlFor="porcentaje"
                 className="font-semibold text-gray-700"
               >
-                Porcentaje de Descuento (%){" "}
+                {t("fields.discountPercentage")}{" "}
                 <span className="text-red-500">*</span>
               </Label>
 
@@ -206,15 +214,14 @@ const FormDescuentosAgro = ({
                   placeholder="10.00"
                   className="pl-10 transition-all duration-200 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   {...register("porcentaje", {
-                    required: "El porcentaje es requerido",
+                    required: t("validation.percentageRequired"),
                     validate: (value) => {
                       const numero = Number(value);
 
-                      if (isNaN(numero))
-                        return "Debe ingresar un número válido";
+                      if (isNaN(numero)) return t("validation.validNumber");
 
                       if (numero < 0 || numero > 100)
-                        return "El porcentaje debe estar entre 0 y 100";
+                        return t("validation.percentageRange");
 
                       return true;
                     },
@@ -263,7 +270,7 @@ const FormDescuentosAgro = ({
               )}
 
               <p className="text-xs text-gray-400 mt-1">
-                * El porcentaje debe ser un valor entre 0% y 100%
+                * {t("hints.percentageRange")}
               </p>
             </div>
           </div>
@@ -276,7 +283,7 @@ const FormDescuentosAgro = ({
               disabled={isLoading}
               className="w-full sm:w-auto hover:bg-gray-50 transition-colors"
             >
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
 
             <Button
@@ -287,19 +294,19 @@ const FormDescuentosAgro = ({
               {isLoading ? (
                 <>
                   <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  {isEdit ? "Actualizando..." : "Creando..."}
+                  {isEdit ? t("buttons.updating") : t("buttons.creating")}
                 </>
               ) : (
                 <>
                   {isEdit ? (
                     <>
                       <RefreshCw className="h-4 w-4 mr-2" />
-                      Actualizar Descuento
+                      {t("buttons.updateDiscount")}
                     </>
                   ) : (
                     <>
                       <Plus className="h-4 w-4 mr-2" />
-                      Crear Descuento
+                      {t("buttons.createDiscount")}
                     </>
                   )}
                 </>
@@ -310,11 +317,7 @@ const FormDescuentosAgro = ({
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
             <p className="text-xs text-amber-700 flex items-start gap-2">
               <span className="inline-block w-1 h-1 bg-amber-500 rounded-full mt-1.5 flex-shrink-0"></span>
-              <span>
-                Los descuentos se aplicarán automáticamente a los clientes según
-                las reglas configuradas. Asegúrate de que el porcentaje sea el
-                correcto.
-              </span>
+              <span>{t("hints.automaticApplication")}</span>
             </p>
           </div>
         </form>

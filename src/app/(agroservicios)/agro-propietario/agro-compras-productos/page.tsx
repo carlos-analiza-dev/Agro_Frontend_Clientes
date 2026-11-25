@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { Filter, ShoppingCart } from "lucide-react";
 import { useState } from "react";
@@ -20,8 +21,11 @@ import Modal from "@/components/generics/Modal";
 import TableComprasProductos from "@/components/agroservicio/compras/TableComprasProductos";
 import FormCompraProductos from "@/components/agroservicio/compras/FormCompraProductos";
 import useGetAllSucursales from "@/hooks/agroservicios/sucursales/useGetAllSucursales";
+import { useTranslations } from "next-intl";
 
 const ComprasProductosPage = () => {
+  const t = useTranslations("comprasProductosPage");
+
   const { cliente } = useAuthStore();
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
   const propietarioId = cliente?.id ?? "";
@@ -31,6 +35,7 @@ const ComprasProductosPage = () => {
   const [proveedor, setProveedor] = useState("");
   const [sucursal, setSucursal] = useState("");
   const [tipoPago, setTipoPago] = useState("");
+
   const { data: proveedores } = useGetAllProveedores(propietarioId);
   const { data: sucursales } = useGetAllSucursales();
 
@@ -69,12 +74,12 @@ const ComprasProductosPage = () => {
       >
         <TitlePage
           Icon={ShoppingCart}
-          title="Compras"
-          description="Gestión de compras agro servicio"
+          title={t("title")}
+          description={t("description")}
         />
         <ButtonAdd
           id="id-compras-add-btn"
-          title="Agregar Compra"
+          title={t("buttons.add")}
           Icon={ShoppingCart}
           action={() => setIsOpen(true)}
           className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
@@ -86,10 +91,10 @@ const ComprasProductosPage = () => {
           <div id="id-compras-filter-proveedor">
             <Select value={proveedor} onValueChange={setProveedor}>
               <SelectTrigger>
-                <SelectValue placeholder="Filtrar por proveedor" />
+                <SelectValue placeholder={t("filters.provider")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
+                <SelectItem value="all">{t("filters.all")}</SelectItem>
                 {proveedores && proveedores.length > 0 ? (
                   proveedores.map((prov) => (
                     <SelectItem value={prov.id} key={prov.id}>
@@ -97,7 +102,9 @@ const ComprasProductosPage = () => {
                     </SelectItem>
                   ))
                 ) : (
-                  <p>No se encontraron proveedores</p>
+                  <p className="px-2 py-1.5 text-sm">
+                    {t("filters.noProviders")}
+                  </p>
                 )}
               </SelectContent>
             </Select>
@@ -106,10 +113,10 @@ const ComprasProductosPage = () => {
           <div id="id-compras-filter-sucursal">
             <Select value={sucursal} onValueChange={setSucursal}>
               <SelectTrigger>
-                <SelectValue placeholder="Filtrar por sucursal" />
+                <SelectValue placeholder={t("filters.branch")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
+                <SelectItem value="all">{t("filters.all")}</SelectItem>
                 {sucursales && sucursales.length > 0 ? (
                   sucursales.map((suc) => (
                     <SelectItem value={suc.id} key={suc.id}>
@@ -117,7 +124,9 @@ const ComprasProductosPage = () => {
                     </SelectItem>
                   ))
                 ) : (
-                  <p>No se encontraron sucursales</p>
+                  <p className="px-2 py-1.5 text-sm">
+                    {t("filters.noBranches")}
+                  </p>
                 )}
               </SelectContent>
             </Select>
@@ -126,10 +135,10 @@ const ComprasProductosPage = () => {
           <div id="id-compras-filter-tipo-pago">
             <Select value={tipoPago} onValueChange={setTipoPago}>
               <SelectTrigger>
-                <SelectValue placeholder="Filtrar por tipo de pago" />
+                <SelectValue placeholder={t("filters.paymentType")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
+                <SelectItem value="all">{t("filters.all")}</SelectItem>
                 {tiposPagos.map((tipo) => (
                   <SelectItem value={tipo.value} key={tipo.id}>
                     {tipo.label}
@@ -145,7 +154,8 @@ const ComprasProductosPage = () => {
               onClick={clearFilters}
               className="w-full md:w-auto"
             >
-              <Filter className="mr-2 h-4 w-4" /> Limpiar
+              <Filter className="mr-2 h-4 w-4" />
+              {t("buttons.clearFilters")}
             </Button>
           </div>
         </div>
@@ -174,8 +184,8 @@ const ComprasProductosPage = () => {
       <Modal
         open={isOpen}
         onOpenChange={setIsOpen}
-        title="Agregar Nueva Compra"
-        description="En esta sección ingresarás las compras de productos"
+        title={t("modal.title")}
+        description={t("modal.description")}
         size="5xl"
         height="auto"
       >

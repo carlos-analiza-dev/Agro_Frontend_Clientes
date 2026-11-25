@@ -20,8 +20,11 @@ import { AgroFactura } from "@/api/agroservicio/facturacion/interface/response-f
 import FormEditFactura from "@/components/agroservicio/facturacion/FormEditFactura";
 import { useAuthEmpleadoStore } from "@/providers/store/useAuthEmpleados";
 import useGetSucursalByEmpleado from "@/hooks/agroservicios/sucursales/useGetSucursalByEmpleado";
+import { useTranslations } from "next-intl";
 
 const FacturasAgroPage = () => {
+  const t = useTranslations("facturasAgroPage");
+
   const { empleado } = useAuthEmpleadoStore();
   const propietarioId = empleado?.agroservicio.propietario.id ?? "";
   const [selectedFactura, setSelectedFactura] = useState<AgroFactura | null>(
@@ -133,11 +136,11 @@ const FacturasAgroPage = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <TitlePage
           Icon={FileText}
-          title={`Facturación de - ${sucursalEmpleado?.nombre}`}
+          title={t("title", { branch: sucursalEmpleado?.nombre ?? "" })}
         />
         <ButtonAdd
           id="add-factura-btn"
-          title="Generar Factura"
+          title={t("buttons.generate")}
           Icon={FileText}
           action={() => setIsOpenCreate(true)}
           className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
@@ -147,10 +150,10 @@ const FacturasAgroPage = () => {
       {(fechaInicio || fechaFin) && (
         <div className="bg-blue-50 p-3 rounded-lg">
           <p className="text-sm text-blue-800">
-            Filtros aplicados:{" "}
+            {t("appliedFilters")}{" "}
             {fechaInicio && (
               <span className="ml-2">
-                desde{" "}
+                {t("dates.from")}{" "}
                 <span className="font-medium">
                   {new Date(fechaInicio).toLocaleDateString("es-HN")}
                 </span>
@@ -158,7 +161,7 @@ const FacturasAgroPage = () => {
             )}
             {fechaFin && (
               <span className="ml-2">
-                hasta{" "}
+                {t("dates.to")}{" "}
                 <span className="font-medium">
                   {new Date(fechaFin).toLocaleDateString("es-HN")}
                 </span>
@@ -173,7 +176,7 @@ const FacturasAgroPage = () => {
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Filter className="h-5 w-5 text-gray-500" />
-              Filtros
+              {t("filters.title")}
               {activeFiltersCount > 0 && (
                 <Badge variant="secondary" className="ml-2">
                   {activeFiltersCount}
@@ -188,7 +191,7 @@ const FacturasAgroPage = () => {
                 className="text-gray-500 hover:text-gray-700"
               >
                 <X className="h-4 w-4 mr-1" />
-                Limpiar todos
+                {t("buttons.clearAll")}
               </Button>
             )}
           </CardTitle>
@@ -201,7 +204,7 @@ const FacturasAgroPage = () => {
                 className="flex items-center gap-2 text-sm font-medium"
               >
                 <Calendar className="h-4 w-4 text-gray-500" />
-                Fecha Inicio
+                {t("dates.startDate")}
               </Label>
               <Input
                 type="date"
@@ -222,7 +225,7 @@ const FacturasAgroPage = () => {
                 className="flex items-center gap-2 text-sm font-medium"
               >
                 <Calendar className="h-4 w-4 text-gray-500" />
-                Fecha Fin
+                {t("dates.endDate")}
               </Label>
               <Input
                 type="date"
@@ -241,19 +244,21 @@ const FacturasAgroPage = () => {
           {hasActiveFilters && (
             <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t">
               <span className="text-sm text-gray-500 font-medium">
-                Filtros activos:
+                {t("filters.active")}
               </span>
 
               {fechaInicio && (
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
-                  Desde: {new Date(fechaInicio).toLocaleDateString("es-HN")}
+                  {t("dates.from")}:{" "}
+                  {new Date(fechaInicio).toLocaleDateString("es-HN")}
                   <button
                     onClick={() => {
                       setFechaInicio("");
                       setOffset(0);
                     }}
                     className="ml-1 hover:text-gray-700"
+                    aria-label={t("dates.removeStartDate")}
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -262,13 +267,15 @@ const FacturasAgroPage = () => {
               {fechaFin && (
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
-                  Hasta: {new Date(fechaFin).toLocaleDateString("es-HN")}
+                  {t("dates.to")}:{" "}
+                  {new Date(fechaFin).toLocaleDateString("es-HN")}
                   <button
                     onClick={() => {
                       setFechaFin("");
                       setOffset(0);
                     }}
                     className="ml-1 hover:text-gray-700"
+                    aria-label={t("dates.removeEndDate")}
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -281,8 +288,8 @@ const FacturasAgroPage = () => {
 
       <div className="flex items-center gap-2">
         <Badge variant="secondary" className="text-sm">
-          Total: {facturas?.total || 0} facturas
-          {hasActiveFilters && " (filtradas)"}
+          {t("summary.total", { total: facturas?.total || 0 })}
+          {hasActiveFilters && ` (${t("summary.filtered")})`}
         </Badge>
       </div>
 
@@ -320,8 +327,8 @@ const FacturasAgroPage = () => {
                 />
               ) : (
                 <MessageError
-                  titulo="No se encontraron facturas"
-                  descripcion="En este momento no se encontraron facturas disponibles"
+                  titulo={t("empty.searchTitle")}
+                  descripcion={t("empty.searchDescription")}
                 />
               )}
             </Card>
@@ -329,9 +336,11 @@ const FacturasAgroPage = () => {
             {facturas && facturas.total > 0 && (
               <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4">
                 <div className="text-sm text-gray-500 order-2 sm:order-1">
-                  Mostrando {Math.min(offset + 1, facturas.total)} -{" "}
-                  {Math.min(offset + limit, facturas.total)} de {facturas.total}{" "}
-                  facturas
+                  {t("pagination.showing", {
+                    from: Math.min(offset + 1, facturas.total),
+                    to: Math.min(offset + limit, facturas.total),
+                    total: facturas.total,
+                  })}
                 </div>
                 <div className="order-1 sm:order-2">
                   <Paginacion
@@ -350,12 +359,12 @@ const FacturasAgroPage = () => {
             <CardContent className="p-12 text-center">
               <FileText className="h-12 w-12 mx-auto text-gray-400 mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No hay facturas
+                {t("empty.title")}
               </h3>
               <p className="text-gray-500">
                 {hasActiveFilters
-                  ? "No se encontraron facturas con los filtros aplicados. Intenta ajustar los filtros."
-                  : "No se han generado facturas aún. Haz clic en 'Generar Factura' para crear una nueva."}
+                  ? t("empty.filteredDescription")
+                  : t("empty.description")}
               </p>
               {hasActiveFilters && (
                 <Button
@@ -363,7 +372,7 @@ const FacturasAgroPage = () => {
                   onClick={limpiarFiltros}
                   className="mt-4"
                 >
-                  Limpiar filtros
+                  {t("buttons.clearFilters")}
                 </Button>
               )}
             </CardContent>
@@ -374,8 +383,8 @@ const FacturasAgroPage = () => {
       <Modal
         open={isOpenCreate}
         onOpenChange={setIsOpenCreate}
-        title="Generación de Factura"
-        description="Aquí puede generar las facturas de ventas realizadas"
+        title={t("modals.create.title")}
+        description={t("modals.create.description")}
         size="6xl"
         height="auto"
       >
@@ -390,8 +399,8 @@ const FacturasAgroPage = () => {
       <Modal
         open={isOpenEdit}
         onOpenChange={setIsOpenEdit}
-        title="Editar datos Factura"
-        description="Aquí puede editar las facturas de ventas realizadas"
+        title={t("modals.edit.title")}
+        description={t("modals.edit.description")}
         size="6xl"
         height="auto"
       >

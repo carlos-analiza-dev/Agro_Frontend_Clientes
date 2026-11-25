@@ -18,6 +18,7 @@ import { isAxiosError } from "axios";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 interface Props {
   onSuccess?: () => void;
@@ -32,13 +33,17 @@ const FormImpuestos = ({
   isPropietario,
   editImpuesto,
 }: Props) => {
+  const t = useTranslations("formImpuestosProductos");
+
   const {
     reset,
     handleSubmit,
     register,
     formState: { errors },
   } = useForm<IngresarImpuestoInterface>();
+
   const queryClient = useQueryClient();
+
   useEffect(() => {
     if (isEdit && editImpuesto) {
       reset({
@@ -59,7 +64,7 @@ const FormImpuestos = ({
         queryKey: ["impuestos-agro"],
       });
 
-      toast.success("Impuesto creado exitosamente");
+      toast.success(t("messages.createSuccess"));
       onSuccess?.();
     },
 
@@ -71,11 +76,11 @@ const FormImpuestos = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear el impuesto";
+            : t("messages.createError");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Hubo un error al crear el impuesto.");
+        toast.error(t("messages.createUnexpectedError"));
       }
     },
   });
@@ -91,7 +96,7 @@ const FormImpuestos = ({
         queryKey: ["impuestos-agro"],
       });
 
-      toast.success("Impuesto actualizado exitosamente");
+      toast.success(t("messages.updateSuccess"));
       onSuccess?.();
     },
 
@@ -103,20 +108,26 @@ const FormImpuestos = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar el impuesto";
+            : t("messages.updateError");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Hubo un error al actualizar el impuesto.");
+        toast.error(t("messages.updateUnexpectedError"));
       }
     },
   });
 
   const onSubmit = (data: IngresarImpuestoInterface) => {
     if (isEdit && editImpuesto) {
-      mutationEditar.mutate({ ...data, porcentaje: Number(data.porcentaje) });
+      mutationEditar.mutate({
+        ...data,
+        porcentaje: Number(data.porcentaje),
+      });
     } else {
-      mutationCrear.mutate({ ...data, porcentaje: Number(data.porcentaje) });
+      mutationCrear.mutate({
+        ...data,
+        porcentaje: Number(data.porcentaje),
+      });
     }
   };
 
@@ -124,21 +135,21 @@ const FormImpuestos = ({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-muted-foreground">
-          Información del Impuesto
+          {t("sections.information")}
         </h3>
 
         <div className="space-y-2">
           <Label className="font-semibold">
-            Nombre <span className="text-red-500">*</span>
+            {t("fields.name")} <span className="text-red-500">*</span>
           </Label>
 
           <Input
-            placeholder="Ej. ISV 15%"
+            placeholder={t("placeholders.name")}
             {...register("nombre", {
-              required: "El nombre del impuesto es requerido",
+              required: t("validation.nameRequired"),
               maxLength: {
                 value: 100,
-                message: "Máximo 100 caracteres",
+                message: t("validation.nameMaxLength"),
               },
             })}
           />
@@ -150,7 +161,7 @@ const FormImpuestos = ({
 
         <div className="space-y-2">
           <Label className="font-semibold">
-            Porcentaje (%) <span className="text-red-500">*</span>
+            {t("fields.percentage")} <span className="text-red-500">*</span>
           </Label>
 
           <Input
@@ -160,14 +171,14 @@ const FormImpuestos = ({
             max={100}
             placeholder="15.00"
             {...register("porcentaje", {
-              required: "El porcentaje es requerido",
+              required: t("validation.percentageRequired"),
               validate: (value) => {
                 const numero = Number(value);
 
-                if (isNaN(numero)) return "Debe ingresar un número";
+                if (isNaN(numero)) return t("validation.invalidNumber");
 
                 if (numero < 0 || numero > 100)
-                  return "Debe estar entre 0 y 100";
+                  return t("validation.percentageRange");
 
                 return true;
               },
@@ -182,11 +193,20 @@ const FormImpuestos = ({
 
       <div className="flex justify-end gap-3">
         <Button type="button" variant="outline" onClick={() => onSuccess?.()}>
-          Cancelar
+          {t("buttons.cancel")}
         </Button>
 
-        <Button type="submit">
-          {isEdit ? "Actualizar Impuesto" : "Crear Impuesto"}
+        <Button
+          type="submit"
+          disabled={mutationCrear.isPending || mutationEditar.isPending}
+        >
+          {mutationCrear.isPending || mutationEditar.isPending
+            ? isEdit
+              ? t("buttons.updating")
+              : t("buttons.creating")
+            : isEdit
+              ? t("buttons.update")
+              : t("buttons.create")}
         </Button>
       </div>
     </form>

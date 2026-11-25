@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Edit } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   descuentos: ResponseDescuentosAgroInterface[];
@@ -17,22 +18,24 @@ interface Props {
 }
 
 const TableDescuentosAgro = ({ descuentos, handleEdit }: Props) => {
+  const t = useTranslations("tableDescuentosAgro");
+
   return (
     <div>
       <Table>
         <TableHeader>
           <TableRow className="bg-gray-50 hover:bg-gray-50">
             <TableHead className="font-semibold text-gray-700">
-              Nombre
+              {t("columns.name")}
             </TableHead>
             <TableHead className="font-semibold text-gray-700 text-center">
-              Porcentaje
+              {t("columns.percentage")}
             </TableHead>
             <TableHead className="font-semibold text-gray-700">
-              Agroservicio
+              {t("columns.agroservice")}
             </TableHead>
             <TableHead className="font-semibold text-gray-700 text-right">
-              Acciones
+              {t("columns.actions")}
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -77,7 +80,7 @@ const TableDescuentosAgro = ({ descuentos, handleEdit }: Props) => {
                     className="h-8 w-8 p-0 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
                   >
                     <Edit className="h-4 w-4" />
-                    <span className="sr-only">Editar</span>
+                    <span className="sr-only">{t("actions.edit")}</span>
                   </Button>
                 </div>
               </TableCell>

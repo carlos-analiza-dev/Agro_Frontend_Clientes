@@ -44,6 +44,7 @@ import { VerificarExistencia } from "@/api/agroservicio/facturacion/accions/veri
 import { ProcesarFactura } from "@/api/agroservicio/facturacion/accions/procesar-factura";
 import { CancelarFactura } from "@/api/agroservicio/facturacion/accions/cancelar-factura";
 import { AutorizarCancelacionFactura } from "@/api/agroservicio/facturacion/accions/autorizar-factura";
+import { useTranslations } from "next-intl";
 
 interface Props {
   facturas: ResponseFacturasAgroInterface | undefined;
@@ -64,6 +65,8 @@ const TableFacturas = ({
   handleEditFactura,
   sucursalId,
 }: Props) => {
+  const t = useTranslations("tableFacturas");
+
   const queryClient = useQueryClient();
   const [descargandoId, setDescargandoId] = useState<string | null>(null);
   const [facturaPreview, setFacturaPreview] = useState<string | null>(null);
@@ -88,25 +91,26 @@ const TableFacturas = ({
     useState<ResponseExistenciaInterface | null>(null);
   const [isVerificacionDialogOpen, setIsVerificacionDialogOpen] =
     useState(false);
+
   const { descargarFactura, verFactura } = useFacturaDownload(propietarioId);
 
   const handleDescargarFactura = async (factura: AgroFactura) => {
     setDescargandoId(factura.id);
+
     try {
       const result = await descargarFactura(factura.id, factura.numero_factura);
 
       if (result.success) {
-        toast.success("Factura descargada exitosamente");
+        toast.success(t("notifications.downloadSuccess"));
       } else {
-        toast.error(result.error || "Error al descargar la factura");
+        toast.error(result.error || t("errors.download"));
       }
     } catch (error) {
       if (isAxiosError(error)) {
-        const message =
-          error.response?.data?.message || "Error al descargar la factura.";
+        const message = error.response?.data?.message || t("errors.download");
         toast.error(message);
       } else {
-        toast.error("Error inesperado al descargar la factura");
+        toast.error(t("errors.unexpectedDownload"));
       }
     } finally {
       setDescargandoId(null);
@@ -120,9 +124,10 @@ const TableFacturas = ({
         propietarioId,
         factura.numero_factura,
       );
+
       setFacturaPreview(objectUrl);
     } catch (error) {
-      toast.error("Error al obtener la vista previa de la factura");
+      toast.error(t("errors.preview"));
     }
   };
 
@@ -136,28 +141,27 @@ const TableFacturas = ({
 
     try {
       if (!sucursalId) {
-        toast.error(
-          "Es necesario que estes asociado a una sucursal para poder ejecutar esta accion",
-        );
+        toast.error(t("errors.branchRequired"));
         return;
       }
+
       const data = await VerificarExistencia(factura.id, sucursalId ?? "");
 
       setResultadoVerificacion(data);
       setIsVerificacionDialogOpen(true);
 
       if (!data.suficiente) {
-        toast.warning("⚠️ Algunos productos no tienen stock suficiente.");
+        toast.warning(t("notifications.insufficientStockWarning"));
       } else {
-        toast.success("✅ Stock suficiente para procesar la factura.");
+        toast.success(t("notifications.sufficientStock"));
       }
     } catch (error) {
       if (isAxiosError(error)) {
         const message =
-          error.response?.data?.message || "Error al verificar existencia.";
+          error.response?.data?.message || t("errors.verifyStock");
         toast.error(message);
       } else {
-        toast.error("Error inesperado al verificar existencia.");
+        toast.error(t("errors.unexpectedVerifyStock"));
       }
     } finally {
       setVerificandoExistencia(null);
@@ -166,15 +170,14 @@ const TableFacturas = ({
 
   const handleAbrirConfirmacionProcesar = async (factura: AgroFactura) => {
     setFacturaAProcesar(factura);
-
     setVerificandoExistencia(factura.id);
+
     try {
       if (!sucursalId) {
-        toast.error(
-          "Es necesario que estes asociado a una sucursal para poder ejecutar esta accion",
-        );
+        toast.error(t("errors.branchRequired"));
         return;
       }
+
       const data = await VerificarExistencia(factura.id, sucursalId ?? "");
 
       if (data.suficiente) {
@@ -182,15 +185,15 @@ const TableFacturas = ({
       } else {
         setResultadoVerificacion(data);
         setIsVerificacionDialogOpen(true);
-        toast.warning("Existen productos con stock insuficiente");
+        toast.warning(t("notifications.insufficientStock"));
       }
     } catch (error) {
       if (isAxiosError(error)) {
         const message =
-          error.response?.data?.message || "Error al verificar existencia.";
+          error.response?.data?.message || t("errors.verifyStock");
         toast.error(message);
       } else {
-        toast.error("Error inesperado al verificar existencia");
+        toast.error(t("errors.unexpectedVerifyStock"));
       }
     } finally {
       setVerificandoExistencia(null);
@@ -236,16 +239,16 @@ const TableFacturas = ({
       queryClient.invalidateQueries({ queryKey: ["facturas"] });
       queryClient.invalidateQueries({ queryKey: ["compras-admin"] });
       queryClient.invalidateQueries({ queryKey: ["lotes-producto"] });
-      toast.success("✅ Factura procesada exitosamente");
 
+      toast.success(t("notifications.processSuccess"));
       onFacturaActualizada?.();
     } catch (error) {
       if (isAxiosError(error)) {
         const message =
-          error.response?.data?.message || "Error al procesar la factura";
+          error.response?.data?.message || t("errors.processInvoice");
         toast.error(message);
       } else {
-        toast.error("Error inesperado al procesar la factura");
+        toast.error(t("errors.unexpectedProcess"));
       }
     } finally {
       setProcesandoId(null);
@@ -264,16 +267,16 @@ const TableFacturas = ({
       queryClient.invalidateQueries({ queryKey: ["facturas"] });
       queryClient.invalidateQueries({ queryKey: ["compras-admin"] });
       queryClient.invalidateQueries({ queryKey: ["lotes-producto"] });
-      toast.success("✅ Factura cancelada exitosamente");
 
+      toast.success(t("notifications.cancelSuccess"));
       onFacturaActualizada?.();
     } catch (error) {
       if (isAxiosError(error)) {
         const message =
-          error.response?.data?.message || "Error al cancelar la factura";
+          error.response?.data?.message || t("errors.cancelInvoice");
         toast.error(message);
       } else {
-        toast.error("Error inesperado al cancelar la factura");
+        toast.error(t("errors.unexpectedCancel"));
       }
     } finally {
       setCancelandoId(null);
@@ -295,16 +298,16 @@ const TableFacturas = ({
     try {
       await AutorizarCancelacionFactura(facturaAAutorizar.id);
       queryClient.invalidateQueries({ queryKey: ["facturas"] });
-      toast.success("✅ Cancelación autorizada exitosamente");
 
+      toast.success(t("notifications.authorizationSuccess"));
       onFacturaActualizada?.();
     } catch (error) {
       if (isAxiosError(error)) {
         const message =
-          error.response?.data?.message || "Error al autorizar la cancelación";
+          error.response?.data?.message || t("errors.authorizeCancellation");
         toast.error(message);
       } else {
-        toast.error("Error inesperado al autorizar la cancelación");
+        toast.error(t("errors.unexpectedAuthorize"));
       }
     } finally {
       setAutorizandoId(null);
@@ -338,21 +341,41 @@ const TableFacturas = ({
     }
   };
 
+  const getEstadoLabel = (estado: string) => {
+    switch (estado) {
+      case "Procesada":
+        return t("status.processed");
+      case "Emitida":
+        return t("status.issued");
+      case "Cancelada":
+        return t("status.cancelled");
+      default:
+        return estado;
+    }
+  };
+
   return (
     <>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="text-center">N° Factura</TableHead>
-
-            <TableHead className="text-center">Cliente</TableHead>
-
-            <TableHead className="text-center">Estado</TableHead>
-            <TableHead className="text-center">Sub Total</TableHead>
-            <TableHead className="text-center">Total</TableHead>
-            <TableHead className="text-center">Acciones</TableHead>
+            <TableHead className="text-center">
+              {t("columns.invoiceNumber")}
+            </TableHead>
+            <TableHead className="text-center">
+              {t("columns.customer")}
+            </TableHead>
+            <TableHead className="text-center">{t("columns.status")}</TableHead>
+            <TableHead className="text-center">
+              {t("columns.subtotal")}
+            </TableHead>
+            <TableHead className="text-center">{t("columns.total")}</TableHead>
+            <TableHead className="text-center">
+              {t("columns.actions")}
+            </TableHead>
           </TableRow>
         </TableHeader>
+
         <TableBody>
           {facturas?.data?.map((factura) => (
             <TableRow key={factura.id}>
@@ -362,6 +385,7 @@ const TableFacturas = ({
                   {factura.numero_factura}
                 </div>
               </TableCell>
+
               <TableCell>
                 <div className="flex justify-center items-center gap-2">
                   <User2 className="h-4 w-4 text-gray-500" />
@@ -380,13 +404,15 @@ const TableFacturas = ({
                     variant={getEstadoBadgeVariant(factura.estado)}
                     className={getEstadoBadgeClass(factura.estado)}
                   >
-                    {factura.estado}
+                    {getEstadoLabel(factura.estado)}
                   </Badge>
                 </div>
               </TableCell>
+
               <TableCell className="text-center">
                 {formatCurrency(factura.sub_total, moneda)}
               </TableCell>
+
               <TableCell className="text-center font-semibold">
                 {formatCurrency(factura.total, moneda)}
               </TableCell>
@@ -403,7 +429,7 @@ const TableFacturas = ({
                           variant="outline"
                           size="sm"
                           onClick={() => handleEditFactura!(factura)}
-                          title="Editar Factura"
+                          title={t("actions.editInvoice")}
                           className="flex items-center gap-1"
                         >
                           <Edit className="h-4 w-4" />
@@ -414,7 +440,7 @@ const TableFacturas = ({
                         <Button
                           variant="outline"
                           size="sm"
-                          title="Verificar Stock"
+                          title={t("actions.verifyStock")}
                           onClick={() => verificarExistencia(factura)}
                           disabled={verificandoExistencia === factura.id}
                           className="flex items-center gap-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200 hover:text-blue-800"
@@ -422,16 +448,17 @@ const TableFacturas = ({
                           {verificandoExistencia === factura.id ? (
                             <>
                               <div className="h-3 w-3 animate-spin rounded-full border border-blue-300 border-t-blue-600" />
-                              <span>Verificando...</span>
+                              <span>{t("loading.verifying")}</span>
                             </>
                           ) : (
                             <>
                               <Package className="h-4 w-4" />
-                              <span>Verificar Stock</span>
+                              <span>{t("actions.verifyStock")}</span>
                             </>
                           )}
                         </Button>
                       )}
+
                       {!isPropietario && (
                         <Button
                           variant="outline"
@@ -439,7 +466,7 @@ const TableFacturas = ({
                           onClick={() =>
                             handleAbrirConfirmacionProcesar(factura)
                           }
-                          title="Procesar Factura"
+                          title={t("actions.processInvoice")}
                           disabled={
                             procesandoId === factura.id ||
                             verificandoExistencia === factura.id
@@ -449,12 +476,12 @@ const TableFacturas = ({
                           {procesandoId === factura.id ? (
                             <>
                               <div className="h-3 w-3 animate-spin rounded-full border border-green-300 border-t-green-600" />
-                              <span>Procesando...</span>
+                              <span>{t("loading.processing")}</span>
                             </>
                           ) : (
                             <>
                               <CheckCircle className="h-4 w-4" />
-                              <span>Procesar</span>
+                              <span>{t("actions.process")}</span>
                             </>
                           )}
                         </Button>
@@ -471,19 +498,19 @@ const TableFacturas = ({
                           onClick={() =>
                             handleAbrirAutorizacionCancelacion(factura)
                           }
-                          title="Autorizar Cancelación"
+                          title={t("actions.authorizeCancellation")}
                           disabled={autorizandoId === factura.id}
                           className="flex items-center gap-1 bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-200 hover:text-purple-800"
                         >
                           {autorizandoId === factura.id ? (
                             <>
                               <div className="h-3 w-3 animate-spin rounded-full border border-purple-300 border-t-purple-600" />
-                              <span>Autorizando...</span>
+                              <span>{t("loading.authorizing")}</span>
                             </>
                           ) : (
                             <>
                               <ShieldCheck className="h-4 w-4" />
-                              <span>Autorizar</span>
+                              <span>{t("actions.authorize")}</span>
                             </>
                           )}
                         </Button>
@@ -496,19 +523,19 @@ const TableFacturas = ({
                           onClick={() =>
                             handleAbrirConfirmacionCancelar(factura)
                           }
-                          title="Cancelar Factura"
+                          title={t("actions.cancelInvoice")}
                           disabled={cancelandoId === factura.id}
                           className="flex items-center gap-1 bg-red-50 hover:bg-red-100 text-red-700 border-red-200 hover:text-red-800"
                         >
                           {cancelandoId === factura.id ? (
                             <>
                               <div className="h-3 w-3 animate-spin rounded-full border border-red-300 border-t-red-600" />
-                              <span>Cancelando...</span>
+                              <span>{t("loading.cancelling")}</span>
                             </>
                           ) : (
                             <>
                               <RotateCcw className="h-4 w-4" />
-                              <span>Cancelar</span>
+                              <span>{t("actions.cancel")}</span>
                             </>
                           )}
                         </Button>
@@ -520,7 +547,7 @@ const TableFacturas = ({
                     variant="outline"
                     size="sm"
                     onClick={() => handlePreviewFactura(factura)}
-                    title="Ver Factura"
+                    title={t("actions.viewInvoice")}
                     className="flex items-center gap-1"
                   >
                     <Eye className="h-4 w-4" />
@@ -530,14 +557,14 @@ const TableFacturas = ({
                     variant="outline"
                     size="sm"
                     onClick={() => handleDescargarFactura(factura)}
-                    title="Descargar Factura"
+                    title={t("actions.downloadInvoice")}
                     disabled={descargandoId === factura.id}
                     className="flex items-center gap-1"
                   >
                     {descargandoId === factura.id ? (
                       <>
                         <div className="h-3 w-3 animate-spin rounded-full border border-gray-300 border-t-gray-900" />
-                        <span>Descargando...</span>
+                        <span>{t("loading.downloading")}</span>
                       </>
                     ) : (
                       <>
@@ -561,44 +588,52 @@ const TableFacturas = ({
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <ShieldCheck className="h-5 w-5 text-purple-600" />
-              Autorizar Cancelación
+              {t("dialogs.authorize.title")}
             </AlertDialogTitle>
 
-            <div className="text-sm text-muted-foreground space-y-3">
-              <p>
-                ¿Está seguro que desea autorizar la cancelación de la factura{" "}
-                <strong>{facturaAAutorizar?.numero_factura}</strong>?
-              </p>
-              <div className="bg-purple-50 p-3 rounded-md text-sm border border-purple-200">
-                <div className="flex items-center gap-2 text-purple-700 mb-2">
-                  <User2 className="h-4 w-4" />
-                  <span className="font-medium">Información de la Factura</span>
-                </div>
+            <AlertDialogDescription asChild>
+              <div className="text-sm text-muted-foreground space-y-3">
                 <p>
-                  <strong>Cliente:</strong> {facturaAAutorizar?.cliente.nombre}
+                  {t("dialogs.authorize.description")}{" "}
+                  <strong>{facturaAAutorizar?.numero_factura}</strong>?
                 </p>
-                <p>
-                  <strong>Total:</strong>{" "}
-                  {facturaAAutorizar &&
-                    formatCurrency(facturaAAutorizar.total, moneda)}
+
+                <div className="bg-purple-50 p-3 rounded-md text-sm border border-purple-200">
+                  <div className="flex items-center gap-2 text-purple-700 mb-2">
+                    <User2 className="h-4 w-4" />
+                    <span className="font-medium">
+                      {t("dialogs.invoiceInformation")}
+                    </span>
+                  </div>
+                  <p>
+                    <strong>{t("dialogs.customer")}:</strong>{" "}
+                    {facturaAAutorizar?.cliente.nombre}
+                  </p>
+                  <p>
+                    <strong>{t("dialogs.total")}:</strong>{" "}
+                    {facturaAAutorizar &&
+                      formatCurrency(facturaAAutorizar.total, moneda)}
+                  </p>
+                </div>
+
+                <p className="text-xs text-gray-500">
+                  {t("dialogs.authorize.note")}
                 </p>
               </div>
-              <p className="text-xs text-gray-500">
-                Al autorizar, el usuario que creó esta factura podrá cancelarla.
-                Esta autorización será válida por 24 horas.
-              </p>
-            </div>
+            </AlertDialogDescription>
           </AlertDialogHeader>
+
           <AlertDialogFooter>
             <AlertDialogCancel onClick={handleCerrarAutorizacion}>
-              Cancelar
+              {t("buttons.cancel")}
             </AlertDialogCancel>
+
             <AlertDialogAction
               onClick={handleAutorizarCancelacionConfirmada}
               className="bg-purple-600 hover:bg-purple-700 text-white"
             >
               <ShieldCheck className="h-4 w-4 mr-2" />
-              Sí, Autorizar Cancelación
+              {t("dialogs.authorize.confirm")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -612,44 +647,52 @@ const TableFacturas = ({
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <CheckCircle className="h-5 w-5 text-green-600" />
-              Confirmar Procesamiento
+              {t("dialogs.process.title")}
             </AlertDialogTitle>
 
-            <div className="text-sm text-muted-foreground space-y-3">
-              <p>
-                ¿Está seguro que desea procesar la factura{" "}
-                <strong>{facturaAProcesar?.numero_factura}</strong>?
-              </p>
-              <div className="bg-green-50 p-3 rounded-md text-sm border border-green-200">
-                <div className="flex items-center gap-2 text-green-700 mb-2">
-                  <Package className="h-4 w-4" />
-                  <span className="font-medium">Stock verificado ✓</span>
-                </div>
+            <AlertDialogDescription asChild>
+              <div className="text-sm text-muted-foreground space-y-3">
                 <p>
-                  <strong>Cliente:</strong> {facturaAProcesar?.cliente.nombre}
+                  {t("dialogs.process.description")}{" "}
+                  <strong>{facturaAProcesar?.numero_factura}</strong>?
                 </p>
-                <p>
-                  <strong>Total:</strong>{" "}
-                  {facturaAProcesar &&
-                    formatCurrency(facturaAProcesar.total, moneda)}
+
+                <div className="bg-green-50 p-3 rounded-md text-sm border border-green-200">
+                  <div className="flex items-center gap-2 text-green-700 mb-2">
+                    <Package className="h-4 w-4" />
+                    <span className="font-medium">
+                      {t("dialogs.process.stockVerified")}
+                    </span>
+                  </div>
+                  <p>
+                    <strong>{t("dialogs.customer")}:</strong>{" "}
+                    {facturaAProcesar?.cliente.nombre}
+                  </p>
+                  <p>
+                    <strong>{t("dialogs.total")}:</strong>{" "}
+                    {facturaAProcesar &&
+                      formatCurrency(facturaAProcesar.total, moneda)}
+                  </p>
+                </div>
+
+                <p className="text-xs text-gray-500">
+                  {t("dialogs.process.note")}
                 </p>
               </div>
-              <p className="text-xs text-gray-500">
-                Esta acción descontará los productos de los lotes y cambiará el
-                estado a "Procesada".
-              </p>
-            </div>
+            </AlertDialogDescription>
           </AlertDialogHeader>
+
           <AlertDialogFooter>
             <AlertDialogCancel onClick={handleCerrarConfirmacion}>
-              Cancelar
+              {t("buttons.cancel")}
             </AlertDialogCancel>
+
             <AlertDialogAction
               onClick={handleProcesarFacturaConfirmada}
               className="bg-green-600 hover:bg-green-700 text-white"
             >
               <CheckCircle className="h-4 w-4 mr-2" />
-              Sí, Procesar Factura
+              {t("dialogs.process.confirm")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -663,44 +706,52 @@ const TableFacturas = ({
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <XCircle className="h-5 w-5 text-red-600" />
-              Confirmar Cancelación
+              {t("dialogs.cancel.title")}
             </AlertDialogTitle>
 
-            <div className="text-sm text-muted-foreground space-y-3">
-              <p>
-                ¿Está seguro que desea cancelar la factura{" "}
-                <strong>{facturaACancelar?.numero_factura}</strong>?
-              </p>
-              <div className="bg-red-50 p-3 rounded-md text-sm border border-red-200">
-                <div className="flex items-center gap-2 text-red-700 mb-2">
-                  <RotateCcw className="h-4 w-4" />
-                  <span className="font-medium">Devolver productos ✓</span>
-                </div>
+            <AlertDialogDescription asChild>
+              <div className="text-sm text-muted-foreground space-y-3">
                 <p>
-                  <strong>Cliente:</strong> {facturaACancelar?.cliente.nombre}
+                  {t("dialogs.cancel.description")}{" "}
+                  <strong>{facturaACancelar?.numero_factura}</strong>?
                 </p>
-                <p>
-                  <strong>Total:</strong>{" "}
-                  {facturaACancelar &&
-                    formatCurrency(facturaACancelar.total, moneda)}
+
+                <div className="bg-red-50 p-3 rounded-md text-sm border border-red-200">
+                  <div className="flex items-center gap-2 text-red-700 mb-2">
+                    <RotateCcw className="h-4 w-4" />
+                    <span className="font-medium">
+                      {t("dialogs.cancel.returnProducts")}
+                    </span>
+                  </div>
+                  <p>
+                    <strong>{t("dialogs.customer")}:</strong>{" "}
+                    {facturaACancelar?.cliente.nombre}
+                  </p>
+                  <p>
+                    <strong>{t("dialogs.total")}:</strong>{" "}
+                    {facturaACancelar &&
+                      formatCurrency(facturaACancelar.total, moneda)}
+                  </p>
+                </div>
+
+                <p className="text-xs text-gray-500">
+                  {t("dialogs.cancel.note")}
                 </p>
               </div>
-              <p className="text-xs text-gray-500">
-                Esta acción devolverá los productos a sus lotes originales y
-                cambiará el estado a "Cancelada".
-              </p>
-            </div>
+            </AlertDialogDescription>
           </AlertDialogHeader>
+
           <AlertDialogFooter>
             <AlertDialogCancel onClick={handleCerrarCancelacion}>
-              Mantener Factura
+              {t("dialogs.cancel.keepInvoice")}
             </AlertDialogCancel>
+
             <AlertDialogAction
               onClick={handleCancelarFacturaConfirmada}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
               <XCircle className="h-4 w-4 mr-2" />
-              Sí, Cancelar Factura
+              {t("dialogs.cancel.confirm")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -718,97 +769,113 @@ const TableFacturas = ({
               ) : (
                 <AlertTriangle className="h-5 w-5 text-orange-600" />
               )}
-              Verificación de Stock
+              {t("dialogs.stock.title")}
             </AlertDialogTitle>
 
-            <div className="text-sm text-muted-foreground space-y-3">
-              <p>
-                Resultado de la verificación para la factura{" "}
-                <strong>{facturaAProcesar?.numero_factura}</strong>
-              </p>
-
-              <div
-                className={`p-3 rounded-md border ${
-                  resultadoVerificacion?.suficiente
-                    ? "bg-green-50 border-green-200"
-                    : "bg-orange-50 border-orange-200"
-                }`}
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  {resultadoVerificacion?.suficiente ? (
-                    <>
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                      <span className="font-medium text-green-700">
-                        Stock suficiente
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <AlertTriangle className="h-4 w-4 text-orange-600" />
-                      <span className="font-medium text-orange-700">
-                        Stock insuficiente
-                      </span>
-                    </>
-                  )}
-                </div>
-
-                <div className="max-h-60 overflow-y-auto">
-                  <table className="w-full text-xs">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left py-1">Producto</th>
-                        <th className="text-center py-1">Requerido</th>
-                        <th className="text-center py-1">Disponible</th>
-                        <th className="text-center py-1">Estado</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {resultadoVerificacion?.detalles.map((detalle, index) => (
-                        <tr key={index} className="border-b border-gray-100">
-                          <td className="py-1">{detalle.productoNombre}</td>
-                          <td className="text-center py-1">
-                            {detalle.cantidadRequerida}
-                          </td>
-                          <td className="text-center py-1">
-                            {detalle.existenciaDisponible !== null
-                              ? detalle.existenciaDisponible
-                              : "N/A"}
-                          </td>
-                          <td className="text-center py-1">
-                            {detalle.suficiente ? (
-                              <Badge
-                                variant="outline"
-                                className="bg-green-100 text-green-800 border-green-200 text-xs"
-                              >
-                                ✓
-                              </Badge>
-                            ) : (
-                              <Badge
-                                variant="outline"
-                                className="bg-red-100 text-red-800 border-red-200 text-xs"
-                              >
-                                ✗
-                              </Badge>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {!resultadoVerificacion?.suficiente && (
-                <p className="text-orange-600 text-xs">
-                  No se puede procesar la factura hasta que se resuelvan los
-                  problemas de stock.
+            <AlertDialogDescription asChild>
+              <div className="text-sm text-muted-foreground space-y-3">
+                <p>
+                  {t("dialogs.stock.result")}{" "}
+                  <strong>{facturaAProcesar?.numero_factura}</strong>
                 </p>
-              )}
-            </div>
+
+                <div
+                  className={`p-3 rounded-md border ${
+                    resultadoVerificacion?.suficiente
+                      ? "bg-green-50 border-green-200"
+                      : "bg-orange-50 border-orange-200"
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    {resultadoVerificacion?.suficiente ? (
+                      <>
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <span className="font-medium text-green-700">
+                          {t("dialogs.stock.sufficient")}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <AlertTriangle className="h-4 w-4 text-orange-600" />
+                        <span className="font-medium text-orange-700">
+                          {t("dialogs.stock.insufficient")}
+                        </span>
+                      </>
+                    )}
+                  </div>
+
+                  <div className="max-h-60 overflow-y-auto">
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-1">
+                            {t("dialogs.stock.columns.product")}
+                          </th>
+                          <th className="text-center py-1">
+                            {t("dialogs.stock.columns.required")}
+                          </th>
+                          <th className="text-center py-1">
+                            {t("dialogs.stock.columns.available")}
+                          </th>
+                          <th className="text-center py-1">
+                            {t("dialogs.stock.columns.status")}
+                          </th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {resultadoVerificacion?.detalles.map(
+                          (detalle, index) => (
+                            <tr
+                              key={index}
+                              className="border-b border-gray-100"
+                            >
+                              <td className="py-1">{detalle.productoNombre}</td>
+                              <td className="text-center py-1">
+                                {detalle.cantidadRequerida}
+                              </td>
+                              <td className="text-center py-1">
+                                {detalle.existenciaDisponible !== null
+                                  ? detalle.existenciaDisponible
+                                  : "N/A"}
+                              </td>
+                              <td className="text-center py-1">
+                                {detalle.suficiente ? (
+                                  <Badge
+                                    variant="outline"
+                                    className="bg-green-100 text-green-800 border-green-200 text-xs"
+                                  >
+                                    ✓
+                                  </Badge>
+                                ) : (
+                                  <Badge
+                                    variant="outline"
+                                    className="bg-red-100 text-red-800 border-red-200 text-xs"
+                                  >
+                                    ✗
+                                  </Badge>
+                                )}
+                              </td>
+                            </tr>
+                          ),
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {!resultadoVerificacion?.suficiente && (
+                  <p className="text-orange-600 text-xs">
+                    {t("dialogs.stock.warning")}
+                  </p>
+                )}
+              </div>
+            </AlertDialogDescription>
           </AlertDialogHeader>
+
           <AlertDialogFooter>
             <AlertDialogCancel onClick={handleCerrarVerificacion}>
-              Cerrar
+              {t("buttons.close")}
             </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -818,17 +885,16 @@ const TableFacturas = ({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg w-full max-w-4xl h-5/6 flex flex-col">
             <div className="flex justify-between items-center p-4 border-b">
-              <h2 className="text-lg font-semibold">
-                Vista Previa de la Factura
-              </h2>
+              <h2 className="text-lg font-semibold">{t("preview.title")}</h2>
               <Button variant="ghost" onClick={() => setFacturaPreview(null)}>
-                Cerrar
+                {t("buttons.close")}
               </Button>
             </div>
+
             <iframe
               src={facturaPreview}
               className="w-full h-full"
-              title="Vista previa de la factura"
+              title={t("preview.title")}
             />
           </div>
         </div>

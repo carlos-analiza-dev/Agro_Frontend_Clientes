@@ -1,4 +1,5 @@
 "use client";
+
 import ButtonAdd from "@/components/generics/ButtonAdd";
 import TitlePage from "@/components/generics/TitlePage";
 import Paginacion from "@/components/generics/Paginacion";
@@ -14,21 +15,27 @@ import FormEmpleadosAgro from "./ui/FormEmpleadosAgro";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { EmpleadoAgro } from "@/api/agroservicio/empleados/interface/response-empleados-agro.interface";
 import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
+import { useTranslations } from "next-intl";
 
 const EmpleadosAgroPage = () => {
+  const t = useTranslations("agroEmpleadosPage");
+
   const { cliente } = useAuthStore();
   const paisId = cliente?.pais.id ?? "";
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedEmpleado, setSelectedEmpleado] = useState<EmpleadoAgro | null>(
     null,
   );
+
   const mostrarLight =
     cliente?.paqueteActivo?.paquete.tipo === TipoPaquete.AGRO_LIGHT
       ? true
       : false;
+
   const [isEdit, setIsEdit] = useState(false);
   const [limit] = useState(10);
   const [openModalForm, setOpenModalForm] = useState(false);
+
   const { data, isLoading } = useGetEmpleadosAgro({
     limit: limit,
     offset: (currentPage - 1) * limit,
@@ -48,6 +55,12 @@ const EmpleadosAgroPage = () => {
     setIsEdit(true);
   };
 
+  const handleOpenCreate = () => {
+    setSelectedEmpleado(null);
+    setIsEdit(false);
+    setOpenModalForm(true);
+  };
+
   return (
     <div
       id="id-empleados-container"
@@ -57,12 +70,12 @@ const EmpleadosAgroPage = () => {
         id="id-empleados-header"
         className="md:flex justify-between items-center gap-4"
       >
-        <TitlePage Icon={Users} title="Control de Empleados" />
+        <TitlePage Icon={Users} title={t("title")} />
         <ButtonAdd
           id="id-empleados-add-btn"
-          title="Agregar Empleado"
+          title={t("buttons.add")}
           Icon={Users}
-          action={() => setOpenModalForm(true)}
+          action={handleOpenCreate}
           className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
         />
       </div>
@@ -73,7 +86,7 @@ const EmpleadosAgroPage = () => {
       >
         <StatCard
           id="id-empleados-stat-total"
-          title="Total Empleados"
+          title={t("statistics.total")}
           value={total}
           icon={Users}
           gradientFrom="from-blue-500"
@@ -84,7 +97,7 @@ const EmpleadosAgroPage = () => {
 
         <StatCard
           id="id-empleados-stat-activos"
-          title="Activos"
+          title={t("statistics.active")}
           value={empleados.filter((e) => e.isActive).length}
           icon={UserCheck}
           gradientFrom="from-green-500"
@@ -95,7 +108,7 @@ const EmpleadosAgroPage = () => {
 
         <StatCard
           id="id-empleados-stat-inactivos"
-          title="Inactivos"
+          title={t("statistics.inactive")}
           value={empleados.filter((e) => !e.isActive).length}
           icon={UserX}
           gradientFrom="from-red-500"
@@ -106,7 +119,7 @@ const EmpleadosAgroPage = () => {
 
         <StatCard
           id="id-empleados-stat-porcentaje"
-          title="Porcentaje Activos"
+          title={t("statistics.activePercentage")}
           value={`${total > 0 ? Math.round((empleados.filter((e) => e.isActive).length / total) * 100) : 0}%`}
           icon={User}
           gradientFrom="from-purple-500"
@@ -126,11 +139,9 @@ const EmpleadosAgroPage = () => {
             <CardContent className="py-12 text-center">
               <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-600">
-                No hay empleados registrados
+                {t("empty.title")}
               </h3>
-              <p className="text-gray-400 mt-2">
-                Haz clic en "Agregar Empleado" para registrar uno nuevo
-              </p>
+              <p className="text-gray-400 mt-2">{t("empty.description")}</p>
             </CardContent>
           </Card>
         ) : (
@@ -159,8 +170,10 @@ const EmpleadosAgroPage = () => {
       <Modal
         open={openModalForm}
         onOpenChange={setOpenModalForm}
-        title="Agregar Empleado"
-        description="Aqui podras agregar los empleados para tu agroservicio"
+        title={isEdit ? t("modal.editTitle") : t("modal.createTitle")}
+        description={
+          isEdit ? t("modal.editDescription") : t("modal.createDescription")
+        }
         size="2xl"
         height="auto"
         showCloseButton={false}

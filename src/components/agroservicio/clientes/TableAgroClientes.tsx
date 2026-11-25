@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Table,
   TableBody,
@@ -10,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Edit, Eye, Mail, Phone } from "lucide-react";
-import { getSexoBadge } from "./getSexoBadge";
+import { useSexoBadge } from "./getSexoBadge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ClienteAgro } from "@/api/agroservicio/clientes/interfaces/response-clientes-ago.interface";
@@ -27,6 +28,8 @@ const TableAgroClientes = ({
   handleEditCliente,
   simbolo = "L ",
 }: Props) => {
+  const t = useTranslations("agroClientesPage");
+  const { getSexoBadge } = useSexoBadge();
   const [selectedCliente, setSelectedCliente] = useState<ClienteAgro | null>(
     null,
   );
@@ -44,25 +47,25 @@ const TableAgroClientes = ({
           <TableHeader>
             <TableRow className="bg-gray-50 hover:bg-gray-50">
               <TableHead className="font-semibold text-gray-700">
-                Cliente
+                {t("table.columns.customer")}
               </TableHead>
               <TableHead className="font-semibold text-gray-700 hidden md:table-cell">
-                Identificación
+                {t("table.columns.identification")}
               </TableHead>
               <TableHead className="font-semibold text-gray-700 hidden lg:table-cell">
-                Contacto
+                {t("table.columns.contact")}
               </TableHead>
               <TableHead className="font-semibold text-gray-700 hidden xl:table-cell">
-                Ubicación
+                {t("table.columns.location")}
               </TableHead>
               <TableHead className="font-semibold text-gray-700">
-                Sexo
+                {t("table.columns.gender")}
               </TableHead>
               <TableHead className="font-semibold text-gray-700 hidden sm:table-cell">
-                Estado
+                {t("table.columns.status")}
               </TableHead>
               <TableHead className="font-semibold text-gray-700 text-right">
-                Acciones
+                {t("table.columns.actions")}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -78,7 +81,7 @@ const TableAgroClientes = ({
                       {cliente.nombre}
                     </span>
                     <span className="text-xs text-gray-400 md:hidden">
-                      ID: {cliente.identificacion}
+                      {t("table.labels.id")}: {cliente.identificacion}
                     </span>
                     <span className="text-xs text-gray-400 lg:hidden">
                       {cliente.telefono}
@@ -121,7 +124,9 @@ const TableAgroClientes = ({
                         : ""
                     }
                   >
-                    {cliente.isActive ? "Activo" : "Inactivo"}
+                    {cliente.isActive
+                      ? t("table.status.active")
+                      : t("table.status.inactive")}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">
@@ -130,22 +135,26 @@ const TableAgroClientes = ({
                       variant="ghost"
                       size="sm"
                       className="h-8 w-8 p-0 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-                      title="Editar"
+                      title={t("table.actions.edit")}
+                      aria-label={t("table.actions.edit")}
                       onClick={() => handleEditCliente(cliente)}
                       id="id-edit-cliente"
                     >
-                      <span className="sr-only">Editar</span>
+                      <span className="sr-only">{t("table.actions.edit")}</span>
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
                       className="h-8 w-8 p-0 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-                      title="Ver productos frecuentes"
+                      title={t("table.actions.viewFrequentProducts")}
+                      aria-label={t("table.actions.viewFrequentProducts")}
                       onClick={() => handleViewProductos(cliente)}
                       id="id-ver-productos"
                     >
-                      <span className="sr-only">Ver productos frecuentes</span>
+                      <span className="sr-only">
+                        {t("table.actions.viewFrequentProducts")}
+                      </span>
                       <Eye className="h-4 w-4" />
                     </Button>
                   </div>

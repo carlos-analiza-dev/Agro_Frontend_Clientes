@@ -1,3 +1,5 @@
+"use client";
+
 import { ResponseExistenciaProductosInterface } from "@/api/agroservicio/existencia_productos/interfaces/response-existencia-productos.interface";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -8,23 +10,29 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useTranslations } from "next-intl";
 
 interface Props {
   filteredData: ResponseExistenciaProductosInterface[];
 }
 
 const TableExistencia = ({ filteredData }: Props) => {
+  const t = useTranslations("tableExistenciaProductos");
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="text-center">Producto</TableHead>
-          <TableHead className="text-center">Codigo de Barra</TableHead>
-          <TableHead className="text-center">Sucursal</TableHead>
-          <TableHead className="text-center">Inventario</TableHead>
-          <TableHead className="text-center">Estado</TableHead>
+          <TableHead className="text-center">{t("columns.product")}</TableHead>
+          <TableHead className="text-center">{t("columns.barcode")}</TableHead>
+          <TableHead className="text-center">{t("columns.branch")}</TableHead>
+          <TableHead className="text-center">
+            {t("columns.inventory")}
+          </TableHead>
+          <TableHead className="text-center">{t("columns.status")}</TableHead>
         </TableRow>
       </TableHeader>
+
       <TableBody>
         {filteredData.map((item) => (
           <TableRow key={`${item.productoId}-${item.sucursalId}`}>
@@ -36,12 +44,15 @@ const TableExistencia = ({ filteredData }: Props) => {
                 </div>
               </div>
             </TableCell>
+
             <TableCell className="text-center">{item.codigo_barra}</TableCell>
+
             <TableCell className="text-center">{item.sucursalNombre}</TableCell>
 
             <TableCell className="text-center">
               {parseFloat(item.existenciaTotal).toFixed(2)}
             </TableCell>
+
             <TableCell className="text-center">
               <Badge
                 variant={
@@ -53,10 +64,10 @@ const TableExistencia = ({ filteredData }: Props) => {
                 }
               >
                 {parseFloat(item.existenciaTotal) > 10
-                  ? "Disponible"
+                  ? t("status.available")
                   : parseFloat(item.existenciaTotal) > 0
-                    ? "Bajo stock"
-                    : "Agotado"}
+                    ? t("status.lowStock")
+                    : t("status.outOfStock")}
               </Badge>
             </TableCell>
           </TableRow>

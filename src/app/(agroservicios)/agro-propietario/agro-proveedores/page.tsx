@@ -1,7 +1,9 @@
 "use client";
+
 import useGetProveedoresAgro from "@/hooks/agroservicios/proveedores/useGetProveedoresAgro";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import { Buscador } from "@/components/generics/Buscador";
 import Paginacion from "@/components/generics/Paginacion";
@@ -14,9 +16,12 @@ import FormProveedores from "@/components/agroservicio/proveedores/FormProveedor
 import { ProveedoreAgro } from "@/api/agroservicio/proveedores/interface/response-agro-proveedores.interface";
 
 const AgroProveedoresPage = () => {
+  const t = useTranslations("agroProveedoresPage");
+
   const { cliente } = useAuthStore();
   const propietarioId = cliente?.id ?? "";
   const paisId = cliente?.pais.id ?? "";
+
   const [openModalProveedor, setOpenModalProveedor] = useState(false);
   const [selectedProveedor, setSelectedProveedor] =
     useState<ProveedoreAgro | null>(null);
@@ -61,11 +66,12 @@ const AgroProveedoresPage = () => {
       <div className="md:flex justify-between items-center gap-4">
         <TitlePage
           Icon={Truck}
-          title="Control de Proveedores"
-          description="Gestiona tus proveedores agroservicios"
+          title={t("title")}
+          description={t("description")}
         />
+
         <ButtonAdd
-          title="Agregar Proveedor"
+          title={t("buttons.add")}
           Icon={Truck}
           action={() => setOpenModalProveedor(true)}
           className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
@@ -78,7 +84,7 @@ const AgroProveedoresPage = () => {
         className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between"
       >
         <Buscador
-          title="Buscar proveedor por nombre, NIT o NRC..."
+          title={t("search.placeholder")}
           setSearchTerm={handleSearch}
           searchTerm={searchTerm}
           className="w-full sm:w-96"
@@ -99,9 +105,13 @@ const AgroProveedoresPage = () => {
       {total > 0 && (
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-2">
           <p className="text-sm text-muted-foreground">
-            Mostrando {(currentPage - 1) * limit + 1} -{" "}
-            {Math.min(currentPage * limit, total)} de {total} proveedores
+            {t("pagination.showing", {
+              start: (currentPage - 1) * limit + 1,
+              end: Math.min(currentPage * limit, total),
+              total,
+            })}
           </p>
+
           <Paginacion
             currentPage={currentPage}
             totalPages={totalPages}
@@ -115,13 +125,13 @@ const AgroProveedoresPage = () => {
         onOpenChange={setOpenModalProveedor}
         title={
           isEdit
-            ? `Editando el proveedor - ${selectedProveedor?.nombre_legal}`
-            : "Agregar nuevo proveedor"
+            ? t("modal.editTitle", {
+                name: selectedProveedor?.nombre_legal ?? "",
+              })
+            : t("modal.addTitle")
         }
         description={
-          isEdit
-            ? "Aquí podrás actualizar la información del proveedor seleccionado para tu agroservicio."
-            : "Aquí podrás registrar un nuevo proveedor para tu agroservicio."
+          isEdit ? t("modal.editDescription") : t("modal.addDescription")
         }
         size="2xl"
         height="auto"

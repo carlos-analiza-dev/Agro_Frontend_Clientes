@@ -1,5 +1,7 @@
 "use client";
+
 import { useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import ButtonAdd from "@/components/generics/ButtonAdd";
 import TitlePage from "@/components/generics/TitlePage";
 import useGetAgroInsumos from "@/hooks/agroservicios/insumos/useGetAgroInsumos";
@@ -32,15 +34,19 @@ import FormAgroInsumos from "@/components/agroservicio/insumos/FormAgroInsumos";
 const ALL_PROVEEDORES = "all";
 
 const AgroInsumosPage = () => {
+  const t = useTranslations("agroInsumosPage");
+
   const { cliente } = useAuthStore();
   const propietarioId = cliente?.id ?? "";
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
+
   const [isEdit, setIsEdit] = useState(false);
   const [selectInsumo, setSelectInsumo] = useState<AgroInsumo | null>(null);
   const [openModalForm, setOpenModalForm] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [limit] = useState(10);
   const [filterProveedor, setFilterProveedor] = useState(ALL_PROVEEDORES);
+
   const { data: proveedores } = useGetAllProveedores(propietarioId);
 
   const params = useMemo(() => {
@@ -95,11 +101,12 @@ const AgroInsumosPage = () => {
       <div className="md:flex justify-between items-start gap-4">
         <TitlePage
           Icon={FlaskConical}
-          title="Insumos Agropecuarios"
-          description="Gestión completa de insumos para el campo"
+          title={t("title")}
+          description={t("description")}
         />
+
         <ButtonAdd
-          title="Agregar Insumo"
+          title={t("buttons.add")}
           Icon={FlaskConical}
           action={() => setOpenModalForm(true)}
           className="bg-green-600 hover:bg-green-700 w-full md:w-auto mt-4 md:mt-0"
@@ -115,12 +122,14 @@ const AgroInsumosPage = () => {
               onValueChange={handleProveedorChange}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Todos los proveedores" />
+                <SelectValue placeholder={t("filters.allProviders")} />
               </SelectTrigger>
+
               <SelectContent>
                 <SelectItem value={ALL_PROVEEDORES}>
-                  Todos los proveedores
+                  {t("filters.allProviders")}
                 </SelectItem>
+
                 {proveedores?.map((proveedor) => (
                   <SelectItem key={proveedor.id} value={proveedor.id}>
                     {proveedor.nombre_legal}
@@ -128,8 +137,9 @@ const AgroInsumosPage = () => {
                 ))}
               </SelectContent>
             </Select>
-            <Button variant={"outline"} onClick={() => clearFilters()}>
-              Limpiar Filtros
+
+            <Button variant="outline" onClick={() => clearFilters()}>
+              {t("filters.clear")}
               <Filter />
             </Button>
           </div>
@@ -140,16 +150,20 @@ const AgroInsumosPage = () => {
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle>Listado de Insumos</CardTitle>
+              <CardTitle>{t("list.title")}</CardTitle>
               <CardDescription>
-                Total: {insumosData?.total || 0} insumos registrados
+                {t("list.total", { total: insumosData?.total || 0 })}
               </CardDescription>
             </div>
+
             <Badge variant="outline" className="text-sm">
-              {insumosData?.insumos?.length || 0} mostrados
+              {t("list.displayed", {
+                count: insumosData?.insumos?.length || 0,
+              })}
             </Badge>
           </div>
         </CardHeader>
+
         <CardContent>
           <div className="rounded-md border overflow-hidden">
             <TableAgroInsumos
@@ -175,11 +189,9 @@ const AgroInsumosPage = () => {
       <Modal
         open={openModalForm}
         onOpenChange={setOpenModalForm}
-        title={isEdit ? "Editar Insumo" : "Agregar Nuevo Insumo"}
+        title={isEdit ? t("modal.editTitle") : t("modal.addTitle")}
         description={
-          isEdit
-            ? "Aquí podrás editar la información del insumo."
-            : "Aquí podrás ingresar nuevos insumos al agroservicio."
+          isEdit ? t("modal.editDescription") : t("modal.addDescription")
         }
         height="auto"
         size="xl"

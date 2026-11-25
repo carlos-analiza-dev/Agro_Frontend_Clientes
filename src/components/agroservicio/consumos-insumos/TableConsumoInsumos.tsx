@@ -1,3 +1,5 @@
+"use client";
+
 import { ResponseConsumoInsumoInterface } from "@/api/agroservicio/consumo-insumos/interface/response-consumo-insumo.interface";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -8,30 +10,33 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useTranslations } from "next-intl";
 
 interface Props {
   consumo: ResponseConsumoInsumoInterface;
 }
 
 const TableConsumoInsumos = ({ consumo }: Props) => {
+  const t = useTranslations("tableConsumoInsumos");
+
   return (
     <div>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Insumo</TableHead>
-            <TableHead>Cantidad</TableHead>
-            <TableHead>Sucursal</TableHead>
-            <TableHead>Fecha Consumo</TableHead>
-            <TableHead>Lote</TableHead>
-            <TableHead>Observación</TableHead>
+            <TableHead>{t("columns.supply")}</TableHead>
+            <TableHead>{t("columns.quantity")}</TableHead>
+            <TableHead>{t("columns.branch")}</TableHead>
+            <TableHead>{t("columns.consumptionDate")}</TableHead>
+            <TableHead>{t("columns.batch")}</TableHead>
+            <TableHead>{t("columns.observation")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {consumo?.data.map((item: any) => (
             <TableRow key={item.id} className="hover:bg-muted/50">
               <TableCell className="font-medium">
-                {item.insumo?.nombre || "N/A"}
+                {item.insumo?.nombre || t("values.notAvailable")}
               </TableCell>
               <TableCell>
                 <Badge variant="secondary" className="font-normal">
@@ -40,7 +45,7 @@ const TableConsumoInsumos = ({ consumo }: Props) => {
               </TableCell>
               <TableCell>
                 <span className="text-sm">
-                  {item.sucursal?.nombre || "N/A"}
+                  {item.sucursal?.nombre || t("values.notAvailable")}
                 </span>
               </TableCell>
               <TableCell>
@@ -48,12 +53,13 @@ const TableConsumoInsumos = ({ consumo }: Props) => {
               </TableCell>
               <TableCell>
                 <span className="text-sm">
-                  {item.lote?.cantidad || "N/A"} unidades
+                  {item.lote?.cantidad || t("values.notAvailable")}
+                  {item.lote?.cantidad ? ` ${t("values.units")}` : ""}
                 </span>
               </TableCell>
               <TableCell className="max-w-xs">
                 <span className="text-sm line-clamp-2">
-                  {item.observacion || "-"}
+                  {item.observacion || t("values.emptyObservation")}
                 </span>
               </TableCell>
             </TableRow>

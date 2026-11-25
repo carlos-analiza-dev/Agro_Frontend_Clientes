@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardContent,
@@ -29,6 +31,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Users, Award, User } from "lucide-react";
 import { formatCurrency } from "@/helpers/funciones/formatCurrency";
 import { ResponseClientesComprasInterface } from "@/api/agroservicio/dashboard/interface/response-clientes-compras.interface";
+import { useTranslations } from "next-intl";
 
 interface TopClientesProps {
   data: ResponseClientesComprasInterface[];
@@ -73,27 +76,33 @@ const getRandomColor = (index: number) => {
     "bg-teal-500",
     "bg-cyan-500",
   ];
+
   return colors[index % colors.length];
 };
 
 const TopClientesComponent = ({
   data,
   isLoading,
-  title = "Top Clientes",
-  description = "Ranking de clientes con mayor volumen de compras",
+  title,
+  description,
   moneda,
 }: TopClientesProps) => {
+  const t = useTranslations("topClientesComponent");
+
+  const titulo = title ?? t("title");
+  const descripcion = description ?? t("description");
+
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
+          <CardTitle>{titulo}</CardTitle>
+          <CardDescription>{descripcion}</CardDescription>
         </CardHeader>
         <CardContent className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Cargando clientes...</p>
+            <p className="mt-4 text-gray-600">{t("loading")}</p>
           </div>
         </CardContent>
       </Card>
@@ -104,16 +113,14 @@ const TopClientesComponent = ({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
+          <CardTitle>{titulo}</CardTitle>
+          <CardDescription>{descripcion}</CardDescription>
         </CardHeader>
         <CardContent className="flex items-center justify-center h-64">
           <div className="text-center text-gray-500">
             <Users className="h-12 w-12 mx-auto mb-2 text-gray-400" />
-            <p>No hay clientes registrados</p>
-            <p className="text-sm">
-              Los clientes aparecerán aquí cuando realicen compras
-            </p>
+            <p>{t("empty.title")}</p>
+            <p className="text-sm">{t("empty.description")}</p>
           </div>
         </CardContent>
       </Card>
@@ -124,6 +131,7 @@ const TopClientesComponent = ({
     (sum, item) => sum + item.cantidadFacturas,
     0,
   );
+
   const totalCompras = data.reduce((sum, item) => sum + item.totalComprado, 0);
 
   const chartData = data.map((item, index) => ({
@@ -146,24 +154,27 @@ const TopClientesComponent = ({
     return null;
   };
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
+
       return (
         <div className="bg-white p-3 border rounded-lg shadow-lg">
           <p className="font-bold text-sm">{data.cliente}</p>
           <p className="text-sm text-gray-600">
-            Total Comprado: {formatCurrency(data.totalComprado, moneda)}
+            {t("tooltip.totalPurchased")}:{" "}
+            {formatCurrency(data.totalComprado, moneda)}
           </p>
           <p className="text-sm text-gray-600">
-            Facturas: {data.cantidadFacturas}
+            {t("tooltip.invoices")}: {data.cantidadFacturas}
           </p>
           <p className="text-sm text-gray-600">
-            Porcentaje: {data.porcentajeCompras}%
+            {t("tooltip.percentage")}: {data.porcentajeCompras}%
           </p>
         </div>
       );
     }
+
     return null;
   };
 
@@ -174,16 +185,17 @@ const TopClientesComponent = ({
           <div>
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5 text-purple-600" />
-              {title}
+              {titulo}
             </CardTitle>
-            <CardDescription>{description}</CardDescription>
+            <CardDescription>{descripcion}</CardDescription>
           </div>
           <Badge variant="outline" className="flex items-center gap-1">
             <User className="h-3 w-3" />
-            {data.length} clientes
+            {data.length} {t("clients")}
           </Badge>
         </div>
       </CardHeader>
+
       <CardContent>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="h-80">
@@ -209,7 +221,7 @@ const TopClientesComponent = ({
                 <Bar
                   dataKey="totalComprado"
                   fill="#4ECDC4"
-                  name="Total Comprado"
+                  name={t("chart.totalPurchased")}
                   radius={[0, 4, 4, 0]}
                 >
                   {chartData.map((entry, index) => (
@@ -228,12 +240,19 @@ const TopClientesComponent = ({
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-12">#</TableHead>
-                  <TableHead>Cliente</TableHead>
-                  <TableHead className="text-right">Facturas</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
-                  <TableHead className="text-right">%</TableHead>
+                  <TableHead>{t("table.client")}</TableHead>
+                  <TableHead className="text-right">
+                    {t("table.invoices")}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {t("table.total")}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {t("table.percentage")}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
+
               <TableBody>
                 {chartData.map((item, index) => (
                   <TableRow key={item.clienteId}>
@@ -249,6 +268,7 @@ const TopClientesComponent = ({
                         )}
                       </div>
                     </TableCell>
+
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
@@ -259,14 +279,17 @@ const TopClientesComponent = ({
                         <span className="font-medium">{item.cliente}</span>
                       </div>
                     </TableCell>
+
                     <TableCell className="text-right">
                       <Badge variant="outline" className="font-mono">
                         {item.cantidadFacturas}
                       </Badge>
                     </TableCell>
+
                     <TableCell className="text-right font-semibold text-green-600">
                       {formatCurrency(item.totalComprado, moneda)}
                     </TableCell>
+
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
                         <div className="w-16 bg-gray-200 rounded-full h-2">
@@ -292,21 +315,28 @@ const TopClientesComponent = ({
 
         <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t">
           <div className="text-center">
-            <p className="text-sm text-gray-500">Total Clientes</p>
+            <p className="text-sm text-gray-500">{t("summary.totalClients")}</p>
             <p className="text-xl font-bold">{data.length}</p>
           </div>
+
           <div className="text-center">
-            <p className="text-sm text-gray-500">Total Facturas</p>
+            <p className="text-sm text-gray-500">
+              {t("summary.totalInvoices")}
+            </p>
             <p className="text-xl font-bold">{totalFacturas}</p>
           </div>
+
           <div className="text-center">
-            <p className="text-sm text-gray-500">Total Ventas</p>
+            <p className="text-sm text-gray-500">{t("summary.totalSales")}</p>
             <p className="text-xl font-bold text-green-600">
               {formatCurrency(totalCompras, moneda)}
             </p>
           </div>
+
           <div className="text-center">
-            <p className="text-sm text-gray-500">Ticket Promedio</p>
+            <p className="text-sm text-gray-500">
+              {t("summary.averageTicket")}
+            </p>
             <p className="text-xl font-bold text-blue-600">
               {formatCurrency(
                 totalFacturas > 0 ? totalCompras / totalFacturas : 0,

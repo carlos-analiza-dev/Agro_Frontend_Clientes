@@ -1,4 +1,6 @@
 "use client";
+
+import { useTranslations } from "next-intl";
 import ButtonAdd from "@/components/generics/ButtonAdd";
 import TitlePage from "@/components/generics/TitlePage";
 import Paginacion from "@/components/generics/Paginacion";
@@ -26,6 +28,7 @@ import { formatDate } from "@/helpers/funciones/formatDate";
 import SkeletonPage from "@/components/generics/SkeletonPage";
 
 const NotasCreditoPage = () => {
+  const t = useTranslations("notasCreditoPage");
   const { cliente } = useAuthStore();
   const propietarioId = cliente?.id ?? "";
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
@@ -47,6 +50,7 @@ const NotasCreditoPage = () => {
   const offset = useMemo(() => (currentPage - 1) * limit, [currentPage, limit]);
 
   const { data: sucursales } = useGetAllSucursalesByPropietario(propietarioId);
+
   const { data: notasData, isLoading } = useGetNotaCreditos(propietarioId, {
     limit,
     offset,
@@ -97,11 +101,11 @@ const NotasCreditoPage = () => {
       <div className="md:flex justify-between items-start gap-4">
         <TitlePage
           Icon={FileMinus}
-          title="Notas de Crédito"
-          description="Gestión completa de notas de crédito"
+          title={t("title")}
+          description={t("description")}
         />
         <ButtonAdd
-          title="Agregar Nota"
+          title={t("buttons.add")}
           Icon={FileMinus}
           action={() => setOpenFormNota(true)}
           className="bg-green-600 hover:bg-green-700 w-full md:w-auto mt-4 md:mt-0"
@@ -117,10 +121,10 @@ const NotasCreditoPage = () => {
               onValueChange={(value) => handleFiltroChange("sucursal", value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Todas las sucursales" />
+                <SelectValue placeholder={t("filters.allBranches")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todas las sucursales</SelectItem>
+                <SelectItem value="all">{t("filters.allBranches")}</SelectItem>
                 {sucursales?.map((sucursal: SucursaleAgro) => (
                   <SelectItem key={sucursal.id} value={sucursal.id}>
                     {sucursal.nombre}
@@ -133,6 +137,7 @@ const NotasCreditoPage = () => {
               <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 type="date"
+                aria-label={t("filters.startDate")}
                 value={filtros.fechaInicio}
                 onChange={(e) =>
                   handleFiltroChange("fechaInicio", e.target.value)
@@ -145,6 +150,7 @@ const NotasCreditoPage = () => {
               <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 type="date"
+                aria-label={t("filters.endDate")}
                 value={filtros.fechaFin}
                 onChange={(e) => handleFiltroChange("fechaFin", e.target.value)}
                 className="pl-9"
@@ -166,15 +172,17 @@ const NotasCreditoPage = () => {
                 className="w-full"
               >
                 <Calendar className="h-4 w-4 mr-2" />
-                Último mes
+                {t("filters.lastMonth")}
               </Button>
             </div>
           </div>
 
           <div className="flex justify-between items-center mt-4 gap-2">
             <p className="text-xs text-muted-foreground">
-              Mostrando notas del {formatDate(filtros.fechaInicio)} al{" "}
-              {formatDate(filtros.fechaFin)}
+              {t("filters.dateRange", {
+                start: formatDate(filtros.fechaInicio),
+                end: formatDate(filtros.fechaFin),
+              })}
             </p>
             {hayFiltrosActivos && (
               <Button
@@ -184,7 +192,7 @@ const NotasCreditoPage = () => {
                 className="text-red-600 hover:text-red-700"
               >
                 <X className="h-4 w-4 mr-1" />
-                Limpiar filtros
+                {t("buttons.clearFilters")}
               </Button>
             )}
           </div>
@@ -195,10 +203,15 @@ const NotasCreditoPage = () => {
         <CardContent className="pt-6">
           <div className="flex justify-between items-center mb-4">
             <p className="text-sm text-muted-foreground">
-              Mostrando {notas.length} de {total} notas de crédito
+              {t("summary.showing", {
+                count: notas.length,
+                total,
+              })}
             </p>
             {isLoading && (
-              <span className="text-sm text-muted-foreground">Cargando...</span>
+              <span className="text-sm text-muted-foreground">
+                {t("loading")}
+              </span>
             )}
           </div>
 
@@ -207,11 +220,9 @@ const NotasCreditoPage = () => {
           ) : notas.length === 0 ? (
             <div className="text-center py-8">
               <FileMinus className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-              <p className="text-muted-foreground">
-                No se encontraron notas de crédito
-              </p>
+              <p className="text-muted-foreground">{t("empty.title")}</p>
               <p className="text-sm text-muted-foreground">
-                Ajusta los filtros o crea una nueva nota
+                {t("empty.description")}
               </p>
             </div>
           ) : (
@@ -239,8 +250,8 @@ const NotasCreditoPage = () => {
       <Modal
         open={openFormNota}
         onOpenChange={setOpenFormNota}
-        title="Ingresar Nota de Credito"
-        description="Aqui podras ingresar notas de credito para el agroservicio"
+        title={t("modal.title")}
+        description={t("modal.description")}
         size="2xl"
         height="auto"
       >

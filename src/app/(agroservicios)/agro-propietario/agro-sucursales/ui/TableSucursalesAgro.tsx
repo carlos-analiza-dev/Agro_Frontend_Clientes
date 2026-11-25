@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { formatDateOnly } from "@/helpers/funciones/formatDateOnly";
 import { Building2, Edit2, Globe, User } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   isLoading: boolean;
@@ -27,22 +28,26 @@ const TableSucursalesAgro = ({
   offset,
   handleEditSucursal,
 }: Props) => {
+  const t = useTranslations("agroSucursalesPage");
+
   return (
     <Table>
       <TableHeader>
         <TableRow className="bg-slate-50">
           <TableHead className="font-semibold">#</TableHead>
-          <TableHead className="font-semibold">Nombre</TableHead>
+          <TableHead className="font-semibold">{t("table.name")}</TableHead>
           <TableHead className="font-semibold hidden md:table-cell">
-            Ubicación
+            {t("table.location")}
           </TableHead>
           <TableHead className="font-semibold hidden sm:table-cell">
-            Gerente
+            {t("table.manager")}
           </TableHead>
           <TableHead className="font-semibold hidden xl:table-cell">
-            Fecha creación
+            {t("table.createdAt")}
           </TableHead>
-          <TableHead className="font-semibold text-center">Acciones</TableHead>
+          <TableHead className="font-semibold text-center">
+            {t("table.actions")}
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -106,7 +111,7 @@ const TableSucursalesAgro = ({
                   </div>
                 ) : (
                   <Badge variant="secondary" className="text-xs">
-                    Sin asignar
+                    {t("table.unassigned")}
                   </Badge>
                 )}
               </TableCell>
@@ -121,6 +126,8 @@ const TableSucursalesAgro = ({
                     id="id-edit-sucursal"
                     className="p-1 hover:bg-blue-50 rounded transition-colors"
                     onClick={() => handleEditSucursal(sucursal)}
+                    aria-label={t("table.editBranch")}
+                    title={t("table.editBranch")}
                   >
                     <Edit2 size={15} />
                   </button>
@@ -133,7 +140,7 @@ const TableSucursalesAgro = ({
             <TableCell colSpan={7} className="text-center py-8 text-gray-500">
               <div className="flex flex-col items-center gap-2">
                 <Building2 className="h-12 w-12 text-gray-300" />
-                <p>No hay sucursales registradas</p>
+                <p>{t("table.empty")}</p>
               </div>
             </TableCell>
           </TableRow>

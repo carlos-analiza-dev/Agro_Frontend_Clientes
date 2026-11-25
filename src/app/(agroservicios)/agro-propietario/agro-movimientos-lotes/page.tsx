@@ -1,4 +1,5 @@
 "use client";
+
 import SkeletonPage from "@/components/generics/SkeletonPage";
 import TitlePage from "@/components/generics/TitlePage";
 import useGetMovimientosLotes from "@/hooks/agroservicios/movimientos-lotes/useGetMovimientosLotes";
@@ -6,6 +7,7 @@ import useGetAllSucursalesByPropietario from "@/hooks/agroservicios/sucursales/u
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { History, Search, X } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,6 +35,8 @@ import { MovimientoLote } from "@/api/agroservicio/movimientos-lotes/interface/r
 import TableMovimientosLotes from "@/components/agroservicio/movimientos-lotes/TableMovimientosLotes";
 
 const MovimientosLotesPage = () => {
+  const t = useTranslations("movimientosLotesPage");
+
   const { cliente } = useAuthStore();
   const propietarioId = cliente?.id ?? "";
   const today = new Date();
@@ -103,8 +107,8 @@ const MovimientosLotesPage = () => {
       <div className="md:flex justify-between items-start gap-4">
         <TitlePage
           Icon={History}
-          title="Movimientos de Lotes"
-          description="Sección que muestra los movimientos que han tenido tus lotes"
+          title={t("title")}
+          description={t("description")}
         />
       </div>
 
@@ -113,17 +117,19 @@ const MovimientosLotesPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
               <Label htmlFor="sucursal" className="text-sm font-medium">
-                Sucursal
+                {t("filters.branch")}
               </Label>
               <Select
                 value={sucursalSelected}
                 onValueChange={setSucursalSelected}
               >
                 <SelectTrigger id="sucursal" className="w-full">
-                  <SelectValue placeholder="Todas las sucursales" />
+                  <SelectValue placeholder={t("placeholders.allBranches")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todas las sucursales</SelectItem>
+                  <SelectItem value="all">
+                    {t("placeholders.allBranches")}
+                  </SelectItem>
                   {sucursales?.map((sucursal: any) => (
                     <SelectItem key={sucursal.id} value={sucursal.id}>
                       {sucursal.nombre}
@@ -135,23 +141,33 @@ const MovimientosLotesPage = () => {
 
             <div className="space-y-2">
               <Label htmlFor="tipo" className="text-sm font-medium">
-                Tipo de Movimiento
+                {t("filters.movementType")}
               </Label>
               <Select value={filtroTipo} onValueChange={setFiltroTipo}>
                 <SelectTrigger id="tipo" className="w-full">
-                  <SelectValue placeholder="Todos los tipos" />
+                  <SelectValue placeholder={t("placeholders.allTypes")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todos los tipos</SelectItem>
-                  <SelectItem value="DEVOLUCION">Devolución</SelectItem>
-                  <SelectItem value="SALIDA">Salida</SelectItem>
-                  <SelectItem value="ENTRADA">Entrada</SelectItem>
+                  <SelectItem value="all">
+                    {t("placeholders.allTypes")}
+                  </SelectItem>
+                  <SelectItem value="DEVOLUCION">
+                    {t("movementTypes.return")}
+                  </SelectItem>
+                  <SelectItem value="SALIDA">
+                    {t("movementTypes.exit")}
+                  </SelectItem>
+                  <SelectItem value="ENTRADA">
+                    {t("movementTypes.entry")}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Fecha Inicio</Label>
+              <Label className="text-sm font-medium">
+                {t("filters.startDate")}
+              </Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -163,7 +179,7 @@ const MovimientosLotesPage = () => {
                   >
                     {fechaInicio
                       ? format(fechaInicio, "dd/MM/yyyy")
-                      : "Seleccionar fecha"}
+                      : t("placeholders.selectDate")}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -179,7 +195,9 @@ const MovimientosLotesPage = () => {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Fecha Fin</Label>
+              <Label className="text-sm font-medium">
+                {t("filters.endDate")}
+              </Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -191,7 +209,7 @@ const MovimientosLotesPage = () => {
                   >
                     {fechaFin
                       ? format(fechaFin, "dd/MM/yyyy")
-                      : "Seleccionar fecha"}
+                      : t("placeholders.selectDate")}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -211,7 +229,7 @@ const MovimientosLotesPage = () => {
             <div id="buscador-movimientos" className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar por producto, factura o compra..."
+                placeholder={t("placeholders.search")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-9"
@@ -224,7 +242,7 @@ const MovimientosLotesPage = () => {
                 className="gap-2"
               >
                 <X className="h-4 w-4" />
-                Limpiar
+                {t("buttons.clear")}
               </Button>
             </div>
           </div>
@@ -232,7 +250,7 @@ const MovimientosLotesPage = () => {
           <div className="flex flex-wrap gap-2 mt-4">
             {sucursalSelected !== "all" && (
               <Badge variant="secondary" className="gap-1">
-                Sucursal:{" "}
+                {t("activeFilters.branch")}:{" "}
                 {
                   sucursales?.find((s: any) => s.id === sucursalSelected)
                     ?.nombre
@@ -245,7 +263,10 @@ const MovimientosLotesPage = () => {
             )}
             {filtroTipo !== "all" && (
               <Badge variant="secondary" className="gap-1">
-                Tipo: {filtroTipo}
+                {t("activeFilters.type")}:{" "}
+                {t(
+                  `movementTypes.${filtroTipo === "DEVOLUCION" ? "return" : filtroTipo === "SALIDA" ? "exit" : "entry"}`,
+                )}
                 <X
                   className="h-3 w-3 cursor-pointer ml-1"
                   onClick={() => setFiltroTipo("all")}
@@ -254,7 +275,7 @@ const MovimientosLotesPage = () => {
             )}
             {fechaInicio && (
               <Badge variant="secondary" className="gap-1">
-                Desde: {format(fechaInicio, "dd/MM/yyyy")}
+                {t("activeFilters.from")}: {format(fechaInicio, "dd/MM/yyyy")}
                 <X
                   className="h-3 w-3 cursor-pointer ml-1"
                   onClick={() => setFechaInicio(undefined)}
@@ -263,7 +284,7 @@ const MovimientosLotesPage = () => {
             )}
             {fechaFin && (
               <Badge variant="secondary" className="gap-1">
-                Hasta: {format(fechaFin, "dd/MM/yyyy")}
+                {t("activeFilters.to")}: {format(fechaFin, "dd/MM/yyyy")}
                 <X
                   className="h-3 w-3 cursor-pointer ml-1"
                   onClick={() => setFechaFin(undefined)}
@@ -278,9 +299,9 @@ const MovimientosLotesPage = () => {
         <CardContent className="pt-6">
           <div className="flex justify-between items-center mb-4">
             <div>
-              <h3 className="font-semibold text-lg">Resultados</h3>
+              <h3 className="font-semibold text-lg">{t("results.title")}</h3>
               <p className="text-sm text-muted-foreground">
-                {movimientosFiltrados.length} movimientos encontrados
+                {t("results.found", { count: movimientosFiltrados.length })}
               </p>
             </div>
           </div>
@@ -297,9 +318,11 @@ const MovimientosLotesPage = () => {
           {totalPages > 1 && (
             <div className="flex justify-between items-center mt-4 pt-4 border-t">
               <div className="text-sm text-muted-foreground">
-                Mostrando {offset + 1} -{" "}
-                {Math.min(offset + limit, movimientos?.total || 0)} de{" "}
-                {movimientos?.total || 0}
+                {t("pagination.showing", {
+                  from: offset + 1,
+                  to: Math.min(offset + limit, movimientos?.total || 0),
+                  total: movimientos?.total || 0,
+                })}
               </div>
               <Paginacion
                 currentPage={currentPage}

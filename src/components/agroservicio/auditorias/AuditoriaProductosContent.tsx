@@ -8,6 +8,7 @@ import { LoadingSkeleton } from "./LoadingSkeleton";
 import { ResponseAuditoriaProductos } from "@/api/agroservicio/auditoria/interface/response-auditoria-productos.interface";
 import { Dispatch, SetStateAction } from "react";
 import { formatDateTimeLocal } from "@/helpers/funciones/formatDateOnly";
+import { useTranslations } from "next-intl";
 
 interface Props {
   isLoadingProductos: boolean;
@@ -24,33 +25,38 @@ export const AuditoriaProductosContent = ({
   totalPagesProductos,
   setCurrentPageProductos,
 }: Props) => {
+  const t = useTranslations("auditoriaCommon");
+
   if (isLoadingProductos) return <LoadingSkeleton />;
+
   if (!audit_productos || audit_productos.data.length === 0) {
-    return (
-      <EmptyState message="No se encontraron registros de auditoría de productos" />
-    );
+    return <EmptyState message={t("products.emptyMessage")} />;
   }
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <span className="text-sm text-muted-foreground">
-          Total: {audit_productos.total} registros
+          {t("products.totalRecords", {
+            total: audit_productos.total,
+          })}
         </span>
       </div>
+
       {audit_productos.data.map((audit: any) => (
         <Card key={audit.id} className="hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
               <div className="flex items-center gap-3">
-                {getAccionBadge(audit.accion)}
+                {getAccionBadge(audit.accion, t)}
                 <span className="text-sm text-muted-foreground flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
                   {formatDateTimeLocal(audit.fecha)}
                 </span>
               </div>
+
               <span className="text-xs text-muted-foreground">
-                ID: {audit.id.slice(0, 8)}
+                {t("products.id")}: {audit.id.slice(0, 8)}
               </span>
             </div>
 
@@ -58,12 +64,13 @@ export const AuditoriaProductosContent = ({
               <div className="space-y-2">
                 <h4 className="text-sm font-semibold flex items-center gap-2">
                   <Package className="h-4 w-4" />
-                  Producto
+                  {t("products.product")}
                 </h4>
+
                 <div className="bg-muted/50 rounded-lg p-3 space-y-1">
                   <p className="font-medium">{audit.producto.nombre}</p>
                   <p className="text-xs text-muted-foreground">
-                    ID: {audit.producto.id.slice(0, 8)}
+                    {t("products.id")}: {audit.producto.id.slice(0, 8)}
                   </p>
                 </div>
               </div>
@@ -71,12 +78,13 @@ export const AuditoriaProductosContent = ({
               <div className="space-y-2">
                 <h4 className="text-sm font-semibold flex items-center gap-2">
                   <User className="h-4 w-4" />
-                  Empleado
+                  {t("products.employee")}
                 </h4>
+
                 <div className="bg-muted/50 rounded-lg p-3 space-y-1">
                   <p className="font-medium">{audit.empleado.nombre}</p>
                   <Badge variant="outline" className="text-xs">
-                    {audit.empleado.role?.name || "Sin rol"}
+                    {audit.empleado.role?.name || t("products.noRole")}
                   </Badge>
                 </div>
               </div>
@@ -84,6 +92,7 @@ export const AuditoriaProductosContent = ({
           </CardContent>
         </Card>
       ))}
+
       {totalPagesProductos > 1 && (
         <div className="flex justify-center mt-6">
           <Paginacion

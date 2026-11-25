@@ -1,3 +1,5 @@
+"use client";
+
 import { ProveedoreAgro } from "@/api/agroservicio/proveedores/interface/response-agro-proveedores.interface";
 import { Categoria } from "@/api/categorias/interfaces/response-categorias";
 import { Marca } from "@/api/marcas/interface/response-marcas.interface";
@@ -14,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Building2, Search, Store, Tag, X } from "lucide-react";
 import React, { Dispatch, SetStateAction } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   categorias: Categoria[] | undefined;
@@ -48,6 +51,8 @@ const CardFiltersAgroProductos = ({
   hasActiveFilters,
   clearFilters,
 }: Props) => {
+  const t = useTranslations("cardFiltersAgroProductos");
+
   return (
     <Card>
       <CardContent className="p-4">
@@ -56,7 +61,7 @@ const CardFiltersAgroProductos = ({
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar productos..."
+                placeholder={t("search.placeholder")}
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
@@ -76,10 +81,12 @@ const CardFiltersAgroProductos = ({
               }}
             >
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Categoría" />
+                <SelectValue placeholder={t("filters.category")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todas las categorías</SelectItem>
+                <SelectItem value="all">
+                  {t("filters.allCategories")}
+                </SelectItem>
                 {categorias?.map((categoria) => (
                   <SelectItem key={categoria.id} value={categoria.id}>
                     {categoria.nombre}
@@ -96,10 +103,10 @@ const CardFiltersAgroProductos = ({
               }}
             >
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Marca" />
+                <SelectValue placeholder={t("filters.brand")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todas las marcas</SelectItem>
+                <SelectItem value="all">{t("filters.allBrands")}</SelectItem>
                 {marcas?.map((marca) => (
                   <SelectItem key={marca.id} value={marca.id}>
                     {marca.nombre}
@@ -116,10 +123,10 @@ const CardFiltersAgroProductos = ({
               }}
             >
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Proveedor" />
+                <SelectValue placeholder={t("filters.supplier")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos los proveedores</SelectItem>
+                <SelectItem value="all">{t("filters.allSuppliers")}</SelectItem>
                 {proveedores?.map((proveedor) => (
                   <SelectItem key={proveedor.id} value={proveedor.id}>
                     {proveedor.nombre_legal}
@@ -134,6 +141,8 @@ const CardFiltersAgroProductos = ({
                 size="icon"
                 onClick={clearFilters}
                 className="h-10 w-10"
+                title={t("buttons.clearFilters")}
+                aria-label={t("buttons.clearFilters")}
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -145,7 +154,7 @@ const CardFiltersAgroProductos = ({
           <div className="flex flex-wrap gap-2 mt-4">
             {searchTerm && (
               <Badge variant="secondary" className="gap-1">
-                Búsqueda: {searchTerm}
+                {t("activeFilters.search")}: {searchTerm}
                 <X
                   className="h-3 w-3 cursor-pointer ml-1"
                   onClick={() => setSearchTerm("")}

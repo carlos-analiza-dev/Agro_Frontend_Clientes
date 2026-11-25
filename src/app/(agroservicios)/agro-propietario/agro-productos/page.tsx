@@ -1,4 +1,6 @@
 "use client";
+
+import { useTranslations } from "next-intl";
 import useGetAgroProductos from "@/hooks/agroservicios/productos/useGetAgroProductos";
 import useGetAllProveedores from "@/hooks/agroservicios/proveedores/useGetAllProveedores";
 import useGetCategorias from "@/hooks/categorias/useGetCategorias";
@@ -20,6 +22,8 @@ import { AgroProducto } from "@/api/agroservicio/productos/interface/response-pr
 const ITEMS_PER_PAGE = 10;
 
 const AgroProductosPage = () => {
+  const t = useTranslations("agroProductosPage");
+
   const { cliente } = useAuthStore();
   const propietarioId = cliente?.id ?? "";
   const paisId = cliente?.pais.id ?? "";
@@ -34,11 +38,13 @@ const AgroProductosPage = () => {
   const [proveedorSelect, setProveedorSelect] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+
   const { data: categorias } = useGetCategorias({
     is_market: false,
   });
   const { data: marcas } = useGetMarcasActivas();
   const { data: proveedores } = useGetAllProveedores(propietarioId);
+
   const { data: productosData, isLoading: loadingProductos } =
     useGetAgroProductos(propietarioId, {
       limit: ITEMS_PER_PAGE,
@@ -96,11 +102,11 @@ const AgroProductosPage = () => {
       <div className="md:flex justify-between items-center gap-4">
         <TitlePage
           Icon={ShoppingBag}
-          title="Productos"
-          description="Gestión de productos agropecuarios"
+          title={t("title")}
+          description={t("description")}
         />
         <ButtonAdd
-          title="Agregar Producto"
+          title={t("buttons.add")}
           Icon={ShoppingBag}
           action={() => setOpenModalProductos(true)}
           className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
@@ -145,9 +151,14 @@ const AgroProductosPage = () => {
       {filteredProducts.length > 0 && (
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            Mostrando {(currentPage - 1) * ITEMS_PER_PAGE + 1} -{" "}
-            {Math.min(currentPage * ITEMS_PER_PAGE, productosData?.total || 0)}{" "}
-            de {productosData?.total || 0} productos
+            {t("pagination.showing", {
+              from: (currentPage - 1) * ITEMS_PER_PAGE + 1,
+              to: Math.min(
+                currentPage * ITEMS_PER_PAGE,
+                productosData?.total || 0,
+              ),
+              total: productosData?.total || 0,
+            })}
           </p>
           <Paginacion
             currentPage={currentPage}
@@ -156,14 +167,13 @@ const AgroProductosPage = () => {
           />
         </div>
       )}
+
       <Modal
         open={openModalProductos}
         onOpenChange={setOpenModalProductos}
-        title={isEdit ? "Editar Producto" : "Agregar Nuevo Producto"}
+        title={isEdit ? t("modal.editTitle") : t("modal.addTitle")}
         description={
-          isEdit
-            ? "Aquí podrás editar la información del producto."
-            : "Aquí podrás ingresar nuevos productos al agroservicio."
+          isEdit ? t("modal.editDescription") : t("modal.addDescription")
         }
         height="auto"
         size="2xl"

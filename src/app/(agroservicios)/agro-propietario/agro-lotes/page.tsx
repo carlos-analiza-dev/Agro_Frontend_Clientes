@@ -31,8 +31,10 @@ import TableLotes from "@/components/agroservicio/lotes-movimientos/TableLotes";
 import Modal from "@/components/generics/Modal";
 import FormTransferirProducto from "@/components/agroservicio/lotes-movimientos/FormTransferirProducto";
 import TitlePage from "@/components/generics/TitlePage";
+import { useTranslations } from "next-intl";
 
 const LotesPage = () => {
+  const t = useTranslations("lotesPage");
   const { cliente } = useAuthStore();
   const propietarioId = cliente?.id ?? "";
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
@@ -108,8 +110,8 @@ const LotesPage = () => {
       <div className="md:flex justify-between items-center gap-4">
         <TitlePage
           Icon={Package}
-          title=" Gestión de Lotes"
-          description=" Administra el inventario de productos por sucursal"
+          title={t("title")}
+          description={t("description")}
         />
       </div>
 
@@ -119,7 +121,7 @@ const LotesPage = () => {
       >
         <div id="card-total-productos">
           <CardDetails
-            title="Total Productos"
+            title={t("statistics.totalProducts")}
             total={totalProductos}
             Icon={Package}
             color="blue"
@@ -128,7 +130,7 @@ const LotesPage = () => {
 
         <div id="card-unidades-totales">
           <CardDetails
-            title="Unidades Totales"
+            title={t("statistics.totalUnits")}
             total={totalCantidad}
             Icon={TrendingUp}
             color="green"
@@ -137,7 +139,7 @@ const LotesPage = () => {
 
         <div id="card-costo-total">
           <CardDetails
-            title="Costo Total"
+            title={t("statistics.totalCost")}
             total={totalCosto.toFixed(2)}
             Icon={DollarSign}
             color="yellow"
@@ -146,7 +148,7 @@ const LotesPage = () => {
 
         <div id="card-valor-promedio">
           <CardDetails
-            title="Valor Promedio"
+            title={t("statistics.averageValue")}
             total={
               totalCantidad > 0
                 ? (totalCosto / totalCantidad).toFixed(2)
@@ -163,7 +165,7 @@ const LotesPage = () => {
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <Label className="text-sm font-semibold mb-2 block">
-                Sucursal
+                {t("filters.branch")}
               </Label>
               {cargandoSucursales ? (
                 <Skeleton className="h-10 w-full" />
@@ -173,7 +175,7 @@ const LotesPage = () => {
                   onValueChange={handleSucursalChange}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar sucursal" />
+                    <SelectValue placeholder={t("placeholders.selectBranch")} />
                   </SelectTrigger>
                   <SelectContent>
                     {sucursales?.map((sucursal) => (
@@ -188,13 +190,13 @@ const LotesPage = () => {
 
             <div className="flex-1">
               <Label className="text-sm font-semibold mb-2 block">
-                Buscar producto
+                {t("filters.searchProduct")}
               </Label>
               <form onSubmit={handleSearch} className="flex gap-2">
                 <div id="buscador-lotes" className="flex-1 relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
-                    placeholder="Nombre o código del producto..."
+                    placeholder={t("placeholders.searchProduct")}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-9"
@@ -211,7 +213,7 @@ const LotesPage = () => {
 
       <Card id="tabla-lotes">
         <CardHeader>
-          <CardTitle className="text-xl">Inventario de Productos</CardTitle>
+          <CardTitle className="text-xl">{t("inventory.title")}</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -223,9 +225,7 @@ const LotesPage = () => {
           ) : filteredLotes.length === 0 ? (
             <Alert>
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                No se encontraron lotes en esta sucursal.
-              </AlertDescription>
+              <AlertDescription>{t("empty.noLots")}</AlertDescription>
             </Alert>
           ) : (
             <div className="overflow-x-auto">
@@ -250,14 +250,17 @@ const LotesPage = () => {
       </Card>
 
       <div className="text-center text-sm text-gray-500">
-        Mostrando {filteredLotes.length} de {totalItems} productos
+        {t("pagination.showing", {
+          shown: filteredLotes.length,
+          total: totalItems,
+        })}
       </div>
 
       <Modal
         open={openModal}
         onOpenChange={setOpenModal}
-        title="Transferir Producto"
-        description="Aqui podras transferir productos a otra sucursal"
+        title={t("modal.title")}
+        description={t("modal.description")}
         size="2xl"
         height="auto"
       >

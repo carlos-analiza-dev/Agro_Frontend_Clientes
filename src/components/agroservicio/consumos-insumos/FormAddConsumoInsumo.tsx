@@ -1,4 +1,5 @@
 "use client";
+
 import { CrearConsumoInsumoInterface } from "@/api/agroservicio/consumo-insumos/interface/crear-consumo-insumo.interface";
 import useGetInsumosDisponibles from "@/hooks/agroservicios/insumos/useGetInsumosDisponibles";
 import useGetExistenciasAgroInsumos from "@/hooks/agroservicios/lotes-insumos/useGetExistenciasAgroInsumos";
@@ -45,6 +46,7 @@ import {
 import { AgroInsumo } from "@/api/agroservicio/insumos/interfaces/response-agro-insumos.interface";
 import { SucursaleAgro } from "@/api/agroservicio/agro-sucursales/interface/response-sucursales-agro.interface";
 import { formatDateOnly } from "@/helpers/funciones/formatDateOnly";
+import { useTranslations } from "next-intl";
 
 interface Props {
   propietarioId: string;
@@ -61,6 +63,8 @@ const FormAddConsumoInsumo = ({
   onSuccess,
   onCancel,
 }: Props) => {
+  const t = useTranslations("formAddConsumoInsumo");
+
   const queryClient = useQueryClient();
 
   const { data: insumos } = useGetInsumosDisponibles(propietarioId);
@@ -113,7 +117,7 @@ const FormAddConsumoInsumo = ({
             data,
           ),
     onSuccess: () => {
-      toast.success("Consumo de insumo registrado exitosamente");
+      toast.success(t("messages.createSuccess"));
       queryClient.invalidateQueries({ queryKey: ["consumo-insumos"] });
       queryClient.invalidateQueries({ queryKey: ["existencia-agro-insumos"] });
       reset({
@@ -133,12 +137,10 @@ const FormAddConsumoInsumo = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al registrar el consumo";
+            : t("messages.createError");
         toast.error(errorMessage);
       } else {
-        toast.error(
-          "Hubo un error al registrar el consumo. Inténtalo de nuevo.",
-        );
+        toast.error(t("messages.createUnexpectedError"));
       }
     },
   });
@@ -146,7 +148,9 @@ const FormAddConsumoInsumo = ({
   const onSubmit = (data: CrearConsumoInsumoInterface) => {
     if (existenciaData && data.cantidad > existenciaData.cantidad) {
       toast.error(
-        `La cantidad excede la disponibilidad (${existenciaData.cantidad} unidades disponibles)`,
+        t("messages.exceedsAvailability", {
+          quantity: existenciaData.cantidad,
+        }),
       );
       return;
     }
@@ -178,11 +182,11 @@ const FormAddConsumoInsumo = ({
         {isPropietario && (
           <div className="space-y-2">
             <Label htmlFor="sucursal" className="font-bold">
-              Sucursal*
+              {t("fields.branch")}*
             </Label>
             <Select value={selectSucursal} onValueChange={setSelectSucursal}>
               <SelectTrigger id="sucursal">
-                <SelectValue placeholder="Selecciona una sucursal" />
+                <SelectValue placeholder={t("placeholders.branch")} />
               </SelectTrigger>
               <SelectContent>
                 {sucursales?.map((sucursal: any) => (
@@ -194,7 +198,7 @@ const FormAddConsumoInsumo = ({
             </Select>
             {!selectSucursal && (
               <p className="text-sm font-medium text-red-500">
-                Selecciona una sucursal para continuar
+                {t("validation.branchRequired")}
               </p>
             )}
           </div>
@@ -202,11 +206,11 @@ const FormAddConsumoInsumo = ({
 
         {!isPropietario && (
           <div className="space-y-2">
-            <Label className="font-bold">Sucursal</Label>
+            <Label className="font-bold">{t("fields.branch")}</Label>
             <div className="p-3 bg-muted rounded-md">
               <p className="text-sm">
                 {sucursales?.find((s: SucursaleAgro) => s.id === sucursalId)
-                  ?.nombre || "Cargando..."}
+                  ?.nombre || t("values.loading")}
               </p>
             </div>
             <input type="hidden" value={sucursalId} />
@@ -215,7 +219,7 @@ const FormAddConsumoInsumo = ({
 
         <div className="space-y-2">
           <Label htmlFor="insumo" className="font-bold">
-            Insumo*
+            {t("fields.supply")}*
           </Label>
           <Select
             value={selectInsumo}
@@ -226,22 +230,22 @@ const FormAddConsumoInsumo = ({
               <SelectValue
                 placeholder={
                   !selectSucursal
-                    ? "Primero selecciona una sucursal"
-                    : "Selecciona un insumo"
+                    ? t("placeholders.selectBranchFirst")
+                    : t("placeholders.supply")
                 }
               />
             </SelectTrigger>
             <SelectContent>
               {insumos?.map((insumo: AgroInsumo) => (
                 <SelectItem key={insumo.id} value={insumo.id}>
-                  {insumo.nombre} - {insumo.codigo || "Sin código"}
+                  {insumo.nombre} - {insumo.codigo || t("values.noCode")}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
           {!selectInsumo && selectSucursal && (
             <p className="text-sm font-medium text-amber-500">
-              Selecciona un insumo para continuar
+              {t("validation.supplyRequired")}
             </p>
           )}
         </div>
@@ -252,10 +256,12 @@ const FormAddConsumoInsumo = ({
               <Package className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               <div>
                 <p className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                  Disponibilidad en {insumoSeleccionado?.nombre}:
+                  {t("availability.title", {
+                    name: insumoSeleccionado?.nombre || "",
+                  })}
                 </p>
                 <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                  {existenciaData.cantidad || 0} unidades
+                  {existenciaData.cantidad || 0} {t("values.units")}
                 </p>
               </div>
             </div>
@@ -264,7 +270,7 @@ const FormAddConsumoInsumo = ({
 
         <div className="space-y-2">
           <Label htmlFor="cantidad" className="font-bold">
-            Cantidad a Consumir*
+            {t("fields.quantity")}*
           </Label>
           <Input
             id="cantidad"
@@ -272,14 +278,16 @@ const FormAddConsumoInsumo = ({
             step="1"
             min={1}
             {...register("cantidad", {
-              required: "La cantidad es requerida",
+              required: t("validation.quantityRequired"),
               min: {
                 value: 0.01,
-                message: "La cantidad debe ser mayor a 0",
+                message: t("validation.quantityMin"),
               },
               validate: (value) => {
                 if (existenciaData && value > existenciaData.cantidad) {
-                  return `No hay suficiente stock. Disponible: ${existenciaData.cantidad} unidades`;
+                  return t("validation.insufficientStock", {
+                    quantity: existenciaData.cantidad,
+                  });
                 }
                 return true;
               },
@@ -296,8 +304,10 @@ const FormAddConsumoInsumo = ({
             <Alert variant="destructive" className="mt-2">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                La cantidad ingresada ({cantidadWatch}) excede la disponibilidad
-                ({existenciaData.cantidad} unidades)
+                {t("alerts.quantityExceedsAvailability", {
+                  quantity: cantidadWatch,
+                  available: existenciaData.cantidad,
+                })}
               </AlertDescription>
             </Alert>
           )}
@@ -305,13 +315,13 @@ const FormAddConsumoInsumo = ({
 
         <div className="space-y-2">
           <Label htmlFor="fecha_consumo" className="font-bold">
-            Fecha de Consumo*
+            {t("fields.consumptionDate")}*
           </Label>
           <Input
             id="fecha_consumo"
             type="date"
             {...register("fecha_consumo", {
-              required: "La fecha de consumo es requerida",
+              required: t("validation.dateRequired"),
             })}
           />
           {errors.fecha_consumo && (
@@ -323,17 +333,17 @@ const FormAddConsumoInsumo = ({
 
         <div className="space-y-2">
           <Label htmlFor="observacion" className="font-bold">
-            Observación (opcional)
+            {t("fields.observation")}
           </Label>
           <Textarea
             id="observacion"
             {...register("observacion", {
               maxLength: {
                 value: 500,
-                message: "La observación no puede tener más de 500 caracteres",
+                message: t("validation.observationMaxLength"),
               },
             })}
-            placeholder="Ej: Aplicación de fertilizante en parcela 5"
+            placeholder={t("placeholders.observation")}
             rows={3}
           />
           {errors.observacion && (
@@ -351,7 +361,7 @@ const FormAddConsumoInsumo = ({
               onClick={onCancel}
               disabled={mutation.isPending}
             >
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
           )}
           <Button
@@ -365,7 +375,7 @@ const FormAddConsumoInsumo = ({
             className="min-w-[150px] bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800"
           >
             <ArrowRight className="h-4 w-4 mr-2" />
-            Revisar y Confirmar
+            {t("buttons.reviewAndConfirm")}
           </Button>
         </div>
       </form>
@@ -375,10 +385,10 @@ const FormAddConsumoInsumo = ({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl">
               <CheckCircle2 className="h-6 w-6 text-green-600" />
-              Confirmar Consumo de Insumo
+              {t("confirmation.title")}
             </DialogTitle>
             <DialogDescription>
-              Por favor, verifica los datos antes de confirmar el consumo.
+              {t("confirmation.description")}
             </DialogDescription>
           </DialogHeader>
 
@@ -387,24 +397,24 @@ const FormAddConsumoInsumo = ({
               <div className="p-4 bg-muted/50 rounded-lg border">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                   <Building2 className="h-4 w-4" />
-                  <span>Sucursal</span>
+                  <span>{t("fields.branch")}</span>
                 </div>
                 <p className="font-medium">
-                  {sucursalSeleccionada?.nombre || "No seleccionada"}
+                  {sucursalSeleccionada?.nombre || t("values.notSelected")}
                 </p>
               </div>
 
               <div className="p-4 bg-muted/50 rounded-lg border">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                   <Box className="h-4 w-4" />
-                  <span>Insumo</span>
+                  <span>{t("fields.supply")}</span>
                 </div>
                 <p className="font-medium">
-                  {insumoSeleccionado?.nombre || "No seleccionado"}
+                  {insumoSeleccionado?.nombre || t("values.notSelected")}
                 </p>
                 {insumoSeleccionado?.codigo && (
                   <p className="text-xs text-muted-foreground">
-                    Código: {insumoSeleccionado.codigo}
+                    {t("values.code")}: {insumoSeleccionado.codigo}
                   </p>
                 )}
               </div>
@@ -412,14 +422,15 @@ const FormAddConsumoInsumo = ({
               <div className="p-4 bg-muted/50 rounded-lg border">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                   <Package className="h-4 w-4" />
-                  <span>Cantidad a Consumir</span>
+                  <span>{t("fields.quantity")}</span>
                 </div>
                 <p className="font-medium text-lg">
-                  {formDataToConfirm?.cantidad || 0} unidades
+                  {formDataToConfirm?.cantidad || 0} {t("values.units")}
                 </p>
                 {existenciaData && (
                   <p className="text-xs text-muted-foreground">
-                    Disponible: {existenciaData.cantidad} unidades
+                    {t("availability.available")}: {existenciaData.cantidad}{" "}
+                    {t("values.units")}
                   </p>
                 )}
               </div>
@@ -427,12 +438,12 @@ const FormAddConsumoInsumo = ({
               <div className="p-4 bg-muted/50 rounded-lg border">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                   <CalendarDays className="h-4 w-4" />
-                  <span>Fecha de Consumo</span>
+                  <span>{t("fields.consumptionDate")}</span>
                 </div>
                 <p className="font-medium">
                   {formDataToConfirm?.fecha_consumo
                     ? formatDateOnly(formDataToConfirm.fecha_consumo)
-                    : "No seleccionada"}
+                    : t("values.notSelected")}
                 </p>
               </div>
             </div>
@@ -441,7 +452,7 @@ const FormAddConsumoInsumo = ({
               <div className="p-4 bg-muted/50 rounded-lg border">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                   <FileText className="h-4 w-4" />
-                  <span>Observación</span>
+                  <span>{t("fields.observation")}</span>
                 </div>
                 <p className="text-sm">{formDataToConfirm.observacion}</p>
               </div>
@@ -465,12 +476,11 @@ const FormAddConsumoInsumo = ({
                   {formDataToConfirm.cantidad >
                   existenciaData.cantidad * 0.8 ? (
                     <span className="text-red-600 dark:text-red-400">
-                      ⚠️ Estás consumiendo más del 80% del stock disponible.
+                      ⚠️ {t("alerts.highConsumption")}
                     </span>
                   ) : (
                     <span className="text-green-600 dark:text-green-400">
-                      ✅ La cantidad solicitada está dentro del stock
-                      disponible.
+                      ✅ {t("alerts.stockAvailable")}
                     </span>
                   )}
                 </AlertDescription>
@@ -484,7 +494,7 @@ const FormAddConsumoInsumo = ({
               onClick={() => setShowConfirmDialog(false)}
               disabled={mutation.isPending}
             >
-              Volver al Formulario
+              {t("buttons.backToForm")}
             </Button>
             <Button
               onClick={handleConfirmSubmit}
@@ -510,15 +520,15 @@ const FormAddConsumoInsumo = ({
                     <path
                       className="opacity-75"
                       fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l-3-2.647z"
                     ></path>
                   </svg>
-                  Registrando...
+                  {t("buttons.registering")}
                 </>
               ) : (
                 <>
                   <CheckCircle2 className="h-4 w-4 mr-2" />
-                  Confirmar y Registrar
+                  {t("buttons.confirmAndRegister")}
                 </>
               )}
             </Button>

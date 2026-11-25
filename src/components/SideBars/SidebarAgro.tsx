@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogOut, Sprout } from "lucide-react";
@@ -26,6 +27,7 @@ import useGetPermisosByRol from "@/hooks/permisos/useGetPermisosByRol";
 import { FullScreenLoader } from "../generics/FullScreenLoader";
 import useGetLogoAgro from "@/hooks/agroservicios/logo/useGetLogoAgro";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 interface SidebarAgroProps {
   handleLogout: () => Promise<void>;
@@ -33,14 +35,19 @@ interface SidebarAgroProps {
 }
 
 const SidebarAgro = ({ handleLogout, isPropietario }: SidebarAgroProps) => {
+  const t = useTranslations("sidebarAgro");
+
   const pathname = usePathname();
   const { cliente } = useAuthStore();
   const { empleado } = useAuthEmpleadoStore();
+
   const tipoPaquete =
     cliente?.paqueteActivo?.paquete.tipo ?? TipoAgroservicio.AGRO_GESTION;
+
   const esAgro =
     cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_GESTION ||
     cliente?.paqueteActivo?.paquete?.tipo === TipoPaquete.AGRO_LIGHT;
+
   const rolId = empleado?.role?.id ?? "";
 
   const propietarioId = esAgro
@@ -114,6 +121,49 @@ const SidebarAgro = ({ handleLogout, isPropietario }: SidebarAgroProps) => {
     return pathname.startsWith(href);
   };
 
+  const getCategoryTranslation = (category: string) => {
+    const categoryKeys: Record<string, string> = {
+      Panel: "categories.panel",
+      Agroservicio: "categories.agroservice",
+      Compras: "categories.purchases",
+      Facturación: "categories.billing",
+      Lotes: "categories.batches",
+      Inventario: "categories.inventory",
+    };
+
+    const key = categoryKeys[category];
+
+    return key && t.has(key) ? t(key) : category;
+  };
+
+  const getItemTranslation = (name: string) => {
+    const itemKeys: Record<string, string> = {
+      Dashboard: "items.dashboard",
+      Auditoria: "items.audit",
+      "Mi Agroservicio": "items.myAgroservice",
+      Sucursales: "items.branches",
+      Personal: "items.staff",
+      Clientes: "items.clients",
+      Productos: "items.products",
+      Insumos: "items.supplies",
+      Facturas: "items.invoices",
+      "Notas de Crédito": "items.creditNotes",
+      "Rangos de Facturación": "items.billingRanges",
+      Lotes: "items.batches",
+      Traslados: "items.transfers",
+      Movimientos: "items.movements",
+      Proveedores: "items.suppliers",
+      "Consumo de Insumos": "items.suppliesConsumption",
+      "Existencia Productos": "items.productStock",
+      Impuestos: "items.taxes",
+      Descuentos: "items.discounts",
+    };
+
+    const key = itemKeys[name];
+
+    return key && t.has(key) ? t(key) : name;
+  };
+
   const isLoading = isPropietario
     ? isLoadingPermisosAgro
     : isLoadingPermisosEmpleados;
@@ -130,9 +180,9 @@ const SidebarAgro = ({ handleLogout, isPropietario }: SidebarAgroProps) => {
 
   const userInfo = isPropietario
     ? {
-        nombre: cliente?.nombre || cliente?.nombre || "Propietario",
-        tipo: "Propietario",
-        rol: "Administrador",
+        nombre: cliente?.nombre || cliente?.nombre || t("user.owner"),
+        tipo: t("user.owner"),
+        rol: t("user.administrator"),
         email: cliente?.email || "",
         imagen:
           logo?.url ||
@@ -140,16 +190,16 @@ const SidebarAgro = ({ handleLogout, isPropietario }: SidebarAgroProps) => {
             ? cliente.profileImages[0].url
             : null),
         tieneLogo: !!logo?.url,
-        agroservicio: logo?.agroservicio || "Agro Servicios",
+        agroservicio: logo?.agroservicio || t("user.agroservice"),
       }
     : {
-        nombre: empleado?.nombre || "Empleado",
-        tipo: "Empleado",
-        rol: empleado?.role?.name || "Sin rol",
+        nombre: empleado?.nombre || t("user.employee"),
+        tipo: t("user.employee"),
+        rol: empleado?.role?.name || t("user.noRole"),
         email: empleado?.email || "",
         imagen: logo?.url || null,
         tieneLogo: !!logo?.url,
-        agroservicio: logo?.agroservicio || "Agro Servicios",
+        agroservicio: logo?.agroservicio || t("user.agroservice"),
       };
 
   return (
@@ -161,7 +211,7 @@ const SidebarAgro = ({ handleLogout, isPropietario }: SidebarAgroProps) => {
               <div className="h-10 w-10 rounded-full overflow-hidden border border-gray-200 flex-shrink-0">
                 <img
                   src={userInfo.imagen!}
-                  alt="Logo agroservicio"
+                  alt={t("accessibility.agroserviceLogo")}
                   className="h-full w-full object-cover"
                 />
               </div>
@@ -219,7 +269,7 @@ const SidebarAgro = ({ handleLogout, isPropietario }: SidebarAgroProps) => {
               rutasVisibles.map((categoria) => (
                 <div key={categoria.category}>
                   <h3 className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
-                    {categoria.category}
+                    {getCategoryTranslation(categoria.category)}
                   </h3>
 
                   <div className="space-y-1">
@@ -244,7 +294,7 @@ const SidebarAgro = ({ handleLogout, isPropietario }: SidebarAgroProps) => {
                                 : "text-gray-400 group-hover:text-gray-500"
                             }`}
                           />
-                          {item.name}
+                          {getItemTranslation(item.name)}
                         </Link>
                       );
                     })}
@@ -253,7 +303,7 @@ const SidebarAgro = ({ handleLogout, isPropietario }: SidebarAgroProps) => {
               ))
             ) : (
               <div className="text-center text-gray-500 py-4">
-                No tienes permisos para ver ninguna ruta
+                {t("noPermissions")}
               </div>
             )}
           </nav>
@@ -269,11 +319,11 @@ const SidebarAgro = ({ handleLogout, isPropietario }: SidebarAgroProps) => {
                   className="w-full justify-center text-red-600 hover:text-red-700 hover:bg-red-50"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
-                  Cerrar sesión
+                  {t("logout")}
                 </Button>
               </TooltipTrigger>
 
-              <TooltipContent side="right">Cerrar sesión</TooltipContent>
+              <TooltipContent side="right">{t("logout")}</TooltipContent>
             </Tooltip>
           </TooltipProvider>
 
@@ -281,7 +331,7 @@ const SidebarAgro = ({ handleLogout, isPropietario }: SidebarAgroProps) => {
             <Image
               unoptimized
               src="/images/interactive_logo.png"
-              alt="Logo"
+              alt={t("accessibility.companyLogo")}
               width={120}
               height={40}
               className="object-contain"

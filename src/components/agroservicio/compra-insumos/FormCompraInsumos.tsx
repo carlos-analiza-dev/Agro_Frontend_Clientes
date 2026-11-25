@@ -1,3 +1,6 @@
+"use client";
+
+import { CompraAgroInsumo } from "@/api/agroservicio/compras_insumos/interfaces/response-compras-insumos.interface";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +19,8 @@ import { Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
+
 import DetailsConfirmCompraInsumos from "./DetailsConfirmCompraInsumos";
 import { InsumoAgroCompra } from "@/api/agroservicio/compras_insumos/interfaces/insumos_compra.interface";
 import {
@@ -55,6 +60,8 @@ const FormCompraInsumos = ({
   propietarioId,
   moneda,
 }: Props) => {
+  const t = useTranslations("formCompraInsumos");
+
   const [isConfirmCompra, setIsConfirmCompra] = useState(false);
   const [compraDataToSubmit, setCompraDataToSubmit] = useState<any>(null);
   const [selectedSucursalId, setSelectedSucursalId] = useState(
@@ -69,7 +76,7 @@ const FormCompraInsumos = ({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["compras-agro-insumos"] });
       queryClient.invalidateQueries({ queryKey: ["existencia-insumos"] });
-      toast.success("Compra creada exitosamente");
+      toast.success(t("messages.created"));
       onSuccess();
       reset();
       setIsConfirmCompra(false);
@@ -81,13 +88,11 @@ const FormCompraInsumos = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al ejecutar la compra";
+            : t("messages.executeError");
 
         toast.error(errorMessage);
       } else {
-        toast.error(
-          "Hubo un error al momento de ejecutar la compra. Inténtalo de nuevo.",
-        );
+        toast.error(t("messages.unexpectedError"));
       }
       setIsConfirmCompra(false);
     },
@@ -160,7 +165,9 @@ const FormCompraInsumos = ({
         setValue("tipoPago", tipoPagoMatch.value);
       } else {
         toast.warning(
-          `Tipo de pago "${proveedorSeleccionado.tipo_pago_default}" no coincide con los valores disponibles`,
+          t("messages.paymentTypeMismatch", {
+            paymentType: proveedorSeleccionado.tipo_pago_default,
+          }),
         );
         setValue("tipoPago", "");
       }
@@ -177,12 +184,21 @@ const FormCompraInsumos = ({
   useEffect(() => {}, [tipoPago]);
 
   const isFormValid = () => {
-    if (!proveedorId || !tipoPago || !selectedSucursalId || !numero_factura)
+    if (
+      !proveedorId ||
+      !tipoPago ||
+      !numero_factura?.trim() ||
+      (isPropietario && !selectedSucursalId) ||
+      (!isPropietario && !sucursalId)
+    ) {
       return false;
+    }
 
     return insumosWatch.every(
       (insumo) =>
-        insumo.insumoId && insumo.cantidad > 0 && insumo.costoUnitario > 0,
+        !!insumo.insumoId &&
+        Number(insumo.cantidad) > 0 &&
+        Number(insumo.costoUnitario) > 0,
     );
   };
 
@@ -266,7 +282,7 @@ const FormCompraInsumos = ({
 
   const onSubmit = (data: FormCompra) => {
     if (!isFormValid()) {
-      toast.error("Por favor, complete todos los campos requeridos");
+      toast.error(t("messages.requiredFields"));
       return;
     }
 
@@ -311,17 +327,19 @@ const FormCompraInsumos = ({
         >
           {isPropietario && (
             <div className="space-y-1">
-              <Label className="font-bold">Sucursal destino *</Label>
+              <Label className="font-bold">
+                {t("fields.destinationBranch")} *
+              </Label>
               <Select
                 value={selectedSucursalId}
                 onValueChange={setSelectedSucursalId}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccione sucursal" />
+                  <SelectValue placeholder={t("placeholders.branch")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Sucursales</SelectLabel>
+                    <SelectLabel>{t("labels.branches")}</SelectLabel>
                     {sucursales?.map((sucursal) => (
                       <SelectItem value={sucursal.id} key={sucursal.id}>
                         {sucursal.nombre}
@@ -331,20 +349,22 @@ const FormCompraInsumos = ({
                 </SelectContent>
               </Select>
               {!selectedSucursalId && isPropietario && (
-                <p className="text-sm text-red-500">Seleccione una sucursal</p>
+                <p className="text-sm text-red-500">
+                  {t("validation.branchRequired")}
+                </p>
               )}
             </div>
           )}
 
           <div className="space-y-1">
-            <Label className="font-bold">Proveedor*</Label>
+            <Label className="font-bold">{t("fields.provider")} *</Label>
             <Select value={proveedorId} onValueChange={handleProveedorChange}>
               <SelectTrigger>
-                <SelectValue placeholder="Selecciona el proveedor" />
+                <SelectValue placeholder={t("placeholders.provider")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Proveedor</SelectLabel>
+                  <SelectLabel>{t("labels.provider")}</SelectLabel>
                   {proveedores?.map((prov) => (
                     <SelectItem value={prov.id} key={prov.id}>
                       {prov.nombre_legal} - {prov.nit_rtn}
@@ -361,13 +381,16 @@ const FormCompraInsumos = ({
           </div>
 
           <div className="space-y-1">
-            <Label className="font-bold">Número de Factura*</Label>
+            <Label className="font-bold">{t("fields.invoiceNumber")} *</Label>
             <Input
               type="text"
-              placeholder="Ej: FAC-00123"
+              placeholder={t("placeholders.invoiceNumber")}
               {...register("numero_factura", {
-                required: "El número de factura es obligatorio",
-                minLength: { value: 3, message: "Mínimo 3 caracteres" },
+                required: t("validation.invoiceRequired"),
+                minLength: {
+                  value: 3,
+                  message: t("validation.invoiceMinLength"),
+                },
               })}
             />
             {errors.numero_factura && (
@@ -378,14 +401,16 @@ const FormCompraInsumos = ({
           </div>
 
           <div className="space-y-1">
-            <Label className="font-bold">Tipo de Pago*</Label>
+            <Label className="font-bold">{t("fields.paymentType")} *</Label>
             <Input
               type="text"
               readOnly
-              value={getTipoPagoLabel(tipoPago) || "Seleccione un proveedor"}
+              value={
+                getTipoPagoLabel(tipoPago) || t("placeholders.selectProvider")
+              }
               className="bg-gray-100 cursor-not-allowed"
               {...register("tipoPago", {
-                required: "El tipo de pago es obligatorio",
+                required: t("validation.paymentTypeRequired"),
               })}
             />
             {errors.tipoPago && (
@@ -394,7 +419,7 @@ const FormCompraInsumos = ({
 
             {proveedorSeleccionado?.tipo_pago_default && tipoPago && (
               <p className="text-sm text-green-600 mt-1">
-                Tipo de pago por defecto del proveedor
+                {t("labels.defaultPaymentType")}
               </p>
             )}
           </div>
@@ -405,18 +430,18 @@ const FormCompraInsumos = ({
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
               <div className="space-y-2">
                 <h2 className="text-2xl font-bold text-gray-800">
-                  Insumos de la Compra
+                  {t("sections.supplies")}
                 </h2>
 
                 {proveedorSeleccionado && proveedorSeleccionado.tipo_escala && (
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                     <span className="text-sm font-medium text-blue-700">
-                      Proveedor trabaja por{" "}
+                      {t("labels.providerScale")}{" "}
                       <span className="font-bold uppercase">
                         {proveedorSeleccionado.tipo_escala}
                       </span>{" "}
-                      de insumos
+                      {t("labels.ofSupplies")}
                     </span>
                   </div>
                 )}
@@ -426,11 +451,11 @@ const FormCompraInsumos = ({
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                       <span className="text-sm font-medium text-green-700">
-                        Plazo de pago:{" "}
+                        {t("labels.paymentTerm")}:{" "}
                         <span className="font-bold">
                           {proveedorSeleccionado.plazo || 30}
                         </span>{" "}
-                        días
+                        {t("labels.days")}
                       </span>
                     </div>
                   )}
@@ -452,7 +477,7 @@ const FormCompraInsumos = ({
                 className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg"
               >
                 <Plus size={18} />
-                Agregar Insumo
+                {t("buttons.addSupply")}
               </Button>
             </div>
           </div>
@@ -483,7 +508,7 @@ const FormCompraInsumos = ({
               <div key={field.id} className="p-4 border rounded-lg space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
                   <div className="space-y-1">
-                    <Label>Insumo*</Label>
+                    <Label>{t("fields.supply")} *</Label>
                     <Select
                       value={insumosWatch?.[index]?.insumoId || ""}
                       onValueChange={(value) =>
@@ -491,11 +516,11 @@ const FormCompraInsumos = ({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar" />
+                        <SelectValue placeholder={t("placeholders.select")} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          <SelectLabel>Insumos</SelectLabel>
+                          <SelectLabel>{t("labels.supplies")}</SelectLabel>
                           {insumosDisponibles?.map((ins) => (
                             <SelectItem value={ins.id} key={ins.id}>
                               {ins.nombre} - {ins.codigo}
@@ -512,7 +537,7 @@ const FormCompraInsumos = ({
                   </div>
 
                   <div className="space-y-1">
-                    <Label>Cantidad*</Label>
+                    <Label>{t("fields.quantity")} *</Label>
                     <Select
                       value={insumosWatch?.[index]?.cantidad?.toString() || ""}
                       onValueChange={(value) => {
@@ -533,11 +558,13 @@ const FormCompraInsumos = ({
                       }}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar Cantidad" />
+                        <SelectValue
+                          placeholder={t("placeholders.selectQuantity")}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          <SelectLabel>Cantidad</SelectLabel>
+                          <SelectLabel>{t("labels.quantity")}</SelectLabel>
                           {escalas && escalas.length > 0 ? (
                             escalas?.map((escala) => (
                               <SelectItem
@@ -545,12 +572,12 @@ const FormCompraInsumos = ({
                                 key={escala.id}
                               >
                                 {escala.cantidad_comprada} →{" "}
-                                {escala.bonificacion} Bonus
+                                {escala.bonificacion} {t("labels.bonus")}
                               </SelectItem>
                             ))
                           ) : (
                             <SelectItem value="no-disponible" disabled>
-                              No se encontraron cantidades
+                              {t("empty.noQuantities")}
                             </SelectItem>
                           )}
                         </SelectGroup>
@@ -564,32 +591,32 @@ const FormCompraInsumos = ({
                   </div>
 
                   <div className="space-y-1">
-                    <Label>Bonificación</Label>
+                    <Label>{t("fields.bonus")}</Label>
                     <Input
                       type="number"
                       min="0"
                       {...register(`insumos.${index}.bonificacion` as const, {
                         valueAsNumber: true,
-                        min: { value: 0, message: "Mínimo 0" },
+                        min: { value: 0, message: t("validation.minimumZero") },
                       })}
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <Label>Costo Unitario</Label>
+                    <Label>{t("fields.unitCost")}</Label>
                     <Input
                       type="number"
                       step="0.01"
                       min="0"
                       {...register(`insumos.${index}.costoUnitario` as const, {
                         valueAsNumber: true,
-                        min: { value: 0, message: "Mínimo 0" },
+                        min: { value: 0, message: t("validation.minimumZero") },
                       })}
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <Label>Descuento %</Label>
+                    <Label>{t("fields.discountPercentage")}</Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -597,14 +624,20 @@ const FormCompraInsumos = ({
                       max="100"
                       {...register(`insumos.${index}.descuento` as const, {
                         valueAsNumber: true,
-                        min: { value: 0, message: "Mínimo 0%" },
-                        max: { value: 100, message: "Máximo 100%" },
+                        min: {
+                          value: 0,
+                          message: t("validation.minimumZeroPercentage"),
+                        },
+                        max: {
+                          value: 100,
+                          message: t("validation.maximumHundredPercentage"),
+                        },
                       })}
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <Label>Impuesto %</Label>
+                    <Label>{t("fields.taxPercentage")}</Label>
                     <Select
                       value={insumosWatch?.[index]?.impuesto?.toString()}
                       onValueChange={(value) =>
@@ -612,11 +645,11 @@ const FormCompraInsumos = ({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar" />
+                        <SelectValue placeholder={t("placeholders.select")} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          <SelectLabel>Impuesto</SelectLabel>
+                          <SelectLabel>{t("labels.tax")}</SelectLabel>
                           {impuestos?.map((imp) => (
                             <SelectItem
                               value={String(parseFloat(imp.porcentaje))}
@@ -634,7 +667,9 @@ const FormCompraInsumos = ({
                 {insumosSeleccionado && (
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-3 bg-blue-50 rounded-lg text-sm">
                     <div>
-                      <span className="font-semibold">Código: </span>
+                      <span className="font-semibold">
+                        {t("labels.code")}:{" "}
+                      </span>
                       {insumosSeleccionado.codigo}
                     </div>
                   </div>
@@ -660,7 +695,7 @@ const FormCompraInsumos = ({
                       className="flex items-center gap-2"
                     >
                       <Trash2 size={16} />
-                      Eliminar
+                      {t("buttons.remove")}
                     </Button>
                   </div>
                 )}
@@ -679,7 +714,7 @@ const FormCompraInsumos = ({
 
         <div className="flex justify-end pt-4 gap-4">
           <Button type="button" variant="outline" onClick={() => onSuccess()}>
-            Cancelar
+            {t("buttons.cancel")}
           </Button>
           <Button
             type="submit"
@@ -687,8 +722,8 @@ const FormCompraInsumos = ({
             disabled={!isFormValid() || crearCompraMutation.isPending}
           >
             {crearCompraMutation.isPending
-              ? "Procesando..."
-              : "Ingresar Compra"}
+              ? t("buttons.processing")
+              : t("buttons.submit")}
           </Button>
         </div>
       </form>
@@ -696,7 +731,7 @@ const FormCompraInsumos = ({
       <Modal
         open={isConfirmCompra}
         onOpenChange={setIsConfirmCompra}
-        title="Confirmación de Compra"
+        title={t("modal.title")}
         size="xl"
       >
         <DetailsConfirmCompraInsumos
@@ -716,7 +751,7 @@ const FormCompraInsumos = ({
             onClick={() => setIsConfirmCompra(false)}
             disabled={crearCompraMutation.isPending}
           >
-            Revisar Compra
+            {t("buttons.reviewPurchase")}
           </Button>
           <Button
             onClick={confirmCompra}
@@ -724,8 +759,8 @@ const FormCompraInsumos = ({
             className="bg-green-600 hover:bg-green-700"
           >
             {crearCompraMutation.isPending
-              ? "Procesando..."
-              : "Confirmar Compra"}
+              ? t("buttons.processing")
+              : t("buttons.confirmPurchase")}
           </Button>
         </div>
       </Modal>

@@ -31,6 +31,7 @@ import {
   Package,
 } from "lucide-react";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 import useGetSubCategoriaByCat from "@/hooks/subcategorias/useGetSubCategoriaByCat";
 import useGetTipoProductoBySubCategoria from "@/hooks/tipo-producto/useGetTipoProductoBySubCategoria";
 import { useDebounceFacturas } from "@/hooks/agroservicios/facturacion/useDebounceFacturas";
@@ -66,6 +67,7 @@ const FormEditFactura = ({
   propietarioId,
   sucursal_id,
 }: Props) => {
+  const t = useTranslations("formEditFactura");
   const queryClient = useQueryClient();
 
   const [categoriaId, setCategoriaId] = useState("");
@@ -284,8 +286,8 @@ const FormEditFactura = ({
 
   const useCantidadChange = (index: number) => {
     const { onChange, ...rest } = register(`detalles.${index}.cantidad`, {
-      required: "La cantidad es requerida",
-      min: { value: 1, message: "Mínimo 1" },
+      required: t("validation.quantityRequired"),
+      min: { value: 1, message: t("validation.minimumQuantity") },
       valueAsNumber: true,
     });
 
@@ -368,7 +370,7 @@ const FormEditFactura = ({
         const existencia = mapaExistencias[detalle.id_producto] || 0;
 
         return {
-          nombre: producto?.nombre || "Producto desconocido",
+          nombre: producto?.nombre || t("fallback.unknownProduct"),
           cantidadRequerida: detalle.cantidad || 0,
           existenciaActual: existencia,
           productoId: detalle.id_producto,
@@ -379,6 +381,7 @@ const FormEditFactura = ({
     productosSeleccionadosPersistentes,
     productosDisponibles,
     mapaExistencias,
+    t,
   ]);
 
   const subTotal = useMemo(() => {
@@ -454,7 +457,7 @@ const FormEditFactura = ({
     mutationFn: (data: Partial<CrearFacturaAgroInterface>) =>
       EditarFacturaAgro(factura?.id ?? "", { ...data, sucursal_id }),
     onSuccess: () => {
-      toast.success("Factura actualizada exitosamente");
+      toast.success(t("notifications.updateSuccess"));
       queryClient.invalidateQueries({ queryKey: ["facturas"] });
       queryClient.invalidateQueries({ queryKey: ["factura", factura?.id] });
       onSuccess();
@@ -466,19 +469,17 @@ const FormEditFactura = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar la factura";
+            : t("notifications.updateError");
         toast.error(errorMessage);
       } else {
-        toast.error(
-          "Hubo un error al momento de actualizar la factura. Inténtalo de nuevo.",
-        );
+        toast.error(t("notifications.updateErrorRetry"));
       }
     },
   });
 
   const onSubmit = (data: CrearFacturaAgroInterface) => {
     if (!data.detalles || data.detalles.length === 0) {
-      toast.error("Debe agregar al menos un producto");
+      toast.error(t("validation.addAtLeastOneProduct"));
       return;
     }
 
@@ -486,7 +487,7 @@ const FormEditFactura = ({
       (detalle) => !detalle.id_producto,
     );
     if (detallesInvalidos) {
-      toast.error("Todos los productos deben estar seleccionados");
+      toast.error(t("validation.selectAllProducts"));
       return;
     }
 
@@ -497,25 +498,32 @@ const FormEditFactura = ({
             productosSeleccionadosPersistentes.find(
               (p) => p.id === productoId,
             ) || productosDisponibles.find((p) => p.id === productoId);
-          return producto?.nombre || "Producto desconocido";
+          return producto?.nombre || t("fallback.unknownProduct");
         })
         .join(", ");
 
       toast.error(
-        `No puede agregar el mismo producto más de una vez: ${productosDuplicadosNombres}`,
+        t("validation.duplicateProducts", {
+          products: productosDuplicadosNombres,
+        }),
       );
       return;
     }
 
     if (!tieneExistenciaSuficiente) {
       const productosLista = infoProductosSinExistencia
-        .map(
-          (p) =>
-            `${p.nombre} (necesita: ${p.cantidadRequerida}, tiene: ${p.existenciaActual})`,
+        .map((p) =>
+          t("validation.insufficientStockItem", {
+            name: p.nombre,
+            required: p.cantidadRequerida,
+            available: p.existenciaActual,
+          }),
         )
         .join(", ");
 
-      toast.error(`Productos con existencia insuficiente: ${productosLista}`);
+      toast.error(
+        t("validation.insufficientStock", { products: productosLista }),
+      );
       return;
     }
 
@@ -548,7 +556,7 @@ const FormEditFactura = ({
   };
 
   if (loadingProductos || loadingClientes) {
-    return <p>Cargando...</p>;
+    return <p>{t("loading")}</p>;
   }
 
   return (
@@ -560,15 +568,17 @@ const FormEditFactura = ({
         <CardContent className="pt-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div>
-              <Label className="font-semibold">N° Factura:</Label>
+              <Label className="font-semibold">{t("invoice.number")}</Label>
               <p className="font-bold">{factura?.numero_factura}</p>
             </div>
             <div>
-              <Label className="font-semibold">Estado:</Label>
+              <Label className="font-semibold">{t("invoice.status")}</Label>
               <Badge variant="default">{factura?.estado}</Badge>
             </div>
             <div>
-              <Label className="font-semibold">Fecha Recepción:</Label>
+              <Label className="font-semibold">
+                {t("invoice.receivedDate")}
+              </Label>
               <p>
                 {new Date(factura?.fecha_recepcion ?? "").toLocaleDateString(
                   "es-ES",
@@ -576,7 +586,7 @@ const FormEditFactura = ({
               </p>
             </div>
             <div>
-              <Label className="font-semibold">Fecha Límite:</Label>
+              <Label className="font-semibold">{t("invoice.dueDate")}</Label>
               <p>
                 {new Date(
                   factura?.fecha_limite_emision ?? "",
@@ -590,16 +600,16 @@ const FormEditFactura = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Información del Cliente</CardTitle>
+            <CardTitle className="text-lg">{t("client.title")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label className="font-bold">Cliente*</Label>
+              <Label className="font-bold">{t("client.clientRequired")}</Label>
               <BuscadorClientes
                 value={watch("id_cliente") || ""}
                 onValueChange={(value) => setValue("id_cliente", value)}
                 clientes={clientes || []}
-                placeholder="Buscar cliente por nombre o identificación..."
+                placeholder={t("client.searchPlaceholder")}
                 className={errors.id_cliente ? "border-red-300" : ""}
               />
               {errors.id_cliente && (
@@ -609,26 +619,30 @@ const FormEditFactura = ({
               )}
               {watch("id_cliente") && (
                 <div className="text-xs text-gray-500 mt-1">
-                  Cliente seleccionado:{" "}
+                  {t("client.selected")}:{" "}
                   {clientes?.find((c) => c.id === watch("id_cliente"))?.nombre}
                 </div>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label className="font-bold">Forma de Pago*</Label>
+              <Label className="font-bold">{t("payment.title")}</Label>
               <Select
                 onValueChange={(value) => setValue("forma_pago", value)}
                 defaultValue={factura?.forma_pago || FormaPago.CONTADO}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccione forma de pago" />
+                  <SelectValue placeholder={t("payment.placeholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={FormaPago.CONTADO}>Contado</SelectItem>
-                  <SelectItem value={FormaPago.CREDITO}>Crédito</SelectItem>
+                  <SelectItem value={FormaPago.CONTADO}>
+                    {t("payment.methods.cash")}
+                  </SelectItem>
+                  <SelectItem value={FormaPago.CREDITO}>
+                    {t("payment.methods.credit")}
+                  </SelectItem>
                   <SelectItem value={FormaPago.TRANSFERENCIA}>
-                    Transferencia
+                    {t("payment.methods.transfer")}
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -643,12 +657,12 @@ const FormEditFactura = ({
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Totales</CardTitle>
+            <CardTitle className="text-lg">{t("totals.title")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1">
-                <Label className="font-bold">Sub Total</Label>
+                <Label className="font-bold">{t("totals.subtotal")}</Label>
                 <Input
                   value={subTotal.toFixed(2)}
                   disabled
@@ -659,14 +673,14 @@ const FormEditFactura = ({
               <div className="space-y-1">
                 <Label className="flex items-center gap-1">
                   <DollarSign className="h-4 w-4 text-blue-600" />
-                  Cargos Extra
+                  {t("totals.extraCharges")}
                 </Label>
                 <Input
                   type="number"
                   min="0.0"
                   step="1"
                   {...register("cargos_extra", {
-                    min: { value: 0, message: "No puede ser negativo" },
+                    min: { value: 0, message: t("validation.nonNegative") },
                     valueAsNumber: true,
                   })}
                   placeholder="0.00"
@@ -680,13 +694,13 @@ const FormEditFactura = ({
               </div>
 
               <div className="space-y-1">
-                <Label>Importe Exento</Label>
+                <Label>{t("totals.exemptAmount")}</Label>
                 <Input
                   type="number"
                   min="0.0"
                   step="1"
                   {...register("importe_exento", {
-                    min: { value: 0, message: "No puede ser negativo" },
+                    min: { value: 0, message: t("validation.nonNegative") },
                     valueAsNumber: true,
                   })}
                   placeholder="0.00"
@@ -700,13 +714,13 @@ const FormEditFactura = ({
               </div>
 
               <div className="space-y-1">
-                <Label>Importe Exonerado</Label>
+                <Label>{t("totals.exoneratedAmount")}</Label>
                 <Input
                   type="number"
                   min="0.0"
                   step="1"
                   {...register("importe_exonerado", {
-                    min: { value: 0, message: "No puede ser negativo" },
+                    min: { value: 0, message: t("validation.nonNegative") },
                     valueAsNumber: true,
                   })}
                   placeholder="0.00"
@@ -720,7 +734,7 @@ const FormEditFactura = ({
               </div>
 
               <div className="border-t pt-4 md:col-span-2">
-                <Label className="font-bold">Total General</Label>
+                <Label className="font-bold">{t("totals.grandTotal")}</Label>
                 <Input
                   value={totalGeneral.toFixed(2)}
                   disabled
@@ -730,7 +744,7 @@ const FormEditFactura = ({
             </div>
 
             <div className="space-y-2">
-              <Label>Descuentos y Rebajas</Label>
+              <Label>{t("discounts.title")}</Label>
               <Select
                 onValueChange={handleDescuentoChange}
                 disabled={
@@ -744,13 +758,15 @@ const FormEditFactura = ({
                     placeholder={
                       !productosSeleccionadosIds ||
                       productosSeleccionadosIds.length === 0
-                        ? "Agregue productos primero"
-                        : "Seleccione un descuento"
+                        ? t("discounts.addProductsFirst")
+                        : t("discounts.selectDiscount")
                     }
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ninguno">Sin descuento</SelectItem>
+                  <SelectItem value="ninguno">
+                    {t("discounts.noDiscount")}
+                  </SelectItem>
                   {descuentos_clientes?.map(
                     (descuento: ResponseDescuentosAgroInterface) => (
                       <SelectItem key={descuento.id} value={descuento.id}>
@@ -762,7 +778,7 @@ const FormEditFactura = ({
               </Select>
               {watch("descuentos_rebajas") > 0 && (
                 <p className="text-sm text-green-600">
-                  Descuento aplicado: {simbolo}{" "}
+                  {t("discounts.applied")}: {simbolo}{" "}
                   {watch("descuentos_rebajas").toFixed(2)}
                 </p>
               )}
@@ -775,13 +791,13 @@ const FormEditFactura = ({
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
             <Package className="h-5 w-5" />
-            Productos
+            {t("products.title")}
           </CardTitle>
           <div className="flex items-center gap-2">
             {(hayProductosDuplicados || !tieneExistenciaSuficiente) && (
               <Badge variant="destructive" className="flex items-center gap-1">
                 <AlertTriangle className="h-3 w-3" />
-                Problemas detectados
+                {t("products.problemsDetected")}
               </Badge>
             )}
           </div>
@@ -831,7 +847,7 @@ const FormEditFactura = ({
               <div className="flex items-center gap-2 text-red-700">
                 <AlertTriangle className="h-4 w-4" />
                 <span className="font-medium">
-                  Productos duplicados detectados:
+                  {t("products.duplicateProductsDetected")}
                 </span>
               </div>
               <ul className="mt-1 text-sm text-red-600">
@@ -842,7 +858,7 @@ const FormEditFactura = ({
                     ) || productosDisponibles.find((p) => p.id === productoId);
                   return (
                     <li key={productoId}>
-                      • {producto?.nombre || "Producto desconocido"}
+                      • {producto?.nombre || t("fallback.unknownProduct")}
                     </li>
                   );
                 })}
@@ -855,14 +871,18 @@ const FormEditFactura = ({
               <div className="flex items-center gap-2 text-orange-700">
                 <AlertTriangle className="h-4 w-4" />
                 <span className="font-medium">
-                  Productos con existencia insuficiente:
+                  {t("products.insufficientStock")}
                 </span>
               </div>
               <ul className="mt-1 text-sm text-orange-600">
                 {infoProductosSinExistencia.map((p, index) => (
                   <li key={index}>
-                    • {p.nombre} (necesita: {p.cantidadRequerida}, tiene:{" "}
-                    {p.existenciaActual})
+                    •{" "}
+                    {t("products.stockDetail", {
+                      name: p.nombre,
+                      required: p.cantidadRequerida,
+                      available: p.existenciaActual,
+                    })}
                   </li>
                 ))}
               </ul>
@@ -872,12 +892,12 @@ const FormEditFactura = ({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Producto</TableHead>
-                <TableHead>Cantidad</TableHead>
-                <TableHead>Precio Unitario</TableHead>
-                <TableHead>Existencia</TableHead>
-                <TableHead>Total</TableHead>
-                <TableHead>Acciones</TableHead>
+                <TableHead>{t("table.product")}</TableHead>
+                <TableHead>{t("table.quantity")}</TableHead>
+                <TableHead>{t("table.unitPrice")}</TableHead>
+                <TableHead>{t("table.stock")}</TableHead>
+                <TableHead>{t("table.total")}</TableHead>
+                <TableHead>{t("table.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -911,18 +931,21 @@ const FormEditFactura = ({
                       <div className="flex flex-col">
                         <div className="flex items-center gap-2">
                           <span className="font-medium">
-                            {producto?.nombre || "Producto no disponible"}
+                            {producto?.nombre ||
+                              t("fallback.unavailableProduct")}
                           </span>
-                          <Badge variant="default">Producto</Badge>
+                          <Badge variant="default">
+                            {t("products.productBadge")}
+                          </Badge>
                         </div>
                         {!producto && (
                           <span className="text-xs text-amber-600">
-                            ⚠️ Producto no disponible en el filtro actual
+                            ⚠️ {t("products.unavailableInCurrentFilter")}
                           </span>
                         )}
                         {esDuplicado && (
                           <Badge variant="destructive" className="mt-1 w-fit">
-                            Producto duplicado
+                            {t("products.duplicateBadge")}
                           </Badge>
                         )}
                       </div>
@@ -957,7 +980,7 @@ const FormEditFactura = ({
                         readOnly
                         value={precio}
                         {...register(`detalles.${index}.precio`, {
-                          required: "El precio es requerido",
+                          required: t("validation.priceRequired"),
                           valueAsNumber: true,
                         })}
                       />
@@ -973,11 +996,13 @@ const FormEditFactura = ({
                                 : "text-green-600 font-medium"
                             }
                           >
-                            {existencia} unidades
+                            {t("products.stockUnits", { count: existencia })}
                           </span>
                           {sinSuficienteExistencia && (
                             <span className="text-xs text-red-500">
-                              Faltan {cantidad - existencia}
+                              {t("products.missingUnits", {
+                                count: cantidad - existencia,
+                              })}
                             </span>
                           )}
                         </div>
@@ -995,7 +1020,7 @@ const FormEditFactura = ({
                           type="button"
                           variant="outline"
                           size="sm"
-                          title="Eliminar"
+                          title={t("table.delete")}
                           onClick={() => eliminarDetalle(index)}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -1011,10 +1036,8 @@ const FormEditFactura = ({
           {productosSeleccionadosIds.length === 0 && (
             <div className="text-center py-8 text-gray-500">
               <Search className="h-12 w-12 mx-auto mb-2 text-gray-300" />
-              <p>No hay productos seleccionados</p>
-              <p className="text-sm">
-                Use el buscador arriba para agregar productos
-              </p>
+              <p>{t("products.empty.title")}</p>
+              <p className="text-sm">{t("products.empty.description")}</p>
             </div>
           )}
         </CardContent>
@@ -1035,7 +1058,7 @@ const FormEditFactura = ({
           onClick={onCancel}
           disabled={mutation.isPending}
         >
-          Cancelar
+          {t("buttons.cancel")}
         </Button>
         <Button
           type="submit"
@@ -1050,12 +1073,12 @@ const FormEditFactura = ({
           {mutation.isPending ? (
             <>
               <div className="h-4 w-4 animate-spin rounded-full border border-white border-t-transparent" />
-              Actualizando Factura...
+              {t("buttons.updating")}
             </>
           ) : (
             <>
               <Save className="h-5 w-5" />
-              Actualizar Factura
+              {t("buttons.update")}
             </>
           )}
         </Button>

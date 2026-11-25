@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, User, X } from "lucide-react";
 import { ClienteAgro } from "@/api/agroservicio/clientes/interfaces/response-clientes-ago.interface";
+import { useTranslations } from "next-intl";
 
 interface BuscadorClientesProps {
   value: string;
@@ -17,10 +18,12 @@ const BuscadorClientes = ({
   value,
   onValueChange,
   clientes,
-  placeholder = "Buscar cliente...",
+  placeholder,
   disabled = false,
   className = "",
 }: BuscadorClientesProps) => {
+  const t = useTranslations("buscadorClientes");
+
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -53,7 +56,7 @@ const BuscadorClientes = ({
       <div className="relative">
         <Input
           type="text"
-          placeholder={placeholder}
+          placeholder={placeholder ?? t("placeholder")}
           value={
             isOpen
               ? searchTerm
@@ -76,6 +79,7 @@ const BuscadorClientes = ({
               type="button"
               onClick={handleClear}
               className="text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label={t("clearSelection")}
             >
               <X className="h-4 w-4" />
             </button>
@@ -88,9 +92,7 @@ const BuscadorClientes = ({
         <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
           {clientesFiltrados.length === 0 ? (
             <div className="p-3 text-center text-gray-500 text-sm">
-              {searchTerm
-                ? "No se encontraron clientes"
-                : "No hay clientes disponibles"}
+              {searchTerm ? t("empty.searchResults") : t("empty.noClients")}
             </div>
           ) : (
             <div className="py-1">
@@ -125,7 +127,7 @@ const BuscadorClientes = ({
                       </Badge>
                     </div>
                     <div className="text-sm text-gray-500 mt-1 text-left">
-                      email: {cliente.email}
+                      {t("email")}: {cliente.email}
                     </div>
                   </button>
                 );

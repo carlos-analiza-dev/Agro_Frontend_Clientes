@@ -16,6 +16,7 @@ import {
 } from "@/helpers/funciones/agroservicio/proveedores/colors-tipo";
 import { formatDateLocal } from "@/helpers/funciones/formatDateOnly";
 import { Building2, Mail, MapPin, Pencil, Phone, User } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   isLoading: boolean;
@@ -30,16 +31,22 @@ const TableProveedores = ({
   searchTerm,
   handleEditProveedor,
 }: Props) => {
+  const t = useTranslations("tableProveedores");
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[250px]">Información</TableHead>
-          <TableHead>Contacto</TableHead>
-          <TableHead>Ubicación</TableHead>
-          <TableHead>Detalles</TableHead>
-          <TableHead className="text-right">Fecha Registro</TableHead>
-          <TableHead className="text-right">Acciones</TableHead>
+          <TableHead className="w-[250px]">
+            {t("columns.information")}
+          </TableHead>
+          <TableHead>{t("columns.contact")}</TableHead>
+          <TableHead>{t("columns.location")}</TableHead>
+          <TableHead>{t("columns.details")}</TableHead>
+          <TableHead className="text-right">
+            {t("columns.registrationDate")}
+          </TableHead>
+          <TableHead className="text-right">{t("columns.actions")}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -74,13 +81,13 @@ const TableProveedores = ({
           ))
         ) : proveedores.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={5} className="text-center py-10">
+            <TableCell colSpan={6} className="text-center py-10">
               <div className="flex flex-col items-center gap-2">
                 <Building2 className="h-12 w-12 text-muted-foreground" />
                 <p className="text-muted-foreground">
                   {searchTerm
-                    ? "No se encontraron proveedores con esta búsqueda"
-                    : "No hay proveedores registrados"}
+                    ? t("empty.searchResults")
+                    : t("empty.noProviders")}
                 </p>
               </div>
             </TableCell>
@@ -152,7 +159,7 @@ const TableProveedores = ({
                   </Badge>
                   {proveedor.plazo && (
                     <Badge variant="outline">
-                      Plazo: {proveedor.plazo} días
+                      {t("details.term", { days: proveedor.plazo })}
                     </Badge>
                   )}
                 </div>
@@ -162,7 +169,7 @@ const TableProveedores = ({
               </TableCell>
               <TableCell className="text-right text-sm text-muted-foreground">
                 <Button
-                  title="Editar Proveedor"
+                  title={t("actions.editProvider")}
                   onClick={() => handleEditProveedor(proveedor)}
                   variant={"ghost"}
                   id="edit-proveedor"

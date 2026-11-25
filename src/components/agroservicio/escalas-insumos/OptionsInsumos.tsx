@@ -1,6 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TableEscalaInsumo from "./TableEscalaInsumo";
 import { AgroInsumo } from "@/api/agroservicio/insumos/interfaces/response-agro-insumos.interface";
+import { useTranslations } from "next-intl";
 
 interface Props {
   propietarioId: string;
@@ -9,12 +10,14 @@ interface Props {
 }
 
 const OptionsInsumos = ({ moneda, propietarioId, selectedInsumo }: Props) => {
+  const t = useTranslations("optionsInsumos");
+
   return (
     <div className="h-full w-full">
       <Tabs defaultValue="escala" className="h-full w-full flex flex-col">
         <TabsList className="w-full">
           <TabsTrigger value="escala" className="flex-1">
-            Escalas
+            {t("tabs.scales")}
           </TabsTrigger>
         </TabsList>
 

@@ -27,6 +27,7 @@ import { useState } from "react";
 import InfoCompra from "./InfoCompra";
 import { formatCurrency } from "@/helpers/funciones/formatCurrency";
 import { formatDateLocal } from "@/helpers/funciones/formatDateOnly";
+import { useTranslations } from "next-intl";
 
 interface Props {
   comprasData: ResponseComprasInterface | undefined;
@@ -35,6 +36,8 @@ interface Props {
 }
 
 const TableComprasProductos = ({ comprasData, isLoading, moneda }: Props) => {
+  const t = useTranslations("comprasProductosPage");
+
   const [isOpenDetails, setIsOpenDetails] = useState(false);
   const [selectedCompra, setSelectedCompra] = useState<Compra | null>(null);
 
@@ -52,18 +55,19 @@ const TableComprasProductos = ({ comprasData, isLoading, moneda }: Props) => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Proveedor</TableHead>
-            <TableHead># Factura</TableHead>
-            <TableHead>Sucursal</TableHead>
-            <TableHead>Fecha</TableHead>
-            <TableHead>Tipo de Pago</TableHead>
-            <TableHead>Impuestos</TableHead>
-            <TableHead>Descuentos</TableHead>
-            <TableHead>Sub total</TableHead>
-            <TableHead>Total</TableHead>
-            <TableHead>Acciones</TableHead>
+            <TableHead>{t("table.columns.provider")}</TableHead>
+            <TableHead>{t("table.columns.invoiceNumber")}</TableHead>
+            <TableHead>{t("table.columns.branch")}</TableHead>
+            <TableHead>{t("table.columns.date")}</TableHead>
+            <TableHead>{t("table.columns.paymentType")}</TableHead>
+            <TableHead>{t("table.columns.taxes")}</TableHead>
+            <TableHead>{t("table.columns.discounts")}</TableHead>
+            <TableHead>{t("table.columns.subtotal")}</TableHead>
+            <TableHead>{t("table.columns.total")}</TableHead>
+            <TableHead>{t("table.columns.actions")}</TableHead>
           </TableRow>
         </TableHeader>
+
         <TableBody>
           {comprasData?.compras && comprasData.compras.length > 0 ? (
             comprasData.compras.map((compra) => (
@@ -86,13 +90,14 @@ const TableComprasProductos = ({ comprasData, isLoading, moneda }: Props) => {
                 <TableCell>{formatCurrency(compra.subtotal, moneda)}</TableCell>
                 <TableCell>{formatCurrency(compra.total, moneda)}</TableCell>
                 <TableCell>
-                  <div className="flex justify-center ">
+                  <div className="flex justify-center">
                     <Button
                       id="id-detalles-compra-producto"
                       onClick={() => handleOpenDetails(compra)}
                       variant="outline"
                       size="icon"
-                      title="Ver detalles"
+                      title={t("table.actions.viewDetails")}
+                      aria-label={t("table.actions.viewDetails")}
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
@@ -105,8 +110,8 @@ const TableComprasProductos = ({ comprasData, isLoading, moneda }: Props) => {
               <TableCell colSpan={10} className="text-center">
                 <div className="flex justify-center py-4">
                   <MessageError
-                    titulo="Error al cargar compras"
-                    descripcion="En este momento no se encontraron compras disponibles"
+                    titulo={t("table.empty.title")}
+                    descripcion={t("table.empty.description")}
                   />
                 </div>
               </TableCell>
@@ -118,12 +123,13 @@ const TableComprasProductos = ({ comprasData, isLoading, moneda }: Props) => {
       <AlertDialog open={isOpenDetails} onOpenChange={setIsOpenDetails}>
         <AlertDialogContent className="w-full md:max-w-4xl max-h-[90vh] overflow-y-auto">
           <div className="flex justify-end">
-            <AlertDialogCancel>X</AlertDialogCancel>
+            <AlertDialogCancel>{t("details.close")}</AlertDialogCancel>
           </div>
+
           <AlertDialogHeader>
-            <AlertDialogTitle>Detalles de la compra</AlertDialogTitle>
+            <AlertDialogTitle>{t("details.title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              En esta sección podrás observar más detalles de la compra
+              {t("details.description")}
             </AlertDialogDescription>
           </AlertDialogHeader>
 

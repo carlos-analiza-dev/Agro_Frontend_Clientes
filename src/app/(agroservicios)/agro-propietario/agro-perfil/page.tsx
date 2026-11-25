@@ -1,4 +1,5 @@
 "use client";
+
 import TitlePage from "@/components/generics/TitlePage";
 import useGetInfoAgro from "@/hooks/agroservicios/mi-agro/useGetInfoAgro";
 import { Store } from "lucide-react";
@@ -34,8 +35,10 @@ import Image from "next/image";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { formatDateLocal } from "@/helpers/funciones/formatDateOnly";
 import { ingresarLogoAgro } from "@/api/agroservicio/logo/accions/ingresar-logo";
+import { useTranslations } from "next-intl";
 
 const AgroPerfilPage = () => {
+  const t = useTranslations("agroPerfilPage");
   const { cliente } = useAuthStore();
   const { data: info_agro, isLoading } = useGetInfoAgro();
   const prefijo_tel = cliente?.pais.code_phone ?? "+504";
@@ -89,12 +92,12 @@ const AgroPerfilPage = () => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.type !== "image/png") {
-        toast.error("Solo se aceptan imágenes en formato PNG");
+        toast.error(t("messages.onlyPng"));
         return;
       }
 
       if (file.size > 1024 * 1024) {
-        toast.error("La imagen no debe superar los 1MB");
+        toast.error(t("messages.imageTooLarge"));
         return;
       }
       setLogoFile(file);
@@ -118,7 +121,7 @@ const AgroPerfilPage = () => {
       return ingresarLogoAgro(info_agro.id, formData);
     },
     onSuccess: () => {
-      toast.success("Logo actualizado exitosamente");
+      toast.success(t("messages.logoUpdated"));
       queryClient.invalidateQueries({ queryKey: ["info-agro"] });
       queryClient.invalidateQueries({ queryKey: ["logo-agro"] });
       queryClient.invalidateQueries({ queryKey: ["permisos-agro"] });
@@ -134,23 +137,21 @@ const AgroPerfilPage = () => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al subir el logo";
+            : t("messages.uploadLogoError");
         toast.error(errorMessage);
       } else {
-        toast.error(
-          "Hubo un error al momento de subir el logo. Inténtalo de nuevo.",
-        );
+        toast.error(t("messages.uploadLogoUnexpectedError"));
       }
     },
   });
 
   const handleUploadLogo = async () => {
     if (!logoFile) {
-      toast.warning("Por favor selecciona una imagen");
+      toast.warning(t("messages.selectImage"));
       return;
     }
     if (!info_agro?.id) {
-      toast.warning("Primero debes crear la información del agroservicio");
+      toast.warning(t("messages.createAgroFirst"));
       return;
     }
     setIsUploadingLogo(true);
@@ -160,7 +161,7 @@ const AgroPerfilPage = () => {
   const create_mutation = useMutation({
     mutationFn: (data: IngresarInfoAgro) => ingresarInfoAgro(data),
     onSuccess: () => {
-      toast.success("Información del agroservicio creada exitosamente");
+      toast.success(t("messages.infoCreated"));
       queryClient.invalidateQueries({ queryKey: ["info-agro"] });
       queryClient.invalidateQueries({ queryKey: ["permisos-agro"] });
       setIsEditing(false);
@@ -172,13 +173,11 @@ const AgroPerfilPage = () => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear la información del agroservicio";
+            : t("messages.createInfoError");
 
         toast.error(errorMessage);
       } else {
-        toast.error(
-          "Hubo un error al momento de crear la información del agroservicio. Inténtalo de nuevo.",
-        );
+        toast.error(t("messages.createInfoUnexpectedError"));
       }
     },
   });
@@ -187,7 +186,7 @@ const AgroPerfilPage = () => {
     mutationFn: (data: IngresarInfoAgro) =>
       editarInfoAgro(info_agro?.id ?? "", data),
     onSuccess: () => {
-      toast.success("Información actualizada exitosamente");
+      toast.success(t("messages.infoUpdated"));
       queryClient.invalidateQueries({ queryKey: ["info-agro"] });
       queryClient.invalidateQueries({ queryKey: ["permisos-agro"] });
       setIsEditing(false);
@@ -199,12 +198,10 @@ const AgroPerfilPage = () => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar la información";
+            : t("messages.updateInfoError");
         toast.error(errorMessage);
       } else {
-        toast.error(
-          "Hubo un error al momento de actualizar la información. Inténtalo de nuevo.",
-        );
+        toast.error(t("messages.updateInfoUnexpectedError"));
       }
     },
   });
@@ -255,9 +252,9 @@ const AgroPerfilPage = () => {
     create_mutation.isPending || update_mutation.isPending;
 
   const getButtonText = () => {
-    if (create_mutation.isPending) return "Creando...";
-    if (update_mutation.isPending) return "Guardando...";
-    return !info_agro?.id ? "Crear Información" : "Guardar Cambios";
+    if (create_mutation.isPending) return t("buttons.creating");
+    if (update_mutation.isPending) return t("buttons.saving");
+    return !info_agro?.id ? t("buttons.createInfo") : t("buttons.saveChanges");
   };
 
   if (isLoading) {
@@ -270,7 +267,7 @@ const AgroPerfilPage = () => {
         id="id-agro-perfil-header"
         className="flex items-center justify-between mb-6"
       >
-        <TitlePage Icon={Store} title="Mi Agroservicio" />
+        <TitlePage Icon={Store} title={t("title")} />
         {!isEditing ? (
           <Button
             id="id-agro-perfil-edit-btn"
@@ -278,7 +275,7 @@ const AgroPerfilPage = () => {
             className="gap-2 bg-green-600 hover:bg-green-700"
           >
             <Pencil className="h-4 w-4" />
-            {!info_agro?.id ? "Crear Información" : "Editar Información"}
+            {!info_agro?.id ? t("buttons.createInfo") : t("buttons.editInfo")}
           </Button>
         ) : (
           <div id="id-agro-perfil-actions" className="flex gap-2">
@@ -289,7 +286,7 @@ const AgroPerfilPage = () => {
               disabled={isMutationPending}
             >
               <X className="h-4 w-4" />
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
             <Button
               onClick={handleSubmit(onSubmit)}
@@ -306,18 +303,18 @@ const AgroPerfilPage = () => {
       <form id="id-agro-perfil-form" onSubmit={handleSubmit(onSubmit)}>
         <Card id="id-agro-perfil-card">
           <CardHeader id="id-agro-perfil-card-header">
-            <CardTitle>Información del Agroservicio</CardTitle>
+            <CardTitle>{t("card.title")}</CardTitle>
             <CardDescription>
               {isEditing
                 ? !info_agro?.id
-                  ? "Completa los datos de tu agroservicio"
-                  : "Modifica los datos de tu agroservicio"
-                : "Información básica del agroservicio"}
+                  ? t("card.createDescription")
+                  : t("card.editDescription")
+                : t("card.viewDescription")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div id="id-agro-perfil-logo-section" className="space-y-4">
-              <Label>Logo del Agroservicio</Label>
+              <Label>{t("logo.label")}</Label>
               <div className="flex items-center gap-6">
                 <div
                   id="id-agro-perfil-logo-preview"
@@ -326,7 +323,7 @@ const AgroPerfilPage = () => {
                   {logoPreview ? (
                     <Image
                       src={logoPreview}
-                      alt="Logo del agroservicio"
+                      alt={t("logo.alt")}
                       fill
                       unoptimized
                       className="object-cover"
@@ -346,7 +343,7 @@ const AgroPerfilPage = () => {
                             className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 rounded-md transition-colors"
                           >
                             <Upload className="h-4 w-4" />
-                            <span>Seleccionar Imagen</span>
+                            <span>{t("logo.selectImage")}</span>
                             <Input
                               id="logo-upload"
                               type="file"
@@ -368,23 +365,23 @@ const AgroPerfilPage = () => {
                             {isUploadingLogo ? (
                               <>
                                 <Loader2 className="h-4 w-4 animate-spin" />
-                                Subiendo...
+                                {t("logo.uploading")}
                               </>
                             ) : (
                               <>
                                 <Upload className="h-4 w-4" />
-                                Subir Logo
+                                {t("logo.upload")}
                               </>
                             )}
                           </Button>
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Formatos: PNG (sin fondo). Máximo 1MB
+                        {t("logo.formats")}
                       </p>
                       {logoFile && (
                         <p className="text-xs text-green-600">
-                          Archivo seleccionado: {logoFile.name}
+                          {t("logo.selectedFile", { name: logoFile.name })}
                         </p>
                       )}
 
@@ -396,11 +393,8 @@ const AgroPerfilPage = () => {
                           <p className="text-sm text-amber-700 flex items-start gap-2">
                             <span className="text-amber-500 text-lg">⚠️</span>
                             <span>
-                              <strong>Logo requerido:</strong> Para acceder a
-                              los demás módulos del sistema, es necesario que
-                              subas imagen tu logo sin fondo para tu
-                              agroservicio. Selecciona una imagen y haz clic en
-                              "Subir Logo".
+                              <strong>{t("logo.requiredTitle")}</strong>{" "}
+                              {t("logo.requiredDescription")}
                             </span>
                           </p>
                         </div>
@@ -409,8 +403,7 @@ const AgroPerfilPage = () => {
                   ) : (
                     <div>
                       <p className="text-sm text-muted-foreground">
-                        Primero crea la información del agroservicio para poder
-                        subir el logo
+                        {t("logo.createInfoFirst")}
                       </p>
                     </div>
                   )}
@@ -423,21 +416,19 @@ const AgroPerfilPage = () => {
               className="grid grid-cols-1 md:grid-cols-2 gap-6"
             >
               <div id="id-agro-perfil-field-nombre" className="space-y-2">
-                <Label htmlFor="nombre_agroservicio">
-                  Nombre del Agroservicio
-                </Label>
+                <Label htmlFor="nombre_agroservicio">{t("fields.name")}</Label>
                 {isEditing ? (
                   <div className="space-y-1">
                     <Input
                       id="nombre_agroservicio"
                       {...register("nombre_agroservicio", {
-                        required: "El nombre del agroservicio es requerido",
+                        required: t("validation.nameRequired"),
                         minLength: {
                           value: 2,
-                          message: "El nombre debe tener al menos 2 caracteres",
+                          message: t("validation.nameMinLength"),
                         },
                       })}
-                      placeholder="Ingrese el nombre del agroservicio"
+                      placeholder={t("placeholders.name")}
                     />
                     {errors.nombre_agroservicio && (
                       <p className="text-sm text-red-500">
@@ -447,25 +438,25 @@ const AgroPerfilPage = () => {
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground p-2 border rounded-md bg-muted/50">
-                    {info_agro?.nombre_agroservicio || "No especificado"}
+                    {info_agro?.nombre_agroservicio || t("notSpecified")}
                   </p>
                 )}
               </div>
 
               <div id="id-agro-perfil-field-rtn" className="space-y-2">
-                <Label htmlFor="rtn">RTN</Label>
+                <Label htmlFor="rtn">{t("fields.rtn")}</Label>
                 {isEditing ? (
                   <div className="space-y-1">
                     <Input
                       id="rtn"
                       {...register("rtn", {
-                        required: "El RTN es requerido",
+                        required: t("validation.rtnRequired"),
                         pattern: {
                           value: /^[0-9]{14}$/,
-                          message: "El RTN debe tener 14 dígitos",
+                          message: t("validation.rtnFormat"),
                         },
                       })}
-                      placeholder="Ingrese el RTN"
+                      placeholder={t("placeholders.rtn")}
                     />
                     {errors.rtn && (
                       <p className="text-sm text-red-500">
@@ -475,26 +466,26 @@ const AgroPerfilPage = () => {
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground p-2 border rounded-md bg-muted/50">
-                    {info_agro?.rtn || "No especificado"}
+                    {info_agro?.rtn || t("notSpecified")}
                   </p>
                 )}
               </div>
 
               <div id="id-agro-perfil-field-correo" className="space-y-2">
-                <Label htmlFor="correo">Correo Electrónico</Label>
+                <Label htmlFor="correo">{t("fields.email")}</Label>
                 {isEditing ? (
                   <div className="space-y-1">
                     <Input
                       id="correo"
                       type="email"
                       {...register("correo", {
-                        required: "El correo electrónico es requerido",
+                        required: t("validation.emailRequired"),
                         pattern: {
                           value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                          message: "Correo electrónico inválido",
+                          message: t("validation.emailInvalid"),
                         },
                       })}
-                      placeholder="Ingrese el correo electrónico"
+                      placeholder={t("placeholders.email")}
                     />
                     {errors.correo && (
                       <p className="text-sm text-red-500">
@@ -504,25 +495,25 @@ const AgroPerfilPage = () => {
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground p-2 border rounded-md bg-muted/50">
-                    {info_agro?.correo || "No especificado"}
+                    {info_agro?.correo || t("notSpecified")}
                   </p>
                 )}
               </div>
 
               <div id="id-agro-perfil-field-telefono" className="space-y-2">
-                <Label htmlFor="telefono">Teléfono</Label>
+                <Label htmlFor="telefono">{t("fields.phone")}</Label>
                 {isEditing ? (
                   <div className="space-y-1">
                     <Input
                       id="telefono"
                       {...register("telefono", {
-                        required: "El teléfono es requerido",
+                        required: t("validation.phoneRequired"),
                         pattern: {
                           value: /^[0-9]{4}-[0-9]{4}$/,
-                          message: "Formato inválido. Debe ser xxxx-xxxx",
+                          message: t("validation.phoneFormat"),
                         },
                       })}
-                      placeholder="Ej: 9999-8888"
+                      placeholder={t("placeholders.phone")}
                     />
                     {errors.telefono && (
                       <p className="text-sm text-red-500">
@@ -532,27 +523,26 @@ const AgroPerfilPage = () => {
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground p-2 border rounded-md bg-muted/50">
-                    {info_agro?.telefono || "No especificado"}
+                    {info_agro?.telefono || t("notSpecified")}
                   </p>
                 )}
               </div>
             </div>
 
             <div id="id-agro-perfil-field-direccion" className="space-y-2">
-              <Label htmlFor="direccion">Dirección</Label>
+              <Label htmlFor="direccion">{t("fields.address")}</Label>
               {isEditing ? (
                 <div className="space-y-1">
                   <Textarea
                     id="direccion"
                     {...register("direccion", {
-                      required: "La dirección es requerida",
+                      required: t("validation.addressRequired"),
                       minLength: {
                         value: 10,
-                        message:
-                          "La dirección debe tener al menos 10 caracteres",
+                        message: t("validation.addressMinLength"),
                       },
                     })}
-                    placeholder="Ingrese la dirección completa"
+                    placeholder={t("placeholders.address")}
                     rows={3}
                   />
                   {errors.direccion && (
@@ -563,7 +553,7 @@ const AgroPerfilPage = () => {
                 </div>
               ) : (
                 <p className="text-sm text-muted-foreground p-2 border rounded-md bg-muted/50">
-                  {info_agro?.direccion || "No especificado"}
+                  {info_agro?.direccion || t("notSpecified")}
                 </p>
               )}
             </div>
@@ -575,7 +565,7 @@ const AgroPerfilPage = () => {
               >
                 <div id="id-agro-perfil-created-at" className="space-y-1">
                   <Label className="text-xs text-muted-foreground">
-                    Creado
+                    {t("dates.created")}
                   </Label>
                   <p className="text-sm">
                     {formatDateLocal(info_agro.created_at)}
@@ -583,7 +573,7 @@ const AgroPerfilPage = () => {
                 </div>
                 <div id="id-agro-perfil-updated-at" className="space-y-1">
                   <Label className="text-xs text-muted-foreground">
-                    Última actualización
+                    {t("dates.lastUpdated")}
                   </Label>
                   <p className="text-sm">
                     {formatDateLocal(info_agro.updated_at)}
@@ -602,16 +592,18 @@ const AgroPerfilPage = () => {
                   className="space-y-1"
                 >
                   <Label className="text-xs text-muted-foreground">
-                    Propietario
+                    {t("owner.name")}
                   </Label>
                   <p className="text-sm font-medium">
                     {info_agro.propietario.nombre}
                   </p>
                 </div>
                 <div id="id-agro-perfil-propietario-pais" className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">País</Label>
+                  <Label className="text-xs text-muted-foreground">
+                    {t("owner.country")}
+                  </Label>
                   <p className="text-sm">
-                    {info_agro.propietario.pais?.nombre || "No especificado"}
+                    {info_agro.propietario.pais?.nombre || t("notSpecified")}
                   </p>
                 </div>
                 <div
@@ -619,11 +611,11 @@ const AgroPerfilPage = () => {
                   className="space-y-1"
                 >
                   <Label className="text-xs text-muted-foreground">
-                    Departamento
+                    {t("owner.department")}
                   </Label>
                   <p className="text-sm">
                     {info_agro.propietario.departamento?.nombre ||
-                      "No especificado"}
+                      t("notSpecified")}
                   </p>
                 </div>
                 <div
@@ -631,11 +623,11 @@ const AgroPerfilPage = () => {
                   className="space-y-1"
                 >
                   <Label className="text-xs text-muted-foreground">
-                    Municipio
+                    {t("owner.municipality")}
                   </Label>
                   <p className="text-sm">
                     {info_agro.propietario.municipio?.nombre ||
-                      "No especificado"}
+                      t("notSpecified")}
                   </p>
                 </div>
               </div>

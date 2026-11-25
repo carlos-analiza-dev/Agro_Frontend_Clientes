@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ArrowLeftRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   filteredLotes: Lote[];
@@ -18,45 +19,56 @@ interface Props {
 }
 
 const TableLotes = ({ filteredLotes, moneda, handleTransferir }: Props) => {
+  const t = useTranslations("tableLotes");
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="text-center">Producto</TableHead>
-          <TableHead className="text-center">Código</TableHead>
-          <TableHead className="text-center">Sucursal</TableHead>
-          <TableHead className="text-center">Cantidad</TableHead>
-          <TableHead className="text-center">Costo Unitario</TableHead>
-          <TableHead className="text-center">Costo Origen</TableHead>
-          <TableHead className="text-center">Estado</TableHead>
-          <TableHead className="text-center">Acciones</TableHead>
+          <TableHead className="text-center">{t("columns.product")}</TableHead>
+          <TableHead className="text-center">{t("columns.code")}</TableHead>
+          <TableHead className="text-center">{t("columns.branch")}</TableHead>
+          <TableHead className="text-center">{t("columns.quantity")}</TableHead>
+          <TableHead className="text-center">{t("columns.unitCost")}</TableHead>
+          <TableHead className="text-center">
+            {t("columns.originCost")}
+          </TableHead>
+          <TableHead className="text-center">{t("columns.status")}</TableHead>
+          <TableHead className="text-center">{t("columns.actions")}</TableHead>
         </TableRow>
       </TableHeader>
+
       <TableBody>
         {filteredLotes.map((lote) => (
           <TableRow key={lote.id}>
             <TableCell className="font-medium text-center">
               {lote.nombre_producto}
             </TableCell>
+
             <TableCell className="text-center">
               <Badge variant="outline" className="font-mono">
                 {lote.codigo_producto}
               </Badge>
             </TableCell>
+
             <TableCell className="text-center">
               {lote.nombre_sucursal}
             </TableCell>
+
             <TableCell className="text-center font-semibold">
               {lote.cantidad}
             </TableCell>
+
             <TableCell className="text-center">
               {moneda}
               {lote.costo_por_unidad?.toFixed(2) || "0.00"}
             </TableCell>
+
             <TableCell className="text-center">
               {moneda}
               {lote.costo?.toFixed(2) || "0.00"}
             </TableCell>
+
             <TableCell className="text-center">
               <Badge
                 variant={lote.cantidad <= 5 ? "destructive" : "default"}
@@ -67,19 +79,20 @@ const TableLotes = ({ filteredLotes, moneda, handleTransferir }: Props) => {
                 }
               >
                 {lote.cantidad <= 5
-                  ? "Stock Bajo"
+                  ? t("status.low")
                   : lote.cantidad <= 10
-                    ? "Stock Limitado"
-                    : "Stock Suficiente"}
+                    ? t("status.limited")
+                    : t("status.sufficient")}
               </Badge>
             </TableCell>
+
             <TableCell className="text-center">
               <Button
                 id="acciones-lotes"
                 onClick={() => handleTransferir(lote)}
-                variant={"outline"}
+                variant="outline"
               >
-                <ArrowLeftRight /> Traslados
+                <ArrowLeftRight /> {t("actions.transfers")}
               </Button>
             </TableCell>
           </TableRow>

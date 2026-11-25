@@ -1,8 +1,11 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,14 +24,6 @@ import {
   CrearNotaCreditoEmpleado,
 } from "@/api/agroservicio/notas-credito/accions/crear-nota-credito";
 import useGetAllSucursalesByPropietario from "@/hooks/agroservicios/sucursales/useGetAllSucursalesByPropietario";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import Modal from "@/components/generics/Modal";
 
 interface Props {
@@ -46,6 +41,8 @@ const FormCrearNotaCredito = ({
   sucursalId,
   isPropietario,
 }: Props) => {
+  const t = useTranslations("formCrearNotaCredito");
+
   const queryClient = useQueryClient();
   const [selectedSucursal, setSelectedSucursal] = useState(
     isPropietario ? "" : sucursalId || "",
@@ -217,7 +214,7 @@ const FormCrearNotaCredito = ({
 
       return precio;
     } catch (error) {
-      toast.error("Error al calcular precio del producto");
+      toast.error(t("messages.calculateProductPriceError"));
       return 0;
     }
   };
@@ -231,8 +228,7 @@ const FormCrearNotaCredito = ({
       const precio = calcularPrecioProducto(productoId);
       return cantidad * precio;
     } catch (error) {
-      toast.error("Error al calcular monto del producto");
-
+      toast.error(t("messages.calculateProductAmountError"));
       return 0;
     }
   };
@@ -263,7 +259,7 @@ const FormCrearNotaCredito = ({
 
       setValue("monto", montoTotalCalculado);
     } catch (error) {
-      toast.error("Error al calcular montos");
+      toast.error(t("messages.calculateAmountsError"));
     }
   }, [detalles, productos, setValue]);
 
@@ -276,7 +272,7 @@ const FormCrearNotaCredito = ({
     mutationFn: (data: CrearNotaCreditoInterface) =>
       isPropietario ? CrearNotaCredito(data) : CrearNotaCreditoEmpleado(data),
     onSuccess: () => {
-      toast.success("Nota de crédito creada exitosamente");
+      toast.success(t("messages.createSuccess"));
       queryClient.invalidateQueries({ queryKey: ["notas-credito"] });
       queryClient.invalidateQueries({ queryKey: ["facturas"] });
       onSucces();
@@ -295,10 +291,11 @@ const FormCrearNotaCredito = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear la nota de crédito";
+            : t("messages.createError");
+
         toast.error(errorMessage);
       } else {
-        toast.error("Hubo un error al crear la nota de crédito");
+        toast.error(t("messages.createError"));
       }
       setShowConfirmModal(false);
     },
@@ -311,8 +308,7 @@ const FormCrearNotaCredito = ({
       const nuevoMonto = calcularMontoProducto(value, cantidad);
       setValue(`detalles.${index}.montoDevuelto`, nuevoMonto);
     } catch (error) {
-      toast.error("Error al cambiar producto");
-
+      toast.error(t("messages.changeProductError"));
       setValue(`detalles.${index}.montoDevuelto`, 0);
     }
   };
@@ -334,20 +330,19 @@ const FormCrearNotaCredito = ({
         setValue(`detalles.${index}.montoDevuelto`, 0);
       }
     } catch (error) {
-      toast.error("Error al cambiar cantidad");
-
+      toast.error(t("messages.changeQuantityError"));
       setValue(`detalles.${index}.montoDevuelto`, 0);
     }
   };
 
   const onSubmit = (data: CrearNotaCreditoInterface) => {
     if (montoTotal <= 0) {
-      toast.error("El monto total debe ser mayor a 0");
+      toast.error(t("validation.totalAmount"));
       return;
     }
 
     if (!data.factura_id) {
-      toast.error("Debe seleccionar una factura");
+      toast.error(t("validation.selectInvoice"));
       return;
     }
 
@@ -396,13 +391,15 @@ const FormCrearNotaCredito = ({
   };
 
   if (isLoadingProductos) {
-    return <div className="flex justify-center p-8">Cargando productos...</div>;
+    return (
+      <div className="flex justify-center p-8">{t("loading.products")}</div>
+    );
   }
 
   if (!productos?.length) {
     return (
       <div className="text-center p-8">
-        <p className="text-red-500">No hay productos disponibles</p>
+        <p className="text-red-500">{t("empty.products")}</p>
       </div>
     );
   }
@@ -414,7 +411,7 @@ const FormCrearNotaCredito = ({
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {isPropietario && (
           <div className="space-y-1">
-            <Label>Sucursal*</Label>
+            <Label>{t("fields.branch")}*</Label>
             <Select
               value={selectedSucursal}
               onValueChange={(value) => {
@@ -423,7 +420,7 @@ const FormCrearNotaCredito = ({
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Seleccione una sucursal" />
+                <SelectValue placeholder={t("placeholders.selectBranch")} />
               </SelectTrigger>
               <SelectContent>
                 {sucursales?.map((sucursal) => (
@@ -435,17 +432,17 @@ const FormCrearNotaCredito = ({
             </Select>
             {!selectedSucursal && (
               <p className="text-red-500 text-sm">
-                Debe seleccionar una sucursal
+                {t("validation.selectBranch")}
               </p>
             )}
           </div>
         )}
 
         <div className="space-y-1">
-          <Label>Numero de Factura*</Label>
+          <Label>{t("fields.invoiceNumber")}*</Label>
           <div className="relative">
             <Input
-              placeholder="Buscar por número de factura o nombre del cliente..."
+              placeholder={t("placeholders.searchInvoice")}
               value={busquedaFactura}
               onChange={(e) => {
                 setBusquedaFactura(e.target.value);
@@ -477,7 +474,8 @@ const FormCrearNotaCredito = ({
                   >
                     <div className="font-medium">{factura.numero_factura}</div>
                     <div className="text-sm text-gray-600">
-                      Cliente: {factura.cliente?.nombre || "N/A"}
+                      {t("labels.customer")}:{" "}
+                      {factura.cliente?.nombre || t("notAvailable")}
                     </div>
                   </div>
                 ))}
@@ -490,10 +488,12 @@ const FormCrearNotaCredito = ({
         </div>
 
         <div className="space-y-1">
-          <Label>Motivo*</Label>
+          <Label>{t("fields.reason")}*</Label>
           <Input
-            {...register("motivo", { required: "El motivo es obligatorio" })}
-            placeholder="Motivo de la nota de crédito"
+            {...register("motivo", {
+              required: t("validation.reasonRequired"),
+            })}
+            placeholder={t("placeholders.reason")}
           />
           {errors.motivo && (
             <p className="text-red-500 text-sm">{errors.motivo.message}</p>
@@ -501,7 +501,7 @@ const FormCrearNotaCredito = ({
         </div>
 
         <div className="space-y-4">
-          <Label className="font-bold">Detalles de Productos</Label>
+          <Label className="font-bold">{t("sections.productDetails")}</Label>
           {fields.map((field, index) => {
             const productosFiltrados = getProductosFiltrados(index);
             const productoSeleccionado = getProductoSeleccionado(index);
@@ -510,10 +510,10 @@ const FormCrearNotaCredito = ({
             return (
               <div key={field.id} className="block">
                 <div className="mb-4">
-                  <Label>Producto*</Label>
+                  <Label>{t("fields.product")}*</Label>
                   <div className="relative">
                     <Input
-                      placeholder="Buscar producto..."
+                      placeholder={t("placeholders.searchProduct")}
                       value={busquedasProductos[index] || ""}
                       onChange={(e) =>
                         handleBusquedaProductoChange(index, e.target.value)
@@ -568,12 +568,15 @@ const FormCrearNotaCredito = ({
                 </div>
                 <div className="grid grid-cols-3 gap-2 items-end border p-2 rounded-md">
                   <div>
-                    <Label>Cantidad*</Label>
+                    <Label>{t("fields.quantity")}*</Label>
                     <Input
                       type="number"
                       {...register(`detalles.${index}.cantidad`, {
-                        required: "Debe indicar la cantidad",
-                        min: { value: 1, message: "Cantidad mínima es 1" },
+                        required: t("validation.quantityRequired"),
+                        min: {
+                          value: 1,
+                          message: t("validation.minimumQuantity"),
+                        },
                         valueAsNumber: true,
                       })}
                       onChange={(e) => handleCantidadChange(e, index)}
@@ -586,7 +589,7 @@ const FormCrearNotaCredito = ({
                   </div>
 
                   <div>
-                    <Label>Monto Devuelto</Label>
+                    <Label>{t("fields.refundedAmount")}</Label>
                     <Input
                       type="number"
                       value={montoProducto}
@@ -602,7 +605,7 @@ const FormCrearNotaCredito = ({
                       onClick={() => remove(index)}
                       disabled={fields.length === 1}
                     >
-                      Eliminar
+                      {t("buttons.remove")}
                     </Button>
                   </div>
                 </div>
@@ -616,13 +619,13 @@ const FormCrearNotaCredito = ({
               append({ producto_id: "", cantidad: 1, montoDevuelto: 0 })
             }
           >
-            Agregar Producto
+            {t("buttons.addProduct")}
           </Button>
         </div>
 
         <div className="flex justify-between items-center pt-4 border-t">
           <div className="text-lg font-bold text-blue-600">
-            Monto total: {simbolo}
+            {t("summary.totalAmount")}: {simbolo}
             {montoTotal.toFixed(2)}
           </div>
           <Button
@@ -633,7 +636,9 @@ const FormCrearNotaCredito = ({
               !facturaSeleccionada
             }
           >
-            {mutation.isPending ? "Creando..." : "Crear Nota de Crédito"}
+            {mutation.isPending
+              ? t("buttons.creating")
+              : t("buttons.createCreditNote")}
           </Button>
         </div>
       </form>
@@ -641,38 +646,51 @@ const FormCrearNotaCredito = ({
       <Modal
         open={showConfirmModal}
         onOpenChange={setShowConfirmModal}
-        title="Confirmar Nota de Crédito"
-        description=" ¿Estás seguro de que deseas crear esta nota de crédito? Revisa los
-              detalles a continuación antes de confirmar."
+        title={t("confirmation.title")}
+        description={t("confirmation.description")}
         size="2xl"
         height="auto"
       >
         <div className="space-y-4 py-4">
           <div className="bg-gray-50 p-4 rounded-lg">
-            <h4 className="font-semibold mb-2">Información de la Factura</h4>
+            <h4 className="font-semibold mb-2">
+              {t("confirmation.invoiceInformation")}
+            </h4>
             <div className="grid grid-cols-2 gap-2 text-sm">
-              <span className="text-gray-600">Número de Factura:</span>
-              <span className="font-medium">
-                {facturaParaModal?.numero_factura || "N/A"}
+              <span className="text-gray-600">
+                {t("fields.invoiceNumber")}:
               </span>
-              <span className="text-gray-600">Cliente:</span>
               <span className="font-medium">
-                {facturaParaModal?.cliente?.nombre || "N/A"}
+                {facturaParaModal?.numero_factura || t("notAvailable")}
               </span>
-              <span className="text-gray-600">Motivo:</span>
-              <span className="font-medium">{watch("motivo") || "N/A"}</span>
+              <span className="text-gray-600">{t("labels.customer")}:</span>
+              <span className="font-medium">
+                {facturaParaModal?.cliente?.nombre || t("notAvailable")}
+              </span>
+              <span className="text-gray-600">{t("fields.reason")}:</span>
+              <span className="font-medium">
+                {watch("motivo") || t("notAvailable")}
+              </span>
             </div>
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">Productos a Devolver</h4>
+            <h4 className="font-semibold mb-2">
+              {t("confirmation.productsToReturn")}
+            </h4>
             <div className="border rounded-lg overflow-hidden">
               <table className="w-full text-sm">
                 <thead className="bg-gray-100">
                   <tr>
-                    <th className="px-4 py-2 text-left">Producto</th>
-                    <th className="px-4 py-2 text-center">Cantidad</th>
-                    <th className="px-4 py-2 text-right">Monto Devuelto</th>
+                    <th className="px-4 py-2 text-left">
+                      {t("fields.product")}
+                    </th>
+                    <th className="px-4 py-2 text-center">
+                      {t("fields.quantity")}
+                    </th>
+                    <th className="px-4 py-2 text-right">
+                      {t("fields.refundedAmount")}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -699,7 +717,7 @@ const FormCrearNotaCredito = ({
                 <tfoot className="bg-gray-50 font-semibold">
                   <tr>
                     <td colSpan={2} className="px-4 py-2 text-right">
-                      Total:
+                      {t("summary.total")}:
                     </td>
                     <td className="px-4 py-2 text-right text-blue-600">
                       {simbolo}
@@ -713,8 +731,7 @@ const FormCrearNotaCredito = ({
 
           <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
             <p className="text-sm text-yellow-800">
-              ⚠️ Una vez confirmada, la nota de crédito quedará registrada y no
-              podrá ser modificada.
+              ⚠️ {t("confirmation.warning")}
             </p>
           </div>
         </div>
@@ -725,14 +742,16 @@ const FormCrearNotaCredito = ({
             onClick={() => setShowConfirmModal(false)}
             disabled={mutation.isPending}
           >
-            Cancelar
+            {t("buttons.cancel")}
           </Button>
           <Button
             onClick={confirmSubmit}
             disabled={mutation.isPending}
             className="bg-blue-600 hover:bg-blue-700"
           >
-            {mutation.isPending ? "Creando..." : "Confirmar Nota de Crédito"}
+            {mutation.isPending
+              ? t("buttons.creating")
+              : t("buttons.confirmCreditNote")}
           </Button>
         </div>
       </Modal>

@@ -15,6 +15,7 @@ import Paginacion from "@/components/generics/Paginacion";
 import { LoadingSkeleton } from "./LoadingSkeleton";
 import { ResponseAuditoriaCompraInterface } from "@/api/agroservicio/auditoria/interface/response-auditoria-compras.interface";
 import { Dispatch, SetStateAction } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   isLoadingCompras: boolean;
@@ -33,33 +34,38 @@ export const AuditoriaComprasContent = ({
   moneda,
   setCurrentPageCompras,
 }: Props) => {
+  const t = useTranslations("auditoriaCommon");
+
   if (isLoadingCompras) return <LoadingSkeleton />;
+
   if (!audit_compras || audit_compras.data.length === 0) {
-    return (
-      <EmptyState message="No se encontraron registros de auditoría de compras" />
-    );
+    return <EmptyState message={t("purchases.emptyMessage")} />;
   }
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <span className="text-sm text-muted-foreground">
-          Total: {audit_compras.total} registros
+          {t("purchases.totalRecords", {
+            total: audit_compras.total,
+          })}
         </span>
       </div>
+
       {audit_compras.data.map((audit: any) => (
         <Card key={audit.id} className="hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
               <div className="flex items-center gap-3">
-                {getAccionBadge(audit.accion)}
+                {getAccionBadge(audit.accion, t)}
                 <span className="text-sm text-muted-foreground flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
                   {formatDateTimeLocal(audit.fecha)}
                 </span>
               </div>
+
               <span className="text-xs text-muted-foreground">
-                ID: {audit.id.slice(0, 8)}
+                {t("purchases.id")}: {audit.id.slice(0, 8)}
               </span>
             </div>
 
@@ -67,13 +73,15 @@ export const AuditoriaComprasContent = ({
               <div className="space-y-2">
                 <h4 className="text-sm font-semibold flex items-center gap-2">
                   <ShoppingCart className="h-4 w-4" />
-                  Compra
+                  {t("purchases.purchase")}
                 </h4>
+
                 <div className="bg-muted/50 rounded-lg p-3 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="font-medium">
-                      Factura: {audit.compra.numero_factura}
+                      {t("purchases.invoice")}: {audit.compra.numero_factura}
                     </span>
+
                     <Badge
                       variant="outline"
                       className="flex items-center gap-1"
@@ -82,6 +90,7 @@ export const AuditoriaComprasContent = ({
                       {formatCurrency(audit.compra.total, moneda)}
                     </Badge>
                   </div>
+
                   <div className="flex items-center gap-2 text-sm">
                     <Building className="h-3 w-3 text-muted-foreground" />
                     <span>{audit.compra.proveedor.nombre_legal}</span>
@@ -92,12 +101,14 @@ export const AuditoriaComprasContent = ({
               <div className="space-y-2">
                 <h4 className="text-sm font-semibold flex items-center gap-2">
                   <User className="h-4 w-4" />
-                  Empleado
+                  {t("purchases.employee")}
                 </h4>
+
                 <div className="bg-muted/50 rounded-lg p-3 space-y-1">
                   <p className="font-medium">{audit.empleado.nombre}</p>
+
                   <Badge variant="outline" className="text-xs">
-                    {audit.empleado.role?.name || "Sin rol"}
+                    {audit.empleado.role?.name || t("purchases.noRole")}
                   </Badge>
                 </div>
               </div>
@@ -105,6 +116,7 @@ export const AuditoriaComprasContent = ({
           </CardContent>
         </Card>
       ))}
+
       {totalPagesCompras > 1 && (
         <div className="flex justify-center mt-6">
           <Paginacion

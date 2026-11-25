@@ -1,4 +1,5 @@
 "use client";
+
 import useGetAuditoriaProveedores from "@/hooks/agroservicios/auditoria/useGetAuditoriaProveedores";
 import useGetAuditoriaProductos from "@/hooks/agroservicios/auditoria/useGetAuditoriaProductos";
 import useGetAuditoriaCompras from "@/hooks/agroservicios/auditoria/useGetAuditoriaCompras";
@@ -23,16 +24,21 @@ import { AuditoriaMovimientosLoteContent } from "@/components/agroservicio/audit
 import { AuditoriaEmpleadosContent } from "@/components/agroservicio/auditorias/AuditoriaEmpleadosContent";
 import useGetAuditoriaMovimientosLote from "@/hooks/agroservicios/auditoria/useGetAuditoriaMovimientosLote";
 import useGetAuditoriaEmpleados from "@/hooks/agroservicios/auditoria/useGetAuditoriaEmpleados";
+import { useTranslations } from "next-intl";
 
 const AuditoriaPage = () => {
+  const t = useTranslations("auditoriaPage");
+
   const { cliente } = useAuthStore();
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
+
   const [currentPageProveedores, setCurrentPageProveedores] = useState(1);
   const [currentPageProductos, setCurrentPageProductos] = useState(1);
   const [currentPageCompras, setCurrentPageCompras] = useState(1);
   const [currentPageMovimientosLote, setCurrentPageMovimientosLote] =
     useState(1);
   const [currentPageEmpleados, setCurrentPageEmpleados] = useState(1);
+
   const limit = 10;
 
   const { data: audit_movimientos_lote, isLoading: isLoadingMovimientosLote } =
@@ -68,15 +74,19 @@ const AuditoriaPage = () => {
   const totalPagesProveedores = audit_proveedores
     ? Math.ceil(audit_proveedores.total / limit)
     : 0;
+
   const totalPagesProductos = audit_productos
     ? Math.ceil(audit_productos.total / limit)
     : 0;
+
   const totalPagesCompras = audit_compras
     ? Math.ceil(audit_compras.total / limit)
     : 0;
+
   const totalPagesMovimientosLote = audit_movimientos_lote
     ? Math.ceil(audit_movimientos_lote.total / limit)
     : 0;
+
   const totalPagesEmpleados = audit_empleados
     ? Math.ceil(audit_empleados.total / limit)
     : 0;
@@ -87,24 +97,29 @@ const AuditoriaPage = () => {
         id="id-auditoria-header"
         className="flex items-center justify-between"
       >
-        <TitlePage Icon={ShieldEllipsis} title="Auditorías" />
+        <TitlePage Icon={ShieldEllipsis} title={t("title")} />
+
         <div id="id-auditoria-badges" className="flex gap-2 flex-wrap">
           <Badge variant="outline" className="flex items-center gap-1">
             <Truck className="h-3 w-3" />
             {audit_proveedores?.total || 0}
           </Badge>
+
           <Badge variant="outline" className="flex items-center gap-1">
             <ShoppingBag className="h-3 w-3" />
             {audit_productos?.total || 0}
           </Badge>
+
           <Badge variant="outline" className="flex items-center gap-1">
             <ShoppingCart className="h-3 w-3" />
             {audit_compras?.total || 0}
           </Badge>
+
           <Badge variant="outline" className="flex items-center gap-1">
             <ArrowRightLeft className="h-3 w-3" />
             {audit_movimientos_lote?.total || 0}
           </Badge>
+
           <Badge variant="outline" className="flex items-center gap-1">
             <Users className="h-3 w-3" />
             {audit_empleados?.total || 0}
@@ -126,39 +141,43 @@ const AuditoriaPage = () => {
               className="flex items-center gap-2"
             >
               <Truck className="h-4 w-4" />
-              Proveedores
+              {t("tabs.suppliers")}
             </TabsTrigger>
+
             <TabsTrigger
               id="id-tab-productos"
               value="productos"
               className="flex items-center gap-2"
             >
               <ShoppingBag className="h-4 w-4" />
-              Productos
+              {t("tabs.products")}
             </TabsTrigger>
+
             <TabsTrigger
               id="id-tab-compras"
               value="compras"
               className="flex items-center gap-2"
             >
               <ShoppingCart className="h-4 w-4" />
-              Compras
+              {t("tabs.purchases")}
             </TabsTrigger>
+
             <TabsTrigger
               id="id-tab-movimientos-lote"
               value="movimientos-lote"
               className="flex items-center gap-2"
             >
               <ArrowRightLeft className="h-4 w-4" />
-              Movimientos Lote
+              {t("tabs.batchMovements")}
             </TabsTrigger>
+
             <TabsTrigger
               id="id-tab-empleados"
               value="empleados"
               className="flex items-center gap-2"
             >
               <Users className="h-4 w-4" />
-              Empleados
+              {t("tabs.employees")}
             </TabsTrigger>
           </TabsList>
 

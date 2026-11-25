@@ -21,6 +21,7 @@ import { useCartStore } from "@/providers/store/useCartStore";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 const RUTA_PERMITIDA_SIN_PERMISOS = "/agro-propietario/agro-servicios";
 
@@ -29,6 +30,8 @@ export default function AgroServiciosLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const t = useTranslations("agroServiciosLayout");
+
   const { logout, cliente, token } = useAuthStore();
   const { empleado, token: token_empleado } = useAuthEmpleadoStore();
   const { limpiarFavoritos } = useFavoritos();
@@ -39,6 +42,7 @@ export default function AgroServiciosLayout({
   const [loading, setLoading] = useState(false);
   const [showSessionModal, setShowSessionModal] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
+
   const tipoPaquete =
     cliente?.paqueteActivo?.paquete.tipo ?? TipoAgroservicio.AGRO_GESTION;
   const isEmpleado = !!empleado && !!token_empleado;
@@ -116,7 +120,7 @@ export default function AgroServiciosLayout({
     }
 
     if (!tieneAgroGestion) {
-      toast.warning("No tienes acceso a Agro Servicios");
+      toast.warning(t("messages.noAccess"));
       router.push("/panel");
       return;
     }
@@ -150,6 +154,7 @@ export default function AgroServiciosLayout({
     router,
     permisosAgro,
     tieneAgroGestion,
+    t,
   ]);
 
   const handleLogout = async () => {
@@ -164,9 +169,9 @@ export default function AgroServiciosLayout({
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       router.push("/");
-      toast.success("Sesión cerrada correctamente");
+      toast.success(t("messages.logoutSuccess"));
     } catch (error) {
-      toast.error("Ocurrió un error al cerrar la sesión");
+      toast.error(t("messages.logoutError"));
       router.push("/");
     } finally {
       setLoading(false);
@@ -180,7 +185,7 @@ export default function AgroServiciosLayout({
       await logout();
       router.push("/");
     } catch (error) {
-      toast.error("Error al cerrar sesión expirada");
+      toast.error(t("messages.expiredSessionError"));
     } finally {
       setLoading(false);
     }

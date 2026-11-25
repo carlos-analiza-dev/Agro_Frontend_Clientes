@@ -1,3 +1,5 @@
+"use client";
+
 import { ImpuestosAgroProductosInterface } from "@/api/agroservicio/impuestos/interface/response-impuestos-agroservicio.interface";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Pencil } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   isLoading: boolean;
@@ -22,15 +25,17 @@ const TableImpuestosProductos = ({
   isLoading,
   handleEditImpuesto,
 }: Props) => {
+  const t = useTranslations("tableImpuestosProductos");
+
   return (
     <div>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Nombre</TableHead>
-            <TableHead>Porcentaje</TableHead>
-            <TableHead className="text-center">Estado</TableHead>
-            <TableHead className="text-right">Acciones</TableHead>
+            <TableHead>{t("columns.name")}</TableHead>
+            <TableHead>{t("columns.percentage")}</TableHead>
+            <TableHead className="text-center">{t("columns.status")}</TableHead>
+            <TableHead className="text-right">{t("columns.actions")}</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -38,7 +43,7 @@ const TableImpuestosProductos = ({
           {isLoading ? (
             <TableRow>
               <TableCell colSpan={4} className="h-28 text-center">
-                Cargando impuestos...
+                {t("loading")}
               </TableCell>
             </TableRow>
           ) : impuestos.length === 0 ? (
@@ -47,7 +52,7 @@ const TableImpuestosProductos = ({
                 colSpan={4}
                 className="h-28 text-center text-muted-foreground"
               >
-                No hay impuestos registrados.
+                {t("empty")}
               </TableCell>
             </TableRow>
           ) : (
@@ -63,7 +68,7 @@ const TableImpuestosProductos = ({
 
                 <TableCell className="text-center">
                   <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
-                    Activo
+                    {t("status.active")}
                   </Badge>
                 </TableCell>
 
@@ -74,6 +79,8 @@ const TableImpuestosProductos = ({
                       onClick={() => handleEditImpuesto(impuesto)}
                       size="icon"
                       variant="outline"
+                      title={t("actions.edit")}
+                      aria-label={t("actions.edit")}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>

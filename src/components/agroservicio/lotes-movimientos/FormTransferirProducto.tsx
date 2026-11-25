@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -49,6 +50,8 @@ const FormTransferirProducto = ({
   sucursales,
   cargandoSucursales,
 }: Props) => {
+  const t = useTranslations("formTransferirProducto");
+
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [maxCantidad, setMaxCantidad] = useState(0);
@@ -100,7 +103,13 @@ const FormTransferirProducto = ({
           });
 
       toast.success(
-        `Producto transferido exitosamente: ${response.data.message || `${data.cantidad} unidades transferidas`}`,
+        t("messages.transferSuccess", {
+          message:
+            response.data.message ||
+            t("messages.unitsTransferred", {
+              quantity: data.cantidad,
+            }),
+        }),
       );
 
       queryClient.invalidateQueries({ queryKey: ["lotes-sucursal"] });
@@ -117,11 +126,11 @@ const FormTransferirProducto = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al transferir el producto";
+            : t("messages.transferError");
         setErrorMessage(errorMessage);
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado. Contacte al administrador");
+        toast.error(t("messages.unexpectedError"));
       }
     }
   };
@@ -138,10 +147,8 @@ const FormTransferirProducto = ({
     return (
       <Alert variant="destructive">
         <AlertCircleIcon className="h-4 w-4" />
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>
-          No se ha seleccionado ningún producto para transferir.
-        </AlertDescription>
+        <AlertTitle>{t("errors.title")}</AlertTitle>
+        <AlertDescription>{t("errors.noProductSelected")}</AlertDescription>
       </Alert>
     );
   }
@@ -151,7 +158,7 @@ const FormTransferirProducto = ({
       {errorMessage && (
         <Alert variant="destructive" className="mb-4">
           <AlertCircleIcon className="h-4 w-4" />
-          <AlertTitle>Error al transferir el producto</AlertTitle>
+          <AlertTitle>{t("errors.transferTitle")}</AlertTitle>
           <AlertDescription className="whitespace-pre-line">
             {errorMessage}
           </AlertDescription>
@@ -162,34 +169,42 @@ const FormTransferirProducto = ({
         <CardContent className="pt-6">
           <div className="flex items-center gap-2 mb-4">
             <Package className="h-5 w-5 text-blue-600" />
-            <h3 className="font-semibold text-lg">Producto a Transferir</h3>
+            <h3 className="font-semibold text-lg">{t("product.title")}</h3>
           </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label className="text-sm text-gray-500">
-                Nombre del Producto
+                {t("product.name")}
               </Label>
               <p className="font-medium mt-1">{lote.nombre_producto}</p>
             </div>
+
             <div>
-              <Label className="text-sm text-gray-500">Código</Label>
+              <Label className="text-sm text-gray-500">
+                {t("product.code")}
+              </Label>
               <Badge variant="outline" className="mt-1">
                 {lote.codigo_producto}
               </Badge>
             </div>
+
             <div>
-              <Label className="text-sm text-gray-500">Sucursal Origen</Label>
+              <Label className="text-sm text-gray-500">
+                {t("product.originBranch")}
+              </Label>
               <div className="flex items-center gap-2 mt-1">
                 <Warehouse className="h-4 w-4 text-gray-500" />
                 <span className="font-medium">{lote.nombre_sucursal}</span>
               </div>
             </div>
+
             <div>
               <Label className="text-sm text-gray-500">
-                Cantidad Disponible
+                {t("product.availableQuantity")}
               </Label>
               <p className="font-medium text-green-600 mt-1">
-                {lote.cantidad} unidades
+                {t("quantities.units", { quantity: lote.cantidad })}
               </p>
             </div>
           </div>
@@ -201,13 +216,13 @@ const FormTransferirProducto = ({
       <div className="space-y-4">
         <div className="flex items-center gap-2 mb-4">
           <ArrowRightLeft className="h-5 w-5 text-blue-600" />
-          <h3 className="font-semibold text-lg">Datos de Transferencia</h3>
+          <h3 className="font-semibold text-lg">{t("transfer.title")}</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="sucursalOrigenId" className="text-sm font-semibold">
-              Sucursal Origen <span className="text-red-500">*</span>
+              {t("fields.originBranch")} <span className="text-red-500">*</span>
             </Label>
             <Input
               id="sucursalOrigenId"
@@ -227,7 +242,8 @@ const FormTransferirProducto = ({
               htmlFor="sucursalDestinoId"
               className="text-sm font-semibold"
             >
-              Sucursal Destino <span className="text-red-500">*</span>
+              {t("fields.destinationBranch")}{" "}
+              <span className="text-red-500">*</span>
             </Label>
             <Select
               value={sucursalDestinoId}
@@ -235,11 +251,13 @@ const FormTransferirProducto = ({
               disabled={isSubmitting}
             >
               <SelectTrigger className="mt-1">
-                <SelectValue placeholder="Seleccionar sucursal destino" />
+                <SelectValue
+                  placeholder={t("placeholders.destinationBranch")}
+                />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Sucursales Disponibles</SelectLabel>
+                  <SelectLabel>{t("fields.availableBranches")}</SelectLabel>
                   {sucursalesDestino.length > 0 ? (
                     sucursalesDestino.map((sucursal) => (
                       <SelectItem key={sucursal.id} value={sucursal.id}>
@@ -248,7 +266,7 @@ const FormTransferirProducto = ({
                     ))
                   ) : (
                     <div className="p-2 text-center text-gray-500">
-                      No hay sucursales disponibles
+                      {t("empty.branches")}
                     </div>
                   )}
                 </SelectGroup>
@@ -263,7 +281,8 @@ const FormTransferirProducto = ({
 
           <div className="md:col-span-2">
             <Label htmlFor="cantidad" className="text-sm font-semibold">
-              Cantidad a Transferir <span className="text-red-500">*</span>
+              {t("fields.quantityToTransfer")}{" "}
+              <span className="text-red-500">*</span>
             </Label>
             <div className="flex items-center gap-4 mt-1">
               <div className="flex-1">
@@ -274,14 +293,16 @@ const FormTransferirProducto = ({
                   min={1}
                   max={maxCantidad}
                   {...register("cantidad", {
-                    required: "La cantidad es requerida",
+                    required: t("validation.quantityRequired"),
                     min: {
                       value: 1,
-                      message: "La cantidad mínima es 1",
+                      message: t("validation.minimumQuantity"),
                     },
                     max: {
                       value: maxCantidad,
-                      message: `La cantidad máxima disponible es ${maxCantidad}`,
+                      message: t("validation.maximumQuantity", {
+                        quantity: maxCantidad,
+                      }),
                     },
                     valueAsNumber: true,
                   })}
@@ -290,11 +311,11 @@ const FormTransferirProducto = ({
                 />
               </div>
               <div className="text-sm text-gray-500">
-                Disponible:{" "}
+                {t("quantities.available")}:{" "}
                 <span className="font-semibold text-green-600">
                   {maxCantidad}
                 </span>{" "}
-                unidades
+                {t("quantities.unitsLabel")}
               </div>
             </div>
             {errors.cantidad && (
@@ -309,23 +330,27 @@ const FormTransferirProducto = ({
               <Card className="bg-blue-50 border-blue-200">
                 <CardContent className="p-4">
                   <h4 className="font-semibold text-blue-800 mb-2">
-                    Resumen de Transferencia
+                    {t("summary.title")}
                   </h4>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Producto:</span>
+                      <span className="text-gray-600">
+                        {t("summary.product")}:
+                      </span>
                       <span className="font-medium">
                         {lote.nombre_producto}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Desde:</span>
+                      <span className="text-gray-600">
+                        {t("summary.from")}:
+                      </span>
                       <span className="font-medium">
                         {lote.nombre_sucursal}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Hacia:</span>
+                      <span className="text-gray-600">{t("summary.to")}:</span>
                       <span className="font-medium">
                         {
                           sucursales?.find((s) => s.id === sucursalDestinoId)
@@ -334,18 +359,22 @@ const FormTransferirProducto = ({
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Cantidad:</span>
+                      <span className="text-gray-600">
+                        {t("summary.quantity")}:
+                      </span>
                       <span className="font-bold text-blue-700">
-                        {cantidad} unidades
+                        {t("quantities.units", { quantity: cantidad })}
                       </span>
                     </div>
                     <Separator className="my-2" />
                     <div className="flex justify-between">
                       <span className="text-gray-600">
-                        Stock restante en origen:
+                        {t("summary.remainingStock")}:
                       </span>
                       <span className="font-medium text-orange-600">
-                        {maxCantidad - cantidad} unidades
+                        {t("quantities.units", {
+                          quantity: maxCantidad - cantidad,
+                        })}
                       </span>
                     </div>
                   </div>
@@ -359,12 +388,12 @@ const FormTransferirProducto = ({
               <Alert className="bg-yellow-50 border-yellow-200">
                 <AlertCircleIcon className="h-4 w-4 text-yellow-600" />
                 <AlertTitle className="text-yellow-800">
-                  Stock bajo en origen
+                  {t("warnings.lowStockTitle")}
                 </AlertTitle>
                 <AlertDescription className="text-yellow-700">
-                  Después de la transferencia, quedarán solo{" "}
-                  {maxCantidad - cantidad} unidades en la sucursal origen.
-                  Considera reabastecer pronto.
+                  {t("warnings.lowStockDescription", {
+                    quantity: maxCantidad - cantidad,
+                  })}
                 </AlertDescription>
               </Alert>
             </div>
@@ -379,7 +408,7 @@ const FormTransferirProducto = ({
           onClick={() => onSucces()}
           disabled={isSubmitting}
         >
-          Cancelar
+          {t("buttons.cancel")}
         </Button>
         <Button
           type="submit"
@@ -394,12 +423,12 @@ const FormTransferirProducto = ({
           {isSubmitting ? (
             <span className="flex items-center gap-2">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              Transferiendo...
+              {t("buttons.transferring")}
             </span>
           ) : (
             <span className="flex items-center gap-2">
               <ArrowRightLeft className="h-4 w-4" />
-              Transferir Producto
+              {t("buttons.transfer")}
             </span>
           )}
         </Button>

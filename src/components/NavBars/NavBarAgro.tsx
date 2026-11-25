@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useMemo, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "../ui/button";
 import {
   LogOut,
@@ -57,6 +60,7 @@ import {
   getPropietarioTourSteps,
 } from "@/helpers/data/guia/agroTourSteps";
 import ButtonGuiaSystem from "../generics/ButtonGuiaSystem";
+import LanguageSwitcher from "../i18n/LanguageSwitcher";
 
 interface Props {
   setMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -69,6 +73,9 @@ const NavBarAgro = ({
   setMobileSidebarOpen,
   isPropietario,
 }: Props) => {
+  const t = useTranslations("navBarAgro");
+  const locale = useLocale();
+
   const linkLoginEmpleados = `${process.env.NEXT_PUBLIC_APP_URL}/login-empleados`;
   const { data: info_agro, isLoading: cargando_info } = useGetInfoAgro();
   const [tourOpen, setTourOpen] = useState(false);
@@ -103,11 +110,14 @@ const NavBarAgro = ({
 
   const allTourSteps = useMemo(() => {
     if (isPropietario) {
-      return getPropietarioTourSteps(tipoAgroservicio);
+      return getPropietarioTourSteps(tipoAgroservicio, locale as "es" | "en");
     } else {
-      return getEmpleadoTourSteps(permisosEmpleados || []);
+      return getEmpleadoTourSteps(
+        permisosEmpleados || [],
+        locale as "es" | "en",
+      );
     }
-  }, [isPropietario, tipoAgroservicio, permisosEmpleados]);
+  }, [isPropietario, tipoAgroservicio, permisosEmpleados, locale]);
 
   const currentTourSteps = useMemo(() => {
     return allTourSteps[pathname] || [];
@@ -238,9 +248,9 @@ const NavBarAgro = ({
   const handleCopyEmployeeLink = async () => {
     try {
       await navigator.clipboard.writeText(linkLoginEmpleados);
-      toast.success("Enlace copiado al portapapeles.");
+      toast.success(t("messages.linkCopied"));
     } catch {
-      toast.error("No se pudo copiar el enlace.");
+      toast.error(t("messages.linkCopyError"));
     }
   };
 
@@ -264,11 +274,11 @@ const NavBarAgro = ({
         setTimeout(() => setTourOpen(true), 500);
       } else {
         setTourOpen(false);
-        toast.info("Has completado todas las guías disponibles");
+        toast.info(t("messages.allGuidesCompleted"));
       }
     } else {
       setTourOpen(false);
-      toast.success("¡Has completado el tour completo!");
+      toast.success(t("messages.tourCompleted"));
     }
   };
 
@@ -287,6 +297,7 @@ const NavBarAgro = ({
             size="icon"
             className="lg:hidden"
             onClick={() => setMobileSidebarOpen(true)}
+            aria-label={t("accessibility.openMenu")}
           >
             <Menu className="h-6 w-6" />
           </Button>
@@ -304,21 +315,27 @@ const NavBarAgro = ({
           <div className="hidden md:flex items-center gap-2 bg-yellow-50 border border-yellow-200 rounded-md px-3 py-1.5">
             <AlertTriangle className="h-4 w-4 text-yellow-600" />
             <span className="text-xs text-yellow-700 whitespace-nowrap">
-              Primero debe ingresar los datos de su agroservicio
+              {t("agroserviceRequired")}
             </span>
             <Link
               className="hover:underline hover:text-blue-800 text-xs"
               href={"/agro-propietario/agro-perfil"}
             >
-              Crear
+              {t("create")}
             </Link>
           </div>
 
+          <LanguageSwitcher />
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+              <Button
+                variant="ghost"
+                className="relative h-8 w-8 rounded-full"
+                aria-label={t("accessibility.openUserMenu")}
+              >
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={userInfo.imagen} alt="Usuario" />
+                  <AvatarImage src={userInfo.imagen} alt={t("user")} />
                   <AvatarFallback>
                     <User className="h-4 w-4" />
                   </AvatarFallback>
@@ -339,8 +356,7 @@ const NavBarAgro = ({
                     <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 rounded-md p-2">
                       <AlertTriangle className="h-4 w-4 text-yellow-600 flex-shrink-0" />
                       <p className="text-xs text-yellow-700">
-                        Para acceder a todos los módulos, primero debe crear su
-                        agroservicio
+                        {t("agroserviceRequiredDetails")}
                       </p>
                     </div>
                   </div>
@@ -353,7 +369,7 @@ const NavBarAgro = ({
                 className="cursor-pointer text-red-600"
               >
                 <LogOut className="mr-2 h-4 w-4" />
-                Cerrar sesión
+                {t("logout")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -370,6 +386,7 @@ const NavBarAgro = ({
           size="icon"
           className="lg:hidden"
           onClick={() => setMobileSidebarOpen(true)}
+          aria-label={t("accessibility.openMenu")}
         >
           <Menu className="h-6 w-6" />
         </Button>
@@ -384,6 +401,7 @@ const NavBarAgro = ({
       </div>
 
       <div className="flex items-center space-x-1 md:space-x-4">
+        <LanguageSwitcher />
         {isPropietario && esPropietario && tienePlanActivo && planActivo && (
           <TooltipProvider>
             <Tooltip>
@@ -401,13 +419,19 @@ const NavBarAgro = ({
               <TooltipContent>
                 <div className="text-xs">
                   {estaVencido ? (
-                    <p>Plan vencido. Renueva para seguir usando el sistema.</p>
+                    <p>{t("plan.expiredTooltip")}</p>
                   ) : estaPorVencer ? (
                     <p>
-                      Quedan {planInfo.daysLeft} días para que venza tu plan
+                      {t("plan.daysUntilExpiration", {
+                        days: planInfo.daysLeft,
+                      })}
                     </p>
                   ) : (
-                    <p>Plan activo. Quedan {planInfo.daysLeft} días</p>
+                    <p>
+                      {t("plan.activeDaysRemaining", {
+                        days: planInfo.daysLeft,
+                      })}
+                    </p>
                   )}
                 </div>
               </TooltipContent>
@@ -432,9 +456,13 @@ const NavBarAgro = ({
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+            <Button
+              variant="ghost"
+              className="relative h-8 w-8 rounded-full"
+              aria-label={t("accessibility.openUserMenu")}
+            >
               <Avatar className="h-8 w-8">
-                <AvatarImage src={userInfo.imagen} alt="Usuario" />
+                <AvatarImage src={userInfo.imagen} alt={t("user")} />
                 <AvatarFallback>
                   <User className="h-4 w-4" />
                 </AvatarFallback>
@@ -454,26 +482,34 @@ const NavBarAgro = ({
                 {!isPropietario && empleado && (
                   <div className="mt-2 pt-2 border-t border-gray-100">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs text-gray-500">Rol:</span>
+                      <span className="text-xs text-gray-500">
+                        {t("employee.role")}:
+                      </span>
                       <Badge variant="outline" className="text-xs">
-                        {empleado.role?.name || "Empleado"}
+                        {empleado.role?.name || t("employee.defaultRole")}
                       </Badge>
                     </div>
                     {empleado.sucursal && (
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-500">Sucursal:</span>
+                        <span className="text-xs text-gray-500">
+                          {t("employee.branch")}:
+                        </span>
                         <span className="text-xs font-medium">
                           {empleado.sucursal.nombre}
                         </span>
                       </div>
                     )}
                     <div className="flex items-center justify-between mt-1">
-                      <span className="text-xs text-gray-500">Estado:</span>
+                      <span className="text-xs text-gray-500">
+                        {t("employee.status")}:
+                      </span>
                       <Badge
                         variant={empleado.isActive ? "default" : "destructive"}
                         className="text-xs"
                       >
-                        {empleado.isActive ? "Activo" : "Inactivo"}
+                        {empleado.isActive
+                          ? t("employee.active")
+                          : t("employee.inactive")}
                       </Badge>
                     </div>
                   </div>
@@ -483,11 +519,11 @@ const NavBarAgro = ({
                   <div className="mt-2 pt-2 border-t border-gray-100">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs text-gray-500">
-                        Plan actual:
+                        {t("plan.current")}:
                       </span>
                       <Badge className={planInfo.color}>
                         <Crown className="mr-1 h-3 w-3" />
-                        {planInfo.label || "Sin plan"}
+                        {planInfo.label || t("plan.noPlan")}
                       </Badge>
                     </div>
 
@@ -495,11 +531,11 @@ const NavBarAgro = ({
                       <>
                         {planActivo.fechaFin && (
                           <p className="text-xs text-gray-500 mb-2">
-                            Vence:{" "}
+                            {t("plan.expires")}:{" "}
                             {planActivo.fechaFinFormateada ||
-                              new Date(
-                                planActivo.fechaFin,
-                              ).toLocaleDateString()}
+                              new Date(planActivo.fechaFin).toLocaleDateString(
+                                locale,
+                              )}
                           </p>
                         )}
 
@@ -507,7 +543,7 @@ const NavBarAgro = ({
                           <div className="space-y-1">
                             <div className="flex justify-between text-xs">
                               <span className="text-gray-500">
-                                Días restantes:
+                                {t("plan.daysRemaining")}:
                               </span>
                               <span
                                 className={`font-medium ${estaPorVencer ? "text-yellow-600" : "text-green-600"}`}
@@ -534,8 +570,7 @@ const NavBarAgro = ({
                         {estaVencido && (
                           <div className="bg-red-50 border border-red-200 rounded-md p-2 mt-2">
                             <p className="text-xs text-red-600">
-                              Tu plan ha vencido. Renueva para seguir usando el
-                              sistema.
+                              {t("plan.expiredNotice")}
                             </p>
                           </div>
                         )}
@@ -543,8 +578,7 @@ const NavBarAgro = ({
                         {estaPorVencer && !estaVencido && (
                           <div className="bg-yellow-50 border border-yellow-200 rounded-md p-2 mt-2">
                             <p className="text-xs text-yellow-600">
-                              ¡Tu plan está por vencer! Renueva pronto para no
-                              perder beneficios.
+                              {t("plan.expiringNotice")}
                             </p>
                           </div>
                         )}
@@ -554,8 +588,7 @@ const NavBarAgro = ({
                     {!planActivo && (
                       <div className="bg-blue-50 border border-blue-200 rounded-md p-2 mt-2">
                         <p className="text-xs text-blue-600">
-                          No tienes un plan activo. Adquiere uno para acceder a
-                          todos los beneficios.
+                          {t("plan.noActivePlanNotice")}
                         </p>
                       </div>
                     )}
@@ -572,7 +605,7 @@ const NavBarAgro = ({
                   className="cursor-pointer text-blue-600"
                 >
                   <PanelsTopLeft className="mr-2 h-4 w-4" />
-                  Panel
+                  {t("panel")}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
               </>
@@ -584,7 +617,7 @@ const NavBarAgro = ({
                 className="cursor-pointer"
               >
                 <Copy className="mr-2 h-4 w-4" />
-                Copiar enlace para empleados
+                {t("copyEmployeeLink")}
               </DropdownMenuItem>
             )}
 
@@ -595,7 +628,7 @@ const NavBarAgro = ({
               className="cursor-pointer text-red-600"
             >
               <LogOut className="mr-2 h-4 w-4" />
-              Cerrar sesión
+              {t("logout")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -605,9 +638,7 @@ const NavBarAgro = ({
         open={tourOpen}
         onClose={() => setTourOpen(false)}
         onFinish={handleTourFinish}
-        onEmpty={() =>
-          toast.info("No hay elementos visibles para la guía en esta página")
-        }
+        onEmpty={() => toast.info(t("messages.noVisibleGuideElements"))}
       />
     </header>
   );

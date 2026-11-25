@@ -31,6 +31,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   filteredRangos: Rangos[];
@@ -45,18 +46,20 @@ const TableRangosFactura = ({
   setSelectedRango,
   handleEditRango,
 }: Props) => {
+  const t = useTranslations("tableRangosFactura");
+
   return (
     <div>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>CAI</TableHead>
-            <TableHead>Prefijo</TableHead>
-            <TableHead>Rango</TableHead>
-            <TableHead>Correlativo</TableHead>
-            <TableHead>Fechas</TableHead>
-            <TableHead>Estado</TableHead>
-            <TableHead className="text-right">Acciones</TableHead>
+            <TableHead>{t("columns.cai")}</TableHead>
+            <TableHead>{t("columns.prefix")}</TableHead>
+            <TableHead>{t("columns.range")}</TableHead>
+            <TableHead>{t("columns.correlative")}</TableHead>
+            <TableHead>{t("columns.dates")}</TableHead>
+            <TableHead>{t("columns.status")}</TableHead>
+            <TableHead className="text-right">{t("columns.actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -94,11 +97,15 @@ const TableRangosFactura = ({
                   <div className="space-y-1">
                     <div className="flex items-center gap-1 text-xs">
                       <Calendar className="h-3 w-3 text-gray-400" />
-                      <span>Inicio: {rango.fecha_recepcion}</span>
+                      <span>
+                        {t("dates.start")}: {rango.fecha_recepcion}
+                      </span>
                     </div>
                     <div className="flex items-center gap-1 text-xs">
                       <Calendar className="h-3 w-3 text-gray-400" />
-                      <span>Límite: {rango.fecha_limite_emision}</span>
+                      <span>
+                        {t("dates.deadline")}: {rango.fecha_limite_emision}
+                      </span>
                     </div>
                   </div>
                 </TableCell>
@@ -112,14 +119,16 @@ const TableRangosFactura = ({
                           : "bg-gray-100 text-gray-700"
                       }
                     >
-                      {rango.is_active ? "Activo" : "Inactivo"}
+                      {rango.is_active
+                        ? t("status.active")
+                        : t("status.inactive")}
                     </Badge>
                     {vencido && (
                       <Badge
                         variant="destructive"
                         className="w-full justify-center"
                       >
-                        Vencido
+                        {t("status.expired")}
                       </Badge>
                     )}
                     {proximoVencer && !vencido && (
@@ -128,7 +137,7 @@ const TableRangosFactura = ({
                         className="w-full justify-center bg-yellow-100 text-yellow-700"
                       >
                         <AlertCircle className="h-3 w-3 mr-1" />
-                        Próximo a vencer
+                        {t("status.expiringSoon")}
                       </Badge>
                     )}
                   </div>
@@ -141,12 +150,14 @@ const TableRangosFactura = ({
                         variant="ghost"
                         className="h-8 w-8 p-0"
                       >
-                        <span className="sr-only">Abrir menú</span>
+                        <span className="sr-only">{t("actions.openMenu")}</span>
                         <MoreVertical className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                      <DropdownMenuLabel>
+                        {t("columns.actions")}
+                      </DropdownMenuLabel>
                       <DropdownMenuItem
                         onClick={() => {
                           setSelectedRango(rango);
@@ -154,11 +165,11 @@ const TableRangosFactura = ({
                         }}
                       >
                         <Eye className="h-4 w-4 mr-2" />
-                        Ver detalles
+                        {t("actions.viewDetails")}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleEditRango(rango)}>
                         <Pencil className="h-4 w-4 mr-2" />
-                        Editar
+                        {t("actions.edit")}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

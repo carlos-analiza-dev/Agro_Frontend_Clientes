@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import useGetMetricasFacturas from "@/hooks/agroservicios/dashboards/useGetMetricasFacturas";
 import useGetAllSucursales from "@/hooks/agroservicios/sucursales/useGetAllSucursales";
 import {
@@ -49,7 +50,7 @@ import {
   X,
 } from "lucide-react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { es, enUS } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import useGetTopProductos from "@/hooks/agroservicios/dashboards/useGetTopProductos";
 import TopProductosComponent from "@/components/agroservicio/dashboard/TopProductosComponent";
@@ -63,6 +64,10 @@ import EstadosFacturasComponent from "@/components/agroservicio/dashboard/Estado
 import { StatCard } from "@/components/generics/StatCard";
 
 const AgroservicioDashboard = () => {
+  const t = useTranslations("agroservicioDashboard");
+  const locale = useLocale();
+  const dateLocale = locale === "en" ? enUS : es;
+
   const { cliente } = useAuthStore();
   const propietarioId = cliente?.id ?? "";
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
@@ -73,6 +78,7 @@ const AgroservicioDashboard = () => {
 
   const { data: sucursales, isLoading: cargandoSucursales } =
     useGetAllSucursales();
+
   const getQueryParams = () => {
     const params: {
       fechaInicio?: string;
@@ -129,10 +135,13 @@ const AgroservicioDashboard = () => {
 
   const datosVentas = [
     {
-      name: "Ventas Totales",
+      name: t("charts.totalSales"),
       value: metricas_facturas?.ventasTotales || 0,
     },
-    { name: "Subtotal", value: metricas_facturas?.subtotal || 0 },
+    {
+      name: t("financialDetails.subtotal"),
+      value: metricas_facturas?.subtotal || 0,
+    },
   ];
 
   const datosImpuestos = [
@@ -142,22 +151,22 @@ const AgroservicioDashboard = () => {
 
   const datosFinancieros = [
     {
-      name: "Descuentos",
+      name: t("financialDetails.discounts"),
       value: metricas_facturas?.descuentos || 0,
     },
     {
-      name: "Cargos Extra",
+      name: t("charts.extraCharges"),
       value: metricas_facturas?.cargosExtra || 0,
     },
   ];
 
   const datosResumen = [
     {
-      name: "Facturas",
+      name: t("summary.invoices"),
       cantidad: metricas_facturas?.cantidadFacturas || 0,
     },
     {
-      name: "Ticket Promedio",
+      name: t("summary.averageTicket"),
       cantidad: metricas_facturas?.ticketPromedio || 0,
     },
   ];
@@ -167,7 +176,7 @@ const AgroservicioDashboard = () => {
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando métricas...</p>
+          <p className="mt-4 text-gray-600">{t("loading")}</p>
         </div>
       </div>
     );
@@ -176,7 +185,7 @@ const AgroservicioDashboard = () => {
   return (
     <div className="p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-3xl font-bold">Dashboard Agroservicio</h1>
+        <h1 className="text-3xl font-bold">{t("title")}</h1>
         <div className="flex flex-wrap gap-2">
           <Button
             variant="outline"
@@ -184,7 +193,9 @@ const AgroservicioDashboard = () => {
             className="flex items-center gap-2"
           >
             <Filter className="h-4 w-4" />
-            {mostrarFiltros ? "Ocultar Filtros" : "Mostrar Filtros"}
+            {mostrarFiltros
+              ? t("buttons.hideFilters")
+              : t("buttons.showFilters")}
             {hayFiltrosActivos && (
               <span className="ml-1 h-2 w-2 rounded-full bg-blue-500"></span>
             )}
@@ -196,7 +207,7 @@ const AgroservicioDashboard = () => {
               className="flex items-center gap-2 text-red-600 hover:text-red-700"
             >
               <X className="h-4 w-4" />
-              Limpiar Filtros
+              {t("buttons.clearFilters")}
             </Button>
           )}
         </div>
@@ -205,15 +216,15 @@ const AgroservicioDashboard = () => {
       {mostrarFiltros && (
         <Card id="id-filters-dashboard">
           <CardHeader>
-            <CardTitle className="text-lg">Filtros</CardTitle>
-            <CardDescription>
-              Selecciona el rango de fechas y sucursal para filtrar los datos
-            </CardDescription>
+            <CardTitle className="text-lg">{t("filters.title")}</CardTitle>
+            <CardDescription>{t("filters.description")}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Fecha Inicio</label>
+                <label className="text-sm font-medium">
+                  {t("filters.startDate")}
+                </label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -225,9 +236,11 @@ const AgroservicioDashboard = () => {
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {fechaInicio ? (
-                        format(fechaInicio, "dd/MM/yyyy", { locale: es })
+                        format(fechaInicio, "dd/MM/yyyy", {
+                          locale: dateLocale,
+                        })
                       ) : (
-                        <span>Seleccionar fecha</span>
+                        <span>{t("filters.selectDate")}</span>
                       )}
                     </Button>
                   </PopoverTrigger>
@@ -237,14 +250,16 @@ const AgroservicioDashboard = () => {
                       selected={fechaInicio}
                       onSelect={setFechaInicio}
                       initialFocus
-                      locale={es}
+                      locale={dateLocale}
                     />
                   </PopoverContent>
                 </Popover>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Fecha Fin</label>
+                <label className="text-sm font-medium">
+                  {t("filters.endDate")}
+                </label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -256,9 +271,9 @@ const AgroservicioDashboard = () => {
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {fechaFin ? (
-                        format(fechaFin, "dd/MM/yyyy", { locale: es })
+                        format(fechaFin, "dd/MM/yyyy", { locale: dateLocale })
                       ) : (
-                        <span>Seleccionar fecha</span>
+                        <span>{t("filters.selectDate")}</span>
                       )}
                     </Button>
                   </PopoverTrigger>
@@ -268,20 +283,24 @@ const AgroservicioDashboard = () => {
                       selected={fechaFin}
                       onSelect={setFechaFin}
                       initialFocus
-                      locale={es}
+                      locale={dateLocale}
                     />
                   </PopoverContent>
                 </Popover>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Sucursal</label>
+                <label className="text-sm font-medium">
+                  {t("filters.branch")}
+                </label>
                 <Select value={sucursal} onValueChange={setSucursal}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Todas las sucursales" />
+                    <SelectValue placeholder={t("filters.allBranches")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="todas">Todas las sucursales</SelectItem>
+                    <SelectItem value="todas">
+                      {t("filters.allBranches")}
+                    </SelectItem>
                     {sucursales?.map((suc: any) => (
                       <SelectItem key={suc.id} value={suc.id}>
                         {suc.nombre}
@@ -295,20 +314,24 @@ const AgroservicioDashboard = () => {
             {hayFiltrosActivos && (
               <div className="mt-4 p-3 bg-blue-50 rounded-lg">
                 <p className="text-sm text-blue-700">
-                  <span className="font-semibold">Filtros aplicados:</span>
+                  <span className="font-semibold">{t("filters.applied")}:</span>
                   {fechaInicio && (
                     <span className="ml-2">
-                      Desde: {format(fechaInicio, "dd/MM/yyyy", { locale: es })}
+                      {t("filters.from")}:{" "}
+                      {format(fechaInicio, "dd/MM/yyyy", {
+                        locale: dateLocale,
+                      })}
                     </span>
                   )}
                   {fechaFin && (
                     <span className="ml-2">
-                      Hasta: {format(fechaFin, "dd/MM/yyyy", { locale: es })}
+                      {t("filters.to")}:{" "}
+                      {format(fechaFin, "dd/MM/yyyy", { locale: dateLocale })}
                     </span>
                   )}
                   {sucursal !== "todas" && (
                     <span className="ml-2">
-                      Sucursal:{" "}
+                      {t("filters.branch")}:{" "}
                       {sucursales?.find((s: any) => s.id === sucursal)
                         ?.nombre || sucursal}
                     </span>
@@ -320,8 +343,8 @@ const AgroservicioDashboard = () => {
             {!hayFiltrosActivos && (
               <div className="mt-4 p-3 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-600">
-                  <span className="font-semibold">Mostrando:</span> Todos los
-                  datos disponibles
+                  <span className="font-semibold">{t("filters.showing")}:</span>{" "}
+                  {t("filters.allAvailableData")}
                 </p>
               </div>
             )}
@@ -334,7 +357,7 @@ const AgroservicioDashboard = () => {
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
       >
         <StatCard
-          title="Total Facturas"
+          title={t("summary.totalInvoices")}
           value={metricas_facturas?.cantidadFacturas || 0}
           icon={FileText}
           gradientFrom="from-blue-500"
@@ -344,7 +367,7 @@ const AgroservicioDashboard = () => {
         />
 
         <StatCard
-          title="Ventas Totales"
+          title={t("summary.totalSales")}
           value={`${moneda} ${metricas_facturas?.ventasTotales?.toFixed(2) || "0.00"}`}
           icon={DollarSign}
           gradientFrom="from-green-500"
@@ -354,7 +377,7 @@ const AgroservicioDashboard = () => {
         />
 
         <StatCard
-          title="Ticket Promedio"
+          title={t("summary.averageTicket")}
           value={`${moneda} ${metricas_facturas?.ticketPromedio?.toFixed(2) || "0.00"}`}
           icon={Receipt}
           gradientFrom="from-purple-500"
@@ -364,7 +387,7 @@ const AgroservicioDashboard = () => {
         />
 
         <StatCard
-          title="Impuestos"
+          title={t("summary.taxes")}
           value={`${moneda} ${metricas_facturas?.impuestos?.toFixed(2) || "0.00"}`}
           icon={FileCheck}
           gradientFrom="from-orange-500"
@@ -377,10 +400,8 @@ const AgroservicioDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card id="id-metrica-ventas">
           <CardHeader>
-            <CardTitle>Análisis de Ventas</CardTitle>
-            <CardDescription>
-              Comparativa entre ventas totales y subtotal
-            </CardDescription>
+            <CardTitle>{t("charts.salesAnalysis")}</CardTitle>
+            <CardDescription>{t("charts.salesComparison")}</CardDescription>
           </CardHeader>
           <CardContent className="h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -392,7 +413,7 @@ const AgroservicioDashboard = () => {
                   formatter={(value) => `${moneda} ${Number(value).toFixed(2)}`}
                 />
                 <Legend />
-                <Bar dataKey="value" fill="#0088FE" name="Monto" />
+                <Bar dataKey="value" fill="#0088FE" name={t("charts.amount")} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -400,8 +421,8 @@ const AgroservicioDashboard = () => {
 
         <Card id="id-metrica-impuestos">
           <CardHeader>
-            <CardTitle>Distribución de Impuestos</CardTitle>
-            <CardDescription>Desglose de impuestos aplicados</CardDescription>
+            <CardTitle>{t("charts.taxDistribution")}</CardTitle>
+            <CardDescription>{t("charts.taxBreakdown")}</CardDescription>
           </CardHeader>
           <CardContent className="h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -435,10 +456,8 @@ const AgroservicioDashboard = () => {
 
         <Card id="id-metrica-descuentos">
           <CardHeader>
-            <CardTitle>Descuentos y Cargos Extra</CardTitle>
-            <CardDescription>
-              Análisis de ajustes en las facturas
-            </CardDescription>
+            <CardTitle>{t("charts.discountsAndExtraCharges")}</CardTitle>
+            <CardDescription>{t("charts.invoiceAdjustments")}</CardDescription>
           </CardHeader>
           <CardContent className="h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -450,7 +469,7 @@ const AgroservicioDashboard = () => {
                   formatter={(value) => `${moneda} ${Number(value).toFixed(2)}`}
                 />
                 <Legend />
-                <Bar dataKey="value" fill="#FF8042" name="Monto" />
+                <Bar dataKey="value" fill="#FF8042" name={t("charts.amount")} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -458,8 +477,10 @@ const AgroservicioDashboard = () => {
 
         <Card id="id-metrica-indicadores">
           <CardHeader>
-            <CardTitle>Resumen de Indicadores</CardTitle>
-            <CardDescription>Facturas y ticket promedio</CardDescription>
+            <CardTitle>{t("charts.indicatorsSummary")}</CardTitle>
+            <CardDescription>
+              {t("charts.invoicesAndAverageTicket")}
+            </CardDescription>
           </CardHeader>
           <CardContent className="h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -477,7 +498,7 @@ const AgroservicioDashboard = () => {
                   type="monotone"
                   dataKey="cantidad"
                   stroke="#8884d8"
-                  name="Valor"
+                  name={t("charts.value")}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -487,13 +508,15 @@ const AgroservicioDashboard = () => {
 
       <Card id="id-detalles-financieros">
         <CardHeader>
-          <CardTitle>Detalles Financieros</CardTitle>
-          <CardDescription>Desglose completo de las métricas</CardDescription>
+          <CardTitle>{t("financialDetails.title")}</CardTitle>
+          <CardDescription>{t("financialDetails.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-500">Subtotal</p>
+              <p className="text-sm text-gray-500">
+                {t("financialDetails.subtotal")}
+              </p>
               <p className="text-lg font-semibold">
                 {moneda} {metricas_facturas?.subtotal?.toFixed(2) || "0.00"}
               </p>
@@ -511,7 +534,9 @@ const AgroservicioDashboard = () => {
               </p>
             </div>
             <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-500">Descuentos</p>
+              <p className="text-sm text-gray-500">
+                {t("financialDetails.discounts")}
+              </p>
               <p className="text-lg font-semibold text-red-600">
                 {moneda} {metricas_facturas?.descuentos?.toFixed(2) || "0.00"}
               </p>
@@ -524,8 +549,8 @@ const AgroservicioDashboard = () => {
         <TopSucursalesComponent
           data={top_sucursales || []}
           isLoading={cargando_sucursales}
-          title="Top Sucursales"
-          description="Ranking de sucursales con mayores ventas"
+          title={t("topBranches.title")}
+          description={t("topBranches.description")}
           moneda={moneda}
         />
       </div>
@@ -542,10 +567,11 @@ const AgroservicioDashboard = () => {
         <TopProductosComponent
           data={metricas_productos || []}
           isLoading={cargando_products}
-          title="Productos Más Vendidos"
-          description="Top productos con mayor cantidad de ventas en el período seleccionado"
+          title={t("topProducts.title")}
+          description={t("topProducts.description")}
         />
       </div>
+
       <div id="id-estados-facturas">
         <EstadosFacturasComponent
           data={estados_facturas || []}

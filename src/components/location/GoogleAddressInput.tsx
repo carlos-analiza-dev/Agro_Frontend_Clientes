@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -5,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Search, Loader2, Crosshair } from "lucide-react";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 declare global {
   interface Window {
@@ -33,6 +36,8 @@ const MapComponent = ({
   onLocationSelect: (lat: number, lng: number) => void;
   initialLocation: { lat: number; lng: number };
 }) => {
+  const t = useTranslations("agroSucursalesPage");
+
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
@@ -53,7 +58,7 @@ const MapComponent = ({
       position: initialLocation,
       map: mapInstanceRef.current,
       draggable: true,
-      title: "Ubicación de la sucursal",
+      title: t("addressInput.map.markerTitle"),
     });
 
     const dragEndListener = markerRef.current.addListener("dragend", () => {
@@ -81,7 +86,7 @@ const MapComponent = ({
         window.google.maps.event.removeListener(clickListener);
       }
     };
-  }, [onLocationSelect, initialLocation]);
+  }, [onLocationSelect, initialLocation, t]);
 
   return <div ref={mapRef} className="w-full h-64 rounded-lg" />;
 };
@@ -93,6 +98,8 @@ const GoogleMapsWrapper = ({
   onLocationSelect: (lat: number, lng: number) => void;
   initialLocation: { lat: number; lng: number };
 }) => {
+  const t = useTranslations("agroSucursalesPage");
+
   const [mapLoaded, setMapLoaded] = useState(false);
   const [loadError, setLoadError] = useState(false);
   const scriptLoadedRef = useRef(false);
@@ -101,7 +108,7 @@ const GoogleMapsWrapper = ({
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
     if (!apiKey) {
-      toast.error("Google Maps API key no encontrada");
+      toast.error(t("addressInput.messages.apiKeyMissing"));
       setLoadError(true);
       return;
     }
@@ -132,15 +139,15 @@ const GoogleMapsWrapper = ({
     };
 
     document.head.appendChild(script);
-  }, []);
+  }, [t]);
 
   if (loadError) {
     return (
       <div className="w-full h-64 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
         <MapPin className="h-12 w-12 text-gray-400 mb-2" />
         <span className="text-gray-600 text-center">
-          Error al cargar el mapa. <br />
-          Verifica tu conexión a internet.
+          {t("addressInput.map.loadError")}{" "}
+          {t("addressInput.map.checkConnection")}
         </span>
       </div>
     );
@@ -150,7 +157,9 @@ const GoogleMapsWrapper = ({
     return (
       <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-        <span className="ml-2 text-gray-600">Cargando mapa...</span>
+        <span className="ml-2 text-gray-600">
+          {t("addressInput.map.loading")}
+        </span>
       </div>
     );
   }
@@ -167,14 +176,16 @@ export const GoogleAddressInput = ({
   value,
   onChange,
   onCoordinatesChange,
-  placeholder = "Ingresa una dirección",
-  label = "Dirección",
+  placeholder,
+  label,
   required = false,
   error,
   disabled = false,
   initialLat = null,
   initialLng = null,
 }: GoogleAddressInputProps) => {
+  const t = useTranslations("agroSucursalesPage");
+
   const defaultLat = 14.0818;
   const defaultLng = -87.2068;
 
@@ -299,17 +310,15 @@ export const GoogleAddressInput = ({
 
             setShowMap(true);
           } else {
-            toast.warning(
-              "No se pudo encontrar la dirección. Intenta con una descripción más específica.",
-            );
+            toast.warning(t("addressInput.messages.addressNotFound"));
           }
         },
       );
     } catch (error) {
       setBuscandoDireccion(false);
-      toast.error("Error al buscar dirección");
+      toast.error(t("addressInput.messages.searchError"));
     }
-  }, [address, onChange, onCoordinatesChange]);
+  }, [address, onChange, onCoordinatesChange, t]);
 
   const handleLocationSelect = useCallback(
     (lat: number, lng: number) => {
@@ -347,7 +356,7 @@ export const GoogleAddressInput = ({
 
   const obtenerUbicacionActual = useCallback(() => {
     if (!navigator.geolocation) {
-      toast.warn("La geolocalización no es compatible con este navegador");
+      toast.warn(t("addressInput.messages.geolocationUnsupported"));
       return;
     }
 
@@ -387,9 +396,7 @@ export const GoogleAddressInput = ({
                 setAddress(fallbackAddress);
                 isUpdatingFromParent.current = true;
                 onChange(fallbackAddress, lat, lng);
-                toast.info(
-                  "No se pudo obtener la dirección exacta, pero las coordenadas están registradas",
-                );
+                toast.info(t("addressInput.messages.coordinatesOnly"));
               }
             },
           );
@@ -405,10 +412,14 @@ export const GoogleAddressInput = ({
       },
       (error) => {
         setCargandoUbicacion(false);
-        toast.error("Error al obtener la ubicación: " + error.message);
+        toast.error(
+          t("addressInput.messages.locationError", {
+            message: error.message,
+          }),
+        );
       },
     );
-  }, [onChange, onCoordinatesChange]);
+  }, [onChange, onCoordinatesChange, t]);
 
   const handleAddressChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -473,16 +484,18 @@ export const GoogleAddressInput = ({
           type="text"
           value={address}
           onChange={handleAddressChange}
-          placeholder={placeholder}
+          placeholder={placeholder || t("addressInput.defaults.placeholder")}
           disabled={disabled}
           className={error ? "border-red-500 flex-1" : "flex-1"}
-          onKeyPress={(e) => e.key === "Enter" && buscarDireccion()}
+          onKeyDown={(e) => e.key === "Enter" && buscarDireccion()}
         />
         <Button
           type="button"
           onClick={buscarDireccion}
           disabled={buscandoDireccion || !address.trim()}
           size="sm"
+          title={t("addressInput.buttons.search")}
+          aria-label={t("addressInput.buttons.search")}
         >
           {buscandoDireccion ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -494,7 +507,12 @@ export const GoogleAddressInput = ({
           type="button"
           variant="outline"
           onClick={obtenerUbicacionActual}
-          title={cargandoUbicacion ? "Cargando..." : "Usar Ubicacion Actual"}
+          title={
+            cargandoUbicacion
+              ? t("addressInput.map.loading")
+              : t("addressInput.buttons.currentLocation")
+          }
+          aria-label={t("addressInput.buttons.currentLocation")}
           disabled={cargandoUbicacion}
           size="sm"
         >
@@ -516,7 +534,9 @@ export const GoogleAddressInput = ({
           onClick={() => setShowMap(!showMap)}
           className="text-xs"
         >
-          {showMap ? "Ocultar mapa" : "Mostrar mapa para seleccionar ubicación"}
+          {showMap
+            ? t("addressInput.buttons.hideMap")
+            : t("addressInput.buttons.showMap")}
         </Button>
       </div>
 
@@ -524,37 +544,40 @@ export const GoogleAddressInput = ({
         <Card>
           <CardContent className="p-4 space-y-3">
             <div className="space-y-2">
-              <Label>Selecciona la ubicación en el mapa</Label>
+              <Label>{t("addressInput.map.selectLocation")}</Label>
               <GoogleMapsWrapper
                 onLocationSelect={handleLocationSelect}
                 initialLocation={initialLocation}
               />
               <p className="text-xs text-gray-600">
-                Haz click en el mapa o arrastra el marcador para seleccionar la
-                ubicación exacta
+                {t("addressInput.map.instructions")}
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <Label className="text-xs">Latitud</Label>
+                <Label className="text-xs">
+                  {t("addressInput.coordinates.latitude")}
+                </Label>
                 <Input
                   type="number"
                   step="any"
                   value={latitude}
                   onChange={handleLatitudeChange}
-                  placeholder="Latitud"
+                  placeholder={t("addressInput.coordinates.latitude")}
                   className="text-sm"
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Longitud</Label>
+                <Label className="text-xs">
+                  {t("addressInput.coordinates.longitude")}
+                </Label>
                 <Input
                   type="number"
                   step="any"
                   value={longitude}
                   onChange={handleLongitudeChange}
-                  placeholder="Longitud"
+                  placeholder={t("addressInput.coordinates.longitude")}
                   className="text-sm"
                 />
               </div>
@@ -564,8 +587,8 @@ export const GoogleAddressInput = ({
               <div className="flex items-center gap-2 text-blue-800">
                 <MapPin className="h-4 w-4" />
                 <span className="text-xs">
-                  Coordenadas registradas: {validLat.toFixed(6)},{" "}
-                  {validLng.toFixed(6)}
+                  {t("addressInput.coordinates.registered")}:{" "}
+                  {validLat.toFixed(6)}, {validLng.toFixed(6)}
                 </span>
               </div>
             </div>
@@ -574,8 +597,7 @@ export const GoogleAddressInput = ({
       )}
 
       <p className="text-xs text-gray-500">
-        💡 Sugerencia: Comienza a escribir y selecciona una dirección de las
-        sugerencias, o usa el mapa para seleccionar la ubicación exacta
+        💡 {t("addressInput.map.suggestion")}
       </p>
     </div>
   );

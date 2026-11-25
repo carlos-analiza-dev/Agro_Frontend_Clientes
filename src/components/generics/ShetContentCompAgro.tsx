@@ -21,6 +21,7 @@ import {
 } from "@/interfaces/enums/paquetes/paquetes.enum";
 import useGetLogoAgro from "@/hooks/agroservicios/logo/useGetLogoAgro";
 import { FullScreenLoader } from "../generics/FullScreenLoader";
+import { useTranslations } from "next-intl";
 
 interface ShetContentCompAgroProps {
   mobileSidebarOpen: boolean;
@@ -35,6 +36,8 @@ const ShetContentCompAgro = ({
   handleLogout,
   isPropietario,
 }: ShetContentCompAgroProps) => {
+  const t = useTranslations("sidebarAgro");
+
   const pathname = usePathname();
   const { cliente } = useAuthStore();
   const { empleado } = useAuthEmpleadoStore();
@@ -119,6 +122,78 @@ const ShetContentCompAgro = ({
       .filter((categoria) => categoria.items.length > 0);
   }, [rutasBase, rutasPermitidas, isPropietario]);
 
+  const getCategoryTranslation = (category: string) => {
+    const categoryMap: Record<string, string> = {
+      Panel: "categories.panel",
+      Agroservicio: "categories.agroservice",
+      Compras: "categories.purchases",
+      Facturación: "categories.billing",
+      Lotes: "categories.batches",
+      Inventario: "categories.inventory",
+    };
+
+    const key = categoryMap[category];
+
+    return key && t.has(key) ? t(key) : category;
+  };
+
+  const getItemTranslation = (href: string, name: string) => {
+    const itemMap: Record<string, string> = {
+      "/agro-propietario/agro-servicios": "items.dashboard",
+      "/agro-propietario/auditoria": "items.audit",
+
+      "/agro-propietario/agro-perfil": "items.myAgroservice",
+      "/agro-propietario/agro-sucursales": "items.branches",
+      "/agro-propietario/agro-empleados": "items.staff",
+      "/agro-propietario/agro-clientes": "items.clients",
+
+      "/agro-propietario/agro-compras-productos": "items.products",
+      "/agro-propietario/agro-compras-insumos": "items.supplies",
+
+      "/agro-propietario/agro-facturas": "items.invoices",
+      "/agro-propietario/agro-notas-credito": "items.creditNotes",
+      "/agro-propietario/agro-rangos-facturas": "items.billingRanges",
+
+      "/agro-propietario/agro-lotes": "items.batches",
+      "/agro-propietario/agro-traslados": "items.transfers",
+      "/agro-propietario/agro-movimientos-lotes": "items.movements",
+
+      "/agro-propietario/agro-productos": "items.products",
+      "/agro-propietario/agro-insumos": "items.supplies",
+      "/agro-propietario/agro-proveedores": "items.suppliers",
+      "/agro-propietario/agro-consumo-insumos": "items.suppliesConsumption",
+      "/agro-propietario/agro-existencia": "items.productStock",
+      "/agro-propietario/agro-impuestos": "items.taxes",
+      "/agro-propietario/agro-descuentos": "items.discounts",
+
+      "/agro-empleados/agro-servicios": "items.dashboard",
+      "/agro-empleados/agro-clientes": "items.clients",
+
+      "/agro-empleados/agro-compras-productos": "items.products",
+      "/agro-empleados/agro-compras-insumos": "items.supplies",
+
+      "/agro-empleados/agro-facturas": "items.invoices",
+      "/agro-empleados/agro-notas-credito": "items.creditNotes",
+      "/agro-empleados/agro-rangos-facturas": "items.billingRanges",
+
+      "/agro-empleados/agro-lotes": "items.batches",
+      "/agro-empleados/agro-traslados": "items.transfers",
+      "/agro-empleados/agro-movimientos-lotes": "items.movements",
+
+      "/agro-empleados/agro-productos": "items.products",
+      "/agro-empleados/agro-insumos": "items.supplies",
+      "/agro-empleados/agro-proveedores": "items.suppliers",
+      "/agro-empleados/agro-consumo-insumos": "items.suppliesConsumption",
+      "/agro-empleados/agro-existencia": "items.productStock",
+      "/agro-empleados/agro-impuestos": "items.taxes",
+      "/agro-empleados/agro-descuentos": "items.discounts",
+    };
+
+    const key = itemMap[href];
+
+    return key && t.has(key) ? t(key) : name;
+  };
+
   const isActive = (href: string) => {
     if (
       href === "/agro-propietario/agro-servicios" ||
@@ -135,9 +210,9 @@ const ShetContentCompAgro = ({
 
   const userInfo = isPropietario
     ? {
-        nombre: cliente?.nombre || cliente?.nombre || "Propietario",
-        tipo: "Propietario",
-        rol: "Administrador",
+        nombre: cliente?.nombre || cliente?.nombre || t("user.owner"),
+        tipo: t("user.owner"),
+        rol: t("user.administrator"),
         email: cliente?.email || "",
         imagen:
           logo?.url ||
@@ -145,16 +220,16 @@ const ShetContentCompAgro = ({
             ? cliente.profileImages[0].url
             : null),
         tieneLogo: !!logo?.url,
-        agroservicio: logo?.agroservicio || "Agro Servicios",
+        agroservicio: logo?.agroservicio || t("user.agroservice"),
       }
     : {
-        nombre: empleado?.nombre || "Empleado",
-        tipo: "Empleado",
-        rol: empleado?.role?.name || "Sin rol",
+        nombre: empleado?.nombre || t("user.employee"),
+        tipo: t("user.employee"),
+        rol: empleado?.role?.name || t("user.noRole"),
         email: empleado?.email || "",
         imagen: logo?.url || null,
         tieneLogo: !!logo?.url,
-        agroservicio: logo?.agroservicio || "Agro Servicios",
+        agroservicio: logo?.agroservicio || t("user.agroservice"),
       };
 
   if (isLoading || cargando_logo) {
@@ -185,7 +260,7 @@ const ShetContentCompAgro = ({
                 <div className="h-8 w-8 rounded-md overflow-hidden border border-gray-200 flex-shrink-0">
                   <img
                     src={userInfo.imagen!}
-                    alt="Logo agroservicio"
+                    alt={t("accessibility.agroserviceLogo")}
                     className="h-full w-full object-cover"
                   />
                 </div>
@@ -243,7 +318,7 @@ const ShetContentCompAgro = ({
                 rutasVisibles.map((categoria) => (
                   <div key={categoria.category}>
                     <h3 className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
-                      {categoria.category}
+                      {getCategoryTranslation(categoria.category)}
                     </h3>
 
                     <div className="space-y-1">
@@ -267,7 +342,7 @@ const ShetContentCompAgro = ({
                                 active ? "text-green-600" : "text-gray-400"
                               }`}
                             />
-                            {item.name}
+                            {getItemTranslation(item.href, item.name)}
                           </Link>
                         );
                       })}
@@ -276,8 +351,8 @@ const ShetContentCompAgro = ({
                 ))
               ) : (
                 <div className="text-center text-gray-500 py-8">
-                  <p>No tienes permisos para ver rutas</p>
-                  <p className="text-xs mt-1">Contacta al administrador</p>
+                  <p>{t("noPermissions")}</p>
+                  <p className="text-xs mt-1">{t("contactAdmin")}</p>
                 </div>
               )}
             </nav>
@@ -290,7 +365,7 @@ const ShetContentCompAgro = ({
               className="flex w-full items-center rounded-lg px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
             >
               <LogOut className="mr-3 h-5 w-5" />
-              Cerrar sesión
+              {t("logout")}
             </button>
           </div>
         </div>

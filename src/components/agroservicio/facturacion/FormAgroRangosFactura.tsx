@@ -20,6 +20,7 @@ import {
   editarAgroRangosFacturaEmpleado,
 } from "@/api/agroservicio/facturacion/accions/editar-agro-rangos";
 import { Rangos } from "@/api/agroservicio/facturacion/interface/response-agro-rangos-factura.interface";
+import { useTranslations } from "next-intl";
 
 interface Props {
   onSuccess?: () => void;
@@ -34,6 +35,8 @@ const FormAgroRangosFactura = ({
   isPropietario,
   editRango,
 }: Props) => {
+  const t = useTranslations("formAgroRangosFactura");
+
   const {
     reset,
     handleSubmit,
@@ -50,8 +53,6 @@ const FormAgroRangosFactura = ({
   });
 
   const queryClient = useQueryClient();
-  const fechaRecepcion = watch("fecha_recepcion");
-  const fechaLimite = watch("fecha_limite_emision");
 
   useEffect(() => {
     if (isEdit && editRango) {
@@ -84,7 +85,7 @@ const FormAgroRangosFactura = ({
         queryKey: ["agro-rangos"],
       });
 
-      toast.success("Rango de factura creado exitosamente");
+      toast.success(t("notifications.createSuccess"));
       onSuccess?.();
       reset();
     },
@@ -97,11 +98,11 @@ const FormAgroRangosFactura = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear el rango";
+            : t("errors.create");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Hubo un error al crear el rango.");
+        toast.error(t("errors.create"));
       }
     },
   });
@@ -117,7 +118,7 @@ const FormAgroRangosFactura = ({
         queryKey: ["agro-rangos"],
       });
 
-      toast.success("Rango de factura actualizado exitosamente");
+      toast.success(t("notifications.updateSuccess"));
       onSuccess?.();
     },
 
@@ -129,11 +130,11 @@ const FormAgroRangosFactura = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar el rango";
+            : t("errors.update");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Hubo un error al actualizar el rango.");
+        toast.error(t("errors.update"));
       }
     },
   });
@@ -156,27 +157,29 @@ const FormAgroRangosFactura = ({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-muted-foreground">
-          Información del Rango de Facturación
+          {t("title")}
         </h3>
 
         <div className="space-y-2">
           <Label className="font-semibold">
             CAI <span className="text-red-500">*</span>
           </Label>
+
           <Input
-            placeholder="Ej. A1B2C3-D4E5F6-G7H8I9-J0K1L2"
+            placeholder={t("placeholders.cai")}
             {...register("cai", {
-              required: "El CAI es requerido",
+              required: t("validation.caiRequired"),
               minLength: {
                 value: 10,
-                message: "El CAI debe tener al menos 10 caracteres",
+                message: t("validation.caiMinLength"),
               },
               maxLength: {
                 value: 100,
-                message: "Máximo 100 caracteres",
+                message: t("validation.maxLength"),
               },
             })}
           />
+
           {errors.cai && (
             <p className="text-sm text-red-500">{errors.cai.message}</p>
           )}
@@ -184,42 +187,47 @@ const FormAgroRangosFactura = ({
 
         <div className="space-y-2">
           <Label className="font-semibold">
-            Prefijo <span className="text-red-500">*</span>
+            {t("fields.prefix")} <span className="text-red-500">*</span>
           </Label>
+
           <Input
-            placeholder="Ej. 001-001-01"
+            placeholder={t("placeholders.prefix")}
             {...register("prefijo", {
-              required: "El prefijo es requerido",
+              required: t("validation.prefixRequired"),
               pattern: {
                 value: /^\d{3}-\d{3}-\d{2}$/,
-                message: "Formato inválido. Ejemplo: 001-001-01",
+                message: t("validation.prefixFormat"),
               },
             })}
           />
+
           {errors.prefijo && (
             <p className="text-sm text-red-500">{errors.prefijo.message}</p>
           )}
-          <p className="text-xs text-gray-500">Formato: 001-001-01</p>
+
+          <p className="text-xs text-gray-500">{t("hints.prefixFormat")}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label className="font-semibold">
-              Rango Inicial <span className="text-red-500">*</span>
+              {t("fields.initialRange")} <span className="text-red-500">*</span>
             </Label>
+
             <Input
               type="number"
               min={1}
               placeholder="1"
               {...register("rango_inicial", {
-                required: "El rango inicial es requerido",
+                required: t("validation.initialRangeRequired"),
                 min: {
                   value: 1,
-                  message: "Debe ser mayor a 0",
+                  message: t("validation.greaterThanZero"),
                 },
                 valueAsNumber: true,
               })}
             />
+
             {errors.rango_inicial && (
               <p className="text-sm text-red-500">
                 {errors.rango_inicial.message}
@@ -229,28 +237,32 @@ const FormAgroRangosFactura = ({
 
           <div className="space-y-2">
             <Label className="font-semibold">
-              Rango Final <span className="text-red-500">*</span>
+              {t("fields.finalRange")} <span className="text-red-500">*</span>
             </Label>
+
             <Input
               type="number"
               min={1}
               placeholder="5000"
               {...register("rango_final", {
-                required: "El rango final es requerido",
+                required: t("validation.finalRangeRequired"),
                 min: {
                   value: 1,
-                  message: "Debe ser mayor a 0",
+                  message: t("validation.greaterThanZero"),
                 },
                 valueAsNumber: true,
                 validate: (value) => {
                   const inicial = watch("rango_inicial");
+
                   if (value <= inicial) {
-                    return "El rango final debe ser mayor al rango inicial";
+                    return t("validation.finalRangeGreater");
                   }
+
                   return true;
                 },
               })}
             />
+
             {errors.rango_final && (
               <p className="text-sm text-red-500">
                 {errors.rango_final.message}
@@ -262,13 +274,13 @@ const FormAgroRangosFactura = ({
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="space-y-2">
             <Label className="font-semibold">
-              Fecha de Recepción <span className="text-red-500">*</span>
+              {t("fields.receiptDate")} <span className="text-red-500">*</span>
             </Label>
 
             <Input
               type="date"
               {...register("fecha_recepcion", {
-                required: "La fecha de recepción es requerida",
+                required: t("validation.receiptDateRequired"),
               })}
             />
 
@@ -281,13 +293,14 @@ const FormAgroRangosFactura = ({
 
           <div className="space-y-2">
             <Label className="font-semibold">
-              Fecha Límite de Emisión <span className="text-red-500">*</span>
+              {t("fields.issuanceDeadline")}{" "}
+              <span className="text-red-500">*</span>
             </Label>
 
             <Input
               type="date"
               {...register("fecha_limite_emision", {
-                required: "La fecha límite de emisión es requerida",
+                required: t("validation.issuanceDeadlineRequired"),
               })}
             />
 
@@ -305,21 +318,24 @@ const FormAgroRangosFactura = ({
             checked={watch("is_active")}
             onCheckedChange={(checked) => setValue("is_active", checked)}
           />
+
           <Label htmlFor="is_active" className="font-semibold cursor-pointer">
-            {watch("is_active") ? "Rango Activo" : "Rango Inactivo"}
+            {watch("is_active") ? t("status.active") : t("status.inactive")}
           </Label>
         </div>
 
         {watch("rango_inicial") && watch("rango_final") && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
             <p className="text-sm text-blue-800">
-              <span className="font-semibold">Resumen:</span> Rango de{" "}
-              <span className="font-bold">{watch("rango_inicial")}</span> a{" "}
+              <span className="font-semibold">{t("summary.title")}</span>{" "}
+              {t("summary.rangeFrom")}{" "}
+              <span className="font-bold">{watch("rango_inicial")}</span>{" "}
+              {t("summary.to")}{" "}
               <span className="font-bold">{watch("rango_final")}</span> ={" "}
               <span className="font-bold">
                 {watch("rango_final") - watch("rango_inicial") + 1}
               </span>{" "}
-              facturas disponibles
+              {t("summary.availableInvoices")}
             </p>
           </div>
         )}
@@ -327,7 +343,7 @@ const FormAgroRangosFactura = ({
 
       <div className="flex justify-end gap-3">
         <Button type="button" variant="outline" onClick={() => onSuccess?.()}>
-          Cancelar
+          {t("buttons.cancel")}
         </Button>
 
         <Button
@@ -335,10 +351,10 @@ const FormAgroRangosFactura = ({
           disabled={mutationCrear.isPending || mutationEditar.isPending}
         >
           {mutationCrear.isPending || mutationEditar.isPending
-            ? "Guardando..."
+            ? t("buttons.saving")
             : isEdit
-              ? "Actualizar Rango"
-              : "Crear Rango"}
+              ? t("buttons.update")
+              : t("buttons.create")}
         </Button>
       </div>
     </form>

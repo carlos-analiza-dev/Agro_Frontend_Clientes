@@ -3,12 +3,12 @@
 import ButtonAdd from "@/components/generics/ButtonAdd";
 import TitlePage from "@/components/generics/TitlePage";
 import useGetDescuentosByAgroservicio from "@/hooks/agroservicios/descuentos/useGetDescuentosByAgroservicio";
-import { BadgePercent } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { BadgePercent, AlertCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
 import TableDescuentosAgro from "@/components/agroservicio/descuentos/TableDescuentosAgro";
 import SkeletonTable from "@/components/generics/SkeletonTable";
 import { useState } from "react";
@@ -18,12 +18,14 @@ import FormDescuentosAgro from "@/components/agroservicio/descuentos/FormDescuen
 import { useAuthEmpleadoStore } from "@/providers/store/useAuthEmpleados";
 
 const DsescuentosAgroPage = () => {
+  const t = useTranslations("agroDescuentosPage");
   const { empleado } = useAuthEmpleadoStore();
   const propietarioId = empleado?.agroservicio.propietario.id ?? "";
   const [openModalForm, setOpenModalForm] = useState(false);
   const [selectedDescuento, setSelectedDescuento] =
     useState<ResponseDescuentosAgroInterface | null>(null);
   const [isEdit, setIsEdit] = useState(false);
+
   const {
     data: descuentos,
     isLoading,
@@ -48,13 +50,13 @@ const DsescuentosAgroPage = () => {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <TitlePage
           Icon={BadgePercent}
-          title="Control de Descuentos para Clientes"
-          description="Gestiona los descuentos disponibles para tus clientes"
+          title={t("title")}
+          description={t("description")}
         />
 
         <ButtonAdd
           id="add-descuento"
-          title="Agregar Descuento"
+          title={t("buttons.add")}
           Icon={BadgePercent}
           action={handleAdd}
           className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 md:w-auto"
@@ -68,30 +70,30 @@ const DsescuentosAgroPage = () => {
         <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-xl">
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl font-semibold text-gray-800">
-              Lista de Descuentos
+              {t("list.title")}
               {descuentos && descuentos.length > 0 && (
                 <Badge
                   variant="secondary"
                   className="ml-3 bg-blue-100 text-blue-700"
                 >
                   {descuentos.length}{" "}
-                  {descuentos.length === 1 ? "descuento" : "descuentos"}
+                  {descuentos.length === 1
+                    ? t("list.discount")
+                    : t("list.discounts")}
                 </Badge>
               )}
             </CardTitle>
           </div>
         </CardHeader>
+
         <CardContent className="p-6">
           {isLoading && <SkeletonTable />}
 
           {error && (
             <Alert variant="destructive" className="mb-4">
               <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>
-                No se pudieron cargar los descuentos. Por favor, intenta de
-                nuevo.
-              </AlertDescription>
+              <AlertTitle>{t("error.title")}</AlertTitle>
+              <AlertDescription>{t("error.description")}</AlertDescription>
             </Alert>
           )}
 
@@ -111,18 +113,19 @@ const DsescuentosAgroPage = () => {
                   <BadgePercent className="h-12 w-12 text-gray-400" />
                 </div>
               </div>
+
               <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                No hay descuentos registrados
+                {t("empty.title")}
               </h3>
-              <p className="text-gray-500 mb-6">
-                Comienza agregando tu primer descuento para tus clientes.
-              </p>
+
+              <p className="text-gray-500 mb-6">{t("empty.description")}</p>
+
               <Button
                 onClick={handleAdd}
                 className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800"
               >
                 <BadgePercent className="h-4 w-4 mr-2" />
-                Agregar Descuento
+                {t("buttons.add")}
               </Button>
             </div>
           )}
@@ -130,20 +133,15 @@ const DsescuentosAgroPage = () => {
       </Card>
 
       <div className="text-xs text-gray-500 text-center border-t border-gray-200 pt-4">
-        <p>
-          Los descuentos se aplican automáticamente a los clientes según las
-          reglas configuradas.
-        </p>
+        <p>{t("footer")}</p>
       </div>
 
       <Modal
         open={openModalForm}
         onOpenChange={setOpenModalForm}
-        title={isEdit ? "Editar Descuento" : "Nuevo Descuento"}
+        title={isEdit ? t("modal.editTitle") : t("modal.createTitle")}
         description={
-          isEdit
-            ? "Actualiza el nombre o porcentaje del descuento."
-            : "Crea un descuento para aplicarlo a los productos comercializados en tu agroservicio."
+          isEdit ? t("modal.editDescription") : t("modal.createDescription")
         }
         size="xl"
         height="auto"

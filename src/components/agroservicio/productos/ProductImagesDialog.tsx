@@ -1,3 +1,5 @@
+"use client";
+
 import { AgroProducto } from "@/api/agroservicio/productos/interface/response-productos-agro.interface";
 import { eliminarImagen } from "@/api/agroservicio/productos/accions/eliminar-imagen";
 import {
@@ -10,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { X, Trash2, ZoomIn } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "react-toastify";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -26,9 +29,12 @@ export const ProductImagesDialog = ({
   producto,
   onSuccess,
 }: ProductImagesDialogProps) => {
+  const t = useTranslations("productImagesDialog");
+
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const queryClient = useQueryClient();
+
   if (!producto) return null;
 
   const hasImages = producto.images && producto.images.length > 0;
@@ -37,11 +43,11 @@ export const ProductImagesDialog = ({
     setDeletingId(imageId);
     try {
       await eliminarImagen(imageId);
-      toast.success("Imagen eliminada exitosamente");
+      toast.success(t("messages.deleteSuccess"));
       queryClient.invalidateQueries({ queryKey: ["agro-productos"] });
       onSuccess?.();
     } catch (error) {
-      toast.error("Error al eliminar la imagen");
+      toast.error(t("messages.deleteError"));
     } finally {
       setDeletingId(null);
     }
@@ -53,9 +59,11 @@ export const ProductImagesDialog = ({
         <DialogContent className="sm:max-w-[700px] max-h-[90vh]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <span>Imágenes de {producto.nombre}</span>
+              <span>{t("title", { product: producto.nombre })}</span>
               <span className="text-sm font-normal text-muted-foreground">
-                ({producto.images?.length || 0} imágenes)
+                {t("imageCount", {
+                  count: producto.images?.length || 0,
+                })}
               </span>
             </DialogTitle>
           </DialogHeader>
@@ -69,10 +77,8 @@ export const ProductImagesDialog = ({
                     <AvatarFallback>N/A</AvatarFallback>
                   </Avatar>
                 </div>
-                <p className="text-lg font-medium">Sin imágenes</p>
-                <p className="text-sm">
-                  Este producto no tiene imágenes asociadas
-                </p>
+                <p className="text-lg font-medium">{t("empty.title")}</p>
+                <p className="text-sm">{t("empty.description")}</p>
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -83,7 +89,7 @@ export const ProductImagesDialog = ({
                   >
                     <img
                       src={image.url}
-                      alt={`Imagen de ${producto.nombre}`}
+                      alt={t("imageAlt", { product: producto.nombre })}
                       className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
                       onClick={() => setSelectedImage(image.url)}
                     />
@@ -94,6 +100,7 @@ export const ProductImagesDialog = ({
                         size="icon"
                         className="h-8 w-8"
                         onClick={() => setSelectedImage(image.url)}
+                        title={t("actions.viewImage")}
                       >
                         <ZoomIn className="h-4 w-4" />
                       </Button>
@@ -103,6 +110,7 @@ export const ProductImagesDialog = ({
                         className="h-8 w-8"
                         onClick={() => handleDeleteImage(image.id)}
                         disabled={deletingId === image.id}
+                        title={t("actions.deleteImage")}
                       >
                         {deletingId === image.id ? (
                           <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
@@ -129,7 +137,7 @@ export const ProductImagesDialog = ({
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cerrar
+              {t("buttons.close")}
             </Button>
           </div>
         </DialogContent>
@@ -146,13 +154,14 @@ export const ProductImagesDialog = ({
               size="icon"
               className="absolute top-4 right-4 text-white hover:bg-white/20 z-10"
               onClick={() => setSelectedImage(null)}
+              title={t("actions.closeImage")}
             >
               <X className="h-6 w-6" />
             </Button>
             <div className="flex items-center justify-center h-[80vh] w-full">
               <img
                 src={selectedImage}
-                alt="Imagen ampliada"
+                alt={t("expandedImageAlt")}
                 className="max-h-full max-w-full object-contain"
               />
             </div>

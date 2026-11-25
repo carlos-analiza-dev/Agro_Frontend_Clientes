@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardContent,
@@ -28,6 +30,7 @@ import { Badge } from "@/components/ui/badge";
 import { Building2, Store, Award, MapPin } from "lucide-react";
 import { ResponseMejoresSucursales } from "@/api/agroservicio/dashboard/interface/response-sucursal-mas-ventas.interface";
 import { formatCurrency } from "@/helpers/funciones/formatCurrency";
+import { useTranslations } from "next-intl";
 
 interface TopSucursalesProps {
   data: ResponseMejoresSucursales[];
@@ -53,21 +56,26 @@ const COLORS = [
 const TopSucursalesComponent = ({
   data,
   isLoading,
-  title = "Top Sucursales",
-  description = "Ranking de sucursales con mayores ventas",
+  title,
+  description,
   moneda,
 }: TopSucursalesProps) => {
+  const t = useTranslations("topSucursalesComponent");
+
+  const titulo = title ?? t("title");
+  const descripcion = description ?? t("description");
+
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
+          <CardTitle>{titulo}</CardTitle>
+          <CardDescription>{descripcion}</CardDescription>
         </CardHeader>
         <CardContent className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Cargando sucursales...</p>
+            <p className="mt-4 text-gray-600">{t("loading")}</p>
           </div>
         </CardContent>
       </Card>
@@ -78,16 +86,14 @@ const TopSucursalesComponent = ({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
+          <CardTitle>{titulo}</CardTitle>
+          <CardDescription>{descripcion}</CardDescription>
         </CardHeader>
         <CardContent className="flex items-center justify-center h-64">
           <div className="text-center text-gray-500">
             <Store className="h-12 w-12 mx-auto mb-2 text-gray-400" />
-            <p>No hay sucursales registradas</p>
-            <p className="text-sm">
-              Las sucursales aparecerán aquí cuando realicen ventas
-            </p>
+            <p>{t("empty.title")}</p>
+            <p className="text-sm">{t("empty.description")}</p>
           </div>
         </CardContent>
       </Card>
@@ -98,6 +104,7 @@ const TopSucursalesComponent = ({
     (sum, item) => sum + item.cantidadFacturas,
     0,
   );
+
   const totalVentasGlobal = data.reduce(
     (sum, item) => sum + item.totalVentas,
     0,
@@ -123,34 +130,32 @@ const TopSucursalesComponent = ({
     return null;
   };
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload;
+      const item = payload[0].payload;
+
       return (
         <div className="bg-white p-3 border rounded-lg shadow-lg">
           <p className="font-bold text-sm flex items-center gap-2">
             <MapPin className="h-4 w-4 text-blue-500" />
-            {data.sucursal}
+            {item.sucursal}
           </p>
           <p className="text-sm text-gray-600">
-            Total Ventas: {formatCurrency(data.totalVentas, moneda)}
+            {t("tooltip.totalSales")}:{" "}
+            {formatCurrency(item.totalVentas, moneda)}
           </p>
           <p className="text-sm text-gray-600">
-            Facturas: {data.cantidadFacturas}
+            {t("tooltip.invoices")}: {item.cantidadFacturas}
           </p>
           <p className="text-sm text-gray-600">
-            Participación: {data.porcentajeVentas}%
+            {t("tooltip.participation")}: {item.porcentajeVentas}%
           </p>
         </div>
       );
     }
+
     return null;
   };
-
-  const pieData = chartData.map((item) => ({
-    name: item.sucursal,
-    value: item.totalVentas,
-  }));
 
   return (
     <Card className="w-full">
@@ -159,16 +164,17 @@ const TopSucursalesComponent = ({
           <div>
             <CardTitle className="flex items-center gap-2">
               <Building2 className="h-5 w-5 text-blue-600" />
-              {title}
+              {titulo}
             </CardTitle>
-            <CardDescription>{description}</CardDescription>
+            <CardDescription>{descripcion}</CardDescription>
           </div>
           <Badge variant="outline" className="flex items-center gap-1">
             <Store className="h-3 w-3" />
-            {data.length} sucursales
+            {data.length} {t("branches")}
           </Badge>
         </div>
       </CardHeader>
+
       <CardContent>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="h-80">
@@ -194,7 +200,7 @@ const TopSucursalesComponent = ({
                 <Bar
                   dataKey="totalVentas"
                   fill="#4ECDC4"
-                  name="Total Ventas"
+                  name={t("chart.totalSales")}
                   radius={[0, 4, 4, 0]}
                 >
                   {chartData.map((entry, index) => (
@@ -207,18 +213,28 @@ const TopSucursalesComponent = ({
               </BarChart>
             </ResponsiveContainer>
           </div>
+
           <div className="mt-6 overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-12">#</TableHead>
-                  <TableHead>Sucursal</TableHead>
-                  <TableHead className="text-right">Facturas</TableHead>
-                  <TableHead className="text-right">Total Ventas</TableHead>
-                  <TableHead className="text-right">Ticket Promedio</TableHead>
-                  <TableHead className="text-right">% Ventas</TableHead>
+                  <TableHead>{t("table.branch")}</TableHead>
+                  <TableHead className="text-right">
+                    {t("table.invoices")}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {t("table.totalSales")}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {t("table.averageTicket")}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {t("table.salesPercentage")}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
+
               <TableBody>
                 {chartData.map((item, index) => (
                   <TableRow key={item.sucursalId}>
@@ -234,6 +250,7 @@ const TopSucursalesComponent = ({
                         )}
                       </div>
                     </TableCell>
+
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <div
@@ -245,20 +262,26 @@ const TopSucursalesComponent = ({
                         <span className="font-medium">{item.sucursal}</span>
                       </div>
                     </TableCell>
+
                     <TableCell className="text-right">
                       <Badge variant="outline" className="font-mono">
                         {item.cantidadFacturas}
                       </Badge>
                     </TableCell>
+
                     <TableCell className="text-right font-semibold text-green-600">
                       {formatCurrency(item.totalVentas, moneda)}
                     </TableCell>
+
                     <TableCell className="text-right text-blue-600">
                       {formatCurrency(
-                        item.totalVentas / item.cantidadFacturas,
+                        item.cantidadFacturas > 0
+                          ? item.totalVentas / item.cantidadFacturas
+                          : 0,
                         moneda,
                       )}
                     </TableCell>
+
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
                         <div className="w-16 bg-gray-200 rounded-full h-2">
@@ -284,21 +307,30 @@ const TopSucursalesComponent = ({
 
         <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t">
           <div className="text-center">
-            <p className="text-sm text-gray-500">Total Sucursales</p>
+            <p className="text-sm text-gray-500">
+              {t("summary.totalBranches")}
+            </p>
             <p className="text-xl font-bold">{data.length}</p>
           </div>
+
           <div className="text-center">
-            <p className="text-sm text-gray-500">Total Facturas</p>
+            <p className="text-sm text-gray-500">
+              {t("summary.totalInvoices")}
+            </p>
             <p className="text-xl font-bold">{totalFacturas}</p>
           </div>
+
           <div className="text-center">
-            <p className="text-sm text-gray-500">Total Ventas</p>
+            <p className="text-sm text-gray-500">{t("summary.totalSales")}</p>
             <p className="text-xl font-bold text-green-600">
               {formatCurrency(totalVentasGlobal, moneda)}
             </p>
           </div>
+
           <div className="text-center">
-            <p className="text-sm text-gray-500">Sucursal Líder</p>
+            <p className="text-sm text-gray-500">
+              {t("summary.leadingBranch")}
+            </p>
             <p className="text-xl font-bold truncate" title={data[0]?.sucursal}>
               {data[0]?.sucursal || "N/A"}
             </p>

@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Table,
   TableBody,
@@ -85,6 +88,8 @@ const TableEscalasProducto = ({
   moneda,
   selectedProducto,
 }: Props) => {
+  const t = useTranslations("tableEscalasProducto");
+
   const queryClient = useQueryClient();
   const [page, setPage] = useState(0);
   const limit = 10;
@@ -121,7 +126,7 @@ const TableEscalasProducto = ({
       queryClient.invalidateQueries({
         queryKey: ["escalas-proveedor-producto"],
       });
-      toast.success("Escala creada exitosamente");
+      toast.success(t("messages.createSuccess"));
       reset();
       setSelectedProveedor("");
     },
@@ -132,13 +137,11 @@ const TableEscalasProducto = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear la escala";
+            : t("messages.createError");
 
         toast.error(errorMessage);
       } else {
-        toast.error(
-          "Hubo un error al momento de crear la escala. Inténtalo de nuevo.",
-        );
+        toast.error(t("messages.createUnexpectedError"));
       }
     },
   });
@@ -164,7 +167,7 @@ const TableEscalasProducto = ({
       queryClient.invalidateQueries({
         queryKey: ["escalas-proveedor-producto"],
       });
-      toast.success("Escala actualizada exitosamente");
+      toast.success(t("messages.updateSuccess"));
     },
     onError: (error) => {
       if (isAxiosError(error)) {
@@ -173,13 +176,11 @@ const TableEscalasProducto = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar la escala";
+            : t("messages.updateError");
 
         toast.error(errorMessage);
       } else {
-        toast.error(
-          "Hubo un error al momento de actualizar la escala. Inténtalo de nuevo.",
-        );
+        toast.error(t("messages.updateUnexpectedError"));
       }
     },
   });
@@ -195,7 +196,7 @@ const TableEscalasProducto = ({
       queryClient.invalidateQueries({
         queryKey: ["escalas-producto", limit, offset, selectedProducto?.id],
       });
-      toast.success("Estado de la escala actualizado exitosamente");
+      toast.success(t("messages.statusSuccess"));
       setIsStatusModalOpen(false);
       setSelectedEscala(null);
     },
@@ -206,13 +207,11 @@ const TableEscalasProducto = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar el estado de la escala";
+            : t("messages.statusError");
 
         toast.error(errorMessage);
       } else {
-        toast.error(
-          "Hubo un error al momento de actualizar el estado de la escala. Inténtalo de nuevo.",
-        );
+        toast.error(t("messages.statusUnexpectedError"));
       }
       setIsStatusModalOpen(false);
       setSelectedEscala(null);
@@ -234,7 +233,7 @@ const TableEscalasProducto = ({
 
   const onSubmit = (data: CrearEscalaProductoInterface) => {
     if (!selectedProducto) {
-      toast.error("Debe seleccionar un producto");
+      toast.error(t("messages.selectProduct"));
       return;
     }
 
@@ -321,14 +320,14 @@ const TableEscalasProducto = ({
   return (
     <div className="w-full space-y-4">
       <div className="bg-muted p-4 rounded-lg">
-        <h3 className="font-semibold mb-3">Agregar Nueva Escala</h3>
+        <h3 className="font-semibold mb-3">{t("form.title")}</h3>
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="grid grid-cols-1 md:grid-cols-6 gap-3 items-end"
         >
           <div className="space-y-2">
             <Label htmlFor="proveedorId" className="font-bold">
-              Proveedor
+              {t("fields.supplier")}
             </Label>
             <Select
               value={selectedProveedor}
@@ -338,7 +337,7 @@ const TableEscalasProducto = ({
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Selecciona un proveedor" />
+                <SelectValue placeholder={t("placeholders.supplier")} />
               </SelectTrigger>
               <SelectContent>
                 {proveedores?.map((proveedor) => (
@@ -357,20 +356,20 @@ const TableEscalasProducto = ({
 
           <div>
             <label className="text-sm font-medium mb-1 block">
-              Compra Mínima
+              {t("fields.minimumPurchase")}
             </label>
             <Input
               type="number"
               min="1"
               {...register("cantidad_comprada", {
-                required: "La compra mínima es requerida",
+                required: t("validation.minimumPurchaseRequired"),
                 min: {
                   value: 1,
-                  message: "La compra mínima debe ser al menos 1",
+                  message: t("validation.minimumPurchaseMin"),
                 },
                 valueAsNumber: true,
               })}
-              placeholder="Cantidad mínima"
+              placeholder={t("placeholders.minimumQuantity")}
               className={errors.cantidad_comprada ? "border-destructive" : ""}
             />
             {errors.cantidad_comprada && (
@@ -379,22 +378,23 @@ const TableEscalasProducto = ({
               </p>
             )}
           </div>
+
           <div>
             <label className="text-sm font-medium mb-1 block">
-              Bonificación
+              {t("fields.bonus")}
             </label>
             <Input
               type="number"
               min="0"
               {...register("bonificacion", {
-                required: "La bonificación es requerida",
+                required: t("validation.bonusRequired"),
                 min: {
                   value: 0,
-                  message: "La bonificación no puede ser negativa",
+                  message: t("validation.bonusMin"),
                 },
                 valueAsNumber: true,
               })}
-              placeholder="Unidades bonus"
+              placeholder={t("placeholders.bonusUnits")}
               className={errors.bonificacion ? "border-destructive" : ""}
             />
             {errors.bonificacion && (
@@ -403,17 +403,21 @@ const TableEscalasProducto = ({
               </p>
             )}
           </div>
+
           <div>
             <label className="text-sm font-medium mb-1 block">
-              Costo Unidad {moneda}
+              {t("fields.unitCost")} {moneda}
             </label>
             <Input
               type="number"
               min="0"
               step="0.01"
               {...register("costo", {
-                required: "El costo es requerido",
-                min: { value: 0, message: "El costo no puede ser negativo" },
+                required: t("validation.costRequired"),
+                min: {
+                  value: 0,
+                  message: t("validation.costMin"),
+                },
                 valueAsNumber: true,
               })}
               placeholder="0.00"
@@ -425,6 +429,7 @@ const TableEscalasProducto = ({
               </p>
             )}
           </div>
+
           <Button
             type="submit"
             className="w-full"
@@ -435,22 +440,34 @@ const TableEscalasProducto = ({
             ) : (
               <Plus className="h-4 w-4 mr-1" />
             )}
-            {createMutation.isPending ? "Creando..." : "Agregar"}
+            {createMutation.isPending
+              ? t("buttons.creating")
+              : t("buttons.add")}
           </Button>
         </form>
       </div>
 
       <Table>
-        <TableCaption>Escalas de precios por volumen de compra</TableCaption>
+        <TableCaption>{t("table.caption")}</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="text-center">Producto</TableHead>
-            <TableHead className="text-center">Proveedor</TableHead>
-            <TableHead className="text-center">Compra Mínima</TableHead>
-            <TableHead className="text-center">Bonificación</TableHead>
-            <TableHead className="text-center">Costo Unitario</TableHead>
-            <TableHead className="text-center">Activa</TableHead>
-            <TableHead className="text-center">Acciones</TableHead>
+            <TableHead className="text-center">
+              {t("columns.product")}
+            </TableHead>
+            <TableHead className="text-center">
+              {t("columns.supplier")}
+            </TableHead>
+            <TableHead className="text-center">
+              {t("columns.minimumPurchase")}
+            </TableHead>
+            <TableHead className="text-center">{t("columns.bonus")}</TableHead>
+            <TableHead className="text-center">
+              {t("columns.unitCost")}
+            </TableHead>
+            <TableHead className="text-center">{t("columns.active")}</TableHead>
+            <TableHead className="text-center">
+              {t("columns.actions")}
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -458,8 +475,8 @@ const TableEscalasProducto = ({
             <TableRow>
               <TableCell colSpan={7} className="text-center py-4">
                 <MessageError
-                  titulo="No se encontraron escalas"
-                  descripcion="En este momento no se encontraron escalas configuradas para el producto seleccionado"
+                  titulo={t("empty.title")}
+                  descripcion={t("empty.description")}
                 />
               </TableCell>
             </TableRow>
@@ -522,7 +539,7 @@ const TableEscalasProducto = ({
                         : "bg-red-100 text-red-800"
                     }`}
                   >
-                    {escala.isActive ? "Sí" : "No"}
+                    {escala.isActive ? t("status.yes") : t("status.no")}
                   </span>
                 </TableCell>
                 <TableCell className="text-center">
@@ -534,12 +551,17 @@ const TableEscalasProducto = ({
                           size="sm"
                           onClick={() => toggleEdit(escala.id)}
                           disabled={updateMutation.isPending}
+                          aria-label={t("actions.edit")}
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              aria-label={t("actions.openMenu")}
+                            >
                               <MoreVertical className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
@@ -547,7 +569,7 @@ const TableEscalasProducto = ({
                             <DropdownMenuItem
                               onClick={() => openStatusModal(escala)}
                             >
-                              Cambiar Estado
+                              {t("actions.changeStatus")}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -559,6 +581,7 @@ const TableEscalasProducto = ({
                           size="sm"
                           onClick={() => toggleEdit(escala.id)}
                           disabled={updateMutation.isPending}
+                          aria-label={t("actions.cancelEdit")}
                         >
                           <X className="h-4 w-4" />
                         </Button>
@@ -567,6 +590,7 @@ const TableEscalasProducto = ({
                           size="sm"
                           onClick={() => handleSave(escala.id)}
                           disabled={updateMutation.isPending}
+                          aria-label={t("actions.save")}
                         >
                           {updateMutation.isPending ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
@@ -587,29 +611,33 @@ const TableEscalasProducto = ({
       <AlertDialog open={isStatusModalOpen} onOpenChange={setIsStatusModalOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Cambiar Estado de la Escala</AlertDialogTitle>
+            <AlertDialogTitle>{t("statusDialog.title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              ¿Estás seguro de que quieres{" "}
-              {selectedEscala?.isActive ? "desactivar" : "activar"} esta escala?
+              {t("statusDialog.description", {
+                action: selectedEscala?.isActive
+                  ? t("statusDialog.deactivate")
+                  : t("statusDialog.activate"),
+              })}
+              {"\n\n"}
+              <strong>{t("statusDialog.product")}:</strong>{" "}
+              {selectedEscala?.producto.nombre}
               <br />
-              <br />
-              <strong>Producto:</strong> {selectedEscala?.producto.nombre}
-              <br />
-              <strong>Proveedor:</strong>{" "}
+              <strong>{t("statusDialog.supplier")}:</strong>{" "}
               {selectedEscala?.proveedor?.nombre_legal}
               <br />
-              <strong>Compra Mínima:</strong>{" "}
-              {selectedEscala?.cantidad_comprada} unidades
+              <strong>{t("statusDialog.minimumPurchase")}:</strong>{" "}
+              {selectedEscala?.cantidad_comprada} {t("statusDialog.units")}
               <br />
-              <strong>Bonificación:</strong> {selectedEscala?.bonificacion}{" "}
-              unidades
+              <strong>{t("statusDialog.bonus")}:</strong>{" "}
+              {selectedEscala?.bonificacion} {t("statusDialog.units")}
               <br />
-              <strong>Costo:</strong> {moneda} {selectedEscala?.costo}
+              <strong>{t("statusDialog.cost")}:</strong> {moneda}{" "}
+              {selectedEscala?.costo}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={toggleStatusMutation.isPending}>
-              Cancelar
+              {t("buttons.cancel")}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => handleStatusChange(!selectedEscala?.isActive)}
@@ -623,7 +651,9 @@ const TableEscalasProducto = ({
               {toggleStatusMutation.isPending ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               ) : null}
-              {selectedEscala?.isActive ? "Desactivar" : "Activar"}
+              {selectedEscala?.isActive
+                ? t("statusDialog.deactivate")
+                : t("statusDialog.activate")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -670,7 +700,10 @@ const TableEscalasProducto = ({
 
       {escalasData && escalasData.total > 0 && (
         <div className="text-sm text-muted-foreground text-center">
-          Mostrando {escalas.length} de {escalasData.total} escalas
+          {t("pagination.showing", {
+            shown: escalas.length,
+            total: escalasData.total,
+          })}
         </div>
       )}
     </div>

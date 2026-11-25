@@ -46,6 +46,7 @@ import useGetAllProducts from "@/hooks/agroservicios/productos/useGetAllProducts
 import Modal from "@/components/generics/Modal";
 import useGetAllSucursales from "@/hooks/agroservicios/sucursales/useGetAllSucursales";
 import useGetImpuestosByAgroservicio from "@/hooks/agroservicios/impuestos/useGetImpuestosByAgroservicio";
+import { useTranslations } from "next-intl";
 
 interface FormCompra {
   sucursalId: string;
@@ -70,6 +71,7 @@ const FormCompraProductos = ({
   isPropietario,
   moneda,
 }: Props) => {
+  const t = useTranslations("FormCompraProductos");
   const [isConfirmCompra, setIsConfirmCompra] = useState(false);
   const [compraDataToSubmit, setCompraDataToSubmit] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -88,7 +90,7 @@ const FormCompraProductos = ({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["compras-agro-productos"] });
       queryClient.invalidateQueries({ queryKey: ["existencia-productos"] });
-      toast.success("Compra creada exitosamente");
+      toast.success(t("messages.createSuccess"));
       onSuccess();
       reset();
       setIsConfirmCompra(false);
@@ -100,13 +102,11 @@ const FormCompraProductos = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al ejecutar la compra";
+            : t("messages.genericError");
 
         toast.error(errorMessage);
       } else {
-        toast.error(
-          "Hubo un error al momento de ejecutar la compra. Inténtalo de nuevo.",
-        );
+        toast.error(t("messages.retryError"));
       }
       setIsConfirmCompra(false);
     },
@@ -224,7 +224,9 @@ const FormCompraProductos = ({
         setValue("tipoPago", tipoPagoMatch.value);
       } else {
         toast.warning(
-          `Tipo de pago "${proveedorSeleccionado.tipo_pago_default}" no coincide con los valores disponibles`,
+          t("messages.paymentTypeMismatch", {
+            value: proveedorSeleccionado.tipo_pago_default,
+          }),
         );
         setValue("tipoPago", "");
       }
@@ -344,7 +346,7 @@ const FormCompraProductos = ({
 
   const onSubmit = (data: FormCompra) => {
     if (!isFormValid()) {
-      toast.error("Por favor, complete todos los campos requeridos");
+      toast.error(t("validation.requiredFields"));
       return;
     }
 
@@ -388,7 +390,9 @@ const FormCompraProductos = ({
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Información General</CardTitle>
+            <CardTitle className="text-lg">
+              {t("sections.generalInfo")}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div
@@ -396,20 +400,19 @@ const FormCompraProductos = ({
             >
               {isPropietario && (
                 <div className="space-y-2">
-                  <Label className="font-semibold">Sucursal destino *</Label>
-
+                  <Label className="font-semibold">
+                    {t("fields.branch")} *
+                  </Label>
                   <Select
                     value={selectedSucursalId}
                     onValueChange={setSelectedSucursalId}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Seleccione sucursal" />
+                      <SelectValue placeholder={t("placeholders.branch")} />
                     </SelectTrigger>
-
                     <SelectContent>
                       <SelectGroup>
-                        <SelectLabel>Sucursales</SelectLabel>
-
+                        <SelectLabel>{t("groups.branches")}</SelectLabel>
                         {sucursales?.map((sucursal) => (
                           <SelectItem value={sucursal.id} key={sucursal.id}>
                             {sucursal.nombre}
@@ -420,18 +423,21 @@ const FormCompraProductos = ({
                   </Select>
                 </div>
               )}
+
               <div className="space-y-2">
-                <Label className="font-semibold">Proveedor *</Label>
+                <Label className="font-semibold">
+                  {t("fields.supplier")} *
+                </Label>
                 <Select
                   value={proveedorId}
                   onValueChange={handleProveedorChange}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona el proveedor" />
+                    <SelectValue placeholder={t("placeholders.supplier")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Proveedor</SelectLabel>
+                      <SelectLabel>{t("groups.supplier")}</SelectLabel>
                       {proveedores?.map((prov) => (
                         <SelectItem value={prov.id} key={prov.id}>
                           {prov.nombre_legal} - {prov.nit_rtn}
@@ -448,13 +454,18 @@ const FormCompraProductos = ({
               </div>
 
               <div className="space-y-2">
-                <Label className="font-semibold">Número de Factura *</Label>
+                <Label className="font-semibold">
+                  {t("fields.invoiceNumber")} *
+                </Label>
                 <Input
                   type="text"
-                  placeholder="Ej: FAC-00123"
+                  placeholder={t("placeholders.invoiceNumber")}
                   {...register("numero_factura", {
-                    required: "El número de factura es obligatorio",
-                    minLength: { value: 3, message: "Mínimo 3 caracteres" },
+                    required: t("validation.invoiceNumberRequired"),
+                    minLength: {
+                      value: 3,
+                      message: t("validation.invoiceNumberMin"),
+                    },
                   })}
                 />
                 {errors.numero_factura && (
@@ -465,12 +476,15 @@ const FormCompraProductos = ({
               </div>
 
               <div className="space-y-2">
-                <Label className="font-semibold">Tipo de Pago *</Label>
+                <Label className="font-semibold">
+                  {t("fields.paymentType")} *
+                </Label>
                 <Input
                   type="text"
                   readOnly
                   value={
-                    getTipoPagoLabel(tipoPago) || "Seleccione un proveedor"
+                    getTipoPagoLabel(tipoPago) ||
+                    t("placeholders.selectSupplierFirst")
                   }
                   className="bg-gray-100 cursor-not-allowed"
                 />
@@ -481,7 +495,7 @@ const FormCompraProductos = ({
                 )}
                 {proveedorSeleccionado?.tipo_pago_default && tipoPago && (
                   <p className="text-sm text-green-600">
-                    Tipo de pago por defecto del proveedor
+                    {t("helpers.defaultPaymentType")}
                   </p>
                 )}
               </div>
@@ -494,30 +508,37 @@ const FormCompraProductos = ({
             <div className="flex justify-center p-4">
               <Alert variant="destructive" className="max-w-md">
                 <AlertCircleIcon />
-                <AlertTitle>Proveedor</AlertTitle>
+                <AlertTitle>{t("alerts.supplierTitle")}</AlertTitle>
                 <AlertDescription>
-                  Selecciona un proveedor para poder ingresar productos
+                  {t("alerts.supplierDescription")}
                 </AlertDescription>
               </Alert>
             </div>
           )}
+
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-lg">Productos de la Compra</CardTitle>
+              <CardTitle className="text-lg">
+                {t("sections.products")}
+              </CardTitle>
               {proveedorSeleccionado && proveedorSeleccionado.tipo_escala && (
                 <div className="flex gap-2 mt-2">
                   <Badge
                     variant="outline"
                     className="bg-blue-100 text-blue-700"
                   >
-                    Escala: {proveedorSeleccionado.tipo_escala}
+                    {t("helpers.scale", {
+                      scale: proveedorSeleccionado.tipo_escala,
+                    })}
                   </Badge>
                   {proveedorSeleccionado?.tipo_pago_default === "CREDITO" && (
                     <Badge
                       variant="outline"
                       className="bg-green-100 text-green-700"
                     >
-                      Plazo: {proveedorSeleccionado.plazo || 30} días
+                      {t("helpers.term", {
+                        days: proveedorSeleccionado.plazo || 30,
+                      })}
                     </Badge>
                   )}
                 </div>
@@ -539,7 +560,7 @@ const FormCompraProductos = ({
               className="flex items-center gap-2"
             >
               <Plus size={18} />
-              Agregar Producto
+              {t("buttons.addProduct")}
             </Button>
           </CardHeader>
           <CardContent>
@@ -547,10 +568,10 @@ const FormCompraProductos = ({
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <Package className="h-12 w-12 text-gray-400 mb-3" />
                 <h3 className="text-lg font-semibold text-gray-600">
-                  No hay productos agregados
+                  {t("emptyState.title")}
                 </h3>
                 <p className="text-sm text-gray-500 mt-1">
-                  Comienza agregando productos a tu compra
+                  {t("emptyState.description")}
                 </p>
                 <Button
                   type="button"
@@ -569,7 +590,7 @@ const FormCompraProductos = ({
                   className="mt-4"
                 >
                   <Plus size={16} className="mr-2" />
-                  Agregar primer producto
+                  {t("buttons.addFirstProduct")}
                 </Button>
               </div>
             ) : (
@@ -604,7 +625,7 @@ const FormCompraProductos = ({
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <Badge variant="secondary">
-                              Producto #{index + 1}
+                              {t("productCard.title", { index: index + 1 })}
                             </Badge>
                             {productoSeleccionado && (
                               <Badge variant="outline">
@@ -621,14 +642,16 @@ const FormCompraProductos = ({
                               className="text-red-500 hover:text-red-700"
                             >
                               <Trash2 size={16} className="mr-1" />
-                              Eliminar
+                              {t("buttons.remove")}
                             </Button>
                           )}
                         </div>
                       </CardHeader>
                       <CardContent className="space-y-4">
                         <div className="space-y-2">
-                          <Label className="font-semibold">Producto *</Label>
+                          <Label className="font-semibold">
+                            {t("productCard.product")} *
+                          </Label>
                           <div className="flex gap-2">
                             <div className="flex-1">
                               <Select
@@ -640,14 +663,20 @@ const FormCompraProductos = ({
                                 }
                               >
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Seleccionar producto" />
+                                  <SelectValue
+                                    placeholder={t(
+                                      "placeholders.selectProduct",
+                                    )}
+                                  />
                                 </SelectTrigger>
                                 <SelectContent>
                                   <div className="p-2 border-b">
                                     <div className="relative">
                                       <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                       <Input
-                                        placeholder="Buscar producto..."
+                                        placeholder={t(
+                                          "placeholders.searchProduct",
+                                        )}
                                         className="pl-8"
                                         value={searchTerm}
                                         onChange={(e) =>
@@ -660,7 +689,7 @@ const FormCompraProductos = ({
                                   <ScrollArea className="h-64">
                                     <SelectGroup>
                                       <SelectLabel>
-                                        Productos Disponibles
+                                        {t("groups.availableProducts")}
                                       </SelectLabel>
                                       {productosDisponibles
                                         .filter(
@@ -687,7 +716,9 @@ const FormCompraProductos = ({
                                                 {prod.nombre}
                                               </span>
                                               <span className="text-xs text-gray-500">
-                                                Código: {prod.codigo}
+                                                {t("productInfo.codeLabel", {
+                                                  code: prod.codigo,
+                                                })}
                                               </span>
                                             </div>
                                           </SelectItem>
@@ -702,7 +733,7 @@ const FormCompraProductos = ({
                               variant="outline"
                               size="icon"
                               onClick={() => openProductSelector(index)}
-                              title="Buscar producto"
+                              title={t("tooltips.searchProduct")}
                             >
                               <Search size={16} />
                             </Button>
@@ -717,14 +748,18 @@ const FormCompraProductos = ({
                         {productoSeleccionado && (
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-3 bg-blue-50 rounded-lg">
                             <div>
-                              <p className="text-xs text-gray-500">Código</p>
+                              <p className="text-xs text-gray-500">
+                                {t("productInfo.code")}
+                              </p>
                               <p className="text-sm font-medium">
                                 {productoSeleccionado.codigo}
                               </p>
                             </div>
                             {productoSeleccionado.marca && (
                               <div>
-                                <p className="text-xs text-gray-500">Marca</p>
+                                <p className="text-xs text-gray-500">
+                                  {t("productInfo.brand")}
+                                </p>
                                 <p className="text-sm">
                                   {productoSeleccionado.marca.nombre}
                                 </p>
@@ -733,7 +768,7 @@ const FormCompraProductos = ({
                             {productoSeleccionado.categoria && (
                               <div>
                                 <p className="text-xs text-gray-500">
-                                  Categoría
+                                  {t("productInfo.category")}
                                 </p>
                                 <p className="text-sm">
                                   {productoSeleccionado.categoria.nombre}
@@ -741,7 +776,9 @@ const FormCompraProductos = ({
                               </div>
                             )}
                             <div>
-                              <p className="text-xs text-gray-500">Impuesto</p>
+                              <p className="text-xs text-gray-500">
+                                {t("productInfo.tax")}
+                              </p>
                               <p className="text-sm">
                                 {productoSeleccionado.tax?.porcentaje || 0}%
                               </p>
@@ -751,7 +788,9 @@ const FormCompraProductos = ({
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                           <div className="space-y-2">
-                            <Label className="font-semibold">Cantidad *</Label>
+                            <Label className="font-semibold">
+                              {t("productCard.quantity")} *
+                            </Label>
                             <Select
                               value={
                                 productosWatch?.[index]?.cantidad?.toString() ||
@@ -794,11 +833,15 @@ const FormCompraProductos = ({
                               }}
                             >
                               <SelectTrigger>
-                                <SelectValue placeholder="Seleccionar" />
+                                <SelectValue
+                                  placeholder={t("placeholders.select")}
+                                />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectGroup>
-                                  <SelectLabel>Cantidades</SelectLabel>
+                                  <SelectLabel>
+                                    {t("groups.quantities")}
+                                  </SelectLabel>
                                   {proveedorSeleccionado?.tipo_escala ===
                                     "ESCALA" &&
                                     escalas?.map((escala) => (
@@ -806,8 +849,10 @@ const FormCompraProductos = ({
                                         value={escala.cantidad_comprada.toString()}
                                         key={escala.id}
                                       >
-                                        {escala.cantidad_comprada} unidades →{" "}
-                                        {escala.bonificacion} bonus
+                                        {t("helpers.scaleItem", {
+                                          quantity: escala.cantidad_comprada,
+                                          bonus: escala.bonificacion,
+                                        })}
                                       </SelectItem>
                                     ))}
                                   {proveedorSeleccionado?.tipo_escala ===
@@ -817,8 +862,10 @@ const FormCompraProductos = ({
                                         value={desc.cantidad_comprada.toString()}
                                         key={desc.id}
                                       >
-                                        {desc.cantidad_comprada} unidades →{" "}
-                                        {desc.descuentos}% descuento
+                                        {t("helpers.discountItem", {
+                                          quantity: desc.cantidad_comprada,
+                                          discount: desc.descuentos,
+                                        })}
                                       </SelectItem>
                                     ))}
                                 </SelectGroup>
@@ -828,7 +875,7 @@ const FormCompraProductos = ({
 
                           <div className="space-y-2">
                             <Label className="font-semibold">
-                              Costo Unitario
+                              {t("productCard.unitCost")}
                             </Label>
                             <Input
                               type="number"
@@ -839,14 +886,19 @@ const FormCompraProductos = ({
                                 `productos.${index}.costoUnitario` as const,
                                 {
                                   valueAsNumber: true,
-                                  min: { value: 0, message: "Mínimo 0" },
+                                  min: {
+                                    value: 0,
+                                    message: t("validation.minZero"),
+                                  },
                                 },
                               )}
                             />
                           </div>
 
                           <div className="space-y-2">
-                            <Label className="font-semibold">Descuento %</Label>
+                            <Label className="font-semibold">
+                              {t("productCard.discount")}
+                            </Label>
                             <Input
                               type="number"
                               step="0.01"
@@ -864,7 +916,7 @@ const FormCompraProductos = ({
 
                           <div className="space-y-2">
                             <Label className="font-semibold">
-                              Bonificación
+                              {t("productCard.bonus")}
                             </Label>
                             <Input
                               type="number"
@@ -880,7 +932,7 @@ const FormCompraProductos = ({
                           </div>
 
                           <div className="space-y-1">
-                            <Label>Impuesto %</Label>
+                            <Label>{t("productCard.taxPercent")}</Label>
                             <Select
                               value={productosWatch?.[
                                 index
@@ -890,11 +942,13 @@ const FormCompraProductos = ({
                               }
                             >
                               <SelectTrigger>
-                                <SelectValue placeholder="Seleccionar" />
+                                <SelectValue
+                                  placeholder={t("placeholders.select")}
+                                />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectGroup>
-                                  <SelectLabel>Impuesto</SelectLabel>
+                                  <SelectLabel>{t("groups.tax")}</SelectLabel>
                                   {impuestos?.map((imp) => (
                                     <SelectItem
                                       value={String(parseFloat(imp.porcentaje))}
@@ -938,7 +992,7 @@ const FormCompraProductos = ({
 
         <div className="flex justify-end pt-4 gap-4">
           <Button type="button" variant="outline" onClick={() => onSuccess()}>
-            Cancelar
+            {t("buttons.cancel")}
           </Button>
           <Button
             type="submit"
@@ -946,14 +1000,14 @@ const FormCompraProductos = ({
             disabled={!isFormValid() || crearCompraMutation.isPending}
           >
             {crearCompraMutation.isPending
-              ? "Procesando..."
-              : "Ingresar Compra"}
+              ? t("buttons.processing")
+              : t("buttons.submitPurchase")}
           </Button>
         </div>
       </form>
 
       <Modal
-        title="Seleccionar Producto"
+        title={t("modals.selectProductTitle")}
         open={isProductDialogOpen}
         onOpenChange={setIsProductDialogOpen}
         size="3xl"
@@ -964,7 +1018,7 @@ const FormCompraProductos = ({
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
-                placeholder="Buscar por nombre o código..."
+                placeholder={t("placeholders.searchByNameOrCode")}
                 className="pl-9"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -976,11 +1030,12 @@ const FormCompraProductos = ({
               onValueChange={setSelectedCategory}
             >
               <SelectTrigger className="w-40">
-                <SelectValue placeholder="Categoría" />
+                <SelectValue placeholder={t("placeholders.category")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todas las categorías</SelectItem>
-
+                <SelectItem value="all">
+                  {t("filters.allCategories")}
+                </SelectItem>
                 {categories.map((cat) => (
                   <SelectItem key={cat} value={cat}>
                     {cat}
@@ -1014,18 +1069,22 @@ const FormCompraProductos = ({
                     </h4>
 
                     <p className="text-xs text-muted-foreground mt-1">
-                      Código: {product.codigo}
+                      {t("productInfo.codeLabel", { code: product.codigo })}
                     </p>
 
                     {product.marca && (
                       <p className="text-xs text-muted-foreground">
-                        Marca: {product.marca.nombre}
+                        {t("productInfo.brandLabel", {
+                          brand: product.marca.nombre,
+                        })}
                       </p>
                     )}
 
                     {product.categoria && (
                       <p className="text-xs text-muted-foreground">
-                        Categoría: {product.categoria.nombre}
+                        {t("productInfo.categoryLabel", {
+                          category: product.categoria.nombre,
+                        })}
                       </p>
                     )}
                   </CardContent>
@@ -1035,7 +1094,7 @@ const FormCompraProductos = ({
 
             {filteredProducts.length === 0 && (
               <div className="py-8 text-center text-muted-foreground">
-                No se encontraron productos
+                {t("emptyState.noProductsFound")}
               </div>
             )}
           </ScrollArea>
@@ -1043,7 +1102,7 @@ const FormCompraProductos = ({
       </Modal>
 
       <Modal
-        title="Confirmación de Compra"
+        title={t("modals.confirmPurchaseTitle")}
         open={isConfirmCompra}
         onOpenChange={setIsConfirmCompra}
         size="4xl"
@@ -1067,7 +1126,7 @@ const FormCompraProductos = ({
             onClick={() => setIsConfirmCompra(false)}
             disabled={crearCompraMutation.isPending}
           >
-            Revisar Compra
+            {t("buttons.reviewPurchase")}
           </Button>
           <Button
             onClick={confirmCompra}
@@ -1075,8 +1134,8 @@ const FormCompraProductos = ({
             className="bg-green-600 hover:bg-green-700"
           >
             {crearCompraMutation.isPending
-              ? "Procesando..."
-              : "Confirmar Compra"}
+              ? t("buttons.processing")
+              : t("buttons.confirmPurchase")}
           </Button>
         </div>
       </Modal>

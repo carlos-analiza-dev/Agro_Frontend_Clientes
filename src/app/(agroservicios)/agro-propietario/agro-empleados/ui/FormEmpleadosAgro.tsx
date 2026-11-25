@@ -31,6 +31,7 @@ import {
   validateEmail,
   validateIdentification,
 } from "@/helpers/funciones/validaciones-form/valid";
+import { useTranslations } from "next-intl";
 
 interface Props {
   onSuccess?: () => void;
@@ -47,23 +48,30 @@ const FormEmpleadosAgro = ({
   paisId = "",
   mostrarLight,
 }: Props) => {
+  const t = useTranslations("agroEmpleadosPage");
   const queryClient = useQueryClient();
+
   const [departamentoSeleccionado, setDepartamentoSeleccionado] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [codigoPais, setCodigoPais] = useState("");
   const [prefijoNumber, setPrefijoNumber] = useState("");
+
   const { data: departamentos, isLoading: cargandoDepartamentos } =
     useGetDepartamentosByPais(paisId || "");
+
   const { data: municipios, isLoading: cargandoMunicipios } =
     useGetMunicipiosActivosByDepto(departamentoSeleccionado);
+
   const { data: roles, isLoading: cargandoRoles } = useGetRolesAgro({
     mostrarLight,
   });
+
   const { data: sucursales, isLoading: cargandoSucursales } =
     useGetSucursalesAgro({
       limit: 100,
       offset: 0,
     });
+
   const { data: pais } = usePaisesById(paisId);
 
   const {
@@ -109,6 +117,7 @@ const FormEmpleadosAgro = ({
         municipioId: editEmpleado.municipio.id,
         sucursalId: editEmpleado.sucursal?.id || "",
       });
+
       setDepartamentoSeleccionado(editEmpleado.departamento.id);
     } else {
       setValue("paisId", paisId);
@@ -120,7 +129,7 @@ const FormEmpleadosAgro = ({
       ingresarAgroEmpleado(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["empleados-agro"] });
-      toast.success("Empleado creado exitosamente");
+      toast.success(t("form.messages.created"));
       reset();
       if (onSuccess) onSuccess();
     },
@@ -131,10 +140,11 @@ const FormEmpleadosAgro = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear el empleado";
+            : t("form.messages.createError");
+
         toast.error(errorMessage);
       } else {
-        toast.error("Hubo un error al crear el empleado. Inténtalo de nuevo.");
+        toast.error(t("form.messages.createUnexpectedError"));
       }
     },
   });
@@ -144,7 +154,7 @@ const FormEmpleadosAgro = ({
       editarAgroEmpleado(editEmpleado?.id ?? "", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["empleados-agro"] });
-      toast.success("Empleado actualizado exitosamente");
+      toast.success(t("form.messages.updated"));
       reset();
       if (onSuccess) onSuccess();
     },
@@ -155,12 +165,11 @@ const FormEmpleadosAgro = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar el empleado";
+            : t("form.messages.updateError");
+
         toast.error(errorMessage);
       } else {
-        toast.error(
-          "Hubo un error al actualizar el empleado. Inténtalo de nuevo.",
-        );
+        toast.error(t("form.messages.updateUnexpectedError"));
       }
     },
   });
@@ -174,9 +183,11 @@ const FormEmpleadosAgro = ({
 
     if (isEdit && editEmpleado) {
       const payload = { ...data };
+
       if (!payload.password) {
         delete payload.password;
       }
+
       mutationEdit.mutate(payload);
     } else {
       mutation.mutate(data);
@@ -189,16 +200,16 @@ const FormEmpleadosAgro = ({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-1">
-          <Label className="font-bold">Nombre Completo*</Label>
+          <Label className="font-bold">{t("form.fields.fullName")}*</Label>
           <Input
             {...register("nombre", {
-              required: "El campo nombre es requerido",
+              required: t("form.validation.nameRequired"),
               minLength: {
                 value: 3,
-                message: "El nombre debe tener al menos 3 caracteres",
+                message: t("form.validation.nameMinLength"),
               },
             })}
-            placeholder="Escriba el nombre completo del empleado"
+            placeholder={t("form.placeholders.fullName")}
           />
           {errors.nombre && (
             <p className="text-sm font-medium text-red-500">
@@ -208,17 +219,19 @@ const FormEmpleadosAgro = ({
         </div>
 
         <div className="space-y-1">
-          <Label className="font-bold">Identificación*</Label>
+          <Label className="font-bold">
+            {t("form.fields.identification")}*
+          </Label>
           <Input
             {...register("identificacion", {
-              required: "El campo identificación es requerido",
+              required: t("form.validation.identificationRequired"),
               validate: (value) => validateIdentification(value, codigoPais),
             })}
             placeholder={
               codigoPais
                 ? ID_REGEX[codigoPais as keyof typeof ID_REGEX]?.example ||
-                  "Número de documento"
-                : "Número de documento"
+                  t("form.placeholders.documentNumber")
+                : t("form.placeholders.documentNumber")
             }
             disabled={isEdit}
           />
@@ -235,16 +248,16 @@ const FormEmpleadosAgro = ({
           )}
           {isEdit && (
             <p className="text-xs text-muted-foreground">
-              La identificación no se puede modificar
+              {t("form.helper.identificationReadonly")}
             </p>
           )}
         </div>
 
         <div className="space-y-1">
-          <Label className="font-bold">Email*</Label>
+          <Label className="font-bold">{t("form.fields.email")}*</Label>
           <Input
             {...register("email", {
-              required: "El campo email es requerido",
+              required: t("form.validation.emailRequired"),
               validate: validateEmail,
             })}
             type="email"
@@ -258,19 +271,19 @@ const FormEmpleadosAgro = ({
           )}
           {isEdit && (
             <p className="text-xs text-muted-foreground">
-              El email no se puede modificar
+              {t("form.helper.emailReadonly")}
             </p>
           )}
         </div>
 
         <div className="space-y-1">
-          <Label className="font-bold">Teléfono*</Label>
+          <Label className="font-bold">{t("form.fields.phone")}*</Label>
           <Input
             {...register("telefono", {
-              required: "El campo teléfono es requerido",
+              required: t("form.validation.phoneRequired"),
               pattern: {
                 value: /^\d{4}-\d{4}$/,
-                message: "El formato debe ser xxxx-xxxx",
+                message: t("form.validation.phoneFormat"),
               },
             })}
             placeholder={`${prefijoNumber || "+XXX"} 0000-0000`}
@@ -284,23 +297,35 @@ const FormEmpleadosAgro = ({
 
         <div className="space-y-1">
           <Label className="font-bold">
-            {isEdit ? "Nueva Contraseña (opcional)" : "Contraseña*"}
+            {isEdit ? t("form.fields.newPassword") : t("form.fields.password")}
           </Label>
           <div className="relative">
             <Input
               {...register("password", {
-                required: !isEdit ? "El campo contraseña es requerido" : false,
+                required: !isEdit
+                  ? t("form.validation.passwordRequired")
+                  : false,
               })}
               type={showPassword ? "text" : "password"}
               placeholder={
                 isEdit
-                  ? "Dejar en blanco para mantener la actual"
-                  : "Ingrese una contraseña"
+                  ? t("form.placeholders.passwordEdit")
+                  : t("form.placeholders.password")
               }
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
+              aria-label={
+                showPassword
+                  ? t("form.actions.hidePassword")
+                  : t("form.actions.showPassword")
+              }
+              title={
+                showPassword
+                  ? t("form.actions.hidePassword")
+                  : t("form.actions.showPassword")
+              }
               className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -313,23 +338,23 @@ const FormEmpleadosAgro = ({
           )}
           {isEdit && (
             <p className="text-xs text-muted-foreground">
-              Dejar en blanco para mantener la contraseña actual
+              {t("form.helper.passwordEdit")}
             </p>
           )}
         </div>
 
         <div className="space-y-1">
-          <Label className="font-bold">Sexo*</Label>
+          <Label className="font-bold">{t("form.fields.gender")}*</Label>
           <Select
             onValueChange={(value) => setValue("sexo", value)}
             defaultValue={editEmpleado?.sexo}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Seleccione el sexo" />
+              <SelectValue placeholder={t("form.placeholders.gender")} />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Sexo</SelectLabel>
+                <SelectLabel>{t("form.selects.gender")}</SelectLabel>
                 {sexos.map((sexo) => (
                   <SelectItem key={sexo.id} value={sexo.value}>
                     {sexo.sexo}
@@ -346,16 +371,16 @@ const FormEmpleadosAgro = ({
         </div>
 
         <div className="space-y-1 md:col-span-2">
-          <Label className="font-bold">Dirección*</Label>
+          <Label className="font-bold">{t("form.fields.address")}*</Label>
           <Input
             {...register("direccion", {
-              required: "El campo dirección es requerido",
+              required: t("form.validation.addressRequired"),
               minLength: {
                 value: 10,
-                message: "La dirección debe tener al menos 10 caracteres",
+                message: t("form.validation.addressMinLength"),
               },
             })}
-            placeholder="Dirección completa del empleado"
+            placeholder={t("form.placeholders.address")}
           />
           {errors.direccion && (
             <p className="text-sm font-medium text-red-500">
@@ -365,7 +390,7 @@ const FormEmpleadosAgro = ({
         </div>
 
         <div className="space-y-1">
-          <Label className="font-bold">Departamento*</Label>
+          <Label className="font-bold">{t("form.fields.department")}*</Label>
           <Select
             onValueChange={(value) => {
               setValue("departamentoId", value);
@@ -377,14 +402,14 @@ const FormEmpleadosAgro = ({
           >
             <SelectTrigger>
               {cargandoDepartamentos ? (
-                <SelectValue placeholder="Cargando..." />
+                <SelectValue placeholder={t("form.selects.loading")} />
               ) : (
-                <SelectValue placeholder="Selecciona un departamento" />
+                <SelectValue placeholder={t("form.placeholders.department")} />
               )}
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Departamentos</SelectLabel>
+                <SelectLabel>{t("form.selects.departments")}</SelectLabel>
                 {departamentos?.data?.departamentos?.map((depto) => (
                   <SelectItem key={depto.id} value={depto.id}>
                     {depto.nombre}
@@ -401,7 +426,7 @@ const FormEmpleadosAgro = ({
         </div>
 
         <div className="space-y-1">
-          <Label className="font-bold">Municipio*</Label>
+          <Label className="font-bold">{t("form.fields.municipality")}*</Label>
           <Select
             onValueChange={(value) => setValue("municipioId", value)}
             defaultValue={editEmpleado?.municipio.id}
@@ -409,20 +434,20 @@ const FormEmpleadosAgro = ({
           >
             <SelectTrigger>
               {cargandoMunicipios ? (
-                <SelectValue placeholder="Cargando..." />
+                <SelectValue placeholder={t("form.selects.loading")} />
               ) : (
                 <SelectValue
                   placeholder={
                     departamentoId
-                      ? "Selecciona un municipio"
-                      : "Primero selecciona un departamento"
+                      ? t("form.placeholders.municipality")
+                      : t("form.placeholders.selectDepartmentFirst")
                   }
                 />
               )}
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Municipios</SelectLabel>
+                <SelectLabel>{t("form.selects.municipalities")}</SelectLabel>
                 {municipios?.data?.map((mun) => (
                   <SelectItem key={mun.id} value={mun.id}>
                     {mun.nombre}
@@ -439,7 +464,7 @@ const FormEmpleadosAgro = ({
         </div>
 
         <div className="space-y-1">
-          <Label className="font-bold">Rol*</Label>
+          <Label className="font-bold">{t("form.fields.role")}*</Label>
           <Select
             onValueChange={(value) => setValue("roleId", value)}
             defaultValue={editEmpleado?.role.id}
@@ -447,14 +472,14 @@ const FormEmpleadosAgro = ({
           >
             <SelectTrigger>
               {cargandoRoles ? (
-                <SelectValue placeholder="Cargando..." />
+                <SelectValue placeholder={t("form.selects.loading")} />
               ) : (
-                <SelectValue placeholder="Selecciona un rol" />
+                <SelectValue placeholder={t("form.placeholders.role")} />
               )}
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Roles</SelectLabel>
+                <SelectLabel>{t("form.selects.roles")}</SelectLabel>
                 {roles?.map((rol) => (
                   <SelectItem key={rol.id} value={rol.id}>
                     {rol.name}
@@ -471,7 +496,7 @@ const FormEmpleadosAgro = ({
         </div>
 
         <div className="space-y-1">
-          <Label className="font-bold">Sucursal*</Label>
+          <Label className="font-bold">{t("form.fields.branch")}*</Label>
           <Select
             onValueChange={(value) => setValue("sucursalId", value)}
             defaultValue={editEmpleado?.sucursal?.id}
@@ -479,14 +504,14 @@ const FormEmpleadosAgro = ({
           >
             <SelectTrigger>
               {cargandoSucursales ? (
-                <SelectValue placeholder="Cargando..." />
+                <SelectValue placeholder={t("form.selects.loading")} />
               ) : (
-                <SelectValue placeholder="Selecciona una sucursal" />
+                <SelectValue placeholder={t("form.placeholders.branch")} />
               )}
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Sucursales</SelectLabel>
+                <SelectLabel>{t("form.selects.branches")}</SelectLabel>
                 {sucursales?.sucursales?.map((sucursal) => (
                   <SelectItem key={sucursal.id} value={sucursal.id}>
                     {sucursal.nombre}
@@ -509,8 +534,9 @@ const FormEmpleadosAgro = ({
           variant="outline"
           onClick={() => onSuccess && onSuccess()}
         >
-          Cancelar
+          {t("form.buttons.cancel")}
         </Button>
+
         <Button type="submit" disabled={isPending}>
           {isPending ? (
             <span className="flex items-center">
@@ -534,10 +560,14 @@ const FormEmpleadosAgro = ({
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 />
               </svg>
-              {isEdit ? "Actualizando..." : "Creando..."}
+              {isEdit ? t("form.buttons.updating") : t("form.buttons.creating")}
             </span>
           ) : (
-            <span>{isEdit ? "Actualizar Empleado" : "Crear Empleado"}</span>
+            <span>
+              {isEdit
+                ? t("form.buttons.updateEmployee")
+                : t("form.buttons.createEmployee")}
+            </span>
           )}
         </Button>
       </div>

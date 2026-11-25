@@ -16,6 +16,7 @@ import { useCartStore } from "@/providers/store/useCartStore";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 const RUTA_PERMITIDA_SIN_PERMISOS = "/agro-empleados/agro-servicios";
 
@@ -24,6 +25,8 @@ export default function EmpleadosAgroServiciosLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const t = useTranslations("empleadosAgroLayout");
+
   const { logout, empleado, token } = useAuthEmpleadoStore();
   const { cliente, token: token_cliente } = useAuthStore();
   const isCliente = !!cliente && !!token_cliente;
@@ -146,9 +149,9 @@ export default function EmpleadosAgroServiciosLayout({
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       router.push("/login-empleados");
-      toast.success("Sesión cerrada correctamente");
+      toast.success(t("messages.logoutSuccess"));
     } catch (error) {
-      toast.error("Ocurrió un error al cerrar la sesión");
+      toast.error(t("messages.logoutError"));
       router.push("/login-empleados");
     } finally {
       setLoading(false);
@@ -162,7 +165,7 @@ export default function EmpleadosAgroServiciosLayout({
       await logout();
       router.push("/login-empleados");
     } catch (error) {
-      toast.error("Error al cerrar sesión expirada");
+      toast.error(t("messages.expiredSessionError"));
     } finally {
       setLoading(false);
     }

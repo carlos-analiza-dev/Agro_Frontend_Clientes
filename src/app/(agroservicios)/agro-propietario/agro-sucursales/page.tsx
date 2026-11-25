@@ -1,4 +1,5 @@
 "use client";
+
 import ButtonAdd from "@/components/generics/ButtonAdd";
 import TitlePage from "@/components/generics/TitlePage";
 import useGetSucursalesAgro from "@/hooks/agroservicios/sucursales/useGetSucursalesAgro";
@@ -12,8 +13,10 @@ import Modal from "@/components/generics/Modal";
 import FormAddSucursalAgro from "./ui/FormAddSucursalAgro";
 import { SucursaleAgro } from "@/api/agroservicio/agro-sucursales/interface/response-sucursales-agro.interface";
 import { useAuthStore } from "@/providers/store/useAuthStore";
+import { useTranslations } from "next-intl";
 
 const AgroSucursalesPage = () => {
+  const t = useTranslations("agroSucursalesPage");
   const { cliente } = useAuthStore();
   const paisId = cliente?.pais.id ?? "";
   const [openAddSucursal, setOpenAddSucursal] = useState(false);
@@ -51,9 +54,9 @@ const AgroSucursalesPage = () => {
   return (
     <div className="container mx-auto p-4 md:p-6 space-y-6">
       <div className="md:flex justify-between items-center gap-4">
-        <TitlePage Icon={House} title="Control de Sucursales" />
+        <TitlePage Icon={House} title={t("title")} />
         <ButtonAdd
-          title="Agregar Sucursal"
+          title={t("buttons.addBranch")}
           Icon={House}
           action={() => setOpenAddSucursal(true)}
           className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
@@ -78,7 +81,7 @@ const AgroSucursalesPage = () => {
       {!isLoading && totalItems > 0 && (
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-2">
           <div className="text-sm text-gray-500">
-            Mostrando{" "}
+            {t("pagination.showing")}{" "}
             <span className="font-medium">
               {Math.min(offset + 1, totalItems)}
             </span>{" "}
@@ -86,7 +89,9 @@ const AgroSucursalesPage = () => {
             <span className="font-medium">
               {Math.min(offset + limit, totalItems)}
             </span>{" "}
-            de <span className="font-medium">{totalItems}</span> sucursales
+            {t("pagination.of")}{" "}
+            <span className="font-medium">{totalItems}</span>{" "}
+            {t("pagination.branches")}
           </div>
           <Paginacion
             currentPage={currentPage}
@@ -99,7 +104,7 @@ const AgroSucursalesPage = () => {
       {!isLoading && currentData.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
           <StatCard
-            title="Total sucursales"
+            title={t("statistics.totalBranches")}
             value={totalItems}
             icon={Building2}
             gradientFrom="from-blue-50"
@@ -109,7 +114,7 @@ const AgroSucursalesPage = () => {
           />
 
           <StatCard
-            title="Países"
+            title={t("statistics.countries")}
             value={new Set(currentData.map((s) => s.pais.nombre)).size}
             icon={Globe}
             gradientFrom="from-green-50"
@@ -119,7 +124,7 @@ const AgroSucursalesPage = () => {
           />
 
           <StatCard
-            title="Con gerente asignado"
+            title={t("statistics.withManager")}
             value={currentData.filter((s) => s.gerente).length}
             icon={User}
             gradientFrom="from-purple-50"
@@ -129,11 +134,12 @@ const AgroSucursalesPage = () => {
           />
         </div>
       )}
+
       <Modal
         open={openAddSucursal}
         onOpenChange={setOpenAddSucursal}
-        title="Agregar Nueva Sucursal"
-        description="Aqui puede agregar sucursales de tu agroservicio"
+        title={t("modal.title")}
+        description={t("modal.description")}
         size="2xl"
         height="auto"
         showCloseButton={false}

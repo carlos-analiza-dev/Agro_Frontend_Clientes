@@ -1,3 +1,5 @@
+"use client";
+
 import { uploadImagesProducto } from "@/api/agroservicio/productos/accions/subir-imagenes";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,6 +11,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { Trash2, Upload } from "lucide-react";
 import { useState, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "react-toastify";
 
 interface ProductImageUploadProps {
@@ -26,6 +29,8 @@ export const ProductImageUpload = ({
   productoNombre,
   onSuccess,
 }: ProductImageUploadProps) => {
+  const t = useTranslations("productImageUpload");
+
   const [uploading, setUploading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
@@ -43,7 +48,7 @@ export const ProductImageUpload = ({
     );
 
     if (invalidFiles.length > 0) {
-      toast.error("Solo se permiten imágenes JPEG y PNG");
+      toast.error(t("messages.invalidFormat"));
       return;
     }
 
@@ -51,7 +56,7 @@ export const ProductImageUpload = ({
     const oversizedFiles = files.filter((file) => file.size > maxSize);
 
     if (oversizedFiles.length > 0) {
-      toast.error("Las imágenes no pueden superar los 1MB");
+      toast.error(t("messages.exceededSize"));
       return;
     }
 
@@ -62,7 +67,7 @@ export const ProductImageUpload = ({
 
   const handleUpload = async () => {
     if (selectedFiles.length === 0) {
-      toast.warning("Selecciona al menos una imagen");
+      toast.warning(t("messages.selectImage"));
       return;
     }
 
@@ -82,13 +87,13 @@ export const ProductImageUpload = ({
 
       await uploadImagesProducto(productoId, imagenesBase64);
 
-      toast.success(`Imágenes subidas exitosamente para ${productoNombre}`);
+      toast.success(t("messages.uploadSuccess", { product: productoNombre }));
       queryClient.invalidateQueries({ queryKey: ["agro-productos"] });
       resetState();
       onSuccess?.();
       onOpenChange(false);
     } catch (error) {
-      toast.error("Error al subir las imágenes");
+      toast.error(t("messages.uploadError"));
     } finally {
       setUploading(false);
     }
@@ -121,7 +126,7 @@ export const ProductImageUpload = ({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Subir imágenes para {productoNombre}</DialogTitle>
+          <DialogTitle>{t("title", { product: productoNombre })}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -146,14 +151,12 @@ export const ProductImageUpload = ({
                 <Upload className="h-8 w-8 text-primary" />
               </div>
               <div>
-                <p className="text-sm font-medium">
-                  Haz clic para seleccionar imágenes
-                </p>
+                <p className="text-sm font-medium">{t("selection.title")}</p>
                 <p className="text-xs text-gray-500 mt-1">
-                  Formatos: JPEG, PNG (máx. 1MB cada una)
+                  {t("selection.formats")}
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
-                  Puedes seleccionar múltiples imágenes
+                  {t("selection.multiple")}
                 </p>
               </div>
             </div>
@@ -162,14 +165,16 @@ export const ProductImageUpload = ({
           {previewImages.length > 0 && (
             <div className="space-y-2">
               <p className="text-sm font-medium">
-                {previewImages.length} imagen(es) seleccionada(s)
+                {t("selection.selectedCount", {
+                  count: previewImages.length,
+                })}
               </p>
               <div className="grid grid-cols-3 gap-2">
                 {previewImages.map((preview, idx) => (
                   <div key={idx} className="relative group">
                     <img
                       src={preview}
-                      alt={`Preview ${idx + 1}`}
+                      alt={t("selection.preview", { number: idx + 1 })}
                       className="w-full h-24 object-cover rounded-lg border"
                     />
                     <Button
@@ -194,7 +199,7 @@ export const ProductImageUpload = ({
             <div className="flex items-center justify-center gap-2 p-4 bg-primary/5 rounded-lg">
               <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent"></div>
               <span className="text-sm text-gray-600">
-                Subiendo imágenes...
+                {t("loading.uploadingImages")}
               </span>
             </div>
           )}
@@ -206,7 +211,7 @@ export const ProductImageUpload = ({
               onClick={handleClose}
               disabled={uploading}
             >
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
             <Button
               type="button"
@@ -216,13 +221,13 @@ export const ProductImageUpload = ({
               {uploading ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
-                  Subiendo...
+                  {t("buttons.uploading")}
                 </>
               ) : (
                 <>
                   <Upload className="h-4 w-4 mr-2" />
-                  Subir{" "}
-                  {selectedFiles.length > 0 && `(${selectedFiles.length})`}
+                  {t("buttons.upload")}
+                  {selectedFiles.length > 0 && ` (${selectedFiles.length})`}
                 </>
               )}
             </Button>

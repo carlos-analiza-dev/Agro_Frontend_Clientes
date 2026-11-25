@@ -1,4 +1,8 @@
+"use client";
+
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
+
 import {
   Dialog,
   DialogContent,
@@ -6,6 +10,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+
 import {
   Table,
   TableBody,
@@ -14,7 +19,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 import { Badge } from "@/components/ui/badge";
+
 import {
   Loader2,
   Package,
@@ -22,6 +29,7 @@ import {
   TrendingDown,
   Minus,
 } from "lucide-react";
+
 import useGetProductosFrecuentes from "@/hooks/agroservicios/clientes/useGetProductosFrecuentes";
 import { ClienteAgro } from "@/api/agroservicio/clientes/interfaces/response-clientes-ago.interface";
 import Paginacion from "@/components/generics/Paginacion";
@@ -40,6 +48,8 @@ const ModalProductosFrecuentes = ({
   cliente,
   simbolo,
 }: Props) => {
+  const t = useTranslations("agroClientesPage.productsFrequent");
+
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 5;
 
@@ -76,21 +86,21 @@ const ModalProductosFrecuentes = ({
       return (
         <Badge className="bg-green-100 text-green-700 hover:bg-green-200">
           <TrendingUp className="h-3 w-3 mr-1" />
-          Alta
+          {t("frequency.high")}
         </Badge>
       );
     } else if (frecuencia >= 1.5) {
       return (
         <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-200">
           <Minus className="h-3 w-3 mr-1" />
-          Media
+          {t("frequency.medium")}
         </Badge>
       );
     } else {
       return (
         <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200">
           <TrendingDown className="h-3 w-3 mr-1" />
-          Baja
+          {t("frequency.low")}
         </Badge>
       );
     }
@@ -102,24 +112,25 @@ const ModalProductosFrecuentes = ({
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold flex items-center gap-2">
             <Package className="h-6 w-6 text-blue-600" />
-            Productos más frecuentes
+            {t("title")}
           </DialogTitle>
+
           <DialogDescription>
             {cliente ? (
               <>
-                Cliente:{" "}
+                {t("client")}:{" "}
                 <span className="font-semibold text-gray-900">
                   {cliente.nombre}
                 </span>
                 {cliente.identificacion && (
                   <span className="text-gray-500">
                     {" "}
-                    | ID: {cliente.identificacion}
+                    | {t("identification")}: {cliente.identificacion}
                   </span>
                 )}
               </>
             ) : (
-              "Seleccione un cliente para ver sus productos frecuentes"
+              t("selectClient")
             )}
           </DialogDescription>
         </DialogHeader>
@@ -127,22 +138,18 @@ const ModalProductosFrecuentes = ({
         {isLoading ? (
           <div className="flex justify-center items-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-            <span className="ml-2 text-gray-600">Cargando productos...</span>
+            <span className="ml-2 text-gray-600">{t("loading")}</span>
           </div>
         ) : isError ? (
           <div className="text-center py-8 text-red-500">
-            <p>
-              No se encontraron productos frecuentes asociados a este cliente
-            </p>
+            <p>{t("error")}</p>
           </div>
         ) : productos.length === 0 ? (
           <div className="text-center py-12">
             <Package className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500">
-              Este cliente no tiene productos frecuentes
-            </p>
+            <p className="text-gray-500">{t("empty.title")}</p>
             <p className="text-sm text-gray-400 mt-1">
-              No se encontraron facturas procesadas para este cliente
+              {t("empty.description")}
             </p>
           </div>
         ) : (
@@ -150,27 +157,38 @@ const ModalProductosFrecuentes = ({
             {estadisticas && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-gray-50 p-4 rounded-lg mb-4">
                 <div>
-                  <p className="text-xs text-gray-500">Total Facturas</p>
+                  <p className="text-xs text-gray-500">
+                    {t("statistics.totalInvoices")}
+                  </p>
                   <p className="text-lg font-bold text-gray-800">
                     {estadisticas.total_facturas}
                   </p>
                 </div>
+
                 <div>
-                  <p className="text-xs text-gray-500">Total Gastado</p>
+                  <p className="text-xs text-gray-500">
+                    {t("statistics.totalSpent")}
+                  </p>
                   <p className="text-lg font-bold text-blue-600">
                     {simbolo}
                     {estadisticas.total_gastado.toFixed(2)}
                   </p>
                 </div>
+
                 <div>
-                  <p className="text-xs text-gray-500">Promedio por Factura</p>
+                  <p className="text-xs text-gray-500">
+                    {t("statistics.averagePerInvoice")}
+                  </p>
                   <p className="text-lg font-bold text-gray-800">
                     {simbolo}
                     {estadisticas.promedio_factura.toFixed(2)}
                   </p>
                 </div>
+
                 <div>
-                  <p className="text-xs text-gray-500">Productos Únicos</p>
+                  <p className="text-xs text-gray-500">
+                    {t("statistics.uniqueProducts")}
+                  </p>
                   <p className="text-lg font-bold text-gray-800">
                     {estadisticas.total_productos_unicos}
                   </p>
@@ -183,28 +201,29 @@ const ModalProductosFrecuentes = ({
                 <TableHeader>
                   <TableRow className="bg-gray-50 hover:bg-gray-50">
                     <TableHead className="font-semibold text-gray-700">
-                      Producto
+                      {t("columns.product")}
                     </TableHead>
                     <TableHead className="font-semibold text-gray-700 hidden md:table-cell">
-                      Código
+                      {t("columns.code")}
                     </TableHead>
                     <TableHead className="font-semibold text-gray-700 text-right">
-                      Precio
+                      {t("columns.price")}
                     </TableHead>
                     <TableHead className="font-semibold text-gray-700 text-center">
-                      Cantidad
+                      {t("columns.quantity")}
                     </TableHead>
                     <TableHead className="font-semibold text-gray-700 text-center hidden lg:table-cell">
-                      Facturas
+                      {t("columns.invoices")}
                     </TableHead>
                     <TableHead className="font-semibold text-gray-700 text-right hidden xl:table-cell">
-                      Total
+                      {t("columns.total")}
                     </TableHead>
                     <TableHead className="font-semibold text-gray-700 text-center">
-                      Frecuencia
+                      {t("columns.frequency")}
                     </TableHead>
                   </TableRow>
                 </TableHeader>
+
                 <TableBody>
                   {productos.map((producto) => (
                     <TableRow
@@ -217,34 +236,41 @@ const ModalProductosFrecuentes = ({
                             {producto.nombre}
                           </span>
                           <span className="text-xs text-gray-400 md:hidden">
-                            Cód: {producto.codigo || "N/A"}
+                            {t("labels.code")}: {producto.codigo || "N/A"}
                           </span>
                           <span className="text-xs text-gray-400 lg:hidden">
-                            {producto.estadisticas.total_facturas} facturas
+                            {producto.estadisticas.total_facturas}{" "}
+                            {t("labels.invoices")}
                           </span>
                         </div>
                       </TableCell>
+
                       <TableCell className="hidden md:table-cell font-mono text-sm">
                         {producto.codigo || "N/A"}
                       </TableCell>
+
                       <TableCell className="text-right font-medium">
                         {simbolo}
                         {producto.precio_actual.toFixed(2)}
                       </TableCell>
+
                       <TableCell className="text-center">
                         <Badge variant="outline" className="font-semibold">
                           {producto.estadisticas.total_comprado}
                         </Badge>
                       </TableCell>
+
                       <TableCell className="text-center hidden lg:table-cell">
                         {producto.estadisticas.total_facturas}
                       </TableCell>
+
                       <TableCell className="text-right hidden xl:table-cell">
                         <span className="font-medium text-blue-600">
                           {simbolo}
                           {producto.estadisticas.total_monto.toFixed(2)}
                         </span>
                       </TableCell>
+
                       <TableCell className="text-center">
                         <div className="flex flex-col items-center gap-1">
                           {getTendenciaBadge(
@@ -252,7 +278,7 @@ const ModalProductosFrecuentes = ({
                           )}
                           <span className="text-xs text-gray-400">
                             {producto.estadisticas.frecuencia_compra.toFixed(2)}{" "}
-                            por factura
+                            {t("labels.perInvoice")}
                           </span>
                         </div>
                       </TableCell>
@@ -265,19 +291,26 @@ const ModalProductosFrecuentes = ({
             {productos.length > 0 && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs text-gray-500 bg-gray-50 p-3 rounded-lg">
                 <div>
-                  <span className="font-medium">Primera compra:</span>{" "}
+                  <span className="font-medium">
+                    {t("dates.firstPurchase")}:
+                  </span>{" "}
                   {formatDateLocal(productos[0]?.estadisticas?.primera_compra)}
                 </div>
                 <div>
-                  <span className="font-medium">Última compra:</span>{" "}
+                  <span className="font-medium">
+                    {t("dates.lastPurchase")}:
+                  </span>{" "}
                   {formatDateLocal(productos[0]?.estadisticas?.ultima_compra)}
                 </div>
                 <div>
-                  <span className="font-medium">Total productos:</span> {total}
+                  <span className="font-medium">
+                    {t("labels.totalProducts")}:
+                  </span>{" "}
+                  {total}
                 </div>
                 <div>
-                  <span className="font-medium">Mostrando:</span>{" "}
-                  {productos.length} de {total}
+                  <span className="font-medium">{t("labels.showing")}:</span>{" "}
+                  {productos.length} {t("labels.of")} {total}
                 </div>
               </div>
             )}

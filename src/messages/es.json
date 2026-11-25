@@ -9942,6 +9942,3138 @@
       "logoutError": "Ocurrió un error al cerrar la sesión",
       "expiredSessionError": "Error al cerrar la sesión expirada"
     }
+  },
+  "agroServiciosLayout": {
+    "messages": {
+      "noAccess": "No tienes acceso a Agro Servicios",
+      "logoutSuccess": "Sesión cerrada correctamente",
+      "logoutError": "Ocurrió un error al cerrar la sesión",
+      "expiredSessionError": "Error al cerrar sesión expirada"
+    }
+  },
+  "agroservicioDashboard": {
+    "title": "Dashboard Agroservicio",
+    "loading": "Cargando métricas...",
+    "buttons": {
+      "hideFilters": "Ocultar filtros",
+      "showFilters": "Mostrar filtros",
+      "clearFilters": "Limpiar filtros"
+    },
+    "filters": {
+      "title": "Filtros",
+      "description": "Selecciona el rango de fechas y sucursal para filtrar los datos",
+      "startDate": "Fecha de inicio",
+      "endDate": "Fecha de fin",
+      "selectDate": "Seleccionar fecha",
+      "branch": "Sucursal",
+      "allBranches": "Todas las sucursales",
+      "applied": "Filtros aplicados",
+      "from": "Desde",
+      "to": "Hasta",
+      "showing": "Mostrando",
+      "allAvailableData": "Todos los datos disponibles"
+    },
+    "summary": {
+      "totalInvoices": "Total de facturas",
+      "totalSales": "Ventas totales",
+      "averageTicket": "Ticket promedio",
+      "taxes": "Impuestos",
+      "invoices": "Facturas"
+    },
+    "charts": {
+      "totalSales": "Ventas totales",
+      "extraCharges": "Cargos extra",
+      "salesAnalysis": "Análisis de ventas",
+      "salesComparison": "Comparativa entre ventas totales y subtotal",
+      "amount": "Monto",
+      "taxDistribution": "Distribución de impuestos",
+      "taxBreakdown": "Desglose de impuestos aplicados",
+      "discountsAndExtraCharges": "Descuentos y cargos extra",
+      "invoiceAdjustments": "Análisis de ajustes en las facturas",
+      "indicatorsSummary": "Resumen de indicadores",
+      "invoicesAndAverageTicket": "Facturas y ticket promedio",
+      "value": "Valor"
+    },
+    "financialDetails": {
+      "title": "Detalles financieros",
+      "description": "Desglose completo de las métricas",
+      "subtotal": "Subtotal",
+      "discounts": "Descuentos"
+    },
+    "topBranches": {
+      "title": "Top sucursales",
+      "description": "Ranking de sucursales con mayores ventas"
+    },
+    "topProducts": {
+      "title": "Productos más vendidos",
+      "description": "Top productos con mayor cantidad de ventas en el período seleccionado"
+    }
+  },
+  "navBarAgro": {
+    "user": "Usuario",
+    "create": "Crear",
+    "logout": "Cerrar sesión",
+    "panel": "Panel",
+    "copyEmployeeLink": "Copiar enlace para empleados",
+    "agroserviceRequired": "Primero debe ingresar los datos de su agroservicio",
+    "agroserviceRequiredDetails": "Para acceder a todos los módulos, primero debe crear su agroservicio",
+    "accessibility": {
+      "openMenu": "Abrir menú de navegación",
+      "openUserMenu": "Abrir menú de usuario"
+    },
+    "messages": {
+      "linkCopied": "Enlace copiado al portapapeles.",
+      "linkCopyError": "No se pudo copiar el enlace.",
+      "allGuidesCompleted": "Has completado todas las guías disponibles",
+      "tourCompleted": "¡Has completado el tour completo!",
+      "noVisibleGuideElements": "No hay elementos visibles para la guía en esta página"
+    },
+    "plan": {
+      "expiredTooltip": "Plan vencido. Renueva para seguir usando el sistema.",
+      "daysUntilExpiration": "Quedan {days} días para que venza tu plan",
+      "activeDaysRemaining": "Plan activo. Quedan {days} días",
+      "current": "Plan actual",
+      "noPlan": "Sin plan",
+      "expires": "Vence",
+      "daysRemaining": "Días restantes",
+      "expiredNotice": "Tu plan ha vencido. Renueva para seguir usando el sistema.",
+      "expiringNotice": "¡Tu plan está por vencer! Renueva pronto para no perder beneficios.",
+      "noActivePlanNotice": "No tienes un plan activo. Adquiere uno para acceder a todos los beneficios."
+    },
+    "employee": {
+      "role": "Rol",
+      "defaultRole": "Empleado",
+      "branch": "Sucursal",
+      "status": "Estado",
+      "active": "Activo",
+      "inactive": "Inactivo"
+    }
+  },
+   "sidebarAgro": {
+    "noPermissions": "No tienes permisos para ver ninguna ruta",
+    "logout": "Cerrar sesión",
+    "user": {
+      "owner": "Propietario",
+      "employee": "Empleado",
+      "administrator": "Administrador",
+      "noRole": "Sin rol",
+      "agroservice": "Agro Servicios"
+    },
+    "accessibility": {
+      "agroserviceLogo": "Logo del agroservicio",
+      "companyLogo": "Logo de la empresa"
+    },
+    "categories": {
+      "panel": "Panel",
+      "agroservice": "Agroservicio",
+      "purchases": "Compras",
+      "billing": "Facturación",
+      "batches": "Lotes",
+      "inventory": "Inventario"
+    },
+    "items": {
+      "dashboard": "Dashboard",
+      "audit": "Auditoría",
+      "myAgroservice": "Mi Agroservicio",
+      "branches": "Sucursales",
+      "staff": "Personal",
+      "clients": "Clientes",
+      "products": "Productos",
+      "supplies": "Insumos",
+      "invoices": "Facturas",
+      "creditNotes": "Notas de Crédito",
+      "billingRanges": "Rangos de Facturación",
+      "batches": "Lotes",
+      "transfers": "Traslados",
+      "movements": "Movimientos",
+      "suppliers": "Proveedores",
+      "suppliesConsumption": "Consumo de Insumos",
+      "productStock": "Existencia Productos",
+      "taxes": "Impuestos",
+      "discounts": "Descuentos"
+    }
+  },
+  "estadosFacturasComponent": {
+  "title": "Estados de Facturas",
+  "description": "Distribución de facturas por estado",
+  "loading": "Cargando estados...",
+  "invoices": "facturas",
+  "empty": {
+    "title": "No hay facturas registradas",
+    "description": "Los estados aparecerán aquí cuando se generen facturas"
+  },
+  "statuses": {
+    "issued": "Emitida",
+    "processed": "Procesada",
+    "cancelled": "Cancelada"
+  },
+  "statusDescriptions": {
+    "issued": "Factura creada y registrada en el sistema",
+    "processed": "Factura procesada y validada correctamente",
+    "cancelled": "Factura cancelada por el usuario",
+    "default": "Estado de factura"
+  },
+  "tooltip": {
+    "quantity": "Cantidad",
+    "invoices": "facturas",
+    "percentage": "Porcentaje"
+  },
+  "table": {
+    "status": "Estado",
+    "description": "Descripción",
+    "quantity": "Cantidad",
+    "percentage": "Porcentaje",
+    "distribution": "Distribución"
+  },
+  "summary": {
+    "totalInvoices": "Total Facturas",
+    "differentStatuses": "Estados Diferentes",
+    "mostFrequentStatus": "Estado Más Frecuente"
   }
+},
+"topClientesComponent": {
+  "title": "Top Clientes",
+  "description": "Ranking de clientes con mayor volumen de compras",
+  "loading": "Cargando clientes...",
+  "clients": "clientes",
+  "empty": {
+    "title": "No hay clientes registrados",
+    "description": "Los clientes aparecerán aquí cuando realicen compras"
+  },
+  "tooltip": {
+    "totalPurchased": "Total Comprado",
+    "invoices": "Facturas",
+    "percentage": "Porcentaje"
+  },
+  "chart": {
+    "totalPurchased": "Total Comprado"
+  },
+  "table": {
+    "client": "Cliente",
+    "invoices": "Facturas",
+    "total": "Total",
+    "percentage": "%"
+  },
+  "summary": {
+    "totalClients": "Total Clientes",
+    "totalInvoices": "Total Facturas",
+    "totalSales": "Total Ventas",
+    "averageTicket": "Ticket Promedio"
+  }
+},
+"topProductosComponent": {
+  "title": "Productos Más Vendidos",
+  "description": "Ranking de productos con mayor cantidad de ventas",
+  "loading": "Cargando productos...",
+  "products": "productos",
+  "empty": {
+    "title": "No hay productos vendidos",
+    "description": "Los productos aparecerán aquí cuando se realicen ventas"
+  },
+  "tooltip": {
+    "units": "unidades",
+    "quantity": "Cantidad"
+  },
+  "chart": {
+    "soldUnits": "Unidades Vendidas"
+  },
+  "table": {
+    "product": "Producto",
+    "units": "Unidades",
+    "percentage": "%"
+  },
+  "summary": {
+    "totalProducts": "Total Productos",
+    "totalUnits": "Total Unidades",
+    "topProduct": "Producto Top"
+  }
+},
+"topSucursalesComponent": {
+  "title": "Top Sucursales",
+  "description": "Ranking de sucursales con mayores ventas",
+  "loading": "Cargando sucursales...",
+  "branches": "sucursales",
+  "empty": {
+    "title": "No hay sucursales registradas",
+    "description": "Las sucursales aparecerán aquí cuando realicen ventas"
+  },
+  "tooltip": {
+    "totalSales": "Total Ventas",
+    "invoices": "Facturas",
+    "participation": "Participación"
+  },
+  "chart": {
+    "totalSales": "Total Ventas"
+  },
+  "table": {
+    "branch": "Sucursal",
+    "invoices": "Facturas",
+    "totalSales": "Total Ventas",
+    "averageTicket": "Ticket Promedio",
+    "salesPercentage": "% Ventas"
+  },
+  "summary": {
+    "totalBranches": "Total Sucursales",
+    "totalInvoices": "Total Facturas",
+    "totalSales": "Total Ventas",
+    "leadingBranch": "Sucursal Líder"
+  }
+},
+"auditoriaPage": {
+  "title": "Auditorías",
+  "tabs": {
+    "suppliers": "Proveedores",
+    "products": "Productos",
+    "purchases": "Compras",
+    "batchMovements": "Movimientos de Lotes",
+    "employees": "Empleados"
+  }
+},
+ "auditoriaCommon": {
+    "actions": {
+      "productCreated": "Producto Creado",
+      "productUpdated": "Producto Actualizado",
+      "productDeleted": "Producto Eliminado",
+      "purchaseCreated": "Compra Creada",
+      "purchaseUpdated": "Compra Actualizada",
+      "purchaseDeleted": "Compra Eliminada",
+      "create": "Creación",
+      "update": "Actualización",
+      "delete": "Eliminación"
+    },
+    "employees": {
+    "emptyMessage": "No se encontraron registros de auditoría de empleados",
+    "totalRecords": "Total: {total} registros",
+    "id": "ID",
+    "employee": "Empleado",
+    "gender": "Sexo",
+    "branch": "Sucursal",
+    "noBranch": "Sin sucursal",
+    "agroservice": "Agroservicio",
+    "actionDescription": "Descripción de la acción:"
+  },
+   "purchases": {
+    "emptyMessage": "No se encontraron registros de auditoría de compras",
+    "totalRecords": "Total: {total} registros",
+    "id": "ID",
+    "purchase": "Compra",
+    "invoice": "Factura",
+    "employee": "Empleado",
+    "noRole": "Sin rol"
+  },
+  "batchMovements": {
+    "emptyMessage": "No se encontraron registros de auditoría de movimientos de lote",
+    "totalRecords": "Total: {total} registros",
+    "id": "ID",
+    "movement": "Movimiento",
+    "quantity": "Cantidad",
+    "batchId": "ID del lote",
+    "batch": "Lote",
+    "movementId": "ID del movimiento",
+    "employee": "Empleado",
+    "noRole": "Sin rol"
+  },
+  "products": {
+    "emptyMessage": "No se encontraron registros de auditoría de productos",
+    "totalRecords": "Total: {total} registros",
+    "id": "ID",
+    "product": "Producto",
+    "employee": "Empleado",
+    "noRole": "Sin rol"
+  },
+   "suppliers": {
+    "emptyMessage": "No se encontraron registros de auditoría de proveedores",
+    "totalRecords": "Total: {total} registros",
+    "id": "ID",
+    "supplier": "Proveedor",
+    "nit": "NIT",
+    "nrc": "NRC",
+    "contact": "Contacto",
+    "employee": "Empleado",
+    "noRole": "Sin rol"
+  },
+    "empty": {
+      "title": "No hay auditorías disponibles"
+    }
+  },
+  "agroPerfilPage": {
+    "title": "Mi Agroservicio",
+    "card": {
+      "title": "Información del Agroservicio",
+      "createDescription": "Completa los datos de tu agroservicio",
+      "editDescription": "Modifica los datos de tu agroservicio",
+      "viewDescription": "Información básica del agroservicio"
+    },
+    "logo": {
+      "label": "Logo del Agroservicio",
+      "alt": "Logo del agroservicio",
+      "selectImage": "Seleccionar Imagen",
+      "upload": "Subir Logo",
+      "uploading": "Subiendo...",
+      "formats": "Formatos: PNG (sin fondo). Máximo 1MB",
+      "selectedFile": "Archivo seleccionado: {name}",
+      "requiredTitle": "Logo requerido:",
+      "requiredDescription": "Para acceder a los demás módulos del sistema, es necesario que subas el logo de tu agroservicio en formato PNG y sin fondo. Selecciona una imagen y haz clic en \"Subir Logo\".",
+      "createInfoFirst": "Primero crea la información del agroservicio para poder subir el logo."
+    },
+    "fields": {
+      "name": "Nombre del Agroservicio",
+      "rtn": "RTN",
+      "email": "Correo Electrónico",
+      "phone": "Teléfono",
+      "address": "Dirección"
+    },
+    "placeholders": {
+      "name": "Ingrese el nombre del agroservicio",
+      "rtn": "Ingrese el RTN",
+      "email": "Ingrese el correo electrónico",
+      "phone": "Ej: 9999-8888",
+      "address": "Ingrese la dirección completa"
+    },
+    "buttons": {
+      "createInfo": "Crear Información",
+      "editInfo": "Editar Información",
+      "cancel": "Cancelar",
+      "saveChanges": "Guardar Cambios",
+      "creating": "Creando...",
+      "saving": "Guardando..."
+    },
+    "validation": {
+      "nameRequired": "El nombre del agroservicio es requerido",
+      "nameMinLength": "El nombre debe tener al menos 2 caracteres",
+      "rtnRequired": "El RTN es requerido",
+      "rtnFormat": "El RTN debe tener 14 dígitos",
+      "emailRequired": "El correo electrónico es requerido",
+      "emailInvalid": "Correo electrónico inválido",
+      "phoneRequired": "El teléfono es requerido",
+      "phoneFormat": "Formato inválido. Debe ser xxxx-xxxx",
+      "addressRequired": "La dirección es requerida",
+      "addressMinLength": "La dirección debe tener al menos 10 caracteres"
+    },
+    "dates": {
+      "created": "Creado",
+      "lastUpdated": "Última actualización"
+    },
+    "owner": {
+      "name": "Propietario",
+      "country": "País",
+      "department": "Departamento",
+      "municipality": "Municipio"
+    },
+    "notSpecified": "No especificado",
+    "messages": {
+      "onlyPng": "Solo se aceptan imágenes en formato PNG",
+      "imageTooLarge": "La imagen no debe superar los 1MB",
+      "logoUpdated": "Logo actualizado exitosamente",
+      "uploadLogoError": "Hubo un error al subir el logo",
+      "uploadLogoUnexpectedError": "Hubo un error al momento de subir el logo. Inténtalo de nuevo.",
+      "selectImage": "Por favor selecciona una imagen",
+      "createAgroFirst": "Primero debes crear la información del agroservicio",
+      "infoCreated": "Información del agroservicio creada exitosamente",
+      "createInfoError": "Hubo un error al crear la información del agroservicio",
+      "createInfoUnexpectedError": "Hubo un error al momento de crear la información del agroservicio. Inténtalo de nuevo.",
+      "infoUpdated": "Información actualizada exitosamente",
+      "updateInfoError": "Hubo un error al actualizar la información",
+      "updateInfoUnexpectedError": "Hubo un error al momento de actualizar la información. Inténtalo de nuevo."
+    }
+  },
+  "agroSucursalesPage": {
+    "title": "Control de Sucursales",
+    "buttons": {
+      "addBranch": "Agregar Sucursal"
+    },
+    "pagination": {
+      "showing": "Mostrando",
+      "of": "de",
+      "branches": "sucursales"
+    },
+    "statistics": {
+      "totalBranches": "Total sucursales",
+      "countries": "Países",
+      "withManager": "Con gerente asignado"
+    },
+    "modal": {
+      "title": "Agregar Nueva Sucursal",
+      "description": "Aquí puedes agregar sucursales de tu agroservicio"
+    },
+    "table": {
+    "name": "Nombre",
+    "location": "Ubicación",
+    "manager": "Gerente",
+    "createdAt": "Fecha de creación",
+    "actions": "Acciones",
+    "unassigned": "Sin asignar",
+    "editBranch": "Editar sucursal",
+    "empty": "No hay sucursales registradas"
+  },
+  "form": {
+    "fields": {
+      "name": "Nombre de la sucursal",
+      "type": "Tipo de sucursal",
+      "department": "Departamento",
+      "municipality": "Municipio",
+      "address": "Dirección",
+      "manager": "Gerente"
+    },
+    "placeholders": {
+      "name": "Escriba el nombre de la sucursal",
+      "type": "Selecciona el tipo de sucursal",
+      "department": "Selecciona un departamento",
+      "municipality": "Selecciona un municipio",
+      "selectDepartmentFirst": "Primero selecciona un departamento",
+      "address": "Escriba la dirección completa de la sucursal",
+      "manager": "Selecciona un gerente (opcional)"
+    },
+    "labels": {
+      "branchTypes": "Tipos de sucursal",
+      "departments": "Departamentos",
+      "municipalities": "Municipios",
+      "managers": "Gerentes",
+      "loading": "Cargando..."
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "create": "Crear sucursal",
+      "update": "Actualizar sucursal"
+    },
+    "validation": {
+      "nameRequired": "El campo nombre es requerido"
+    },
+    "messages": {
+      "created": "Sucursal creada exitosamente",
+      "updated": "Sucursal actualizada exitosamente",
+      "createError": "Hubo un error al crear la sucursal",
+      "createUnexpectedError": "Hubo un error al crear la sucursal. Inténtalo de nuevo.",
+      "updateError": "Hubo un error al actualizar la sucursal",
+      "updateUnexpectedError": "Hubo un error al actualizar la sucursal. Inténtalo de nuevo."
+    }
+  },
+   "addressInput": {
+    "defaults": {
+      "placeholder": "Ingresa una dirección"
+    },
+    "buttons": {
+      "search": "Buscar dirección",
+      "currentLocation": "Usar ubicación actual",
+      "hideMap": "Ocultar mapa",
+      "showMap": "Mostrar mapa para seleccionar ubicación"
+    },
+    "map": {
+      "markerTitle": "Ubicación de la sucursal",
+      "loadError": "Error al cargar el mapa.",
+      "checkConnection": "Verifica tu conexión a internet.",
+      "loading": "Cargando mapa...",
+      "selectLocation": "Selecciona la ubicación en el mapa",
+      "instructions": "Haz clic en el mapa o arrastra el marcador para seleccionar la ubicación exacta",
+      "suggestion": "Comienza a escribir y selecciona una dirección de las sugerencias, o usa el mapa para seleccionar la ubicación exacta"
+    },
+    "coordinates": {
+      "latitude": "Latitud",
+      "longitude": "Longitud",
+      "registered": "Coordenadas registradas"
+    },
+    "messages": {
+      "apiKeyMissing": "No se encontró la clave API de Google Maps",
+      "addressNotFound": "No se pudo encontrar la dirección. Intenta con una descripción más específica.",
+      "searchError": "Error al buscar dirección",
+      "geolocationUnsupported": "La geolocalización no es compatible con este navegador",
+      "coordinatesOnly": "No se pudo obtener la dirección exacta, pero las coordenadas están registradas",
+      "locationError": "Error al obtener la ubicación: {message}"
+    }
+  }
+  },
+  "agroEmpleadosPage": {
+    "title": "Control de Empleados",
+    "buttons": {
+      "add": "Agregar Empleado"
+    },
+    "statistics": {
+      "total": "Total de Empleados",
+      "active": "Activos",
+      "inactive": "Inactivos",
+      "activePercentage": "Porcentaje de Activos"
+    },
+    "empty": {
+      "title": "No hay empleados registrados",
+      "description": "Haz clic en \"Agregar Empleado\" para registrar uno nuevo"
+    },
+    "modal": {
+      "createTitle": "Agregar Empleado",
+      "createDescription": "Aquí podrás agregar los empleados para tu agroservicio",
+      "editTitle": "Editar Empleado",
+      "editDescription": "Aquí podrás actualizar la información del empleado"
+    },
+    "table": {
+    "headers": {
+      "employee": "Empleado",
+      "contact": "Contacto",
+      "location": "Ubicación",
+      "role": "Rol",
+      "branch": "Sucursal",
+      "status": "Estado",
+      "createdAt": "Fecha de creación",
+      "actions": "Acciones"
+    },
+    "unassigned": "Sin asignar",
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+    "actions": {
+      "openMenu": "Abrir menú de acciones",
+      "edit": "Editar",
+      "activate": "Activar",
+      "deactivate": "Desactivar"
+    },
+    "empty": "No hay empleados registrados",
+    "messages": {
+      "activated": "Empleado activado exitosamente",
+      "deactivated": "Empleado desactivado exitosamente",
+      "activateError": "Hubo un error al activar el empleado",
+      "deactivateError": "Hubo un error al desactivar el empleado",
+      "activateUnexpectedError": "Hubo un error al activar el empleado. Inténtalo de nuevo.",
+      "deactivateUnexpectedError": "Hubo un error al desactivar el empleado. Inténtalo de nuevo."
+    },
+    "confirmation": {
+      "activateTitle": "¿Activar empleado?",
+      "deactivateTitle": "¿Desactivar empleado?",
+      "activateDescription": "¿Estás seguro de que deseas activar a {name}?",
+      "deactivateDescription": "¿Estás seguro de que deseas desactivar a {name}?",
+      "cancel": "Cancelar",
+      "processing": "Procesando...",
+      "activate": "Activar",
+      "deactivate": "Desactivar"
+    }
+  },
+   "form": {
+    "fields": {
+      "fullName": "Nombre completo",
+      "identification": "Identificación",
+      "email": "Correo electrónico",
+      "phone": "Teléfono",
+      "password": "Contraseña",
+      "newPassword": "Nueva contraseña (opcional)",
+      "gender": "Sexo",
+      "address": "Dirección",
+      "department": "Departamento",
+      "municipality": "Municipio",
+      "role": "Rol",
+      "branch": "Sucursal"
+    },
+    "placeholders": {
+      "fullName": "Escriba el nombre completo del empleado",
+      "documentNumber": "Número de documento",
+      "password": "Ingrese una contraseña",
+      "passwordEdit": "Dejar en blanco para mantener la actual",
+      "gender": "Seleccione el sexo",
+      "address": "Dirección completa del empleado",
+      "department": "Seleccione un departamento",
+      "municipality": "Seleccione un municipio",
+      "selectDepartmentFirst": "Primero seleccione un departamento",
+      "role": "Seleccione un rol",
+      "branch": "Seleccione una sucursal"
+    },
+    "helper": {
+      "identificationReadonly": "La identificación no se puede modificar",
+      "emailReadonly": "El correo electrónico no se puede modificar",
+      "passwordEdit": "Deje en blanco para mantener la contraseña actual"
+    },
+    "selects": {
+      "loading": "Cargando...",
+      "gender": "Sexo",
+      "departments": "Departamentos",
+      "municipalities": "Municipios",
+      "roles": "Roles",
+      "branches": "Sucursales"
+    },
+    "validation": {
+      "nameRequired": "El campo nombre es requerido",
+      "nameMinLength": "El nombre debe tener al menos 3 caracteres",
+      "identificationRequired": "El campo identificación es requerido",
+      "emailRequired": "El campo correo electrónico es requerido",
+      "phoneRequired": "El campo teléfono es requerido",
+      "phoneFormat": "El formato debe ser xxxx-xxxx",
+      "passwordRequired": "El campo contraseña es requerido",
+      "addressRequired": "El campo dirección es requerido",
+      "addressMinLength": "La dirección debe tener al menos 10 caracteres"
+    },
+    "actions": {
+      "showPassword": "Mostrar contraseña",
+      "hidePassword": "Ocultar contraseña"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "creating": "Creando...",
+      "updating": "Actualizando...",
+      "createEmployee": "Crear empleado",
+      "updateEmployee": "Actualizar empleado"
+    },
+    "messages": {
+      "created": "Empleado creado exitosamente",
+      "updated": "Empleado actualizado exitosamente",
+      "createError": "Hubo un error al crear el empleado",
+      "createUnexpectedError": "Hubo un error al crear el empleado. Inténtalo de nuevo.",
+      "updateError": "Hubo un error al actualizar el empleado",
+      "updateUnexpectedError": "Hubo un error al actualizar el empleado. Inténtalo de nuevo."
+    }
+  }
+  },
+ "agroClientesPage": {
+  "title": "Control de Clientes",
+  "description": "Gestiona los clientes registrados en tu agroservicio",
+  "buttons": {
+    "add": "Agregar Cliente"
+  },
+  "statistics": {
+    "totalClients": "Total de Clientes",
+    "active": "Activos",
+    "departments": "Departamentos",
+    "municipalities": "Municipios"
+  },
+  "filters": {
+    "title": "Filtros de búsqueda",
+    "show": "Mostrar filtros",
+    "hide": "Ocultar filtros",
+    "searchClient": "Buscar Cliente",
+    "searchPlaceholder": "Nombre o identificación...",
+    "clearSearch": "Limpiar búsqueda",
+    "searching": "Buscando: \"{term}\"",
+    "department": "Departamento",
+    "allDepartments": "Todos los departamentos",
+    "municipality": "Municipio",
+    "selectDepartment": "Seleccione departamento",
+    "allMunicipalities": "Todos los municipios",
+    "all": "Todos",
+    "actions": "Acciones",
+    "clearAll": "Limpiar todo",
+    "activeFilters": "Filtros activos:",
+    "removeSearch": "Quitar filtro de búsqueda",
+    "removeDepartment": "Quitar filtro de departamento",
+    "removeMunicipality": "Quitar filtro de municipio"
+  },
+"table": {
+  "title": "Lista de Clientes",
+  "count": "{count, plural, one {# cliente} other {# clientes}}",
+  "showing": "Mostrando {from} - {to} de {total}",
+  "columns": {
+    "customer": "Cliente",
+    "identification": "Identificación",
+    "contact": "Contacto",
+    "location": "Ubicación",
+    "gender": "Género",
+    "status": "Estado",
+    "actions": "Acciones"
+  },
+  "labels": {
+    "id": "ID"
+  },
+  "status": {
+    "active": "Activo",
+    "inactive": "Inactivo"
+  },
+  "actions": {
+    "edit": "Editar",
+    "viewFrequentProducts": "Ver productos frecuentes"
+  },
+  "gender": {
+    "male": "Masculino",
+    "female": "Femenino",
+    "other": "Otro"
+  }
+},
+  "empty": {
+    "title": "No hay clientes registrados",
+    "description": "Comienza agregando tu primer cliente",
+    "filteredDescription": "No se encontraron clientes con los filtros aplicados"
+  },
+  "modal": {
+    "createTitle": "Nuevo Cliente",
+    "editTitle": "Editar Cliente",
+    "createDescription": "Crea un cliente para tu agroservicio.",
+    "editDescription": "Actualiza los datos de los clientes."
+  },
+  "productsFrequent": {
+  "title": "Productos más frecuentes",
+  "client": "Cliente",
+  "identification": "ID",
+  "selectClient": "Seleccione un cliente para ver sus productos frecuentes",
+  "loading": "Cargando productos...",
+  "error": "No se encontraron productos frecuentes asociados a este cliente",
+  "empty": {
+    "title": "Este cliente no tiene productos frecuentes",
+    "description": "No se encontraron facturas procesadas para este cliente"
+  },
+  "statistics": {
+    "totalInvoices": "Total Facturas",
+    "totalSpent": "Total Gastado",
+    "averagePerInvoice": "Promedio por Factura",
+    "uniqueProducts": "Productos Únicos"
+  },
+  "columns": {
+    "product": "Producto",
+    "code": "Código",
+    "price": "Precio",
+    "quantity": "Cantidad",
+    "invoices": "Facturas",
+    "total": "Total",
+    "frequency": "Frecuencia"
+  },
+  "frequency": {
+    "high": "Alta",
+    "medium": "Media",
+    "low": "Baja"
+  },
+  "labels": {
+    "code": "Cód",
+    "invoices": "facturas",
+    "perInvoice": "por factura",
+    "totalProducts": "Total productos",
+    "showing": "Mostrando",
+    "of": "de"
+  },
+  "dates": {
+    "firstPurchase": "Primera compra",
+    "lastPurchase": "Última compra"
+  }
+},
+"form": {
+  "title": {
+    "create": "Nuevo Cliente",
+    "edit": "Editar Cliente"
+  },
+  "description": {
+    "create": "Registra un nuevo cliente en tu agroservicio",
+    "edit": "Actualiza la información del cliente"
+  },
+  "sections": {
+    "personal": "Información Personal",
+    "contact": "Información de Contacto",
+    "location": "Ubicación",
+    "customerStatus": "Estado del Cliente"
+  },
+  "fields": {
+    "name": "Nombre Completo",
+    "identification": "Identificación",
+    "gender": "Sexo",
+    "phone": "Teléfono",
+    "email": "Correo Electrónico",
+    "country": "País",
+    "address": "Dirección",
+    "department": "Departamento",
+    "municipality": "Municipio",
+    "status": "Estado"
+  },
+  "placeholders": {
+    "name": "Ej. Juan Carlos Pérez López",
+    "identification": "Número de documento",
+    "gender": "Selecciona una opción",
+    "phone": "9876-5432",
+    "email": "cliente@email.com",
+    "address": "Calle 123 # 45-67",
+    "department": "Selecciona un departamento",
+    "municipality": "Selecciona un municipio",
+    "selectDepartmentFirst": "Selecciona un departamento primero"
+  },
+  "sex": {
+    "male": "Masculino",
+    "female": "Femenino",
+    "other": "Otro"
+  },
+  "validation": {
+    "nameRequired": "El nombre es requerido",
+    "nameMinLength": "Mínimo 3 caracteres",
+    "nameMaxLength": "Máximo 150 caracteres",
+    "identificationRequired": "La identificación es requerida",
+    "phoneRequired": "El teléfono es requerido",
+    "addressRequired": "La dirección es requerida",
+    "addressMinLength": "La dirección debe tener al menos 10 caracteres",
+    "addressMaxLength": "Máximo 200 caracteres",
+    "locationRequired": "Debe seleccionar un departamento y municipio"
+  },
+  "hints": {
+    "phoneFormat": "Formato: xxxx-xxxx (ej: 9876-5432)",
+    "optional": "* Opcional",
+    "countryAutomatic": "El país se asigna automáticamente",
+    "requiredFields": "Todos los campos marcados con",
+    "requiredFieldsSuffix": "son obligatorios. Asegúrate de ingresar la información correctamente según el formato de tu país."
+  },
+  "labels": {
+    "loading": "Cargando..."
+  },
+  "empty": {
+    "departments": "No se encontraron departamentos",
+    "municipalities": "No se encontraron municipios"
+  },
+  "status": {
+    "active": "Activo",
+    "inactive": "Inactivo"
+  },
+  "buttons": {
+    "cancel": "Cancelar",
+    "create": "Crear Cliente",
+    "update": "Actualizar Cliente",
+    "creating": "Creando...",
+    "updating": "Actualizando..."
+  },
+  "messages": {
+    "created": "Cliente creado exitosamente",
+    "updated": "Cliente actualizado exitosamente",
+    "createError": "Hubo un error al crear el cliente",
+    "updateError": "Hubo un error al actualizar el cliente"
+  }
+}
+},
+"comprasProductosPage": {
+  "title": "Compras",
+  "description": "Gestión de compras agro servicio",
+  "buttons": {
+    "add": "Agregar Compra",
+    "clearFilters": "Limpiar"
+  },
+  "filters": {
+    "provider": "Filtrar por proveedor",
+    "branch": "Filtrar por sucursal",
+    "paymentType": "Filtrar por tipo de pago",
+    "all": "Todos",
+    "noProviders": "No se encontraron proveedores",
+    "noBranches": "No se encontraron sucursales"
+  },
+  "modal": {
+    "title": "Agregar Nueva Compra",
+    "description": "En esta sección ingresarás las compras de productos"
+  },
+  "table": {
+  "columns": {
+    "provider": "Proveedor",
+    "invoiceNumber": "# Factura",
+    "branch": "Sucursal",
+    "date": "Fecha",
+    "paymentType": "Tipo de Pago",
+    "taxes": "Impuestos",
+    "discounts": "Descuentos",
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "actions": "Acciones"
+  },
+  "actions": {
+    "viewDetails": "Ver detalles"
+  },
+  "empty": {
+    "title": "Error al cargar compras",
+    "description": "En este momento no se encontraron compras disponibles"
+  }
+},
+"details": {
+  "title": "Detalles de la compra",
+  "description": "En esta sección podrás observar más detalles de la compra",
+  "close": "Cerrar"
+},
+"summary": {
+  "paidQuantity": "Cant. Pagada",
+  "bonus": "Bonificación",
+  "subtotal": "Subtotal",
+  "discount": "Descuento",
+  "tax": "Impuesto",
+  "productTotal": "Total Producto"
+},
+"info": {
+  "purchaseInformation": "Información de la Compra",
+  "provider": "Proveedor",
+  "invoice": "Factura",
+  "identification": "NIT/RTN",
+  "nrc": "NRC",
+  "branch": "Sucursal",
+  "date": "Fecha",
+  "paymentType": "Tipo de Pago",
+  "totals": "Totales",
+  "subtotal": "Subtotal",
+  "discounts": "Descuentos",
+  "taxes": "Impuestos",
+  "total": "Total"
+},
+"confirmation": {
+  "confirmQuestion": "¿Estás seguro de ejecutar esta compra?",
+  "provider": "Proveedor",
+  "paymentType": "Tipo de Pago",
+  "notSelected": "No seleccionado",
+  "productsTitle": "Productos en la compra",
+  "quantity": "Cantidad",
+  "bonus": "Bonificación",
+  "price": "Precio",
+  "discountAbbreviation": "Desc.",
+  "taxAbbreviation": "Imp.",
+  "subtotal": "Subtotal",
+  "discounts": "Descuentos",
+  "taxes": "Impuestos",
+  "total": "TOTAL",
+  "warning": "Una vez ejecutes la compra, esta será procesada y no podrá ser revertida."
+},
+"totals": {
+  "subtotal": "Subtotal",
+  "discounts": "Descuentos",
+  "taxes": "Impuestos",
+  "total": "Total"
+}
+},
+"FormCompraProductos": {
+    "sections": {
+      "generalInfo": "Información General",
+      "products": "Productos de la Compra"
+    },
+    "fields": {
+      "branch": "Sucursal destino",
+      "supplier": "Proveedor",
+      "invoiceNumber": "Número de Factura",
+      "paymentType": "Tipo de Pago"
+    },
+    "placeholders": {
+      "branch": "Seleccione sucursal",
+      "supplier": "Selecciona el proveedor",
+      "selectSupplierFirst": "Seleccione un proveedor",
+      "invoiceNumber": "Ej: FAC-00123",
+      "selectProduct": "Seleccionar producto",
+      "searchProduct": "Buscar producto...",
+      "searchByNameOrCode": "Buscar por nombre o código...",
+      "category": "Categoría",
+      "select": "Seleccionar"
+    },
+    "groups": {
+      "branches": "Sucursales",
+      "supplier": "Proveedor",
+      "availableProducts": "Productos Disponibles",
+      "quantities": "Cantidades",
+      "tax": "Impuesto"
+    },
+    "productCard": {
+      "title": "Producto #{index}",
+      "product": "Producto",
+      "quantity": "Cantidad",
+      "unitCost": "Costo Unitario",
+      "discount": "Descuento %",
+      "bonus": "Bonificación",
+      "taxPercent": "Impuesto %"
+    },
+    "productInfo": {
+      "code": "Código",
+      "codeLabel": "Código: {code}",
+      "brand": "Marca",
+      "brandLabel": "Marca: {brand}",
+      "category": "Categoría",
+      "categoryLabel": "Categoría: {category}",
+      "tax": "Impuesto"
+    },
+    "alerts": {
+      "supplierTitle": "Proveedor",
+      "supplierDescription": "Selecciona un proveedor para poder ingresar productos"
+    },
+    "helpers": {
+      "scale": "Escala: {scale}",
+      "term": "Plazo: {days} días",
+      "defaultPaymentType": "Tipo de pago por defecto del proveedor",
+      "scaleItem": "{quantity} unidades → {bonus} bonus",
+      "discountItem": "{quantity} unidades → {discount}% descuento"
+    },
+    "emptyState": {
+      "title": "No hay productos agregados",
+      "description": "Comienza agregando productos a tu compra",
+      "noProductsFound": "No se encontraron productos"
+    },
+    "filters": {
+      "allCategories": "Todas las categorías"
+    },
+    "tooltips": {
+      "searchProduct": "Buscar producto"
+    },
+    "buttons": {
+      "addProduct": "Agregar Producto",
+      "addFirstProduct": "Agregar primer producto",
+      "remove": "Eliminar",
+      "cancel": "Cancelar",
+      "processing": "Procesando...",
+      "submitPurchase": "Ingresar Compra",
+      "reviewPurchase": "Revisar Compra",
+      "confirmPurchase": "Confirmar Compra"
+    },
+    "modals": {
+      "selectProductTitle": "Seleccionar Producto",
+      "confirmPurchaseTitle": "Confirmación de Compra"
+    },
+    "validation": {
+      "requiredFields": "Por favor, complete todos los campos requeridos",
+      "invoiceNumberRequired": "El número de factura es obligatorio",
+      "invoiceNumberMin": "Mínimo 3 caracteres",
+      "minZero": "Mínimo 0"
+    },
+    "messages": {
+      "createSuccess": "Compra creada exitosamente",
+      "genericError": "Hubo un error al ejecutar la compra",
+      "retryError": "Hubo un error al momento de ejecutar la compra. Inténtalo de nuevo.",
+      "paymentTypeMismatch": "Tipo de pago \"{value}\" no coincide con los valores disponibles"
+    }
+  },
+  "comprasInsumosPage": {
+  "title": "Compra de Insumos",
+  "description": "Gestiona la compra de insumos en tu agroservicio",
+  "buttons": {
+    "add": "Agregar Compra",
+    "collapseDetails": "Contraer detalles",
+    "expandDetails": "Expandir detalles"
+  },
+  "filters": {
+    "title": "Filtros de búsqueda",
+    "provider": "Proveedor",
+    "branch": "Sucursal",
+    "paymentType": "Tipo de Pago",
+    "allProviders": "Todos los proveedores",
+    "allBranches": "Todas las sucursales",
+    "allPaymentTypes": "Todos los tipos",
+    "providers": "Proveedores",
+    "branches": "Sucursales",
+    "paymentTypes": "Tipos de Pago",
+    "all": "Todos"
+  },
+  "list": {
+    "title": "Lista de Compras",
+    "count": "{total, plural, one {# compra} other {# compras}}",
+    "suppliesCount": "{total, plural, one {# insumo} other {# insumos}}"
+  },
+  "empty": {
+    "title": "No hay compras registradas",
+    "description": "Comienza agregando una nueva compra"
+  },
+  "labels": {
+    "provider": "Proveedor",
+    "branch": "Sucursal",
+    "total": "Total"
+  },
+  "modal": {
+    "title": "Agregar Nueva Compra",
+    "description": "En esta sección ingresarás las compras de insumos"
+  },
+  "detailsConfirmCompraInsumos": {
+  "confirmQuestion": "¿Estás seguro de ejecutar esta compra?",
+  "provider": "Proveedor",
+  "paymentType": "Tipo de Pago",
+  "notSelected": "No seleccionado",
+  "suppliesTitle": "Insumos en la compra",
+  "quantity": "Cantidad",
+  "bonus": "Bonificación",
+  "price": "Precio",
+  "discountAbbreviation": "Desc.",
+  "taxAbbreviation": "Imp.",
+  "subtotal": "Subtotal",
+  "discounts": "Descuentos",
+  "taxes": "Impuestos",
+  "total": "TOTAL",
+  "warning": "Una vez ejecutes la compra, esta será procesada y no podrá ser revertida."
+}
+},
+"expandedDetailsCompraInsumo": {
+  "agroservice": "Agroservicio",
+  "provider": "Proveedor",
+  "taxId": "NIT",
+  "invoice": "Factura",
+  "columns": {
+    "supply": "Insumo",
+    "quantity": "Cantidad",
+    "bonus": "Bonificación",
+    "unitCost": "Costo Unit.",
+    "discounts": "Descuentos",
+    "taxes": "Impuestos",
+    "total": "Total"
+  },
+  "totals": "Totales"
+},
+"formCompraInsumos": {
+  "sections": {
+    "supplies": "Insumos de la Compra"
+  },
+  "fields": {
+    "destinationBranch": "Sucursal destino",
+    "provider": "Proveedor",
+    "invoiceNumber": "Número de Factura",
+    "paymentType": "Tipo de Pago",
+    "supply": "Insumo",
+    "quantity": "Cantidad",
+    "bonus": "Bonificación",
+    "unitCost": "Costo Unitario",
+    "discountPercentage": "Descuento %",
+    "taxPercentage": "Impuesto %"
+  },
+  "placeholders": {
+    "branch": "Seleccione sucursal",
+    "provider": "Selecciona el proveedor",
+    "invoiceNumber": "Ej: FAC-00123",
+    "selectProvider": "Seleccione un proveedor",
+    "select": "Seleccionar",
+    "selectQuantity": "Seleccionar Cantidad"
+  },
+  "labels": {
+    "branches": "Sucursales",
+    "provider": "Proveedor",
+    "defaultPaymentType": "Tipo de pago por defecto del proveedor",
+    "providerScale": "Proveedor trabaja por",
+    "ofSupplies": "de insumos",
+    "paymentTerm": "Plazo de pago",
+    "days": "días",
+    "supplies": "Insumos",
+    "quantity": "Cantidad",
+    "bonus": "Bonificación",
+    "tax": "Impuesto",
+    "code": "Código"
+  },
+  "buttons": {
+    "addSupply": "Agregar Insumo",
+    "remove": "Eliminar",
+    "cancel": "Cancelar",
+    "processing": "Procesando...",
+    "submit": "Ingresar Compra",
+    "reviewPurchase": "Revisar Compra",
+    "confirmPurchase": "Confirmar Compra"
+  },
+  "validation": {
+    "branchRequired": "Seleccione una sucursal",
+    "invoiceRequired": "El número de factura es obligatorio",
+    "invoiceMinLength": "Mínimo 3 caracteres",
+    "paymentTypeRequired": "El tipo de pago es obligatorio",
+    "minimumZero": "Mínimo 0",
+    "minimumZeroPercentage": "Mínimo 0%",
+    "maximumHundredPercentage": "Máximo 100%"
+  },
+  "empty": {
+    "noQuantities": "No se encontraron cantidades"
+  },
+  "modal": {
+    "title": "Confirmación de Compra"
+  },
+  "messages": {
+    "created": "Compra creada exitosamente",
+    "executeError": "Hubo un error al ejecutar la compra",
+    "unexpectedError": "Hubo un error al momento de ejecutar la compra. Inténtalo de nuevo.",
+    "requiredFields": "Por favor, complete todos los campos requeridos",
+    "paymentTypeMismatch": "Tipo de pago \"{paymentType}\" no coincide con los valores disponibles"
+  }
+},
+"detailsConfirmCompraInsumos": {
+  "confirmQuestion": "¿Estás seguro de ejecutar esta compra?",
+  "provider": "Proveedor",
+  "paymentType": "Tipo de Pago",
+  "notSelected": "No seleccionado",
+  "suppliesTitle": "Insumos en la compra",
+  "quantity": "Cantidad",
+  "bonus": "Bonificación",
+  "price": "Precio",
+  "discountAbbreviation": "Desc.",
+  "taxAbbreviation": "Imp.",
+  "subtotal": "Subtotal",
+  "discounts": "Descuentos",
+  "taxes": "Impuestos",
+  "total": "TOTAL",
+  "warning": "Una vez ejecutes la compra, esta será procesada y no podrá ser revertida."
+},
+"facturasAgroPage": {
+  "title": "Facturación de - {branch}",
+  "ownerTitle": "Facturación de Agroservicio",
+  "buttons": {
+    "generate": "Generar Factura",
+    "clearAll": "Limpiar todos",
+    "clearFilters": "Limpiar filtros"
+  },
+  "appliedFilters": "Filtros aplicados:",
+  "filters": {
+    "title": "Filtros",
+    "active": "Filtros activos:",
+    "branch": "Sucursal",
+    "allBranches": "Todas las sucursales",
+    "selected": "Seleccionada",
+    "removeBranch": "Quitar sucursal"
+  },
+  "dates": {
+    "from": "Desde",
+    "to": "Hasta",
+    "startDate": "Fecha Inicio",
+    "endDate": "Fecha Fin",
+    "removeStartDate": "Quitar fecha de inicio",
+    "removeEndDate": "Quitar fecha de fin"
+  },
+  "summary": {
+    "total": "Total: {total} facturas",
+    "filtered": "filtradas"
+  },
+  "empty": {
+    "searchTitle": "No se encontraron facturas",
+    "searchDescription": "En este momento no se encontraron facturas disponibles",
+    "title": "No hay facturas",
+    "description": "No se han generado facturas aún. Haz clic en 'Generar Factura' para crear una nueva.",
+    "filteredDescription": "No se encontraron facturas con los filtros aplicados. Intenta ajustar los filtros."
+  },
+  "pagination": {
+    "showing": "Mostrando {from} - {to} de {total} facturas"
+  },
+  "modals": {
+    "create": {
+      "title": "Generación de Factura",
+      "description": "Aquí puede generar las facturas de ventas realizadas"
+    },
+    "edit": {
+      "title": "Editar datos Factura",
+      "description": "Aquí puede editar las facturas de ventas realizadas"
+    }
+  }
+},
+"tableRangosFactura": {
+  "columns": {
+    "cai": "CAI",
+    "prefix": "Prefijo",
+    "range": "Rango",
+    "correlative": "Correlativo",
+    "dates": "Fechas",
+    "status": "Estado",
+    "actions": "Acciones"
+  },
+  "dates": {
+    "start": "Inicio",
+    "deadline": "Límite"
+  },
+  "status": {
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "expired": "Vencido",
+    "expiringSoon": "Próximo a vencer"
+  },
+  "actions": {
+    "openMenu": "Abrir menú",
+    "viewDetails": "Ver detalles",
+    "edit": "Editar"
+  }
+},
+"selectorProductos": {
+  "title": "Filtros de Búsqueda",
+  "activeFilters": "Filtros activos",
+  "buttons": {
+    "clearFilters": "Limpiar filtros",
+    "close": "Cerrar",
+    "search": "Buscar",
+    "add": "Agregar"
+  },
+  "fields": {
+    "category": "Categoría",
+    "subcategory": "Subcategoría",
+    "productType": "Tipo de Producto",
+    "indications": "Indicaciones",
+    "productUses": "Usos del Producto"
+  },
+  "placeholders": {
+    "allCategories": "Todas las categorías",
+    "selectCategoryFirst": "Seleccione categoría primero",
+    "allSubcategories": "Todas las subcategorías",
+    "selectSubcategoryFirst": "Seleccione subcategoría primero",
+    "allTypes": "Todos los tipos",
+    "indications": "Ej: moco, cochilla, infecciones...",
+    "productUses": "Ej: engorde, reproducción, lechero...",
+    "searchProduct": "Buscar producto para agregar..."
+  },
+  "hints": {
+    "multipleIndications": "Separa múltiples indicaciones con comas",
+    "multipleUses": "Separa múltiples usos con comas"
+  },
+  "empty": {
+    "categories": "No hay categorías disponibles",
+    "subcategories": "No hay subcategorías",
+    "selectCategory": "Seleccione una categoría",
+    "productTypes": "No hay tipos de producto",
+    "selectSubcategory": "Seleccione una subcategoría",
+    "searchResults": "No se encontraron resultados para \"{searchTerm}\"",
+    "products": "No hay productos disponibles"
+  },
+  "loading": {
+    "products": "Cargando productos..."
+  },
+  "results": {
+    "found": "{count, plural, one {# resultado encontrado} other {# resultados encontrados}}"
+  },
+  "labels": {
+    "product": "Producto",
+    "added": "Agregado",
+    "code": "Código",
+    "uses": "Usos",
+    "components": "Componentes",
+    "subcategorySelected": "Subcategoría seleccionada",
+    "typeSelected": "Tipo seleccionado"
+  }
+},
+"resumenFactura": {
+  "title": "Resumen de la Factura",
+  "subtotal": "Sub Total",
+  "extraCharges": "Cargos Extra:",
+  "items": "Items",
+  "grandTotal": "Total General"
+},
+"existenciaBadge": {
+  "loading": "Cargando...",
+  "noStock": "Sin existencia",
+  "available": "Disponible: {quantity}",
+  "insufficient": "Insuficiente: {quantity}"
+},
+"buscadorClientes": {
+  "placeholder": "Buscar cliente...",
+  "clearSelection": "Limpiar selección",
+  "email": "Correo electrónico",
+  "empty": {
+    "searchResults": "No se encontraron clientes",
+    "noClients": "No hay clientes disponibles"
+  }
+},
+"tableFacturas": {
+  "columns": {
+    "invoiceNumber": "N° Factura",
+    "customer": "Cliente",
+    "status": "Estado",
+    "subtotal": "Sub Total",
+    "total": "Total",
+    "actions": "Acciones"
+  },
+  "status": {
+    "issued": "Emitida",
+    "processed": "Procesada",
+    "cancelled": "Cancelada"
+  },
+  "actions": {
+    "editInvoice": "Editar Factura",
+    "verifyStock": "Verificar Stock",
+    "processInvoice": "Procesar Factura",
+    "process": "Procesar",
+    "authorizeCancellation": "Autorizar Cancelación",
+    "authorize": "Autorizar",
+    "cancelInvoice": "Cancelar Factura",
+    "cancel": "Cancelar",
+    "viewInvoice": "Ver Factura",
+    "downloadInvoice": "Descargar Factura"
+  },
+  "loading": {
+    "verifying": "Verificando...",
+    "processing": "Procesando...",
+    "authorizing": "Autorizando...",
+    "cancelling": "Cancelando...",
+    "downloading": "Descargando..."
+  },
+  "buttons": {
+    "cancel": "Cancelar",
+    "close": "Cerrar"
+  },
+  "notifications": {
+    "downloadSuccess": "Factura descargada exitosamente",
+    "insufficientStockWarning": "⚠️ Algunos productos no tienen stock suficiente.",
+    "sufficientStock": "✅ Stock suficiente para procesar la factura.",
+    "insufficientStock": "Existen productos con stock insuficiente",
+    "processSuccess": "✅ Factura procesada exitosamente",
+    "cancelSuccess": "✅ Factura cancelada exitosamente",
+    "authorizationSuccess": "✅ Cancelación autorizada exitosamente"
+  },
+  "errors": {
+    "download": "Error al descargar la factura",
+    "unexpectedDownload": "Error inesperado al descargar la factura",
+    "preview": "Error al obtener la vista previa de la factura",
+    "branchRequired": "Es necesario que estés asociado a una sucursal para poder ejecutar esta acción",
+    "verifyStock": "Error al verificar existencia",
+    "unexpectedVerifyStock": "Error inesperado al verificar existencia",
+    "processInvoice": "Error al procesar la factura",
+    "unexpectedProcess": "Error inesperado al procesar la factura",
+    "cancelInvoice": "Error al cancelar la factura",
+    "unexpectedCancel": "Error inesperado al cancelar la factura",
+    "authorizeCancellation": "Error al autorizar la cancelación",
+    "unexpectedAuthorize": "Error inesperado al autorizar la cancelación"
+  },
+  "dialogs": {
+    "invoiceInformation": "Información de la Factura",
+    "customer": "Cliente",
+    "total": "Total",
+    "authorize": {
+      "title": "Autorizar Cancelación",
+      "description": "¿Está seguro que desea autorizar la cancelación de la factura",
+      "note": "Al autorizar, el usuario que creó esta factura podrá cancelarla. Esta autorización será válida por 24 horas.",
+      "confirm": "Sí, Autorizar Cancelación"
+    },
+    "process": {
+      "title": "Confirmar Procesamiento",
+      "description": "¿Está seguro que desea procesar la factura",
+      "stockVerified": "Stock verificado ✓",
+      "note": "Esta acción descontará los productos de los lotes y cambiará el estado a \"Procesada\".",
+      "confirm": "Sí, Procesar Factura"
+    },
+    "cancel": {
+      "title": "Confirmar Cancelación",
+      "description": "¿Está seguro que desea cancelar la factura",
+      "returnProducts": "Devolver productos ✓",
+      "note": "Esta acción devolverá los productos a sus lotes originales y cambiará el estado a \"Cancelada\".",
+      "keepInvoice": "Mantener Factura",
+      "confirm": "Sí, Cancelar Factura"
+    },
+    "stock": {
+      "title": "Verificación de Stock",
+      "result": "Resultado de la verificación para la factura",
+      "sufficient": "Stock suficiente",
+      "insufficient": "Stock insuficiente",
+      "warning": "No se puede procesar la factura hasta que se resuelvan los problemas de stock.",
+      "columns": {
+        "product": "Producto",
+        "required": "Requerido",
+        "available": "Disponible",
+        "status": "Estado"
+      }
+    }
+  },
+  "preview": {
+    "title": "Vista Previa de la Factura"
+  }
+},
+"formAgroRangosFactura": {
+  "title": "Información del Rango de Facturación",
+  "fields": {
+    "prefix": "Prefijo",
+    "initialRange": "Rango Inicial",
+    "finalRange": "Rango Final",
+    "receiptDate": "Fecha de Recepción",
+    "issuanceDeadline": "Fecha Límite de Emisión"
+  },
+  "placeholders": {
+    "cai": "Ej. A1B2C3-D4E5F6-G7H8I9-J0K1L2",
+    "prefix": "Ej. 001-001-01"
+  },
+  "hints": {
+    "prefixFormat": "Formato: 001-001-01"
+  },
+  "validation": {
+    "caiRequired": "El CAI es requerido",
+    "caiMinLength": "El CAI debe tener al menos 10 caracteres",
+    "maxLength": "Máximo 100 caracteres",
+    "prefixRequired": "El prefijo es requerido",
+    "prefixFormat": "Formato inválido. Ejemplo: 001-001-01",
+    "initialRangeRequired": "El rango inicial es requerido",
+    "finalRangeRequired": "El rango final es requerido",
+    "greaterThanZero": "Debe ser mayor a 0",
+    "finalRangeGreater": "El rango final debe ser mayor al rango inicial",
+    "receiptDateRequired": "La fecha de recepción es requerida",
+    "issuanceDeadlineRequired": "La fecha límite de emisión es requerida"
+  },
+  "status": {
+    "active": "Rango Activo",
+    "inactive": "Rango Inactivo"
+  },
+  "summary": {
+    "title": "Resumen:",
+    "rangeFrom": "Rango de",
+    "to": "a",
+    "availableInvoices": "facturas disponibles"
+  },
+  "buttons": {
+    "cancel": "Cancelar",
+    "saving": "Guardando...",
+    "update": "Actualizar Rango",
+    "create": "Crear Rango"
+  },
+  "notifications": {
+    "createSuccess": "Rango de factura creado exitosamente",
+    "updateSuccess": "Rango de factura actualizado exitosamente"
+  },
+  "errors": {
+    "create": "Hubo un error al crear el rango",
+    "update": "Hubo un error al actualizar el rango"
+  }
+},
+"formCreateFactura": {
+  "loading": "Cargando...",
+  "sections": {
+    "customerInfo": "Información del Cliente",
+    "totals": "Totales",
+    "products": "Productos"
+  },
+  "fields": {
+    "customer": "Cliente",
+    "paymentMethod": "Forma de Pago",
+    "subtotal": "Sub Total",
+    "extraCharges": "Cargos Extra",
+    "exemptAmount": "Importe Exento",
+    "exoneratedAmount": "Importe Exonerado",
+    "grandTotal": "Total General",
+    "discounts": "Descuentos y Rebajas"
+  },
+  "placeholders": {
+    "customer": "Buscar cliente por nombre o identificación...",
+    "paymentMethod": "Seleccione forma de pago",
+    "addProductsFirst": "Agregue productos primero",
+    "selectDiscount": "Seleccione un descuento"
+  },
+  "paymentMethods": {
+    "cash": "Contado",
+    "credit": "Crédito",
+    "transfer": "Transferencia",
+    "creditNote": "Nota de Crédito",
+    "combination": "Combinación"
+  },
+  "discounts": {
+    "none": "Sin descuento",
+    "applied": "Descuento aplicado"
+  },
+  "labels": {
+    "problemsDetected": "Problemas detectados",
+    "unknownProduct": "Producto desconocido",
+    "productUnavailable": "Producto no disponible",
+    "product": "Producto",
+    "duplicateProduct": "Producto duplicado",
+    "units": "unidades",
+    "missingUnits": "Faltan {count}"
+  },
+  "alerts": {
+    "duplicateProducts": "Productos duplicados detectados:",
+    "insufficientStock": "Productos con existencia insuficiente:",
+    "stockItem": "{name} (necesita: {required}, tiene: {available})",
+    "productUnavailableInFilter": "Producto no disponible en el filtro actual"
+  },
+  "table": {
+    "product": "Producto",
+    "quantity": "Cantidad",
+    "unitPrice": "Precio Unitario",
+    "stock": "Existencia",
+    "total": "Total",
+    "actions": "Acciones"
+  },
+  "empty": {
+    "noProductsSelected": "No hay productos seleccionados",
+    "useSearchToAdd": "Use el buscador arriba para agregar productos"
+  },
+  "buttons": {
+    "delete": "Eliminar",
+    "creating": "Creando Factura...",
+    "createInvoice": "Crear Factura"
+  },
+  "validation": {
+    "quantityRequired": "La cantidad es requerida",
+    "minimumQuantity": "Mínimo 1",
+    "priceRequired": "El precio es requerido",
+    "nonNegative": "No puede ser negativo",
+    "addAtLeastOneProduct": "Debe agregar al menos un producto",
+    "selectAllProducts": "Todos los productos deben estar seleccionados",
+    "duplicateProducts": "No puede agregar el mismo producto más de una vez: {products}",
+    "insufficientProductItem": "{name} (necesita: {required}, tiene: {available})",
+    "insufficientProducts": "Productos con existencia insuficiente: {products}"
+  },
+  "notifications": {
+    "createSuccess": "Factura creada exitosamente"
+  },
+  "errors": {
+    "create": "Hubo un error al crear la factura",
+    "unexpected": "Hubo un error al momento de crear la factura. Inténtalo de nuevo."
+  }
+},
+"formEditFactura": {
+  "loading": "Cargando...",
+  "invoice": {
+    "number": "N.° Factura:",
+    "status": "Estado:",
+    "receivedDate": "Fecha de recepción:",
+    "dueDate": "Fecha límite:"
+  },
+  "client": {
+    "title": "Información del Cliente",
+    "clientRequired": "Cliente*",
+    "searchPlaceholder": "Buscar cliente por nombre o identificación...",
+    "selected": "Cliente seleccionado"
+  },
+  "payment": {
+    "title": "Forma de Pago*",
+    "placeholder": "Seleccione forma de pago",
+    "methods": {
+      "cash": "Contado",
+      "credit": "Crédito",
+      "transfer": "Transferencia"
+    }
+  },
+  "totals": {
+    "title": "Totales",
+    "subtotal": "Sub Total",
+    "extraCharges": "Cargos Extra",
+    "exemptAmount": "Importe Exento",
+    "exoneratedAmount": "Importe Exonerado",
+    "grandTotal": "Total General"
+  },
+  "discounts": {
+    "title": "Descuentos y Rebajas",
+    "addProductsFirst": "Agregue productos primero",
+    "selectDiscount": "Seleccione un descuento",
+    "noDiscount": "Sin descuento",
+    "applied": "Descuento aplicado"
+  },
+  "products": {
+    "title": "Productos",
+    "problemsDetected": "Problemas detectados",
+    "duplicateProductsDetected": "Productos duplicados detectados:",
+    "insufficientStock": "Productos con existencia insuficiente:",
+    "stockDetail": "{name} (necesita: {required}, tiene: {available})",
+    "productBadge": "Producto",
+    "unavailableInCurrentFilter": "Producto no disponible en el filtro actual",
+    "duplicateBadge": "Producto duplicado",
+    "stockUnits": "{count} unidades",
+    "missingUnits": "Faltan {count}",
+    "empty": {
+      "title": "No hay productos seleccionados",
+      "description": "Use el buscador de arriba para agregar productos"
+    }
+  },
+  "table": {
+    "product": "Producto",
+    "quantity": "Cantidad",
+    "unitPrice": "Precio Unitario",
+    "stock": "Existencia",
+    "total": "Total",
+    "actions": "Acciones",
+    "delete": "Eliminar"
+  },
+  "fallback": {
+    "unknownProduct": "Producto desconocido",
+    "unavailableProduct": "Producto no disponible"
+  },
+  "validation": {
+    "quantityRequired": "La cantidad es requerida",
+    "minimumQuantity": "Mínimo 1",
+    "priceRequired": "El precio es requerido",
+    "nonNegative": "No puede ser negativo",
+    "addAtLeastOneProduct": "Debe agregar al menos un producto",
+    "selectAllProducts": "Todos los productos deben estar seleccionados",
+    "duplicateProducts": "No puede agregar el mismo producto más de una vez: {products}",
+    "insufficientStockItem": "{name} (necesita: {required}, tiene: {available})",
+    "insufficientStock": "Productos con existencia insuficiente: {products}"
+  },
+  "notifications": {
+    "updateSuccess": "Factura actualizada exitosamente",
+    "updateError": "Hubo un error al actualizar la factura",
+    "updateErrorRetry": "Hubo un error al momento de actualizar la factura. Inténtalo de nuevo."
+  },
+  "buttons": {
+    "cancel": "Cancelar",
+    "updating": "Actualizando Factura...",
+    "update": "Actualizar Factura"
+  }
+},
+"notasCreditoPage": {
+  "title": "Notas de Crédito",
+  "description": "Gestión completa de notas de crédito",
+  "buttons": {
+    "add": "Agregar Nota",
+    "clearFilters": "Limpiar filtros"
+  },
+  "filters": {
+    "allBranches": "Todas las sucursales",
+    "startDate": "Fecha de inicio",
+    "endDate": "Fecha de fin",
+    "lastMonth": "Último mes",
+    "dateRange": "Mostrando notas del {start} al {end}"
+  },
+  "summary": {
+    "showing": "Mostrando {count} de {total} notas de crédito"
+  },
+  "loading": "Cargando...",
+  "loadingNotes": "Cargando notas...",
+  "empty": {
+    "title": "No se encontraron notas de crédito",
+    "description": "Ajusta los filtros o crea una nueva nota"
+  },
+  "modal": {
+    "title": "Ingresar Nota de Crédito",
+    "description": "Aquí podrás ingresar notas de crédito para el agroservicio"
+  }
+},
+"tableNotaCredito": {
+  "columns": {
+    "note": "# Nota",
+    "invoice": "Factura",
+    "agroservice": "Agroservicio",
+    "amount": "Monto",
+    "reason": "Motivo",
+    "date": "Fecha",
+    "actions": "Acciones"
+  },
+  "actions": {
+    "preview": "Ver Factura",
+    "download": "Descargar Nota",
+    "downloading": "Descargando..."
+  },
+  "buttons": {
+    "close": "Cerrar"
+  },
+  "preview": {
+    "title": "Vista Previa de la Factura"
+  },
+  "messages": {
+    "previewError": "Error al obtener la vista previa de la nota",
+    "downloadSuccess": "Nota descargada exitosamente",
+    "downloadError": "Error inesperado al descargar la nota"
+  },
+  "notAvailable": "N/A"
+},
+"formCrearNotaCredito": {
+  "fields": {
+    "branch": "Sucursal",
+    "invoiceNumber": "Número de Factura",
+    "reason": "Motivo",
+    "product": "Producto",
+    "quantity": "Cantidad",
+    "refundedAmount": "Monto Devuelto"
+  },
+  "sections": {
+    "productDetails": "Detalles de Productos"
+  },
+  "labels": {
+    "customer": "Cliente"
+  },
+  "placeholders": {
+    "selectBranch": "Seleccione una sucursal",
+    "searchInvoice": "Buscar por número de factura o nombre del cliente...",
+    "reason": "Motivo de la nota de crédito",
+    "searchProduct": "Buscar producto..."
+  },
+  "buttons": {
+    "remove": "Eliminar",
+    "addProduct": "Agregar Producto",
+    "createCreditNote": "Crear Nota de Crédito",
+    "confirmCreditNote": "Confirmar Nota de Crédito",
+    "creating": "Creando...",
+    "cancel": "Cancelar"
+  },
+  "summary": {
+    "totalAmount": "Monto total",
+    "total": "Total"
+  },
+  "loading": {
+    "products": "Cargando productos..."
+  },
+  "empty": {
+    "products": "No hay productos disponibles"
+  },
+  "validation": {
+    "selectBranch": "Debe seleccionar una sucursal",
+    "reasonRequired": "El motivo es obligatorio",
+    "quantityRequired": "Debe indicar la cantidad",
+    "minimumQuantity": "Cantidad mínima es 1",
+    "totalAmount": "El monto total debe ser mayor a 0",
+    "selectInvoice": "Debe seleccionar una factura"
+  },
+  "messages": {
+    "calculateProductPriceError": "Error al calcular precio del producto",
+    "calculateProductAmountError": "Error al calcular monto del producto",
+    "calculateAmountsError": "Error al calcular montos",
+    "createSuccess": "Nota de crédito creada exitosamente",
+    "createError": "Hubo un error al crear la nota de crédito",
+    "changeProductError": "Error al cambiar producto",
+    "changeQuantityError": "Error al cambiar cantidad"
+  },
+  "confirmation": {
+    "title": "Confirmar Nota de Crédito",
+    "description": "¿Estás seguro de que deseas crear esta nota de crédito? Revisa los detalles a continuación antes de confirmar.",
+    "invoiceInformation": "Información de la Factura",
+    "productsToReturn": "Productos a Devolver",
+    "warning": "Una vez confirmada, la nota de crédito quedará registrada y no podrá ser modificada."
+  },
+  "notAvailable": "N/A"
+},
+"agroRangosFacturaPage": {
+  "title": "Control de Rangos de Facturas",
+  "description": "Gestiona los rangos de facturación del agroservicio",
+  "buttons": {
+    "add": "Agregar Rango",
+    "close": "Cerrar"
+  },
+  "loading": "Cargando rangos de factura...",
+  "statistics": {
+    "total": "Total Rangos",
+    "configured": "Rangos configurados",
+    "active": "Rangos Activos",
+    "percentageOfTotal": "{percentage}% del total",
+    "noRanges": "Sin rangos",
+    "expiringSoon": "Próximos a Vencer",
+    "daysUntilExpiration": "Menos de 30 días para vencer"
+  },
+  "search": {
+    "placeholder": "Buscar por CAI, prefijo o agroservicio..."
+  },
+  "list": {
+    "title": "Lista de Rangos",
+    "found": "{count, plural, one {# rango encontrado} other {# rangos encontrados}}"
+  },
+  "empty": {
+    "searchTitle": "No se encontraron resultados",
+    "title": "No hay rangos configurados",
+    "searchDescription": "Intenta con otros términos de búsqueda",
+    "description": "Comienza agregando tu primer rango de facturación."
+  },
+  "details": {
+    "title": "Detalles del Rango",
+    "description": "Información completa del rango de facturación",
+    "cai": "CAI",
+    "prefix": "Prefijo",
+    "initialRange": "Rango Inicial",
+    "finalRange": "Rango Final",
+    "currentNumber": "Correlativo Actual",
+    "status": "Estado",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "receivedDate": "Fecha Recepción",
+    "deadline": "Fecha Límite",
+    "agroservice": "Agroservicio",
+    "taxId": "RTN",
+    "rangeUsage": "Uso del Rango",
+    "auditInformation": "Información de Auditoría",
+    "created": "Creado",
+    "updated": "Actualizado"
+  },
+  "form": {
+    "editTitle": "Editar Rango",
+    "addTitle": "Agregar Nuevo Rango"
+  }
+},
+"lotesPage": {
+  "title": "Gestión de Lotes",
+  "description": "Administra el inventario de productos por sucursal",
+  "statistics": {
+    "totalProducts": "Total Productos",
+    "totalUnits": "Unidades Totales",
+    "totalCost": "Costo Total",
+    "averageValue": "Valor Promedio"
+  },
+  "filters": {
+    "branch": "Sucursal",
+    "searchProduct": "Buscar producto"
+  },
+  "placeholders": {
+    "selectBranch": "Seleccionar sucursal",
+    "searchProduct": "Nombre o código del producto..."
+  },
+  "inventory": {
+    "title": "Inventario de Productos"
+  },
+  "empty": {
+    "noLots": "No se encontraron lotes en esta sucursal."
+  },
+  "pagination": {
+    "showing": "Mostrando {shown} de {total} productos"
+  },
+  "modal": {
+    "title": "Transferir Producto",
+    "description": "Aquí podrás transferir productos a otra sucursal"
+  }
+},
+"tableLotes": {
+  "columns": {
+    "product": "Producto",
+    "code": "Código",
+    "branch": "Sucursal",
+    "quantity": "Cantidad",
+    "unitCost": "Costo Unitario",
+    "originCost": "Costo Origen",
+    "status": "Estado",
+    "actions": "Acciones"
+  },
+  "status": {
+    "low": "Stock Bajo",
+    "limited": "Stock Limitado",
+    "sufficient": "Stock Suficiente"
+  },
+  "actions": {
+    "transfers": "Traslados"
+  }
+},
+"formTransferirProducto": {
+  "errors": {
+    "title": "Error",
+    "noProductSelected": "No se ha seleccionado ningún producto para transferir.",
+    "transferTitle": "Error al transferir el producto"
+  },
+  "messages": {
+    "transferSuccess": "Producto transferido exitosamente: {message}",
+    "unitsTransferred": "{quantity} unidades transferidas",
+    "transferError": "Hubo un error al transferir el producto",
+    "unexpectedError": "Error inesperado. Contacte al administrador"
+  },
+  "product": {
+    "title": "Producto a Transferir",
+    "name": "Nombre del Producto",
+    "code": "Código",
+    "originBranch": "Sucursal Origen",
+    "availableQuantity": "Cantidad Disponible"
+  },
+  "transfer": {
+    "title": "Datos de Transferencia"
+  },
+  "fields": {
+    "originBranch": "Sucursal Origen",
+    "destinationBranch": "Sucursal Destino",
+    "availableBranches": "Sucursales Disponibles",
+    "quantityToTransfer": "Cantidad a Transferir"
+  },
+  "placeholders": {
+    "destinationBranch": "Seleccionar sucursal destino"
+  },
+  "empty": {
+    "branches": "No hay sucursales disponibles"
+  },
+  "validation": {
+    "quantityRequired": "La cantidad es requerida",
+    "minimumQuantity": "La cantidad mínima es 1",
+    "maximumQuantity": "La cantidad máxima disponible es {quantity}"
+  },
+  "quantities": {
+    "units": "{quantity} unidades",
+    "unitsLabel": "unidades",
+    "available": "Disponible"
+  },
+  "summary": {
+    "title": "Resumen de Transferencia",
+    "product": "Producto",
+    "from": "Desde",
+    "to": "Hacia",
+    "quantity": "Cantidad",
+    "remainingStock": "Stock restante en origen"
+  },
+  "warnings": {
+    "lowStockTitle": "Stock bajo en origen",
+    "lowStockDescription": "Después de la transferencia, quedarán solo {quantity} unidades en la sucursal origen. Considera reabastecer pronto."
+  },
+  "buttons": {
+    "cancel": "Cancelar",
+    "transferring": "Transfiriendo...",
+    "transfer": "Transferir Producto"
+  }
+},
+"lotesTrasladosPage": {
+  "title": "Traslados de Inventario",
+  "description": "Historial de transferencias de productos entre sucursales",
+  "search": {
+    "placeholder": "Buscar por nombre o código de producto..."
+  },
+  "buttons": {
+    "filters": "Filtros",
+    "clearFilters": "Limpiar filtros",
+    "applyFilters": "Aplicar filtros"
+  },
+  "filters": {
+    "branch": "Sucursal",
+    "allBranches": "Todas las sucursales",
+    "startDate": "Fecha Inicio",
+    "endDate": "Fecha Fin"
+  },
+  "statistics": {
+    "totalTransfers": "Total Traslados",
+    "transferredProducts": "Productos Transferidos",
+    "involvedBranches": "Sucursales Involucradas"
+  },
+  "history": {
+    "title": "Historial de Traslados"
+  },
+  "empty": {
+    "description": "No se encontraron traslados de inventario con los filtros seleccionados."
+  },
+  "pagination": {
+    "showing": "Mostrando {shown} de {total} traslados"
+  }
+},
+"tableTraslados": {
+  "columns": {
+    "product": "Producto",
+    "quantity": "Cantidad",
+    "origin": "Origen",
+    "destination": "Destino",
+    "unitCost": "Costo Unitario",
+    "date": "Fecha",
+    "type": "Tipo"
+  },
+  "values": {
+    "units": "{quantity} unidades",
+    "notAvailable": "N/A"
+  }
+},
+"tipoMovimientoBadge": {
+  "transfer": "Transferencia",
+  "entry": "Entrada",
+  "exit": "Salida"
+},
+"movimientosLotesPage": {
+  "title": "Movimientos de Lotes",
+  "description": "Sección que muestra los movimientos que han tenido tus lotes",
+  "filters": {
+    "branch": "Sucursal",
+    "movementType": "Tipo de Movimiento",
+    "startDate": "Fecha Inicio",
+    "endDate": "Fecha Fin"
+  },
+  "placeholders": {
+    "allBranches": "Todas las sucursales",
+    "allTypes": "Todos los tipos",
+    "selectDate": "Seleccionar fecha",
+    "search": "Buscar por producto, factura o compra..."
+  },
+  "movementTypes": {
+    "return": "Devolución",
+    "exit": "Salida",
+    "entry": "Entrada"
+  },
+  "buttons": {
+    "clear": "Limpiar"
+  },
+  "activeFilters": {
+    "branch": "Sucursal",
+    "type": "Tipo",
+    "from": "Desde",
+    "to": "Hasta"
+  },
+  "results": {
+    "title": "Resultados",
+    "found": "{count, plural, one {# movimiento encontrado} other {# movimientos encontrados}}"
+  },
+  "pagination": {
+    "showing": "Mostrando {from} - {to} de {total}"
+  }
+},
+"tableMovimientosLotes": {
+  "columns": {
+    "date": "Fecha",
+    "product": "Producto",
+    "type": "Tipo",
+    "quantity": "Cantidad",
+    "invoice": "Factura",
+    "branch": "Sucursal",
+    "previousStock": "Stock Anterior",
+    "newStock": "Stock Nuevo"
+  },
+  "empty": {
+    "title": "No se encontraron movimientos",
+    "description": "Prueba ajustando los filtros o la búsqueda"
+  },
+  "labels": {
+    "code": "Código"
+  }
+},
+"tipoMovimientoLoteBadge": {
+  "return": "Devolución",
+  "exit": "Salida",
+  "adjustment": "Ajuste"
+},
+"agroProductosPage": {
+  "title": "Productos",
+  "description": "Gestión de productos agropecuarios",
+  "buttons": {
+    "add": "Agregar Producto"
+  },
+  "pagination": {
+    "showing": "Mostrando {from} - {to} de {total} productos"
+  },
+  "modal": {
+    "editTitle": "Editar Producto",
+    "addTitle": "Agregar Nuevo Producto",
+    "editDescription": "Aquí podrás editar la información del producto.",
+    "addDescription": "Aquí podrás ingresar nuevos productos al agroservicio."
+  }
+},
+"tableAgroProductos": {
+  "columns": {
+    "product": "Producto",
+    "brand": "Marca",
+    "category": "Categoría",
+    "supplier": "Proveedor",
+    "price": "Precio",
+    "availability": "Disponible",
+    "lots": "Lotes",
+    "actions": "Acciones"
+  },
+  "empty": {
+    "products": "No se encontraron productos"
+  },
+  "buttons": {
+    "clearFilters": "Limpiar filtros",
+    "viewLots": "Ver Lotes"
+  },
+  "images": {
+    "more": "+{count} más"
+  },
+  "labels": {
+    "code": "Código"
+  },
+  "availability": {
+    "available": "Disponible",
+    "unavailable": "No disponible"
+  },
+  "actions": {
+    "configuration": "Configuración",
+    "editProduct": "Editar producto",
+    "uploadImages": "Subir imágenes"
+  },
+  "configuration": {
+    "title": "Configuración de escalas y descuentos",
+    "description": "Administra las escalas de compra y los descuentos aplicables a este producto."
+  },
+  "tabs": {
+    "scales": "Escalas",
+    "discounts": "Descuentos"
+  },
+  "lots": {
+    "title": "Lotes del Producto",
+    "description": "En esta sección podrás observar los lotes del producto seleccionado."
+  }
+},
+"productImageUpload": {
+  "title": "Subir imágenes para {product}",
+  "selection": {
+    "title": "Haz clic para seleccionar imágenes",
+    "formats": "Formatos: JPEG, PNG (máx. 1MB cada una)",
+    "multiple": "Puedes seleccionar múltiples imágenes",
+    "selectedCount": "{count, plural, one {# imagen seleccionada} other {# imágenes seleccionadas}}",
+    "preview": "Vista previa {number}"
+  },
+  "loading": {
+    "uploadingImages": "Subiendo imágenes..."
+  },
+  "buttons": {
+    "cancel": "Cancelar",
+    "uploading": "Subiendo...",
+    "upload": "Subir"
+  },
+  "messages": {
+    "invalidFormat": "Solo se permiten imágenes JPEG y PNG",
+    "exceededSize": "Las imágenes no pueden superar los 1MB",
+    "selectImage": "Selecciona al menos una imagen",
+    "uploadSuccess": "Imágenes subidas exitosamente para {product}",
+    "uploadError": "Error al subir las imágenes"
+  }
+},
+"productImagesDialog": {
+  "title": "Imágenes de {product}",
+  "imageCount": "{count, plural, one {# imagen} other {# imágenes}}",
+  "empty": {
+    "title": "Sin imágenes",
+    "description": "Este producto no tiene imágenes asociadas"
+  },
+  "imageAlt": "Imagen de {product}",
+  "expandedImageAlt": "Imagen ampliada",
+  "actions": {
+    "viewImage": "Ver imagen",
+    "deleteImage": "Eliminar imagen",
+    "closeImage": "Cerrar imagen"
+  },
+  "buttons": {
+    "close": "Cerrar"
+  },
+  "messages": {
+    "deleteSuccess": "Imagen eliminada exitosamente",
+    "deleteError": "Error al eliminar la imagen"
+  }
+},
+"lotesByProducto": {
+  "empty": {
+    "title": "No se encontraron lotes para este producto",
+    "description": "En este momento no se encontraron lotes asociados al producto seleccionado"
+  },
+  "product": {
+    "code": "Código",
+    "barcode": "Barras"
+  },
+  "statistics": {
+    "totalLots": "Total de Lotes",
+    "totalStock": "Stock Total",
+    "totalValue": "Valor Total"
+  },
+  "details": {
+    "title": "Detalle de Lotes"
+  },
+  "columns": {
+    "lotId": "Lote ID",
+    "branch": "Sucursal",
+    "invoice": "Factura",
+    "quantity": "Cantidad",
+    "unitCost": "Costo Unitario",
+    "totalValue": "Valor Total",
+    "status": "Estado"
+  },
+  "status": {
+    "inStock": "En Stock",
+    "outOfStock": "Sin Stock"
+  },
+  "purchases": {
+    "title": "Información de Compras",
+    "invoice": "Factura",
+    "date": "Fecha",
+    "type": "Tipo"
+  },
+  "distribution": {
+    "title": "Distribución por Sucursal"
+  },
+  "quantities": {
+    "units": "{quantity, plural, one {# unidad} other {# unidades}}"
+  }
+},
+"cardFiltersAgroProductos": {
+  "search": {
+    "placeholder": "Buscar productos..."
+  },
+  "filters": {
+    "category": "Categoría",
+    "allCategories": "Todas las categorías",
+    "brand": "Marca",
+    "allBrands": "Todas las marcas",
+    "supplier": "Proveedor",
+    "allSuppliers": "Todos los proveedores"
+  },
+  "activeFilters": {
+    "search": "Búsqueda"
+  },
+  "buttons": {
+    "clearFilters": "Limpiar filtros"
+  }
+},
+
+"formAgroProductos": {
+  "fields": {
+    "productName": "Nombre del Producto",
+    "barcode": "Código de Barra",
+    "brand": "Marca",
+    "category": "Categoría",
+    "subcategory": "Subcategoría",
+    "productType": "Tipo de Producto",
+    "salesUnit": "Unidad de Venta",
+    "usageInstructions": "Forma de Uso",
+    "attributes": "Atributos",
+    "minimumPurchase": "Compra Mínima",
+    "minimumDistribution": "Distribución Mínima",
+    "minimumSale": "Venta Mínima",
+    "cost": "Costo",
+    "price": "Precio",
+    "tax": "Impuesto",
+    "supplier": "Proveedor"
+  },
+  "placeholders": {
+    "productName": "Ej: Vitamina AD3E Inyectable, Fertilizante NPK...",
+    "barcode": "Ej: 7501031311309",
+    "brand": "Selecciona una marca",
+    "category": "Selecciona una categoría",
+    "subcategory": "Selecciona una subcategoría",
+    "productType": "Selecciona un tipo de producto",
+    "salesUnit": "Selecciona la unidad",
+    "fractioningUnit": "Selecciona unidad de fraccionamiento",
+    "fractioningExample": "Ej: 1000 (para kg a gramos)",
+    "contentExample": "Ej: 500 (para 500 ml)",
+    "componentName": "Ej: Vitamina A",
+    "componentQuantity": "Ej: 500000",
+    "componentUnit": "Ej: UI, mg, g",
+    "usageType": "Escribe un tipo de uso y presiona Agregar",
+    "usageInstructions": "Ej: Aplicar por vía intramuscular o subcutánea según indicación del médico veterinario.",
+    "indication": "Escribe una indicación y presiona Agregar",
+    "attributes": "Ej: Frasco plástico de 500 ml, Color verde, Uso agrícola...",
+    "minimumPurchase": "Ej: 12",
+    "minimumDistribution": "Ej: 6",
+    "minimumSale": "Ej: 1",
+    "tax": "Selecciona un impuesto",
+    "supplier": "Selecciona un proveedor"
+  },
+  "fractioning": {
+    "title": "Fraccionamiento",
+    "type": "Tipo de Fraccionamiento",
+    "unit": "Unidad de Fraccionamiento",
+    "content": "Contenido",
+    "contentDescription": "Cantidad total del producto en la unidad principal"
+  },
+  "components": {
+    "title": "Componentes del Producto",
+    "description": "Lista de ingredientes/activos con cantidad o porcentaje",
+    "name": "Nombre del Componente",
+    "quantity": "Cantidad",
+    "unit": "Unidad"
+  },
+  "usageTypes": {
+    "title": "Tipos de Uso",
+    "description": "¿Para qué sirve este producto? (Ej: Bovino, Porcino, Equino)",
+    "instructionsDescription": "Instrucciones de aplicación del producto"
+  },
+  "indications": {
+    "title": "Indicaciones / Padecimientos",
+    "description": "Condición que trata el producto (Ej: cochinilla, sarna, mastitis)"
+  },
+  "purchaseType": {
+    "title": "Tipo de Compra",
+    "directPurchase": "Compra directa a bodega",
+    "description": "Marque esta opción si el producto se compra directamente a bodega"
+  },
+  "status": {
+    "title": "Estado",
+    "available": "Producto disponible",
+    "activity": "Actividad",
+    "active": "Producto activo"
+  },
+  "validation": {
+    "productNameRequired": "El nombre del producto es requerido",
+    "productNameMin": "El nombre debe tener al menos 3 caracteres",
+    "productNameMax": "El nombre no puede tener más de 100 caracteres",
+    "barcodeRequired": "El código de barra es requerido",
+    "barcodeMax": "El código de barra no puede tener más de 20 caracteres",
+    "fractioningUnitMin": "La unidad de fraccionamiento debe ser mayor a 0",
+    "contentMin": "El contenido debe ser mayor a 0",
+    "componentNameRequired": "El nombre es obligatorio",
+    "attributesRequired": "Los atributos son requeridos",
+    "attributesMax": "Los atributos no pueden tener más de 250 caracteres",
+    "minimumPurchaseRequired": "La compra mínima es requerida",
+    "minimumPurchaseMin": "La compra mínima debe ser al menos 1",
+    "minimumDistributionRequired": "La distribución mínima es requerida",
+    "minimumDistributionMin": "La distribución mínima debe ser al menos 1",
+    "minimumSaleRequired": "La venta mínima es requerida",
+    "minimumSaleMin": "La venta mínima debe ser al menos 1",
+    "costRequired": "El costo es requerido",
+    "costMin": "El costo no puede ser negativo",
+    "priceRequired": "El precio es requerido",
+    "priceMin": "El precio no puede ser negativo"
+  },
+  "buttons": {
+    "add": "Agregar",
+    "addComponent": "Agregar Componente",
+    "removeComponent": "Eliminar componente",
+    "removeUsageType": "Eliminar tipo de uso {value}",
+    "removeIndication": "Eliminar indicación {value}",
+    "cancel": "Cancelar",
+    "creating": "Creando...",
+    "updating": "Actualizando...",
+    "createProduct": "Crear Producto",
+    "updateProduct": "Actualizar Producto"
+  },
+  "notifications": {
+    "createSuccess": "Producto creado exitosamente",
+    "createError": "Hubo un error al crear el producto",
+    "createErrorRetry": "Hubo un error al crear el producto. Inténtalo de nuevo.",
+    "updateSuccess": "Producto actualizado exitosamente",
+    "updateError": "Hubo un error al actualizar el producto",
+    "updateErrorRetry": "Hubo un error al actualizar el producto. Inténtalo de nuevo."
+  }
+},
+"tableEscalasProducto": {
+  "form": {
+    "title": "Agregar Nueva Escala"
+  },
+  "fields": {
+    "supplier": "Proveedor",
+    "minimumPurchase": "Compra Mínima",
+    "bonus": "Bonificación",
+    "unitCost": "Costo Unidad"
+  },
+  "placeholders": {
+    "supplier": "Selecciona un proveedor",
+    "minimumQuantity": "Cantidad mínima",
+    "bonusUnits": "Unidades bonus"
+  },
+  "validation": {
+    "minimumPurchaseRequired": "La compra mínima es requerida",
+    "minimumPurchaseMin": "La compra mínima debe ser al menos 1",
+    "bonusRequired": "La bonificación es requerida",
+    "bonusMin": "La bonificación no puede ser negativa",
+    "costRequired": "El costo es requerido",
+    "costMin": "El costo no puede ser negativo"
+  },
+  "buttons": {
+    "creating": "Creando...",
+    "add": "Agregar",
+    "cancel": "Cancelar"
+  },
+  "table": {
+    "caption": "Escalas de precios por volumen de compra"
+  },
+  "columns": {
+    "product": "Producto",
+    "supplier": "Proveedor",
+    "minimumPurchase": "Compra Mínima",
+    "bonus": "Bonificación",
+    "unitCost": "Costo Unitario",
+    "active": "Activa",
+    "actions": "Acciones"
+  },
+  "empty": {
+    "title": "No se encontraron escalas",
+    "description": "En este momento no se encontraron escalas configuradas para el producto seleccionado"
+  },
+  "status": {
+    "yes": "Sí",
+    "no": "No"
+  },
+  "actions": {
+    "edit": "Editar",
+    "openMenu": "Abrir menú",
+    "changeStatus": "Cambiar Estado",
+    "cancelEdit": "Cancelar edición",
+    "save": "Guardar"
+  },
+  "statusDialog": {
+    "title": "Cambiar Estado de la Escala",
+    "description": "¿Estás seguro de que quieres {action} esta escala?",
+    "activate": "activar",
+    "deactivate": "desactivar",
+    "product": "Producto",
+    "supplier": "Proveedor",
+    "minimumPurchase": "Compra Mínima",
+    "bonus": "Bonificación",
+    "cost": "Costo",
+    "units": "unidades"
+  },
+  "pagination": {
+    "showing": "Mostrando {shown} de {total} escalas"
+  },
+  "messages": {
+    "createSuccess": "Escala creada exitosamente",
+    "createError": "Hubo un error al crear la escala",
+    "createUnexpectedError": "Hubo un error al momento de crear la escala. Inténtalo de nuevo.",
+    "updateSuccess": "Escala actualizada exitosamente",
+    "updateError": "Hubo un error al actualizar la escala",
+    "updateUnexpectedError": "Hubo un error al momento de actualizar la escala. Inténtalo de nuevo.",
+    "statusSuccess": "Estado de la escala actualizado exitosamente",
+    "statusError": "Hubo un error al actualizar el estado de la escala",
+    "statusUnexpectedError": "Hubo un error al momento de actualizar el estado de la escala. Inténtalo de nuevo.",
+    "selectProduct": "Debe seleccionar un producto"
+  }
+},
+"tableEscalaInsumo": {
+  "form": {
+    "title": "Agregar Nueva Escala"
+  },
+  "fields": {
+    "supplier": "Proveedor",
+    "minimumPurchase": "Compra Mínima",
+    "bonus": "Bonificación",
+    "unitCost": "Costo Unidad"
+  },
+  "placeholders": {
+    "supplier": "Selecciona un proveedor",
+    "minimumQuantity": "Cantidad mínima",
+    "bonusUnits": "Unidades bonus"
+  },
+  "validation": {
+    "minimumPurchaseRequired": "La compra mínima es requerida",
+    "minimumPurchase": "La compra mínima debe ser al menos 1",
+    "bonusRequired": "La bonificación es requerida",
+    "bonusNonNegative": "La bonificación no puede ser negativa",
+    "costRequired": "El costo es requerido",
+    "costNonNegative": "El costo no puede ser negativo"
+  },
+  "buttons": {
+    "creating": "Creando...",
+    "add": "Agregar",
+    "cancel": "Cancelar",
+    "activate": "Activar",
+    "deactivate": "Desactivar"
+  },
+  "table": {
+    "caption": "Escalas de precios por volumen de compra"
+  },
+  "columns": {
+    "supply": "Insumo",
+    "supplier": "Proveedor",
+    "minimumPurchase": "Compra Mínima",
+    "bonus": "Bonificación",
+    "unitCost": "Costo Unitario",
+    "active": "Activa",
+    "actions": "Acciones"
+  },
+  "empty": {
+    "title": "Error al cargar la escala",
+    "description": "Se produjo un error al momento de cargar las escalas del insumo seleccionado"
+  },
+  "values": {
+    "yes": "Sí",
+    "no": "No",
+    "units": "unidades"
+  },
+  "actions": {
+    "edit": "Editar escala",
+    "openMenu": "Abrir menú",
+    "changeStatus": "Cambiar Estado",
+    "cancelEdit": "Cancelar edición",
+    "save": "Guardar cambios"
+  },
+  "statusDialog": {
+    "title": "Cambiar Estado de la Escala",
+    "confirm": "¿Estás seguro de que quieres {action} esta escala?",
+    "activate": "activar",
+    "deactivate": "desactivar",
+    "supply": "Insumo",
+    "supplier": "Proveedor",
+    "minimumPurchase": "Compra Mínima",
+    "bonus": "Bonificación",
+    "cost": "Costo"
+  },
+  "messages": {
+    "createSuccess": "Escala creada exitosamente",
+    "createError": "Hubo un error al crear la escala",
+    "createUnexpectedError": "Hubo un error al momento de crear la escala. Inténtalo de nuevo.",
+    "updateSuccess": "Escala actualizada exitosamente",
+    "updateError": "Hubo un error al actualizar la escala",
+    "updateUnexpectedError": "Hubo un error al momento de actualizar la escala. Inténtalo de nuevo.",
+    "statusUpdateSuccess": "Estado de la escala actualizado exitosamente",
+    "statusUpdateError": "Hubo un error al actualizar el estado de la escala",
+    "statusUpdateUnexpectedError": "Hubo un error al momento de actualizar el estado de la escala. Inténtalo de nuevo.",
+    "selectSupply": "Debe seleccionar un insumo"
+  },
+  "pagination": {
+    "showing": "Mostrando {shown} de {total} escalas"
+  }
+},
+"optionsInsumos": {
+  "tabs": {
+    "scales": "Escalas"
+  }
+},
+"formProveedores": {
+  "sections": {
+    "legalInformation": "Información Legal",
+    "contactInformation": "Información de Contacto",
+    "location": "Ubicación",
+    "configuration": "Configuración"
+  },
+  "fields": {
+    "legalName": "Nombre Legal",
+    "taxId": "NIT/RTN",
+    "taxRegistrationNumber": "NRC",
+    "paymentTerm": "Plazo (días)",
+    "phone": "Teléfono",
+    "email": "Correo Electrónico",
+    "contactName": "Nombre de Contacto",
+    "department": "Departamento",
+    "departments": "Departamentos",
+    "municipality": "Municipio",
+    "municipalities": "Municipios",
+    "address": "Dirección",
+    "paymentType": "Tipo de Pago",
+    "paymentTypes": "Tipos de Pago",
+    "scaleType": "Tipo de Escala",
+    "scaleTypes": "Tipos de Escala"
+  },
+  "placeholders": {
+    "legalName": "Nombre legal de la empresa",
+    "taxId": "Ej: 0801-2003-12345",
+    "taxRegistrationNumber": "Número de Registro de Contribuyente (opcional)",
+    "paymentTerm": "Días de plazo (opcional)",
+    "phone": "Ej: 2234-5678",
+    "email": "correo@proveedor.com",
+    "contactName": "Nombre de la persona de contacto (opcional)",
+    "loading": "Cargando...",
+    "department": "Selecciona un departamento",
+    "municipality": "Selecciona un municipio",
+    "selectDepartmentFirst": "Primero selecciona un departamento",
+    "address": "Dirección completa del proveedor",
+    "paymentType": "Selecciona el tipo de pago",
+    "scaleType": "Selecciona el tipo de escala"
+  },
+  "validation": {
+    "legalNameRequired": "El nombre legal es requerido",
+    "taxIdRequired": "El NIT/RTN es requerido",
+    "taxIdPattern": "Solo números y guiones",
+    "paymentTermMin": "El plazo debe ser mayor o igual a 0",
+    "phoneRequired": "El teléfono es requerido",
+    "emailRequired": "El correo es requerido",
+    "emailInvalid": "Correo electrónico inválido",
+    "addressRequired": "La dirección es requerida"
+  },
+  "buttons": {
+    "cancel": "Cancelar",
+    "create": "Crear Proveedor",
+    "update": "Actualizar Proveedor"
+  },
+  "messages": {
+    "createSuccess": "Proveedor creado exitosamente",
+    "createError": "Hubo un error al crear el proveedor",
+    "createUnexpectedError": "Hubo un error al crear el proveedor. Inténtalo de nuevo.",
+    "updateSuccess": "Proveedor actualizado exitosamente",
+    "updateError": "Hubo un error al actualizar el proveedor",
+    "updateUnexpectedError": "Hubo un error al actualizar el proveedor. Inténtalo de nuevo."
+  }
+},
+"tableProveedores": {
+  "columns": {
+    "information": "Información",
+    "contact": "Contacto",
+    "location": "Ubicación",
+    "details": "Detalles",
+    "registrationDate": "Fecha de registro",
+    "actions": "Acciones"
+  },
+  "empty": {
+    "searchResults": "No se encontraron proveedores con esta búsqueda",
+    "noProviders": "No hay proveedores registrados"
+  },
+  "details": {
+    "term": "Plazo: {days} días"
+  },
+  "actions": {
+    "editProvider": "Editar proveedor"
+  }
+},
+"tableDescuentosAgro": {
+  "columns": {
+    "name": "Nombre",
+    "percentage": "Porcentaje",
+    "agroservice": "Agroservicio",
+    "actions": "Acciones"
+  },
+  "actions": {
+    "edit": "Editar"
+  }
+},
+"tableDescuentoProductos": {
+  "form": {
+    "title": "Agregar nuevo descuento"
+  },
+  "fields": {
+    "supplier": "Proveedor",
+    "minimumQuantity": "Cantidad mínima",
+    "discount": "Descuento (%)"
+  },
+  "placeholders": {
+    "supplier": "Selecciona un proveedor",
+    "quantity": "Cantidad"
+  },
+  "validation": {
+    "quantityRequired": "La cantidad es requerida",
+    "minimumQuantity": "La cantidad mínima es 1",
+    "discountRequired": "El descuento es requerido",
+    "minimumDiscount": "El descuento mínimo es 0%",
+    "maximumDiscount": "El descuento máximo es 100%"
+  },
+  "buttons": {
+    "creating": "Creando...",
+    "add": "Agregar",
+    "cancel": "Cancelar"
+  },
+  "table": {
+    "caption": "Descuentos por volumen de compra"
+  },
+  "columns": {
+    "product": "Producto",
+    "supplier": "Proveedor",
+    "minimumQuantity": "Cantidad mínima",
+    "discount": "Descuento",
+    "active": "Activa",
+    "actions": "Acciones"
+  },
+  "values": {
+    "notAvailable": "N/A",
+    "yes": "Sí",
+    "no": "No"
+  },
+  "actions": {
+    "edit": "Editar",
+    "moreOptions": "Más opciones",
+    "changeStatus": "Cambiar estado",
+    "cancelEdit": "Cancelar edición",
+    "save": "Guardar"
+  },
+  "empty": {
+    "title": "No se encontraron descuentos",
+    "description": "En este momento no se encuentran descuentos disponibles para este producto"
+  },
+  "statusDialog": {
+    "title": "Cambiar estado del descuento",
+    "confirm": "¿Estás seguro de que quieres {action} este descuento?",
+    "activate": "Activar",
+    "deactivate": "Desactivar",
+    "product": "Producto",
+    "supplier": "Proveedor",
+    "minimumQuantity": "Cantidad mínima",
+    "units": "unidades",
+    "discount": "Descuento"
+  },
+  "messages": {
+    "createSuccess": "Descuento creado exitosamente",
+    "createError": "Hubo un error al crear los descuentos",
+    "createUnexpectedError": "Hubo un error al momento de crear los descuentos. Inténtalo de nuevo.",
+    "updateSuccess": "Descuento actualizado exitosamente",
+    "updateError": "Hubo un error al editar los descuentos",
+    "updateUnexpectedError": "Hubo un error al momento de editar los descuentos. Inténtalo de nuevo.",
+    "statusUpdateSuccess": "Estado del descuento actualizado exitosamente",
+    "statusUpdateError": "Hubo un error al actualizar el estado del descuento",
+    "statusUpdateUnexpectedError": "Hubo un error al momento de actualizar el estado del descuento. Inténtalo de nuevo."
+  }
+},
+"tableAgroInsumos": {
+  "columns": {
+    "code": "Código",
+    "name": "Nombre",
+    "brand": "Marca",
+    "supplier": "Proveedor",
+    "cost": "Costo",
+    "unit": "Unidad",
+    "date": "Fecha",
+    "status": "Estado",
+    "actions": "Acciones"
+  },
+  "empty": {
+    "title": "No hay insumos registrados",
+    "description": "Comienza agregando tu primer insumo"
+  },
+  "values": {
+    "notAvailable": "N/A"
+  },
+  "status": {
+    "available": "Disponible",
+    "unavailable": "No disponible"
+  },
+  "actions": {
+    "configuration": "Configuración",
+    "edit": "Editar"
+  },
+  "modal": {
+    "title": "Gestionar datos del insumo - {name}",
+    "description": "En esta sección podrás gestionar diferentes datos de los insumos"
+  }
+},
+"formAgroInsumos": {
+  "fields": {
+    "name": "Nombre del insumo",
+    "cost": "Costo",
+    "brand": "Marca",
+    "supplier": "Proveedor",
+    "salesUnit": "Unidad de venta"
+  },
+  "placeholders": {
+    "name": "Ej: Fertilizante NPK 15-15-15",
+    "brand": "Selecciona una marca",
+    "supplier": "Selecciona un proveedor",
+    "salesUnit": "Selecciona la unidad"
+  },
+  "validation": {
+    "nameRequired": "El nombre del insumo es requerido",
+    "nameMinLength": "El nombre debe tener al menos 3 caracteres",
+    "nameMaxLength": "El nombre no puede tener más de 100 caracteres",
+    "costRequired": "El costo es requerido",
+    "costMin": "El costo no puede ser negativo"
+  },
+  "buttons": {
+    "cancel": "Cancelar",
+    "creating": "Creando...",
+    "updating": "Actualizando...",
+    "create": "Crear insumo",
+    "update": "Actualizar insumo"
+  },
+  "messages": {
+    "createSuccess": "Insumo creado exitosamente",
+    "createError": "Hubo un error al crear el insumo",
+    "createUnexpectedError": "Hubo un error al crear el insumo. Inténtalo de nuevo.",
+    "updateSuccess": "Insumo actualizado exitosamente",
+    "updateError": "Hubo un error al actualizar el insumo",
+    "updateUnexpectedError": "Hubo un error al actualizar el insumo. Inténtalo de nuevo."
+  }
+},
+"tableConsumoInsumos": {
+  "columns": {
+    "supply": "Insumo",
+    "quantity": "Cantidad",
+    "branch": "Sucursal",
+    "consumptionDate": "Fecha de consumo",
+    "batch": "Lote",
+    "observation": "Observación"
+  },
+  "values": {
+    "notAvailable": "N/A",
+    "units": "unidades",
+    "emptyObservation": "-"
+  }
+},
+"formAddConsumoInsumo": {
+  "fields": {
+    "branch": "Sucursal",
+    "supply": "Insumo",
+    "quantity": "Cantidad a consumir",
+    "consumptionDate": "Fecha de consumo",
+    "observation": "Observación (opcional)"
+  },
+  "placeholders": {
+    "branch": "Selecciona una sucursal",
+    "supply": "Selecciona un insumo",
+    "selectBranchFirst": "Primero selecciona una sucursal",
+    "observation": "Ej: Aplicación de fertilizante en parcela 5"
+  },
+  "validation": {
+    "branchRequired": "Selecciona una sucursal para continuar",
+    "supplyRequired": "Selecciona un insumo para continuar",
+    "quantityRequired": "La cantidad es requerida",
+    "quantityMin": "La cantidad debe ser mayor a 0",
+    "insufficientStock": "No hay suficiente stock. Disponible: {quantity} unidades",
+    "dateRequired": "La fecha de consumo es requerida",
+    "observationMaxLength": "La observación no puede tener más de 500 caracteres"
+  },
+  "availability": {
+    "title": "Disponibilidad en {name}:",
+    "available": "Disponible"
+  },
+  "values": {
+    "loading": "Cargando...",
+    "noCode": "Sin código",
+    "notSelected": "No seleccionada",
+    "code": "Código",
+    "units": "unidades"
+  },
+  "alerts": {
+    "quantityExceedsAvailability": "La cantidad ingresada ({quantity}) excede la disponibilidad ({available} unidades)",
+    "highConsumption": "Estás consumiendo más del 80% del stock disponible.",
+    "stockAvailable": "La cantidad solicitada está dentro del stock disponible."
+  },
+  "buttons": {
+    "cancel": "Cancelar",
+    "reviewAndConfirm": "Revisar y confirmar",
+    "backToForm": "Volver al formulario",
+    "registering": "Registrando...",
+    "confirmAndRegister": "Confirmar y registrar"
+  },
+  "confirmation": {
+    "title": "Confirmar consumo de insumo",
+    "description": "Por favor, verifica los datos antes de confirmar el consumo."
+  },
+  "messages": {
+    "createSuccess": "Consumo de insumo registrado exitosamente",
+    "createError": "Hubo un error al registrar el consumo",
+    "createUnexpectedError": "Hubo un error al registrar el consumo. Inténtalo de nuevo.",
+    "exceedsAvailability": "La cantidad excede la disponibilidad ({quantity} unidades disponibles)"
+  }
+},
+"tableImpuestosProductos": {
+  "columns": {
+    "name": "Nombre",
+    "percentage": "Porcentaje",
+    "status": "Estado",
+    "actions": "Acciones"
+  },
+  "loading": "Cargando impuestos...",
+  "empty": "No hay impuestos registrados.",
+  "status": {
+    "active": "Activo"
+  },
+  "actions": {
+    "edit": "Editar impuesto"
+  }
+},
+"formImpuestosProductos": {
+  "sections": {
+    "information": "Información del impuesto"
+  },
+  "fields": {
+    "name": "Nombre",
+    "percentage": "Porcentaje (%)"
+  },
+  "placeholders": {
+    "name": "Ej. ISV 15%"
+  },
+  "validation": {
+    "nameRequired": "El nombre del impuesto es requerido",
+    "nameMaxLength": "Máximo 100 caracteres",
+    "percentageRequired": "El porcentaje es requerido",
+    "invalidNumber": "Debe ingresar un número",
+    "percentageRange": "Debe estar entre 0 y 100"
+  },
+  "buttons": {
+    "cancel": "Cancelar",
+    "creating": "Creando...",
+    "updating": "Actualizando...",
+    "create": "Crear impuesto",
+    "update": "Actualizar impuesto"
+  },
+  "messages": {
+    "createSuccess": "Impuesto creado exitosamente",
+    "createError": "Hubo un error al crear el impuesto",
+    "createUnexpectedError": "Hubo un error al crear el impuesto.",
+    "updateSuccess": "Impuesto actualizado exitosamente",
+    "updateError": "Hubo un error al actualizar el impuesto",
+    "updateUnexpectedError": "Hubo un error al actualizar el impuesto."
+  }
+},
+"tableExistenciaProductos": {
+  "columns": {
+    "product": "Producto",
+    "barcode": "Código de barra",
+    "branch": "Sucursal",
+    "inventory": "Inventario",
+    "status": "Estado"
+  },
+  "status": {
+    "available": "Disponible",
+    "lowStock": "Bajo stock",
+    "outOfStock": "Agotado"
+  }
+},
+"agroInsumosPage": {
+  "title": "Insumos Agropecuarios",
+  "description": "Gestión completa de insumos para el campo",
+  "buttons": {
+    "add": "Agregar Insumo"
+  },
+  "filters": {
+    "allProviders": "Todos los proveedores",
+    "clear": "Limpiar Filtros"
+  },
+  "list": {
+    "title": "Listado de Insumos",
+    "total": "Total: {total} insumos registrados",
+    "displayed": "{count} mostrados"
+  },
+  "modal": {
+    "editTitle": "Editar Insumo",
+    "addTitle": "Agregar Nuevo Insumo",
+    "editDescription": "Aquí podrás editar la información del insumo.",
+    "addDescription": "Aquí podrás ingresar nuevos insumos al agroservicio."
+  }
+},
+"agroProveedoresPage": {
+  "title": "Control de Proveedores",
+  "description": "Gestiona tus proveedores agroservicios",
+  "buttons": {
+    "add": "Agregar Proveedor"
+  },
+  "search": {
+    "placeholder": "Buscar proveedor por nombre, NIT o NRC..."
+  },
+  "pagination": {
+    "showing": "Mostrando {start} - {end} de {total} proveedores"
+  },
+  "modal": {
+    "editTitle": "Editando el proveedor - {name}",
+    "addTitle": "Agregar nuevo proveedor",
+    "editDescription": "Aquí podrás actualizar la información del proveedor seleccionado para tu agroservicio.",
+    "addDescription": "Aquí podrás registrar un nuevo proveedor para tu agroservicio."
+  }
+},
+"agroConsumoInsumosPage": {
+  "title": "Consumo de Insumos",
+  "description": "Gestiona el consumo de insumos en tu agroservicio",
+  "buttons": {
+    "add": "Agregar Consumo"
+  },
+  "filters": {
+    "title": "Filtros",
+    "description": "Filtra el consumo de insumos por sucursal y rango de fechas",
+    "branch": "Sucursal",
+    "allBranches": "Todas las sucursales"
+  },
+  "list": {
+    "title": "Registros de Consumo",
+    "showing": "Mostrando {count} de {total} registros",
+    "noRecordsAvailable": "No hay registros disponibles",
+    "total": "Total: {total}"
+  },
+  "empty": {
+    "title": "No hay registros",
+    "description": "No se encontraron consumos de insumos con los filtros aplicados"
+  },
+  "modal": {
+    "title": "Agregar Consumo de Insumo"
+  }
+},
+"existenciaProductosPage": {
+  "title": "Existencia de Productos",
+  "summary": {
+    "total": "Total",
+    "units": "unidades"
+  },
+  "filters": {
+    "search": "Buscar producto o sucursal...",
+    "branch": "Filtrar por sucursal",
+    "allBranches": "Todas las sucursales",
+    "product": "Filtrar por producto",
+    "allProducts": "Todos los productos",
+    "clear": "Limpiar filtros"
+  }
+},
+"agroImpuestosPage": {
+  "title": "Control de Impuestos",
+  "buttons": {
+    "add": "Agregar Impuesto"
+  },
+  "table": {
+    "title": "Impuestos registrados",
+    "description": "Administra los impuestos disponibles para tu agroservicio."
+  },
+  "modal": {
+    "editTitle": "Editar Impuesto",
+    "createTitle": "Nuevo Impuesto",
+    "editDescription": "Actualiza el nombre o porcentaje del impuesto.",
+    "createDescription": "Crea un impuesto para aplicarlo a los productos comercializados en tu agroservicio."
+  }
+},
+"agroDescuentosPage": {
+  "title": "Control de Descuentos para Clientes",
+  "description": "Gestiona los descuentos disponibles para tus clientes",
+  "buttons": {
+    "add": "Agregar Descuento"
+  },
+  "list": {
+    "title": "Lista de Descuentos",
+    "discount": "descuento",
+    "discounts": "descuentos"
+  },
+  "error": {
+    "title": "Error",
+    "description": "No se pudieron cargar los descuentos. Por favor, intenta de nuevo."
+  },
+  "empty": {
+    "title": "No hay descuentos registrados",
+    "description": "Comienza agregando tu primer descuento para tus clientes."
+  },
+  "footer": "Los descuentos se aplican automáticamente a los clientes según las reglas configuradas.",
+  "modal": {
+    "editTitle": "Editar Descuento",
+    "createTitle": "Nuevo Descuento",
+    "editDescription": "Actualiza el nombre o porcentaje del descuento.",
+    "createDescription": "Crea un descuento para aplicarlo a los productos comercializados en tu agroservicio."
+  }
+},
+"formDescuentosAgro": {
+  "titles": {
+    "edit": "Editar Descuento",
+    "create": "Crear Descuento"
+  },
+  "descriptions": {
+    "edit": "Actualiza la información del descuento seleccionado.",
+    "create": "Registra un nuevo descuento para tus clientes."
+  },
+  "sections": {
+    "discountInformation": "Información del Descuento"
+  },
+  "fields": {
+    "discountName": "Nombre del Descuento",
+    "discountPercentage": "Porcentaje de Descuento"
+  },
+  "placeholders": {
+    "discountName": "Ej. Descuento por cliente frecuente"
+  },
+  "validation": {
+    "nameRequired": "El nombre del descuento es obligatorio.",
+    "nameMinLength": "El nombre debe tener al menos 3 caracteres.",
+    "nameMaxLength": "El nombre no puede superar los 100 caracteres.",
+    "percentageRequired": "El porcentaje de descuento es obligatorio.",
+    "validNumber": "Ingresa un número válido.",
+    "percentageRange": "El porcentaje debe estar entre 0 y 100."
+  },
+  "hints": {
+    "percentageRange": "Ingresa un porcentaje entre 0% y 100%.",
+    "automaticApplication": "Este descuento se aplicará automáticamente a los clientes según las reglas configuradas."
+  },
+  "buttons": {
+    "cancel": "Cancelar",
+    "creating": "Creando...",
+    "updating": "Actualizando...",
+    "updateDiscount": "Actualizar Descuento",
+    "createDiscount": "Crear Descuento"
+  },
+  "messages": {
+    "createSuccess": "Descuento creado correctamente.",
+    "createError": "No se pudo crear el descuento.",
+    "updateSuccess": "Descuento actualizado correctamente.",
+    "updateError": "No se pudo actualizar el descuento."
+  }
+},
+"empleadosAgroLayout": {
+  "messages": {
+    "logoutSuccess": "Sesión cerrada correctamente",
+    "logoutError": "Ocurrió un error al cerrar la sesión",
+    "expiredSessionError": "Error al cerrar sesión expirada"
+  }
+}
 }
 

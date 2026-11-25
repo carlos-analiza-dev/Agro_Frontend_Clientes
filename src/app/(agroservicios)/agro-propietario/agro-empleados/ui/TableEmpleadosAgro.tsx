@@ -36,6 +36,7 @@ import { isAxiosError } from "axios";
 import { useState } from "react";
 import { editarStatusAgroEmpleado } from "@/api/agroservicio/empleados/accions/editar-empleado";
 import Modal from "@/components/generics/Modal";
+import { useTranslations } from "next-intl";
 
 interface Props {
   isLoading: boolean;
@@ -52,7 +53,9 @@ const TableEmpleadosAgro = ({
   offset,
   handleEditEmpleado,
 }: Props) => {
+  const t = useTranslations("agroEmpleadosPage");
   const queryClient = useQueryClient();
+
   const [empleadoSeleccionado, setEmpleadoSeleccionado] =
     useState<EmpleadoAgro | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -81,10 +84,12 @@ const TableEmpleadosAgro = ({
       editarStatusAgroEmpleado(id, isActive),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["empleados-agro"] });
+
       const mensaje =
         accionDialog === "activar"
-          ? "Empleado activado exitosamente"
-          : "Empleado desactivado exitosamente";
+          ? t("table.messages.activated")
+          : t("table.messages.deactivated");
+
       toast.success(mensaje);
       setOpenDialog(false);
       setEmpleadoSeleccionado(null);
@@ -96,11 +101,20 @@ const TableEmpleadosAgro = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : `Hubo un error al ${accionDialog === "activar" ? "activar" : "desactivar"} el empleado`;
+            : t(
+                accionDialog === "activar"
+                  ? "table.messages.activateError"
+                  : "table.messages.deactivateError",
+              );
+
         toast.error(errorMessage);
       } else {
         toast.error(
-          `Hubo un error al ${accionDialog === "activar" ? "activar" : "desactivar"} el empleado. Inténtalo de nuevo.`,
+          t(
+            accionDialog === "activar"
+              ? "table.messages.activateUnexpectedError"
+              : "table.messages.deactivateUnexpectedError",
+          ),
         );
       }
     },
@@ -128,30 +142,33 @@ const TableEmpleadosAgro = ({
         <TableHeader>
           <TableRow className="bg-slate-50">
             <TableHead className="font-semibold">#</TableHead>
-            <TableHead className="font-semibold">Empleado</TableHead>
+            <TableHead className="font-semibold">
+              {t("table.headers.employee")}
+            </TableHead>
             <TableHead className="font-semibold hidden md:table-cell">
-              Contacto
+              {t("table.headers.contact")}
             </TableHead>
             <TableHead className="font-semibold hidden lg:table-cell">
-              Ubicación
+              {t("table.headers.location")}
             </TableHead>
             <TableHead className="font-semibold hidden sm:table-cell">
-              Rol
+              {t("table.headers.role")}
             </TableHead>
             <TableHead className="font-semibold hidden xl:table-cell">
-              Sucursal
+              {t("table.headers.branch")}
             </TableHead>
             <TableHead className="font-semibold hidden 2xl:table-cell">
-              Estado
+              {t("table.headers.status")}
             </TableHead>
             <TableHead className="font-semibold hidden 2xl:table-cell">
-              Fecha creación
+              {t("table.headers.createdAt")}
             </TableHead>
             <TableHead className="font-semibold text-center">
-              Acciones
+              {t("table.headers.actions")}
             </TableHead>
           </TableRow>
         </TableHeader>
+
         <TableBody>
           {isLoading ? (
             Array.from({ length: limit }).map((_, index) => (
@@ -202,6 +219,7 @@ const TableEmpleadosAgro = ({
                 <TableCell className="font-medium">
                   {offset + index + 1}
                 </TableCell>
+
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <div
@@ -218,6 +236,7 @@ const TableEmpleadosAgro = ({
                         .toUpperCase()
                         .slice(0, 2)}
                     </div>
+
                     <div>
                       <div
                         className={`font-medium ${!empleado.isActive ? "text-gray-400 line-through" : ""}`}
@@ -232,6 +251,7 @@ const TableEmpleadosAgro = ({
                     </div>
                   </div>
                 </TableCell>
+
                 <TableCell className="hidden md:table-cell">
                   <div className="space-y-1">
                     <div className="flex items-center gap-1 text-sm">
@@ -252,6 +272,7 @@ const TableEmpleadosAgro = ({
                     </div>
                   </div>
                 </TableCell>
+
                 <TableCell className="hidden lg:table-cell">
                   <div className="flex items-center gap-1 text-sm">
                     <MapPin className="h-3 w-3 text-gray-400 flex-shrink-0" />
@@ -266,11 +287,13 @@ const TableEmpleadosAgro = ({
                     </Badge>
                   </div>
                 </TableCell>
+
                 <TableCell className="hidden sm:table-cell">
                   <Badge className={getRoleColor(empleado.role.name)}>
                     {empleado.role.name}
                   </Badge>
                 </TableCell>
+
                 <TableCell className="hidden xl:table-cell">
                   {empleado.sucursal ? (
                     <div className="flex items-center gap-1 text-sm">
@@ -283,15 +306,19 @@ const TableEmpleadosAgro = ({
                     </div>
                   ) : (
                     <Badge variant="secondary" className="text-xs">
-                      Sin asignar
+                      {t("table.unassigned")}
                     </Badge>
                   )}
                 </TableCell>
+
                 <TableCell className="hidden 2xl:table-cell">
                   <Badge className={getStatusColor(empleado.isActive)}>
-                    {empleado.isActive ? "Activo" : "Inactivo"}
+                    {empleado.isActive
+                      ? t("table.status.active")
+                      : t("table.status.inactive")}
                   </Badge>
                 </TableCell>
+
                 <TableCell className="hidden 2xl:table-cell">
                   <span
                     className={`text-sm ${!empleado.isActive ? "text-gray-400" : "text-gray-500"}`}
@@ -299,6 +326,7 @@ const TableEmpleadosAgro = ({
                     {formatDateOnly(empleado.createdAt)}
                   </span>
                 </TableCell>
+
                 <TableCell>
                   <div
                     id="id-options-empleados"
@@ -306,26 +334,37 @@ const TableEmpleadosAgro = ({
                   >
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
+                        <Button
+                          variant="ghost"
+                          className="h-8 w-8 p-0"
+                          aria-label={t("table.actions.openMenu")}
+                          title={t("table.actions.openMenu")}
+                        >
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
+
                       <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                        <DropdownMenuLabel>
+                          {t("table.headers.actions")}
+                        </DropdownMenuLabel>
+
                         <DropdownMenuItem
                           onClick={() => handleEditEmpleado(empleado)}
                         >
                           <Edit2 className="mr-2 h-4 w-4" />
-                          Editar
+                          {t("table.actions.edit")}
                         </DropdownMenuItem>
+
                         <DropdownMenuSeparator />
+
                         {empleado.isActive ? (
                           <DropdownMenuItem
                             onClick={() => handleToggleStatus(empleado)}
                             className="text-red-600"
                           >
                             <CircleX className="mr-2 h-4 w-4" />
-                            Desactivar
+                            {t("table.actions.deactivate")}
                           </DropdownMenuItem>
                         ) : (
                           <DropdownMenuItem
@@ -333,7 +372,7 @@ const TableEmpleadosAgro = ({
                             className="text-green-600"
                           >
                             <CheckCircle className="mr-2 h-4 w-4" />
-                            Activar
+                            {t("table.actions.activate")}
                           </DropdownMenuItem>
                         )}
                       </DropdownMenuContent>
@@ -347,7 +386,7 @@ const TableEmpleadosAgro = ({
               <TableCell colSpan={9} className="text-center py-8 text-gray-500">
                 <div className="flex flex-col items-center gap-2">
                   <Users className="h-12 w-12 text-gray-300" />
-                  <p>No hay empleados registrados</p>
+                  <p>{t("table.empty")}</p>
                 </div>
               </TableCell>
             </TableRow>
@@ -360,17 +399,23 @@ const TableEmpleadosAgro = ({
         onOpenChange={setOpenDialog}
         title={
           accionDialog === "activar"
-            ? "¿Activar empleado?"
-            : "¿Desactivar empleado?"
+            ? t("table.confirmation.activateTitle")
+            : t("table.confirmation.deactivateTitle")
         }
-        description={` ¿Estás seguro de que deseas ${accionDialog === "activar" ? "activar" : "desactivar"} a ${empleadoSeleccionado?.nombre}?`}
+        description={t(
+          accionDialog === "activar"
+            ? "table.confirmation.activateDescription"
+            : "table.confirmation.deactivateDescription",
+          { name: empleadoSeleccionado?.nombre ?? "" },
+        )}
         size="xl"
         height="auto"
       >
         <div className="p-6 flex justify-between">
-          <Button variant={"outline"} onClick={() => setOpenDialog(false)}>
-            Cancelar
+          <Button variant="outline" onClick={() => setOpenDialog(false)}>
+            {t("table.confirmation.cancel")}
           </Button>
+
           <Button
             onClick={confirmToggleStatus}
             className={
@@ -381,10 +426,10 @@ const TableEmpleadosAgro = ({
             disabled={mutationStatus.isPending}
           >
             {mutationStatus.isPending
-              ? "Procesando..."
+              ? t("table.confirmation.processing")
               : accionDialog === "activar"
-                ? "Activar"
-                : "Desactivar"}
+                ? t("table.confirmation.activate")
+                : t("table.confirmation.deactivate")}
           </Button>
         </div>
       </Modal>

@@ -1,3 +1,5 @@
+"use client";
+
 import { editarAgroSucursal } from "@/api/agroservicio/agro-sucursales/accions/editar-agro-sucursal";
 import { ingresarAgroSucursal } from "@/api/agroservicio/agro-sucursales/accions/ingresar-agro-sucursal";
 import {
@@ -22,12 +24,12 @@ import { tiposSucursal } from "@/helpers/data/agroservicio/sucursales/tiposSucur
 import useGetEmpleadosAgro from "@/hooks/agroservicios/empleados/useGetEmpleadosAgro";
 import useGetDepartamentosByPais from "@/hooks/departamentos/useGetDepartamentosByPais";
 import useGetMunicipiosActivosByDepto from "@/hooks/municipios/useGetMunicipiosActivosByDepto";
-import useGetAllTrabajadores from "@/hooks/trabajadores/useGetAllTrabajadores";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 interface Props {
   onSuccess?: () => void;
@@ -42,6 +44,8 @@ const FormAddSucursalAgro = ({
   isEdit = false,
   paisId = "",
 }: Props) => {
+  const t = useTranslations("agroSucursalesPage");
+
   const { data: departamentos, isLoading: cargandoDepartamentos } =
     useGetDepartamentosByPais(paisId || "");
   const { data: gerentes } = useGetEmpleadosAgro({ rol: "Gerente Sucursal" });
@@ -127,8 +131,8 @@ const FormAddSucursalAgro = ({
     mutationFn: (data: CreateAgroSucursale) => ingresarAgroSucursal(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agro-sucursales"] });
-      onSuccess!();
-      toast.success("Sucursal Creada Exitosamente");
+      onSuccess?.();
+      toast.success(t("form.messages.created"));
     },
     onError: (error) => {
       if (isAxiosError(error)) {
@@ -137,10 +141,10 @@ const FormAddSucursalAgro = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear la sucursal";
+            : t("form.messages.createError");
         toast.error(errorMessage);
       } else {
-        toast.error("Hubo un error al crear la sucursal. Inténtalo de nuevo.");
+        toast.error(t("form.messages.createUnexpectedError"));
       }
     },
   });
@@ -150,8 +154,8 @@ const FormAddSucursalAgro = ({
       editarAgroSucursal(editSucursal?.id ?? "", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agro-sucursales"] });
-      onSuccess!();
-      toast.success("Sucursal Actualizada Exitosamente");
+      onSuccess?.();
+      toast.success(t("form.messages.updated"));
     },
     onError: (error) => {
       if (isAxiosError(error)) {
@@ -160,12 +164,10 @@ const FormAddSucursalAgro = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar la sucursal";
+            : t("form.messages.updateError");
         toast.error(errorMessage);
       } else {
-        toast.error(
-          "Hubo un error al actualizar la sucursal. Inténtalo de nuevo.",
-        );
+        toast.error(t("form.messages.updateUnexpectedError"));
       }
     },
   });
@@ -190,10 +192,12 @@ const FormAddSucursalAgro = ({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-1">
-        <Label className="font-bold">Nombre de la Sucursal*</Label>
+        <Label className="font-bold">{t("form.fields.name")}*</Label>
         <Input
-          {...register("nombre", { required: "El campo nombre es requerido" })}
-          placeholder="Escriba el nombre de la sucursal"
+          {...register("nombre", {
+            required: t("form.validation.nameRequired"),
+          })}
+          placeholder={t("form.placeholders.name")}
         />
         {errors.nombre && (
           <p className="text-sm font-medium text-red-500">
@@ -203,17 +207,17 @@ const FormAddSucursalAgro = ({
       </div>
 
       <div className="space-y-1">
-        <Label className="font-bold">Tipo de Sucursal*</Label>
+        <Label className="font-bold">{t("form.fields.type")}*</Label>
         <Select
           onValueChange={(value) => setValue("tipo", value as TipoSucursal)}
           defaultValue={editSucursal?.tipo}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Selecciona el tipo de sucursal" />
+            <SelectValue placeholder={t("form.placeholders.type")} />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Tipos de Sucursal</SelectLabel>
+              <SelectLabel>{t("form.labels.branchTypes")}</SelectLabel>
               {tiposSucursal.map((tipo) => (
                 <SelectItem key={tipo.id} value={tipo.value}>
                   {tipo.label}
@@ -231,7 +235,7 @@ const FormAddSucursalAgro = ({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-1">
-          <Label className="font-bold">Departamento*</Label>
+          <Label className="font-bold">{t("form.fields.department")}*</Label>
           <Select
             onValueChange={(value) => setValue("departamentoId", value)}
             defaultValue={editSucursal?.departamento.id}
@@ -239,14 +243,14 @@ const FormAddSucursalAgro = ({
           >
             <SelectTrigger>
               {cargandoDepartamentos ? (
-                <SelectValue placeholder="Cargando..." />
+                <SelectValue placeholder={t("form.labels.loading")} />
               ) : (
-                <SelectValue placeholder="Selecciona un departamento" />
+                <SelectValue placeholder={t("form.placeholders.department")} />
               )}
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Departamentos</SelectLabel>
+                <SelectLabel>{t("form.labels.departments")}</SelectLabel>
                 {departamentos?.data?.departamentos?.map((depto) => (
                   <SelectItem key={depto.id} value={depto.id}>
                     {depto.nombre}
@@ -263,7 +267,7 @@ const FormAddSucursalAgro = ({
         </div>
 
         <div className="space-y-1">
-          <Label className="font-bold">Municipio*</Label>
+          <Label className="font-bold">{t("form.fields.municipality")}*</Label>
           <Select
             onValueChange={(value) => setValue("municipioId", value)}
             defaultValue={editSucursal?.municipio.id}
@@ -271,20 +275,20 @@ const FormAddSucursalAgro = ({
           >
             <SelectTrigger>
               {cargandoMunicipios ? (
-                <SelectValue placeholder="Cargando..." />
+                <SelectValue placeholder={t("form.labels.loading")} />
               ) : (
                 <SelectValue
                   placeholder={
                     departamentoId
-                      ? "Selecciona un municipio"
-                      : "Primero selecciona un departamento"
+                      ? t("form.placeholders.municipality")
+                      : t("form.placeholders.selectDepartmentFirst")
                   }
                 />
               )}
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Municipios</SelectLabel>
+                <SelectLabel>{t("form.labels.municipalities")}</SelectLabel>
                 {municipios?.data?.map((mun) => (
                   <SelectItem key={mun.id} value={mun.id}>
                     {mun.nombre}
@@ -306,8 +310,8 @@ const FormAddSucursalAgro = ({
           value={direccionComplemento || ""}
           onChange={handleAddressChange}
           onCoordinatesChange={handleCoordinatesChange}
-          placeholder="Escriba la dirección completa de la sucursal"
-          label="Dirección*"
+          placeholder={t("form.placeholders.address")}
+          label={t("form.fields.address") + "*"}
           required={true}
           error={errors.direccion_complemento?.message as string}
           initialLat={
@@ -320,17 +324,17 @@ const FormAddSucursalAgro = ({
       </div>
 
       <div className="space-y-1">
-        <Label className="font-bold">Gerente</Label>
+        <Label className="font-bold">{t("form.fields.manager")}</Label>
         <Select
           onValueChange={(value) => setValue("gerenteId", value)}
           defaultValue={editSucursal?.gerente?.id}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Selecciona un gerente (opcional)" />
+            <SelectValue placeholder={t("form.placeholders.manager")} />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Gerentes</SelectLabel>
+              <SelectLabel>{t("form.labels.managers")}</SelectLabel>
               {gerentes?.empleados.map((gerente) => (
                 <SelectItem key={gerente.id} value={gerente.id}>
                   {gerente.nombre}
@@ -342,11 +346,11 @@ const FormAddSucursalAgro = ({
       </div>
 
       <div className="flex justify-end pt-4 gap-3">
-        <Button type="button" variant={"outline"} onClick={() => onSuccess!()}>
-          Cancelar
+        <Button type="button" variant="outline" onClick={() => onSuccess?.()}>
+          {t("form.buttons.cancel")}
         </Button>
         <Button type="submit" disabled={isPending}>
-          {isEdit ? "Actualizar Sucursal" : "Crear Sucursal"}
+          {isEdit ? t("form.buttons.update") : t("form.buttons.create")}
         </Button>
       </div>
     </form>

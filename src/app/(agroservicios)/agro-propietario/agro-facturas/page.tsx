@@ -1,6 +1,5 @@
 "use client";
 
-import ButtonAdd from "@/components/generics/ButtonAdd";
 import TitlePage from "@/components/generics/TitlePage";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,8 +22,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import TableFacturas from "@/components/agroservicio/facturacion/TableFacturas";
 import { MessageError } from "@/components/generics/MessageError";
+import { useTranslations } from "next-intl";
 
 const FacturasAgroPage = () => {
+  const t = useTranslations("facturasAgroPage");
+
   const { cliente } = useAuthStore();
   const propietarioId = cliente?.id ?? "";
   const moneda = cliente?.pais?.simbolo_moneda ?? "L";
@@ -104,23 +106,23 @@ const FacturasAgroPage = () => {
       className="container mx-auto p-4 md:p-6 space-y-6"
     >
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <TitlePage Icon={FileText} title="Facturación de Agroservicio" />
+        <TitlePage Icon={FileText} title={t("ownerTitle")} />
       </div>
 
       {(sucursalSeleccionada || fechaInicio || fechaFin) && (
         <div className="bg-blue-50 p-3 rounded-lg">
           <p className="text-sm text-blue-800">
-            Filtros aplicados:{" "}
+            {t("appliedFilters")}{" "}
             {sucursalSeleccionada && (
               <span className="font-medium">
-                Sucursal:{" "}
+                {t("filters.branch")}:{" "}
                 {sucursalesValidas.find((s) => s.id === sucursalSeleccionada)
-                  ?.nombre || "Seleccionada"}
+                  ?.nombre || t("filters.selected")}
               </span>
             )}
             {fechaInicio && (
               <span className="ml-2">
-                desde{" "}
+                {t("dates.from")}{" "}
                 <span className="font-medium">
                   {new Date(fechaInicio).toLocaleDateString("es-HN")}
                 </span>
@@ -128,7 +130,7 @@ const FacturasAgroPage = () => {
             )}
             {fechaFin && (
               <span className="ml-2">
-                hasta{" "}
+                {t("dates.to")}{" "}
                 <span className="font-medium">
                   {new Date(fechaFin).toLocaleDateString("es-HN")}
                 </span>
@@ -143,7 +145,7 @@ const FacturasAgroPage = () => {
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Filter className="h-5 w-5 text-gray-500" />
-              Filtros
+              {t("filters.title")}
               {activeFiltersCount > 0 && (
                 <Badge variant="secondary" className="ml-2">
                   {activeFiltersCount}
@@ -158,7 +160,7 @@ const FacturasAgroPage = () => {
                 className="text-gray-500 hover:text-gray-700"
               >
                 <X className="h-4 w-4 mr-1" />
-                Limpiar todos
+                {t("buttons.clearAll")}
               </Button>
             )}
           </CardTitle>
@@ -171,7 +173,7 @@ const FacturasAgroPage = () => {
                 className="flex items-center gap-2 text-sm font-medium"
               >
                 <Building className="h-4 w-4 text-gray-500" />
-                Sucursal
+                {t("filters.branch")}
               </Label>
               <Select
                 value={sucursalSeleccionada || "all"}
@@ -182,10 +184,12 @@ const FacturasAgroPage = () => {
                 disabled={isLoadingSucursales}
               >
                 <SelectTrigger className="bg-white">
-                  <SelectValue placeholder="Todas las sucursales" />
+                  <SelectValue placeholder={t("filters.allBranches")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todas las sucursales</SelectItem>
+                  <SelectItem value="all">
+                    {t("filters.allBranches")}
+                  </SelectItem>
                   {sucursalesValidas.map((sucursal) => (
                     <SelectItem key={sucursal.id} value={sucursal.id}>
                       {sucursal.nombre}
@@ -201,7 +205,7 @@ const FacturasAgroPage = () => {
                 className="flex items-center gap-2 text-sm font-medium"
               >
                 <Calendar className="h-4 w-4 text-gray-500" />
-                Fecha Inicio
+                {t("dates.startDate")}
               </Label>
               <Input
                 type="date"
@@ -222,7 +226,7 @@ const FacturasAgroPage = () => {
                 className="flex items-center gap-2 text-sm font-medium"
               >
                 <Calendar className="h-4 w-4 text-gray-500" />
-                Fecha Fin
+                {t("dates.endDate")}
               </Label>
               <Input
                 type="date"
@@ -241,19 +245,20 @@ const FacturasAgroPage = () => {
           {hasActiveFilters && (
             <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t">
               <span className="text-sm text-gray-500 font-medium">
-                Filtros activos:
+                {t("filters.active")}
               </span>
               {sucursalSeleccionada && (
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <Building className="h-3 w-3" />
                   {sucursalesValidas.find((s) => s.id === sucursalSeleccionada)
-                    ?.nombre || "Seleccionada"}
+                    ?.nombre || t("filters.selected")}
                   <button
                     onClick={() => {
                       setSucursalSeleccionada("");
                       setOffset(0);
                     }}
                     className="ml-1 hover:text-gray-700"
+                    aria-label={t("filters.removeBranch")}
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -262,13 +267,15 @@ const FacturasAgroPage = () => {
               {fechaInicio && (
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
-                  Desde: {new Date(fechaInicio).toLocaleDateString("es-HN")}
+                  {t("dates.from")}:{" "}
+                  {new Date(fechaInicio).toLocaleDateString("es-HN")}
                   <button
                     onClick={() => {
                       setFechaInicio("");
                       setOffset(0);
                     }}
                     className="ml-1 hover:text-gray-700"
+                    aria-label={t("dates.removeStartDate")}
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -277,13 +284,15 @@ const FacturasAgroPage = () => {
               {fechaFin && (
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
-                  Hasta: {new Date(fechaFin).toLocaleDateString("es-HN")}
+                  {t("dates.to")}:{" "}
+                  {new Date(fechaFin).toLocaleDateString("es-HN")}
                   <button
                     onClick={() => {
                       setFechaFin("");
                       setOffset(0);
                     }}
                     className="ml-1 hover:text-gray-700"
+                    aria-label={t("dates.removeEndDate")}
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -296,8 +305,8 @@ const FacturasAgroPage = () => {
 
       <div className="flex items-center gap-2">
         <Badge variant="secondary" className="text-sm">
-          Total: {facturas?.total || 0} facturas
-          {hasActiveFilters && " (filtradas)"}
+          {t("summary.total", { total: facturas?.total || 0 })}
+          {hasActiveFilters && ` (${t("summary.filtered")})`}
         </Badge>
       </div>
 
@@ -333,8 +342,8 @@ const FacturasAgroPage = () => {
                 />
               ) : (
                 <MessageError
-                  titulo="No se encontraron facturas"
-                  descripcion="En este momento no se encontraron facturas disponibles"
+                  titulo={t("empty.searchTitle")}
+                  descripcion={t("empty.searchDescription")}
                 />
               )}
             </Card>
@@ -342,9 +351,11 @@ const FacturasAgroPage = () => {
             {facturas && facturas.total > 0 && (
               <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4">
                 <div className="text-sm text-gray-500 order-2 sm:order-1">
-                  Mostrando {Math.min(offset + 1, facturas.total)} -{" "}
-                  {Math.min(offset + limit, facturas.total)} de {facturas.total}{" "}
-                  facturas
+                  {t("pagination.showing", {
+                    from: Math.min(offset + 1, facturas.total),
+                    to: Math.min(offset + limit, facturas.total),
+                    total: facturas.total,
+                  })}
                 </div>
                 <div className="order-1 sm:order-2">
                   <Paginacion
@@ -363,12 +374,12 @@ const FacturasAgroPage = () => {
             <CardContent className="p-12 text-center">
               <FileText className="h-12 w-12 mx-auto text-gray-400 mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No hay facturas
+                {t("empty.title")}
               </h3>
               <p className="text-gray-500">
                 {hasActiveFilters
-                  ? "No se encontraron facturas con los filtros aplicados. Intenta ajustar los filtros."
-                  : "No se han generado facturas aún. Haz clic en 'Generar Factura' para crear una nueva."}
+                  ? t("empty.filteredDescription")
+                  : t("empty.description")}
               </p>
               {hasActiveFilters && (
                 <Button
@@ -376,7 +387,7 @@ const FacturasAgroPage = () => {
                   onClick={limpiarFiltros}
                   className="mt-4"
                 >
-                  Limpiar filtros
+                  {t("buttons.clearFilters")}
                 </Button>
               )}
             </CardContent>

@@ -15,14 +15,12 @@ import {
   Edit,
   Save,
   X,
-  Trash2,
   Percent,
   Loader2,
   MoreVertical,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
 import { toast } from "react-toastify";
 import { isAxiosError } from "axios";
 import TableUsersSkeleton from "@/components/generics/SkeletonTable";
@@ -58,6 +56,7 @@ import { CrearDescuentoInterface } from "@/api/agroservicio/descuentos_producto/
 import { CrearDescuentoProducto } from "@/api/agroservicio/descuentos_producto/accions/crear-descuento-producto";
 import { ActualizarDescuentoProducto } from "@/api/agroservicio/descuentos_producto/accions/actualizar-descuentos";
 import { MessageError } from "@/components/generics/MessageError";
+import { useTranslations } from "next-intl";
 
 interface Props {
   paisId: string;
@@ -84,11 +83,14 @@ const TableDescuentoProductos = ({
   paisId,
   propietarioId,
 }: Props) => {
+  const t = useTranslations("tableDescuentoProductos");
   const queryClient = useQueryClient();
+
   const { data: descuentosData, isLoading } = useGetDescuentoProducto(
     selectedProducto?.id ?? "",
   );
   const { data: proveedores } = useGetAllProveedores(propietarioId);
+
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [selectedDescuento, setSelectedDescuento] =
     useState<DescuentoLocal | null>(null);
@@ -101,6 +103,7 @@ const TableDescuentoProductos = ({
     setValue,
     formState: { errors },
   } = useForm<CrearDescuentoInterface>();
+
   const [descuentos, setDescuentos] = useState<DescuentoLocal[]>([]);
 
   const createMutation = useMutation({
@@ -109,7 +112,7 @@ const TableDescuentoProductos = ({
       queryClient.invalidateQueries({
         queryKey: ["descuento-producto", selectedProducto?.id],
       });
-      toast.success("Descuento creado exitosamente");
+      toast.success(t("messages.createSuccess"));
       reset();
       setSelectedProveedor("");
     },
@@ -120,13 +123,11 @@ const TableDescuentoProductos = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear los descuentos";
+            : t("messages.createError");
 
         toast.error(errorMessage);
       } else {
-        toast.error(
-          "Hubo un error al momento de crear los descuentos. Inténtalo de nuevo.",
-        );
+        toast.error(t("messages.createUnexpectedError"));
       }
     },
   });
@@ -150,7 +151,7 @@ const TableDescuentoProductos = ({
       queryClient.invalidateQueries({
         queryKey: ["descuento-proveedor-producto", selectedProducto?.id],
       });
-      toast.success("Descuento actualizado exitosamente");
+      toast.success(t("messages.updateSuccess"));
     },
     onError: (error) => {
       if (isAxiosError(error)) {
@@ -159,13 +160,11 @@ const TableDescuentoProductos = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al editar los descuentos";
+            : t("messages.updateError");
 
         toast.error(errorMessage);
       } else {
-        toast.error(
-          "Hubo un error al momento de editar los descuentos. Inténtalo de nuevo.",
-        );
+        toast.error(t("messages.updateUnexpectedError"));
       }
     },
   });
@@ -184,7 +183,7 @@ const TableDescuentoProductos = ({
       queryClient.invalidateQueries({
         queryKey: ["descuento-proveedor-producto", selectedProducto?.id],
       });
-      toast.success("Estado del descuento actualizado exitosamente");
+      toast.success(t("messages.statusUpdateSuccess"));
       setIsStatusModalOpen(false);
       setSelectedDescuento(null);
     },
@@ -195,13 +194,11 @@ const TableDescuentoProductos = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar el estado del descuento";
+            : t("messages.statusUpdateError");
 
         toast.error(errorMessage);
       } else {
-        toast.error(
-          "Hubo un error al momento de actualizar el estado del descuento. Inténtalo de nuevo.",
-        );
+        toast.error(t("messages.statusUpdateUnexpectedError"));
       }
       setIsStatusModalOpen(false);
       setSelectedDescuento(null);
@@ -273,15 +270,17 @@ const TableDescuentoProductos = ({
   return (
     <div className="w-full space-y-4">
       <div className="bg-muted p-4 rounded-lg">
-        <h3 className="font-semibold mb-3">Agregar Nuevo Descuento</h3>
+        <h3 className="font-semibold mb-3">{t("form.title")}</h3>
+
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="grid grid-cols-1 md:grid-cols-5 gap-3 items-end"
         >
           <div className="space-y-2">
             <Label htmlFor="proveedorId" className="font-bold">
-              Proveedor
+              {t("fields.supplier")}
             </Label>
+
             <Select
               value={selectedProveedor}
               onValueChange={(value) => {
@@ -290,8 +289,9 @@ const TableDescuentoProductos = ({
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Selecciona un proveedor" />
+                <SelectValue placeholder={t("placeholders.supplier")} />
               </SelectTrigger>
+
               <SelectContent>
                 {proveedores?.map((proveedor) => (
                   <SelectItem key={proveedor.id} value={proveedor.id}>
@@ -300,53 +300,61 @@ const TableDescuentoProductos = ({
                 ))}
               </SelectContent>
             </Select>
+
             {errors.proveedorId && (
               <p className="text-destructive text-xs mt-1">
                 {errors.proveedorId.message}
               </p>
             )}
           </div>
+
           <div>
             <label className="text-sm font-medium mb-1 block">
-              Cantidad Mínima
+              {t("fields.minimumQuantity")}
             </label>
+
             <Input
               type="number"
               min="1"
               {...register("cantidad_comprada", {
-                required: "La cantidad es requerida",
-                min: { value: 1, message: "La cantidad mínima es 1" },
+                required: t("validation.quantityRequired"),
+                min: { value: 1, message: t("validation.minimumQuantity") },
                 valueAsNumber: true,
               })}
-              placeholder="Cantidad"
+              placeholder={t("placeholders.quantity")}
               className={errors.cantidad_comprada ? "border-destructive" : ""}
             />
+
             {errors.cantidad_comprada && (
               <p className="text-destructive text-xs mt-1">
                 {errors.cantidad_comprada.message}
               </p>
             )}
           </div>
+
           <div>
             <label className="text-sm font-medium mb-1 block">
-              Descuento (%)
+              {t("fields.discount")}
             </label>
+
             <div className="relative">
               <Input
                 type="number"
                 min="0"
                 max="100"
                 {...register("descuentos", {
-                  required: "El descuento es requerido",
-                  min: { value: 0, message: "El descuento mínimo es 0%" },
-                  max: { value: 100, message: "El descuento máximo es 100%" },
+                  required: t("validation.discountRequired"),
+                  min: { value: 0, message: t("validation.minimumDiscount") },
+                  max: { value: 100, message: t("validation.maximumDiscount") },
                   valueAsNumber: true,
                 })}
                 placeholder="0"
                 className={`pr-8 ${errors.descuentos ? "border-destructive" : ""}`}
               />
+
               <Percent className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
             </div>
+
             {errors.descuentos && (
               <p className="text-destructive text-xs mt-1">
                 {errors.descuentos.message}
@@ -364,33 +372,49 @@ const TableDescuentoProductos = ({
             ) : (
               <Plus className="h-4 w-4 mr-1" />
             )}
-            {createMutation.isPending ? "Creando..." : "Agregar"}
+            {createMutation.isPending
+              ? t("buttons.creating")
+              : t("buttons.add")}
           </Button>
         </form>
       </div>
 
       <Table>
-        <TableCaption>Descuentos por volumen de compra</TableCaption>
+        <TableCaption>{t("table.caption")}</TableCaption>
+
         <TableHeader>
           <TableRow>
-            <TableHead className="text-center">Producto</TableHead>
-            <TableHead className="text-center">Proveedor</TableHead>
-            <TableHead className="text-center">Cantidad Mínima</TableHead>
-            <TableHead className="text-center">Descuento</TableHead>
-            <TableHead className="text-center">Activa</TableHead>
-            <TableHead className="text-center">Acciones</TableHead>
+            <TableHead className="text-center">
+              {t("columns.product")}
+            </TableHead>
+            <TableHead className="text-center">
+              {t("columns.supplier")}
+            </TableHead>
+            <TableHead className="text-center">
+              {t("columns.minimumQuantity")}
+            </TableHead>
+            <TableHead className="text-center">
+              {t("columns.discount")}
+            </TableHead>
+            <TableHead className="text-center">{t("columns.active")}</TableHead>
+            <TableHead className="text-center">
+              {t("columns.actions")}
+            </TableHead>
           </TableRow>
         </TableHeader>
+
         <TableBody>
           {descuentos && descuentos.length > 0 ? (
             descuentos.map((descuento) => (
               <TableRow key={descuento.id}>
                 <TableCell className="text-center">
-                  {descuento.producto?.nombre || "N/A"}
+                  {descuento.producto?.nombre || t("values.notAvailable")}
                 </TableCell>
+
                 <TableCell className="text-center">
-                  {descuento.proveedor.nombre_legal || "N/A"}
+                  {descuento.proveedor.nombre_legal || t("values.notAvailable")}
                 </TableCell>
+
                 <TableCell className="flex justify-center">
                   <Input
                     type="number"
@@ -413,6 +437,7 @@ const TableDescuentoProductos = ({
                     disabled={!descuento.editing}
                   />
                 </TableCell>
+
                 <TableCell className="text-center">
                   <div className="flex items-center justify-center gap-1">
                     <Input
@@ -435,9 +460,11 @@ const TableDescuentoProductos = ({
                       className="w-20 text-right"
                       disabled={!descuento.editing}
                     />
+
                     <Percent className="h-4 w-4 text-muted-foreground" />
                   </div>
                 </TableCell>
+
                 <TableCell className="text-center">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -446,9 +473,10 @@ const TableDescuentoProductos = ({
                         : "bg-red-100 text-red-800"
                     }`}
                   >
-                    {descuento.isActive ? "Sí" : "No"}
+                    {descuento.isActive ? t("values.yes") : t("values.no")}
                   </span>
                 </TableCell>
+
                 <TableCell className="text-center">
                   <div className="flex justify-center gap-2">
                     {!descuento.editing ? (
@@ -458,20 +486,27 @@ const TableDescuentoProductos = ({
                           size="sm"
                           onClick={() => toggleEdit(descuento.id)}
                           disabled={updateMutation.isPending}
+                          title={t("actions.edit")}
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
+
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              title={t("actions.moreOptions")}
+                            >
                               <MoreVertical className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
+
                           <DropdownMenuContent>
                             <DropdownMenuItem
                               onClick={() => openStatusModal(descuento)}
                             >
-                              Cambiar Estado
+                              {t("actions.changeStatus")}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -483,14 +518,17 @@ const TableDescuentoProductos = ({
                           size="sm"
                           onClick={() => toggleEdit(descuento.id)}
                           disabled={updateMutation.isPending}
+                          title={t("actions.cancelEdit")}
                         >
                           <X className="h-4 w-4" />
                         </Button>
+
                         <Button
                           variant="default"
                           size="sm"
                           onClick={() => handleSave(descuento.id)}
                           disabled={updateMutation.isPending}
+                          title={t("actions.save")}
                         >
                           {updateMutation.isPending ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
@@ -506,10 +544,10 @@ const TableDescuentoProductos = ({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={7} className="text-center py-4">
+              <TableCell colSpan={6} className="text-center py-4">
                 <MessageError
-                  titulo="No se encontraron descuentos"
-                  descripcion="En este momento no se encuentran descuentos disponibles para este producto"
+                  titulo={t("empty.title")}
+                  descripcion={t("empty.description")}
                 />
               </TableCell>
             </TableRow>
@@ -520,28 +558,35 @@ const TableDescuentoProductos = ({
       <AlertDialog open={isStatusModalOpen} onOpenChange={setIsStatusModalOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Cambiar Estado del Descuento</AlertDialogTitle>
+            <AlertDialogTitle>{t("statusDialog.title")}</AlertDialogTitle>
+
             <AlertDialogDescription>
-              ¿Estás seguro de que quieres{" "}
-              {selectedDescuento?.isActive ? "desactivar" : "activar"} este
-              descuento?
+              {t("statusDialog.confirm", {
+                action: selectedDescuento?.isActive
+                  ? t("statusDialog.deactivate")
+                  : t("statusDialog.activate"),
+              })}
               <br />
               <br />
-              <strong>Producto:</strong> {selectedDescuento?.producto?.nombre}
+              <strong>{t("statusDialog.product")}:</strong>{" "}
+              {selectedDescuento?.producto?.nombre}
               <br />
-              <strong>Proveedor:</strong>{" "}
+              <strong>{t("statusDialog.supplier")}:</strong>{" "}
               {selectedDescuento?.proveedor?.nombre_legal}
               <br />
-              <strong>Cantidad Mínima:</strong>{" "}
-              {selectedDescuento?.cantidad_comprada} unidades
+              <strong>{t("statusDialog.minimumQuantity")}:</strong>{" "}
+              {selectedDescuento?.cantidad_comprada} {t("statusDialog.units")}
               <br />
-              <strong>Descuento:</strong> {selectedDescuento?.descuentos}%
+              <strong>{t("statusDialog.discount")}:</strong>{" "}
+              {selectedDescuento?.descuentos}%
             </AlertDialogDescription>
           </AlertDialogHeader>
+
           <AlertDialogFooter>
             <AlertDialogCancel disabled={toggleStatusMutation.isPending}>
-              Cancelar
+              {t("buttons.cancel")}
             </AlertDialogCancel>
+
             <AlertDialogAction
               onClick={() => handleStatusChange(!selectedDescuento?.isActive)}
               disabled={toggleStatusMutation.isPending}
@@ -554,7 +599,10 @@ const TableDescuentoProductos = ({
               {toggleStatusMutation.isPending ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               ) : null}
-              {selectedDescuento?.isActive ? "Desactivar" : "Activar"}
+
+              {selectedDescuento?.isActive
+                ? t("statusDialog.deactivate")
+                : t("statusDialog.activate")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

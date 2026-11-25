@@ -1,4 +1,5 @@
 import { useState, useMemo, Dispatch, SetStateAction } from "react";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -71,6 +72,8 @@ const SelectorProductos = ({
   tipo_uso,
   isLoading,
 }: SelectorProductosProps) => {
+  const t = useTranslations("selectorProductos");
+
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -109,16 +112,14 @@ const SelectorProductos = ({
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-2">
           <div className="h-8 w-1 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full"></div>
-          <h2 className="text-lg font-semibold text-gray-800">
-            Filtros de Búsqueda
-          </h2>
+          <h2 className="text-lg font-semibold text-gray-800">{t("title")}</h2>
           {(categoriaId ||
             subcategoriaId ||
             tipoId ||
             indicaciones ||
             tipo_uso) && (
             <Badge variant="secondary" className="ml-2">
-              Filtros activos
+              {t("activeFilters")}
             </Badge>
           )}
         </div>
@@ -134,7 +135,7 @@ const SelectorProductos = ({
           className="inline-flex cursor-pointer select-none items-center gap-2 rounded-md border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600 active:scale-95"
         >
           <Filter className="h-4 w-4" />
-          Limpiar Filtros
+          {t("buttons.clearFilters")}
         </div>
       </div>
 
@@ -145,7 +146,7 @@ const SelectorProductos = ({
               <span className="text-blue-500">
                 <FolderClosed size={15} />
               </span>{" "}
-              Categoría
+              {t("fields.category")}
             </Label>
             <Select
               value={categoriaId}
@@ -155,7 +156,7 @@ const SelectorProductos = ({
               }}
             >
               <SelectTrigger className="bg-white border-gray-200 hover:border-blue-300 transition-colors">
-                <SelectValue placeholder="Todas las categorías" />
+                <SelectValue placeholder={t("placeholders.allCategories")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
@@ -170,7 +171,7 @@ const SelectorProductos = ({
                     ))
                   ) : (
                     <div className="p-2 text-center text-gray-500 text-sm">
-                      No hay categorías disponibles
+                      {t("empty.categories")}
                     </div>
                   )}
                 </SelectGroup>
@@ -183,7 +184,7 @@ const SelectorProductos = ({
               <span className="text-purple-500">
                 <FolderOpen size={15} />
               </span>{" "}
-              Subcategoría
+              {t("fields.subcategory")}
             </Label>
             <Select
               value={subcategoriaId}
@@ -199,8 +200,8 @@ const SelectorProductos = ({
                 <SelectValue
                   placeholder={
                     !categoriaId
-                      ? "Seleccione categoría primero"
-                      : "Todas las subcategorías"
+                      ? t("placeholders.selectCategoryFirst")
+                      : t("placeholders.allSubcategories")
                   }
                 />
               </SelectTrigger>
@@ -218,8 +219,8 @@ const SelectorProductos = ({
                   ) : (
                     <div className="p-2 text-center text-gray-500 text-sm">
                       {categoriaId
-                        ? "No hay subcategorías"
-                        : "Seleccione una categoría"}
+                        ? t("empty.subcategories")
+                        : t("empty.selectCategory")}
                     </div>
                   )}
                 </SelectGroup>
@@ -232,7 +233,7 @@ const SelectorProductos = ({
               <span className="text-orange-500">
                 <Tag size={15} />
               </span>{" "}
-              Tipo de Producto
+              {t("fields.productType")}
             </Label>
             <Select
               value={tipoId}
@@ -245,8 +246,8 @@ const SelectorProductos = ({
                 <SelectValue
                   placeholder={
                     !subcategoriaId
-                      ? "Seleccione subcategoría primero"
-                      : "Todos los tipos"
+                      ? t("placeholders.selectSubcategoryFirst")
+                      : t("placeholders.allTypes")
                   }
                 />
               </SelectTrigger>
@@ -264,8 +265,8 @@ const SelectorProductos = ({
                   ) : (
                     <div className="p-2 text-center text-gray-500 text-sm">
                       {subcategoriaId
-                        ? "No hay tipos de producto"
-                        : "Seleccione una subcategoría"}
+                        ? t("empty.productTypes")
+                        : t("empty.selectSubcategory")}
                     </div>
                   )}
                 </SelectGroup>
@@ -282,11 +283,11 @@ const SelectorProductos = ({
               <span className="text-blue-600">
                 <Pill size={15} />
               </span>{" "}
-              Indicaciones
+              {t("fields.indications")}
             </Label>
             <Input
               type="text"
-              placeholder="Ej: moco, cochilla, infecciones..."
+              placeholder={t("placeholders.indications")}
               value={indicaciones}
               onChange={(e) => {
                 const valor = e.target.value.replace(
@@ -298,7 +299,7 @@ const SelectorProductos = ({
               className="bg-white border-gray-200 focus:border-blue-400 focus:ring-blue-400 transition-all"
             />
             <p className="text-xs text-gray-500">
-              Separa múltiples indicaciones con comas
+              {t("hints.multipleIndications")}
             </p>
           </div>
 
@@ -307,11 +308,11 @@ const SelectorProductos = ({
               <span className="text-purple-600">
                 <TicketSlash size={15} />
               </span>{" "}
-              Usos del Producto
+              {t("fields.productUses")}
             </Label>
             <Input
               type="text"
-              placeholder="Ej: engorde, reproducción, lechero..."
+              placeholder={t("placeholders.productUses")}
               value={tipo_uso}
               onChange={(e) => {
                 const valor = e.target.value.replace(
@@ -322,9 +323,7 @@ const SelectorProductos = ({
               }}
               className="bg-white border-gray-200 focus:border-purple-400 focus:ring-purple-400 transition-all"
             />
-            <p className="text-xs text-gray-500">
-              Separa múltiples usos con comas
-            </p>
+            <p className="text-xs text-gray-500">{t("hints.multipleUses")}</p>
           </div>
         </div>
       </div>
@@ -334,7 +333,7 @@ const SelectorProductos = ({
           <div className="relative flex-1">
             <Input
               type="text"
-              placeholder="Buscar producto para agregar..."
+              placeholder={t("placeholders.searchProduct")}
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -364,7 +363,7 @@ const SelectorProductos = ({
             disabled={disabled}
             className="gap-2 transition-all"
           >
-            {isOpen ? "Cerrar" : "Buscar"}
+            {isOpen ? t("buttons.close") : t("buttons.search")}
           </Button>
         </div>
 
@@ -374,15 +373,15 @@ const SelectorProductos = ({
               {isLoading ? (
                 <div className="p-8 text-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
-                  <p className="text-gray-500">Cargando productos...</p>
+                  <p className="text-gray-500">{t("loading.products")}</p>
                 </div>
               ) : opcionesFiltradas.length === 0 ? (
                 <div className="p-8 text-center">
                   <div className="text-4xl mb-3">🔍</div>
                   <p className="text-gray-600 font-medium">
                     {searchTerm
-                      ? `No se encontraron resultados para "${searchTerm}"`
-                      : "No hay productos disponibles"}
+                      ? t("empty.searchResults", { searchTerm })
+                      : t("empty.products")}
                   </p>
                   {(categoriaId ||
                     subcategoriaId ||
@@ -395,14 +394,16 @@ const SelectorProductos = ({
                       onClick={() => clearFilters()}
                       className="mt-2 text-blue-600"
                     >
-                      Limpiar filtros
+                      {t("buttons.clearFilters")}
                     </Button>
                   )}
                 </div>
               ) : (
                 <div className="py-2 divide-y divide-gray-100">
                   <div className="px-3 py-2 bg-gray-50 text-xs text-gray-500 font-medium sticky top-0">
-                    {opcionesFiltradas.length} resultados encontrados
+                    {t("results.found", {
+                      count: opcionesFiltradas.length,
+                    })}
                   </div>
                   {opcionesFiltradas.map((item) => {
                     const seleccionado = estaSeleccionado(item.id);
@@ -426,7 +427,7 @@ const SelectorProductos = ({
                                 {item.nombre}
                               </span>
                               <Badge variant="default" className="text-xs">
-                                Producto
+                                {t("labels.product")}
                               </Badge>
                               <Badge variant="outline" className="text-xs">
                                 {simbolo} {Number(item.precio).toFixed(2)}
@@ -436,7 +437,7 @@ const SelectorProductos = ({
                                   variant="outline"
                                   className="bg-green-50 text-green-700 text-xs border-green-200"
                                 >
-                                  ✓ Agregado
+                                  ✓ {t("labels.added")}
                                 </Badge>
                               )}
                             </div>
@@ -445,7 +446,7 @@ const SelectorProductos = ({
                               {item.codigo && (
                                 <div className="flex items-center gap-2">
                                   <span className="text-xs font-medium text-gray-500">
-                                    Código:
+                                    {t("labels.code")}:
                                   </span>
                                   <span className="text-xs text-gray-600">
                                     {item.codigo}
@@ -459,7 +460,7 @@ const SelectorProductos = ({
                                     <div className="flex items-center gap-2">
                                       <Pill size={15} />
                                       <span className="text-xs font-medium text-blue-600 min-w-[80px]">
-                                        Indicaciones:
+                                        {t("fields.indications")}:
                                       </span>
                                     </div>
                                     <div className="flex flex-wrap gap-1">
@@ -483,7 +484,7 @@ const SelectorProductos = ({
                                   <div className="flex items-center gap-2">
                                     <Tag size={15} />
                                     <span className="text-xs font-medium text-purple-600 min-w-[80px]">
-                                      Usos:
+                                      {t("labels.uses")}:
                                     </span>
                                   </div>
 
@@ -507,7 +508,7 @@ const SelectorProductos = ({
                                     <div className="flex items-center gap-2">
                                       <Package size={15} />
                                       <span className="text-xs font-medium text-orange-600 min-w-[80px]">
-                                        Componentes:
+                                        {t("labels.components")}:
                                       </span>
                                     </div>
 
@@ -542,7 +543,7 @@ const SelectorProductos = ({
                               className="ml-3 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
                             >
                               <Plus className="h-4 w-4 mr-1" />
-                              Agregar
+                              {t("buttons.add")}
                             </Button>
                           )}
                         </div>
@@ -567,13 +568,14 @@ const SelectorProductos = ({
         indicaciones ||
         tipo_uso) && (
         <div className="mt-3 flex flex-wrap gap-2">
-          <span className="text-xs text-gray-500">Filtros activos:</span>
+          <span className="text-xs text-gray-500">{t("activeFilters")}:</span>
           {categoriaId && (
             <Badge
               variant="secondary"
               className="text-xs bg-blue-100 text-blue-700"
             >
-              Categoría: {categorias?.find((c) => c.id === categoriaId)?.nombre}
+              {t("fields.category")}:{" "}
+              {categorias?.find((c) => c.id === categoriaId)?.nombre}
             </Badge>
           )}
           {subcategoriaId && (
@@ -581,7 +583,7 @@ const SelectorProductos = ({
               variant="secondary"
               className="text-xs bg-purple-100 text-purple-700"
             >
-              Subcategoría seleccionada
+              {t("labels.subcategorySelected")}
             </Badge>
           )}
           {tipoId && (
@@ -589,7 +591,7 @@ const SelectorProductos = ({
               variant="secondary"
               className="text-xs bg-orange-100 text-orange-700"
             >
-              Tipo seleccionado
+              {t("labels.typeSelected")}
             </Badge>
           )}
           {indicaciones && (
@@ -597,7 +599,7 @@ const SelectorProductos = ({
               variant="secondary"
               className="text-xs bg-blue-100 text-blue-700"
             >
-              Indicaciones: {indicaciones}
+              {t("fields.indications")}: {indicaciones}
             </Badge>
           )}
           {tipo_uso && (
@@ -605,7 +607,7 @@ const SelectorProductos = ({
               variant="secondary"
               className="text-xs bg-purple-100 text-purple-700"
             >
-              Usos: {tipo_uso}
+              {t("labels.uses")}: {tipo_uso}
             </Badge>
           )}
         </div>

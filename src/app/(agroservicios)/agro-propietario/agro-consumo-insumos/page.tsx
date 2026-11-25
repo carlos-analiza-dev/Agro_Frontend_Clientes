@@ -1,4 +1,5 @@
 "use client";
+
 import ButtonAdd from "@/components/generics/ButtonAdd";
 import TitlePage from "@/components/generics/TitlePage";
 import useGetConsumoInsumos from "@/hooks/agroservicios/consumo-insumos/useGetConsumoInsumos";
@@ -27,8 +28,11 @@ import SkeletonPage from "@/components/generics/SkeletonPage";
 import TableConsumoInsumos from "@/components/agroservicio/consumos-insumos/TableConsumoInsumos";
 import Modal from "@/components/generics/Modal";
 import FormAddConsumoInsumo from "@/components/agroservicio/consumos-insumos/FormAddConsumoInsumo";
+import { useTranslations } from "next-intl";
 
 const AgroConsumoInsumos = () => {
+  const t = useTranslations("agroConsumoInsumosPage");
+
   const { cliente } = useAuthStore();
   const propietarioId = cliente?.id ?? "";
   const { data: sucursales } = useGetAllSucursales();
@@ -64,13 +68,13 @@ const AgroConsumoInsumos = () => {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <TitlePage
           Icon={FlaskConical}
-          title="Consumo de Insumos"
-          description="Gestiona el consumo de insumos en tu agroservicio"
+          title={t("title")}
+          description={t("description")}
         />
 
         <ButtonAdd
           id="add-consumo-insumo"
-          title="Agregar Consumo"
+          title={t("buttons.add")}
           Icon={FlaskConical}
           action={() => setOpenModalForm(true)}
           className="w-full md:w-auto bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 shadow-lg hover:shadow-xl transition-all duration-300"
@@ -81,24 +85,24 @@ const AgroConsumoInsumos = () => {
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2">
             <Filter className="h-5 w-5 text-muted-foreground" />
-            Filtros
+            {t("filters.title")}
           </CardTitle>
-          <CardDescription>
-            Filtra el consumo de insumos por sucursal y rango de fechas
-          </CardDescription>
+          <CardDescription>{t("filters.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="sucursal" className="text-sm font-medium">
-                Sucursal
+                {t("filters.branch")}
               </Label>
               <Select value={selectSucursal} onValueChange={setSelectSucursal}>
                 <SelectTrigger id="sucursal" className="w-full">
-                  <SelectValue placeholder="Todas las sucursales" />
+                  <SelectValue placeholder={t("filters.allBranches")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="todas">Todas las sucursales</SelectItem>
+                  <SelectItem value="todas">
+                    {t("filters.allBranches")}
+                  </SelectItem>
                   {sucursales?.map((sucursal: any) => (
                     <SelectItem key={sucursal.id} value={sucursal.id}>
                       {sucursal.nombre}
@@ -115,16 +119,19 @@ const AgroConsumoInsumos = () => {
         <CardHeader className="pb-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
-              <CardTitle className="text-lg">Registros de Consumo</CardTitle>
+              <CardTitle className="text-lg">{t("list.title")}</CardTitle>
               <CardDescription>
                 {consumo?.total
-                  ? `Mostrando ${consumo.data.length} de ${consumo.total} registros`
-                  : "No hay registros disponibles"}
+                  ? t("list.showing", {
+                      count: consumo.data.length,
+                      total: consumo.total,
+                    })
+                  : t("list.noRecordsAvailable")}
               </CardDescription>
             </div>
             {consumo?.total && (
               <Badge variant="outline" className="w-fit">
-                Total: {consumo.total}
+                {t("list.total", { total: consumo.total })}
               </Badge>
             )}
           </div>
@@ -151,18 +158,17 @@ const AgroConsumoInsumos = () => {
           ) : (
             <div className="text-center py-8 text-muted-foreground">
               <FlaskConical className="h-12 w-12 mx-auto mb-3 opacity-50" />
-              <p className="text-lg font-medium">No hay registros</p>
-              <p className="text-sm">
-                No se encontraron consumos de insumos con los filtros aplicados
-              </p>
+              <p className="text-lg font-medium">{t("empty.title")}</p>
+              <p className="text-sm">{t("empty.description")}</p>
             </div>
           )}
         </CardContent>
       </Card>
+
       <Modal
         open={openModalForm}
         onOpenChange={setOpenModalForm}
-        title="Agregar Consumo de Insumo"
+        title={t("modal.title")}
         size="2xl"
         height="auto"
         showCloseButton={false}

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardContent,
@@ -18,6 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Package, Store, FileText, Hash } from "lucide-react";
 import useGetLotesByProducto from "@/hooks/agroservicios/productos/useGetLotesByProducto";
 import { MessageError } from "@/components/generics/MessageError";
+import { useTranslations } from "next-intl";
 
 interface Props {
   productoId: string;
@@ -25,6 +28,8 @@ interface Props {
 }
 
 const LotesByProducto = ({ productoId, moneda }: Props) => {
+  const t = useTranslations("lotesByProducto");
+
   const { data: lotes_producto, isLoading } = useGetLotesByProducto(productoId);
 
   if (isLoading) {
@@ -35,8 +40,8 @@ const LotesByProducto = ({ productoId, moneda }: Props) => {
     return (
       <div className="flex justify-center items-center">
         <MessageError
-          titulo="No se encontraron lotes para este producto"
-          descripcion="En este momento no se encontraron lotes asociados al producto seleccionado"
+          titulo={t("empty.title")}
+          descripcion={t("empty.description")}
         />
       </div>
     );
@@ -46,6 +51,7 @@ const LotesByProducto = ({ productoId, moneda }: Props) => {
     (sum, lote) => sum + parseFloat(lote.cantidad),
     0,
   );
+
   const valorTotal = lotes_producto.reduce((sum, lote) => {
     const costo = parseFloat(lote.costo_por_unidad || lote.costo);
     const cantidad = parseFloat(lote.cantidad);
@@ -63,7 +69,8 @@ const LotesByProducto = ({ productoId, moneda }: Props) => {
             {producto?.nombre}
           </CardTitle>
           <CardDescription>
-            Código: {producto?.codigo} | Barras: {producto?.codigo_barra}
+            {t("product.code")}: {producto?.codigo} | {t("product.barcode")}:{" "}
+            {producto?.codigo_barra}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -72,19 +79,25 @@ const LotesByProducto = ({ productoId, moneda }: Props) => {
               <span className="text-2xl font-bold text-blue-600">
                 {lotes_producto.length}
               </span>
-              <span className="text-sm text-blue-600">Total de Lotes</span>
+              <span className="text-sm text-blue-600">
+                {t("statistics.totalLots")}
+              </span>
             </div>
             <div className="flex flex-col items-center justify-center p-4 bg-green-50 rounded-lg">
               <span className="text-2xl font-bold text-green-600">
                 {stockTotal}
               </span>
-              <span className="text-sm text-green-600">Stock Total</span>
+              <span className="text-sm text-green-600">
+                {t("statistics.totalStock")}
+              </span>
             </div>
             <div className="flex flex-col items-center justify-center p-4 bg-purple-50 rounded-lg">
               <span className="text-2xl font-bold text-purple-600">
-                L {valorTotal.toFixed(2)}
+                {moneda} {valorTotal.toFixed(2)}
               </span>
-              <span className="text-sm text-purple-600">Valor Total</span>
+              <span className="text-sm text-purple-600">
+                {t("statistics.totalValue")}
+              </span>
             </div>
           </div>
         </CardContent>
@@ -94,20 +107,26 @@ const LotesByProducto = ({ productoId, moneda }: Props) => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Detalle de Lotes
+            {t("details.title")}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Lote ID</TableHead>
-                <TableHead>Sucursal</TableHead>
-                <TableHead>Factura</TableHead>
-                <TableHead className="text-right">Cantidad</TableHead>
-                <TableHead className="text-right">Costo Unitario</TableHead>
-                <TableHead className="text-right">Valor Total</TableHead>
-                <TableHead>Estado</TableHead>
+                <TableHead>{t("columns.lotId")}</TableHead>
+                <TableHead>{t("columns.branch")}</TableHead>
+                <TableHead>{t("columns.invoice")}</TableHead>
+                <TableHead className="text-right">
+                  {t("columns.quantity")}
+                </TableHead>
+                <TableHead className="text-right">
+                  {t("columns.unitCost")}
+                </TableHead>
+                <TableHead className="text-right">
+                  {t("columns.totalValue")}
+                </TableHead>
+                <TableHead>{t("columns.status")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -154,7 +173,9 @@ const LotesByProducto = ({ productoId, moneda }: Props) => {
                     </TableCell>
                     <TableCell>
                       <Badge variant={tieneStock ? "default" : "secondary"}>
-                        {tieneStock ? "En Stock" : "Sin Stock"}
+                        {tieneStock
+                          ? t("status.inStock")
+                          : t("status.outOfStock")}
                       </Badge>
                     </TableCell>
                   </TableRow>
@@ -170,7 +191,7 @@ const LotesByProducto = ({ productoId, moneda }: Props) => {
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <FileText className="h-4 w-4" />
-              Información de Compras
+              {t("purchases.title")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -182,18 +203,21 @@ const LotesByProducto = ({ productoId, moneda }: Props) => {
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="font-medium text-sm">
-                      Factura: {lote.compra?.numero_factura}
+                      {t("purchases.invoice")}: {lote.compra?.numero_factura}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Fecha: {new Date(lote.compra?.fecha).toLocaleDateString()}
+                      {t("purchases.date")}:{" "}
+                      {new Date(lote.compra?.fecha).toLocaleDateString()}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Tipo: {lote.compra?.tipo_pago} |{" "}
+                      {t("purchases.type")}: {lote.compra?.tipo_pago} |{" "}
                       {lote.compra?.tipo_compra}
                     </p>
                   </div>
                   <Badge variant="outline" className="text-xs">
-                    {parseFloat(lote.cantidad)} unidades
+                    {t("quantities.units", {
+                      quantity: parseFloat(lote.cantidad),
+                    })}
                   </Badge>
                 </div>
               </div>
@@ -205,7 +229,7 @@ const LotesByProducto = ({ productoId, moneda }: Props) => {
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <Store className="h-4 w-4" />
-              Distribución por Sucursal
+              {t("distribution.title")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -215,9 +239,11 @@ const LotesByProducto = ({ productoId, moneda }: Props) => {
               const sucursal = lotes_producto.find(
                 (l) => l.sucursal?.id === sucursalId,
               )?.sucursal;
+
               const lotesSucursal = lotes_producto.filter(
                 (l) => l.sucursal?.id === sucursalId,
               );
+
               const stockSucursal = lotesSucursal.reduce(
                 (sum, l) => sum + parseFloat(l.cantidad),
                 0,
@@ -235,7 +261,9 @@ const LotesByProducto = ({ productoId, moneda }: Props) => {
                       {sucursal?.departamento?.nombre}
                     </p>
                   </div>
-                  <Badge variant="secondary">{stockSucursal} unidades</Badge>
+                  <Badge variant="secondary">
+                    {t("quantities.units", { quantity: stockSucursal })}
+                  </Badge>
                 </div>
               );
             })}

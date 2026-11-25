@@ -1,3 +1,5 @@
+"use client";
+
 import {
   editarAgroProveedor,
   editarAgroProveedorEmpleados,
@@ -35,6 +37,7 @@ import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 interface Props {
   onSuccess?: () => void;
@@ -51,6 +54,8 @@ const FormProveedores = ({
   paisId = "",
   isEmpleado = false,
 }: Props) => {
+  const t = useTranslations("formProveedores");
+
   const [departamentoSeleccionado, setDepartamentoSeleccionado] = useState("");
 
   const { data: departamentos, isLoading: cargandoDepartamentos } =
@@ -105,7 +110,7 @@ const FormProveedores = ({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agro-proveedores"] });
       onSuccess?.();
-      toast.success("Proveedor creado exitosamente");
+      toast.success(t("messages.createSuccess"));
     },
     onError: (error) => {
       if (isAxiosError(error)) {
@@ -114,10 +119,10 @@ const FormProveedores = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear el proveedor";
+            : t("messages.createError");
         toast.error(errorMessage);
       } else {
-        toast.error("Hubo un error al crear el proveedor. Inténtalo de nuevo.");
+        toast.error(t("messages.createUnexpectedError"));
       }
     },
   });
@@ -130,7 +135,7 @@ const FormProveedores = ({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agro-proveedores"] });
       onSuccess?.();
-      toast.success("Proveedor actualizado exitosamente");
+      toast.success(t("messages.updateSuccess"));
     },
     onError: (error) => {
       if (isAxiosError(error)) {
@@ -139,12 +144,10 @@ const FormProveedores = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar el proveedor";
+            : t("messages.updateError");
         toast.error(errorMessage);
       } else {
-        toast.error(
-          "Hubo un error al actualizar el proveedor. Inténtalo de nuevo.",
-        );
+        toast.error(t("messages.updateUnexpectedError"));
       }
     },
   });
@@ -166,16 +169,16 @@ const FormProveedores = ({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-muted-foreground">
-          Información Legal
+          {t("sections.legalInformation")}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <Label className="font-bold">Nombre Legal*</Label>
+            <Label className="font-bold">{t("fields.legalName")}*</Label>
             <Input
               {...register("nombre_legal", {
-                required: "El nombre legal es requerido",
+                required: t("validation.legalNameRequired"),
               })}
-              placeholder="Nombre legal de la empresa"
+              placeholder={t("placeholders.legalName")}
             />
             {errors.nombre_legal && (
               <p className="text-sm font-medium text-red-500">
@@ -185,16 +188,16 @@ const FormProveedores = ({
           </div>
 
           <div className="space-y-1">
-            <Label className="font-bold">NIT/RTN*</Label>
+            <Label className="font-bold">{t("fields.taxId")}*</Label>
             <Input
               {...register("nit_rtn", {
-                required: "El NIT/RTN es requerido",
+                required: t("validation.taxIdRequired"),
                 pattern: {
                   value: /^[0-9-]+$/,
-                  message: "Solo números y guiones",
+                  message: t("validation.taxIdPattern"),
                 },
               })}
-              placeholder="Ej: 0801-2003-12345"
+              placeholder={t("placeholders.taxId")}
             />
             {errors.nit_rtn && (
               <p className="text-sm font-medium text-red-500">
@@ -206,25 +209,27 @@ const FormProveedores = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <Label className="font-bold">NRC</Label>
+            <Label className="font-bold">
+              {t("fields.taxRegistrationNumber")}
+            </Label>
             <Input
               {...register("nrc")}
-              placeholder="Número de Registro de Contribuyente (opcional)"
+              placeholder={t("placeholders.taxRegistrationNumber")}
             />
           </div>
 
           <div className="space-y-1">
-            <Label className="font-bold">Plazo (días)</Label>
+            <Label className="font-bold">{t("fields.paymentTerm")}</Label>
             <Input
               {...register("plazo", {
                 setValueAs: (v) => (v === "" ? undefined : Number(v)),
                 min: {
                   value: 0,
-                  message: "El plazo debe ser mayor o igual a 0",
+                  message: t("validation.paymentTermMin"),
                 },
               })}
               type="number"
-              placeholder="Días de plazo (opcional)"
+              placeholder={t("placeholders.paymentTerm")}
             />
             {errors.plazo && (
               <p className="text-sm font-medium text-red-500">
@@ -237,16 +242,16 @@ const FormProveedores = ({
 
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-muted-foreground">
-          Información de Contacto
+          {t("sections.contactInformation")}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <Label className="font-bold">Teléfono*</Label>
+            <Label className="font-bold">{t("fields.phone")}*</Label>
             <Input
               {...register("telefono", {
-                required: "El teléfono es requerido",
+                required: t("validation.phoneRequired"),
               })}
-              placeholder="Ej: 2234-5678"
+              placeholder={t("placeholders.phone")}
             />
             {errors.telefono && (
               <p className="text-sm font-medium text-red-500">
@@ -256,16 +261,16 @@ const FormProveedores = ({
           </div>
 
           <div className="space-y-1">
-            <Label className="font-bold">Correo Electrónico*</Label>
+            <Label className="font-bold">{t("fields.email")}*</Label>
             <Input
               {...register("correo", {
-                required: "El correo es requerido",
+                required: t("validation.emailRequired"),
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "Correo electrónico inválido",
+                  message: t("validation.emailInvalid"),
                 },
               })}
-              placeholder="correo@proveedor.com"
+              placeholder={t("placeholders.email")}
               type="email"
             />
             {errors.correo && (
@@ -277,21 +282,21 @@ const FormProveedores = ({
         </div>
 
         <div className="space-y-1">
-          <Label className="font-bold">Nombre de Contacto</Label>
+          <Label className="font-bold">{t("fields.contactName")}</Label>
           <Input
             {...register("nombre_contacto")}
-            placeholder="Nombre de la persona de contacto (opcional)"
+            placeholder={t("placeholders.contactName")}
           />
         </div>
       </div>
 
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-muted-foreground">
-          Ubicación
+          {t("sections.location")}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <Label className="font-bold">Departamento*</Label>
+            <Label className="font-bold">{t("fields.department")}*</Label>
             <Select
               onValueChange={(value) => setValue("departamentoId", value)}
               defaultValue={editProveedor?.departamento.id}
@@ -299,14 +304,14 @@ const FormProveedores = ({
             >
               <SelectTrigger>
                 {cargandoDepartamentos ? (
-                  <SelectValue placeholder="Cargando..." />
+                  <SelectValue placeholder={t("placeholders.loading")} />
                 ) : (
-                  <SelectValue placeholder="Selecciona un departamento" />
+                  <SelectValue placeholder={t("placeholders.department")} />
                 )}
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Departamentos</SelectLabel>
+                  <SelectLabel>{t("fields.departments")}</SelectLabel>
                   {departamentos?.data?.departamentos?.map((depto) => (
                     <SelectItem key={depto.id} value={depto.id}>
                       {depto.nombre}
@@ -323,7 +328,7 @@ const FormProveedores = ({
           </div>
 
           <div className="space-y-1">
-            <Label className="font-bold">Municipio*</Label>
+            <Label className="font-bold">{t("fields.municipality")}*</Label>
             <Select
               onValueChange={(value) => setValue("municipioId", value)}
               defaultValue={editProveedor?.municipio.id}
@@ -331,20 +336,20 @@ const FormProveedores = ({
             >
               <SelectTrigger>
                 {cargandoMunicipios ? (
-                  <SelectValue placeholder="Cargando..." />
+                  <SelectValue placeholder={t("placeholders.loading")} />
                 ) : (
                   <SelectValue
                     placeholder={
                       departamentoId
-                        ? "Selecciona un municipio"
-                        : "Primero selecciona un departamento"
+                        ? t("placeholders.municipality")
+                        : t("placeholders.selectDepartmentFirst")
                     }
                   />
                 )}
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Municipios</SelectLabel>
+                  <SelectLabel>{t("fields.municipalities")}</SelectLabel>
                   {municipios?.data?.map((mun) => (
                     <SelectItem key={mun.id} value={mun.id}>
                       {mun.nombre}
@@ -362,12 +367,12 @@ const FormProveedores = ({
         </div>
 
         <div className="space-y-1">
-          <Label className="font-bold">Dirección*</Label>
+          <Label className="font-bold">{t("fields.address")}*</Label>
           <Input
             {...register("complemento_direccion", {
-              required: "La dirección es requerida",
+              required: t("validation.addressRequired"),
             })}
-            placeholder="Dirección completa del proveedor"
+            placeholder={t("placeholders.address")}
           />
           {errors.complemento_direccion && (
             <p className="text-sm font-medium text-red-500">
@@ -379,11 +384,11 @@ const FormProveedores = ({
 
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-muted-foreground">
-          Configuración
+          {t("sections.configuration")}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <Label className="font-bold">Tipo de Pago*</Label>
+            <Label className="font-bold">{t("fields.paymentType")}*</Label>
             <Select
               onValueChange={(value) =>
                 setValue("tipo_pago_default", value as TipoPagoProveedor)
@@ -391,11 +396,11 @@ const FormProveedores = ({
               defaultValue={editProveedor?.tipo_pago_default}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Selecciona el tipo de pago" />
+                <SelectValue placeholder={t("placeholders.paymentType")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Tipos de Pago</SelectLabel>
+                  <SelectLabel>{t("fields.paymentTypes")}</SelectLabel>
                   {tiposPagoProveedor.map((tipo) => (
                     <SelectItem key={tipo.id} value={tipo.value}>
                       {tipo.label}
@@ -412,7 +417,7 @@ const FormProveedores = ({
           </div>
 
           <div className="space-y-1">
-            <Label className="font-bold">Tipo de Escala*</Label>
+            <Label className="font-bold">{t("fields.scaleType")}*</Label>
             <Select
               onValueChange={(value) =>
                 setValue("tipo_escala", value as TipoEscala)
@@ -420,11 +425,11 @@ const FormProveedores = ({
               defaultValue={editProveedor?.tipo_escala}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Selecciona el tipo de escala" />
+                <SelectValue placeholder={t("placeholders.scaleType")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Tipos de Escala</SelectLabel>
+                  <SelectLabel>{t("fields.scaleTypes")}</SelectLabel>
                   {tiposEscala.map((tipo) => (
                     <SelectItem key={tipo.id} value={tipo.value}>
                       {tipo.label}
@@ -444,10 +449,10 @@ const FormProveedores = ({
 
       <div className="flex justify-end pt-4 gap-3">
         <Button type="button" variant="outline" onClick={() => onSuccess?.()}>
-          Cancelar
+          {t("buttons.cancel")}
         </Button>
         <Button type="submit" disabled={isPending}>
-          {isEdit ? "Actualizar Proveedor" : "Crear Proveedor"}
+          {isEdit ? t("buttons.update") : t("buttons.create")}
         </Button>
       </div>
     </form>

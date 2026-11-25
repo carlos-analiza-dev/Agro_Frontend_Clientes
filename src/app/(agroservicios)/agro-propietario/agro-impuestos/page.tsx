@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Receipt } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import TitlePage from "@/components/generics/TitlePage";
 import ButtonAdd from "@/components/generics/ButtonAdd";
@@ -22,6 +23,8 @@ import TableImpuestosProductos from "@/components/agroservicio/impuestos/TableIm
 import { ImpuestosAgroProductosInterface } from "@/api/agroservicio/impuestos/interface/response-impuestos-agroservicio.interface";
 
 const AgroImpuestosPage = () => {
+  const t = useTranslations("agroImpuestosPage");
+
   const { cliente } = useAuthStore();
   const propietarioId = cliente?.id ?? "";
   const [openModalImpuesto, setOpenModalImpuesto] = useState(false);
@@ -40,10 +43,10 @@ const AgroImpuestosPage = () => {
   return (
     <div id="impuestos-page" className="container mx-auto space-y-6 p-4 md:p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <TitlePage Icon={Receipt} title="Control de Impuestos" />
+        <TitlePage Icon={Receipt} title={t("title")} />
 
         <ButtonAdd
-          title="Agregar Impuesto"
+          title={t("buttons.add")}
           Icon={Receipt}
           action={() => setOpenModalImpuesto(true)}
           className="w-full bg-green-600 hover:bg-green-700 md:w-auto"
@@ -53,10 +56,8 @@ const AgroImpuestosPage = () => {
 
       <Card id="tabla-impuestos">
         <CardHeader>
-          <CardTitle>Impuestos registrados</CardTitle>
-          <CardDescription>
-            Administra los impuestos disponibles para tu agroservicio.
-          </CardDescription>
+          <CardTitle>{t("table.title")}</CardTitle>
+          <CardDescription>{t("table.description")}</CardDescription>
         </CardHeader>
 
         <CardContent className="p-0">
@@ -67,14 +68,13 @@ const AgroImpuestosPage = () => {
           />
         </CardContent>
       </Card>
+
       <Modal
         open={openModalImpuesto}
         onOpenChange={setOpenModalImpuesto}
-        title={isEdit ? "Editar Impuesto" : "Nuevo Impuesto"}
+        title={isEdit ? t("modal.editTitle") : t("modal.createTitle")}
         description={
-          isEdit
-            ? "Actualiza el nombre o porcentaje del impuesto."
-            : "Crea un impuesto para aplicarlo a los productos comercializados en tu agroservicio."
+          isEdit ? t("modal.editDescription") : t("modal.createDescription")
         }
         size="xl"
         height="auto"

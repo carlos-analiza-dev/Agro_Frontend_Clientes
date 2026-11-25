@@ -1,4 +1,5 @@
 "use client";
+
 import { CrearAgroInsumoInterface } from "@/api/agroservicio/insumos/interfaces/crear-agro-insumo.interface";
 import { AgroInsumo } from "@/api/agroservicio/insumos/interfaces/response-agro-insumos.interface";
 import { UnidadVenta } from "@/api/agroservicio/insumos/interfaces/response-agro-insumos.interface";
@@ -27,6 +28,7 @@ import { isAxiosError } from "axios";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 interface Props {
   propietarioId: string;
@@ -43,6 +45,8 @@ const FormAgroInsumos = ({
   isEdit = false,
   Success,
 }: Props) => {
+  const t = useTranslations("formAgroInsumos");
+
   const queryClient = useQueryClient();
 
   const { data: marcasActivas } = useGetMarcasActivas({
@@ -85,7 +89,7 @@ const FormAgroInsumos = ({
         : ingresarAgroInsumo(payload);
     },
     onSuccess: () => {
-      toast.success("Insumo creado exitosamente");
+      toast.success(t("messages.createSuccess"));
       queryClient.invalidateQueries({ queryKey: ["agro-insumos"] });
       reset();
       Success?.();
@@ -97,10 +101,10 @@ const FormAgroInsumos = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear el insumo";
+            : t("messages.createError");
         toast.error(errorMessage);
       } else {
-        toast.error("Hubo un error al crear el insumo. Inténtalo de nuevo.");
+        toast.error(t("messages.createUnexpectedError"));
       }
     },
   });
@@ -116,7 +120,7 @@ const FormAgroInsumos = ({
         : editarAgroInsumo(editInsumo?.id || "", payload);
     },
     onSuccess: () => {
-      toast.success("Insumo actualizado exitosamente");
+      toast.success(t("messages.updateSuccess"));
       queryClient.invalidateQueries({ queryKey: ["agro-insumos"] });
       reset();
       Success?.();
@@ -128,12 +132,10 @@ const FormAgroInsumos = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar el insumo";
+            : t("messages.updateError");
         toast.error(errorMessage);
       } else {
-        toast.error(
-          "Hubo un error al actualizar el insumo. Inténtalo de nuevo.",
-        );
+        toast.error(t("messages.updateUnexpectedError"));
       }
     },
   });
@@ -155,22 +157,22 @@ const FormAgroInsumos = ({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="nombre" className="font-bold">
-          Nombre del Insumo*
+          {t("fields.name")}*
         </Label>
         <Input
           id="nombre"
           {...register("nombre", {
-            required: "El nombre del insumo es requerido",
+            required: t("validation.nameRequired"),
             minLength: {
               value: 3,
-              message: "El nombre debe tener al menos 3 caracteres",
+              message: t("validation.nameMinLength"),
             },
             maxLength: {
               value: 100,
-              message: "El nombre no puede tener más de 100 caracteres",
+              message: t("validation.nameMaxLength"),
             },
           })}
-          placeholder="Ej: Fertilizante NPK 15-15-15"
+          placeholder={t("placeholders.name")}
         />
         {errors.nombre && (
           <p className="text-sm font-medium text-red-500">
@@ -181,7 +183,7 @@ const FormAgroInsumos = ({
 
       <div className="space-y-2">
         <Label htmlFor="costo" className="font-bold">
-          Costo*
+          {t("fields.cost")}*
         </Label>
         <Input
           id="costo"
@@ -189,8 +191,11 @@ const FormAgroInsumos = ({
           step="0.01"
           min={1}
           {...register("costo", {
-            required: "El costo es requerido",
-            min: { value: 0, message: "El costo no puede ser negativo" },
+            required: t("validation.costRequired"),
+            min: {
+              value: 0,
+              message: t("validation.costMin"),
+            },
           })}
           placeholder="0.00"
         />
@@ -203,14 +208,14 @@ const FormAgroInsumos = ({
 
       <div className="space-y-2">
         <Label htmlFor="marcaId" className="font-bold">
-          Marca
+          {t("fields.brand")}
         </Label>
         <Select
           onValueChange={(value) => setValue("marcaId", value)}
           defaultValue={isEdit ? editInsumo?.marca?.id : ""}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Selecciona una marca" />
+            <SelectValue placeholder={t("placeholders.brand")} />
           </SelectTrigger>
           <SelectContent>
             {marcasActivas?.map((marca) => (
@@ -224,14 +229,14 @@ const FormAgroInsumos = ({
 
       <div className="space-y-2">
         <Label htmlFor="proveedorId" className="font-bold">
-          Proveedor*
+          {t("fields.supplier")}*
         </Label>
         <Select
           onValueChange={(value) => setValue("proveedorId", value)}
           defaultValue={isEdit ? editInsumo?.proveedor?.id : ""}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Selecciona un proveedor" />
+            <SelectValue placeholder={t("placeholders.supplier")} />
           </SelectTrigger>
           <SelectContent>
             {proveedoresActivos?.map((proveedor) => (
@@ -250,7 +255,7 @@ const FormAgroInsumos = ({
 
       <div className="space-y-2">
         <Label htmlFor="unidad_venta" className="font-bold">
-          Unidad de Venta*
+          {t("fields.salesUnit")}*
         </Label>
         <Select
           defaultValue={isEdit ? editInsumo?.unidad_venta : UnidadVenta.UNIDAD}
@@ -259,7 +264,7 @@ const FormAgroInsumos = ({
           }
         >
           <SelectTrigger>
-            <SelectValue placeholder="Selecciona la unidad" />
+            <SelectValue placeholder={t("placeholders.salesUnit")} />
           </SelectTrigger>
           <SelectContent>
             {unidadesMedida.map((unidad) => (
@@ -287,7 +292,7 @@ const FormAgroInsumos = ({
               }
             }}
           >
-            Cancelar
+            {t("buttons.cancel")}
           </Button>
         )}
         <Button
@@ -314,13 +319,13 @@ const FormAgroInsumos = ({
                 <path
                   className="opacity-75"
                   fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l-2.647-2.647z"
                 ></path>
               </svg>
-              {isEdit ? "Actualizando..." : "Creando..."}
+              {isEdit ? t("buttons.updating") : t("buttons.creating")}
             </>
           ) : (
-            <>{isEdit ? "Actualizar Insumo" : "Crear Insumo"}</>
+            <>{isEdit ? t("buttons.update") : t("buttons.create")}</>
           )}
         </Button>
       </div>

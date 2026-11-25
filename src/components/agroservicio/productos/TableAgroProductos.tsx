@@ -1,3 +1,5 @@
+"use client";
+
 import { AgroProducto } from "@/api/agroservicio/productos/interface/response-productos-agro.interface";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,7 +19,8 @@ import {
   Layers3,
   BadgePercent,
 } from "lucide-react";
-import { use, useState } from "react";
+import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { ProductImageUpload } from "./ProductImageUpload";
 import { ProductImagesDialog } from "./ProductImagesDialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -46,6 +49,8 @@ const TableAgroProductos = ({
   propietarioId,
   moneda,
 }: Props) => {
+  const t = useTranslations("tableAgroProductos");
+
   const [openModalLotes, setOpenModalLotes] = useState(false);
   const [imageUploadOpen, setImageUploadOpen] = useState(false);
   const [imagesDialogOpen, setImagesDialogOpen] = useState(false);
@@ -87,30 +92,33 @@ const TableAgroProductos = ({
         <TableHeader>
           <TableRow>
             <TableHead></TableHead>
-            <TableHead>Producto</TableHead>
-            <TableHead>Marca</TableHead>
-            <TableHead>Categoría</TableHead>
-            <TableHead>Proveedor</TableHead>
-            <TableHead className="text-right">Precio</TableHead>
-            <TableHead className="text-center">Disponible</TableHead>
-            <TableHead className="text-center">Lotes</TableHead>
-            <TableHead className="text-right">Acciones</TableHead>
+            <TableHead>{t("columns.product")}</TableHead>
+            <TableHead>{t("columns.brand")}</TableHead>
+            <TableHead>{t("columns.category")}</TableHead>
+            <TableHead>{t("columns.supplier")}</TableHead>
+            <TableHead className="text-right">{t("columns.price")}</TableHead>
+            <TableHead className="text-center">
+              {t("columns.availability")}
+            </TableHead>
+            <TableHead className="text-center">{t("columns.lots")}</TableHead>
+            <TableHead className="text-right">{t("columns.actions")}</TableHead>
           </TableRow>
         </TableHeader>
+
         <TableBody>
           {filteredProducts.length === 0 ? (
             <TableRow>
               <TableCell colSpan={8} className="text-center py-8">
                 <div className="flex flex-col items-center gap-2 text-muted-foreground">
                   <Package className="h-8 w-8" />
-                  <p>No se encontraron productos</p>
+                  <p>{t("empty.products")}</p>
                   {hasActiveFilters && (
                     <Button
                       variant="link"
                       onClick={clearFilters}
                       className="text-sm"
                     >
-                      Limpiar filtros
+                      {t("buttons.clearFilters")}
                     </Button>
                   )}
                 </div>
@@ -136,35 +144,43 @@ const TableAgroProductos = ({
                       {producto.nombre?.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
+
                   {producto.images && producto.images.length > 1 && (
                     <div className="flex justify-center mt-1">
                       <span className="text-[10px] text-muted-foreground">
-                        +{producto.images.length - 1} más
+                        {t("images.more", {
+                          count: producto.images.length - 1,
+                        })}
                       </span>
                     </div>
                   )}
                 </TableCell>
+
                 <TableCell>
                   <div>
                     <p className="font-medium">{producto.nombre}</p>
                     {producto.codigo_barra && (
                       <p className="text-xs text-muted-foreground">
-                        Código: {producto.codigo_barra}
+                        {t("labels.code")}: {producto.codigo_barra}
                       </p>
                     )}
                   </div>
                 </TableCell>
+
                 <TableCell>{producto.marca?.nombre || "-"}</TableCell>
+
                 <TableCell>
                   <Badge variant="outline">
                     {producto.categoria?.nombre || "-"}
                   </Badge>
                 </TableCell>
+
                 <TableCell>
                   <span className="text-sm">
                     {producto.proveedor?.nombre_legal || "-"}
                   </span>
                 </TableCell>
+
                 <TableCell className="text-right font-medium">
                   {producto.pais?.simbolo_moneda || "L"}{" "}
                   {parseFloat(producto.precio).toFixed(2)}
@@ -179,17 +195,21 @@ const TableAgroProductos = ({
                         : ""
                     }
                   >
-                    {producto.disponible ? "Disponible" : "No disponible"}
+                    {producto.disponible
+                      ? t("availability.available")
+                      : t("availability.unavailable")}
                   </Badge>
                 </TableCell>
+
                 <TableCell className="text-center font-medium">
                   <Button
                     onClick={() => handleViewLotes(producto.id)}
                     variant={"ghost"}
                   >
-                    Ver Lotes
+                    {t("buttons.viewLots")}
                   </Button>
                 </TableCell>
+
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
                     <Button
@@ -197,27 +217,29 @@ const TableAgroProductos = ({
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
-                      title="Configuracion"
+                      title={t("actions.configuration")}
                       id="config-escalas-descuentos"
                     >
                       <Cog className="h-4 w-4" />
                     </Button>
+
                     <Button
                       onClick={() => handleEditProducto(producto)}
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
-                      title="Editar producto"
+                      title={t("actions.editProduct")}
                       id="edit-producto"
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
+
                     <Button
                       onClick={() => handleUploadImages(producto)}
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
-                      title="Subir imágenes"
+                      title={t("actions.uploadImages")}
                       id="subir-imagen-producto"
                     >
                       <Image className="h-4 w-4" />
@@ -248,7 +270,7 @@ const TableAgroProductos = ({
       <Modal
         open={openModalEcalasDescuentos}
         onOpenChange={setOpenModalEcalasDescuentos}
-        title="Configuración de escalas y descuentos"
+        title={t("configuration.title")}
         height="auto"
         size="6xl"
       >
@@ -258,8 +280,7 @@ const TableAgroProductos = ({
               {selectedProducto?.nombre}
             </h3>
             <p className="text-sm text-muted-foreground">
-              Administra las escalas de compra y los descuentos aplicables a
-              este producto.
+              {t("configuration.description")}
             </p>
           </div>
 
@@ -267,12 +288,12 @@ const TableAgroProductos = ({
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="escalas" className="gap-2">
                 <Layers3 className="h-4 w-4" />
-                Escalas
+                {t("tabs.scales")}
               </TabsTrigger>
 
               <TabsTrigger value="descuentos" className="gap-2">
                 <BadgePercent className="h-4 w-4" />
-                Descuentos
+                {t("tabs.discounts")}
               </TabsTrigger>
             </TabsList>
 
@@ -299,9 +320,8 @@ const TableAgroProductos = ({
       <Modal
         open={openModalLotes}
         onOpenChange={setOpenModalLotes}
-        title="Lotes del Producto"
-        description="En esta sección podras observar los lotes del producto
-              seleccionado"
+        title={t("lots.title")}
+        description={t("lots.description")}
         size="4xl"
         height="auto"
       >

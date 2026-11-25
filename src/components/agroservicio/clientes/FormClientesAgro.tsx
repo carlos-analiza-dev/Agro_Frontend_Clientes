@@ -1,3 +1,5 @@
+"use client";
+
 import { CrearClienteAgroInterface } from "@/api/agroservicio/clientes/interfaces/crear-cliente-agro.interface";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +29,7 @@ import {
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 import useGetDeptosActivesByPais from "@/hooks/departamentos/useGetDeptosActivesByPais";
 import useGetMunicipiosActivosByDepto from "@/hooks/municipios/useGetMunicipiosActivosByDepto";
 import { ClienteAgro } from "@/api/agroservicio/clientes/interfaces/response-clientes-ago.interface";
@@ -62,6 +65,8 @@ const FormClientesAgro = ({
   onSuccess,
   isPropietario,
 }: Props) => {
+  const t = useTranslations("agroClientesPage.form");
+
   const [prefijoNumber, setPrefijoNumber] = useState("");
   const [codigoPais, setCodigoPais] = useState("");
   const [departamentoId, setDepartamentoId] = useState("");
@@ -134,6 +139,7 @@ const FormClientesAgro = ({
         municipioId: "",
         isActive: true,
       });
+
       setDepartamentoId("");
       setMunicipioIdInicial("");
       setCargandoDatos(false);
@@ -150,6 +156,7 @@ const FormClientesAgro = ({
       const municipioExiste = municipios.data.some(
         (m) => m.id === municipioIdInicial,
       );
+
       if (municipioExiste) {
         setValue("municipioId", municipioIdInicial);
       }
@@ -173,7 +180,7 @@ const FormClientesAgro = ({
         queryKey: ["agro-clientes"],
       });
 
-      toast.success("Cliente creado exitosamente");
+      toast.success(t("messages.created"));
       onSuccess?.();
     },
 
@@ -185,11 +192,11 @@ const FormClientesAgro = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear el cliente";
+            : t("messages.createError");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Hubo un error al crear el cliente.");
+        toast.error(t("messages.createError"));
       }
     },
   });
@@ -205,7 +212,7 @@ const FormClientesAgro = ({
         queryKey: ["agro-clientes"],
       });
 
-      toast.success("Cliente actualizado exitosamente");
+      toast.success(t("messages.updated"));
       onSuccess?.();
     },
 
@@ -217,11 +224,11 @@ const FormClientesAgro = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar el cliente";
+            : t("messages.updateError");
 
         toast.error(errorMessage);
       } else {
-        toast.error("Hubo un error al actualizar el cliente.");
+        toast.error(t("messages.updateError"));
       }
     },
   });
@@ -231,6 +238,7 @@ const FormClientesAgro = ({
       data.identificacion,
       codigoPais,
     );
+
     if (idValidation !== true) {
       toast.error(idValidation as string);
       return;
@@ -251,7 +259,7 @@ const FormClientesAgro = ({
     }
 
     if (!departamentoId || !data.municipioId) {
-      toast.error("Debe seleccionar un departamento y municipio");
+      toast.error(t("validation.locationRequired"));
       return;
     }
 
@@ -278,6 +286,12 @@ const FormClientesAgro = ({
   const currentDepartamento = watch("departamentoId");
   const currentMunicipio = watch("municipioId");
 
+  const sexoLabels: Record<string, string> = {
+    Masculino: t("sex.male"),
+    Femenino: t("sex.female"),
+    Otro: t("sex.other"),
+  };
+
   if (cargandoDatos && isEdit) {
     return (
       <div className="flex justify-center items-center py-8">
@@ -295,12 +309,10 @@ const FormClientesAgro = ({
           </div>
           <div>
             <CardTitle className="text-xl font-semibold text-gray-800">
-              {isEdit ? "Editar Cliente" : "Nuevo Cliente"}
+              {isEdit ? t("title.edit") : t("title.create")}
             </CardTitle>
             <p className="text-sm text-gray-500 mt-0.5">
-              {isEdit
-                ? "Actualiza la información del cliente"
-                : "Registra un nuevo cliente en tu agroservicio"}
+              {isEdit ? t("description.edit") : t("description.create")}
             </p>
           </div>
         </div>
@@ -312,28 +324,28 @@ const FormClientesAgro = ({
             <div className="bg-blue-50/50 rounded-lg p-4 border border-blue-100">
               <h3 className="text-sm font-semibold text-blue-700 flex items-center gap-2">
                 <User className="h-4 w-4" />
-                Información Personal
+                {t("sections.personal")}
               </h3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="nombre" className="font-semibold text-gray-700">
-                  Nombre Completo <span className="text-red-500">*</span>
+                  {t("fields.name")} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="nombre"
-                  placeholder="Ej. Juan Carlos Pérez López"
+                  placeholder={t("placeholders.name")}
                   className="transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   {...register("nombre", {
-                    required: "El nombre es requerido",
+                    required: t("validation.nameRequired"),
                     minLength: {
                       value: 3,
-                      message: "Mínimo 3 caracteres",
+                      message: t("validation.nameMinLength"),
                     },
                     maxLength: {
                       value: 150,
-                      message: "Máximo 150 caracteres",
+                      message: t("validation.nameMaxLength"),
                     },
                   })}
                   disabled={isLoading}
@@ -353,7 +365,8 @@ const FormClientesAgro = ({
                 >
                   <div className="flex items-center gap-1">
                     <IdCard className="h-4 w-4" />
-                    Identificación <span className="text-red-500">*</span>
+                    {t("fields.identification")}{" "}
+                    <span className="text-red-500">*</span>
                   </div>
                 </Label>
                 <Input
@@ -361,12 +374,12 @@ const FormClientesAgro = ({
                   placeholder={
                     codigoPais && ID_REGEX[codigoPais as keyof typeof ID_REGEX]
                       ? ID_REGEX[codigoPais as keyof typeof ID_REGEX].example
-                      : "Número de documento"
+                      : t("placeholders.identification")
                   }
                   className="transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
                   disabled={isLoading}
                   {...register("identificacion", {
-                    required: "La identificación es requerida",
+                    required: t("validation.identificationRequired"),
                     validate: (value) => {
                       const result = validateIdentification(value, codigoPais);
                       return result === true || result;
@@ -392,7 +405,7 @@ const FormClientesAgro = ({
 
               <div className="space-y-2">
                 <Label htmlFor="sexo" className="font-semibold text-gray-700">
-                  Sexo <span className="text-red-500">*</span>
+                  {t("fields.gender")} <span className="text-red-500">*</span>
                 </Label>
                 <Select
                   value={currentSexo || ""}
@@ -400,12 +413,12 @@ const FormClientesAgro = ({
                   disabled={isLoading}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona una opción" />
+                    <SelectValue placeholder={t("placeholders.gender")} />
                   </SelectTrigger>
                   <SelectContent>
                     {sexos.map((sexo) => (
                       <SelectItem key={sexo.id} value={sexo.value}>
-                        {sexo.sexo}
+                        {sexoLabels[sexo.sexo] || sexo.sexo}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -421,7 +434,7 @@ const FormClientesAgro = ({
             <div className="bg-green-50/50 rounded-lg p-4 border border-green-100">
               <h3 className="text-sm font-semibold text-green-700 flex items-center gap-2">
                 <Phone className="h-4 w-4" />
-                Información de Contacto
+                {t("sections.contact")}
               </h3>
             </div>
 
@@ -433,15 +446,15 @@ const FormClientesAgro = ({
                 >
                   <div className="flex items-center gap-1">
                     <Phone className="h-4 w-4" />
-                    Teléfono <span className="text-red-500">*</span>
+                    {t("fields.phone")} <span className="text-red-500">*</span>
                   </div>
                 </Label>
                 <Input
                   id="telefono"
-                  placeholder="9876-5432"
+                  placeholder={t("placeholders.phone")}
                   className="transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
                   {...register("telefono", {
-                    required: "El teléfono es requerido",
+                    required: t("validation.phoneRequired"),
                     validate: validatePhone,
                   })}
                   disabled={isLoading}
@@ -452,7 +465,7 @@ const FormClientesAgro = ({
                   </p>
                 )}
                 <p className="text-xs text-muted-foreground">
-                  Formato: xxxx-xxxx (ej: 9876-5432)
+                  {t("hints.phoneFormat")}
                 </p>
               </div>
 
@@ -460,13 +473,13 @@ const FormClientesAgro = ({
                 <Label htmlFor="email" className="font-semibold text-gray-700">
                   <div className="flex items-center gap-1">
                     <Mail className="h-4 w-4" />
-                    Correo Electrónico
+                    {t("fields.email")}
                   </div>
                 </Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="cliente@email.com"
+                  placeholder={t("placeholders.email")}
                   className="transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   disabled={isLoading}
                   {...register("email", {
@@ -481,7 +494,9 @@ const FormClientesAgro = ({
                     {errors.email.message as string}
                   </p>
                 )}
-                <p className="text-xs text-muted-foreground">* Opcional</p>
+                <p className="text-xs text-muted-foreground">
+                  {t("hints.optional")}
+                </p>
               </div>
             </div>
           </div>
@@ -490,27 +505,27 @@ const FormClientesAgro = ({
             <div className="bg-purple-50/50 rounded-lg p-4 border border-purple-100">
               <h3 className="text-sm font-semibold text-purple-700 flex items-center gap-2">
                 <MapPin className="h-4 w-4" />
-                Ubicación
+                {t("sections.location")}
               </h3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="pais" className="font-semibold text-gray-700">
-                  País <span className="text-red-500">*</span>
+                  {t("fields.country")} <span className="text-red-500">*</span>
                 </Label>
                 <div className="relative">
                   <div className="flex items-center gap-2 p-2 border rounded-md bg-gray-50">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
                     <span className="font-medium">
-                      {pais?.data?.nombre || "Cargando..."}
+                      {pais?.data?.nombre || t("labels.loading")}
                     </span>
                     <CheckCircle2 className="h-4 w-4 text-green-500 ml-auto" />
                   </div>
                   <input type="hidden" {...register("departamentoId")} />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  El país se asigna automáticamente
+                  {t("hints.countryAutomatic")}
                 </p>
               </div>
 
@@ -519,21 +534,21 @@ const FormClientesAgro = ({
                   htmlFor="direccion"
                   className="font-semibold text-gray-700"
                 >
-                  Dirección <span className="text-red-500">*</span>
+                  {t("fields.address")} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="direccion"
-                  placeholder="Calle 123 # 45-67"
+                  placeholder={t("placeholders.address")}
                   className="transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   {...register("direccion", {
-                    required: "La dirección es requerida",
+                    required: t("validation.addressRequired"),
                     minLength: {
                       value: 10,
-                      message: "La dirección debe tener al menos 10 caracteres",
+                      message: t("validation.addressMinLength"),
                     },
                     maxLength: {
                       value: 200,
-                      message: "Máximo 200 caracteres",
+                      message: t("validation.addressMaxLength"),
                     },
                   })}
                   disabled={isLoading}
@@ -552,7 +567,8 @@ const FormClientesAgro = ({
                 >
                   <div className="flex items-center gap-1">
                     <Users className="h-4 w-4" />
-                    Departamento <span className="text-red-500">*</span>
+                    {t("fields.department")}{" "}
+                    <span className="text-red-500">*</span>
                   </div>
                 </Label>
                 <Select
@@ -567,7 +583,7 @@ const FormClientesAgro = ({
                   disabled={isLoading}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona un departamento" />
+                    <SelectValue placeholder={t("placeholders.department")} />
                   </SelectTrigger>
                   <SelectContent>
                     {departamentos && departamentos.data.length > 0 ? (
@@ -578,7 +594,7 @@ const FormClientesAgro = ({
                       ))
                     ) : (
                       <SelectItem value="no-deptos" disabled>
-                        No se encontraron departamentos
+                        {t("empty.departments")}
                       </SelectItem>
                     )}
                   </SelectContent>
@@ -597,7 +613,8 @@ const FormClientesAgro = ({
                 >
                   <div className="flex items-center gap-1">
                     <MapPin className="h-4 w-4" />
-                    Municipio <span className="text-red-500">*</span>
+                    {t("fields.municipality")}{" "}
+                    <span className="text-red-500">*</span>
                   </div>
                 </Label>
                 <Select
@@ -609,8 +626,8 @@ const FormClientesAgro = ({
                     <SelectValue
                       placeholder={
                         departamentoId
-                          ? "Selecciona un municipio"
-                          : "Selecciona un departamento primero"
+                          ? t("placeholders.municipality")
+                          : t("placeholders.selectDepartmentFirst")
                       }
                     />
                   </SelectTrigger>
@@ -624,8 +641,8 @@ const FormClientesAgro = ({
                     ) : (
                       <SelectItem value="no-municipios" disabled>
                         {departamentoId
-                          ? "No se encontraron municipios"
-                          : "Selecciona un departamento primero"}
+                          ? t("empty.municipalities")
+                          : t("placeholders.selectDepartmentFirst")}
                       </SelectItem>
                     )}
                   </SelectContent>
@@ -644,7 +661,7 @@ const FormClientesAgro = ({
               <div className="bg-gray-50/50 rounded-lg p-4 border border-gray-200">
                 <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                   <User className="h-4 w-4" />
-                  Estado del Cliente
+                  {t("sections.customerStatus")}
                 </h3>
               </div>
               <div className="space-y-2">
@@ -652,7 +669,7 @@ const FormClientesAgro = ({
                   htmlFor="isActive"
                   className="font-semibold text-gray-700"
                 >
-                  Estado
+                  {t("fields.status")}
                 </Label>
                 <Select
                   value={watch("isActive") ? "true" : "false"}
@@ -665,8 +682,10 @@ const FormClientesAgro = ({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="true">Activo</SelectItem>
-                    <SelectItem value="false">Inactivo</SelectItem>
+                    <SelectItem value="true">{t("status.active")}</SelectItem>
+                    <SelectItem value="false">
+                      {t("status.inactive")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -682,7 +701,7 @@ const FormClientesAgro = ({
               className="w-full sm:w-auto hover:bg-gray-50 transition-colors"
             >
               <X className="h-4 w-4 mr-2" />
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
 
             <Button
@@ -693,19 +712,19 @@ const FormClientesAgro = ({
               {isLoading ? (
                 <>
                   <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  {isEdit ? "Actualizando..." : "Creando..."}
+                  {isEdit ? t("buttons.updating") : t("buttons.creating")}
                 </>
               ) : (
                 <>
                   {isEdit ? (
                     <>
                       <RefreshCw className="h-4 w-4 mr-2" />
-                      Actualizar Cliente
+                      {t("buttons.update")}
                     </>
                   ) : (
                     <>
                       <UserPlus className="h-4 w-4 mr-2" />
-                      Crear Cliente
+                      {t("buttons.create")}
                     </>
                   )}
                 </>
@@ -717,10 +736,9 @@ const FormClientesAgro = ({
             <p className="text-xs text-amber-700 flex items-start gap-2">
               <span className="inline-block w-1 h-1 bg-amber-500 rounded-full mt-1.5 flex-shrink-0"></span>
               <span>
-                Todos los campos marcados con{" "}
-                <span className="text-red-500">*</span> son obligatorios.
-                Asegúrate de ingresar la información correctamente según el
-                formato de tu país.
+                {t("hints.requiredFields")}{" "}
+                <span className="text-red-500">*</span>{" "}
+                {t("hints.requiredFieldsSuffix")}
               </span>
             </p>
           </div>

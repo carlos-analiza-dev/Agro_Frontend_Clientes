@@ -1,4 +1,5 @@
 "use client";
+
 import ButtonAdd from "@/components/generics/ButtonAdd";
 import TitlePage from "@/components/generics/TitlePage";
 import Paginacion from "@/components/generics/Paginacion";
@@ -12,6 +13,7 @@ import {
   CalendarDays,
 } from "lucide-react";
 import { useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -34,8 +36,10 @@ import { formatDateOnly } from "@/helpers/funciones/formatDateOnly";
 import FormAgroRangosFactura from "@/components/agroservicio/facturacion/FormAgroRangosFactura";
 
 const AgroRangosFacturaPage = () => {
+  const t = useTranslations("agroRangosFacturaPage");
   const { cliente } = useAuthStore();
   const propietarioId = cliente?.id ?? "";
+
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRango, setSelectedRango] = useState<Rangos | null>(null);
@@ -47,7 +51,7 @@ const AgroRangosFacturaPage = () => {
   const { data: rangosData, isLoading } = useGetAgroRangosFactura(
     propietarioId,
     {
-      limit: limit,
+      limit,
       offset: (currentPage - 1) * limit,
     },
   );
@@ -95,7 +99,7 @@ const AgroRangosFacturaPage = () => {
       <div className="flex items-center justify-center h-96">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-12 w-12 animate-spin text-green-600" />
-          <p className="text-gray-500">Cargando rangos de factura...</p>
+          <p className="text-gray-500">{t("loading")}</p>
         </div>
       </div>
     );
@@ -106,11 +110,11 @@ const AgroRangosFacturaPage = () => {
       <div className="md:flex justify-between items-center gap-4">
         <TitlePage
           Icon={FileText}
-          title="Control de Rangos de Facturas"
-          description="Gestiona los rangos de facturación del agroservicio"
+          title={t("title")}
+          description={t("description")}
         />
         <ButtonAdd
-          title="Agregar Rango"
+          title={t("buttons.add")}
           Icon={FileText}
           action={() => setOpenFormRango(true)}
           className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
@@ -124,28 +128,15 @@ const AgroRangosFacturaPage = () => {
       >
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Rangos</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("statistics.total")}
+            </CardTitle>
             <FileText className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{total}</div>
-            <p className="text-xs text-gray-500">Rangos configurados</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Rangos Activos
-            </CardTitle>
-            <CheckCircle className="h-4 w-4 text-blue-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.activos}</div>
             <p className="text-xs text-gray-500">
-              {rangos.length > 0
-                ? `${Math.round((stats.activos / rangos.length) * 100)}% del total`
-                : "Sin rangos"}
+              {t("statistics.configured")}
             </p>
           </CardContent>
         </Card>
@@ -153,14 +144,35 @@ const AgroRangosFacturaPage = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Próximos a Vencer
+              {t("statistics.active")}
+            </CardTitle>
+            <CheckCircle className="h-4 w-4 text-blue-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.activos}</div>
+            <p className="text-xs text-gray-500">
+              {rangos.length > 0
+                ? t("statistics.percentageOfTotal", {
+                    percentage: Math.round(
+                      (stats.activos / rangos.length) * 100,
+                    ),
+                  })
+                : t("statistics.noRanges")}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              {t("statistics.expiringSoon")}
             </CardTitle>
             <CalendarDays className="h-4 w-4 text-yellow-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.proximosVencer}</div>
             <p className="text-xs text-gray-500">
-              Menos de 30 días para vencer
+              {t("statistics.daysUntilExpiration")}
             </p>
           </CardContent>
         </Card>
@@ -169,7 +181,7 @@ const AgroRangosFacturaPage = () => {
       <div id="buscador-rangos" className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
         <Input
-          placeholder="Buscar por CAI, prefijo o agroservicio..."
+          placeholder={t("search.placeholder")}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="pl-10 max-w-md"
@@ -178,9 +190,9 @@ const AgroRangosFacturaPage = () => {
 
       <Card id="lista-rangos">
         <CardHeader>
-          <CardTitle>Lista de Rangos</CardTitle>
+          <CardTitle>{t("list.title")}</CardTitle>
           <CardDescription>
-            {filteredRangos.length} rangos encontrados
+            {t("list.found", { count: filteredRangos.length })}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -197,14 +209,12 @@ const AgroRangosFacturaPage = () => {
             <div className="text-center py-12">
               <FileText className="h-12 w-12 mx-auto text-gray-300" />
               <h3 className="mt-4 text-lg font-semibold text-gray-900">
-                {searchTerm
-                  ? "No se encontraron resultados"
-                  : "No hay rangos configurados"}
+                {searchTerm ? t("empty.searchTitle") : t("empty.title")}
               </h3>
               <p className="mt-2 text-sm text-gray-500">
                 {searchTerm
-                  ? "Intenta con otros términos de búsqueda"
-                  : "Comienza agregando tu primer rango de facturación."}
+                  ? t("empty.searchDescription")
+                  : t("empty.description")}
               </p>
             </div>
           )}
@@ -224,8 +234,8 @@ const AgroRangosFacturaPage = () => {
       <Modal
         open={isViewDialogOpen}
         onOpenChange={setIsViewDialogOpen}
-        title="Detalles del Rango"
-        description="Información completa del rango de facturación"
+        title={t("details.title")}
+        description={t("details.description")}
         size="3xl"
         height="auto"
       >
@@ -233,39 +243,49 @@ const AgroRangosFacturaPage = () => {
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-xs text-gray-500">CAI</Label>
+                <Label className="text-xs text-gray-500">
+                  {t("details.cai")}
+                </Label>
                 <p className="font-mono text-sm bg-gray-50 p-2 rounded mt-1 break-all">
                   {selectedRango.cai}
                 </p>
               </div>
               <div>
-                <Label className="text-xs text-gray-500">Prefijo</Label>
+                <Label className="text-xs text-gray-500">
+                  {t("details.prefix")}
+                </Label>
                 <p className="font-mono text-sm bg-gray-50 p-2 rounded mt-1">
                   {selectedRango.prefijo}
                 </p>
               </div>
               <div>
-                <Label className="text-xs text-gray-500">Rango Inicial</Label>
+                <Label className="text-xs text-gray-500">
+                  {t("details.initialRange")}
+                </Label>
                 <p className="font-mono text-sm bg-gray-50 p-2 rounded mt-1">
                   {selectedRango.rango_inicial}
                 </p>
               </div>
               <div>
-                <Label className="text-xs text-gray-500">Rango Final</Label>
+                <Label className="text-xs text-gray-500">
+                  {t("details.finalRange")}
+                </Label>
                 <p className="font-mono text-sm bg-gray-50 p-2 rounded mt-1">
                   {selectedRango.rango_final}
                 </p>
               </div>
               <div>
                 <Label className="text-xs text-gray-500">
-                  Correlativo Actual
+                  {t("details.currentNumber")}
                 </Label>
                 <p className="font-mono text-sm bg-gray-50 p-2 rounded mt-1">
                   {selectedRango.correlativo_actual}
                 </p>
               </div>
               <div>
-                <Label className="text-xs text-gray-500">Estado</Label>
+                <Label className="text-xs text-gray-500">
+                  {t("details.status")}
+                </Label>
                 <div className="mt-1">
                   <Badge
                     variant={selectedRango.is_active ? "default" : "secondary"}
@@ -275,18 +295,24 @@ const AgroRangosFacturaPage = () => {
                         : "bg-gray-100 text-gray-700"
                     }
                   >
-                    {selectedRango.is_active ? "Activo" : "Inactivo"}
+                    {selectedRango.is_active
+                      ? t("details.active")
+                      : t("details.inactive")}
                   </Badge>
                 </div>
               </div>
               <div>
-                <Label className="text-xs text-gray-500">Fecha Recepción</Label>
+                <Label className="text-xs text-gray-500">
+                  {t("details.receivedDate")}
+                </Label>
                 <p className="text-sm bg-gray-50 p-2 rounded mt-1">
                   {selectedRango.fecha_recepcion}
                 </p>
               </div>
               <div>
-                <Label className="text-xs text-gray-500">Fecha Límite</Label>
+                <Label className="text-xs text-gray-500">
+                  {t("details.deadline")}
+                </Label>
                 <p className="text-sm bg-gray-50 p-2 rounded mt-1">
                   {selectedRango.fecha_limite_emision}
                 </p>
@@ -294,13 +320,15 @@ const AgroRangosFacturaPage = () => {
             </div>
 
             <div className="border-t pt-4">
-              <Label className="text-xs text-gray-500">Agroservicio</Label>
+              <Label className="text-xs text-gray-500">
+                {t("details.agroservice")}
+              </Label>
               <div className="bg-gray-50 p-3 rounded mt-1">
                 <p className="text-sm font-medium">
                   {selectedRango.agroservicio?.nombre_agroservicio}
                 </p>
                 <p className="text-xs text-gray-400">
-                  RTN: {selectedRango.agroservicio?.rtn}
+                  {t("details.taxId")}: {selectedRango.agroservicio?.rtn}
                 </p>
                 <p className="text-xs text-gray-400">
                   {selectedRango.agroservicio?.correo}
@@ -309,7 +337,9 @@ const AgroRangosFacturaPage = () => {
             </div>
 
             <div className="border-t pt-4">
-              <Label className="text-xs text-gray-500">Uso del Rango</Label>
+              <Label className="text-xs text-gray-500">
+                {t("details.rangeUsage")}
+              </Label>
               <div className="mt-2">
                 <div className="flex items-center gap-4">
                   <div className="flex-1 bg-gray-200 rounded-full h-3">
@@ -333,17 +363,21 @@ const AgroRangosFacturaPage = () => {
 
             <div className="border-t pt-4">
               <Label className="text-xs text-gray-500">
-                Información de Auditoría
+                {t("details.auditInformation")}
               </Label>
               <div className="grid grid-cols-2 gap-2 mt-1">
                 <div>
-                  <p className="text-xs text-gray-400">Creado</p>
+                  <p className="text-xs text-gray-400">
+                    {t("details.created")}
+                  </p>
                   <p className="text-xs">
                     {formatDateOnly(selectedRango.created_at)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400">Actualizado</p>
+                  <p className="text-xs text-gray-400">
+                    {t("details.updated")}
+                  </p>
                   <p className="text-xs">
                     {formatDateOnly(selectedRango.updated_at)}
                   </p>
@@ -355,7 +389,7 @@ const AgroRangosFacturaPage = () => {
 
         <div className="mt-5 flex justify-end">
           <Button variant="outline" onClick={() => setIsViewDialogOpen(false)}>
-            Cerrar
+            {t("buttons.close")}
           </Button>
         </div>
       </Modal>
@@ -363,7 +397,7 @@ const AgroRangosFacturaPage = () => {
       <Modal
         open={openFormRango}
         onOpenChange={setOpenFormRango}
-        title={isEdit ? "Editar Rango" : "Agregar Nuevo Rango"}
+        title={isEdit ? t("form.editTitle") : t("form.addTitle")}
         showCloseButton={false}
         size="2xl"
         height="auto"

@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { Filter, ShoppingCart } from "lucide-react";
 import { useState } from "react";
@@ -20,16 +21,21 @@ import TableComprasProductos from "@/components/agroservicio/compras/TableCompra
 import FormCompraProductos from "@/components/agroservicio/compras/FormCompraProductos";
 import { useAuthEmpleadoStore } from "@/providers/store/useAuthEmpleados";
 import useGetSucursalByEmpleado from "@/hooks/agroservicios/sucursales/useGetSucursalByEmpleado";
+import { useTranslations } from "next-intl";
 
 const ComprasProductosPage = () => {
+  const t = useTranslations("comprasProductosPage");
+
   const { empleado } = useAuthEmpleadoStore();
   const moneda = empleado?.pais.simbolo_moneda ?? "$";
   const propietarioId = empleado?.agroservicio.propietario.id ?? "";
+
   const [isOpen, setIsOpen] = useState(false);
   const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
   const [proveedor, setProveedor] = useState("");
   const [tipoPago, setTipoPago] = useState("");
+
   const { data: proveedores } = useGetAllProveedores(propietarioId);
   const { data: sucursalEmpleado } = useGetSucursalByEmpleado();
 
@@ -59,6 +65,7 @@ const ComprasProductosPage = () => {
     setTipoPago("");
     setOffset(0);
   };
+
   return (
     <div id="id-compras-container" className="container mx-auto py-6">
       <div
@@ -67,12 +74,13 @@ const ComprasProductosPage = () => {
       >
         <TitlePage
           Icon={ShoppingCart}
-          title="Compras"
-          description="Gestión de compras agro servicio"
+          title={t("title")}
+          description={t("description")}
         />
+
         <ButtonAdd
           id="id-compras-add-btn"
-          title="Agregar Compra"
+          title={t("buttons.add")}
           Icon={ShoppingCart}
           action={() => setIsOpen(true)}
           className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
@@ -84,10 +92,11 @@ const ComprasProductosPage = () => {
           <div id="id-compras-filter-proveedor">
             <Select value={proveedor} onValueChange={setProveedor}>
               <SelectTrigger>
-                <SelectValue placeholder="Filtrar por proveedor" />
+                <SelectValue placeholder={t("filters.provider")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
+                <SelectItem value="all">{t("filters.all")}</SelectItem>
+
                 {proveedores && proveedores.length > 0 ? (
                   proveedores.map((prov) => (
                     <SelectItem value={prov.id} key={prov.id}>
@@ -95,7 +104,9 @@ const ComprasProductosPage = () => {
                     </SelectItem>
                   ))
                 ) : (
-                  <p>No se encontraron proveedores</p>
+                  <p className="px-2 py-1.5 text-sm">
+                    {t("filters.noProviders")}
+                  </p>
                 )}
               </SelectContent>
             </Select>
@@ -104,10 +115,11 @@ const ComprasProductosPage = () => {
           <div id="id-compras-filter-tipo-pago">
             <Select value={tipoPago} onValueChange={setTipoPago}>
               <SelectTrigger>
-                <SelectValue placeholder="Filtrar por tipo de pago" />
+                <SelectValue placeholder={t("filters.paymentType")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
+                <SelectItem value="all">{t("filters.all")}</SelectItem>
+
                 {tiposPagos.map((tipo) => (
                   <SelectItem value={tipo.value} key={tipo.id}>
                     {tipo.label}
@@ -116,12 +128,14 @@ const ComprasProductosPage = () => {
               </SelectContent>
             </Select>
           </div>
+
           <Button
             id="id-compras-filter-actions"
             variant="outline"
             onClick={clearFilters}
           >
-            <Filter className="mr-2 h-4 w-4" /> Limpiar
+            <Filter className="mr-2 h-4 w-4" />
+            {t("buttons.clearFilters")}
           </Button>
         </div>
       </div>
@@ -145,11 +159,12 @@ const ComprasProductosPage = () => {
           </div>
         )}
       </div>
+
       <Modal
         open={isOpen}
         onOpenChange={setIsOpen}
-        title="Agregar Nueva Compra"
-        description="En esta sección ingresarás las compras de productos"
+        title={t("modal.title")}
+        description={t("modal.description")}
         size="5xl"
         height="auto"
       >

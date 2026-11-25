@@ -1,4 +1,6 @@
 "use client";
+
+import { useTranslations } from "next-intl";
 import {
   CrearAgroProducto,
   UnidadVenta,
@@ -54,6 +56,8 @@ const FormAgroProductos = ({
   Success,
   paisId,
 }: Props) => {
+  const t = useTranslations("formAgroProductos");
+
   const queryClient = useQueryClient();
   const [unidadVentaSeleccionada, setUnidadVentaSeleccionada] = useState("");
   const [nuevoTipoUso, setNuevoTipoUso] = useState("");
@@ -208,7 +212,7 @@ const FormAgroProductos = ({
         : ingresarAgroProducto(payload);
     },
     onSuccess: () => {
-      toast.success("Producto creado exitosamente");
+      toast.success(t("notifications.createSuccess"));
       queryClient.invalidateQueries({ queryKey: ["agro-productos"] });
       reset();
       Success?.();
@@ -220,10 +224,10 @@ const FormAgroProductos = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al crear el producto";
+            : t("notifications.createError");
         toast.error(errorMessage);
       } else {
-        toast.error("Hubo un error al crear el producto. Inténtalo de nuevo.");
+        toast.error(t("notifications.createErrorRetry"));
       }
     },
   });
@@ -244,7 +248,7 @@ const FormAgroProductos = ({
         : editarAgroProducto(editProducto?.id || "", payload);
     },
     onSuccess: () => {
-      toast.success("Producto actualizado exitosamente");
+      toast.success(t("notifications.updateSuccess"));
       queryClient.invalidateQueries({ queryKey: ["agro-productos"] });
       reset();
       Success?.();
@@ -256,12 +260,10 @@ const FormAgroProductos = ({
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : "Hubo un error al actualizar el producto";
+            : t("notifications.updateError");
         toast.error(errorMessage);
       } else {
-        toast.error(
-          "Hubo un error al actualizar el producto. Inténtalo de nuevo.",
-        );
+        toast.error(t("notifications.updateErrorRetry"));
       }
     },
   });
@@ -317,22 +319,22 @@ const FormAgroProductos = ({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="nombre" className="font-bold">
-          Nombre del Producto*
+          {t("fields.productName")}*
         </Label>
         <Input
           id="nombre"
           {...register("nombre", {
-            required: "El nombre del producto es requerido",
+            required: t("validation.productNameRequired"),
             minLength: {
               value: 3,
-              message: "El nombre debe tener al menos 3 caracteres",
+              message: t("validation.productNameMin"),
             },
             maxLength: {
               value: 100,
-              message: "El nombre no puede tener más de 100 caracteres",
+              message: t("validation.productNameMax"),
             },
           })}
-          placeholder="Ej: Vitamina AD3E Inyectable, Fertilizante NPK..."
+          placeholder={t("placeholders.productName")}
         />
         {errors.nombre && (
           <p className="text-sm font-medium text-red-500">
@@ -343,18 +345,18 @@ const FormAgroProductos = ({
 
       <div className="space-y-2">
         <Label htmlFor="codigo_barra" className="font-bold">
-          Código de Barra*
+          {t("fields.barcode")}*
         </Label>
         <Input
           id="codigo_barra"
           {...register("codigo_barra", {
-            required: "El código de barra es requerido",
+            required: t("validation.barcodeRequired"),
             maxLength: {
               value: 20,
-              message: "El código de barra no puede tener más de 20 caracteres",
+              message: t("validation.barcodeMax"),
             },
           })}
-          placeholder="Ej: 7501031311309"
+          placeholder={t("placeholders.barcode")}
         />
         {errors.codigo_barra && (
           <p className="text-sm font-medium text-red-500">
@@ -365,14 +367,14 @@ const FormAgroProductos = ({
 
       <div className="space-y-2">
         <Label htmlFor="marcaId" className="font-bold">
-          Marca
+          {t("fields.brand")}
         </Label>
         <Select
           onValueChange={(value) => setValue("marcaId", value)}
           defaultValue={isEdit ? editProducto?.marca?.id : ""}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Selecciona una marca" />
+            <SelectValue placeholder={t("placeholders.brand")} />
           </SelectTrigger>
           <SelectContent>
             {marcasActivas?.map((marca) => (
@@ -386,7 +388,7 @@ const FormAgroProductos = ({
 
       <div className="space-y-2">
         <Label htmlFor="categoriaId" className="font-bold">
-          Categoría*
+          {t("fields.category")}*
         </Label>
         <Select
           onValueChange={(value) => {
@@ -397,7 +399,7 @@ const FormAgroProductos = ({
           defaultValue={isEdit ? editProducto?.categoria?.id : ""}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Selecciona una categoría" />
+            <SelectValue placeholder={t("placeholders.category")} />
           </SelectTrigger>
           <SelectContent>
             {categorias?.map((cat) => (
@@ -417,7 +419,7 @@ const FormAgroProductos = ({
       {categoriaSeleccionada && (
         <div className="space-y-2">
           <Label htmlFor="subcategoriaId" className="font-bold">
-            Subcategoría
+            {t("fields.subcategory")}
           </Label>
           <Select
             onValueChange={(value) => {
@@ -427,7 +429,7 @@ const FormAgroProductos = ({
             defaultValue={isEdit ? editProducto?.subcategoria?.id : ""}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Selecciona una subcategoría" />
+              <SelectValue placeholder={t("placeholders.subcategory")} />
             </SelectTrigger>
             <SelectContent>
               {subcategorias?.map((subcat) => (
@@ -443,14 +445,14 @@ const FormAgroProductos = ({
       {subcategoriaSeleccionada && (
         <div className="space-y-2">
           <Label htmlFor="tipo_producto_id" className="font-bold">
-            Tipo de Producto
+            {t("fields.productType")}
           </Label>
           <Select
             onValueChange={(value) => setValue("tipo_producto_id", value)}
             defaultValue={isEdit ? editProducto?.tipo_producto?.id : ""}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Selecciona un tipo de producto" />
+              <SelectValue placeholder={t("placeholders.productType")} />
             </SelectTrigger>
             <SelectContent>
               {tiposProducto?.map((tipo) => (
@@ -465,7 +467,7 @@ const FormAgroProductos = ({
 
       <div className="space-y-2">
         <Label htmlFor="unidad_venta" className="font-bold">
-          Unidad de Venta*
+          {t("fields.salesUnit")}*
         </Label>
         <Select
           defaultValue={isEdit ? editProducto?.unidad_venta : "unidad"}
@@ -477,7 +479,7 @@ const FormAgroProductos = ({
           }}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Selecciona la unidad" />
+            <SelectValue placeholder={t("placeholders.salesUnit")} />
           </SelectTrigger>
           <SelectContent>
             {unidadesMedida.map((unidad) => (
@@ -496,11 +498,11 @@ const FormAgroProductos = ({
 
       {unidadVentaSeleccionada && unidadVentaSeleccionada !== "unidad" && (
         <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
-          <h3 className="font-bold text-lg">Fraccionamiento</h3>
+          <h3 className="font-bold text-lg">{t("fractioning.title")}</h3>
 
           <div className="space-y-2">
             <Label htmlFor="tipo_fraccionamiento" className="font-bold">
-              Tipo de Fraccionamiento
+              {t("fractioning.type")}
             </Label>
             <Select
               defaultValue={
@@ -513,7 +515,7 @@ const FormAgroProductos = ({
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Selecciona unidad de fraccionamiento" />
+                <SelectValue placeholder={t("placeholders.fractioningUnit")} />
               </SelectTrigger>
               <SelectContent>
                 {unidadesMedida.map((unidad) => (
@@ -527,7 +529,7 @@ const FormAgroProductos = ({
 
           <div className="space-y-2">
             <Label htmlFor="unidad_fraccionamiento" className="font-bold">
-              Unidad de Fraccionamiento
+              {t("fractioning.unit")}
             </Label>
             <Input
               id="unidad_fraccionamiento"
@@ -536,10 +538,10 @@ const FormAgroProductos = ({
               {...register("unidad_fraccionamiento", {
                 min: {
                   value: 0.0001,
-                  message: "La unidad de fraccionamiento debe ser mayor a 0",
+                  message: t("validation.fractioningUnitMin"),
                 },
               })}
-              placeholder="Ej: 1000 (para kg a gramos)"
+              placeholder={t("placeholders.fractioningExample")}
             />
             {errors.unidad_fraccionamiento && (
               <p className="text-sm font-medium text-red-500">
@@ -550,7 +552,7 @@ const FormAgroProductos = ({
 
           <div className="space-y-2">
             <Label htmlFor="contenido" className="font-bold">
-              Contenido
+              {t("fractioning.content")}
             </Label>
             <Input
               id="contenido"
@@ -559,10 +561,10 @@ const FormAgroProductos = ({
               {...register("contenido", {
                 min: {
                   value: 0.0001,
-                  message: "El contenido debe ser mayor a 0",
+                  message: t("validation.contentMin"),
                 },
               })}
-              placeholder="Ej: 500 (para 500 ml)"
+              placeholder={t("placeholders.contentExample")}
             />
             {errors.contenido && (
               <p className="text-sm font-medium text-red-500">
@@ -570,17 +572,15 @@ const FormAgroProductos = ({
               </p>
             )}
             <p className="text-xs text-gray-500">
-              Cantidad total del producto en la unidad principal
+              {t("fractioning.contentDescription")}
             </p>
           </div>
         </div>
       )}
 
       <div className="space-y-4 p-4 border rounded-lg">
-        <h3 className="font-bold text-lg">Componentes del Producto</h3>
-        <p className="text-sm text-gray-500">
-          Lista de ingredientes/activos con cantidad o porcentaje
-        </p>
+        <h3 className="font-bold text-lg">{t("components.title")}</h3>
+        <p className="text-sm text-gray-500">{t("components.description")}</p>
 
         {fields.map((field, index) => (
           <div
@@ -588,27 +588,27 @@ const FormAgroProductos = ({
             className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end p-3 border rounded"
           >
             <div className="col-span-2">
-              <Label>Nombre del Componente</Label>
+              <Label>{t("components.name")}</Label>
               <Input
                 {...register(`componentes.${index}.nombre`, {
-                  required: "El nombre es obligatorio",
+                  required: t("validation.componentNameRequired"),
                 })}
-                placeholder="Ej: Vitamina A"
+                placeholder={t("placeholders.componentName")}
               />
             </div>
             <div>
-              <Label>Cantidad</Label>
+              <Label>{t("components.quantity")}</Label>
               <Input
                 {...register(`componentes.${index}.cantidad`)}
-                placeholder="Ej: 500000"
+                placeholder={t("placeholders.componentQuantity")}
               />
             </div>
             <div className="flex items-end gap-2">
               <div className="flex-1">
-                <Label>Unidad</Label>
+                <Label>{t("components.unit")}</Label>
                 <Input
                   {...register(`componentes.${index}.unidad`)}
-                  placeholder="Ej: UI, mg, g"
+                  placeholder={t("placeholders.componentUnit")}
                 />
               </div>
               <Button
@@ -616,6 +616,7 @@ const FormAgroProductos = ({
                 variant="destructive"
                 size="icon"
                 onClick={() => remove(index)}
+                aria-label={t("buttons.removeComponent")}
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -630,15 +631,13 @@ const FormAgroProductos = ({
           className="w-full"
         >
           <Plus className="h-4 w-4 mr-2" />
-          Agregar Componente
+          {t("buttons.addComponent")}
         </Button>
       </div>
 
       <div className="space-y-4 p-4 border rounded-lg">
-        <h3 className="font-bold text-lg">Tipos de Uso</h3>
-        <p className="text-sm text-gray-500">
-          ¿Para qué sirve este producto? (Ej: Bovino, Porcino, Equino)
-        </p>
+        <h3 className="font-bold text-lg">{t("usageTypes.title")}</h3>
+        <p className="text-sm text-gray-500">{t("usageTypes.description")}</p>
 
         <div className="flex flex-wrap gap-2 mb-3">
           {tiposUso?.map((tipo, index) => (
@@ -651,6 +650,7 @@ const FormAgroProductos = ({
                 type="button"
                 onClick={() => eliminarTipoUso(tipo)}
                 className="hover:text-blue-600"
+                aria-label={t("buttons.removeUsageType", { value: tipo })}
               >
                 <X className="h-3 w-3" />
               </button>
@@ -665,36 +665,34 @@ const FormAgroProductos = ({
             onKeyPress={(e) =>
               e.key === "Enter" && (e.preventDefault(), agregarTipoUso())
             }
-            placeholder="Escribe un tipo de uso y presiona Agregar"
+            placeholder={t("placeholders.usageType")}
             className="flex-1"
           />
           <Button type="button" onClick={agregarTipoUso}>
             <Plus className="h-4 w-4 mr-2" />
-            Agregar
+            {t("buttons.add")}
           </Button>
         </div>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="forma_uso" className="font-bold">
-          Forma de Uso
+          {t("fields.usageInstructions")}
         </Label>
         <Textarea
           id="forma_uso"
           {...register("forma_uso")}
-          placeholder="Ej: Aplicar por vía intramuscular o subcutánea según indicación del médico veterinario."
+          placeholder={t("placeholders.usageInstructions")}
           className="min-h-[100px]"
         />
         <p className="text-xs text-gray-500">
-          Instrucciones de aplicación del producto
+          {t("usageTypes.instructionsDescription")}
         </p>
       </div>
 
       <div className="space-y-4 p-4 border rounded-lg">
-        <h3 className="font-bold text-lg">Indicaciones / Padecimientos</h3>
-        <p className="text-sm text-gray-500">
-          Condición que trata el producto (Ej: cochinilla, sarna, mastitis)
-        </p>
+        <h3 className="font-bold text-lg">{t("indications.title")}</h3>
+        <p className="text-sm text-gray-500">{t("indications.description")}</p>
 
         <div className="flex flex-wrap gap-2 mb-3">
           {indicaciones?.map((indicacion, index) => (
@@ -707,6 +705,9 @@ const FormAgroProductos = ({
                 type="button"
                 onClick={() => eliminarIndicacion(indicacion)}
                 className="hover:text-green-600"
+                aria-label={t("buttons.removeIndication", {
+                  value: indicacion,
+                })}
               >
                 <X className="h-3 w-3" />
               </button>
@@ -721,30 +722,30 @@ const FormAgroProductos = ({
             onKeyPress={(e) =>
               e.key === "Enter" && (e.preventDefault(), agregarIndicacion())
             }
-            placeholder="Escribe una indicación y presiona Agregar"
+            placeholder={t("placeholders.indication")}
             className="flex-1"
           />
           <Button type="button" onClick={agregarIndicacion}>
             <Plus className="h-4 w-4 mr-2" />
-            Agregar
+            {t("buttons.add")}
           </Button>
         </div>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="atributos" className="font-bold">
-          Atributos*
+          {t("fields.attributes")}*
         </Label>
         <Textarea
           id="atributos"
           {...register("atributos", {
-            required: "Los atributos son requeridos",
+            required: t("validation.attributesRequired"),
             maxLength: {
               value: 250,
-              message: "Los atributos no pueden tener más de 250 caracteres",
+              message: t("validation.attributesMax"),
             },
           })}
-          placeholder="Ej: Frasco plástico de 500 ml, Color verde, Uso agrícola..."
+          placeholder={t("placeholders.attributes")}
           className="min-h-[80px]"
         />
         {errors.atributos && (
@@ -757,7 +758,7 @@ const FormAgroProductos = ({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label htmlFor="compra_minima" className="font-bold">
-            Compra Mínima*
+            {t("fields.minimumPurchase")}*
           </Label>
           <Input
             id="compra_minima"
@@ -765,13 +766,13 @@ const FormAgroProductos = ({
             min="1"
             step="1"
             {...register("compra_minima", {
-              required: "La compra mínima es requerida",
+              required: t("validation.minimumPurchaseRequired"),
               min: {
                 value: 1,
-                message: "La compra mínima debe ser al menos 1",
+                message: t("validation.minimumPurchaseMin"),
               },
             })}
-            placeholder="Ej: 12"
+            placeholder={t("placeholders.minimumPurchase")}
           />
           {errors.compra_minima && (
             <p className="text-sm font-medium text-red-500">
@@ -782,7 +783,7 @@ const FormAgroProductos = ({
 
         <div className="space-y-2">
           <Label htmlFor="distribucion_minima" className="font-bold">
-            Distribución Mínima*
+            {t("fields.minimumDistribution")}*
           </Label>
           <Input
             id="distribucion_minima"
@@ -790,13 +791,13 @@ const FormAgroProductos = ({
             min="1"
             step="1"
             {...register("distribucion_minima", {
-              required: "La distribución mínima es requerida",
+              required: t("validation.minimumDistributionRequired"),
               min: {
                 value: 1,
-                message: "La distribución mínima debe ser al menos 1",
+                message: t("validation.minimumDistributionMin"),
               },
             })}
-            placeholder="Ej: 6"
+            placeholder={t("placeholders.minimumDistribution")}
           />
           {errors.distribucion_minima && (
             <p className="text-sm font-medium text-red-500">
@@ -807,7 +808,7 @@ const FormAgroProductos = ({
 
         <div className="space-y-2">
           <Label htmlFor="venta_minima" className="font-bold">
-            Venta Mínima*
+            {t("fields.minimumSale")}*
           </Label>
           <Input
             id="venta_minima"
@@ -815,10 +816,13 @@ const FormAgroProductos = ({
             min="1"
             step="1"
             {...register("venta_minima", {
-              required: "La venta mínima es requerida",
-              min: { value: 1, message: "La venta mínima debe ser al menos 1" },
+              required: t("validation.minimumSaleRequired"),
+              min: {
+                value: 1,
+                message: t("validation.minimumSaleMin"),
+              },
             })}
-            placeholder="Ej: 1"
+            placeholder={t("placeholders.minimumSale")}
           />
           {errors.venta_minima && (
             <p className="text-sm font-medium text-red-500">
@@ -829,7 +833,7 @@ const FormAgroProductos = ({
       </div>
 
       <div className="space-y-2">
-        <Label className="font-bold">Tipo de Compra</Label>
+        <Label className="font-bold">{t("purchaseType.title")}</Label>
         <div className="flex items-center space-x-2">
           <Checkbox
             id="es_compra_bodega"
@@ -839,27 +843,25 @@ const FormAgroProductos = ({
             }
           />
           <Label htmlFor="es_compra_bodega" className="text-sm font-normal">
-            Compra directa a bodega
+            {t("purchaseType.directPurchase")}
           </Label>
         </div>
-        <p className="text-sm text-gray-500">
-          Marque esta opción si el producto se compra directamente a bodega
-        </p>
+        <p className="text-sm text-gray-500">{t("purchaseType.description")}</p>
       </div>
 
       {!isEdit ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="costo" className="font-bold">
-              Costo*
+              {t("fields.cost")}*
             </Label>
             <Input
               id="costo"
               type="number"
               step="0.01"
               {...register("costo", {
-                required: "El costo es requerido",
-                min: { value: 0, message: "El costo no puede ser negativo" },
+                required: t("validation.costRequired"),
+                min: { value: 0, message: t("validation.costMin") },
               })}
               placeholder="0.00"
             />
@@ -871,15 +873,15 @@ const FormAgroProductos = ({
           </div>
           <div className="space-y-2">
             <Label htmlFor="precio" className="font-bold">
-              Precio*
+              {t("fields.price")}*
             </Label>
             <Input
               id="precio"
               type="number"
               step="0.01"
               {...register("precio", {
-                required: "El precio es requerido",
-                min: { value: 0, message: "El precio no puede ser negativo" },
+                required: t("validation.priceRequired"),
+                min: { value: 0, message: t("validation.priceMin") },
               })}
               placeholder="0.00"
             />
@@ -894,7 +896,7 @@ const FormAgroProductos = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="costo" className="font-bold">
-              Costo
+              {t("fields.cost")}
             </Label>
             <Input
               id="costo"
@@ -906,7 +908,7 @@ const FormAgroProductos = ({
           </div>
           <div className="space-y-2">
             <Label htmlFor="precio" className="font-bold">
-              Precio
+              {t("fields.price")}
             </Label>
             <Input
               id="precio"
@@ -921,14 +923,14 @@ const FormAgroProductos = ({
 
       <div className="space-y-2">
         <Label htmlFor="taxId" className="font-bold">
-          Impuesto
+          {t("fields.tax")}
         </Label>
         <Select
           onValueChange={(value) => setValue("taxId", value)}
           defaultValue={isEdit ? editProducto?.tax?.id : ""}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Selecciona un impuesto" />
+            <SelectValue placeholder={t("placeholders.tax")} />
           </SelectTrigger>
           <SelectContent>
             {impuestos?.map((imp) => (
@@ -942,14 +944,14 @@ const FormAgroProductos = ({
 
       <div className="space-y-2">
         <Label htmlFor="proveedorId" className="font-bold">
-          Proveedor*
+          {t("fields.supplier")}*
         </Label>
         <Select
           onValueChange={(value) => setValue("proveedorId", value)}
           defaultValue={isEdit ? editProducto?.proveedor?.id : ""}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Selecciona un proveedor" />
+            <SelectValue placeholder={t("placeholders.supplier")} />
           </SelectTrigger>
           <SelectContent>
             {proveedoresActivos?.map((proveedor) => (
@@ -969,7 +971,7 @@ const FormAgroProductos = ({
       {isEdit && (
         <>
           <div className="space-y-2">
-            <Label className="font-bold">Estado</Label>
+            <Label className="font-bold">{t("status.title")}</Label>
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="disponible"
@@ -979,13 +981,13 @@ const FormAgroProductos = ({
                 }
               />
               <Label htmlFor="disponible" className="text-sm font-normal">
-                Producto disponible
+                {t("status.available")}
               </Label>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label className="font-bold">Actividad</Label>
+            <Label className="font-bold">{t("status.activity")}</Label>
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="isActive"
@@ -995,7 +997,7 @@ const FormAgroProductos = ({
                 }
               />
               <Label htmlFor="isActive" className="text-sm font-normal">
-                Producto activo
+                {t("status.active")}
               </Label>
             </div>
           </div>
@@ -1013,7 +1015,7 @@ const FormAgroProductos = ({
               }
             }}
           >
-            Cancelar
+            {t("buttons.cancel")}
           </Button>
         )}
         <Button
@@ -1043,10 +1045,12 @@ const FormAgroProductos = ({
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 ></path>
               </svg>
-              {isEdit ? "Actualizando..." : "Creando..."}
+              {isEdit ? t("buttons.updating") : t("buttons.creating")}
             </>
           ) : (
-            <>{isEdit ? "Actualizar Producto" : "Crear Producto"}</>
+            <>
+              {isEdit ? t("buttons.updateProduct") : t("buttons.createProduct")}
+            </>
           )}
         </Button>
       </div>

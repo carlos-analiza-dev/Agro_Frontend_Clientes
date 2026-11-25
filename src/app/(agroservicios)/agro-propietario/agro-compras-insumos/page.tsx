@@ -1,4 +1,5 @@
 "use client";
+
 import FormCompraInsumos from "@/components/agroservicio/compra-insumos/FormCompraInsumos";
 import ButtonAdd from "@/components/generics/ButtonAdd";
 import Modal from "@/components/generics/Modal";
@@ -19,6 +20,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,16 +41,21 @@ import { formatDateOnly } from "@/helpers/funciones/formatDateOnly";
 import { formatCurrency } from "@/helpers/funciones/formatCurrency";
 
 const ComprasInsumoInterface = () => {
+  const t = useTranslations("comprasInsumosPage");
+
   const { cliente } = useAuthStore();
   const propietarioId = cliente?.id ?? "";
   const moneda = cliente?.pais.simbolo_moneda ?? "$";
+
   const [openModalForm, setOpenModalForm] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [filtroProveedor, setFiltroProveedor] = useState("");
   const [filtroSucursal, setFiltroSucursal] = useState("");
   const [filtroTipoPago, setFiltroTipoPago] = useState("");
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+
   const limit = 10;
+
   const proveedor = filtroProveedor === "todos" ? "" : filtroProveedor;
   const sucursal = filtroSucursal === "todos" ? "" : filtroSucursal;
   const tipo = filtroTipoPago === "todos" ? "" : filtroTipoPago;
@@ -73,11 +80,13 @@ const ComprasInsumoInterface = () => {
 
   const toggleRow = (id: string) => {
     const newExpanded = new Set(expandedRows);
+
     if (newExpanded.has(id)) {
       newExpanded.delete(id);
     } else {
       newExpanded.add(id);
     }
+
     setExpandedRows(newExpanded);
   };
 
@@ -89,13 +98,13 @@ const ComprasInsumoInterface = () => {
       >
         <TitlePage
           Icon={FlaskConical}
-          title="Compra de Insumos"
-          description="Gestiona la compra de insumos en tu agroservicio"
+          title={t("title")}
+          description={t("description")}
         />
 
         <ButtonAdd
           id="add-compra-insumo"
-          title="Agregar Compra"
+          title={t("buttons.add")}
           Icon={FlaskConical}
           action={() => setOpenModalForm(true)}
           className="w-full md:w-auto bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 shadow-lg hover:shadow-xl transition-all duration-300"
@@ -106,24 +115,30 @@ const ComprasInsumoInterface = () => {
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Filtros de búsqueda
+            {t("filters.title")}
           </CardTitle>
         </CardHeader>
+
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div id="compra-prov-insumo" className="space-y-2">
-              <Label className="text-sm font-medium">Proveedor</Label>
+              <Label className="text-sm font-medium">
+                {t("filters.provider")}
+              </Label>
+
               <Select
                 value={filtroProveedor}
                 onValueChange={setFiltroProveedor}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Todos los proveedores" />
+                  <SelectValue placeholder={t("filters.allProviders")} />
                 </SelectTrigger>
+
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Proveedores</SelectLabel>
-                    <SelectItem value="todos">Todos</SelectItem>
+                    <SelectLabel>{t("filters.providers")}</SelectLabel>
+                    <SelectItem value="todos">{t("filters.all")}</SelectItem>
+
                     {proveedores?.map((prov) => (
                       <SelectItem value={prov.id} key={prov.id}>
                         {prov.nombre_legal}
@@ -135,15 +150,20 @@ const ComprasInsumoInterface = () => {
             </div>
 
             <div id="compra-sucursal-insumo" className="space-y-2">
-              <Label className="text-sm font-medium">Sucursal</Label>
+              <Label className="text-sm font-medium">
+                {t("filters.branch")}
+              </Label>
+
               <Select value={filtroSucursal} onValueChange={setFiltroSucursal}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Todas las sucursales" />
+                  <SelectValue placeholder={t("filters.allBranches")} />
                 </SelectTrigger>
+
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Sucursales</SelectLabel>
-                    <SelectItem value="todos">Todas</SelectItem>
+                    <SelectLabel>{t("filters.branches")}</SelectLabel>
+                    <SelectItem value="todos">{t("filters.all")}</SelectItem>
+
                     {sucursales?.map((suc) => (
                       <SelectItem value={suc.id} key={suc.id}>
                         {suc.nombre}
@@ -155,15 +175,20 @@ const ComprasInsumoInterface = () => {
             </div>
 
             <div id="compra-tipo-insumo" className="space-y-2">
-              <Label className="text-sm font-medium">Tipo de Pago</Label>
+              <Label className="text-sm font-medium">
+                {t("filters.paymentType")}
+              </Label>
+
               <Select value={filtroTipoPago} onValueChange={setFiltroTipoPago}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Todos los tipos" />
+                  <SelectValue placeholder={t("filters.allPaymentTypes")} />
                 </SelectTrigger>
+
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Tipos de Pago</SelectLabel>
-                    <SelectItem value="todos">Todos</SelectItem>
+                    <SelectLabel>{t("filters.paymentTypes")}</SelectLabel>
+                    <SelectItem value="todos">{t("filters.all")}</SelectItem>
+
                     {tiposPagos.map((tipo) => (
                       <SelectItem value={tipo.value} key={tipo.id}>
                         {tipo.label}
@@ -180,23 +205,27 @@ const ComprasInsumoInterface = () => {
       <Card id="table-compra-insumos">
         <CardHeader>
           <CardTitle className="text-lg flex items-center justify-between">
-            <span>Lista de Compras</span>
+            <span>{t("list.title")}</span>
+
             <Badge variant="outline" className="text-sm">
-              {total} compras
+              {t("list.count", { total })}
             </Badge>
           </CardTitle>
         </CardHeader>
+
         <CardContent>
           {isLoading ? (
             <SkeletonPage />
           ) : compras.length === 0 ? (
             <div className="text-center py-12">
               <Package className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+
               <h3 className="text-lg font-semibold text-gray-600">
-                No hay compras registradas
+                {t("empty.title")}
               </h3>
+
               <p className="text-sm text-gray-500 mt-1">
-                Comienza agregando una nueva compra
+                {t("empty.description")}
               </p>
             </div>
           ) : (
@@ -220,11 +249,14 @@ const ComprasInsumoInterface = () => {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-3 flex-wrap">
                             <h3 className="text-lg font-semibold truncate">
-                              {compra.proveedor?.nombre_legal || "Proveedor"}
+                              {compra.proveedor?.nombre_legal ||
+                                t("labels.provider")}
                             </h3>
+
                             <Badge variant="outline" className="shrink-0">
                               #{compra.numero_factura}
                             </Badge>
+
                             <Badge
                               variant={
                                 compra.tipo_pago === "CONTADO"
@@ -236,20 +268,24 @@ const ComprasInsumoInterface = () => {
                               {getTipoPagoLabel(compra.tipo_pago)}
                             </Badge>
                           </div>
+
                           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm text-muted-foreground">
                             <span className="flex items-center gap-1">
                               <Calendar className="h-3.5 w-3.5" />
                               {formatDateOnly(compra.fecha)}
                             </span>
+
                             <span className="flex items-center gap-1">
                               <Store className="h-3.5 w-3.5" />
-                              {compra.sucursal?.nombre || "Sucursal"}
+                              {compra.sucursal?.nombre || t("labels.branch")}
                             </span>
+
                             {primerDetalle && (
                               <span className="flex items-center gap-1">
                                 <Package className="h-3.5 w-3.5" />
-                                {totalDetalles}{" "}
-                                {totalDetalles === 1 ? "insumo" : "insumos"}
+                                {t("list.suppliesCount", {
+                                  total: totalDetalles,
+                                })}
                               </span>
                             )}
                           </div>
@@ -258,17 +294,24 @@ const ComprasInsumoInterface = () => {
                         <div className="flex items-center gap-4 shrink-0">
                           <div className="text-right">
                             <p className="text-sm text-muted-foreground">
-                              Total
+                              {t("labels.total")}
                             </p>
+
                             <p className="text-xl font-bold text-green-600">
                               {formatCurrency(compra.total, moneda)}
                             </p>
                           </div>
+
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => toggleRow(compra.id)}
                             className="shrink-0"
+                            aria-label={
+                              isExpanded
+                                ? t("buttons.collapseDetails")
+                                : t("buttons.expandDetails")
+                            }
                           >
                             {isExpanded ? (
                               <ChevronUp className="h-4 w-4" />
@@ -307,8 +350,8 @@ const ComprasInsumoInterface = () => {
       <Modal
         open={openModalForm}
         onOpenChange={setOpenModalForm}
-        title="Agregar Nueva Compra"
-        description="En esta sección ingresarás las compras de insumos"
+        title={t("modal.title")}
+        description={t("modal.description")}
         size="6xl"
         height="auto"
       >
