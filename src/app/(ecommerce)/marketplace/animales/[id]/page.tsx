@@ -34,15 +34,26 @@ import { ChatModal } from "@/components/chat/ChatModal";
 import { TipoPublicacion } from "@/interfaces/enums/market/tipo_publicacion.enum";
 import { formatCurrency } from "@/helpers/funciones/formatCurrency";
 import DetailsSkeleton from "@/components/marketplace/DetailsSkeleton";
+import { useTranslations } from "next-intl";
+import { toast } from "react-toastify";
+import { marcarPublicacionVendida } from "@/api/market-animales/accions/marcar-vendido";
+import { isAxiosError } from "axios";
+import Modal from "@/components/generics/Modal";
+import { useQueryClient } from "@tanstack/react-query";
 
 const DetailsAnimalesPage = () => {
+  const t = useTranslations("DetailsAnimalesPage");
   const { cliente } = useAuthStore();
+  const queryClient = useQueryClient();
   const params = useParams();
   const router = useRouter();
   const marketAnimalId = params.id as string;
   const { data: animal, isLoading } = useGetAnimalMarketById(marketAnimalId);
   const tipoProducto = animal?.tipo_producto ? animal.tipo_producto.id : "";
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isMarkingSold, setIsMarkingSold] = useState(false);
+  const [isPublicationMarked, setIsPublicationMarked] = useState(false);
   const { data: animales_market, isLoading: cargando } =
     useGetAnimalesMarketSugerencias({
       categoriaId: animal?.categoria.id,
@@ -93,7 +104,7 @@ const DetailsAnimalesPage = () => {
     const precios = [];
     if (animal?.precioHora && Number(animal.precioHora) > 0) {
       precios.push({
-        label: "Por hora",
+        label: t("prices.perHour"),
         valor: animal.precioHora,
         unidad: "hora",
         icon: getTimeIcon("hora"),
@@ -101,7 +112,7 @@ const DetailsAnimalesPage = () => {
     }
     if (animal?.precioDia && Number(animal.precioDia) > 0) {
       precios.push({
-        label: "Por día",
+        label: t("prices.perDay"),
         valor: animal.precioDia,
         unidad: "día",
         icon: getTimeIcon("día"),
@@ -109,7 +120,7 @@ const DetailsAnimalesPage = () => {
     }
     if (animal?.precioSemana && Number(animal.precioSemana) > 0) {
       precios.push({
-        label: "Por semana",
+        label: t("prices.perWeek"),
         valor: animal.precioSemana,
         unidad: "semana",
         icon: getTimeIcon("semana"),
@@ -117,13 +128,39 @@ const DetailsAnimalesPage = () => {
     }
     if (animal?.precioMes && Number(animal.precioMes) > 0) {
       precios.push({
-        label: "Por mes",
+        label: t("prices.perMonth"),
         valor: animal.precioMes,
         unidad: "mes",
         icon: getTimeIcon("mes"),
       });
     }
     return precios;
+  };
+
+  const handleMarkAsSold = async () => {
+    try {
+      setIsMarkingSold(true);
+
+      await marcarPublicacionVendida(marketAnimalId);
+
+      setIsPublicationMarked(true);
+      setIsConfirmModalOpen(false);
+      queryClient.invalidateQueries({ queryKey: ["mis-publicaciones"] });
+      queryClient.invalidateQueries({ queryKey: ["publicaciones"] });
+      toast.success(
+        t("messages.markSuccess", {
+          status: textVendido,
+        }),
+      );
+    } catch (error) {
+      const message = isAxiosError(error)
+        ? error.response?.data?.message || t("messages.markError")
+        : t("messages.markError");
+
+      toast.error(message);
+    } finally {
+      setIsMarkingSold(false);
+    }
   };
 
   const renderPrecio = () => {
@@ -134,7 +171,7 @@ const DetailsAnimalesPage = () => {
         return (
           <div className="mt-3">
             <p className="text-lg font-semibold text-yellow-600">
-              Precios disponibles
+              {t("prices.availablePrices")}
             </p>
           </div>
         );
@@ -163,7 +200,7 @@ const DetailsAnimalesPage = () => {
               <DollarSign className="w-5 h-5 text-yellow-600" />
               <div>
                 <p className="text-sm font-medium text-yellow-700">
-                  Depósito de garantía
+                  {t("prices.securityDeposit")}
                 </p>
                 <p className="text-sm text-yellow-600">
                   {formatCurrency(animal.montoDeposito ?? 0, animal.moneda)}
@@ -171,10 +208,7 @@ const DetailsAnimalesPage = () => {
               </div>
             </div>
           )}
-          <p className="text-xs text-gray-500">
-            💡 Selecciona la opción de alquiler que mejor se adapte a tus
-            necesidades
-          </p>
+          <p className="text-xs text-gray-500">{t("prices.rentalHint")}</p>
         </div>
       );
     }
@@ -204,7 +238,7 @@ const DetailsAnimalesPage = () => {
       return (
         <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
           <Clock className="w-4 h-4" />
-          Disponible para alquiler
+          {t("badges.availableForRent")}
         </div>
       );
     }
@@ -213,9 +247,9 @@ const DetailsAnimalesPage = () => {
 
   const getEstadoDescripcion = () => {
     if (esAlquiler) {
-      return "Este producto está disponible para alquiler. Contacta al vendedor para más detalles.";
+      return t("rentalInfo.rentDescription");
     }
-    return "Este producto está disponible para compra. Contacta al vendedor para más detalles.";
+    return t("rentalInfo.purchaseDescription");
   };
 
   if (isLoading) {
@@ -223,16 +257,16 @@ const DetailsAnimalesPage = () => {
   }
 
   if (!animal) {
-    return (
-      <PublicacionNoEncontrada mensaje="La publicación que buscas no existe, fue eliminada o no está disponible" />
-    );
+    return <PublicacionNoEncontrada mensaje={t("notFound.message")} />;
   }
 
-  const isVendido = animal.vendido === true;
+  const isVendido = animal.vendido === true || isPublicationMarked;
   const esMiPublicacion = cliente?.id === animal.vendedor.id;
 
-  const textVendido = esAlquiler ? "alquilado" : "vendido";
-  const textVendidoCapitalized = esAlquiler ? "Alquilado" : "Vendido";
+  const textVendido = esAlquiler ? t("status.rented") : t("status.sold");
+  const textVendidoCapitalized = esAlquiler
+    ? t("status.rentedCapitalized")
+    : t("status.soldCapitalized");
 
   return (
     <div className="container mb-10">
@@ -249,18 +283,23 @@ const DetailsAnimalesPage = () => {
           {renderPrecio()}
 
           <p className="mt-3 text-sm text-gray-500">
-            Publicado {formatDateLocal(animal?.created_at ?? "")},{" "}
-            {animal?.direccion}
+            {t("publishedAt", {
+              date: formatDateLocal(animal?.created_at ?? ""),
+            })}
+            , {animal?.direccion}
           </p>
 
           {isVendido ? (
             <div className="mt-5 p-3 bg-red-50 border border-red-200 rounded-lg text-center">
               <p className="text-red-600 font-medium">
-                Este producto ya fue {textVendido}
+                {t("status.alreadyStatus", { status: textVendido })}
               </p>
               <p className="text-sm text-gray-500 mt-1">
-                No está disponible para {esAlquiler ? "alquiler" : "compra"} ni
-                para compartir
+                {t("status.unavailableFor", {
+                  action: esAlquiler
+                    ? t("status.rental")
+                    : t("status.purchase"),
+                })}
               </p>
             </div>
           ) : (
@@ -269,11 +308,13 @@ const DetailsAnimalesPage = () => {
                 <div className="flex flex-wrap items-center gap-3 w-full mt-5">
                   <Button
                     className="bg-green-600 hover:bg-green-700 text-white flex-1 sm:flex-none"
-                    title="Enviar Mensaje"
+                    title={t("buttons.sendMessage")}
                     onClick={() => setIsChatOpen(true)}
                   >
                     <MessageCircle className="w-4 h-4 mr-2" />
-                    {esAlquiler ? "Consultar disponibilidad" : "Enviar Mensaje"}
+                    {esAlquiler
+                      ? t("buttons.checkAvailability")
+                      : t("buttons.sendMessage")}
                   </Button>
                   <GuardarButton
                     producto={animal}
@@ -283,7 +324,14 @@ const DetailsAnimalesPage = () => {
                   />
                   <ShareButtons
                     title={animal.nombre}
-                    description={`${animal.descripcion.slice(0, 100)}... ${esAlquiler ? "Precios de alquiler disponibles" : `Precio: ${animal.moneda} ${animal.precio}`}`}
+                    description={`${animal.descripcion.slice(0, 100)}... ${
+                      esAlquiler
+                        ? t("share.rentalPricesAvailable")
+                        : t("share.priceValue", {
+                            currency: animal.moneda ?? "$",
+                            price: animal.precio ?? 0,
+                          })
+                    }`}
                     url={currentUrl}
                     imageUrl={animal.imagenes?.[0]?.url}
                     variant="dropdown"
@@ -295,15 +343,22 @@ const DetailsAnimalesPage = () => {
                   <Button
                     className="bg-gray-200 hover:bg-gray-100 text-black flex-1 sm:flex-none"
                     variant="outline"
-                    title="Editar publicacion"
+                    title={t("buttons.editPublication")}
                     onClick={() => handleClickEdit(animal)}
                   >
                     <Pencil className="w-4 h-4 mr-2" />
-                    Editar
+                    {t("buttons.edit")}
                   </Button>
                   <ShareButtons
                     title={animal.nombre}
-                    description={`${animal.descripcion.slice(0, 100)}... ${esAlquiler ? "Precios de alquiler disponibles" : `Precio: ${animal.moneda} ${animal.precio}`}`}
+                    description={`${animal.descripcion.slice(0, 100)}... ${
+                      esAlquiler
+                        ? t("share.rentalPricesAvailable")
+                        : t("share.priceValue", {
+                            currency: animal.moneda ?? "$",
+                            price: animal.precio ?? 0,
+                          })
+                    }`}
                     url={currentUrl}
                     imageUrl={animal.imagenes?.[0]?.url}
                     variant="dropdown"
@@ -315,7 +370,9 @@ const DetailsAnimalesPage = () => {
           )}
 
           <div className="mt-6">
-            <p className="text-xl font-bold">Descripción del vendedor</p>
+            <p className="text-xl font-bold">
+              {t("sections.sellerDescription")}
+            </p>
             <p className="mt-3 text-gray-700 leading-relaxed">
               {animal?.descripcion}
             </p>
@@ -323,7 +380,7 @@ const DetailsAnimalesPage = () => {
               <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 <p className="text-sm text-blue-700">
                   📋{" "}
-                  <span className="font-medium">Información de alquiler:</span>{" "}
+                  <span className="font-medium">{t("rentalInfo.label")}</span>{" "}
                   {getEstadoDescripcion()}
                 </p>
               </div>
@@ -331,12 +388,12 @@ const DetailsAnimalesPage = () => {
           </div>
 
           <div className="mt-6">
-            <p className="text-xl font-bold mb-3">Ubicación</p>
+            <p className="text-xl font-bold mb-3">{t("sections.location")}</p>
             <AnimalLocationMap direccion={animal?.direccion ?? ""} />
           </div>
 
           <div className="mt-6">
-            <p className="text-xl font-bold">Información del vendedor</p>
+            <p className="text-xl font-bold">{t("sections.sellerInfo")}</p>
             <div className="flex gap-3 items-center mt-4 p-4 bg-gray-50 rounded-lg">
               <Avatar className="w-16 h-16">
                 <AvatarImage
@@ -358,12 +415,8 @@ const DetailsAnimalesPage = () => {
                   {animal.vendedor.verificado &&
                   animal.vendedor.tienePaqueteActivo &&
                   animal.vendedor.paqueteActivo?.nombre !== "Plan Free"
-                    ? `Vendedor verificad${
-                        animal?.vendedor.nombre?.endsWith("a") ? "a" : "o"
-                      }`
-                    : `Vendedor no verificad${
-                        animal?.vendedor.nombre?.endsWith("a") ? "a" : "o"
-                      }`}
+                    ? t("seller.verified")
+                    : t("seller.notVerified")}
                 </p>
               </div>
             </div>
@@ -372,8 +425,9 @@ const DetailsAnimalesPage = () => {
           <div className="mt-4 flex gap-3 items-center text-gray-600">
             <Tractor size={20} />
             <p className="text-sm">
-              Se unió a AgroMarket en{" "}
-              {formatDateLocalAnyo(animal?.vendedor.create ?? "")}
+              {t("seller.joinedAt", {
+                year: formatDateLocalAnyo(animal?.vendedor.create ?? ""),
+              })}
             </p>
           </div>
 
@@ -387,8 +441,8 @@ const DetailsAnimalesPage = () => {
                     <MessageCircle size={20} className="text-green-500" />
                     <p className="font-medium">
                       {esAlquiler
-                        ? "¿Necesitas información sobre el alquiler?"
-                        : "¿Necesitas información?"}
+                        ? t("contact.rentalQuestion")
+                        : t("contact.infoQuestion")}
                     </p>
                   </div>
                   <div className="mt-3">
@@ -398,8 +452,8 @@ const DetailsAnimalesPage = () => {
                     >
                       <MessageCircle className="w-4 h-4 mr-2" />
                       {esAlquiler
-                        ? "Consultar disponibilidad"
-                        : "Chat con el vendedor"}
+                        ? t("buttons.checkAvailability")
+                        : t("buttons.chatWithSeller")}
                     </Button>
                   </div>
                 </div>
@@ -407,15 +461,9 @@ const DetailsAnimalesPage = () => {
                 <div className="mt-6 mb-5">
                   <Button
                     className="w-full bg-green-600 hover:bg-green-700"
-                    onClick={() => {
-                      const confirmar = confirm(
-                        `¿Estás seguro de marcar este producto como ${textVendido}?`,
-                      );
-                      if (confirmar) {
-                      }
-                    }}
+                    onClick={() => setIsConfirmModalOpen(true)}
                   >
-                    Marcar como {textVendido}
+                    {t("buttons.markAsStatus", { status: textVendido })}
                   </Button>
                 </div>
               )}
@@ -425,11 +473,12 @@ const DetailsAnimalesPage = () => {
           {isVendido && esMiPublicacion && (
             <div className="mt-6 mb-5 p-3 bg-green-50 border border-green-200 rounded-lg text-center">
               <p className="text-green-700 font-medium">
-                ✓ Producto marcado como {textVendido}
+                {t("status.markedAsStatus", { status: textVendido })}
               </p>
               <p className="text-sm text-gray-500 mt-1">
-                Los {esAlquiler ? "arrendatarios" : "compradores"} ya no pueden
-                interactuar con esta publicación
+                {t("status.usersCannotInteract", {
+                  users: esAlquiler ? t("status.tenants") : t("status.buyers"),
+                })}
               </p>
             </div>
           )}
@@ -438,7 +487,7 @@ const DetailsAnimalesPage = () => {
 
       {!isVendido && !esMiPublicacion && filtersAnimales.length > 0 && (
         <div className="mt-12">
-          <h2 className="text-2xl font-black mb-6">Sugerencias de hoy</h2>
+          <h2 className="text-2xl font-black mb-6">{t("suggestions.title")}</h2>
           {cargando ? (
             <SkeletonCard />
           ) : filtersAnimales.length > 0 ? (
@@ -456,7 +505,7 @@ const DetailsAnimalesPage = () => {
             <EmptyStateMarketplace
               variant="error"
               isLoading={false}
-              description="No se encontraron productos sugeridos en este momento"
+              description={t("suggestions.emptyDescription")}
             />
           )}
         </div>
@@ -469,6 +518,46 @@ const DetailsAnimalesPage = () => {
         seller={animal.vendedor}
         buyerId={cliente?.id || ""}
       />
+      <Modal
+        open={isConfirmModalOpen}
+        onOpenChange={setIsConfirmModalOpen}
+        title={t("confirmModal.title", { status: textVendidoCapitalized })}
+        description={t("confirmModal.description", {
+          status: textVendido,
+        })}
+        size="md"
+        showCloseButton={!isMarkingSold}
+      >
+        <div className="space-y-5">
+          <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+            <p className="text-sm text-yellow-800">
+              {t("confirmModal.warning")}
+            </p>
+          </div>
+
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isMarkingSold}
+              onClick={() => setIsConfirmModalOpen(false)}
+            >
+              {t("confirmModal.cancel")}
+            </Button>
+
+            <Button
+              type="button"
+              className="bg-green-600 text-white hover:bg-green-700"
+              disabled={isMarkingSold}
+              onClick={handleMarkAsSold}
+            >
+              {isMarkingSold
+                ? t("confirmModal.processing")
+                : t("confirmModal.confirm")}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

@@ -20,6 +20,7 @@ import {
   Snail,
   ChevronRight,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const speciesIcons: Record<string, any> = {
   Porcino: PiggyBank,
@@ -59,6 +60,7 @@ const speciesColors: Record<string, string> = {
 };
 
 const EspeciesPage = () => {
+  const t = useTranslations("marketPlaceSpeciesPage");
   const router = useRouter();
   const { data: especies, isLoading, isError } = useGetEspecies();
 
@@ -96,13 +98,11 @@ const EspeciesPage = () => {
           <div className="bg-red-100 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
             <PawPrint className="h-8 w-8 text-red-600" />
           </div>
-          <h3 className="text-lg font-semibold mb-2">
-            Error al cargar las especies
-          </h3>
-          <p className="text-muted-foreground mb-4">
-            No se pudieron cargar las especies. Por favor, intenta nuevamente.
-          </p>
-          <Button onClick={() => window.location.reload()}>Reintentar</Button>
+          <h3 className="text-lg font-semibold mb-2">{t("error.title")}</h3>
+          <p className="text-muted-foreground mb-4">{t("error.description")}</p>
+          <Button onClick={() => window.location.reload()}>
+            {t("buttons.retry")}
+          </Button>
         </div>
       </div>
     );
@@ -117,12 +117,8 @@ const EspeciesPage = () => {
           <div className="bg-muted rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
             <PawPrint className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-semibold mb-2">
-            No hay especies disponibles
-          </h3>
-          <p className="text-muted-foreground">
-            No se encontraron especies activas en el sistema.
-          </p>
+          <h3 className="text-lg font-semibold mb-2">{t("empty.title")}</h3>
+          <p className="text-muted-foreground">{t("empty.description")}</p>
         </div>
       </div>
     );
@@ -132,11 +128,9 @@ const EspeciesPage = () => {
     <div className="container mx-auto p-4">
       <div className="mb-8 text-center">
         <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent mb-2">
-          Especies Disponibles
+          {t("title")}
         </h1>
-        <p className="text-muted-foreground">
-          Explora los animales disponibles en el marketplace por especie
-        </p>
+        <p className="text-muted-foreground">{t("description")}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -164,7 +158,7 @@ const EspeciesPage = () => {
 
                 <div className="flex items-center justify-center gap-2 mb-3">
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    Activo
+                    {t("status.active")}
                   </span>
                 </div>
 
@@ -172,7 +166,7 @@ const EspeciesPage = () => {
                   variant="ghost"
                   className="mt-2 gap-2 group-hover:gap-3 transition-all"
                 >
-                  Ver animales
+                  {t("buttons.viewAnimals")}
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </CardContent>

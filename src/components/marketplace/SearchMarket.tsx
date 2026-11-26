@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Dispatch,
   SetStateAction,
@@ -6,6 +8,7 @@ import {
   useRef,
   useEffect,
 } from "react";
+import { useTranslations } from "next-intl";
 import { Skeleton } from "../ui/skeleton";
 import { useRouter } from "next/navigation";
 import { ResponseSearchInterface } from "@/api/market-animales/interfaces/response-search.interface";
@@ -27,6 +30,7 @@ const SearchMarket = ({
   cargando,
   onSearch,
 }: Props) => {
+  const t = useTranslations("marketPlaceSearchMarket");
   const router = useRouter();
   const [mostrarSugerencias, setMostrarSugerencias] = useState(true);
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -101,13 +105,14 @@ const SearchMarket = ({
           type="text"
           placeholder={
             isMobile
-              ? "Buscar en AgroMarket..."
-              : "Buscar en AgroMarket... (Presiona Enter)"
+              ? t("placeholders.search")
+              : t("placeholders.searchWithEnter")
           }
           value={nombre}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           onFocus={handleInputFocus}
+          aria-label={t("accessibility.search")}
           className="
             w-full
             h-12
@@ -134,6 +139,8 @@ const SearchMarket = ({
               setMostrarSugerencias(true);
               inputRef.current?.focus();
             }}
+            aria-label={t("accessibility.clearSearch")}
+            title={t("accessibility.clearSearch")}
             className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
           >
             <X className="h-4 w-4" />
@@ -155,24 +162,24 @@ const SearchMarket = ({
             className={`
         ${
           isMobile
-            ? `absolute 
-             left-0 
-             right-0 
-             top-full 
+            ? `absolute
+             left-0
+             right-0
+             top-full
              mt-1
-             z-[9999] 
-             rounded-xl 
+             z-[9999]
+             rounded-xl
              shadow-xl
              max-h-[60vh]
              overflow-hidden`
-            : `absolute 
-             top-full 
-             left-0 
-             right-0 
-             mt-2 
-             rounded-xl 
-             shadow-xl 
-             z-[999] 
+            : `absolute
+             top-full
+             left-0
+             right-0
+             mt-2
+             rounded-xl
+             shadow-xl
+             z-[999]
              max-h-[400px]`
         }
         bg-white
@@ -196,10 +203,12 @@ const SearchMarket = ({
             {isMobile && (
               <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center">
                 <h3 className="text-sm font-medium text-gray-700">
-                  Resultados de búsqueda
+                  {t("suggestions.title")}
                 </h3>
                 <button
                   onClick={closeMobileSuggestions}
+                  aria-label={t("accessibility.closeSuggestions")}
+                  title={t("accessibility.closeSuggestions")}
                   className="p-1 hover:bg-gray-100 rounded-full transition-colors"
                 >
                   <X className="h-5 w-5 text-gray-500" />
@@ -246,7 +255,7 @@ const SearchMarket = ({
                 </div>
               ) : (
                 <div className="p-4 text-center text-sm text-gray-500">
-                  No se encontraron resultados para "{nombre}"
+                  {t("messages.noResults", { name: nombre })}
                 </div>
               )}
             </div>
@@ -268,7 +277,7 @@ const SearchMarket = ({
                     transition-colors
                   "
                 >
-                  Ver todos los resultados para "{nombre}"
+                  {t("buttons.viewAll", { name: nombre })}
                 </button>
               </div>
             )}
@@ -290,7 +299,7 @@ const SearchMarket = ({
                     transition-colors
                   "
                 >
-                  Buscar "{nombre}" →
+                  {t("buttons.search", { name: nombre })}
                 </button>
               </div>
             )}
@@ -305,9 +314,7 @@ const SearchMarket = ({
         mostrarSugerencias &&
         !isMobile && (
           <div className="mt-2 text-xs text-green-600 font-medium">
-            {buscando.length} resultado{buscando.length !== 1 ? "s" : ""}{" "}
-            encontrado{buscando.length !== 1 ? "s" : ""} • Presiona Enter para
-            buscar
+            {t("messages.resultsFound", { count: buscando.length })}
           </div>
         )}
     </div>

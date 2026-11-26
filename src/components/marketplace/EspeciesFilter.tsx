@@ -1,6 +1,7 @@
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface EspeciesFilterProps {
   onEspecieChange: (especieNombre: string | undefined) => void;
@@ -11,6 +12,8 @@ const EspeciesFilter = ({
   onEspecieChange,
   initialEspecieNombre,
 }: EspeciesFilterProps) => {
+  const t = useTranslations("marketPlaceFilters");
+
   const { data: especies, isLoading } = useGetEspecies();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedEspecie, setSelectedEspecie] = useState<string | undefined>(
@@ -59,9 +62,7 @@ const EspeciesFilter = ({
           }
         `}
       >
-        <span className="truncate">
-          {selectedEspecie || "Todas las especies"}
-        </span>
+        <span className="truncate">{selectedEspecie || t("species.all")}</span>
         <ChevronDown
           size={16}
           className={`transition-transform ${isOpen ? "rotate-180" : ""}`}
@@ -78,14 +79,14 @@ const EspeciesFilter = ({
           <div className="absolute left-0 mt-2 w-64 z-50 bg-background border rounded-lg shadow-lg p-2 max-h-60 overflow-y-auto">
             <div className="flex justify-between items-center mb-2 px-2">
               <span className="text-xs font-medium text-muted-foreground">
-                Especies
+                {t("species.title")}
               </span>
               {selectedEspecie && (
                 <button
                   onClick={handleClear}
                   className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Limpiar
+                  {t("buttons.clear")}
                 </button>
               )}
             </div>
@@ -114,7 +115,7 @@ const EspeciesFilter = ({
 
               {(!especies || especies.data.length === 0) && (
                 <p className="text-sm text-muted-foreground text-center py-4">
-                  No hay especies disponibles
+                  {t("species.empty")}
                 </p>
               )}
             </div>

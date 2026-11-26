@@ -1,12 +1,15 @@
 "use client";
+
 import { TipoPublicacion } from "@/interfaces/enums/market/tipo_publicacion.enum";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import SkeletonPublicacion from "@/components/marketplace/SkeletonPublicacion";
 import FormPublicacion from "@/components/marketplace/FormPublicacion";
 
 const CreatePublicacionPage = () => {
+  const t = useTranslations("marketPlaceCreatePublicacionPage");
   const { cliente } = useAuthStore();
   const params = useParams();
 
@@ -26,11 +29,12 @@ const CreatePublicacionPage = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
-                  Crear nueva publicación
+                  {t("title")}
                 </h1>
                 <p className="text-gray-600 mt-1">
-                  Completa los detalles de tu{" "}
-                  {isAnimales ? "animal" : "producto"}
+                  {t("description", {
+                    type: isAnimales ? t("types.animal") : t("types.product"),
+                  })}
                 </p>
               </div>
             </div>

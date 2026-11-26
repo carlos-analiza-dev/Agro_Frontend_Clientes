@@ -37,12 +37,14 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 interface Props {
   producto: ProductoPublish;
 }
 
 const MisPublicacionesCard = ({ producto }: Props) => {
+  const t = useTranslations("marketPlaceMyPublicationsCard");
   const router = useRouter();
   const queryClient = useQueryClient();
   const [openModal, setOpenModal] = useState(false);
@@ -69,16 +71,16 @@ const MisPublicacionesCard = ({ producto }: Props) => {
           queryKey: ["animal-market-id", producto.id],
         });
       }
-      toast.success("Publicacion eliminada con exito");
+      toast.success(t("messages.deleteSuccess"));
     } catch (error) {
       if (isAxiosError(error)) {
         const errorMessage =
           error.response?.data?.message ||
           error.message ||
-          "Error al eliminar la publicación";
+          t("messages.deleteError");
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado al eliminar la publicación");
+        toast.error(t("messages.unexpectedDeleteError"));
       }
     }
   };
@@ -105,16 +107,18 @@ const MisPublicacionesCard = ({ producto }: Props) => {
         });
       }
       setOpenVendido(false);
-      toast.success("Publicacion Marcada como Vendida");
+      toast.success(
+        t(esAlquiler ? "messages.rentedSuccess" : "messages.soldSuccess"),
+      );
     } catch (error) {
       if (isAxiosError(error)) {
         const errorMessage =
           error.response?.data?.message ||
           error.message ||
-          "Error al eliminar la publicación";
+          t("messages.deleteError");
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado al marcar la publicación");
+        toast.error(t("messages.unexpectedMarkError"));
       }
     }
   };
@@ -131,6 +135,21 @@ const MisPublicacionesCard = ({ producto }: Props) => {
         return <CalendarRange className="w-4 h-4" />;
       default:
         return <Clock className="w-4 h-4" />;
+    }
+  };
+
+  const getTimeUnitLabel = (unidad: string) => {
+    switch (unidad) {
+      case "hora":
+        return t("rentalUnits.hour");
+      case "día":
+        return t("rentalUnits.day");
+      case "semana":
+        return t("rentalUnits.week");
+      case "mes":
+        return t("rentalUnits.month");
+      default:
+        return unidad;
     }
   };
 
@@ -159,7 +178,7 @@ const MisPublicacionesCard = ({ producto }: Props) => {
         return (
           <div className="text-sm text-muted-foreground">
             <span className="font-semibold text-yellow-600">
-              Precios disponibles
+              {t("pricing.available")}
             </span>
           </div>
         );
@@ -173,13 +192,13 @@ const MisPublicacionesCard = ({ producto }: Props) => {
               {formatCurrency(precioMasBajo.valor, producto.moneda)}
             </p>
             <span className="text-sm text-muted-foreground">
-              /{precioMasBajo.unidad}
+              /{getTimeUnitLabel(precioMasBajo.unidad)}
             </span>
           </div>
           {producto.requiereDeposito && (
             <div className="flex items-center gap-1 text-xs text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-full">
               <DollarSign className="w-3 h-3" />
-              Depósito:
+              {t("pricing.deposit")}
               {formatCurrency(producto.montoDeposito ?? 0, producto.moneda)}
             </div>
           )}
@@ -198,7 +217,7 @@ const MisPublicacionesCard = ({ producto }: Props) => {
     if (esAlquiler) {
       return (
         <Badge className="bg-blue-500 hover:bg-blue-500 shadow-sm">
-          Alquiler
+          {t("badges.rental")}
         </Badge>
       );
     }
@@ -214,7 +233,7 @@ const MisPublicacionesCard = ({ producto }: Props) => {
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100">
                 <ImageOff className="w-12 h-12 text-gray-400 mb-2" />
                 <p className="text-sm text-gray-500 text-center px-4">
-                  Imagen no disponible
+                  {t("imageUnavailable")}
                 </p>
               </div>
             ) : (
@@ -238,17 +257,17 @@ const MisPublicacionesCard = ({ producto }: Props) => {
 
             {producto.disponible ? (
               <Badge className="bg-green-500 hover:bg-green-500 shadow-sm">
-                Disponible
+                {t("badges.available")}
               </Badge>
             ) : (
               <Badge variant="destructive" className="shadow-sm">
-                No disponible
+                {t("badges.unavailable")}
               </Badge>
             )}
 
             {producto.vendido && (
               <Badge className="bg-blue-500 hover:bg-blue-500 shadow-sm">
-                Vendido
+                {t("badges.sold")}
               </Badge>
             )}
           </div>
@@ -269,13 +288,13 @@ const MisPublicacionesCard = ({ producto }: Props) => {
                 <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuItem onClick={() => handleClickEdit()}>
                     <Pencil className="mr-2 h-4 w-4" />
-                    Editar publicación
+                    {t("menu.edit")}
                   </DropdownMenuItem>
 
                   {producto.disponible && !producto.vendido && (
                     <DropdownMenuItem onClick={() => setOpenVendido(true)}>
                       <Check className="mr-2 h-4 w-4" />
-                      Marcar como {esAlquiler ? "alquilada" : "vendida"}
+                      {t(esAlquiler ? "menu.markRented" : "menu.markSold")}
                     </DropdownMenuItem>
                   )}
 
@@ -284,7 +303,7 @@ const MisPublicacionesCard = ({ producto }: Props) => {
                     className="text-red-600"
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
-                    Eliminar publicación
+                    {t("menu.delete")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -311,7 +330,9 @@ const MisPublicacionesCard = ({ producto }: Props) => {
           </div>
 
           <p className="text-xs text-muted-foreground mt-2">
-            Publicado el {formatDateLocal(producto.created_at)}
+            {t("publishedOn", {
+              date: formatDateLocal(producto.created_at),
+            })}
           </p>
 
           <Separator className="my-4" />
@@ -323,7 +344,9 @@ const MisPublicacionesCard = ({ producto }: Props) => {
                 <Skeleton className="h-4 w-16" />
               ) : (
                 <span className="text-sm font-medium">
-                  {views?.totalVisualizaciones ?? 0} vistas
+                  {t("views", {
+                    count: views?.totalVisualizaciones ?? 0,
+                  })}
                 </span>
               )}
             </div>
@@ -334,7 +357,7 @@ const MisPublicacionesCard = ({ producto }: Props) => {
               onClick={() => handleLinkPublicacion(producto)}
               className="w-full rounded-xl bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300"
             >
-              Ver publicación
+              {t("buttons.viewPublication")}
             </Button>
           </div>
         </CardContent>
@@ -343,15 +366,15 @@ const MisPublicacionesCard = ({ producto }: Props) => {
       <Modal
         open={openModal}
         onOpenChange={setOpenModal}
-        title="Eliminar publicación"
-        description="Esta acción es permanente. No podrás recuperar la publicación ni sus imágenes."
+        title={t("deleteModal.title")}
+        description={t("deleteModal.description")}
         showCloseButton={false}
       >
         <div className="p-6 space-y-5">
           <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4">
             <div className="mt-0.5 h-2 w-2 rounded-full bg-red-500" />
             <div className="text-sm text-red-700">
-              Estás a punto de eliminar esta publicación de forma permanente.
+              {t("deleteModal.warning")}
             </div>
           </div>
 
@@ -361,14 +384,14 @@ const MisPublicacionesCard = ({ producto }: Props) => {
               onClick={() => setOpenModal(false)}
               className="w-full sm:w-auto"
             >
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
 
             <Button
               onClick={handleDelete}
               className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white"
             >
-              Eliminar publicación
+              {t("buttons.deletePublication")}
             </Button>
           </div>
         </div>
@@ -377,16 +400,21 @@ const MisPublicacionesCard = ({ producto }: Props) => {
       <Modal
         open={openVendido}
         onOpenChange={setOpenVendido}
-        title={`Marcar publicación como ${esAlquiler ? "alquilada" : "vendida"}`}
-        description={`Esta acción es permanente. Una vez marques como ${esAlquiler ? "alquilada" : "vendida"}, no se puede restablecer`}
+        title={t(esAlquiler ? "soldModal.rentTitle" : "soldModal.saleTitle")}
+        description={t(
+          esAlquiler
+            ? "soldModal.rentDescription"
+            : "soldModal.saleDescription",
+        )}
         showCloseButton={false}
       >
         <div className="p-6 space-y-5">
           <div className="flex items-start gap-3 rounded-lg border border-green-200 bg-green-50 p-4">
             <div className="mt-0.5 h-2 w-2 rounded-full bg-green-500" />
             <div className="text-sm text-green-700">
-              Estás a punto de marcar esta publicación como{" "}
-              {esAlquiler ? "alquilada" : "vendida"}.
+              {t(
+                esAlquiler ? "soldModal.rentWarning" : "soldModal.saleWarning",
+              )}
             </div>
           </div>
 
@@ -396,14 +424,14 @@ const MisPublicacionesCard = ({ producto }: Props) => {
               onClick={() => setOpenVendido(false)}
               className="w-full sm:w-auto"
             >
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
 
             <Button
               onClick={() => handleVendido(producto.id)}
               className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white"
             >
-              Marcar publicación
+              {t("buttons.confirmMark")}
             </Button>
           </div>
         </div>

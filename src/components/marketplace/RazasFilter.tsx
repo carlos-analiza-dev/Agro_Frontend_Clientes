@@ -2,6 +2,7 @@ import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface RazasFilterProps {
   especieNombre: string | undefined;
@@ -14,6 +15,8 @@ const RazasFilter = ({
   onRazaChange,
   initialRazaId,
 }: RazasFilterProps) => {
+  const t = useTranslations("marketPlaceFilters");
+
   const { data: especies } = useGetEspecies();
 
   const especieId = especies?.data?.find((e) => e.nombre === especieNombre)?.id;
@@ -84,8 +87,8 @@ const RazasFilter = ({
       >
         <span className="truncate">
           {isDisabled
-            ? "Selecciona una especie"
-            : selectedRazaName || "Todas las razas"}
+            ? t("breeds.selectSpecies")
+            : selectedRazaName || t("breeds.all")}
         </span>
         {!isDisabled && (
           <ChevronDown
@@ -105,14 +108,14 @@ const RazasFilter = ({
           <div className="absolute left-0 mt-2 w-64 z-50 bg-background border rounded-lg shadow-lg p-2 max-h-60 overflow-y-auto">
             <div className="flex justify-between items-center mb-2 px-2">
               <span className="text-xs font-medium text-muted-foreground">
-                Razas
+                {t("breeds.title")}
               </span>
               {selectedRaza && (
                 <button
                   onClick={handleClear}
                   className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Limpiar
+                  {t("buttons.clear")}
                 </button>
               )}
             </div>
@@ -142,8 +145,8 @@ const RazasFilter = ({
               {(!razas || razas.data?.length === 0) && (
                 <p className="text-sm text-muted-foreground text-center py-4">
                   {especieNombre && especieId
-                    ? "No hay razas disponibles para esta especie"
-                    : "Selecciona una especie primero"}
+                    ? t("breeds.empty")
+                    : t("breeds.selectSpeciesFirst")}
                 </p>
               )}
             </div>

@@ -1,8 +1,11 @@
 import { ProductoAnimal } from "@/api/market-animales/interfaces/response-market-animales.interface";
 import { useMarketplaceGuardadosStore } from "@/providers/store/marketplaceGuardadosStore";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 export const useMarketplaceGuardados = () => {
+  const t = useTranslations("marketPlaceSavedMessages");
+
   const {
     guardados,
     agregarGuardado,
@@ -20,9 +23,9 @@ export const useMarketplaceGuardados = () => {
 
     if (showToast) {
       if (!isSaved) {
-        toast.success(`${producto.nombre} guardado en tus publicaciones`);
+        toast.success(t("saved", { name: producto.nombre }));
       } else {
-        toast.info(`${producto.nombre} eliminado de tus guardados`);
+        toast.info(t("removed", { name: producto.nombre }));
       }
     }
   };
@@ -32,7 +35,7 @@ export const useMarketplaceGuardados = () => {
     productoNombre: string,
   ) => {
     removerGuardado(productoId);
-    toast.info(`${productoNombre} eliminado de tus guardados`);
+    toast.info(t("removed", { name: productoNombre }));
   };
 
   return {

@@ -1,5 +1,7 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useCallback, useRef } from "react";
+import { useTranslations } from "next-intl";
 import SkeletonCard from "@/components/generics/SkeletonCard";
 import CardMarketAnimal from "@/components/marketplace/CardMarketAnimal";
 import EmptyStateMarketplace from "@/components/marketplace/EmptyStateMarketplace";
@@ -9,9 +11,10 @@ import useUserLocation from "@/hooks/location/useUserLocation";
 import useGetAnimalesMarket from "@/hooks/market-animales/useGetAnimalesMarket";
 import { MapPin } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useCallback, useRef } from "react";
 
 const PublicacionesByCategory = () => {
+  const t = useTranslations("marketPlacePublicationsByCategory");
+
   const params = useParams();
   const id = params.id as string;
 
@@ -63,6 +66,7 @@ const PublicacionesByCategory = () => {
     animales_market?.pages.flatMap((page) => page.productos) ?? [];
 
   const observerRef = useRef<IntersectionObserver | null>(null);
+
   const lastAnimalRef = useCallback(
     (node: HTMLDivElement | null) => {
       if (isLoading || isFetchingNextPage) return;
@@ -93,7 +97,7 @@ const PublicacionesByCategory = () => {
       <div className="container mx-auto px-3 sm:px-4 lg:px-6">
         <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
           <h1 className="text-lg sm:text-xl md:text-2xl font-bold">
-            Publicaciones por Categoría
+            {t("title")}
           </h1>
 
           <div className="flex items-center gap-2 flex-wrap">
@@ -116,11 +120,12 @@ const PublicacionesByCategory = () => {
             </div>
           </div>
         </div>
+
         <EmptyStateMarketplace
           variant="error"
           onRefresh={handleRefresh}
           isLoading={isLoading}
-          description={error?.message || "No se pudieron cargar los productos"}
+          description={error?.message || t("messages.loadError")}
         />
       </div>
     );
@@ -130,7 +135,7 @@ const PublicacionesByCategory = () => {
     <div className="container mx-auto px-3 sm:px-4 lg:px-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
         <h1 className="text-lg sm:text-xl md:text-2xl font-bold">
-          Publicaciones por Categoría
+          {t("title")}
         </h1>
 
         <div className="flex items-center gap-2 flex-wrap">
@@ -167,6 +172,7 @@ const PublicacionesByCategory = () => {
               </div>
             );
           }
+
           return (
             <CardMarketAnimal
               key={animal.id}
@@ -183,7 +189,7 @@ const PublicacionesByCategory = () => {
           <div className="flex flex-col items-center gap-3">
             <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
             <p className="text-sm text-muted-foreground">
-              Cargando más publicaciones...
+              {t("messages.loadingMore")}
             </p>
           </div>
         </div>
@@ -192,7 +198,7 @@ const PublicacionesByCategory = () => {
       {!hasNextPage && animales.length > 0 && (
         <div className="text-center py-8">
           <p className="text-sm text-muted-foreground">
-            No hay más publicaciones para mostrar
+            {t("messages.noMorePublications")}
           </p>
         </div>
       )}

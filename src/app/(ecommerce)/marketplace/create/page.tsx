@@ -2,14 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  PawPrint,
-  Package,
-  Sprout,
-  ArrowRight,
-  Check,
-  ChevronRight,
-} from "lucide-react";
+import { useTranslations } from "next-intl";
+import { ArrowRight, Check, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -32,6 +26,7 @@ type CategoriaType =
   | null;
 
 const CrearPublicacionPage = () => {
+  const t = useTranslations("marketPlaceCreatePublicationPage");
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<CategoriaType>(null);
   const [isHovered, setIsHovered] = useState<string | null>(null);
@@ -48,14 +43,13 @@ const CrearPublicacionPage = () => {
         <div className="container mx-auto px-4 py-12 md:py-16">
           <div className="text-center max-w-3xl mx-auto">
             <Badge className="mb-4 bg-white/20 text-white hover:bg-white/30 border-none">
-              Nueva Publicación
+              {t("header.badge")}
             </Badge>
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-              ¿Qué deseas publicar hoy?
+              {t("header.title")}
             </h1>
             <p className="text-lg md:text-xl text-green-100">
-              Elige la categoría que mejor describa tu producto y comienza a
-              vender en AgroMarket
+              {t("header.description")}
             </p>
           </div>
         </div>
@@ -109,7 +103,7 @@ const CrearPublicacionPage = () => {
                 <CardContent className="space-y-4 pt-4">
                   <div>
                     <p className="text-sm font-semibold text-gray-700 mb-2">
-                      Ejemplos de publicación:
+                      {t("category.examples")}
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {categoria.ejemplos.map((ejemplo, idx) => (
@@ -137,11 +131,11 @@ const CrearPublicacionPage = () => {
                     {isSelected ? (
                       <>
                         <Check className="h-4 w-4" />
-                        Categoría seleccionada
+                        {t("category.selected")}
                       </>
                     ) : (
                       <>
-                        Seleccionar
+                        {t("category.select")}
                         <ChevronRight className="h-4 w-4" />
                       </>
                     )}
@@ -157,7 +151,7 @@ const CrearPublicacionPage = () => {
             <div className="bg-white shadow-lg rounded-full p-2 flex gap-3 items-center border border-gray-200">
               <div className="px-4 py-2">
                 <p className="text-sm text-gray-600">
-                  Categoría seleccionada:{" "}
+                  {t("selection.selectedCategory")}{" "}
                   <span className="font-bold text-gray-900">
                     {
                       categorias_publish.find((c) => c.id === selectedCategory)
@@ -170,7 +164,7 @@ const CrearPublicacionPage = () => {
                 onClick={handleContinue}
                 className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 rounded-full gap-2"
               >
-                Continuar
+                {t("buttons.continue")}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
@@ -181,21 +175,21 @@ const CrearPublicacionPage = () => {
       <div className="border-t border-gray-200 bg-white">
         <div className="container mx-auto px-4 py-6">
           <p className="text-center text-sm text-gray-500">
-            Al publicar, aceptas nuestros{" "}
+            {t("footer.acceptTerms")}{" "}
             <Link
               href="/terminos"
               target="_blank"
               className="text-green-600 hover:underline"
             >
-              Términos y Condiciones
+              {t("footer.termsAndConditions")}
             </Link>{" "}
-            y{" "}
+            {t("footer.and")}{" "}
             <Link
               href="/privacidad"
               target="_blank"
               className="text-green-600 hover:underline"
             >
-              Políticas de Publicación
+              {t("footer.publicationPolicies")}
             </Link>
           </p>
         </div>

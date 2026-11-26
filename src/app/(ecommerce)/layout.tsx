@@ -15,12 +15,15 @@ import { LocationPermissionBanner } from "@/components/location/LocationPermissi
 import PublicidadBanner from "@/components/publicidad/PublicidadBanner";
 import PublicidadPanel from "@/components/publicidad/PublicidadPanel";
 import { TipoPaquete } from "@/interfaces/enums/paquetes/paquetes.enum";
+import { useTranslations } from "next-intl";
 
 export default function MarketPlaceLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const t = useTranslations("marketPlaceLayout");
+
   const { logout, cliente, token } = useAuthStore();
   const router = useRouter();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -52,7 +55,7 @@ export default function MarketPlaceLayout({
       await logout();
       router.push("/");
     } catch (error) {
-      toast.error("Error al cerrar sesión expirada");
+      toast.error(t("messages.logoutError"));
     } finally {
       setLoading(false);
     }
@@ -65,13 +68,10 @@ export default function MarketPlaceLayout({
     const isPropietario = rol === TipoCliente.PROPIETARIO;
 
     if (!isPropietario) {
-      toast.error(
-        "Acceso denegado. Solo los propietarios pueden acceder al marketplace.",
-        {
-          position: "top-center",
-          autoClose: 3000,
-        },
-      );
+      toast.error(t("messages.accessDenied"), {
+        position: "top-center",
+        autoClose: 3000,
+      });
       router.push("/");
       return false;
     }
@@ -79,7 +79,7 @@ export default function MarketPlaceLayout({
     const tieneEcommerce = cliente.paqueteActivo?.paquete?.ecommerce === true;
 
     if (!tieneEcommerce) {
-      toast.error("Tu paquete actual no tiene habilitado el ecommerce.", {
+      toast.error(t("messages.ecommerceUnavailable"), {
         position: "top-center",
         autoClose: 3000,
       });

@@ -10,8 +10,11 @@ import useUserLocation from "@/hooks/location/useUserLocation";
 import useGetAnimalesMarket from "@/hooks/market-animales/useGetAnimalesMarket";
 import { MapPin } from "lucide-react";
 import { useCallback, useRef } from "react";
+import { useTranslations } from "next-intl";
 
 const MarketPlacePage = () => {
+  const t = useTranslations("marketPlacePage");
+
   const { location } = useUserLocation();
   const [radio, setRadio] = useState<number>(100);
   const [priceMin, setPriceMin] = useState<number | undefined>(undefined);
@@ -89,7 +92,7 @@ const MarketPlacePage = () => {
       <div className="container mx-auto px-3 sm:px-4 lg:px-6">
         <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
           <h1 className="text-lg sm:text-xl md:text-2xl font-bold">
-            Destacados de hoy
+            {t("title")}
           </h1>
 
           <div className="flex items-center gap-2 flex-wrap">
@@ -116,7 +119,7 @@ const MarketPlacePage = () => {
           variant="error"
           onRefresh={handleRefresh}
           isLoading={isLoading}
-          description={error?.message || "No se pudieron cargar los productos"}
+          description={error?.message || t("messages.loadError")}
         />
       </div>
     );
@@ -126,7 +129,7 @@ const MarketPlacePage = () => {
     <div className="container mx-auto px-3 sm:px-4 lg:px-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
         <h1 className="text-lg sm:text-xl md:text-2xl font-bold">
-          Destacados de hoy
+          {t("title")}
         </h1>
 
         <div className="flex items-center gap-2 flex-wrap">
@@ -179,7 +182,7 @@ const MarketPlacePage = () => {
           <div className="flex flex-col items-center gap-3">
             <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
             <p className="text-sm text-muted-foreground">
-              Cargando más publicaciones...
+              {t("messages.loadingMore")}
             </p>
           </div>
         </div>
@@ -188,7 +191,7 @@ const MarketPlacePage = () => {
       {!hasNextPage && animales.length > 0 && (
         <div className="text-center py-8">
           <p className="text-sm text-muted-foreground">
-            No hay más publicaciones para mostrar
+            {t("messages.noMorePublications")}
           </p>
         </div>
       )}

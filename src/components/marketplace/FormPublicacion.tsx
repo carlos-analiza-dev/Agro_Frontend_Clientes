@@ -55,6 +55,7 @@ import { toast } from "react-toastify";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { cn } from "@/lib/utils";
 import { ESPECIES_EXCLUIDAS } from "@/helpers/data/especies/especiesData";
+import { useTranslations } from "next-intl";
 
 interface Props {
   tipo_publicacion: TipoPublicacion;
@@ -69,6 +70,7 @@ const FormPublicacion = ({
   publicacion,
   isLoading,
 }: Props) => {
+  const t = useTranslations("marketPlaceFormPublicacion");
   const paidId = cliente?.pais.id ?? "";
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -130,7 +132,6 @@ const FormPublicacion = ({
     handleSubmit,
     setValue,
     watch,
-
     formState: { errors },
   } = useForm<CreateMarketplaceAnimale>({
     defaultValues: {
@@ -245,7 +246,6 @@ const FormPublicacion = ({
   useEffect(() => {
     if (publicacion?.subcategoria?.id && subcategorias?.length) {
       setValue("subcategoriaId", publicacion.subcategoria.id);
-
       setSubcateId(publicacion.subcategoria.id);
     }
   }, [publicacion, subcategorias, setValue]);
@@ -299,15 +299,13 @@ const FormPublicacion = ({
     const currentTotal = imagePreviews.length;
 
     if (currentTotal + files.length > 10) {
-      toast.error(
-        `Máximo 10 imágenes permitidas. Actualmente tienes ${currentTotal}`,
-      );
+      toast.error(t("messages.maxImages", { current: currentTotal }));
       return;
     }
 
     files.forEach((file) => {
       if (file.size > 3 * 1024 * 1024) {
-        toast.error(`La imagen ${file.name} excede 3MB`);
+        toast.error(t("messages.imageTooLarge", { name: file.name }));
         return;
       }
       setImages((prev) => [...prev, file]);
@@ -340,9 +338,9 @@ const FormPublicacion = ({
         setValue("direccion_completa", location.direccion);
       }
       setIsUsingUserLocation(true);
-      toast.success("Ubicación actualizada con tu ubicación actual");
+      toast.success(t("messages.locationUpdated"));
     } else {
-      toast.error("No se pudo obtener tu ubicación");
+      toast.error(t("messages.locationUnavailable"));
     }
   };
 
@@ -354,47 +352,47 @@ const FormPublicacion = ({
     setValue("latitud", coords.latitude);
     setValue("longitud", coords.longitude);
     setIsUsingUserLocation(false);
-    toast.success("Ubicación seleccionada correctamente");
+    toast.success(t("messages.locationSelected"));
   };
 
   const onSubmit = async (data: CreateMarketplaceAnimale) => {
     if (imagePreviews.length === 0) {
-      toast.warning("Debes subir al menos una imagen");
+      toast.warning(t("validation.imageRequired"));
       return;
     }
 
     if (!data.nombre || data.nombre.length < 3) {
-      toast.error("El nombre debe tener al menos 3 caracteres");
+      toast.error(t("validation.nameMinLength"));
       return;
     }
 
     if (!data.descripcion || data.descripcion.length < 10) {
-      toast.error("La descripción debe tener al menos 10 caracteres");
+      toast.error(t("validation.descriptionMinLength"));
       return;
     }
 
     if (isAnimales && !data.animalId) {
-      toast.error("Debes seleccionar un animal");
+      toast.error(t("validation.animalRequired"));
       return;
     }
 
     if (!data.categoriaId) {
-      toast.warning("Selecciona una categoría");
+      toast.warning(t("validation.categoryRequired"));
       return;
     }
 
     if (!data.subcategoriaId) {
-      toast.error("Selecciona una subcategoría");
+      toast.error(t("validation.subcategoryRequired"));
       return;
     }
 
     if (!data.departamentoId) {
-      toast.error("Selecciona un departamento");
+      toast.error(t("validation.departmentRequired"));
       return;
     }
 
     if (!data.direccion_completa) {
-      toast.error("La dirección es requerida");
+      toast.error(t("validation.addressRequired"));
       return;
     }
 
@@ -406,7 +404,7 @@ const FormPublicacion = ({
         (data.precioPorMes && data.precioPorMes > 0);
 
       if (!tienePrecioAlquiler) {
-        toast.error("Debes especificar al menos un precio de alquiler");
+        toast.error(t("validation.rentalPriceRequired"));
         return;
       }
 
@@ -414,16 +412,16 @@ const FormPublicacion = ({
         data.requiereDeposito &&
         (!data.montoDeposito || data.montoDeposito <= 0)
       ) {
-        toast.error("Debes especificar el monto del depósito");
+        toast.error(t("validation.depositAmountRequired"));
         return;
       }
     } else {
       if (data.precio <= 0) {
-        toast.error("El precio debe ser mayor a 0");
+        toast.error(t("validation.priceGreaterThanZero"));
         return;
       }
       if (data.stock < 1) {
-        toast.error("El stock debe ser al menos 1");
+        toast.error(t("validation.stockMinimum"));
         return;
       }
     }
@@ -503,10 +501,10 @@ const FormPublicacion = ({
       let response;
       if (publicacion) {
         response = await editarPublicacionesMarket(publicacion.id, formData);
-        toast.success("Publicación actualizada correctamente");
+        toast.success(t("messages.updateSuccess"));
       } else {
         response = await crearPublicacionesMarket(formData);
-        toast.success("Publicación creada correctamente");
+        toast.success(t("messages.createSuccess"));
       }
 
       queryClient.invalidateQueries({ queryKey: ["animales-market"] });
@@ -526,10 +524,10 @@ const FormPublicacion = ({
         const errorMessage =
           error.response?.data?.message ||
           error.message ||
-          "Error al procesar la publicación";
+          t("messages.processError");
         toast.error(errorMessage);
       } else {
-        toast.error("Error inesperado al procesar la publicación");
+        toast.error(t("messages.unexpectedError"));
       }
     } finally {
       setIsSubmitting(false);
@@ -558,7 +556,7 @@ const FormPublicacion = ({
                 <Label className="text-base font-semibold flex items-center justify-between gap-2 mb-4">
                   <div className="flex items-center gap-2">
                     <ImagePlus className="w-5 h-5" />
-                    <span>Fotos</span>
+                    <span>{t("images.title")}</span>
                   </div>
                   <span className="text-sm text-gray-500 font-normal">
                     {imagePreviews.length}/10
@@ -571,7 +569,7 @@ const FormPublicacion = ({
                       <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
                         <Image
                           src={preview}
-                          alt={`Preview ${index + 1}`}
+                          alt={t("images.previewAlt", { number: index + 1 })}
                           width={200}
                           height={200}
                           unoptimized
@@ -582,13 +580,13 @@ const FormPublicacion = ({
                         type="button"
                         onClick={() => removeImage(index)}
                         className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-red-500"
-                        aria-label="Eliminar imagen"
+                        aria-label={t("images.remove")}
                       >
                         <X className="w-3 h-3" />
                       </button>
                       {index < existingImages.length && (
                         <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs px-1.5 py-0.5 rounded">
-                          Actual
+                          {t("images.current")}
                         </div>
                       )}
                     </div>
@@ -598,7 +596,9 @@ const FormPublicacion = ({
                     <label className="aspect-square rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 cursor-pointer flex flex-col items-center justify-center gap-2 transition-colors min-h-[100px]">
                       <ImagePlus className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" />
                       <span className="text-xs sm:text-sm text-gray-500 text-center px-2">
-                        {imagePreviews.length === 0 ? "Subir foto" : "Agregar"}
+                        {imagePreviews.length === 0
+                          ? t("images.upload")
+                          : t("images.add")}
                       </span>
                       <input
                         type="file"
@@ -613,10 +613,10 @@ const FormPublicacion = ({
 
                 <div className="mt-3 space-y-1">
                   <p className="text-xs text-gray-500">
-                    📸 Sube hasta 10 imágenes (máx. 3MB cada una)
+                    📸 {t("images.limit")}
                   </p>
                   <p className="text-xs text-gray-400">
-                    💡 La primera imagen será la portada
+                    💡 {t("images.coverHint")}
                   </p>
                 </div>
               </CardContent>
@@ -628,10 +628,10 @@ const FormPublicacion = ({
               <CardContent className="p-4 sm:p-6 space-y-5">
                 <h2 className="text-lg font-semibold flex items-center gap-2 border-b pb-3">
                   <Tag className="w-5 h-5" />
-                  Información básica
+                  {t("basic.title")}
                   {isEditing && (
                     <span className="ml-auto text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                      Modo edición
+                      {t("basic.editMode")}
                     </span>
                   )}
                 </h2>
@@ -641,7 +641,7 @@ const FormPublicacion = ({
                     <Label htmlFor="animalId" className="block">
                       <span className="flex items-center gap-2">
                         <PawPrint className="w-4 h-4" />
-                        Buscar animal *
+                        {t("animal.searchLabel")}
                       </span>
                     </Label>
 
@@ -651,7 +651,7 @@ const FormPublicacion = ({
                         <input
                           type="text"
                           id="animalId"
-                          placeholder="Buscar por identificador o nombre..."
+                          placeholder={t("animal.searchPlaceholder")}
                           value={searchAnimalTerm}
                           onChange={(e) => {
                             setSearchAnimalTerm(e.target.value);
@@ -703,7 +703,7 @@ const FormPublicacion = ({
                                   <span className="font-medium text-sm truncate">
                                     {animal.identificador ||
                                       animal.nombre_animal ||
-                                      "Sin identificar"}
+                                      t("animal.unidentified")}
                                   </span>
                                   {watch("animalId") === animal.id && (
                                     <Check className="h-4 w-4 flex-shrink-0 text-blue-600" />
@@ -712,11 +712,11 @@ const FormPublicacion = ({
                                 <div className="flex items-center gap-1 text-xs text-gray-500">
                                   <span>
                                     {animal.especie?.nombre ||
-                                      "Especie no especificada"}
+                                      t("animal.unspecifiedSpecies")}
                                   </span>
                                   <span>•</span>
                                   <span>
-                                    {animal.sexo || "Sexo no especificado"}
+                                    {animal.sexo || t("animal.unspecifiedSex")}
                                   </span>
                                 </div>
                               </div>
@@ -724,9 +724,9 @@ const FormPublicacion = ({
                           ))
                         ) : (
                           <div className="py-6 text-center text-sm">
-                            <p>No se encontraron animales.</p>
+                            <p>{t("animal.notFound")}</p>
                             <p className="text-xs text-gray-500 mt-1">
-                              Intenta con otro término de búsqueda
+                              {t("animal.tryAnotherSearch")}
                             </p>
                           </div>
                         )}
@@ -734,7 +734,7 @@ const FormPublicacion = ({
                     )}
 
                     <p className="text-xs text-gray-500">
-                      🔍 Busca por identificador o nombre del animal
+                      🔍 {t("animal.searchHint")}
                     </p>
 
                     {watch("animalId") && !searchAnimalTerm && (
@@ -773,18 +773,18 @@ const FormPublicacion = ({
                                 <p className="font-medium text-sm truncate">
                                   {selectedAnimal.identificador ||
                                     selectedAnimal.nombre_animal ||
-                                    "Animal"}
+                                    t("animal.defaultName")}
                                 </p>
                                 <p className="text-sm text-gray-600">
                                   {selectedAnimal.especie?.nombre ||
-                                    "Especie no especificada"}{" "}
+                                    t("animal.unspecifiedSpecies")}{" "}
                                   •{" "}
                                   {selectedAnimal.sexo ||
-                                    "Sexo no especificado"}
+                                    t("animal.unspecifiedSex")}
                                   {selectedAnimal.fecha_nacimiento && (
                                     <>
                                       {" "}
-                                      • Nacimiento:{" "}
+                                      • {t("animal.birthDate")}:{" "}
                                       {new Date(
                                         selectedAnimal.fecha_nacimiento,
                                       ).toLocaleDateString()}
@@ -801,14 +801,14 @@ const FormPublicacion = ({
                 )}
                 <div>
                   <Label htmlFor="nombre" className="mb-2 block">
-                    Título *
+                    {t("fields.title")}
                   </Label>
                   <Input
                     id="nombre"
                     placeholder={
                       isAnimales
-                        ? "Ej: Vendo Golden Retriever"
-                        : "Ej: Venta de alimento balanceado"
+                        ? t("placeholders.animalTitle")
+                        : t("placeholders.productTitle")
                     }
                     {...register("nombre")}
                     className="text-sm sm:text-base"
@@ -821,24 +821,23 @@ const FormPublicacion = ({
                 </div>
                 <div>
                   <Label htmlFor="descripcion" className="mb-2 block">
-                    Descripción *
+                    {t("fields.description")}
                   </Label>
                   <Textarea
                     id="descripcion"
-                    placeholder="Describe tu publicación en detalle..."
+                    placeholder={t("placeholders.description")}
                     rows={5}
                     {...register("descripcion")}
                     className="text-sm sm:text-base resize-none"
                   />
                   <p className="text-xs text-gray-400 mt-1.5">
-                    💡 Incluye características, condiciones y detalles
-                    importantes
+                    💡 {t("hints.description")}
                   </p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="categoriaId" className="mb-2 block">
-                      Categoría *
+                      {t("fields.category")}
                     </Label>
                     <Select
                       onValueChange={(value) => {
@@ -849,7 +848,7 @@ const FormPublicacion = ({
                       value={watch("categoriaId")}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecciona una categoría" />
+                        <SelectValue placeholder={t("placeholders.category")} />
                       </SelectTrigger>
                       <SelectContent>
                         {categorias?.map((cat: Categoria) => (
@@ -863,7 +862,7 @@ const FormPublicacion = ({
 
                   <div>
                     <Label htmlFor="subcategoriaId" className="mb-2 block">
-                      Subcategoría *
+                      {t("fields.subcategory")}
                     </Label>
                     <Select
                       onValueChange={(value) => {
@@ -874,7 +873,9 @@ const FormPublicacion = ({
                       disabled={!categoriaId}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecciona una subcategoría" />
+                        <SelectValue
+                          placeholder={t("placeholders.subcategory")}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {subcategorias?.map((sub: SubCategoria) => (
@@ -891,14 +892,16 @@ const FormPublicacion = ({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="marcaId" className="mb-2 block">
-                          Marca (opcional)
+                          {t("fields.brand")}
                         </Label>
                         <Select
                           onValueChange={(value) => setValue("marcaId", value)}
                           value={watch("marcaId")}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecciona una marca" />
+                            <SelectValue
+                              placeholder={t("placeholders.brand")}
+                            />
                           </SelectTrigger>
                           <SelectContent>
                             {marcas?.map((marca: any) => (
@@ -912,7 +915,7 @@ const FormPublicacion = ({
 
                       <div>
                         <Label htmlFor="tipoProductoId" className="mb-2 block">
-                          Tipo de producto
+                          {t("fields.productType")}
                         </Label>
                         <Select
                           onValueChange={(value) =>
@@ -922,7 +925,9 @@ const FormPublicacion = ({
                           disabled={!subcateId}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecciona tipo de producto" />
+                            <SelectValue
+                              placeholder={t("placeholders.productType")}
+                            />
                           </SelectTrigger>
                           <SelectContent>
                             {tipo_producto?.map((tp: any) => (
@@ -937,11 +942,11 @@ const FormPublicacion = ({
 
                     <div>
                       <Label htmlFor="modelo" className="mb-2 block">
-                        Modelo (opcional)
+                        {t("fields.model")}
                       </Label>
                       <Input
                         id="modelo"
-                        placeholder="Modelo del producto"
+                        placeholder={t("placeholders.model")}
                         {...register("modelo")}
                       />
                     </div>
@@ -954,18 +959,15 @@ const FormPublicacion = ({
               <CardContent className="p-4 sm:p-6 space-y-5">
                 <h2 className="text-lg font-semibold flex items-center gap-2 border-b pb-3">
                   <DollarSign className="w-5 h-5" />
-                  {isAlquileres
-                    ? "Precios de alquiler"
-                    : "Precio y disponibilidad"}
+                  {isAlquileres ? t("pricing.rentalTitle") : t("pricing.title")}
                 </h2>
 
                 {isAlquileres ? (
-                  // Sección de precios de alquiler
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="precioPorHora" className="mb-2 block">
-                          Precio por hora
+                          {t("pricing.perHour")}
                         </Label>
                         <div className="relative">
                           <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -985,7 +987,7 @@ const FormPublicacion = ({
 
                       <div>
                         <Label htmlFor="precioPorDia" className="mb-2 block">
-                          Precio por día
+                          {t("pricing.perDay")}
                         </Label>
                         <div className="relative">
                           <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -1007,7 +1009,7 @@ const FormPublicacion = ({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="precioPorSemana" className="mb-2 block">
-                          Precio por semana
+                          {t("pricing.perWeek")}
                         </Label>
                         <div className="relative">
                           <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -1027,7 +1029,7 @@ const FormPublicacion = ({
 
                       <div>
                         <Label htmlFor="precioPorMes" className="mb-2 block">
-                          Precio por mes
+                          {t("pricing.perMonth")}
                         </Label>
                         <div className="relative">
                           <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -1058,7 +1060,7 @@ const FormPublicacion = ({
                           htmlFor="requiereDeposito"
                           className="cursor-pointer"
                         >
-                          Requiere depósito de garantía
+                          {t("pricing.requiresDeposit")}
                         </Label>
                       </div>
 
@@ -1071,7 +1073,7 @@ const FormPublicacion = ({
                             step="0.01"
                             min={0}
                             className="pl-9"
-                            placeholder="Monto del depósito"
+                            placeholder={t("placeholders.depositAmount")}
                             {...register("montoDeposito", {
                               valueAsNumber: true,
                             })}
@@ -1081,15 +1083,14 @@ const FormPublicacion = ({
                     </div>
 
                     <p className="text-xs text-gray-500">
-                      💡 Al menos uno de los precios de alquiler debe ser mayor
-                      a 0
+                      💡 {t("pricing.rentalHint")}
                     </p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="precio" className="mb-2 block">
-                        Precio regular *
+                        {t("pricing.regularPrice")}
                       </Label>
                       <div className="relative">
                         <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -1107,7 +1108,7 @@ const FormPublicacion = ({
 
                     <div>
                       <Label htmlFor="stock" className="mb-2 block">
-                        Cantidad / Stock *
+                        {t("pricing.stock")}
                       </Label>
                       <div className="relative">
                         <Package className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -1130,7 +1131,7 @@ const FormPublicacion = ({
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <h2 className="text-lg font-semibold flex items-center gap-2">
                     <MapPin className="w-5 h-5" />
-                    Ubicación
+                    {t("location.title")}
                   </h2>
                   <div className="flex flex-wrap gap-2">
                     <Button
@@ -1142,9 +1143,11 @@ const FormPublicacion = ({
                     >
                       <MapIcon className="w-4 h-4" />
                       <span className="hidden sm:inline">
-                        Seleccionar en mapa
+                        {t("location.selectOnMap")}
                       </span>
-                      <span className="sm:hidden">Mapa</span>
+                      <span className="sm:hidden">
+                        {t("location.mapShort")}
+                      </span>
                     </Button>
                     {location && (
                       <Button
@@ -1155,8 +1158,12 @@ const FormPublicacion = ({
                         className="flex items-center gap-2 text-sm"
                       >
                         <Navigation className="w-4 h-4" />
-                        <span className="hidden sm:inline">Mi ubicación</span>
-                        <span className="sm:hidden">GPS</span>
+                        <span className="hidden sm:inline">
+                          {t("location.myLocation")}
+                        </span>
+                        <span className="sm:hidden">
+                          {t("location.gpsShort")}
+                        </span>
                       </Button>
                     )}
                   </div>
@@ -1166,14 +1173,14 @@ const FormPublicacion = ({
                   <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2">
                     <Navigation className="w-4 h-4 text-green-600" />
                     <span className="text-sm text-green-700">
-                      Utilizando tu ubicación actual
+                      {t("location.usingCurrentLocation")}
                     </span>
                   </div>
                 )}
 
                 <div>
                   <Label htmlFor="departamentoId" className="mb-2 block">
-                    Departamento *
+                    {t("fields.department")}
                   </Label>
                   <Select
                     onValueChange={(value) => {
@@ -1183,7 +1190,7 @@ const FormPublicacion = ({
                     value={watch("departamentoId")}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecciona un departamento" />
+                      <SelectValue placeholder={t("placeholders.department")} />
                     </SelectTrigger>
                     <SelectContent>
                       {departamentos?.data.map((depto) => (
@@ -1198,25 +1205,25 @@ const FormPublicacion = ({
                 <div>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
                     <Label htmlFor="direccion_completa" className="block">
-                      Dirección detallada *
+                      {t("fields.detailedAddress")}
                     </Label>
                     {isUsingUserLocation && location && !isEditing && (
                       <div className="flex items-center gap-1 text-xs text-green-600">
                         <Navigation className="w-3 h-3" />
-                        <span>Usando tu ubicación actual</span>
+                        <span>{t("location.usingCurrentLocation")}</span>
                       </div>
                     )}
                   </div>
                   <Textarea
                     id="direccion_completa"
-                    placeholder="Dirección detallada, referencias, etc..."
+                    placeholder={t("placeholders.address")}
                     rows={3}
                     {...register("direccion_completa")}
                     onChange={() => setIsUsingUserLocation(false)}
                     className="resize-none"
                   />
                   <p className="text-xs text-gray-500 mt-1.5">
-                    📍 Ej: Zona 10, cerca del obelisco, Casa #123
+                    📍 {t("hints.addressExample")}
                   </p>
                 </div>
 
@@ -1232,7 +1239,7 @@ const FormPublicacion = ({
                 {locationLoading && (
                   <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 p-3 rounded-lg">
                     <Navigation className="w-4 h-4 animate-spin" />
-                    <span>Obteniendo tu ubicación...</span>
+                    <span>{t("location.gettingLocation")}</span>
                   </div>
                 )}
               </CardContent>
@@ -1249,7 +1256,7 @@ const FormPublicacion = ({
               disabled={isSubmitting}
               className="flex-1 sm:flex-none"
             >
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
             <Button
               className={`flex-1 sm:flex-none ${isEditing ? "bg-blue-500 hover:bg-blue-600" : "bg-green-500 hover:bg-green-600"}`}
@@ -1259,19 +1266,19 @@ const FormPublicacion = ({
               {isSubmitting ? (
                 <>
                   <span className="animate-spin mr-2">⏳</span>
-                  {isEditing ? "Actualizando..." : "Publicando..."}
+                  {isEditing ? t("buttons.updating") : t("buttons.publishing")}
                 </>
               ) : (
                 <>
                   {isEditing ? (
                     <>
                       <Edit className="w-4 h-4 mr-2" />
-                      Actualizar Publicación
+                      {t("buttons.updatePublication")}
                     </>
                   ) : (
                     <>
                       <Plus className="w-4 h-4 mr-2" />
-                      Publicar
+                      {t("buttons.publish")}
                     </>
                   )}
                 </>

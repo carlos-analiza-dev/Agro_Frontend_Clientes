@@ -43,7 +43,6 @@ import { CreateFinca } from "@/api/fincas/accions/crear-finca";
 import EspecieCantidadPicker from "./ui/EspecieCantidadPicker";
 import MapaSeleccionDireccion from "@/components/maps/MapaSeleccionDireccion";
 
-// Esquema de validación con mensajes traducibles
 const createFincaSchema = (t: (key: any) => string) =>
   z
     .object({

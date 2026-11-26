@@ -6,8 +6,10 @@ import { Bookmark, Trash2 } from "lucide-react";
 import EmptyStateMarketplace from "@/components/marketplace/EmptyStateMarketplace";
 import { useRouter } from "next/navigation";
 import { useMarketplaceGuardados } from "@/hooks/market-animales/useMarketplaceGuardados";
+import { useTranslations } from "next-intl";
 
 const PublicacionesGuardadasPage = () => {
+  const t = useTranslations("marketPlaceSavedPublicationsPage");
   const router = useRouter();
   const { guardados, limpiarGuardados, guardadosCount } =
     useMarketplaceGuardados();
@@ -21,9 +23,9 @@ const PublicacionesGuardadasPage = () => {
       <div className="container mx-auto px-4 py-10">
         <EmptyStateMarketplace
           variant="no-products"
-          title="No tienes publicaciones guardadas"
-          description="Explora nuestro marketplace y guarda las publicaciones que te interesen para verlas más tarde."
-          actionText="Explorar marketplace"
+          title={t("empty.title")}
+          description={t("empty.description")}
+          actionText={t("empty.action")}
           onRefresh={() => router.push("/marketplace")}
         />
       </div>
@@ -36,10 +38,10 @@ const PublicacionesGuardadasPage = () => {
         <div>
           <h1 className="text-lg md:text-3xl font-black flex items-center gap-2">
             <Bookmark className="w-8 h-8 text-blue-500" />
-            Publicaciones guardadas
+            {t("title")}
           </h1>
           <p className="text-gray-500 mt-1">
-            Tienes {guardadosCount} publicación(es) guardada(s)
+            {t("savedCount", { count: guardadosCount })}
           </p>
         </div>
 
@@ -50,7 +52,7 @@ const PublicacionesGuardadasPage = () => {
             className="text-red-600 hover:text-red-700 hover:bg-red-50"
           >
             <Trash2 className="w-4 h-4 mr-2" />
-            Limpiar guardados
+            {t("buttons.clear")}
           </Button>
         )}
       </div>

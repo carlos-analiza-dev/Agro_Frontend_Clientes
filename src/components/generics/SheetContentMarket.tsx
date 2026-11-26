@@ -32,6 +32,7 @@ import {
 } from "@/helpers/data/sidebar/sidebarDataMarket";
 import useGetCategorias from "@/hooks/categorias/useGetCategorias";
 import { Skeleton } from "../ui/skeleton";
+import { useTranslations } from "next-intl";
 
 interface Props {
   mobileSidebarOpen: boolean;
@@ -44,10 +45,15 @@ const SheetContentMarket = ({
   setMobileSidebarOpen,
   handleLogout,
 }: Props) => {
+  const t = useTranslations("marketPlaceSidebar");
+
   const pathname = usePathname();
   const router = useRouter();
   const { cliente } = useAuthStore();
-  const { data: categorias, isLoading } = useGetCategorias({ is_market: true });
+  const { data: categorias, isLoading } = useGetCategorias({
+    is_market: true,
+  });
+
   const [openMenus, setOpenMenus] = useState<string[]>([]);
 
   const filterCate = categorias?.filter((cat) => cat.is_market);
@@ -62,6 +68,7 @@ const SheetContentMarket = ({
 
   const isExactActive = (href: string) => pathname === href;
   const isParentActive = (href: string) => pathname.startsWith(href);
+
   const isCategoryActive = (id: string) =>
     pathname.startsWith(`/marketplace/categorias/${id}`);
 
@@ -85,7 +92,7 @@ const SheetContentMarket = ({
       >
         <VisuallyHidden asChild>
           <SheetHeader>
-            <SheetTitle>Menú de Marketplace</SheetTitle>
+            <SheetTitle>{t("mobile.menuTitle")}</SheetTitle>
           </SheetHeader>
         </VisuallyHidden>
 
@@ -129,7 +136,7 @@ const SheetContentMarket = ({
 
           <div className="space-y-1">
             <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Menú Principal
+              {t("sections.mainMenu")}
             </p>
 
             {mainMenuItems.map((item) => (
@@ -150,13 +157,14 @@ const SheetContentMarket = ({
                       >
                         <div className="flex items-center gap-3">
                           <item.icon className="h-4 w-4" />
-                          <span>{item.title}</span>
+                          <span>{t(`menu.${item.titleKey}`)}</span>
                           {item.badge !== undefined && item.badge > 0 && (
                             <Badge className="ml-auto bg-red-500 hover:bg-red-600">
                               {item.badge}
                             </Badge>
                           )}
                         </div>
+
                         {openMenus.includes(item.title) ? (
                           <ChevronDown className="h-4 w-4" />
                         ) : (
@@ -164,6 +172,7 @@ const SheetContentMarket = ({
                         )}
                       </Button>
                     </CollapsibleTrigger>
+
                     <CollapsibleContent className="ml-6 space-y-1">
                       {item.subItems.map((subItem) => (
                         <Link
@@ -177,7 +186,7 @@ const SheetContentMarket = ({
                           }`}
                         >
                           {subItem.icon && <subItem.icon className="h-3 w-3" />}
-                          <span>{subItem.title}</span>
+                          <span>{t(`subMenu.${subItem.titleKey}`)}</span>
                         </Link>
                       ))}
                     </CollapsibleContent>
@@ -194,7 +203,7 @@ const SheetContentMarket = ({
                     >
                       <div className="flex items-center gap-3">
                         <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
+                        <span>{t(`menu.${item.titleKey}`)}</span>
                         {item.badge !== undefined && item.badge > 0 && (
                           <Badge className="ml-auto bg-red-500 hover:bg-red-600">
                             {item.badge}
@@ -213,7 +222,7 @@ const SheetContentMarket = ({
               variant="outline"
             >
               <Plus className="mr-2 h-4 w-4" />
-              Crear Publicación
+              {t("buttons.createPublication")}
             </Button>
 
             <Button
@@ -222,7 +231,7 @@ const SheetContentMarket = ({
               variant="outline"
             >
               <BookCheck className="mr-2 h-4 w-4" />
-              Mis Publicaciones
+              {t("buttons.myPublications")}
             </Button>
           </div>
 
@@ -235,8 +244,9 @@ const SheetContentMarket = ({
             filterCate.length > 0 && (
               <div className="space-y-2">
                 <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Categorías Destacadas
+                  {t("sections.featuredCategories")}
                 </p>
+
                 <div className="space-y-1">
                   {filterCate.map((category) => {
                     const active = isCategoryActive(category.id);
@@ -265,8 +275,9 @@ const SheetContentMarket = ({
 
           <div className="space-y-1">
             <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Enlaces Útiles
+              {t("sections.helpfulLinks")}
             </p>
+
             {helpfulLinks.map((link) => (
               <Link
                 key={link.href}
@@ -280,7 +291,7 @@ const SheetContentMarket = ({
                 >
                   <div className="flex items-center gap-3">
                     <link.icon className="h-4 w-4" />
-                    <span>{link.title}</span>
+                    <span>{t(`helpfulLinks.${link.titleKey}`)}</span>
                   </div>
                 </Button>
               </Link>
@@ -299,7 +310,7 @@ const SheetContentMarket = ({
                 className="w-full justify-start px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700"
               >
                 <LogOut className="mr-3 h-4 w-4" />
-                Cerrar Sesión
+                {t("buttons.logout")}
               </Button>
             </>
           )}
@@ -308,16 +319,32 @@ const SheetContentMarket = ({
         <div className="border-t border-gray-200 p-4 flex-shrink-0">
           <div className="space-y-2">
             <p className="text-xs text-gray-500 text-center">
-              © 2024 AgroMarket
+              {t("mobile.copyright")}
             </p>
+
             <div className="flex justify-center gap-2">
-              <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                aria-label="Facebook"
+              >
                 <Facebook className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                aria-label="Instagram"
+              >
                 <Instagram className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                aria-label="Twitter"
+              >
                 <Twitter className="h-4 w-4" />
               </Button>
             </div>

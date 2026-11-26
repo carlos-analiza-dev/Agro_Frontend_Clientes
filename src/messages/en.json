@@ -13088,5 +13088,570 @@
     "logoutError": "An error occurred while logging out",
     "expiredSessionError": "Error while closing the expired session"
   }
-}
+},
+"marketPlaceNavBar": {
+    "userAvatar": "User",
+    "defaultUser": "User",
+    "closeMarketplace": "Close Marketplace"
+  },
+   "marketPlaceLayout": {
+    "messages": {
+      "logoutError": "Error while logging out of the expired session.",
+      "accessDenied": "Access denied. Only business owners can access the marketplace.",
+      "ecommerceUnavailable": "Your current plan does not have e-commerce enabled."
+    }
+  },
+   "marketPlacePage": {
+    "title": "Today's Featured Listings",
+    "messages": {
+      "loadError": "Products could not be loaded",
+      "loadingMore": "Loading more listings...",
+      "noMorePublications": "There are no more listings to display"
+    }
+  },
+   "marketPlaceAnimalesPage": {
+    "title": "Featured Animals",
+    "messages": {
+      "loadError": "Products could not be loaded",
+      "loadingMore": "Loading more animals...",
+      "noMoreAnimals": "There are no more animals to display"
+    }
+  },
+  "marketPlaceFilters": {
+    "buttons": {
+      "clear": "Clear"
+    },
+    "species": {
+      "all": "All species",
+      "title": "Species",
+      "empty": "No species available"
+    },
+    "breeds": {
+      "all": "All breeds",
+      "title": "Breeds",
+      "selectSpecies": "Select a species",
+      "selectSpeciesFirst": "Select a species first",
+      "empty": "No breeds available for this species"
+    }
+  },
+   "DetailsAnimalesPage": {
+    "notFound": {
+      "message": "The listing you are looking for does not exist, was removed, or is not available"
+    },
+    "publishedAt": "Published {date}",
+    "prices": {
+      "perHour": "Per hour",
+      "perDay": "Per day",
+      "perWeek": "Per week",
+      "perMonth": "Per month",
+      "availablePrices": "Available prices",
+      "securityDeposit": "Security deposit",
+      "rentalHint": "💡 Select the rental option that best fits your needs"
+    },
+    "badges": {
+      "availableForRent": "Available for rent"
+    },
+    "status": {
+      "sold": "sold",
+      "soldCapitalized": "Sold",
+      "rented": "rented",
+      "rentedCapitalized": "Rented",
+      "alreadyStatus": "This product has already been {status}",
+      "unavailableFor": "It is no longer available for {action} or sharing",
+      "purchase": "purchase",
+      "rental": "rental",
+      "markedAsStatus": "✓ Product marked as {status}",
+      "usersCannotInteract": "{users} can no longer interact with this listing",
+      "buyers": "buyers",
+      "tenants": "tenants"
+    },
+    "buttons": {
+      "sendMessage": "Send Message",
+      "checkAvailability": "Check availability",
+      "chatWithSeller": "Chat with the seller",
+      "edit": "Edit",
+      "editPublication": "Edit listing",
+      "markAsStatus": "Mark as {status}"
+    },
+    "share": {
+      "rentalPricesAvailable": "Rental prices available",
+      "priceValue": "Price: {currency} {price}"
+    },
+    "sections": {
+      "sellerDescription": "Seller's description",
+      "location": "Location",
+      "sellerInfo": "Seller information"
+    },
+    "rentalInfo": {
+      "label": "Rental information:",
+      "rentDescription": "This product is available for rent. Contact the seller for more details.",
+      "purchaseDescription": "This product is available for purchase. Contact the seller for more details."
+    },
+    "seller": {
+      "verified": "Verified seller",
+      "notVerified": "Unverified seller",
+      "joinedAt": "Joined AgroMarket in {year}"
+    },
+    "contact": {
+      "rentalQuestion": "Do you need rental information?",
+      "infoQuestion": "Do you need information?"
+    },
+    "confirm": {
+      "markAsStatus": "Are you sure you want to mark this product as {status}?"
+    },
+    "suggestions": {
+      "title": "Today's suggestions",
+      "emptyDescription": "No suggested products found at this time"
+    },
+    "chat": {
+      "initialMessage": "Hi, {name}. Is it still available?"
+    },
+    "confirmModal": {
+      "title": "Confirm {status}",
+      "description": "Are you sure you want to mark this listing as {status}?",
+      "warning": "Once this action is completed, users will no longer be able to interact with this listing.",
+      "cancel": "Cancel",
+      "confirm": "Yes, confirm",
+      "processing": "Processing..."
+    },
+    "messages": {
+      "markSuccess": "The listing has been successfully marked as {status}.",
+      "markError": "The listing status could not be updated."
+    }
+  },
+   "ShareButtons": {
+    "share": "Share",
+    "defaultShareText": "Check out this listing on AgroMarket: {title}",
+    "linkCopied": "Link copied to clipboard",
+    "linkCopyError": "Error copying the link",
+    "copied": "Copied!",
+    "copyLink": "Copy link",
+    "networks": {
+      "facebook": "Facebook",
+      "twitter": "Twitter (X)",
+      "whatsapp": "WhatsApp"
+    }
+  },
+   "marketPlaceSaveButton": {
+    "saved": "Saved",
+    "save": "Save",
+    "savePublication": "Save publication",
+    "removeFromSaved": "Remove from saved"
+  },
+  "marketPlaceSavedMessages": {
+    "saved": "{name} saved to your publications",
+    "removed": "{name} removed from your saved items"
+  },
+  "marketPlaceFloatingChat": {
+    "buttons": {
+      "minimize": "Minimize chat",
+      "close": "Close chat",
+      "removeImage": "Remove image",
+      "attachImages": "Attach images",
+      "send": "Send message"
+    },
+    "states": {
+      "loadingMessages": "Loading messages...",
+      "startConversation": "Start the conversation",
+      "startConversationDescription": "Send a message or image to get started",
+      "sending": "Sending...",
+      "reconnecting": "Reconnecting..."
+    },
+    "placeholders": {
+      "imageCaption": "Add a caption...",
+      "message": "Type a message..."
+    },
+    "errors": {
+      "initialize": "Error starting the chat",
+      "sendMessage": "The message could not be sent. Check your connection.",
+      "imageTooLarge": "The image {name} exceeds the maximum size of 1MB",
+      "invalidImage": "The file {name} is not a valid image",
+      "sendImages": "Error sending images"
+    },
+    "modal": {
+      "imagePreview": "Image preview",
+      "imageAlt": "Image {number}"
+    }
+  },
+  "marketPlaceSpeciesPage": {
+    "title": "Available Species",
+    "description": "Explore the animals available in the marketplace by species",
+    "status": {
+      "active": "Active"
+    },
+    "buttons": {
+      "retry": "Try again",
+      "viewAnimals": "View animals"
+    },
+    "error": {
+      "title": "Error loading species",
+      "description": "The species could not be loaded. Please try again."
+    },
+    "empty": {
+      "title": "No species available",
+      "description": "No active species were found in the system."
+    }
+  },
+   "marketPlaceAnimalByEspecie": {
+    "title": "Sales of {species}",
+    "messages": {
+      "loadError": "Products could not be loaded",
+      "loadingMore": "Loading more animals...",
+      "noMoreAnimals": "There are no more animals to display"
+    }
+  },
+  "marketPlaceProductosAgricolasPage": {
+    "title": "Featured agricultural products",
+    "messages": {
+      "loadError": "Products could not be loaded",
+      "loadingMore": "Loading more products...",
+      "noMoreProducts": "There are no more products to display"
+    }
+  },
+   "marketPlaceSearchPage": {
+    "title": "Search results for \"{term}\"",
+    "messages": {
+      "loadError": "Products could not be loaded",
+      "loadingMore": "Loading more results...",
+      "noMoreResults": "There are no more results to display"
+    }
+  },
+  "marketPlaceCategoriesPage": {
+    "title": "Marketplace Categories",
+    "description": "Explore our categories and find everything you need for your farm, animals, or business",
+    "statistics": {
+      "total": "Total categories",
+      "active": "Active",
+      "featured": "Featured",
+      "popular": "Popular",
+      "animalSales": "ANIMAL SALES"
+    },
+    "empty": {
+      "title": "No categories available",
+      "description": "No categories were found in the marketplace",
+      "filteredTitle": "No categories found",
+      "filteredDescription": "There are no categories"
+    },
+    "footer": {
+      "title": "Can't find what you're looking for?",
+      "description": "Explore all listings or contact a seller directly",
+      "button": "View all listings"
+    }
+  },
+   "marketPlacePublicationsByCategory": {
+    "title": "Publications by category",
+    "messages": {
+      "loadError": "Products could not be loaded",
+      "loadingMore": "Loading more publications...",
+      "noMorePublications": "There are no more publications to display"
+    }
+  },
+  "marketPlaceCreatePublicationPage": {
+    "header": {
+      "badge": "New Listing",
+      "title": "What would you like to list today?",
+      "description": "Choose the category that best describes your product and start selling on AgroMarket"
+    },
+    "category": {
+      "examples": "Listing examples:",
+      "selected": "Category selected",
+      "select": "Select"
+    },
+    "selection": {
+      "selectedCategory": "Selected category:"
+    },
+    "buttons": {
+      "continue": "Continue"
+    },
+    "footer": {
+      "acceptTerms": "By publishing, you agree to our",
+      "termsAndConditions": "Terms and Conditions",
+      "and": "and",
+      "publicationPolicies": "Publication Policies"
+    }
+  },
+  "marketPlaceCreatePublicacionPage": {
+    "title": "Create a new listing",
+    "description": "Complete the details of your {type}",
+    "types": {
+      "animal": "animal",
+      "product": "product"
+    }
+  },
+  "marketPlaceFormPublicacion": {
+    "images": {
+      "title": "Photos",
+      "previewAlt": "Image preview {number}",
+      "remove": "Remove image",
+      "current": "Current",
+      "upload": "Upload photo",
+      "add": "Add",
+      "limit": "Upload up to 10 images (max. 3MB each)",
+      "coverHint": "The first image will be the cover"
+    },
+    "basic": {
+      "title": "Basic information",
+      "editMode": "Edit mode"
+    },
+    "animal": {
+      "searchLabel": "Search for an animal *",
+      "searchPlaceholder": "Search by identifier or name...",
+      "unidentified": "Unidentified",
+      "unspecifiedSpecies": "Unspecified species",
+      "unspecifiedSex": "Unspecified sex",
+      "notFound": "No animals found.",
+      "tryAnotherSearch": "Try another search term",
+      "searchHint": "Search by the animal's identifier or name",
+      "defaultName": "Animal",
+      "birthDate": "Birth date"
+    },
+    "fields": {
+      "title": "Title *",
+      "description": "Description *",
+      "category": "Category *",
+      "subcategory": "Subcategory *",
+      "brand": "Brand (optional)",
+      "productType": "Product type",
+      "model": "Model (optional)",
+      "department": "Department *",
+      "detailedAddress": "Detailed address *"
+    },
+    "placeholders": {
+      "animalTitle": "E.g.: Golden Retriever for sale",
+      "productTitle": "E.g.: Balanced animal feed for sale",
+      "description": "Describe your listing in detail...",
+      "category": "Select a category",
+      "subcategory": "Select a subcategory",
+      "brand": "Select a brand",
+      "productType": "Select a product type",
+      "model": "Product model",
+      "depositAmount": "Deposit amount",
+      "department": "Select a department",
+      "address": "Detailed address, landmarks, etc..."
+    },
+    "hints": {
+      "description": "Include important features, conditions, and details",
+      "addressExample": "E.g.: Zone 10, near the obelisk, House #123"
+    },
+    "pricing": {
+      "title": "Price and availability",
+      "rentalTitle": "Rental prices",
+      "perHour": "Price per hour",
+      "perDay": "Price per day",
+      "perWeek": "Price per week",
+      "perMonth": "Price per month",
+      "requiresDeposit": "Requires a security deposit",
+      "rentalHint": "At least one rental price must be greater than 0",
+      "regularPrice": "Regular price *",
+      "stock": "Quantity / Stock *"
+    },
+    "location": {
+      "title": "Location",
+      "selectOnMap": "Select on map",
+      "mapShort": "Map",
+      "myLocation": "My location",
+      "gpsShort": "GPS",
+      "usingCurrentLocation": "Using your current location",
+      "gettingLocation": "Getting your location..."
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "updating": "Updating...",
+      "publishing": "Publishing...",
+      "updatePublication": "Update listing",
+      "publish": "Publish"
+    },
+    "validation": {
+      "imageRequired": "You must upload at least one image",
+      "nameMinLength": "The name must contain at least 3 characters",
+      "descriptionMinLength": "The description must contain at least 10 characters",
+      "animalRequired": "You must select an animal",
+      "categoryRequired": "Select a category",
+      "subcategoryRequired": "Select a subcategory",
+      "departmentRequired": "Select a department",
+      "addressRequired": "The address is required",
+      "rentalPriceRequired": "You must specify at least one rental price",
+      "depositAmountRequired": "You must specify the deposit amount",
+      "priceGreaterThanZero": "The price must be greater than 0",
+      "stockMinimum": "Stock must be at least 1"
+    },
+    "messages": {
+      "maxImages": "A maximum of 10 images is allowed. You currently have {current}",
+      "imageTooLarge": "The image {name} exceeds 3MB",
+      "locationUpdated": "Location updated with your current location",
+      "locationUnavailable": "Could not retrieve your location",
+      "locationSelected": "Location selected successfully",
+      "updateSuccess": "Listing updated successfully",
+      "createSuccess": "Listing created successfully",
+      "processError": "Error processing the listing",
+      "unexpectedError": "Unexpected error while processing the listing"
+    }
+  },
+  "marketPlaceLivestockProductsPage": {
+    "title": "Featured livestock products",
+    "messages": {
+      "loadError": "Could not load the products",
+      "loadingMore": "Loading more products...",
+      "noMoreProducts": "There are no more products to display"
+    }
+  },
+   "marketPlaceSavedPublicationsPage": {
+    "title": "Saved listings",
+    "savedCount": "You have {count, plural, one {# saved listing} other {# saved listings}}",
+    "buttons": {
+      "clear": "Clear saved listings"
+    },
+    "empty": {
+      "title": "You don't have any saved listings",
+      "description": "Explore our marketplace and save listings you're interested in to view them later.",
+      "action": "Explore marketplace"
+    }
+  },
+  "marketPlaceMyPublicationsPage": {
+    "title": "My listings",
+    "description": "Manage your published products",
+    "publicationCount": "{count, plural, one {# listing} other {# listings}}",
+    "empty": {
+      "title": "You don't have any listings",
+      "description": "Your published products will appear here."
+    }
+  },
+  "marketPlaceMyPublicationsCard": {
+    "pricing": {
+      "available": "Prices available",
+      "deposit": "Deposit: "
+    },
+    "rentalUnits": {
+      "hour": "hour",
+      "day": "day",
+      "week": "week",
+      "month": "month"
+    },
+    "badges": {
+      "rental": "Rental",
+      "available": "Available",
+      "unavailable": "Unavailable",
+      "sold": "Sold"
+    },
+    "imageUnavailable": "Image unavailable",
+    "menu": {
+      "edit": "Edit listing",
+      "markRented": "Mark as rented",
+      "markSold": "Mark as sold",
+      "delete": "Delete listing"
+    },
+    "publishedOn": "Published on {date}",
+    "views": "{count, plural, one {# view} other {# views}}",
+    "buttons": {
+      "viewPublication": "View listing",
+      "cancel": "Cancel",
+      "deletePublication": "Delete listing",
+      "confirmMark": "Mark listing"
+    },
+    "deleteModal": {
+      "title": "Delete listing",
+      "description": "This action is permanent. You will not be able to recover the listing or its images.",
+      "warning": "You are about to permanently delete this listing."
+    },
+    "soldModal": {
+      "rentTitle": "Mark listing as rented",
+      "saleTitle": "Mark listing as sold",
+      "rentDescription": "This action is permanent. Once marked as rented, it cannot be undone.",
+      "saleDescription": "This action is permanent. Once marked as sold, it cannot be undone.",
+      "rentWarning": "You are about to mark this listing as rented.",
+      "saleWarning": "You are about to mark this listing as sold."
+    },
+    "messages": {
+      "deleteSuccess": "Listing deleted successfully",
+      "deleteError": "Error deleting the listing",
+      "unexpectedDeleteError": "Unexpected error while deleting the listing",
+      "soldSuccess": "Listing marked as sold",
+      "rentedSuccess": "Listing marked as rented",
+      "unexpectedMarkError": "Unexpected error while marking the listing"
+    }
+  },
+   "marketPlaceEditPublicationPage": {
+    "title": "Edit listing",
+    "description": "Complete the details of your {type}",
+    "types": {
+      "animal": "animal",
+      "product": "product"
+    }
+  },
+  "marketPlaceSidebar": {
+    "sections": {
+      "mainMenu": "Main Menu",
+      "featuredCategories": "Featured Categories",
+      "helpfulLinks": "Helpful Links"
+    },
+    "menu": {
+      "exploreAll": "Explore All",
+      "livestock": "Livestock",
+      "products": "Products",
+      "savedItems": "Saved Items"
+    },
+    "subMenu": {
+      "allAnimals": "All Animals",
+      "cattle": "Cattle",
+      "horses": "Horses",
+      "birds": "Birds",
+      "pigs": "Pigs",
+      "agricultural": "Agricultural",
+      "livestockProducts": "Livestock",
+      "categories": "Categories"
+    },
+    "buttons": {
+      "createPublication": "Create Listing",
+      "myPublications": "My Listings",
+      "logout": "Log Out"
+    },
+    "helpfulLinks": {
+      "terms": "Terms and Conditions",
+      "contact": "Contact"
+    },
+    "images": {
+      "logoAlt": "AgroMarket logo"
+    },
+     "mobile": {
+    "menuTitle": "Marketplace Menu",
+    "copyright": "© 2024 AgroMarket"
+  }
+  },
+  "marketPlaceSearchMarket": {
+    "placeholders": {
+      "search": "Search AgroMarket...",
+      "searchWithEnter": "Search AgroMarket... (Press Enter)"
+    },
+    "suggestions": {
+      "title": "Search results"
+    },
+    "messages": {
+      "noResults": "No results found for \"{name}\"",
+      "resultsFound": "{count, plural, one {# result found} other {# results found}}"
+    },
+    "buttons": {
+      "viewAll": "View all results for \"{name}\"",
+      "search": "Search \"{name}\" →"
+    },
+    "accessibility": {
+      "search": "Search listings",
+      "clearSearch": "Clear search",
+      "closeSuggestions": "Close suggestions"
+    }
+  },
+  "marketPlaceMessageInbox": {
+    "title": "Messages",
+    "conversationCount": "{count, plural, one {# conversation} other {# conversations}}",
+    "empty": {
+      "title": "You don't have any messages",
+      "description": "When you contact a seller, your conversations will appear here"
+    },
+    "productFallback": "Product",
+    "priceUnavailable": "Price unavailable",
+    "newMessageCount": "{count, plural, one {# new} other {# new}}",
+    "accessibility": {
+      "openMessages": "Open messages",
+      "closeMessages": "Close messages"
+    }
+  }
 }

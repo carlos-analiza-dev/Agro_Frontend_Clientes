@@ -30,6 +30,7 @@ import {
 } from "../ui/carousel";
 import Modal from "../generics/Modal";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 interface ChatFloatingProps {
   product: ProductoAnimal;
@@ -55,6 +56,8 @@ export const ChatFloating = ({
   buyerId,
   onClose,
 }: ChatFloatingProps) => {
+  const t = useTranslations("marketPlaceFloatingChat");
+
   const { cliente } = useAuthStore();
   const senderId = cliente?.id ?? "";
   const [message, setMessage] = useState("");
@@ -117,6 +120,7 @@ export const ChatFloating = ({
 
   const loadMessages = async () => {
     if (!localConversationId) return;
+
     setIsLoading(true);
     try {
       await fetchMessages(localConversationId);
@@ -141,7 +145,7 @@ export const ChatFloating = ({
         setLocalConversationId(conversation.id);
       }
     } catch (error) {
-      toast.error("Error al iniciar el chat");
+      toast.error(t("errors.initialize"));
     } finally {
       setIsLoading(false);
     }
@@ -160,7 +164,7 @@ export const ChatFloating = ({
     if (success) {
       setMessage("");
     } else {
-      toast.warning("No se pudo enviar el mensaje. Verifica tu conexión.");
+      toast.warning(t("errors.sendMessage"));
     }
   };
 
@@ -178,13 +182,15 @@ export const ChatFloating = ({
     const MAX_SIZE = 1024 * 1024;
     const validFiles = files.filter((file) => {
       if (file.size > MAX_SIZE) {
-        toast.error(`La imagen ${file.name} excede el tamaño máximo de 1MB`);
+        toast.error(t("errors.imageTooLarge", { name: file.name }));
         return false;
       }
+
       if (!file.type.startsWith("image/")) {
-        toast.error(`El archivo ${file.name} no es una imagen válida`);
+        toast.error(t("errors.invalidImage", { name: file.name }));
         return false;
       }
+
       return true;
     });
 
@@ -230,14 +236,14 @@ export const ChatFloating = ({
       const result = await uploadImagesChat(formData);
 
       if (!result) {
-        toast.error("Error al enviar imágenes");
+        toast.error(t("errors.sendImages"));
         return;
       }
 
       setImagePreviews([]);
       setMessage("");
     } catch (error) {
-      toast.error("Error al enviar imágenes");
+      toast.error(t("errors.sendImages"));
     } finally {
       setIsSendingImage(false);
     }
@@ -310,12 +316,14 @@ export const ChatFloating = ({
               </Link>
             </div>
           </div>
+
           <div className="flex items-center gap-1">
             <Button
               variant="ghost"
               size="icon"
               className="h-8 w-8 text-white hover:bg-green-700"
               onClick={() => setIsMinimized(true)}
+              title={t("buttons.minimize")}
             >
               <Minimize2 className="h-4 w-4" />
             </Button>
@@ -324,6 +332,7 @@ export const ChatFloating = ({
               size="icon"
               className="h-8 w-8 text-white hover:bg-green-700"
               onClick={onClose}
+              title={t("buttons.close")}
             >
               <X className="h-4 w-4" />
             </Button>
@@ -335,16 +344,18 @@ export const ChatFloating = ({
             <div className="flex justify-center items-center h-full">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 mx-auto mb-2" />
-                <p className="text-xs text-gray-500">Cargando mensajes...</p>
+                <p className="text-xs text-gray-500">
+                  {t("states.loadingMessages")}
+                </p>
               </div>
             </div>
           ) : conversationMessages.length === 0 &&
             imagePreviews.length === 0 ? (
             <div className="flex justify-center items-center h-full">
               <div className="text-center text-gray-500">
-                <p className="text-sm">Inicia la conversación</p>
+                <p className="text-sm">{t("states.startConversation")}</p>
                 <p className="text-xs">
-                  Envía un mensaje o imagen para comenzar
+                  {t("states.startConversationDescription")}
                 </p>
               </div>
             </div>
@@ -458,6 +469,7 @@ export const ChatFloating = ({
                                     updatedAt: new Date(),
                                   }) as ImagesMessage,
                               );
+
                               handleOpenModalImages(
                                 previewImages[idx],
                                 previewImages,
@@ -489,7 +501,7 @@ export const ChatFloating = ({
                       })}
                     </div>
                     <div className="text-[10px] text-gray-500 mt-1 text-right">
-                      Enviando...
+                      {t("states.sending")}
                     </div>
                   </div>
                 </div>
@@ -516,6 +528,8 @@ export const ChatFloating = ({
                   <button
                     onClick={() => removeImagePreview(idx)}
                     className="absolute -top-2 -right-2 bg-gray-800 rounded-full p-1 opacity-0 group-hover:opacity-100 transition"
+                    aria-label={t("buttons.removeImage")}
+                    title={t("buttons.removeImage")}
                   >
                     <X className="h-3 w-3 text-white" />
                   </button>
@@ -540,6 +554,7 @@ export const ChatFloating = ({
               className={`p-2 rounded-full hover:bg-gray-100 cursor-pointer transition ${
                 isSendingImage ? "opacity-50 cursor-not-allowed" : ""
               }`}
+              title={t("buttons.attachImages")}
             >
               <ImagePlus className="h-5 w-5 text-gray-600" />
             </label>
@@ -551,8 +566,8 @@ export const ChatFloating = ({
                 onKeyDown={handleKeyPress}
                 placeholder={
                   imagePreviews.length > 0
-                    ? "Añadir leyenda..."
-                    : "Escribe un mensaje..."
+                    ? t("placeholders.imageCaption")
+                    : t("placeholders.message")
                 }
                 disabled={!isConnected || isLoading || isSendingImage}
                 className="rounded-full bg-gray-100 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -566,6 +581,7 @@ export const ChatFloating = ({
               disabled={!canSend}
               size="icon"
               className="rounded-full bg-green-600 hover:bg-green-700 h-9 w-9"
+              title={t("buttons.send")}
             >
               {isSendingImage ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -578,13 +594,13 @@ export const ChatFloating = ({
 
         {!isConnected && (
           <div className="text-center py-1 bg-amber-50 text-amber-600 text-xs">
-            Reconectando...
+            {t("states.reconnecting")}
           </div>
         )}
       </div>
 
       <Modal
-        title="Vista Previa de Imágenes"
+        title={t("modal.imagePreview")}
         open={openModalImages}
         onOpenChange={(open) => {
           setopenModalImages(open);
@@ -613,7 +629,7 @@ export const ChatFloating = ({
                         width={400}
                         height={400}
                         unoptimized
-                        alt={`Imagen ${index + 1}`}
+                        alt={t("modal.imageAlt", { number: index + 1 })}
                         className="max-h-[70vh] w-auto object-cover rounded-lg shadow-lg"
                       />
                     </div>

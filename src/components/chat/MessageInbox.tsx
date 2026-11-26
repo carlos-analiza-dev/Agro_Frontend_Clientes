@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { MessageCircle, CheckCheck, X } from "lucide-react";
 import {
   DropdownMenu,
@@ -27,6 +28,7 @@ export const MessageInbox = ({
   conversations,
   isLoading,
 }: MessageInboxProps) => {
+  const t = useTranslations("marketPlaceMessageInbox");
   const { cliente } = useAuthStore();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedConversation, setSelectedConversation] = useState<{
@@ -71,7 +73,13 @@ export const MessageInbox = ({
     <>
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative"
+            aria-label={t("accessibility.openMessages")}
+            title={t("accessibility.openMessages")}
+          >
             <MessageCircle className="h-5 w-5" />
             {totalUnreadCount > 0 && (
               <Badge
@@ -86,21 +94,26 @@ export const MessageInbox = ({
 
         <DropdownMenuContent className="w-96 p-0" align="end">
           <div className="flex justify-end mr-4 mt-2">
-            <X
-              size={20}
+            <button
+              type="button"
               onClick={() => setIsOpen(false)}
-              className="hover:cursor-pointer"
-            />
+              aria-label={t("accessibility.closeMessages")}
+              title={t("accessibility.closeMessages")}
+            >
+              <X size={20} className="hover:cursor-pointer" />
+            </button>
           </div>
+
           <DropdownMenuLabel className="flex items-center justify-between p-4">
             <div className="flex items-center gap-2">
               <MessageCircle className="h-4 w-4 text-gray-500" />
-              <span className="text-lg font-semibold">Mensajes</span>
+              <span className="text-lg font-semibold">{t("title")}</span>
             </div>
             {conversations.length > 0 && (
               <Badge variant="secondary" className="text-xs">
-                {conversations.length} conversación
-                {conversations.length !== 1 && "es"}
+                {t("conversationCount", {
+                  count: conversations.length,
+                })}
               </Badge>
             )}
           </DropdownMenuLabel>
@@ -128,11 +141,10 @@ export const MessageInbox = ({
                   <MessageCircle className="h-8 w-8 text-gray-400" />
                 </div>
                 <p className="text-sm font-medium text-gray-900">
-                  No tienes mensajes
+                  {t("empty.title")}
                 </p>
                 <p className="text-xs text-gray-500 mt-1 max-w-[200px]">
-                  Cuando contactes a un vendedor, tus conversaciones aparecerán
-                  aquí
+                  {t("empty.description")}
                 </p>
               </div>
             ) : (
@@ -203,22 +215,24 @@ export const MessageInbox = ({
                                 : "text-gray-600"
                             }`}
                           >
-                            {conversation.product?.nombre || "Producto"}
+                            {conversation.product?.nombre ||
+                              t("productFallback")}
                           </p>
 
                           <div className="flex items-center justify-between mt-1.5">
                             <p className="text-xs text-gray-500">
                               {conversation.product?.precio
                                 ? conversation.product.precio
-                                : "Precio no disponible"}
+                                : t("priceUnavailable")}
                             </p>
                             {hasUnread && (
                               <Badge
                                 variant="destructive"
                                 className="text-[10px] h-5 px-1.5"
                               >
-                                {conversation.unreadCount} nuevo
-                                {conversation.unreadCount !== 1 && "s"}
+                                {t("newMessageCount", {
+                                  count: conversation.unreadCount,
+                                })}
                               </Badge>
                             )}
                             {!hasUnread && (

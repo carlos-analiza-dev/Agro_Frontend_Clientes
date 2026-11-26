@@ -16,12 +16,16 @@ import useGetConversaciones from "@/hooks/chat/useGetConversaciones";
 import { MessageInbox } from "../chat/MessageInbox";
 import useGetSearchMarket from "@/hooks/market-animales/useGetSearchMarket";
 import SearchMarket from "../marketplace/SearchMarket";
+import LanguageSwitcher from "../i18n/LanguageSwitcher";
+import { useTranslations } from "next-intl";
 
 interface Props {
   setMobileSidebarOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const MarhetPlaceNavBar = ({ setMobileSidebarOpen }: Props) => {
+  const t = useTranslations("marketPlaceNavBar");
+
   const { cliente } = useAuthStore();
   const [isScrolled, setIsScrolled] = useState(false);
   const { data: conversaciones, isLoading: isLoadingConversaciones } =
@@ -81,6 +85,7 @@ const MarhetPlaceNavBar = ({ setMobileSidebarOpen }: Props) => {
         </div>
 
         <div className="flex gap-2 items-center">
+          <LanguageSwitcher />
           <MessageInbox
             conversations={conversaciones || []}
             isLoading={isLoadingConversaciones}
@@ -89,7 +94,7 @@ const MarhetPlaceNavBar = ({ setMobileSidebarOpen }: Props) => {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src="/avatars/user.png" alt="Usuario" />
+                  <AvatarImage src="/avatars/user.png" alt={t("userAvatar")} />
                   <AvatarFallback>
                     <User className="h-4 w-4" />
                   </AvatarFallback>
@@ -100,7 +105,7 @@ const MarhetPlaceNavBar = ({ setMobileSidebarOpen }: Props) => {
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-2">
                   <p className="text-sm font-medium text-gray-900">
-                    {cliente?.nombre || "Usuario"}
+                    {cliente?.nombre || t("defaultUser")}
                   </p>
                   <p className="text-xs leading-none text-gray-500">
                     {cliente?.email}
@@ -114,7 +119,7 @@ const MarhetPlaceNavBar = ({ setMobileSidebarOpen }: Props) => {
                 className="cursor-pointer text-red-600"
               >
                 <LogOut className="mr-2 h-4 w-4" />
-                Cerrar Market Place
+                {t("closeMarketplace")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

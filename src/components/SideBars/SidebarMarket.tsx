@@ -8,9 +8,6 @@ import {
   LogOut,
   ChevronDown,
   ChevronRight,
-  Facebook,
-  Instagram,
-  Twitter,
   Plus,
   BookCheck,
 } from "lucide-react";
@@ -34,14 +31,18 @@ import { Skeleton } from "../ui/skeleton";
 import useGetSearchMarket from "@/hooks/market-animales/useGetSearchMarket";
 import SearchMarket from "../marketplace/SearchMarket";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 interface Props {
   handleLogout: () => Promise<void>;
 }
 
 const SidebarMarket = ({ handleLogout }: Props) => {
+  const t = useTranslations("marketPlaceSidebar");
+
   const pathname = usePathname();
   const router = useRouter();
+
   const { data: categorias, isLoading } = useGetCategorias({
     is_market: true,
     destacada: true,
@@ -124,8 +125,9 @@ const SidebarMarket = ({ handleLogout }: Props) => {
 
           <div className="space-y-2">
             <p className="px-3 mt-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Menú Principal
+              {t("sections.mainMenu")}
             </p>
+
             {mainMenuItems.map((item) => (
               <div key={item.href}>
                 {item.subItems ? (
@@ -144,13 +146,14 @@ const SidebarMarket = ({ handleLogout }: Props) => {
                       >
                         <div className="flex items-center gap-3">
                           <item.icon className="h-4 w-4" />
-                          <span>{item.title}</span>
+                          <span>{t(`menu.${item.titleKey}`)}</span>
                           {item.badge !== undefined && item.badge > 0 && (
                             <Badge className="ml-auto bg-red-500 hover:bg-red-600">
                               {item.badge}
                             </Badge>
                           )}
                         </div>
+
                         {openMenus.includes(item.title) ? (
                           <ChevronDown className="h-4 w-4" />
                         ) : (
@@ -158,6 +161,7 @@ const SidebarMarket = ({ handleLogout }: Props) => {
                         )}
                       </Button>
                     </CollapsibleTrigger>
+
                     <CollapsibleContent className="ml-6 space-y-1">
                       {item.subItems.map((subItem) => (
                         <Link
@@ -170,7 +174,7 @@ const SidebarMarket = ({ handleLogout }: Props) => {
                           }`}
                         >
                           {subItem.icon && <subItem.icon className="h-3 w-3" />}
-                          <span>{subItem.title}</span>
+                          <span>{t(`subMenu.${subItem.titleKey}`)}</span>
                         </Link>
                       ))}
                     </CollapsibleContent>
@@ -187,7 +191,7 @@ const SidebarMarket = ({ handleLogout }: Props) => {
                     >
                       <div className="flex items-center gap-3">
                         <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
+                        <span>{t(`menu.${item.titleKey}`)}</span>
                         {item.badge !== undefined && item.badge > 0 && (
                           <Badge className="ml-auto bg-red-500 hover:bg-red-600">
                             {item.badge}
@@ -199,6 +203,7 @@ const SidebarMarket = ({ handleLogout }: Props) => {
                 )}
               </div>
             ))}
+
             <Button
               onClick={handleCreatePublicacion}
               className={`w-full font-bold ${
@@ -209,7 +214,7 @@ const SidebarMarket = ({ handleLogout }: Props) => {
               variant="outline"
             >
               <Plus />
-              Crear Publicación
+              {t("buttons.createPublication")}
             </Button>
 
             <Button
@@ -222,7 +227,7 @@ const SidebarMarket = ({ handleLogout }: Props) => {
               variant="outline"
             >
               <BookCheck />
-              Mis Publicaciones
+              {t("buttons.myPublications")}
             </Button>
           </div>
 
@@ -235,8 +240,9 @@ const SidebarMarket = ({ handleLogout }: Props) => {
             filterCate.length > 0 && (
               <div className="space-y-2">
                 <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Categorías Destacadas
+                  {t("sections.featuredCategories")}
                 </p>
+
                 <div className="space-y-1">
                   {filterCate.map((category) => {
                     const active = isCategoryActive(category.id);
@@ -246,11 +252,11 @@ const SidebarMarket = ({ handleLogout }: Props) => {
                         key={category.id}
                         href={`/marketplace/categorias/${category.id}`}
                         className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors
-        ${
-          active
-            ? "bg-green-50 text-green-700 font-semibold"
-            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-        }`}
+                        ${
+                          active
+                            ? "bg-green-50 text-green-700 font-semibold"
+                            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                        }`}
                       >
                         <span>{category.nombre.toUpperCase()}</span>
                       </Link>
@@ -265,8 +271,9 @@ const SidebarMarket = ({ handleLogout }: Props) => {
 
           <div className="space-y-1">
             <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Enlaces Útiles
+              {t("sections.helpfulLinks")}
             </p>
+
             {helpfulLinks.map((link) => (
               <Link key={link.href} href={link.href} target="_blank">
                 <Button
@@ -275,7 +282,7 @@ const SidebarMarket = ({ handleLogout }: Props) => {
                 >
                   <div className="flex items-center gap-3">
                     <link.icon className="h-4 w-4" />
-                    <span>{link.title}</span>
+                    <span>{t(`helpfulLinks.${link.titleKey}`)}</span>
                   </div>
                 </Button>
               </Link>
@@ -292,14 +299,14 @@ const SidebarMarket = ({ handleLogout }: Props) => {
                 className="w-full justify-center px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700"
               >
                 <LogOut className="mr-3 h-4 w-4" />
-                Cerrar Sesión
+                {t("buttons.logout")}
               </Button>
 
               <div className="flex justify-center mb-4">
                 <Image
                   unoptimized
                   src="/images/interactive_logo.png"
-                  alt="Logo"
+                  alt={t("images.logoAlt")}
                   width={120}
                   height={40}
                   className="object-contain"
