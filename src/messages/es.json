@@ -13791,6 +13791,194 @@
     "modal": {
       "title": "Calendario"
     }
+  },
+  "codigoClientePage": {
+    "title": "Activar paquete",
+    "description": "Ingresa el código de cliente que te proporcionamos para activar tu paquete",
+    "placeholders": {
+      "code": "Ej: ABC123XYZ"
+    },
+    "hints": {
+      "codeFormat": "Ingresa el código de 2 a 20 caracteres alfanuméricos"
+    },
+    "validation": {
+      "required": "Por favor, ingresa un código de cliente válido",
+      "format": "El código debe contener solo letras, números, guiones y guiones bajos (2-20 caracteres)"
+    },
+    "buttons": {
+      "validating": "Validando código...",
+      "activated": "Activado",
+      "activate": "Activar paquete"
+    },
+    "messages": {
+      "activationSuccess": "El código ha sido validado y el paquete se ha activado correctamente.",
+      "refreshWarning": "Paquete activado, pero necesitas recargar la página para ver los cambios.",
+      "invalidCode": "El código ingresado no es válido",
+      "validationError": "Hubo un error al validar el código. Por favor, intenta nuevamente.",
+      "successAlert": "¡Código válido! Paquete activado exitosamente."
+    },
+    "contact": {
+      "question": "¿No tienes un código?",
+      "link": "Contáctanos"
+    }
+  },
+  "comprarPlanPage": {
+    "header": {
+      "title": "Elige el Plan Perfecto",
+      "description": "Selecciona el plan que mejor se adapte a tus necesidades y comienza a optimizar tu producción ganadera"
+    },
+    "activePlan": {
+      "description": "Actualmente tienes el plan",
+      "active": "activo",
+      "expiresOn": "Vence el {date}",
+      "daysRemaining": "(Te quedan {days, plural, one {# día} other {# días}})",
+      "expiringWarning": "¡Tu plan está por vencer! Renueva ahora y suma los días restantes a tu nuevo plan."
+    },
+    "tabs": {
+      "monthly": "Pago Mensual",
+      "annual": "Pago Anual",
+      "save": "Ahorra"
+    },
+    "renewal": {
+      "benefit": "Beneficio por renovación",
+      "remainingDays": "Sumarás los {days, plural, one {# día} other {# días}} restantes de tu plan actual a esta nueva suscripción."
+    },
+    "priceUnavailable": "No disponible",
+    "messages": {
+      "purchaseError": "Error al ejecutar la compra"
+    }
+  },
+  "pricingCard": {
+    "badges": {
+      "currentPlan": "Plan Actual",
+      "recommended": "Recomendado"
+    },
+    "billing": {
+      "month": "mes",
+      "year": "año"
+    },
+    "pricing": {
+      "save": "Ahorra {percentage}%"
+    },
+    "features": {
+      "title": "Características:",
+      "farms": "Hasta {count, plural, one {# finca} other {# fincas}}",
+      "animals": "Hasta {count, plural, one {# animal} other {# animales}}",
+      "workers": "Hasta {count, plural, one {# trabajador} other {# trabajadores}}",
+      "marketplace": "Acceso a Agro Market"
+    },
+    "buttons": {
+      "renew": "Renovar Plan",
+      "startFree": "Comenzar Gratis",
+      "subscribe": "Contratar Plan"
+    }
+  },
+  "modalConfirmCompra": {
+    "title": "Confirmar Compra",
+    "description": "¿Estás seguro de que deseas adquirir este plan?",
+    "renewal": {
+      "benefit": "Beneficio por renovación",
+      "remainingDays": "Sumarás los {days, plural, one {# día} other {# días}} restantes de tu plan actual a esta nueva suscripción."
+    },
+    "subscription": {
+      "title": "Tipo de suscripción",
+      "monthly": "Mensual",
+      "annual": "Anual",
+      "save": "Ahorra {percentage}%",
+      "freeTooltip": "El plan FREE solo está disponible en modalidad mensual",
+      "freeNotice": "El plan gratuito solo está disponible en modalidad mensual"
+    },
+    "payment": {
+      "total": "Total a pagar:",
+      "monthlyCharge": "Se realizará un cargo mensual",
+      "annualCharge": "Se realizará un cargo único anual"
+    },
+    "expiration": {
+      "activeUntil": "Tu plan estará activo hasta el",
+      "additionalDays": "Incluye {days, plural, one {# día adicional} other {# días adicionales}} de tu plan anterior"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "processing": "Procesando...",
+      "renew": "Renovar y Aprovechar Días",
+      "confirm": "Confirmar"
+    }
+  },
+   "historialPaquetesPage": {
+    "header": {
+      "title": "Historial de Planes",
+      "description": "Revisa el historial de tus suscripciones y planes adquiridos"
+    },
+    "status": {
+      "active": "Activo",
+      "expired": "Expirado"
+    },
+    "empty": {
+      "title": "No hay historial de planes",
+      "description": "Aún no has adquirido ningún plan. ¡Comienza tu experiencia con nosotros!"
+    },
+    "sections": {
+      "currentPlan": "Plan Actual",
+      "previousPlans": "Planes Anteriores",
+      "planCount": "{count, plural, one {# plan} other {# planes}}"
+    }
+  },
+  "cardResumenHistorial": {
+    "contractedPlans": "Planes contratados",
+    "activePlan": "Plan activo",
+    "premiumPlansPurchased": "Planes Premium adquiridos"
+  },
+  "cardPlanActivo": {
+    "status": {
+      "active": "Activo"
+    },
+    "dates": {
+      "from": "Desde {date}",
+      "validUntil": "Válido hasta"
+    },
+    "limits": {
+      "maxFarms": "Máximo Fincas",
+      "maxAnimals": "Máximo Animales",
+      "maxWorkers": "Máximo Trabajadores"
+    },
+    "duration": {
+      "total": "Duración total",
+      "days": "{count, plural, one {# día} other {# días}}"
+    }
+  },
+  "cardPaquetesHistorial": {
+    "limits": {
+      "farms": "Fincas",
+      "animals": "Animales",
+      "workers": "Trabajadores"
+    },
+    "duration": {
+      "label": "Duración",
+      "days": "{count, plural, one {# día} other {# días}}"
+    },
+    "dates": {
+      "validFrom": "Vigente del",
+      "to": "al"
+    }
+  },
+  "unauthorizedPage": {
+    "restrictedAccess": "Acceso restringido",
+    "title": "No autorizado",
+    "description": "No tienes los permisos necesarios para acceder a esta página.",
+    "authenticatedMessage": "Si crees que es un error, contacta con el administrador o verifica tu plan actual.",
+    "unauthenticatedMessage": "Inicia sesión o regístrate para continuar.",
+    "buttons": {
+      "goToPanel": "Ir al panel",
+      "goHome": "Volver al inicio"
+    }
+  },
+  "pageNotFound": {
+    "title": "¡Ups! Página no encontrada.",
+    "description": "Lo sentimos, la página que buscas no existe o fue movida.",
+    "buttons": {
+      "back": "Volver",
+      "goHome": "Volver al inicio"
+    }
   }
 }
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useAuthEmpleadoStore } from "@/providers/store/useAuthEmpleados";
@@ -14,6 +15,8 @@ import {
 } from "lucide-react";
 
 const UnauthorizedPage = () => {
+  const t = useTranslations("unauthorizedPage");
+
   const { cliente, token: clienteToken } = useAuthStore();
   const { empleado, token: empleadoToken } = useAuthEmpleadoStore();
 
@@ -50,19 +53,19 @@ const UnauthorizedPage = () => {
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/70 backdrop-blur-sm border border-gray-200/50 mb-4">
             <Lock className="h-3.5 w-3.5 text-red-500" />
             <span className="text-xs font-medium text-gray-500">
-              Acceso restringido
+              {t("restrictedAccess")}
             </span>
           </div>
 
           <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 bg-clip-text text-transparent">
-            No autorizado
+            {t("title")}
           </h1>
 
           <p className="text-sm md:text-base text-gray-500 mt-3 leading-relaxed">
-            No tienes los permisos necesarios para acceder a esta página.
+            {t("description")}
             {isAuthenticated
-              ? " Si crees que es un error, contacta con el administrador o verifica tu plan actual."
-              : " Inicia sesión o regístrate para continuar."}
+              ? ` ${t("authenticatedMessage")}`
+              : ` ${t("unauthenticatedMessage")}`}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-2 mt-6">
@@ -73,12 +76,12 @@ const UnauthorizedPage = () => {
               {isAuthenticated ? (
                 <>
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Ir al panel
+                  {t("buttons.goToPanel")}
                 </>
               ) : (
                 <>
                   <Home className="w-4 h-4 mr-2" />
-                  Volver al inicio
+                  {t("buttons.goHome")}
                 </>
               )}
             </Button>

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,6 +25,7 @@ import { useAuthStore } from "@/providers/store/useAuthStore";
 import { isAxiosError } from "axios";
 
 const CodigoClientePage = () => {
+  const t = useTranslations("codigoClientePage");
   const { cliente, refreshSession } = useAuthStore();
   const clienteId = cliente?.id ?? "";
   const router = useRouter();
@@ -35,17 +37,13 @@ const CodigoClientePage = () => {
     mutationFn: (data: IngresarCodigoInterface) => ingresarCodigoCliente(data),
 
     onSuccess: async () => {
-      toast.success(
-        "El código ha sido validado y el paquete se ha activado correctamente.",
-      );
+      toast.success(t("messages.activationSuccess"));
 
       try {
         const refreshResult = await refreshSession();
         if (refreshResult) {
         } else {
-          toast.warning(
-            "Paquete activado, pero necesitas recargar la página para ver los cambios.",
-          );
+          toast.warning(t("messages.refreshWarning"));
         }
       } catch (error) {}
 
@@ -68,14 +66,12 @@ const CodigoClientePage = () => {
           ? messages[0]
           : typeof messages === "string"
             ? messages
-            : error.response?.data?.message ||
-              "El código ingresado no es válido";
+            : error.response?.data?.message || t("messages.invalidCode");
 
         setError(errorMessage);
         toast.error(errorMessage);
       } else {
-        const errorMessage =
-          "Hubo un error al validar el código. Por favor, intenta nuevamente.";
+        const errorMessage = t("messages.validationError");
         setError(errorMessage);
         toast.error(errorMessage);
       }
@@ -89,14 +85,12 @@ const CodigoClientePage = () => {
     const codigoTrimmed = codigo.trim().toUpperCase();
 
     if (!codigoTrimmed) {
-      setError("Por favor, ingresa un código de cliente válido");
+      setError(t("validation.required"));
       return;
     }
 
     if (!/^[A-Z0-9_-]{2,20}$/.test(codigoTrimmed)) {
-      setError(
-        "El código debe contener solo letras, números, guiones y guiones bajos (2-20 caracteres)",
-      );
+      setError(t("validation.format"));
       return;
     }
     mutation.mutate({ codigo: codigoTrimmed });
@@ -128,11 +122,10 @@ const CodigoClientePage = () => {
             </div>
           </div>
           <CardTitle className="text-2xl font-bold tracking-tight">
-            Activar Paquete
+            {t("title")}
           </CardTitle>
           <CardDescription className="text-slate-500">
-            Ingresa el código de cliente que te proporcionamos para activar tu
-            paquete
+            {t("description")}
           </CardDescription>
         </CardHeader>
 
@@ -141,7 +134,7 @@ const CodigoClientePage = () => {
             <div className="space-y-2">
               <Input
                 type="text"
-                placeholder="Ej: ABC123XYZ"
+                placeholder={t("placeholders.code")}
                 value={codigo}
                 onChange={handleChange}
                 onPaste={handlePaste}
@@ -153,7 +146,7 @@ const CodigoClientePage = () => {
                 autoComplete="off"
               />
               <p className="text-xs text-muted-foreground text-center">
-                Ingresa el código de 2 a 20 caracteres alfanuméricos
+                {t("hints.codeFormat")}
               </p>
             </div>
 
@@ -171,7 +164,7 @@ const CodigoClientePage = () => {
               <Alert className="border-green-500 bg-green-50 text-green-800 animate-in slide-in-from-top-2">
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
                 <AlertDescription className="font-medium">
-                  ¡Código válido! Paquete activado exitosamente.
+                  {t("messages.successAlert")}
                 </AlertDescription>
               </Alert>
             )}
@@ -184,15 +177,15 @@ const CodigoClientePage = () => {
               {mutation.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Validando código...
+                  {t("buttons.validating")}
                 </>
               ) : isSuccess ? (
                 <>
                   <CheckCircle2 className="mr-2 h-4 w-4" />
-                  Activado
+                  {t("buttons.activated")}
                 </>
               ) : (
-                "Activar paquete"
+                t("buttons.activate")
               )}
             </Button>
           </form>
@@ -200,13 +193,13 @@ const CodigoClientePage = () => {
 
         <CardFooter className="flex flex-col space-y-2 border-t pt-6">
           <p className="text-xs text-center text-muted-foreground">
-            ¿No tienes un código?{" "}
+            {t("contact.question")}{" "}
             <a
               target="_blank"
               href="/contacto"
               className="text-primary hover:underline font-medium"
             >
-              Contáctanos
+              {t("contact.link")}
             </a>
           </p>
         </CardFooter>

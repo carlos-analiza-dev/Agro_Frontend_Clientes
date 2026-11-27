@@ -13805,5 +13805,193 @@
     "modal": {
       "title": "Calendar"
     }
+  },
+  "codigoClientePage": {
+    "title": "Activate Package",
+    "description": "Enter the customer code we provided to activate your package",
+    "placeholders": {
+      "code": "E.g.: ABC123XYZ"
+    },
+    "hints": {
+      "codeFormat": "Enter a code containing 2 to 20 alphanumeric characters"
+    },
+    "validation": {
+      "required": "Please enter a valid customer code",
+      "format": "The code must contain only letters, numbers, hyphens, and underscores (2-20 characters)"
+    },
+    "buttons": {
+      "validating": "Validating code...",
+      "activated": "Activated",
+      "activate": "Activate package"
+    },
+    "messages": {
+      "activationSuccess": "The code has been validated and the package has been activated successfully.",
+      "refreshWarning": "Package activated, but you need to reload the page to see the changes.",
+      "invalidCode": "The entered code is invalid",
+      "validationError": "An error occurred while validating the code. Please try again.",
+      "successAlert": "Valid code! Package activated successfully."
+    },
+    "contact": {
+      "question": "Don't have a code?",
+      "link": "Contact us"
+    }
+  },
+  "comprarPlanPage": {
+    "header": {
+      "title": "Choose the Perfect Plan",
+      "description": "Select the plan that best suits your needs and start optimizing your livestock production"
+    },
+    "activePlan": {
+      "description": "You currently have the",
+      "active": "plan active",
+      "expiresOn": "Expires on {date}",
+      "daysRemaining": "({days, plural, one {# day remaining} other {# days remaining}})",
+      "expiringWarning": "Your plan is about to expire! Renew now and add your remaining days to your new plan."
+    },
+    "tabs": {
+      "monthly": "Monthly Payment",
+      "annual": "Annual Payment",
+      "save": "Save"
+    },
+    "renewal": {
+      "benefit": "Renewal Benefit",
+      "remainingDays": "The {days, plural, one {# remaining day} other {# remaining days}} on your current plan will be added to this new subscription."
+    },
+    "priceUnavailable": "Not available",
+    "messages": {
+      "purchaseError": "An error occurred while processing the purchase"
+    }
+  },
+  "pricingCard": {
+    "badges": {
+      "currentPlan": "Current Plan",
+      "recommended": "Recommended"
+    },
+    "billing": {
+      "month": "month",
+      "year": "year"
+    },
+    "pricing": {
+      "save": "Save {percentage}%"
+    },
+    "features": {
+      "title": "Features:",
+      "farms": "Up to {count, plural, one {# farm} other {# farms}}",
+      "animals": "Up to {count, plural, one {# animal} other {# animals}}",
+      "workers": "Up to {count, plural, one {# worker} other {# workers}}",
+      "marketplace": "Access to Agro Market"
+    },
+    "buttons": {
+      "renew": "Renew Plan",
+      "startFree": "Get Started for Free",
+      "subscribe": "Subscribe to Plan"
+    }
+  },
+  "modalConfirmCompra": {
+    "title": "Confirm Purchase",
+    "description": "Are you sure you want to purchase this plan?",
+    "renewal": {
+      "benefit": "Renewal Benefit",
+      "remainingDays": "The {days, plural, one {# remaining day} other {# remaining days}} on your current plan will be added to this new subscription."
+    },
+    "subscription": {
+      "title": "Subscription Type",
+      "monthly": "Monthly",
+      "annual": "Annual",
+      "save": "Save {percentage}%",
+      "freeTooltip": "The FREE plan is only available with monthly billing",
+      "freeNotice": "The free plan is only available with monthly billing"
+    },
+    "payment": {
+      "total": "Total due:",
+      "monthlyCharge": "A monthly charge will be applied",
+      "annualCharge": "A one-time annual charge will be applied"
+    },
+    "expiration": {
+      "activeUntil": "Your plan will remain active until",
+      "additionalDays": "Includes {days, plural, one {# additional day} other {# additional days}} from your previous plan"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "processing": "Processing...",
+      "renew": "Renew and Keep Remaining Days",
+      "confirm": "Confirm"
+    }
+  },
+  "historialPaquetesPage": {
+    "header": {
+      "title": "Plan History",
+      "description": "Review your subscription history and purchased plans"
+    },
+    "status": {
+      "active": "Active",
+      "expired": "Expired"
+    },
+    "empty": {
+      "title": "No Plan History",
+      "description": "You haven't purchased any plans yet. Start your journey with us!"
+    },
+    "sections": {
+      "currentPlan": "Current Plan",
+      "previousPlans": "Previous Plans",
+      "planCount": "{count, plural, one {# plan} other {# plans}}"
+    }
+  },
+   "cardResumenHistorial": {
+    "contractedPlans": "Subscribed plans",
+    "activePlan": "Active plan",
+    "premiumPlansPurchased": "Premium plans purchased"
+  },
+  "cardPlanActivo": {
+    "status": {
+      "active": "Active"
+    },
+    "dates": {
+      "from": "Since {date}",
+      "validUntil": "Valid until"
+    },
+    "limits": {
+      "maxFarms": "Maximum Farms",
+      "maxAnimals": "Maximum Animals",
+      "maxWorkers": "Maximum Workers"
+    },
+    "duration": {
+      "total": "Total duration",
+      "days": "{count, plural, one {# day} other {# days}}"
+    }
+  },
+  "cardPaquetesHistorial": {
+    "limits": {
+      "farms": "Farms",
+      "animals": "Animals",
+      "workers": "Workers"
+    },
+    "duration": {
+      "label": "Duration",
+      "days": "{count, plural, one {# day} other {# days}}"
+    },
+    "dates": {
+      "validFrom": "Valid from",
+      "to": "to"
+    }
+  },
+  "unauthorizedPage": {
+    "restrictedAccess": "Restricted access",
+    "title": "Unauthorized",
+    "description": "You don't have the required permissions to access this page.",
+    "authenticatedMessage": "If you believe this is an error, contact the administrator or check your current plan.",
+    "unauthenticatedMessage": "Sign in or register to continue.",
+    "buttons": {
+      "goToPanel": "Go to dashboard",
+      "goHome": "Back to home"
+    }
+  },
+  "pageNotFound": {
+    "title": "Oops! Page not found.",
+    "description": "Sorry, the page you're looking for doesn't exist or has been moved.",
+    "buttons": {
+      "back": "Go back",
+      "goHome": "Back to home"
+    }
   }
 }

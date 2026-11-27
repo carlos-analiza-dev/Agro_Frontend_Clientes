@@ -1,7 +1,9 @@
 "use client";
+
 import { useState, useEffect, useMemo } from "react";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import useGetPaquetesByPais from "@/hooks/paquetes/useGetPaquetesByPais";
+import { useTranslations, useLocale } from "next-intl";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertCircle, Clock } from "lucide-react";
 import { toast } from "react-toastify";
@@ -46,6 +48,9 @@ const sumarDiasAFecha = (fechaInicio: Date, dias: number): Date => {
 };
 
 const ComprarPlanPage = () => {
+  const t = useTranslations("comprarPlanPage");
+  const locale = useLocale();
+
   const { cliente, refreshSession } = useAuthStore();
   const { data: paquetes, isLoading } = useGetPaquetesByPais();
   const [selectedPaquete, setSelectedPaquete] =
@@ -182,7 +187,12 @@ const ComprarPlanPage = () => {
       };
     }
 
-    return { mensual: 0, anual: 0, moneda: "$", paisNombre: "No disponible" };
+    return {
+      mensual: 0,
+      anual: 0,
+      moneda: "$",
+      paisNombre: t("priceUnavailable"),
+    };
   };
 
   const calcularAhorro = (precioMensual: number, precioAnual: number) => {
@@ -239,7 +249,7 @@ const ComprarPlanPage = () => {
         const errorMessage =
           error.response?.data?.message ||
           error.message ||
-          "Error al ejecutar la compra";
+          t("messages.purchaseError");
         toast.error(errorMessage);
       }
     } finally {
@@ -252,10 +262,10 @@ const ComprarPlanPage = () => {
   const getFechaFinPreview = () => {
     if (esPaqueteFree) {
       const fechas = calcularFechasFree();
-      return new Date(fechas.fechaFin).toLocaleDateString();
+      return new Date(fechas.fechaFin).toLocaleDateString(locale);
     }
     const fechas = calcularFechas(tipoPago);
-    return new Date(fechas.fechaFin).toLocaleDateString();
+    return new Date(fechas.fechaFin).toLocaleDateString(locale);
   };
 
   const getMensajeRenovacionModal = () => {
@@ -266,9 +276,8 @@ const ComprarPlanPage = () => {
         <div className="flex items-center gap-2">
           <Clock className="h-4 w-4 text-green-600" />
           <span className="text-sm text-green-800">
-            ✨ <strong>Beneficio por renovación:</strong> Sumarás los{" "}
-            <strong>{diasRestantes} días</strong> restantes de tu plan actual a
-            esta nueva suscripción.
+            ✨ <strong>{t("renewal.benefit")}:</strong>{" "}
+            {t("renewal.remainingDays", { days: diasRestantes })}
           </span>
         </div>
       </div>
@@ -286,11 +295,10 @@ const ComprarPlanPage = () => {
         <div className="relative container mx-auto px-4 py-12 md:py-16">
           <div className="text-center text-white">
             <h1 className="text-3xl md:text-4xl font-bold mb-3">
-              Elige el Plan Perfecto
+              {t("header.title")}
             </h1>
             <p className="text-base md:text-lg text-blue-100 max-w-2xl mx-auto">
-              Selecciona el plan que mejor se adapte a tus necesidades y
-              comienza a optimizar tu producción ganadera
+              {t("header.description")}
             </p>
           </div>
         </div>
@@ -301,23 +309,27 @@ const ComprarPlanPage = () => {
           <Alert className="bg-green-50 border-green-200">
             <AlertCircle className="h-4 w-4 text-green-600" />
             <AlertDescription className="text-green-800">
-              Actualmente tienes el plan{" "}
-              <strong>{planActivo.paquete?.nombre}</strong> activo.
+              {t("activePlan.description")}{" "}
+              <strong>{planActivo.paquete?.nombre}</strong>{" "}
+              {t("activePlan.active")}.
               {planActivo.fechaFin && (
                 <span>
                   {" "}
-                  Vence el {new Date(planActivo.fechaFin).toLocaleDateString()}
+                  {t("activePlan.expiresOn", {
+                    date: new Date(planActivo.fechaFin).toLocaleDateString(
+                      locale,
+                    ),
+                  })}
                   {diasRestantes > 0 && (
                     <span className="ml-2 text-blue-600">
-                      (Te quedan {diasRestantes} días)
+                      {t("activePlan.daysRemaining", { days: diasRestantes })}
                     </span>
                   )}
                 </span>
               )}
               {estaPorVencer && !planActivo.estaVencido && (
                 <span className="block text-yellow-600 text-sm mt-1">
-                  ⚠️ ¡Tu plan está por vencer! Renueva ahora y suma los días
-                  restantes a tu nuevo plan.
+                  ⚠️ {t("activePlan.expiringWarning")}
                 </span>
               )}
             </AlertDescription>
@@ -338,11 +350,11 @@ const ComprarPlanPage = () => {
         >
           <div className="flex justify-center mb-8">
             <TabsList className="grid w-full max-w-md grid-cols-2">
-              <TabsTrigger value="mensual">Pago Mensual</TabsTrigger>
+              <TabsTrigger value="mensual">{t("tabs.monthly")}</TabsTrigger>
               <TabsTrigger value="anual">
-                Pago Anual
+                {t("tabs.annual")}
                 <span className="ml-2 text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">
-                  Ahorra
+                  {t("tabs.save")}
                 </span>
               </TabsTrigger>
             </TabsList>

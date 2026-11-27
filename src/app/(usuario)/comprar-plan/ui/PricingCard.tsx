@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +24,8 @@ export const PricingCard = ({
   ahorro,
   onComprar,
 }: any) => {
+  const t = useTranslations("pricingCard");
+
   const montoMostrar = tipoPago === "mensual" ? precio.mensual : precio.anual;
   const precioOriginal =
     tipoPago === "anual" && precio.mensual > 0 ? precio.mensual * 12 : null;
@@ -37,7 +40,7 @@ export const PricingCard = ({
         {esPlanActual && (
           <div className="absolute top-0 right-0">
             <div className="bg-green-500 text-white px-3 py-1 rounded-bl-lg text-xs font-semibold">
-              Plan Actual
+              {t("badges.currentPlan")}
             </div>
           </div>
         )}
@@ -45,7 +48,7 @@ export const PricingCard = ({
         {!esFree && !esPlanActual && (
           <div className="absolute top-0 left-0">
             <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white px-3 py-1 rounded-br-lg text-xs font-semibold">
-              Recomendado
+              {t("badges.recommended")}
             </div>
           </div>
         )}
@@ -71,7 +74,10 @@ export const PricingCard = ({
                 {montoMostrar.toFixed(2)}
               </span>
               <span className="text-gray-500">
-                /{tipoPago === "mensual" ? "mes" : "año"}
+                /
+                {tipoPago === "mensual"
+                  ? t("billing.month")
+                  : t("billing.year")}
               </span>
             </div>
             {precioOriginal && montoMostrar < precioOriginal && (
@@ -80,38 +86,38 @@ export const PricingCard = ({
                   {precio.moneda}
                   {precioOriginal.toFixed(2)}
                 </span>
-                <span className="ml-2 font-semibold">Ahorra {ahorro}%</span>
+                <span className="ml-2 font-semibold">
+                  {t("pricing.save", { percentage: ahorro })}
+                </span>
               </p>
             )}
           </div>
 
           <div className="space-y-2">
             <p className="text-sm font-semibold text-gray-600">
-              Características:
+              {t("features.title")}
             </p>
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm">
                 <Check className="w-4 h-4 text-green-500" />
+                <span>{t("features.farms", { count: paquete.maxFincas })}</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <Check className="w-4 h-4 text-green-500" />
                 <span>
-                  Hasta {paquete.maxFincas} finca
-                  {paquete.maxFincas !== 1 ? "s" : ""}
+                  {t("features.animals", { count: paquete.maxAnimales })}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Check className="w-4 h-4 text-green-500" />
-                <span>Hasta {paquete.maxAnimales} animales</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Check className="w-4 h-4 text-green-500" />
                 <span>
-                  Hasta {paquete.maxTrabajadores} trabajador
-                  {paquete.maxTrabajadores !== 1 ? "es" : ""}
+                  {t("features.workers", { count: paquete.maxTrabajadores })}
                 </span>
               </div>
               {paquete && paquete.ecommerce && (
                 <div className="flex items-center gap-2 text-sm">
                   <Check className="w-4 h-4 text-green-500" />
-                  <span>Acceso a Agro Market</span>
+                  <span>{t("features.marketplace")}</span>
                 </div>
               )}
             </div>
@@ -128,10 +134,10 @@ export const PricingCard = ({
             size="lg"
           >
             {esPlanActual
-              ? "Renovar Plan"
+              ? t("buttons.renew")
               : esFree
-                ? "Comenzar Gratis"
-                : "Contratar Plan"}
+                ? t("buttons.startFree")
+                : t("buttons.subscribe")}
           </Button>
         </CardFooter>
       </Card>

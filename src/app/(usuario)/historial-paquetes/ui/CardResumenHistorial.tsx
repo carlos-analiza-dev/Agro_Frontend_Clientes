@@ -1,6 +1,8 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { PaqueteInterface } from "@/api/paquetes/interface/paquete.interface";
 import { Card, CardContent } from "@/components/ui/card";
-import React from "react";
 
 interface Props {
   historial: PaqueteInterface[];
@@ -8,6 +10,8 @@ interface Props {
 }
 
 const CardResumenHistorial = ({ historial, planActivo }: Props) => {
+  const t = useTranslations("cardResumenHistorial");
+
   return (
     <Card className="bg-gradient-to-r from-gray-50 to-gray-100">
       <CardContent className="pt-6">
@@ -16,13 +20,15 @@ const CardResumenHistorial = ({ historial, planActivo }: Props) => {
             <div className="text-3xl font-bold text-blue-600">
               {historial.length}
             </div>
-            <div className="text-sm text-gray-600 mt-1">Planes contratados</div>
+            <div className="text-sm text-gray-600 mt-1">
+              {t("contractedPlans")}
+            </div>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold text-green-600">
               {planActivo ? 1 : 0}
             </div>
-            <div className="text-sm text-gray-600 mt-1">Plan activo</div>
+            <div className="text-sm text-gray-600 mt-1">{t("activePlan")}</div>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold text-purple-600">
@@ -32,7 +38,7 @@ const CardResumenHistorial = ({ historial, planActivo }: Props) => {
               }
             </div>
             <div className="text-sm text-gray-600 mt-1">
-              Planes Premium adquiridos
+              {t("premiumPlansPurchased")}
             </div>
           </div>
         </div>

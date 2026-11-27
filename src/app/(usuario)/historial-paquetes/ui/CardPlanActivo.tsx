@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { PaqueteInterface } from "@/api/paquetes/interface/paquete.interface";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -13,7 +16,6 @@ import {
   getPlanIcon,
 } from "@/helpers/funciones/paquetes/get-infos";
 import { CheckCircle2, Clock } from "lucide-react";
-import React from "react";
 
 interface Props {
   planActivo: PaqueteInterface;
@@ -21,6 +23,8 @@ interface Props {
 }
 
 const CardPlanActivo = ({ planActivo, calcularDuracionDias }: Props) => {
+  const t = useTranslations("cardPlanActivo");
+
   return (
     <Card
       className={`overflow-hidden border-2 ${getPlanColor(planActivo.paquete.tipo)} shadow-lg`}
@@ -36,16 +40,20 @@ const CardPlanActivo = ({ planActivo, calcularDuracionDias }: Props) => {
               <CardDescription className="flex items-center gap-2 mt-1">
                 <Badge className="bg-green-500 hover:bg-green-600">
                   <CheckCircle2 className="h-3 w-3 mr-1" />
-                  Activo
+                  {t("status.active")}
                 </Badge>
                 <span className="text-sm">
-                  Desde {formatDateLocal(planActivo.fechaInicio)}
+                  {t("dates.from", {
+                    date: formatDateLocal(planActivo.fechaInicio),
+                  })}
                 </span>
               </CardDescription>
             </div>
           </div>
           <div className="text-right">
-            <div className="text-sm text-gray-600 mb-1">Válido hasta</div>
+            <div className="text-sm text-gray-600 mb-1">
+              {t("dates.validUntil")}
+            </div>
             <div className="text-lg font-semibold text-gray-900">
               {formatDateLocal(planActivo.fechaFin)}
             </div>
@@ -55,20 +63,24 @@ const CardPlanActivo = ({ planActivo, calcularDuracionDias }: Props) => {
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div className="bg-white/50 rounded-lg p-3">
-            <div className="text-sm text-gray-600 mb-1">Máximo Fincas</div>
+            <div className="text-sm text-gray-600 mb-1">
+              {t("limits.maxFarms")}
+            </div>
             <div className="text-2xl font-bold text-gray-900">
               {planActivo.paquete.maxFincas}
             </div>
           </div>
           <div className="bg-white/50 rounded-lg p-3">
-            <div className="text-sm text-gray-600 mb-1">Máximo Animales</div>
+            <div className="text-sm text-gray-600 mb-1">
+              {t("limits.maxAnimals")}
+            </div>
             <div className="text-2xl font-bold text-gray-900">
               {planActivo.paquete.maxAnimales}
             </div>
           </div>
           <div className="bg-white/50 rounded-lg p-3">
             <div className="text-sm text-gray-600 mb-1">
-              Máximo Trabajadores
+              {t("limits.maxWorkers")}
             </div>
             <div className="text-2xl font-bold text-gray-900">
               {planActivo.paquete.maxTrabajadores}
@@ -79,13 +91,14 @@ const CardPlanActivo = ({ planActivo, calcularDuracionDias }: Props) => {
           <div className="flex items-center gap-2 text-sm text-blue-800">
             <Clock className="h-4 w-4" />
             <span>
-              Duración total:{" "}
+              {t("duration.total")}:{" "}
               <strong>
-                {calcularDuracionDias(
-                  planActivo.fechaInicio,
-                  planActivo.fechaFin,
-                )}{" "}
-                días
+                {t("duration.days", {
+                  count: calcularDuracionDias(
+                    planActivo.fechaInicio,
+                    planActivo.fechaFin,
+                  ),
+                })}
               </strong>
             </span>
           </div>

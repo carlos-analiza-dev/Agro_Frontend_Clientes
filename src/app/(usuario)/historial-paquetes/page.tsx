@@ -1,4 +1,6 @@
 "use client";
+
+import { useTranslations } from "next-intl";
 import useGetHistorialPaquetesByCliente from "@/hooks/paquetes/useGetHistorialPaquetesByCliente";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,19 +13,21 @@ import CardPlanActivo from "./ui/CardPlanActivo";
 import CardResumenHistorial from "./ui/CardResumenHistorial";
 
 const HistorialPaquetesPage = () => {
+  const t = useTranslations("historialPaquetesPage");
+
   const { data: historial, isLoading } = useGetHistorialPaquetesByCliente();
 
   const getBadgeVariant = (activo: boolean) => {
     if (activo) {
       return {
         variant: "default" as const,
-        label: "Activo",
+        label: t("status.active"),
         color: "bg-green-500",
       };
     }
     return {
       variant: "secondary" as const,
-      label: "Expirado",
+      label: t("status.expired"),
       color: "bg-gray-400",
     };
   };
@@ -72,12 +76,9 @@ const HistorialPaquetesPage = () => {
             <Calendar className="h-10 w-10 text-gray-400" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            No hay historial de planes
+            {t("empty.title")}
           </h3>
-          <p className="text-gray-500">
-            Aún no has adquirido ningún plan. ¡Comienza tu experiencia con
-            nosotros!
-          </p>
+          <p className="text-gray-500">{t("empty.description")}</p>
         </div>
       </div>
     );
@@ -93,10 +94,10 @@ const HistorialPaquetesPage = () => {
         <div className="relative container mx-auto px-4 py-12 md:py-16">
           <div className="text-center text-white">
             <h1 className="text-3xl md:text-4xl font-bold mb-3">
-              Historial de Planes
+              {t("header.title")}
             </h1>
             <p className="text-base md:text-lg text-blue-100 max-w-2xl mx-auto">
-              Revisa el historial de tus suscripciones y planes adquiridos
+              {t("header.description")}
             </p>
           </div>
         </div>
@@ -107,7 +108,9 @@ const HistorialPaquetesPage = () => {
           <div className="mb-12">
             <div className="flex items-center gap-2 mb-4">
               <div className="h-1 w-8 bg-green-500 rounded"></div>
-              <h2 className="text-2xl font-bold text-gray-800">Plan Actual</h2>
+              <h2 className="text-2xl font-bold text-gray-800">
+                {t("sections.currentPlan")}
+              </h2>
             </div>
             <CardPlanActivo
               planActivo={planActivo}
@@ -121,10 +124,12 @@ const HistorialPaquetesPage = () => {
             <div className="flex items-center gap-2 mb-4">
               <div className="h-1 w-8 bg-gray-400 rounded"></div>
               <h2 className="text-2xl font-bold text-gray-800">
-                Planes Anteriores
+                {t("sections.previousPlans")}
               </h2>
               <Badge variant="outline" className="ml-2">
-                {historialAnterior.length} planes
+                {t("sections.planCount", {
+                  count: historialAnterior.length,
+                })}
               </Badge>
             </div>
 

@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { PaqueteInterface } from "@/api/paquetes/interface/paquete.interface";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -17,7 +20,6 @@ import {
   getPlanIcon,
 } from "@/helpers/funciones/paquetes/get-infos";
 import { Calendar, Clock } from "lucide-react";
-import React from "react";
 
 interface Props {
   item: PaqueteInterface;
@@ -28,6 +30,8 @@ interface Props {
 }
 
 const CardPaquetesHistorial = ({ item, duracionDias, badgeInfo }: Props) => {
+  const t = useTranslations("cardPaquetesHistorial");
+
   return (
     <Card
       className={`overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-105 ${getPlanColor(item.paquete.tipo)}`}
@@ -53,19 +57,19 @@ const CardPaquetesHistorial = ({ item, duracionDias, badgeInfo }: Props) => {
         <div className="space-y-3">
           <div className="grid grid-cols-3 gap-2 text-center">
             <div className="bg-white/50 rounded p-2">
-              <div className="text-xs text-gray-600">Fincas</div>
+              <div className="text-xs text-gray-600">{t("limits.farms")}</div>
               <div className="font-semibold text-gray-900">
                 {item.paquete.maxFincas}
               </div>
             </div>
             <div className="bg-white/50 rounded p-2">
-              <div className="text-xs text-gray-600">Animales</div>
+              <div className="text-xs text-gray-600">{t("limits.animals")}</div>
               <div className="font-semibold text-gray-900">
                 {item.paquete.maxAnimales}
               </div>
             </div>
             <div className="bg-white/50 rounded p-2">
-              <div className="text-xs text-gray-600">Trabajadores</div>
+              <div className="text-xs text-gray-600">{t("limits.workers")}</div>
               <div className="font-semibold text-gray-900">
                 {item.paquete.maxTrabajadores}
               </div>
@@ -77,18 +81,18 @@ const CardPaquetesHistorial = ({ item, duracionDias, badgeInfo }: Props) => {
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-1 text-gray-600">
               <Calendar className="h-3 w-3" />
-              <span>Duración</span>
+              <span>{t("duration.label")}</span>
             </div>
             <span className="font-medium text-gray-900">
-              {duracionDias} días
+              {t("duration.days", { count: duracionDias })}
             </span>
           </div>
 
           <div className="flex items-center gap-2 text-xs text-gray-500">
             <Clock className="h-3 w-3" />
             <span>
-              Vigente del {formatDateOnly(item.fechaInicio)} al{" "}
-              {formatDateOnly(item.fechaFin)}
+              {t("dates.validFrom")} {formatDateOnly(item.fechaInicio)}{" "}
+              {t("dates.to")} {formatDateOnly(item.fechaFin)}
             </span>
           </div>
         </div>

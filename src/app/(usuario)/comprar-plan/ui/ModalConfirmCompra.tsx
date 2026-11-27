@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { ResponsePaquetesInterface } from "@/api/paquetes/interface/response-paquetes.interface";
 import Modal from "@/components/generics/Modal";
 import { Badge } from "@/components/ui/badge";
@@ -59,12 +60,14 @@ const ModalConfirmCompra = ({
   handleConfirmarCompra,
   planActualEsFree,
 }: Props) => {
+  const t = useTranslations("modalConfirmCompra");
+
   return (
     <Modal
       open={showConfirmDialog}
       onOpenChange={setShowConfirmDialog}
-      title="Confirmar Compra"
-      description="¿Estás seguro de que deseas adquirir este plan?"
+      title={t("title")}
+      description={t("description")}
     >
       {selectedPaquete && (
         <div className="space-y-4">
@@ -91,9 +94,10 @@ const ModalConfirmCompra = ({
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-green-600" />
                       <span className="text-sm text-green-800">
-                        ✨ <strong>Beneficio por renovación:</strong> Sumarás
-                        los <strong>{diasRestantes} días</strong> restantes de
-                        tu plan actual a esta nueva suscripción.
+                        ✨ <strong>{t("renewal.benefit")}:</strong>{" "}
+                        {t("renewal.remainingDays", {
+                          days: diasRestantes,
+                        })}
                       </span>
                     </div>
                   </div>
@@ -101,7 +105,7 @@ const ModalConfirmCompra = ({
 
               <div>
                 <Label className="text-sm font-semibold">
-                  Tipo de suscripción
+                  {t("subscription.title")}
                 </Label>
                 <RadioGroup
                   value={tipoPago}
@@ -118,7 +122,7 @@ const ModalConfirmCompra = ({
                       htmlFor="mensual"
                       className={`cursor-pointer ${esPaqueteFree ? "text-gray-400" : ""}`}
                     >
-                      Mensual
+                      {t("subscription.monthly")}
                     </Label>
                   </div>
 
@@ -135,16 +139,16 @@ const ModalConfirmCompra = ({
                             htmlFor="anual"
                             className={`cursor-pointer ${esPaqueteFree ? "text-gray-400" : ""}`}
                           >
-                            Anual
+                            {t("subscription.annual")}
                             {getPrecio(selectedPaquete).mensual > 0 &&
                               !esPaqueteFree && (
                                 <span className="ml-2 text-xs text-green-600">
-                                  Ahorra{" "}
-                                  {calcularAhorro(
-                                    getPrecio(selectedPaquete).mensual,
-                                    getPrecio(selectedPaquete).anual,
-                                  )}
-                                  %
+                                  {t("subscription.save", {
+                                    percentage: calcularAhorro(
+                                      getPrecio(selectedPaquete).mensual,
+                                      getPrecio(selectedPaquete).anual,
+                                    ),
+                                  })}
                                 </span>
                               )}
                           </Label>
@@ -153,8 +157,7 @@ const ModalConfirmCompra = ({
                       {esPaqueteFree && (
                         <TooltipContent>
                           <p className="text-xs">
-                            El plan FREE solo está disponible en modalidad
-                            mensual
+                            {t("subscription.freeTooltip")}
                           </p>
                         </TooltipContent>
                       )}
@@ -164,15 +167,14 @@ const ModalConfirmCompra = ({
 
                 {esPaqueteFree && (
                   <p className="text-xs text-blue-600 mt-2">
-                    ℹ️ El plan gratuito solo está disponible en modalidad
-                    mensual
+                    ℹ️ {t("subscription.freeNotice")}
                   </p>
                 )}
               </div>
 
               <div className="bg-white rounded-lg p-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Total a pagar:</span>
+                  <span className="text-gray-600">{t("payment.total")}</span>
                   <span className="text-2xl font-bold text-blue-600">
                     {getPrecio(selectedPaquete).moneda}{" "}
                     {tipoPago === TipoPrecio.MENSUAL
@@ -182,8 +184,8 @@ const ModalConfirmCompra = ({
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
                   {tipoPago === TipoPrecio.MENSUAL
-                    ? "Se realizará un cargo mensual"
-                    : "Se realizará un cargo único anual"}
+                    ? t("payment.monthlyCharge")
+                    : t("payment.annualCharge")}
                 </p>
               </div>
 
@@ -191,12 +193,14 @@ const ModalConfirmCompra = ({
                 <div className="flex items-center gap-2 text-sm">
                   <Calendar className="h-4 w-4 text-blue-600" />
                   <span className="text-gray-700">
-                    Tu plan estará activo hasta el{" "}
+                    {t("expiration.activeUntil")}{" "}
                     <strong>{getFechaFinPreview()}</strong>
                     {!planActualEsFree && (
                       <span className="block text-xs text-green-600 mt-1">
-                        ✅ Incluye {diasRestantes} días adicionales de tu plan
-                        anterior
+                        ✅{" "}
+                        {t("expiration.additionalDays", {
+                          days: diasRestantes,
+                        })}
                       </span>
                     )}
                   </span>
@@ -212,7 +216,7 @@ const ModalConfirmCompra = ({
               className="flex-1"
               disabled={isProcessing}
             >
-              Cancelar
+              {t("buttons.cancel")}
             </Button>
             <Button
               onClick={handleConfirmarCompra}
@@ -222,14 +226,14 @@ const ModalConfirmCompra = ({
               {isProcessing ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                  Procesando...
+                  {t("buttons.processing")}
                 </>
               ) : (
                 <>
                   <CreditCard className="mr-2 h-4 w-4" />
                   {diasRestantes > 0
-                    ? "Renovar y Aprovechar Días"
-                    : "Confirmar"}
+                    ? t("buttons.renew")
+                    : t("buttons.confirm")}
                 </>
               )}
             </Button>

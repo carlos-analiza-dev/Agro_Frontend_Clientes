@@ -1,11 +1,14 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/providers/store/useAuthStore";
 import { useAuthEmpleadoStore } from "@/providers/store/useAuthEmpleados";
 import { useRouter } from "next/navigation";
 
 const PageNotFound = () => {
+  const t = useTranslations("pageNotFound");
+
   const { cliente, token: clienteToken } = useAuthStore();
   const { empleado, token: empleadoToken } = useAuthEmpleadoStore();
 
@@ -30,18 +33,18 @@ const PageNotFound = () => {
         </h1>
 
         <p className="text-2xl md:text-3xl font-semibold text-gray-600 dark:text-gray-400 mt-4">
-          Oops! Página no encontrada.
+          {t("title")}
         </p>
 
         <p className="text-gray-500 dark:text-gray-400 mt-2">
-          Lo sentimos, la página que buscas no existe o fue movida.
+          {t("description")}
         </p>
 
         <Button
           onClick={handleNotFound}
           className="mt-6 rounded-2xl bg-green-600 px-6 py-3 text-white shadow-md transition hover:bg-green-700"
         >
-          {isAuthenticated ? "Volver" : "Volver al inicio"}
+          {isAuthenticated ? t("buttons.back") : t("buttons.goHome")}
         </Button>
       </div>
     </div>
