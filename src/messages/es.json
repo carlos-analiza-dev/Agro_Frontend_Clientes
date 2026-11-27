@@ -13639,6 +13639,158 @@
       "openMessages": "Abrir mensajes",
       "closeMessages": "Cerrar mensajes"
     }
+  },
+  "deliveryCostCalculator": {
+    "states": {
+      "loadingMaps": "Cargando Google Maps...",
+      "missingCoordinates": "Faltan coordenadas para calcular el costo de envío",
+      "calculating": "Calculando costo de envío..."
+    },
+    "buttons": {
+      "calculate": "Calcular costo de envío"
+    },
+    "results": {
+      "shippingCost": "Costo de envío",
+      "distance": "Distancia: {distance} km",
+      "estimatedTime": "Tiempo estimado: {duration} min",
+      "calculationNote": "*Costo calculado basado en la distancia desde la sucursal hasta el punto de entrega"
+    }
+  },
+  "googleMapsWrapper": {
+    "errors": {
+      "apiKeyNotFound": "Clave API de Google Maps no encontrada",
+      "loadMap": "Error al cargar el mapa.",
+      "checkConnection": "Verifica tu conexión a internet."
+    },
+    "states": {
+      "loading": "Cargando mapa..."
+    }
+  },
+  "googleMapViewer": {
+    "errors": {
+      "apiKeyNotFound": "Clave API de Google Maps no encontrada",
+      "initializeMap": "Error al inicializar el mapa"
+    },
+    "states": {
+      "loadError": "No se pudo cargar el mapa",
+      "loading": "Cargando mapa..."
+    },
+    "buttons": {
+      "openGoogleMaps": "Abrir en Google Maps",
+      "getDirections": "Cómo llegar"
+    },
+    "map": {
+      "latitude": "Lat",
+      "longitude": "Lng"
+    }
+  },
+  "sheetContentClientOut": {
+    "navigation": {
+      "products": "Productos",
+      "services": "Servicios",
+      "market": "Market",
+      "favorites": "Favoritos",
+      "cart": "Carrito"
+    },
+    "country": {
+      "label": "País:"
+    },
+    "buttons": {
+      "login": "Iniciar Sesión",
+      "register": "Crear cuenta nueva"
+    }
+  },
+   "publicidadCard": {
+    "imageUnavailable": "Sin imagen",
+    "viewMore": "Ver más"
+  },
+  "distribucionServicio": {
+    "title": "Distribución por servicio"
+  },
+  "evolucionMensual": {
+    "title": "Evolución mensual de costos",
+    "monthLabel": "Mes: {month}",
+    "totalCost": "Costo total"
+  },
+  "resumenPorServicio": {
+    "title": "Resumen por servicio",
+    "columns": {
+      "service": "Servicio",
+      "quantity": "Cantidad",
+      "total": "Total"
+    }
+  },
+  "calendarioEventos": {
+    "title": "Calendario de Eventos",
+    "buttons": {
+      "today": "Hoy",
+      "previousMonth": "Mes anterior",
+      "nextMonth": "Mes siguiente",
+      "addToGoogleCalendar": "Agregar a Google Calendar"
+    },
+    "weekdays": {
+      "monday": "Lun",
+      "tuesday": "Mar",
+      "wednesday": "Mié",
+      "thursday": "Jue",
+      "friday": "Vie",
+      "saturday": "Sáb",
+      "sunday": "Dom"
+    },
+    "legend": {
+      "urgent": "Urgente (0-1 días)",
+      "soon": "Pronto (2-3 días)",
+      "upcoming": "Próximo (4-7 días)",
+      "scheduled": "Programado (>7 días)"
+    },
+    "summary": {
+      "label": "Resumen:",
+      "withEvents": "{events, plural, one {# evento programado} other {# eventos programados}} en {totalDays, plural, one {# día diferente} other {# días diferentes}}",
+      "noEvents": "No hay eventos programados para este mes"
+    },
+    "animal": {
+      "unidentified": "Sin identificar"
+    },
+    "calendarDetails": {
+      "type": "Tipo",
+      "animal": "Animal",
+      "id": "ID"
+    },
+    "messages": {
+      "eventWithoutDate": "El evento no tiene fecha programada",
+      "openingGoogleCalendar": "Abriendo Google Calendar para agregar el evento",
+      "googleCalendarError": "No se pudo abrir Google Calendar"
+    }
+  },
+   "proximosEventosAlerta": {
+    "title": "Próximos eventos programados",
+    "eventCount": "{count, plural, one {# evento} other {# eventos}}",
+    "description": "Eventos programados para los próximos días que requieren atención",
+    "eventFallback": "Evento",
+    "urgency": {
+      "today": "¡Hoy!",
+      "tomorrow": "Mañana",
+      "verySoon": "Muy pronto",
+      "upcoming": "Próximamente",
+      "scheduled": "Programado"
+    },
+    "relativeDate": {
+      "today": "Hoy",
+      "oneDay": "1 día",
+      "days": "{count} días",
+      "oneDayShort": "1d",
+      "daysShort": "{count}d"
+    },
+    "animal": {
+      "unidentified": "Sin identificar"
+    },
+    "responsible": "Resp: {name}",
+    "buttons": {
+      "viewCalendar": "Ver calendario completo"
+    },
+    "modal": {
+      "title": "Calendario"
+    }
   }
 }
 

@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { COLORS_SANIDAD } from "@/helpers/data/sanidad/tipos_servicios_sanidad";
 import { formatCurrency } from "@/helpers/funciones/formatCurrency";
 
@@ -7,14 +10,16 @@ interface Props {
 }
 
 const ResumenPorServicio = ({ datosPorServicio, moneda }: Props) => {
+  const t = useTranslations("resumenPorServicio");
+
   return (
     <div>
-      <h4 className="text-sm font-medium mb-2">Resumen por servicio</h4>
+      <h4 className="text-sm font-medium mb-2">{t("title")}</h4>
       <div className="border rounded-lg overflow-hidden">
         <div className="grid grid-cols-3 gap-2 p-3 bg-gray-50 font-medium text-sm">
-          <div>Servicio</div>
-          <div className="text-right">Cantidad</div>
-          <div className="text-right">Total</div>
+          <div>{t("columns.service")}</div>
+          <div className="text-right">{t("columns.quantity")}</div>
+          <div className="text-right">{t("columns.total")}</div>
         </div>
         <div className="max-h-[250px] overflow-y-auto">
           {datosPorServicio.map((servicio, index) => (

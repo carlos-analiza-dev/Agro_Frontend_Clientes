@@ -1,14 +1,18 @@
+"use client";
+
 import React from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import { Separator } from "../ui/separator";
 import { Globe, Heart, ShoppingCart, User } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface Props {
   isMobileMenuOpen: boolean;
   setIsMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
   onProductsClick: () => void;
   onServicesClick: () => void;
+  onMarketClick: () => void;
   hasSelectedCountry: boolean;
   selectedCountry: any;
   isActive: (href: string) => boolean;
@@ -21,6 +25,7 @@ const SheetContentClientOut = ({
   setIsMobileMenuOpen,
   onProductsClick,
   onServicesClick,
+  onMarketClick,
   hasSelectedCountry,
   selectedCountry,
   isActive,
@@ -28,19 +33,26 @@ const SheetContentClientOut = ({
   cantidadCarrito,
 }: Props) => {
   const router = useRouter();
+  const t = useTranslations("sheetContentClientOut");
 
   const mobileNavLinks = [
     {
-      name: "Productos",
+      name: t("navigation.products"),
       href: "/productos-agroservicios",
       icon: null,
       onClick: onProductsClick,
     },
     {
-      name: "Servicios",
+      name: t("navigation.services"),
       href: "/servicios-sembrador",
       icon: null,
       onClick: onServicesClick,
+    },
+    {
+      name: t("navigation.market"),
+      href: "/agro-market",
+      icon: null,
+      onClick: onMarketClick,
     },
   ];
 
@@ -94,7 +106,7 @@ const SheetContentClientOut = ({
                     className="flex items-center w-full rounded-lg px-3 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
                   >
                     <Heart className="mr-3 h-5 w-5" />
-                    Favoritos
+                    {t("navigation.favorites")}
                     {cantidadFavoritos > 0 && (
                       <span className="ml-auto bg-red-100 text-red-600 text-xs px-2 py-0.5 rounded-full">
                         {cantidadFavoritos}
@@ -110,7 +122,7 @@ const SheetContentClientOut = ({
                     className="flex items-center w-full rounded-lg px-3 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
                   >
                     <ShoppingCart className="mr-3 h-5 w-5" />
-                    Carrito
+                    {t("navigation.cart")}
                     {cantidadCarrito > 0 && (
                       <span className="ml-auto bg-blue-100 text-blue-600 text-xs px-2 py-0.5 rounded-full">
                         {cantidadCarrito}
@@ -127,7 +139,9 @@ const SheetContentClientOut = ({
               <div className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-2">
                   <Globe className="h-4 w-4 text-green-600" />
-                  <span className="text-sm text-gray-600">País:</span>
+                  <span className="text-sm text-gray-600">
+                    {t("country.label")}
+                  </span>
                 </div>
                 <span className="text-sm font-medium text-gray-900">
                   {selectedCountry?.nombre}
@@ -146,7 +160,7 @@ const SheetContentClientOut = ({
                 className="flex w-full items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
               >
                 <User className="mr-3 h-5 w-5" />
-                Iniciar Sesión
+                {t("buttons.login")}
               </button>
               <button
                 onClick={() => {
@@ -155,7 +169,7 @@ const SheetContentClientOut = ({
                 }}
                 className="flex w-full items-center justify-center rounded-lg px-4 py-2.5 text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
               >
-                Crear cuenta nueva
+                {t("buttons.register")}
               </button>
             </div>
           </div>

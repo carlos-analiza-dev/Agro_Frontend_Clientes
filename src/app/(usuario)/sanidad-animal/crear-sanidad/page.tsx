@@ -11,6 +11,7 @@ import { useTranslations } from "next-intl";
 
 const CrearSanidadAnimalByEspecie = () => {
   const t = useTranslations("crearSanidadAnimalByEspecie");
+  const tServices = useTranslations("SanidadServices");
   const searchParams = useSearchParams();
   const router = useRouter();
   const [selectedSanidad, setSelectedSanidad] = useState<Sanidad | null>(null);
@@ -21,14 +22,17 @@ const CrearSanidadAnimalByEspecie = () => {
 
   const colors = ESPECIE_COLORS[especie_animal] || ESPECIE_COLORS.bovino;
 
-  const opciones_servicios_especie = tiposServiciosSanidadData.filter(
-    (data) => {
+  const opciones_servicios_especie = tiposServiciosSanidadData
+    .filter((data) => {
       if (data.especies.includes("todas")) {
         return especie_animal !== "peces";
       }
       return data.especies.includes(especie_animal);
-    },
-  );
+    })
+    .map((data) => ({
+      ...data,
+      label: tServices(data.value),
+    }));
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">

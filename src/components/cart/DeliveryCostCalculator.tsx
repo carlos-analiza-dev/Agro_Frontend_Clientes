@@ -1,4 +1,7 @@
+"use client";
+
 import { useState, useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import { Truck, Loader2, MapPin, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -32,12 +35,16 @@ export const DeliveryCostCalculator = ({
   autoCalculate = true,
   precioPorKm = 1.5,
 }: DeliveryCostCalculatorProps) => {
+  const t = useTranslations("deliveryCostCalculator");
+
   const [calculado, setCalculado] = useState(false);
   const [googleMapsReady, setGoogleMapsReady] = useState(false);
+
   const { calcularCostoDelivery, isCalculating, distanceResult } =
     useDistanceCalculator({
       precioPorKm,
     });
+
   const lastKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -115,7 +122,7 @@ export const DeliveryCostCalculator = ({
         <CardContent className="p-4">
           <div className="flex items-center gap-2 text-yellow-800">
             <Loader2 className="h-5 w-5 animate-spin" />
-            <span className="text-sm">Cargando Google Maps...</span>
+            <span className="text-sm">{t("states.loadingMaps")}</span>
           </div>
         </CardContent>
       </Card>
@@ -128,9 +135,7 @@ export const DeliveryCostCalculator = ({
         <CardContent className="p-4">
           <div className="flex items-center gap-2 text-yellow-800">
             <AlertCircle className="h-5 w-5" />
-            <span className="text-sm">
-              Faltan coordenadas para calcular el costo de envío
-            </span>
+            <span className="text-sm">{t("states.missingCoordinates")}</span>
           </div>
         </CardContent>
       </Card>
@@ -143,7 +148,7 @@ export const DeliveryCostCalculator = ({
         <CardContent className="p-4">
           <div className="flex items-center gap-2 text-blue-800">
             <Loader2 className="h-5 w-5 animate-spin" />
-            <span className="text-sm">Calculando costo de envío...</span>
+            <span className="text-sm">{t("states.calculating")}</span>
           </div>
         </CardContent>
       </Card>
@@ -159,7 +164,7 @@ export const DeliveryCostCalculator = ({
         className="w-full"
       >
         <Truck className="h-4 w-4 mr-2" />
-        Calcular costo de envío
+        {t("buttons.calculate")}
       </Button>
     );
   }
@@ -171,7 +176,7 @@ export const DeliveryCostCalculator = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-orange-800">
               <Truck className="h-5 w-5" />
-              <span className="font-medium">Costo de Envío</span>
+              <span className="font-medium">{t("results.shippingCost")}</span>
             </div>
             <span className="text-xl font-bold text-orange-800">
               {simboloMoneda} {distanceResult.cost.toFixed(2)}
@@ -181,16 +186,21 @@ export const DeliveryCostCalculator = ({
           <div className="flex justify-between text-sm text-orange-700">
             <div className="flex items-center gap-1">
               <MapPin className="h-3 w-3" />
-              <span>Distancia: {distanceResult.distance.toFixed(1)} km</span>
+              <span>
+                {t("results.distance", {
+                  distance: distanceResult.distance.toFixed(1),
+                })}
+              </span>
             </div>
             <span>
-              Tiempo estimado: {Math.round(distanceResult.duration)} min
+              {t("results.estimatedTime", {
+                duration: Math.round(distanceResult.duration),
+              })}
             </span>
           </div>
 
           <p className="text-xs text-orange-600 mt-1">
-            *Costo calculado basado en la distancia desde la sucursal hasta el
-            punto de entrega
+            {t("results.calculationNote")}
           </p>
         </CardContent>
       </Card>

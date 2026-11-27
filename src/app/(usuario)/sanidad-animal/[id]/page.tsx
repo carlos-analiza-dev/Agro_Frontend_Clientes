@@ -11,6 +11,7 @@ import { useTranslations } from "next-intl";
 
 const SanidadAnimalByIdPage = () => {
   const t = useTranslations("sanidadAnimalByIdPage");
+  const tServices = useTranslations("SanidadServices");
   const { id } = useParams();
   const sanidadId = id as string;
   const router = useRouter();
@@ -22,14 +23,17 @@ const SanidadAnimalByIdPage = () => {
 
   const colors = ESPECIE_COLORS[especie_animal] || ESPECIE_COLORS.bovino;
 
-  const opciones_servicios_especie = tiposServiciosSanidadData.filter(
-    (data) => {
+  const opciones_servicios_especie = tiposServiciosSanidadData
+    .filter((data) => {
       if (data.especies.includes("todas")) {
         return especie_animal !== "peces";
       }
       return data.especies.includes(especie_animal);
-    },
-  );
+    })
+    .map((data) => ({
+      ...data,
+      label: tServices(data.value),
+    }));
 
   if (isLoading) {
     return <SkeletonCard />;

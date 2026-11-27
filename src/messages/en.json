@@ -13653,5 +13653,157 @@
       "openMessages": "Open messages",
       "closeMessages": "Close messages"
     }
+  },
+  "deliveryCostCalculator": {
+    "states": {
+      "loadingMaps": "Loading Google Maps...",
+      "missingCoordinates": "Coordinates are missing to calculate the delivery cost",
+      "calculating": "Calculating delivery cost..."
+    },
+    "buttons": {
+      "calculate": "Calculate delivery cost"
+    },
+    "results": {
+      "shippingCost": "Delivery cost",
+      "distance": "Distance: {distance} km",
+      "estimatedTime": "Estimated time: {duration} min",
+      "calculationNote": "*Cost calculated based on the distance from the branch to the delivery location"
+    }
+  },
+   "googleMapsWrapper": {
+    "errors": {
+      "apiKeyNotFound": "Google Maps API key not found",
+      "loadMap": "Error loading the map.",
+      "checkConnection": "Please check your internet connection."
+    },
+    "states": {
+      "loading": "Loading map..."
+    }
+  },
+   "googleMapViewer": {
+    "errors": {
+      "apiKeyNotFound": "Google Maps API key not found",
+      "initializeMap": "Error initializing the map"
+    },
+    "states": {
+      "loadError": "Unable to load the map",
+      "loading": "Loading map..."
+    },
+    "buttons": {
+      "openGoogleMaps": "Open in Google Maps",
+      "getDirections": "Get directions"
+    },
+    "map": {
+      "latitude": "Lat",
+      "longitude": "Lng"
+    }
+  },
+  "sheetContentClientOut": {
+    "navigation": {
+      "products": "Products",
+      "services": "Services",
+      "market": "Market",
+      "favorites": "Favorites",
+      "cart": "Shopping Cart"
+    },
+    "country": {
+      "label": "Country:"
+    },
+    "buttons": {
+      "login": "Log In",
+      "register": "Create a New Account"
+    }
+  },
+  "publicidadCard": {
+    "imageUnavailable": "No image",
+    "viewMore": "View more"
+  },
+   "distribucionServicio": {
+    "title": "Distribution by service"
+  },
+  "evolucionMensual": {
+    "title": "Monthly Cost Trend",
+    "monthLabel": "Month: {month}",
+    "totalCost": "Total cost"
+  },
+  "resumenPorServicio": {
+    "title": "Summary by Service",
+    "columns": {
+      "service": "Service",
+      "quantity": "Quantity",
+      "total": "Total"
+    }
+  },
+   "calendarioEventos": {
+    "title": "Events Calendar",
+    "buttons": {
+      "today": "Today",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "addToGoogleCalendar": "Add to Google Calendar"
+    },
+    "weekdays": {
+      "monday": "Mon",
+      "tuesday": "Tue",
+      "wednesday": "Wed",
+      "thursday": "Thu",
+      "friday": "Fri",
+      "saturday": "Sat",
+      "sunday": "Sun"
+    },
+    "legend": {
+      "urgent": "Urgent (0-1 days)",
+      "soon": "Soon (2-3 days)",
+      "upcoming": "Upcoming (4-7 days)",
+      "scheduled": "Scheduled (>7 days)"
+    },
+    "summary": {
+      "label": "Summary:",
+      "withEvents": "{events, plural, one {# scheduled event} other {# scheduled events}} across {totalDays, plural, one {# different day} other {# different days}}",
+      "noEvents": "There are no events scheduled for this month"
+    },
+    "animal": {
+      "unidentified": "Unidentified"
+    },
+    "calendarDetails": {
+      "type": "Type",
+      "animal": "Animal",
+      "id": "ID"
+    },
+    "messages": {
+      "eventWithoutDate": "The event does not have a scheduled date",
+      "openingGoogleCalendar": "Opening Google Calendar to add the event",
+      "googleCalendarError": "Could not open Google Calendar"
+    }
+  },
+   "proximosEventosAlerta": {
+    "title": "Upcoming scheduled events",
+    "eventCount": "{count, plural, one {# event} other {# events}}",
+    "description": "Events scheduled for the coming days that require attention",
+    "eventFallback": "Event",
+    "urgency": {
+      "today": "Today!",
+      "tomorrow": "Tomorrow",
+      "verySoon": "Very soon",
+      "upcoming": "Coming up",
+      "scheduled": "Scheduled"
+    },
+    "relativeDate": {
+      "today": "Today",
+      "oneDay": "1 day",
+      "days": "{count} days",
+      "oneDayShort": "1d",
+      "daysShort": "{count}d"
+    },
+    "animal": {
+      "unidentified": "Unidentified"
+    },
+    "responsible": "Resp: {name}",
+    "buttons": {
+      "viewCalendar": "View full calendar"
+    },
+    "modal": {
+      "title": "Calendar"
+    }
   }
 }

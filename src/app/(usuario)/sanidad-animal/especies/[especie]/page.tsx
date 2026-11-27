@@ -486,6 +486,7 @@ const SanidadByEspeciePage = () => {
       ...data,
       label: tServices(data.value),
     }));
+
   const handleAddSanidad = () => {
     if (isMobile) {
       router.push(`/sanidad-animal/crear-sanidad?especie=${especie_animal}`);

@@ -623,6 +623,7 @@ const PublicNavBar = () => {
         setIsMobileMenuOpen={setIsMobileMenuOpen}
         onProductsClick={() => navigateTo("/productos-agroservicios")}
         onServicesClick={() => navigateTo("/servicios-sembrador")}
+        onMarketClick={() => navigateTo("/agro-market")}
         hasSelectedCountry={hasSelectedCountry}
         selectedCountry={selectedCountry}
         isActive={(path: string) => pathname === path}

@@ -1,3 +1,5 @@
+"use client";
+
 import { Sanidad } from "@/api/sanidad-animal/interface/response-sanidad-animal.interface";
 import { differenceInCalendarDays } from "date-fns";
 import { AlertCircle, Calendar, Clock, CalendarDays } from "lucide-react";
@@ -6,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/helpers/funciones/formatDate";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import CalendarioEventos from "../calendario/CalendarioEventos";
 import Modal from "@/components/generics/Modal";
 
@@ -24,6 +27,7 @@ const ProximosEventosAlerta = ({
   textColor = "text-yellow-800",
   iconColor = "text-yellow-600",
 }: ProximosEventosAlertaProps) => {
+  const t = useTranslations("proximosEventosAlerta");
   const [mostrarCalendario, setMostrarCalendario] = useState(false);
 
   const eventosConProxima = eventos
@@ -51,11 +55,22 @@ const ProximosEventosAlerta = ({
   };
 
   const getUrgenciaLabel = (dias: number) => {
-    if (dias === 0) return "¡Hoy!";
-    if (dias === 1) return "Mañana";
-    if (dias <= 3) return "Muy pronto";
-    if (dias <= 7) return "Próximamente";
-    return "Programado";
+    if (dias === 0) return t("urgency.today");
+    if (dias === 1) return t("urgency.tomorrow");
+    if (dias <= 3) return t("urgency.verySoon");
+    if (dias <= 7) return t("urgency.upcoming");
+    return t("urgency.scheduled");
+  };
+
+  const getDaysLabel = (dias: number, compact = false) => {
+    if (dias === 0) return t("relativeDate.today");
+    if (dias === 1) {
+      return compact ? t("relativeDate.oneDayShort") : t("relativeDate.oneDay");
+    }
+
+    return compact
+      ? t("relativeDate.daysShort", { count: dias + 1 })
+      : t("relativeDate.days", { count: dias + 1 });
   };
 
   return (
@@ -72,12 +87,12 @@ const ProximosEventosAlerta = ({
                   <h4
                     className={`text-xs sm:text-sm font-semibold ${textColor} flex flex-wrap items-center gap-1 sm:gap-2`}
                   >
-                    Próximos eventos programados
+                    {t("title")}
                     <Badge
                       variant="outline"
                       className={`${bgColor.replace("/50", "")} ${textColor} border ${borderColor} text-[10px] sm:text-xs`}
                     >
-                      {eventosConProxima.length} eventos
+                      {t("eventCount", { count: eventosConProxima.length })}
                     </Badge>
                   </h4>
 
@@ -88,14 +103,13 @@ const ProximosEventosAlerta = ({
                     className={`text-[10px] sm:text-xs h-7 sm:h-8 ${borderColor} ${textColor} hover:${bgColor}`}
                   >
                     <CalendarDays className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                    Ver calendario completo
+                    {t("buttons.viewCalendar")}
                   </Button>
                 </div>
                 <p
                   className={`text-[10px] sm:text-xs ${textColor.replace("800", "700")} mt-0.5`}
                 >
-                  Eventos programados para los próximos días que requieren
-                  atención
+                  {t("description")}
                 </p>
               </div>
 
@@ -108,12 +122,12 @@ const ProximosEventosAlerta = ({
                     <div className="flex items-start justify-between gap-1 sm:gap-2">
                       <div className="flex-1 min-w-0">
                         <p className="text-[10px] sm:text-xs font-medium truncate">
-                          {evento.tipo_servicio || "Evento"}
+                          {evento.tipo_servicio || t("eventFallback")}
                         </p>
                         <p className="text-[10px] sm:text-xs truncate text-gray-600">
                           {evento.animal?.nombre_animal ||
                             evento.animal?.identificador ||
-                            "Sin identificar"}
+                            t("animal.unidentified")}
                         </p>
                       </div>
                       <Badge
@@ -133,25 +147,19 @@ const ProximosEventosAlerta = ({
                       <span className="text-gray-500 hidden xs:inline">•</span>
                       <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0 hidden xs:inline" />
                       <span className="hidden xs:inline">
-                        {evento.diasHasta === 0
-                          ? "Hoy"
-                          : evento.diasHasta === 1
-                            ? "1 día"
-                            : `${evento.diasHasta + 1} días`}
+                        {getDaysLabel(evento.diasHasta)}
                       </span>
 
                       <span className="xs:hidden text-gray-500">
-                        {evento.diasHasta === 0
-                          ? "Hoy"
-                          : evento.diasHasta === 1
-                            ? "1d"
-                            : `${evento.diasHasta + 1}d`}
+                        {getDaysLabel(evento.diasHasta, true)}
                       </span>
                     </div>
 
                     {evento.responsable && (
                       <p className="mt-1 text-[8px] sm:text-[10px] text-gray-600 truncate">
-                        Resp: {evento.responsable}
+                        {t("responsible", {
+                          name: evento.responsable,
+                        })}
                       </p>
                     )}
                   </div>
@@ -163,7 +171,7 @@ const ProximosEventosAlerta = ({
       </Card>
 
       <Modal
-        title="Calendario"
+        title={t("modal.title")}
         open={mostrarCalendario}
         onOpenChange={setMostrarCalendario}
         height="auto"

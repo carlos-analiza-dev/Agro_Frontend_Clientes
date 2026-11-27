@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { ResponseAnunciosInterface } from "@/api/anuncios/interface/response-anuncios.interface";
 
 interface Props {
@@ -10,6 +11,8 @@ interface Props {
 }
 
 export default function PublicidadCard({ anuncio }: Props) {
+  const t = useTranslations("publicidadCard");
+
   const { titulo, descripcion, link, etiqueta, anucioImages } = anuncio;
 
   const imageUrl =
@@ -29,7 +32,9 @@ export default function PublicidadCard({ anuncio }: Props) {
             />
           ) : (
             <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-              <span className="text-gray-400 text-sm">Sin imagen</span>
+              <span className="text-gray-400 text-sm">
+                {t("imageUnavailable")}
+              </span>
             </div>
           )}
 
@@ -69,7 +74,9 @@ export default function PublicidadCard({ anuncio }: Props) {
             />
           ) : (
             <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-              <span className="text-gray-400 text-sm">Sin imagen</span>
+              <span className="text-gray-400 text-sm">
+                {t("imageUnavailable")}
+              </span>
             </div>
           )}
 
@@ -90,7 +97,7 @@ export default function PublicidadCard({ anuncio }: Props) {
           </p>
 
           <div className="flex items-center gap-1 text-xs font-medium text-green-600 mt-3 group-hover:gap-2 transition-all">
-            <span>Ver más</span>
+            <span>{t("viewMore")}</span>
             <ChevronRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
           </div>
         </div>

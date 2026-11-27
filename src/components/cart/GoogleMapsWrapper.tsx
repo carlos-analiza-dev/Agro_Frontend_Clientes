@@ -1,5 +1,8 @@
+"use client";
+
 import { Loader2, MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "react-toastify";
 import { MapComponent } from "./MapComponent";
 
@@ -10,6 +13,8 @@ export const GoogleMapsWrapper = ({
   onLocationSelect: (lat: number, lng: number) => void;
   initialLocation: { lat: number; lng: number };
 }) => {
+  const t = useTranslations("googleMapsWrapper");
+
   const [mapLoaded, setMapLoaded] = useState(false);
   const [loadError, setLoadError] = useState(false);
 
@@ -17,7 +22,7 @@ export const GoogleMapsWrapper = ({
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
     if (!apiKey) {
-      toast.error("Google Maps API key no encontrada");
+      toast.error(t("errors.apiKeyNotFound"));
       setLoadError(true);
       return;
     }
@@ -57,8 +62,9 @@ export const GoogleMapsWrapper = ({
       <div className="w-full h-64 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
         <MapPin className="h-12 w-12 text-gray-400 mb-2" />
         <span className="text-gray-600 text-center">
-          Error al cargar el mapa. <br />
-          Verifica tu conexión a internet.
+          {t("errors.loadMap")}
+          <br />
+          {t("errors.checkConnection")}
         </span>
       </div>
     );
@@ -68,7 +74,7 @@ export const GoogleMapsWrapper = ({
     return (
       <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-        <span className="ml-2 text-gray-600">Cargando mapa...</span>
+        <span className="ml-2 text-gray-600">{t("states.loading")}</span>
       </div>
     );
   }

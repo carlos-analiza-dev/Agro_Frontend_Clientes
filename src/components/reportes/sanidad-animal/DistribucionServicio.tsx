@@ -1,6 +1,9 @@
+"use client";
+
 import { COLORS_SANIDAD } from "@/helpers/data/sanidad/tipos_servicios_sanidad";
 import { formatCurrency } from "@/helpers/funciones/formatCurrency";
 import React from "react";
+import { useTranslations } from "next-intl";
 import {
   ResponsiveContainer,
   PieChart as RePieChart,
@@ -15,9 +18,11 @@ interface Props {
 }
 
 const DistribucionServicio = ({ moneda, datosCostosProcesados }: Props) => {
+  const t = useTranslations("distribucionServicio");
+
   return (
     <div className="h-[300px]">
-      <h4 className="text-sm font-medium mb-2">Distribución por servicio</h4>
+      <h4 className="text-sm font-medium mb-2">{t("title")}</h4>
       <ResponsiveContainer width="100%" height="100%">
         <RePieChart>
           <Pie

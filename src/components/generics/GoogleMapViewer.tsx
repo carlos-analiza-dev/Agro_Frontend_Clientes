@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Loader2, MapPin, Navigation } from "lucide-react";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 declare global {
   interface Window {
@@ -30,6 +31,8 @@ const GoogleMapViewer = ({
   height = "h-48",
   showDirectionsButton = true,
 }: GoogleMapViewerProps) => {
+  const t = useTranslations("googleMapViewer");
+
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
@@ -37,7 +40,7 @@ const GoogleMapViewer = ({
   const [loadError, setLoadError] = useState(false);
 
   const safeParseFloat = (
-    value: string | number | null | undefined
+    value: string | number | null | undefined,
   ): number => {
     if (value === null || value === undefined) return 0;
     if (typeof value === "number") return value;
@@ -52,7 +55,7 @@ const GoogleMapViewer = ({
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
     if (!apiKey) {
-      toast.error("Google Maps API key no encontrada");
+      toast.error(t("errors.apiKeyNotFound"));
 
       setLoadError(true);
       return;
@@ -84,7 +87,7 @@ const GoogleMapViewer = ({
     };
 
     document.head.appendChild(script);
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (!mapLoaded || !mapRef.current || !window.google) return;
@@ -141,7 +144,7 @@ const GoogleMapViewer = ({
           <h3 class="font-semibold text-sm text-gray-900">${titulo}</h3>
           ${direccion ? `<p class="text-xs text-gray-600 mt-1">${direccion}</p>` : ""}
           <p class="text-xs text-gray-500 mt-1">
-            Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}
+            ${t("map.latitude")}: ${lat.toFixed(6)}, ${t("map.longitude")}: ${lng.toFixed(6)}
           </p>
         </div>
       `;
@@ -158,11 +161,11 @@ const GoogleMapViewer = ({
         infoWindow.open(mapInstanceRef.current, markerRef.current);
       }, 1000);
     } catch (error) {
-      toast.error("Error al inicializar el mapa");
+      toast.error(t("errors.initializeMap"));
 
       setLoadError(true);
     }
-  }, [mapLoaded, latitud, longitud, titulo, direccion]);
+  }, [mapLoaded, latitud, longitud, titulo, direccion, t]);
 
   const openGoogleMapsDirections = () => {
     const lat = safeParseFloat(latitud);
@@ -191,13 +194,13 @@ const GoogleMapViewer = ({
       >
         <MapPin className="h-8 w-8 text-gray-400 mb-2" />
         <span className="text-gray-600 text-center text-sm">
-          No se pudo cargar el mapa
+          {t("states.loadError")}
         </span>
         <button
           onClick={openGoogleMaps}
           className="mt-2 text-xs text-blue-600 hover:text-blue-800 underline"
         >
-          Abrir en Google Maps
+          {t("buttons.openGoogleMaps")}
         </button>
       </div>
     );
@@ -209,7 +212,9 @@ const GoogleMapViewer = ({
         className={`${className} ${height} bg-gray-100 flex items-center justify-center`}
       >
         <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
-        <span className="ml-2 text-gray-600 text-sm">Cargando mapa...</span>
+        <span className="ml-2 text-gray-600 text-sm">
+          {t("states.loading")}
+        </span>
       </div>
     );
   }
@@ -222,7 +227,7 @@ const GoogleMapViewer = ({
           onClick={openGoogleMaps}
           className="text-xs text-blue-600 hover:text-blue-800 underline"
         >
-          Abrir en Google Maps
+          {t("buttons.openGoogleMaps")}
         </button>
 
         {showDirectionsButton && (
@@ -231,7 +236,7 @@ const GoogleMapViewer = ({
             className="flex items-center text-xs text-green-600 hover:text-green-800 underline"
           >
             <Navigation className="h-3 w-3 mr-1" />
-            Cómo llegar
+            {t("buttons.getDirections")}
           </button>
         )}
       </div>
